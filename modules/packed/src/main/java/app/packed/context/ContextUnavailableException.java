@@ -13,13 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime;
+package app.packed.context;
+
+import app.packed.application.BuildException;
 
 /**
  *
  */
-public interface LifetimeConf {
-    LifetimeConf ALL = null;
-    LifetimeConf START_ONLY = null;
-    LifetimeConf STOP = null;
+// Hmm StaticContextUnavilable?
+// TransactionContext.get()
+public class ContextUnavailableException extends BuildException {
+
+    /**
+     * @param message
+     */
+    public ContextUnavailableException(String message) {
+        super(message);
+    }
+
+    private static final long serialVersionUID = 1L;
+
 }

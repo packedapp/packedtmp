@@ -23,7 +23,7 @@ import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
 /** A mirror of a container. */
 @BindingHook(extension = MirrorExtension.class)
-public class ContainerMirror implements ContextualizedElement, Mirror {
+public non-sealed class ContainerMirror implements ContextualizedElement, Mirror {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {

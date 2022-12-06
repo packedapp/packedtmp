@@ -25,9 +25,8 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.container.Extension.DependsOn;
 import app.packed.container.FrameworkExtension;
-import app.packed.lifetime.LifetimeConf;
-import app.packed.operation.OperationTemplate;
 import app.packed.operation.Op;
+import app.packed.operation.OperationTemplate;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.BindingProvider.FromOperation;
@@ -207,12 +206,12 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
     // providePerRequest <-- every time the service is requested
     // Also these beans, can typically just be composites??? Nah
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        BeanHandle<T> handle = bean().newApplicationBean(BeanKind.MANYTON).lifetimes(LifetimeConf.START_ONLY).install(implementation);
+        BeanHandle<T> handle = bean().newApplicationBean(BeanKind.MANYTON).lifetimes().install(implementation);
         return new ProvideableBeanConfiguration<T>(handle).provide();
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> op) {
-        BeanHandle<T> handle = bean().newApplicationBean(BeanKind.MANYTON).lifetimes(LifetimeConf.START_ONLY).install(op);
+        BeanHandle<T> handle = bean().newApplicationBean(BeanKind.MANYTON).lifetimes().install(op);
         return new ProvideableBeanConfiguration<T>(handle).provide();
     }
 

@@ -33,7 +33,7 @@ import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 import app.packed.service.UnsatisfiableServiceDependencyException;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.lifetime.LifetimeObjectArena;
+import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
 import internal.app.packed.operation.binding.BindingProvider;
@@ -55,7 +55,7 @@ public final class ServiceManager {
     /** The container's injection manager. */
     public final OldServiceResolver injectionManager = new OldServiceResolver();
 
-    public ServiceLocator newServiceLocator(LifetimeObjectArena region) {
+    public ServiceLocator newServiceLocator(PackedExtensionContext region) {
         return injectionManager.newServiceLocator(region);
     }
 

@@ -27,7 +27,7 @@ import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.lifetime.LifetimeAccessor;
 import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
-import internal.app.packed.lifetime.LifetimeObjectArena;
+import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
@@ -55,7 +55,7 @@ public final class OldServiceResolver {
         }
     }
 
-    ServiceLocator newServiceLocator(LifetimeObjectArena region) {
+    ServiceLocator newServiceLocator(PackedExtensionContext region) {
         Map<Key<?>, MethodHandle> runtimeEntries = new LinkedHashMap<>();
         for (var e : nodes.entrySet()) {
             Key<?> key = e.getKey();
@@ -64,7 +64,7 @@ public final class OldServiceResolver {
             if (export.accessor == null) {
                 mh = export.operation.generateMethodHandle();
             } else {
-                mh = LifetimeObjectArena.constant(key.rawType(), export.accessor.read(region));
+                mh = PackedExtensionContext.constant(key.rawType(), export.accessor.read(region));
             }
             runtimeEntries.put(key, mh);
         }

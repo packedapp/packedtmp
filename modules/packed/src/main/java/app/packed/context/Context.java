@@ -24,7 +24,7 @@ import app.packed.container.Extension;
  *            the extension the runtime context is a part of
  */
 // StaticContext
-public interface RuntimeContext<E extends Extension<E>> {
+public interface Context<E extends Extension<E>> {
 
     // Protected typeClass
 

@@ -47,6 +47,10 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
         return (BeanHandle<T>) super.handle();
     }
 
+    public <K> InstanceBeanConfiguration<T> initializeWith(Class<K> key, Op<K> operation) {
+        throw new UnsupportedOperationException();
+    }
+
     public <K> InstanceBeanConfiguration<T> initializeWithInstance(Class<K> key, K instance) {
         return initializeWithInstance(Key.of(key), instance);
     }

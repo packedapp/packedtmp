@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.context;
-
-import app.packed.container.ContainerExtension;
-import internal.app.packed.lifetime.PackedExtensionContext;
+package app.packed.lifetime;
 
 /**
- * All extensions operate within an ExtensionContext...
+ *
  */
-
-// The whole service layer for extensions are provided via ExtensionContext...
-// Vi har en per container?
-
-public sealed interface ExtensionContext extends Context<ContainerExtension> permits PackedExtensionContext {}
+public interface LifetimeTemplate {
+    LifetimeTemplate ALL = null;
+    LifetimeTemplate START_ONLY = null;
+    LifetimeTemplate STOP = null;
+}

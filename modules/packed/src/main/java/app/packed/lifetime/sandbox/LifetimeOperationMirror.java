@@ -21,13 +21,18 @@ import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 
 /**
- * An operation that creates or destroys a lifetime.
+ * An operation whose sole purpose is to create and/or destroy lifetimes.
+ * <p>
+ * Ot
+ * 
  */
 // Ved ikke om den kommer med som en egentlig operation
 // Giver god mening med
 
 // Altsaa hvis en @Get laver en ny bean saa er det jo ikke en LifetimeOperation
 // WebGetOperationMirror ved jo ikke om den laver en ny lifetime...
+
+// Og saa alligevel.. @Get -> Kalder jo ogsaa Bean.factory operationen 
 
 // Virker den kun hvis man har create and destroy a.la. Session.
 // Men App.run() med kun en operations

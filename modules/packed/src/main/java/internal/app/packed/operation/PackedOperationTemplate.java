@@ -5,11 +5,11 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodType;
 
 import app.packed.operation.OperationTemplate;
-import internal.app.packed.lifetime.LifetimeObjectArena;
+import internal.app.packed.lifetime.PackedExtensionContext;
 
 public final class PackedOperationTemplate implements OperationTemplate {
 
-    public static PackedOperationTemplate DEFAULTS = new PackedOperationTemplate(0, -1, MethodType.methodType(void.class, LifetimeObjectArena.class));
+    public static PackedOperationTemplate DEFAULTS = new PackedOperationTemplate(0, -1, MethodType.methodType(void.class, PackedExtensionContext.class));
     final int beanInstanceIndex;
     final int extensionContext;
 
@@ -35,7 +35,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
     /** {@inheritDoc} */
     @Override
-    public boolean requiresArena() {
+    public boolean requiresExtensionContext() {
         return extensionContext != -1;
     }
 

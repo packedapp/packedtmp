@@ -42,7 +42,7 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
 import internal.app.packed.operation.PackedOperationTemplate;
 
-/** Responsible for introspecting bean fields. */
+/** Responsible for introspecting fields on a bean. */
 public final class IntrospectedBeanField implements OnField {
 
     /** Whether or not the field can be read. */

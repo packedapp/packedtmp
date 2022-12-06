@@ -25,7 +25,7 @@ import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;
-import internal.app.packed.lifetime.LifetimeObjectArena;
+import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
 import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 import internal.app.packed.util.ThrowableUtil;
@@ -45,7 +45,7 @@ public final class ApplicationInitializationContext {
     public String name;
 
     /** The runtime component node we are building. */
-    private LifetimeObjectArena pool;
+    private PackedExtensionContext pool;
 
     /** If the application is stateful, the applications runtime. */
     @Nullable
@@ -69,7 +69,7 @@ public final class ApplicationInitializationContext {
         return name;
     }
 
-    public LifetimeObjectArena pool() {
+    public PackedExtensionContext pool() {
         return pool;
     }
 
@@ -118,7 +118,7 @@ public final class ApplicationInitializationContext {
             }
         }
 
-        LifetimeObjectArena pool = context.pool = application.container.lifetime.pool.newRuntimePool(context);
+        PackedExtensionContext pool = context.pool = application.container.lifetime.pool.newRuntimePool(context);
 
         // Run all initializers
         for (MethodHandle mh : application.container.lifetime.initializers) {

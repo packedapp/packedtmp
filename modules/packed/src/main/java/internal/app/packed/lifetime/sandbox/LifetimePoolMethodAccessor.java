@@ -20,24 +20,24 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import internal.app.packed.lifetime.LifetimeObjectArena;
+import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
 
 /**
- * A implementation of {@link MethodAccessor} that takes a method handle that needs a single {@link LifetimeObjectArena} to be
+ * A implementation of {@link MethodAccessor} that takes a method handle that needs a single {@link PackedExtensionContext} to be
  * invoked.
  */
 public record LifetimePoolMethodAccessor<T> (/** The method handle to invoke */
 MethodHandle mh, /** The constant pool that stores needed data. */
-LifetimeObjectArena pool) implements MethodAccessor<T> {
+PackedExtensionContext pool) implements MethodAccessor<T> {
 
     /**
      * A method handle for creating new RuntimeRegionInvoker instance. We explicitly cast return type from
      * ConstantPoolMethodAccessor->MethodAccessor.
      */
     public static final MethodHandle MH_INVOKER = MethodHandleUtil
-            .castReturnType(LookupUtil.lookupConstructor(MethodHandles.lookup(), MethodHandle.class, LifetimeObjectArena.class), MethodAccessor.class);
+            .castReturnType(LookupUtil.lookupConstructor(MethodHandles.lookup(), MethodHandle.class, PackedExtensionContext.class), MethodAccessor.class);
 
     public LifetimePoolMethodAccessor {
         requireNonNull(mh);

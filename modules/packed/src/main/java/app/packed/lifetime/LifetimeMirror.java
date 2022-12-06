@@ -90,7 +90,7 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
      * 
      * @return
      */
-    public Optional<BeanMirror> managedByBean() {
+    public Optional<BeanMirror> managedBy() {
         List<OperationMirror> operations = operations();
         return operations.isEmpty() ? Optional.empty() : Optional.of(operations.get(0).bean());
     }
@@ -135,7 +135,7 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
     // Eller maaske ligger vi det bare paa launcheren
     // List<LifetimeManagementOperationMirror> managementOperations();
 
-    /** {@return any parent lifetime this lifetime might have.} */
+    /** {@return any parent lifetime this lifetime is contained within.} */
     public Optional<ContainerLifetimeMirror> parent() {
         return Optional.ofNullable(lifetime().parent).map(e -> e.mirror());
     }
@@ -186,8 +186,6 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
 //}
 
 //Kan man have Dependent beans... DVS beans
-
-//Component Lifetime?
 
 ////Det er maaske mere noget a.la. hvornaar maa componenten benyttes
 ////istedet for hvor lang tid den lever.

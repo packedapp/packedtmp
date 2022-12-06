@@ -12,9 +12,10 @@ import java.util.function.Consumer;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
-import app.packed.context.RuntimeContext;
-import app.packed.lifetime.LifetimeConf;
+import app.packed.context.ContextUnavailableException;
+import app.packed.context.Context;
 import app.packed.operation.Op;
+import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.PackedExtensionPointContext;
@@ -158,7 +159,24 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
          */
         public abstract BeanInstaller introspectWith(BeanIntrospector introspector);
 
-        public BeanInstaller lifetimes(LifetimeConf... confs) {
+        // Hvad skal vi helt praecis goere her...
+        // Vi bliver noedt til at vide hvilke kontekts der er...
+        // Saa vi skal vel have OperationTemplates
+
+        //// Hvad med @Get som laver en bean...
+        //// Det er vel operationen der laver den...
+
+        // No Lifetime, Container, Static, Functional, Static
+
+        // Operational -> A bean that is instantiated and lives for the duration of an operation
+
+        // MANYTONE -> Controlled
+
+        public BeanInstaller lifetimeFromOperations() {
+            return this;
+        }
+
+        public BeanInstaller lifetimes(OperationTemplate... confs) {
             return this;
         }
 
@@ -220,11 +238,16 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         Class<? extends Extension<?>> extension();
 
         /**
-         * Any runtime contexts that are required in order to use the binding class or annotation.
+         * Contexts that are required in order to use the binding class or annotation.
+         * <p>
+         * If this binding is attempted to be used without the context being available a {@link ContextUnavailableException}
+         * will be thrown.
+         * <p>
+         * If this method returns multiple contexts they will <strong>all</strong> be required.
          * 
          * @return stuff
          */
-        Class<? extends RuntimeContext<?>>[] requiringContexts() default {}; // maybe just requiring???
+        Class<? extends Context<?>>[] requiresContext() default {};
 
         // IDK about this...
         // Den virker jo kun for annotering..completesavings
@@ -245,6 +268,8 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
         /** The extension the hook is a part of. */
         Class<? extends Extension<?>> extension();
+        
+        Class<? extends Context<?>>[] requiresContext() default {};
     }
 
     /**
@@ -267,6 +292,8 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
         /** The extension the hook is a part of. */
         Class<? extends Extension<?>> extension();
+        
+        Class<? extends Context<?>>[] requiresContext() default {};
     }
 
     /**
@@ -293,10 +320,12 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
         /** The extension the hook is a part of. */
         Class<? extends Extension<?>> extension();
-        
+
         // IDK, don't we just want to ignore it most of the time???
         // Nah maybe fail. People might think it does something
         boolean requiresVoidReturn() default false;
+        
+        Class<? extends Context<?>>[] requiresContext() default {};
     }
 }
 

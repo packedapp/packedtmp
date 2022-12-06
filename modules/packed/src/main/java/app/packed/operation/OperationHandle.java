@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -32,6 +33,7 @@ import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
+import app.packed.context.Context;
 import internal.app.packed.bean.IntrospectedBeanBinding;
 import internal.app.packed.operation.OperationSetup;
 
@@ -99,6 +101,11 @@ public final /* primitive */ class OperationHandle {
         this.operation = requireNonNull(operation);
     }
 
+    /** {@return any contexts that is available for the operation.} */
+    public Set<Class<? extends Context<?>>> contexts() {
+        throw new UnsupportedOperationException();
+    }
+    
     /**
      * Creates a binding for the parameter with the specified index.
      * <p>

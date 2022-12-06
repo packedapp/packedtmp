@@ -25,13 +25,13 @@ import java.util.Set;
 import app.packed.operation.Provider;
 import app.packed.service.Key;
 import app.packed.service.ServiceLocator;
-import internal.app.packed.lifetime.LifetimeObjectArena;
+import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
  *
  */
-public record PackedServiceLocator(LifetimeObjectArena arena, Map<Key<?>, MethodHandle> map) implements ServiceLocator {
+public record PackedServiceLocator(PackedExtensionContext pec, Map<Key<?>, MethodHandle> map) implements ServiceLocator {
 
     /** {@inheritDoc} */
     @Override
@@ -46,7 +46,7 @@ public record PackedServiceLocator(LifetimeObjectArena arena, Map<Key<?>, Method
             @Override
             public T provide() {
                 try {
-                    return (T) provider.invoke(arena);
+                    return (T) provider.invoke(pec);
                 } catch (Throwable e) {
                     throw ThrowableUtil.orUndeclared(e);
                 }

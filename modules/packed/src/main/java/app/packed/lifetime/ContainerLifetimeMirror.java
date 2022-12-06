@@ -47,7 +47,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
      * If this is container or application lifetime and it has a container lifetime wrapper bean. Returns the bean,
      * otherwise empty.
      * <p>
-     * A wrapper and {@link #managedByBean()} is always two different beans.
+     * A wrapper and {@link #managedBy()} is always two different beans.
      * 
      * @return
      */

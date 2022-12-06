@@ -18,6 +18,7 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -26,6 +27,7 @@ import java.util.function.Supplier;
 import app.packed.application.NamespacePath;
 import app.packed.bean.BeanExtensionPoint.BeanInstaller;
 import app.packed.container.Realm;
+import app.packed.context.Context;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
@@ -56,6 +58,11 @@ public final /* primitive */ class BeanHandle<T> {
      */
     BeanHandle(BeanSetup bean) {
         this.bean = requireNonNull(bean);
+    }
+
+    /** {@return a set of the contexts available for this bean.} */
+    public Set<Class<? extends Context<?>>> contexts() {
+        throw new UnsupportedOperationException();
     }
 
     // We need a extension bean
@@ -155,12 +162,13 @@ public final /* primitive */ class BeanHandle<T> {
      * If the bean is registered with its own lifetime. This method returns a list of the lifetime operations of the bean.
      * <p>
      * The operations in the returned list must be computed exactly once. For example, via
-     * {@link OperationHandle#computeMethodHandleInvoker()}. Otherwise a build exception will be thrown. Maybe this goes for
-     * all operation customizers.
+     * {@link OperationHandle#generateMethodHandle()}. Otherwise a build exception will be thrown. Maybe this goes for all
+     * operation customizers.
      * 
-     * @return
+     * @return a list of lifetime operations
+     * 
+     * @see BeanInstaller#lifetimes(app.packed.operation.OperationTemplate...)
      */
-    // Ideen er jo foerst og fremmest taenkt paa
     public List<OperationHandle> lifetimeOperations() {
         return List.of();
     }
@@ -192,9 +200,9 @@ public final /* primitive */ class BeanHandle<T> {
     }
 
     public void setErrorHandler(ErrorHandler errorHandler) {
-        
+
     }
-    
+
     public NamespacePath path() {
         return bean.path();
     }

@@ -38,6 +38,11 @@ import app.packed.service.Key;
 // ExtensionBean er jo oplagt...
 public class ContextTemplate {
 
+    // Is SchedulingContext available for injection
+    boolean isContextAvailableAsKey() {
+        return false;
+    }
+    
     // Tror vi bliver noedt til at definere om vi operere 
     // i en operation eller freeform (SessionContext)
     
@@ -45,7 +50,7 @@ public class ContextTemplate {
         return List.of();
     }
 
-    Class<? extends RuntimeContext<?>> contextClass() {
+    Class<? extends Context<?>> contextClass() {
         throw new UnsupportedOperationException();
     }
 
@@ -59,7 +64,7 @@ public class ContextTemplate {
 
     }
 
-    public static ContextTemplate of(Class<? extends RuntimeContext<?>> contextClass) {
+    public static ContextTemplate of(Class<? extends Context<?>> contextClass) {
         throw new UnsupportedOperationException();
     }
 }

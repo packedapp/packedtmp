@@ -39,7 +39,7 @@ import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.lifetime.LifetimeObjectArena;
+import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
 import internal.app.packed.operation.binding.BindingProvider.FromOperation;
@@ -167,7 +167,7 @@ public sealed abstract class OperationSetup {
         if (requiresBeanInstance) {
             mh = MethodHandles.collectArguments(mh, 0, bean.accessBeanX().provideSpecial());
         } else if (bindings.length == 0) {
-            return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
+            return MethodHandles.dropArguments(mh, 0, PackedExtensionContext.class);
         }
 
         if (bindings.length > 0) {
@@ -181,7 +181,7 @@ public sealed abstract class OperationSetup {
             }
 
             // reduce (LifetimeObjectArena, *)X -> (LifetimeObjectArena)X
-            MethodType mt = MethodType.methodType(methodHandle.type().returnType(), LifetimeObjectArena.class);
+            MethodType mt = MethodType.methodType(methodHandle.type().returnType(), PackedExtensionContext.class);
             mh = MethodHandles.permuteArguments(mh, mt, new int[mh.type().parameterCount()]);
         }
 
@@ -204,7 +204,7 @@ public sealed abstract class OperationSetup {
             System.err.println(mh.type());
             throw new Error("Bean : " + bean.path() + ", operation : " + name);
         }
-        if (mh.type().parameterType(0) != LifetimeObjectArena.class) {
+        if (mh.type().parameterType(0) != PackedExtensionContext.class) {
             System.err.println(mh.type());
             throw new Error();
         }

@@ -46,7 +46,7 @@ public sealed interface OperationTarget {
     public sealed interface OfFieldAccess extends OperationTarget permits FieldOperationSetup {
 
         /** {@return the mode used when accessing the field.} */
-        AccessMode accessMode(); // Could we have a list instead???
+        AccessMode accessMode(); // Could we have a list instead??? Or optional where is empty is VarHandle
 
         /** {@return the underlying field.} */
         Field field();

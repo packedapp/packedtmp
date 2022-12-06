@@ -34,7 +34,7 @@ import internal.app.packed.util.StreamUtil;
  * Instances of this class is typically obtained from calls to {@link ApplicationMirror} or {@link ContainerMirror}.
  */
 @BindingHook(extension = MirrorExtension.class)
-public class BeanMirror implements ContextualizedElement, Mirror {
+public non-sealed class BeanMirror implements ContextualizedElement, Mirror {
 
     /**
      * The internal configuration of the bean we are mirroring. Is initially null but populated via

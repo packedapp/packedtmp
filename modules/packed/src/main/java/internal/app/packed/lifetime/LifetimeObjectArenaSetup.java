@@ -40,7 +40,7 @@ import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
 public final class LifetimeObjectArenaSetup {
 
     /** All constants that should be stored in the constant pool. */
-    private final ArrayList<Consumer<? super LifetimeObjectArena>> entries = new ArrayList<>();
+    private final ArrayList<Consumer<? super PackedExtensionContext>> entries = new ArrayList<>();
 
     public final ArrayList<Runnable> postProcessing = new ArrayList<>();
 
@@ -49,21 +49,21 @@ public final class LifetimeObjectArenaSetup {
 
     LifetimeObjectArenaSetup() {}
 
-    public void addOrdered(Consumer<? super LifetimeObjectArena> c) {
+    public void addOrdered(Consumer<? super PackedExtensionContext> c) {
         // new Exception().printStackTrace();
         // We just keep both these 2 method that does the same for now
         entries.add(c);
     }
 
-    public LifetimeObjectArena newRuntimePool(ApplicationInitializationContext launchContext) {
-        LifetimeObjectArena pool = LifetimeObjectArena.create(size);
+    public PackedExtensionContext newRuntimePool(ApplicationInitializationContext launchContext) {
+        PackedExtensionContext pool = PackedExtensionContext.create(size);
 
         
         if (launchContext.runtime != null) {
             launchContext.application.runtimeAccessor.store(pool, launchContext.runtime);
         }
         
-        for (Consumer<? super LifetimeObjectArena> e : entries) {
+        for (Consumer<? super PackedExtensionContext> e : entries) {
             e.accept(pool);
         }
 

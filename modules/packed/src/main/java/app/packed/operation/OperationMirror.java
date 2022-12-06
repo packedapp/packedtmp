@@ -56,7 +56,7 @@ import internal.app.packed.operation.binding.BindingSetup;
  * </ul>
  */
 @BindingHook(extension = MirrorExtension.class)
-public class OperationMirror implements ContextualizedElement, Mirror {
+public non-sealed class OperationMirror implements ContextualizedElement, Mirror {
 
     /**
      * The internal configuration of the operation we are mirrored. Is initially null but populated via

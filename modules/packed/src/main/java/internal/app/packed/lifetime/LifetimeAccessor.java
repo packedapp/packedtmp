@@ -22,9 +22,9 @@ public sealed interface LifetimeAccessor {
 
     Class<?> type();
 
-    Object read(LifetimeObjectArena ignore);
+    Object read(PackedExtensionContext ignore);
 
-    void store(LifetimeObjectArena pool, Object o);
+    void store(PackedExtensionContext pool, Object o);
     
     public record ConstantAccessor(Object constant, Class<?> type) implements LifetimeAccessor {
 
@@ -38,24 +38,24 @@ public sealed interface LifetimeAccessor {
             return type;
         }
 
-        public Object read(LifetimeObjectArena ignore) {
+        public Object read(PackedExtensionContext ignore) {
             return constant;
         }
 
         /** {@inheritDoc} */
         @Override
-        public void store(LifetimeObjectArena pool, Object o) {
+        public void store(PackedExtensionContext pool, Object o) {
             throw new UnsupportedOperationException();
         }
     }
 
     public record DynamicAccessor(Class<?> type, int index) implements LifetimeAccessor {
 
-        public Object read(LifetimeObjectArena pool) {
+        public Object read(PackedExtensionContext pool) {
             return pool.read(index);
         }
 
-        public void store(LifetimeObjectArena pool, Object o) {
+        public void store(PackedExtensionContext pool, Object o) {
             if (!type.isInstance(o)) {
                 throw new Error("Expected " + type + ", was " + o.getClass());
             }

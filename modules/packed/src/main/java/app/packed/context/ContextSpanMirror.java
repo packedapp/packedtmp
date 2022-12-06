@@ -44,7 +44,7 @@ import internal.app.packed.container.Mirror;
 public interface ContextSpanMirror extends Mirror {
 
     /** {@return the context.} */
-    Class<? extends RuntimeContext<?>> contextClass();
+    Class<? extends Context<?>> contextClass();
 
     /** {@return the extension that defines the context.} */
     Class<? extends Extension<?>> extensionType();

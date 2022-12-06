@@ -18,30 +18,31 @@ package internal.app.packed.lifetime;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
+import app.packed.context.ExtensionContext;
 import internal.app.packed.util.LookupUtil;
 
 /**
  * All strongly connected components relate to the same pod.
  */
 // Long term, this might just be an Object[] array. But for now its a class, in case we need stuff that isn't stored in the array. 
-public final /* primitive */ class LifetimeObjectArena {
+public final /* primitive */ class PackedExtensionContext implements ExtensionContext {
 
     /** A method handle for calling {@link #read(int)} at runtime. */
     public static final MethodHandle MH_CONSTANT_POOL_READER = LookupUtil.lookupVirtual(MethodHandles.lookup(), "read", Object.class, int.class);
 
-    public static final LifetimeObjectArena EMPTY = new LifetimeObjectArena(0);
+    public static final PackedExtensionContext EMPTY = new PackedExtensionContext(0);
     
     private final Object[] objects;
 
-    private LifetimeObjectArena(int size) {
+    private PackedExtensionContext(int size) {
         objects = new Object[size];
     }
 
-    public static LifetimeObjectArena create(int size) {
+    public static PackedExtensionContext create(int size) {
         if (size == 0) {
             return EMPTY;
         } else {
-            return new LifetimeObjectArena(size);
+            return new PackedExtensionContext(size);
         }
 
     }
@@ -77,7 +78,7 @@ public final /* primitive */ class LifetimeObjectArena {
     
     public static MethodHandle constant(Class<?> type, Object constant) {
         MethodHandle mh = MethodHandles.constant(type, constant);
-        mh = MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
+        mh = MethodHandles.dropArguments(mh, 0, PackedExtensionContext.class);
         return mh;
     }
 }

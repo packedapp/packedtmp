@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.operation.bindings.BindingProviderKind;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.lifetime.LifetimeObjectArena;
+import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.MethodHandleUtil;
 
@@ -104,7 +104,7 @@ public sealed abstract class BindingProvider {
         @Override
         public MethodHandle provideSpecial() {
             MethodHandle mh = MethodHandles.constant(constantType, constant);
-            return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
+            return MethodHandles.dropArguments(mh, 0, PackedExtensionContext.class);
         }
     }
 
@@ -140,7 +140,7 @@ public sealed abstract class BindingProvider {
         @Override
         public MethodHandle provideSpecial() {
             // Must be calculated relative to the operation...
-            MethodHandle mh = MethodHandles.insertArguments(LifetimeObjectArena.MH_CONSTANT_POOL_READER, 1, index);
+            MethodHandle mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, index);
             return MethodHandleUtil.castReturnType(mh, type); // (LifetimePool)Object -> (LifetimePool)clazz
         }
     }

@@ -251,6 +251,15 @@ public abstract class BeanIntrospector {
         // if we called AnnotationReader is should really be located in a utility package
     }
 
+    // IDK vi bliver stadig noedt til at analysere den...
+    // Factory hint instead? Og allow en Method... saa det ikke kun er
+    // constructors
+    @interface ConstructorHint {
+        // Ideen er lidt at man bruger den for extension beans
+
+        Class<?>[] value();
+    }
+
     /**
     *
     */
@@ -316,6 +325,10 @@ public abstract class BeanIntrospector {
 
         // Kan only do this if is invoking extension!!
 
+        default boolean canUseInvocationArguments() {
+            return false;
+        }
+
         /**
          * @param postFix
          *            the message to include in the final message
@@ -337,10 +350,6 @@ public abstract class BeanIntrospector {
 
         /** {@return the extension that is responsible for invoking the underlying operation.} */
         Class<? extends Extension<?>> invokingExtension();
-
-        default boolean canUseInvocationArguments() {
-            return false;
-        }
 
         default boolean isOperation(OperationHandle operation) {
             return false;
@@ -513,27 +522,26 @@ public abstract class BeanIntrospector {
         int modifiers();
 
         /**
-         * Creates a new operation that read a field as specified by {@link Lookup#unreflectGetter(Field)}.
+         * Creates a new operation that can read the field.
          * <p>
-         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfFieldAccess} as
+         * If an {@link OperationMirror} is created for the operation. It will report {@link OperationTarget.OfFieldAccess} as
          * its {@link OperationMirror#target()}.
          * 
          * @param template
          *            a template for the operation
          * @return an operation handle
+         * @see Lookup#unreflectGetter(Field)
          */
         OperationHandle newGetOperation(OperationTemplate template);
 
         /**
-         * Creates a new operation that can read or/and write a field as specified by
-         * {@link VarHandle#toMethodHandle(java.lang.invoke.VarHandle.AccessMode)}.
+         * Creates a new operation that can read or/and write a field as specified by the provided access mode.
          * <p>
          * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfFieldAccess} as
          * its {@link OperationMirror#target()}.
          * 
          * @param template
          *            a template for the operation
-         * 
          * @param accessMode
          *            the access mode of the operation
          * 
@@ -541,22 +549,23 @@ public abstract class BeanIntrospector {
          * 
          * @see VarHandle#toMethodHandle(java.lang.invoke.VarHandle.AccessMode)
          * 
-         * @apiNote there are currently no way to create more than 1 MethodHandle per operation (for example 1 for read and 1
-         *          for write). You must create an operation per access mode. If this is needed at some point. We could take a
-         *          varargs of access modes and then allow repeat calls to methodHandleNow.
+         * @apiNote There are currently no way to create more than one MethodHandle per operation (for example one for reading
+         *          and one for writing a field). You must create an operation per access mode instead. It is also currently not
+         *          possible to get a VarHandle for the field
          */
         OperationHandle newOperation(OperationTemplate template, VarHandle.AccessMode accessMode);
 
         /**
-         * Creates a new operation that can write to a field as specified by {@link Lookup#unreflectSetter(Field)}.
+         * Creates a new operation that can write to a field.
          * <p>
          * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfFieldAccess} as
          * its {@link OperationMirror#target()}.
          * 
          * @param template
          *            a template for the operation
-         * 
          * @return an operation handle
+         * 
+         * @see Lookup#unreflectSetter(Field)
          */
         OperationHandle newSetOperation(OperationTemplate template);
 
@@ -632,7 +641,6 @@ public abstract class BeanIntrospector {
          * 
          * @param template
          *            a template for the operation
-         * 
          * @return an operation handle
          * 
          * @see OperationTarget.OfMethodHandleInvoke
@@ -649,13 +657,4 @@ public abstract class BeanIntrospector {
     /** A small utility record to hold the both the extension model and the bean in one field. */
     // Replace with Introspector???
     private record Setup(ExtensionDescriptor extension, BeanSetup bean) {}
-
-    // IDK vi bliver stadig noedt til at analysere den...
-    // Factory hint instead? Og allow en Method... saa det ikke kun er
-    // constructors
-    @interface ConstructorHint {
-        // Ideen er lidt at man bruger den for extension beans
-
-        Class<?>[] value();
-    }
 }

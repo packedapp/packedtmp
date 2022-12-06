@@ -17,6 +17,9 @@ package app.packed.context;
 
 import java.util.Set;
 
+import app.packed.bean.BeanMirror;
+import app.packed.container.ContainerMirror;
+import app.packed.operation.OperationMirror;
 import app.packed.service.Key;
 
 /**
@@ -28,9 +31,10 @@ import app.packed.service.Key;
  * 
  */
 // An element that can operate within a context
-public interface ContextualizedElement {
+public sealed interface ContextualizedElement permits ContainerMirror, BeanMirror, OperationMirror {
 
     /** {@return a set of keys that are available to all operations within this component.} */
+    // Som default er context key'en tilgaengelig? Nej det skal man vaelge
     default Set<Key<?>> contextKeys() {
         return Set.copyOf(contexts().stream().flatMap(m -> m.keys().stream()).toList());
     }

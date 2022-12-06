@@ -22,7 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.BeanExtensionPoint.BindingHook;
-import app.packed.context.RuntimeContext;
+import app.packed.context.Context;
+import app.packed.context.ExtensionContext;
 
 /**
  *
@@ -32,11 +33,12 @@ import app.packed.context.RuntimeContext;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 
-@BindingHook(extension = ContainerExtension.class)
+// Alternativt, hvis man proever at injecte sig selv.. faar man en parent...
+@BindingHook(extension = ContainerExtension.class, requiresContext = ExtensionContext.class)
 public @interface FromChildContainer {}
 
 //Alternativt en ContainerLaucherContext? med context services.
 //Saa kan vi ogsaa se praecis hvad der er tilgaengelig via OperationContext
+//Maaske er det bare initialize with? IDK, er maaske ret at have seperat
 
-//
-interface ContainerLaunchContext extends RuntimeContext<ContainerExtension> {}
+interface ContainerLaunchContext extends Context<ContainerExtension> {}

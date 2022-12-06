@@ -19,8 +19,8 @@ import java.lang.invoke.MethodType;
 import java.util.Map;
 
 import app.packed.bean.BeanIntrospector.OnBinding;
+import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
-import app.packed.context.RuntimeContext;
 import app.packed.errorhandling.ErrorHandler;
 import internal.app.packed.operation.PackedOperationTemplate;
 
@@ -60,7 +60,7 @@ import internal.app.packed.operation.PackedOperationTemplate;
 
 public sealed interface OperationTemplate permits PackedOperationTemplate {
 
-    boolean requiresArena();
+    boolean requiresExtensionContext();
 
     int beanInstanceIndex();
 
@@ -73,7 +73,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
      */
     MethodType invocationType();
 
-    default /* OrderedMap */ Map<Class<? extends RuntimeContext<?>>, ContextTemplate> contexts() {
+    default /* OrderedMap */ Map<Class<? extends Context<?>>, ContextTemplate> contexts() {
         throw new UnsupportedOperationException();
     }
 
