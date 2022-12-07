@@ -150,23 +150,23 @@ public abstract class ExtensionMirror<E extends Extension<E>> implements Mirror 
         return navigator().extensionDescriptor().type();
     }
 
-    
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
         return navigator().hashCode();
     }
 
-    
-    
     /**
      * Invoked by a MethodHandle from ExtensionMirrorHelper to set the internal configuration of the extension.
      * 
      * @param extension
-     *            the internal configuration of the extension to mirror
+     *            the extension to mirror
+     * @param the
+     *            type of the extension
      */
-    final void initialize(ExtensionSetup originExtension, Class<E> extensionType) {
-        ExtensionNavigator<E> extensions = new ExtensionNavigator<>(originExtension, extensionType);
+    final void initialize(ExtensionSetup extension) {
+        @SuppressWarnings("unchecked")
+        ExtensionNavigator<E> extensions = new ExtensionNavigator<>(extension, (Class<E>) extension.extensionType);
         if (this.navigator != null) {
             throw new IllegalStateException("This mirror has already been initialized.");
         }

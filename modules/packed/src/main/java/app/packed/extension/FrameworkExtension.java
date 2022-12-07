@@ -26,8 +26,7 @@ import app.packed.framework.Framework;
  * A framework extension must be places in a {@link Module module} whose {@link Module#getName() name} is contained in
  * {@link Framework#moduleNames()} or the unnamed module.
  * 
- * @implNote We do not make use of sealed classes because the framework may consists of multiple modules in the future.
+ * @implNote This class is not a sealed class as the framework may consists of multiple modules in the future.
  */
-// Hoere maaske alligevel til i .container?
 // Are test extensions part of the framework?? Hmm Maybe have a FrameworkTestExtension?
 public abstract class FrameworkExtension<E extends FrameworkExtension<E>> extends Extension<E> {}

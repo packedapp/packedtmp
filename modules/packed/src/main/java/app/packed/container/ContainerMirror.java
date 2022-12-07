@@ -36,14 +36,6 @@ import internal.app.packed.util.typevariable.TypeVariableExtractor;
 @BindingHook(extension = MirrorExtension.class)
 public non-sealed class ContainerMirror implements ContextualizedElement , Mirror {
 
-    /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
-    private static final MethodHandle MH_NEW_MIRROR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "newExtensionMirror",
-            ExtensionMirror.class);
-
-    /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
-    private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionMirror.class, "initialize",
-            void.class, ExtensionSetup.class, Class.class);
-
     /** Extract the (extension class) type variable from ExtensionMirror. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
 
@@ -67,6 +59,14 @@ public non-sealed class ContainerMirror implements ContextualizedElement , Mirro
             return ExtensionDescriptor.of(extensionClass).type(); // Check that the extension is valid
         }
     };
+
+    /** A MethodHandle for invoking {@link ExtensionMirror#initialize(ExtensionSetup)}. */
+    private static final MethodHandle MH_EXTENSION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionMirror.class, "initialize",
+            void.class, ExtensionSetup.class);
+
+    /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
+    private static final MethodHandle MH_NEW_EXTENSION_MIRROR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "newExtensionMirror",
+            ExtensionMirror.class);
 
     /**
      * The internal configuration of the container we are mirroring. Is initially null but populated via
@@ -283,7 +283,7 @@ public non-sealed class ContainerMirror implements ContextualizedElement , Mirro
         
         ExtensionMirror<?> mirror;
         try {
-            mirror = (ExtensionMirror<?>) MH_NEW_MIRROR.invokeExact(instance);
+            mirror = (ExtensionMirror<?>) MH_NEW_EXTENSION_MIRROR.invokeExact(instance);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
@@ -317,7 +317,7 @@ public non-sealed class ContainerMirror implements ContextualizedElement , Mirro
         }
 
         try {
-            MH_MIRROR_INITIALIZE.invokeExact(mirror, extension, extension.extensionType);
+            MH_EXTENSION_MIRROR_INITIALIZE.invokeExact(mirror, extension);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
