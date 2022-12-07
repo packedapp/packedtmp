@@ -9,6 +9,7 @@ import app.packed.application.App;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
+import app.packed.extension.MirrorExtension;
 import app.packed.framework.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.AssemblySetup;

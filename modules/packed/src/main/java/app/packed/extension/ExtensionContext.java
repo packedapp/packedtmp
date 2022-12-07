@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.context;
+package app.packed.extension;
 
-import app.packed.container.ContainerExtension;
+import app.packed.bean.BeanExtension;
+import app.packed.context.Context;
 import internal.app.packed.lifetime.PackedExtensionContext;
 
 /**
- * All extensions operate within an ExtensionContext...
+ * All beans that are owned by an extension operates within an ExtensionContext.
+ * <p>
+ * This extension context is typically required when invoking operations.
  */
-
-// The whole service layer for extensions are provided via ExtensionContext...
-// Vi har en per container?
-
-public sealed interface ExtensionContext extends Context<ContainerExtension> permits PackedExtensionContext {}
+public sealed interface ExtensionContext extends Context<BeanExtension>permits PackedExtensionContext {}

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.errorhandling.ErrorHandler;
+import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.container.ContainerSetup;
 

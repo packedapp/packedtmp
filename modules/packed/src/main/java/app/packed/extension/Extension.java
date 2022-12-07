@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.extension;
 
 import static internal.app.packed.util.StringFormatter.format;
 import static java.util.Objects.requireNonNull;
@@ -29,6 +29,12 @@ import app.packed.application.BuildGoal;
 import app.packed.application.NamespacePath;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanIntrospector;
+import app.packed.container.Assembly;
+import app.packed.container.BaseAssembly;
+import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerHandle;
+import app.packed.container.Wirelet;
+import app.packed.container.WireletSelection;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
 import internal.app.packed.container.ExtensionSetup;

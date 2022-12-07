@@ -19,9 +19,9 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import app.packed.application.BuildException;
-import app.packed.container.Extension;
-import app.packed.container.ExtensionPoint;
-import app.packed.container.InternalExtensionException;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionPoint;
+import app.packed.extension.InternalExtensionException;
 import app.packed.operation.OperationHandle;
 
 /** An extension point for {@link EntryPointExtension}. */

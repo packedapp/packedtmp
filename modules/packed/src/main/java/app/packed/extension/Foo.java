@@ -13,26 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
-
-import java.lang.invoke.MethodHandles;
-
-import app.packed.operation.Op1;
-import app.packed.service.ServiceExtension;
+package app.packed.extension;
 
 /**
  *
  */
-class BridgeInnerUsage {
+public class Foo {
 
-    public static void main(String[] args) {
-        BridgeInner<ServiceExtension> b = BridgeInner.builder(MethodHandles.lookup(), ServiceExtension.class);
-        b.onUse(s -> s.exportAll());
-        b.provideUp(new Op1<MyExtBean, String>(e -> e.foo) {});
-        b.build();
-    }
-
-    public class MyExtBean {
-        String foo;
-    }
 }

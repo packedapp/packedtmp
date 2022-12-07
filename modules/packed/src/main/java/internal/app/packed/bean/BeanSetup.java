@@ -28,6 +28,7 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.NameCheck;
 import internal.app.packed.container.RealmSetup;
+import internal.app.packed.context.ContextSetup;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifetime.LifetimeAccessor;
@@ -35,8 +36,8 @@ import internal.app.packed.lifetime.LifetimeOperation;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.LifetimePoolOperationSetup;
-import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.operation.PackedOp;
+import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.operation.binding.BindingProvider;
 import internal.app.packed.operation.binding.BindingProvider.FromConstant;
 import internal.app.packed.operation.binding.BindingProvider.FromLifetimeArena;
@@ -60,8 +61,6 @@ public final class BeanSetup {
 
     /** A handle that can access BeanHandle#bean. */
     private static final VarHandle VH_BEAN_HANDLE_BEAN = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanHandle.class, "bean", BeanSetup.class);
-
-    private static final @Nullable LifetimeAccessor DynamicAccessor = null;
 
     /** The bean class, is typical void.class for functional beans. */
     public final Class<?> beanClass;
@@ -119,6 +118,8 @@ public final class BeanSetup {
     /** Non-null while a bean is being introspected. */
     @Nullable
     public IntrospectedBean introspecting;
+    
+    public ContextSetup contexts;
     
     /**
      * Create a new bean.

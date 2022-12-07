@@ -29,6 +29,10 @@ import internal.app.packed.operation.binding.BindingSetup;
 /**
  * A binding to a service.
  */
+// ContextService or ContainerService
+//// Vi kan ikke bestemme hvad foerened til sidst...
+//// fx initialize with er jo efter bean introspection
+
 public final class ServiceBindingSetup extends BindingSetup {
 
     /** An entry corresponding to the key. */

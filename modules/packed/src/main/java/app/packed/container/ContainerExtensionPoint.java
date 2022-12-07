@@ -16,6 +16,9 @@
 package app.packed.container;
 
 import app.packed.bean.BeanHandle;
+import app.packed.extension.ExtensionPoint;
+import app.packed.extension.bridge.ExtensionBridgeBeanConfiguration;
+import app.packed.extension.bridge.ExtensionBridgeOuter;
 
 /**
  *
@@ -44,11 +47,11 @@ public class ContainerExtensionPoint extends ExtensionPoint<ContainerExtension> 
     
     // Man skal kunne lave den separate. Lad os sige vi har 4 sessions, hvor vi gerne vil returner det samme
     // Hvis man er lazy bruger man den ikke. Saa den er altid multi
-    public <T> ContainerLauncherBeanConfiguration<T> newContainerWrapper(Class<T> t, BridgeOuter... companions) {
+    public <T> ExtensionBridgeBeanConfiguration<T> newContainerWrapper(Class<T> t, ExtensionBridgeOuter... companions) {
         BeanHandle<T> h = null;// extension().use(BeanExtensionPoint.class).newManytonBean(useSite(), t, LifetimeConf.ALL);
-        for (BridgeOuter clc : companions) {
+        for (ExtensionBridgeOuter clc : companions) {
             System.out.println(clc);
         }
-        return new ContainerLauncherBeanConfiguration<>(h);
+        return new ExtensionBridgeBeanConfiguration<>(h);
     }
 }

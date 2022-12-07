@@ -24,11 +24,11 @@ import java.util.function.Consumer;
 
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanExtensionPoint.BeanInstaller;
+import app.packed.extension.InternalExtensionException;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
-import app.packed.container.InternalExtensionException;
 import app.packed.framework.Nullable;
 import app.packed.operation.Op;
 import app.packed.operation.Provider;

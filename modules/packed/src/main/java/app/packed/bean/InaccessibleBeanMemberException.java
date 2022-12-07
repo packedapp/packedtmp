@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.container.AbstractComposer;
 import app.packed.container.Assembly;
-import app.packed.container.InternalExtensionException;
+import app.packed.extension.InternalExtensionException;
 
 /**
  * This exception is thrown when installing a bean, if a member (constructor, field or method) of the bean is not

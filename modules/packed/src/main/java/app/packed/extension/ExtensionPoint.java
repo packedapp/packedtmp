@@ -1,7 +1,8 @@
-package app.packed.container;
+package app.packed.extension;
 
-import app.packed.container.Extension.DependsOn;
+import app.packed.container.Realm;
 import app.packed.entrypoint.EntryPointExtensionPoint;
+import app.packed.extension.Extension.DependsOn;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;

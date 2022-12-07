@@ -18,9 +18,9 @@ package app.packed.operation;
 import java.lang.annotation.Annotation;
 import java.util.Optional;
 
-import app.packed.container.Extension;
-import app.packed.container.ExtensionMirror;
 import app.packed.container.Realm;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMirror;
 import app.packed.framework.Nullable;
 import app.packed.operation.bindings.BindingProviderKind;
 import app.packed.operation.bindings.sandbox.DependenciesMirror;

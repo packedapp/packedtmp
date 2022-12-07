@@ -20,7 +20,7 @@ import java.util.Set;
 
 import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.container.Mirror;
 

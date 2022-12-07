@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.extension;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
+import app.packed.container.AssemblyMirror;
+import app.packed.container.ContainerMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.IntrospectedBeanBinding;

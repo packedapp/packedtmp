@@ -1,5 +1,6 @@
-package app.packed.container;
+package app.packed.extension;
 
+import app.packed.container.Wirelet;
 import internal.app.packed.container.Mirror;
 
 // Wirelet retainModelsAtRuntime();

@@ -13,19 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package app.packed.extension.bridge;
 
-import app.packed.container.Realm;
-import app.packed.extension.ExtensionPoint.UsageContext;
+import static java.util.Objects.requireNonNull;
+
+import java.util.List;
+import java.util.Set;
+
+import app.packed.service.Key;
+import internal.app.packed.application.PackedBridge;
 
 /**
  *
  */
-public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UsageContext {
+public final class ExtensionBridgeOuter {
 
-    /** {@inheritDoc} */
-    @Override
-    public Realm realm() {
-        return extension.extensionRealm.extensionModel.realm();
+    /** The actual lifetime bridge. */
+    final PackedBridge<?> bridge;
+
+    ExtensionBridgeOuter(PackedBridge<?> bridge) {
+        this.bridge = requireNonNull(bridge);
+    }
+    
+    public List<Class<?>> invocationArguments() {
+        return bridge.invocationArguments();
+    }
+    
+    public Set<Key<?>> keys() {
+        return bridge.keys();
     }
 }

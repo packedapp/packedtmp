@@ -24,12 +24,12 @@ import java.util.TreeSet;
 
 import app.packed.application.BuildGoal;
 import app.packed.container.AbstractComposer.ComposerAssembly;
+import app.packed.extension.Extension;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.DelegatingAssembly;
-import app.packed.container.Extension;
 import app.packed.container.Realm;
 import app.packed.container.Wirelet;
 import internal.app.packed.application.ApplicationBuildEvent;

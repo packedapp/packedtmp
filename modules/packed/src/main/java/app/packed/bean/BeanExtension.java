@@ -2,7 +2,7 @@ package app.packed.bean;
 
 import app.packed.bean.BeanExtensionPoint.BeanInstaller;
 import app.packed.container.BaseAssembly;
-import app.packed.container.FrameworkExtension;
+import app.packed.extension.FrameworkExtension;
 import app.packed.lifetime.RunState;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.Op;

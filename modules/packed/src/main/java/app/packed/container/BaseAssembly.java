@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 
 import app.packed.bean.BeanExtension;
 import app.packed.bean.CustomBeanHook.JavaBaseSupport;
+import app.packed.extension.Extension;
 import app.packed.bean.OnStart;
 import app.packed.operation.Op;
 import app.packed.service.ProvideService;

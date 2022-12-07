@@ -19,9 +19,9 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
 import app.packed.container.Assembly;
-import app.packed.container.BridgeOuter;
-import app.packed.container.Extension;
 import app.packed.container.Wirelet;
+import app.packed.extension.Extension;
+import app.packed.extension.bridge.ExtensionBridgeOuter;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
@@ -186,7 +186,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
          * @throws UnsupportedOperationException
          *             if this builder does not have a wrapper
          */
-        default Builder addCompanion(BridgeOuter... companions) {
+        default Builder addCompanion(ExtensionBridgeOuter... companions) {
             return this;
         }
 

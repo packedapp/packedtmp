@@ -34,12 +34,12 @@ import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import app.packed.container.Extension;
-import app.packed.container.Extension.DependsOn;
-import app.packed.container.ExtensionDescriptor;
-import app.packed.container.FrameworkExtension;
-import app.packed.container.InternalExtensionException;
 import app.packed.container.Realm;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionDescriptor;
+import app.packed.extension.FrameworkExtension;
+import app.packed.extension.InternalExtensionException;
+import app.packed.extension.Extension.DependsOn;
 import app.packed.framework.Framework;
 import app.packed.framework.Nullable;
 import internal.app.packed.util.ClassUtil;

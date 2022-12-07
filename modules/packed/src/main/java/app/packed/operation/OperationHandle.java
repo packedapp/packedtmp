@@ -31,9 +31,9 @@ import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.container.Extension;
-import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.context.Context;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionBeanConfiguration;
 import internal.app.packed.bean.IntrospectedBeanBinding;
 import internal.app.packed.operation.OperationSetup;
 

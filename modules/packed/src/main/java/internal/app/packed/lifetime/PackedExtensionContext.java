@@ -18,7 +18,7 @@ package internal.app.packed.lifetime;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.context.ExtensionContext;
+import app.packed.extension.ExtensionContext;
 import internal.app.packed.util.LookupUtil;
 
 /**

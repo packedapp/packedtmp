@@ -31,19 +31,15 @@ import internal.app.packed.operation.binding.InternalDependency;
 final class IntrospectedBeanParameter {
 
     public static void resolveParameter(IntrospectedBean iBean, OperationSetup operation, int index) {
+        // Extracts the variable we want to resolve
         Variable var = operation.type.parameter(index);
 
-        // if isComposit
-        // Create a new CompositeBinding
-        // Create the new OperationSetup();
-        // bindIt
-
-        // Look for annotations on the parameter
-        if (tryResolveAsBindingHook(iBean, var, operation, index)) {
+        // First, try and see if there are any binding annotations we can use
+        if (tryResolveAsAnnotatedBindingHook(iBean, var, operation, index)) {
             return;
         }
 
-        // See if the type is something we should care about
+        // Next, let us see if the parameter type is a binding class 
         ParameterTypeRecord hook = iBean.hookModel.lookupParameterType(var.getType());
         if (hook != null) {
             Contributor contributor = iBean.computeContributor(hook.extensionType(), false);
@@ -54,12 +50,7 @@ final class IntrospectedBeanParameter {
             }
         }
 
-        // System.out.println("Resolve as service " + var + " for " + operation.operator.extensionType);
-        // finally resolve as service
-
-        // Okay we calling in here with extension services as well.
-        // Need to handle it
-
+        // Finally, we resolve it as a service
         boolean resolveAsService = operation.operator.extensionType == BeanExtension.class;
 
         if (resolveAsService) {
@@ -79,7 +70,7 @@ final class IntrospectedBeanParameter {
      *            the method to look for annotations on
      * @return
      */
-    private static boolean tryResolveAsBindingHook(IntrospectedBean introspector, Variable var, OperationSetup os, int index) {
+    private static boolean tryResolveAsAnnotatedBindingHook(IntrospectedBean introspector, Variable var, OperationSetup os, int index) {
 
         Annotation[] annotations = var.getAnnotations();
 

@@ -13,19 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
-
-import app.packed.container.Realm;
-import app.packed.extension.ExtensionPoint.UsageContext;
+package internal.app.packed.context;
 
 /**
  *
  */
-public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UsageContext {
+public class ContextSetup {
 
-    /** {@inheritDoc} */
-    @Override
-    public Realm realm() {
-        return extension.extensionRealm.extensionModel.realm();
-    }
 }

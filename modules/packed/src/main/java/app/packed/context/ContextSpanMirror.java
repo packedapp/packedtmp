@@ -18,7 +18,7 @@ package app.packed.context;
 import java.util.Collection;
 import java.util.Set;
 
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
 import app.packed.service.Key;
 import internal.app.packed.container.Mirror;

@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.extension.bridge;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.container.Assembly;
+import app.packed.container.ContainerHandle;
+import app.packed.container.Wirelet;
 
 /**
  * A bean that creates a new container lifetime.
@@ -34,13 +37,13 @@ import app.packed.bean.InstanceBeanConfiguration;
 
 // Saa resolver vi hver container vi adder op i mod den.
 
-
-public class ContainerLauncherBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
+// ExtensionBridge
+public class ExtensionBridgeBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
     /**
      * @param handle
      */
-    ContainerLauncherBeanConfiguration(BeanHandle<T> handle) {
+    public ExtensionBridgeBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
     }
     // addCompanion 

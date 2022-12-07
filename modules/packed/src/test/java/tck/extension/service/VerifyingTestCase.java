@@ -29,7 +29,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanExtension;
 import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.service.ServiceExtension;
 import internal.app.packed.util.ThrowableUtil;
 

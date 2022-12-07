@@ -5,8 +5,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.bean.BeanMirror;
-import app.packed.container.Extension;
-import app.packed.container.ExtensionMirror;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMirror;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.application.ApplicationSetup;

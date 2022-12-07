@@ -20,7 +20,7 @@ import static internal.app.packed.util.StringFormatter.format;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import app.packed.container.InternalExtensionException;
+import app.packed.extension.InternalExtensionException;
 import app.packed.framework.Nullable;
 import app.packed.service.Key;
 import internal.app.packed.bean.BeanSetup;

@@ -26,7 +26,7 @@ import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
 import app.packed.container.BaseAssembly;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.service.ProvideService;
 import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.ServiceBindingMirror;

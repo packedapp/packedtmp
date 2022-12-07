@@ -1,4 +1,4 @@
-package app.packed.container;
+package app.packed.extension;
 
 import static java.util.Objects.requireNonNull;
 
@@ -12,7 +12,9 @@ import java.util.function.ToLongFunction;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.container.ContainerMirror;
 import app.packed.framework.Nullable;
+import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
 
 /**
@@ -155,13 +157,16 @@ public abstract class ExtensionMirror<E extends Extension<E>> implements Mirror 
         return navigator().hashCode();
     }
 
+    
+    
     /**
      * Invoked by a MethodHandle from ExtensionMirrorHelper to set the internal configuration of the extension.
      * 
      * @param extension
      *            the internal configuration of the extension to mirror
      */
-    final void initialize(ExtensionNavigator<E> extensions) {
+    final void initialize(ExtensionSetup originExtension, Class<E> extensionType) {
+        ExtensionNavigator<E> extensions = new ExtensionNavigator<>(originExtension, extensionType);
         if (this.navigator != null) {
             throw new IllegalStateException("This mirror has already been initialized.");
         }

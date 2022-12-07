@@ -16,7 +16,7 @@
 package internal.app.packed.application.sandbox;
 
 import app.packed.container.BaseAssembly;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import internal.app.packed.application.sandbox.ThreeTier.Presentation;
 
 /**

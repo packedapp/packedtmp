@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
-
-import app.packed.container.Realm;
-import app.packed.extension.ExtensionPoint.UsageContext;
+package app.packed.context;
 
 /**
  *
  */
-public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UsageContext {
-
-    /** {@inheritDoc} */
-    @Override
-    public Realm realm() {
-        return extension.extensionRealm.extensionModel.realm();
-    }
+public enum ContextRootKind {
+    CONTAINER, BEAN, 
+    
+    /** The contexts are available only for the particular operation. 
+     * This doesn't mean that other operations on the same bean can define the same context */
+    OPERATION;
 }
+
+// For container maaske er de inherited per default...
+// Men man kan ContextWirelets.removeAllContext();
+// Men man kan ContextWirelets.removeContexts(SessionContext.class);
+
+// alternativt ContextWirelets.propagateContexts(SessionContext.class);

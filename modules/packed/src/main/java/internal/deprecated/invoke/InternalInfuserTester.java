@@ -4,7 +4,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.stream.IntStream;
 
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import internal.app.packed.util.LookupUtil;
 
 public class InternalInfuserTester {

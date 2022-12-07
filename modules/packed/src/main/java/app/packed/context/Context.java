@@ -15,30 +15,26 @@
  */
 package app.packed.context;
 
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 
 /**
- * A runtime context.
+ * A static context. By static we mean that is can be determined at runtime whether or not a given context is available
+ * in a container, bean or operation.
+ * 
  * 
  * @param <E>
  *            the extension the runtime context is a part of
  */
 // StaticContext
-public interface Context<E extends Extension<E>> {
+public interface Context<E extends Extension<E>> {}
+// Protected typeClass for configuration...
 
-    // Protected typeClass
-
-}
-// Only a marker interface??? Og something more
 
 // Kan extension beans have it injected???? I don't think so....
 // Only the owner of the ContextuablizedElement
 
-
-
 // Ved ikke om det er problematisk at tage E med paa runtime...
 // Den er jo ikke super needed. Og bliver jo encoded i klassen
-
 
 //interface SchedulingContext extends RuntimeContext<ScheduledJobExtension> {}
 

@@ -19,8 +19,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import app.packed.container.Extension;
-import app.packed.container.ExtensionMirror;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMirror;
 
 /** A mirror for {@link EntryPointExtension}. */
 public final class EntryPointExtensionMirror extends ExtensionMirror<EntryPointExtension> {

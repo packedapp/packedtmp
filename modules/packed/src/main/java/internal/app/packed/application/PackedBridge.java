@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.service.Key;
 
 /**

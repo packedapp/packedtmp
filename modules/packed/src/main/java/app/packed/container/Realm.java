@@ -2,6 +2,7 @@ package app.packed.container;
 
 import java.util.NoSuchElementException;
 
+import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import internal.app.packed.util.ClassUtil;
 

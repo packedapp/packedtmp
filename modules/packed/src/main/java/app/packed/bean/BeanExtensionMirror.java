@@ -2,7 +2,7 @@ package app.packed.bean;
 
 import java.util.stream.Stream;
 
-import app.packed.container.ExtensionMirror;
+import app.packed.extension.ExtensionMirror;
 
 /** A specialized extension mirror for the {@link BeanExtension}. */
 // Let's see how useful this will end up being

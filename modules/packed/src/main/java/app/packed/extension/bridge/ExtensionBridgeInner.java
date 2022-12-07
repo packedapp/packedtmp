@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.extension.bridge;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.service.Key;
 import internal.app.packed.application.PackedBridge;
@@ -28,49 +29,49 @@ import internal.app.packed.application.PackedBridge;
 /**
  *
  */
-public final class BridgeInner<E extends Extension<E>> {
+public final class ExtensionBridgeInner<E extends Extension<E>> {
 
     private PackedBridge<E> bridge;
 
-    BridgeInner(PackedBridge<E> bridge) {
+    ExtensionBridgeInner(PackedBridge<E> bridge) {
         this.bridge = requireNonNull(bridge);
     }
 
-    public BridgeOuter build() {
-        return new BridgeOuter(bridge);
+    public ExtensionBridgeOuter build() {
+        return new ExtensionBridgeOuter(bridge);
     }
 
     // A runtime argument passed along to ???
-    public BridgeInner<E> addInvocationArgument(Class<?> key) {
+    public ExtensionBridgeInner<E> addInvocationArgument(Class<?> key) {
         throw new UnsupportedOperationException();
     }
 
-    public BridgeInner<E> addInvocationArgument(Key<?> key) {
+    public ExtensionBridgeInner<E> addInvocationArgument(Key<?> key) {
         throw new UnsupportedOperationException();
     }
 
-    public BridgeInner<E> onNeverUsed(Runnable action) {
+    public ExtensionBridgeInner<E> onNeverUsed(Runnable action) {
         throw new UnsupportedOperationException();
     }
 
-    public BridgeInner<E> onUse(Consumer<E> action) {
+    public ExtensionBridgeInner<E> onUse(Consumer<E> action) {
         bridge = bridge.onUse(action);
         return this;
     }
 
-    public BridgeInner<E> provideUp(Op<?> op) {
+    public ExtensionBridgeInner<E> provideUp(Op<?> op) {
         throw new UnsupportedOperationException();
     }
 
-    public <S> BridgeInner<E> provideOutOr(Op<?> op, Supplier<S> supplier) {
+    public <S> ExtensionBridgeInner<E> provideOutOr(Op<?> op, Supplier<S> supplier) {
         throw new UnsupportedOperationException();
     }
 
-    public <S> BridgeInner<E> provideOutOrInstance(Op<S> op, S constant) {
+    public <S> ExtensionBridgeInner<E> provideOutOrInstance(Op<S> op, S constant) {
         throw new UnsupportedOperationException();
     }
 
-    public static <E extends Extension<E>> BridgeInner<E> builder(MethodHandles.Lookup lookup, Class<E> extensionType) {
+    public static <E extends Extension<E>> ExtensionBridgeInner<E> builder(MethodHandles.Lookup lookup, Class<E> extensionType) {
         throw new UnsupportedOperationException();
     }
 }

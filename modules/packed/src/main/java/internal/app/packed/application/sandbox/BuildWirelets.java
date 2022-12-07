@@ -20,8 +20,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationLauncher;
-import app.packed.container.Extension;
 import app.packed.container.Wirelet;
+import app.packed.extension.Extension;
 
 /**
  * Wirelets that can only be specified when building an application.

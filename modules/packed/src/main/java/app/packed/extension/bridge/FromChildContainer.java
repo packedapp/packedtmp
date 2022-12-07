@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.extension.bridge;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -21,9 +21,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
+import app.packed.container.ContainerExtension;
 import app.packed.context.Context;
-import app.packed.context.ExtensionContext;
+import app.packed.extension.ExtensionContext;
 
 /**
  *
@@ -34,8 +36,8 @@ import app.packed.context.ExtensionContext;
 @Documented
 
 // Alternativt, hvis man proever at injecte sig selv.. faar man en parent...
-@BindingHook(extension = ContainerExtension.class, requiresContext = ExtensionContext.class)
-public @interface FromChildContainer {}
+@BindingHook(extension = BeanExtension.class, requiresContext = ExtensionContext.class)
+public @interface FromChildContainer {} // childExtension? instead
 
 //Alternativt en ContainerLaucherContext? med context services.
 //Saa kan vi ogsaa se praecis hvad der er tilgaengelig via OperationContext

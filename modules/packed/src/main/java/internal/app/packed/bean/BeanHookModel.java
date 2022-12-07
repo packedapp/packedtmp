@@ -28,9 +28,9 @@ import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.bean.BeanExtensionPoint.MethodHook;
 import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.bean.BeanIntrospector.OnField;
+import app.packed.extension.Extension;
+import app.packed.extension.InternalExtensionException;
 import app.packed.bean.CustomBeanHook;
-import app.packed.container.Extension;
-import app.packed.container.InternalExtensionException;
 import app.packed.framework.Nullable;
 import internal.app.packed.util.ClassUtil;
 

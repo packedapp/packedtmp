@@ -15,8 +15,8 @@
  */
 package internal.app.packed.container;
 
-import app.packed.container.Extension;
 import app.packed.container.Realm;
+import app.packed.extension.Extension;
 
 /**
  * A single instance of this class exists per extension per application. And is used to have a single point. Where we

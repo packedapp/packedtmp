@@ -18,7 +18,11 @@ package app.packed.bean;
 import app.packed.context.Context;
 
 /**
+ * A context for selected operations if a bean has been configured with initialization elements.
+ * <p>
+ * If a bean is not initialized with any values, the context is not present.
  * 
- * @see InstanceBeanConfiguration
+ * @see InstanceBeanConfiguration#initializeWithInstance(Class, Object)
+ * @see InstanceBeanConfiguration#initializeWithInstance(app.packed.service.Key, Object)
  */
 public interface InitializeWithContext extends Context<BeanExtension> {}

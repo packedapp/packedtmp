@@ -15,7 +15,7 @@
  */
 package internal.app.packed.container;
 
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 
 /**
  *

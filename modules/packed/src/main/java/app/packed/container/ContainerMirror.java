@@ -1,5 +1,7 @@
 package app.packed.container;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -13,17 +15,34 @@ import app.packed.application.NamespacePath;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanMirror;
 import app.packed.context.ContextualizedElement;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionDescriptor;
+import app.packed.extension.ExtensionMirror;
+import app.packed.extension.InternalExtensionException;
+import app.packed.extension.MirrorExtension;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
+import app.packed.operation.OperationMirror;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
+import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.ClassUtil;
+import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
 /** A mirror of a container. */
 @BindingHook(extension = MirrorExtension.class)
-public non-sealed class ContainerMirror implements ContextualizedElement, Mirror {
+public non-sealed class ContainerMirror implements ContextualizedElement , Mirror {
+
+    /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
+    private static final MethodHandle MH_NEW_MIRROR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "newExtensionMirror",
+            ExtensionMirror.class);
+
+    /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
+    private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionMirror.class, "initialize",
+            void.class, ExtensionSetup.class, Class.class);
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
@@ -239,43 +258,6 @@ public non-sealed class ContainerMirror implements ContextualizedElement, Mirror
         return op.get();
     }
 
-    /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    static ExtensionMirror<?> newMirror(ExtensionSetup extension, Class<? extends ExtensionMirror<?>> expectedMirrorClass) {
-        ExtensionMirror<?> mirror = extension.instance().newExtensionMirror();
-
-        // Cannot return a null mirror
-        if (mirror == null) {
-            throw new InternalExtensionException(
-                    "Extension " + extension.descriptor().fullName() + " returned null from " + extension.descriptor().name() + ".newExtensionMirror()");
-        }
-
-        // If we expect a mirror of a particular type, check it
-        if (expectedMirrorClass != null) {
-            // Fail if the type of mirror returned by the extension does not match the specified mirror type
-            if (!expectedMirrorClass.isInstance(mirror)) {
-                throw new InternalExtensionException(extension.extensionType.getSimpleName() + ".newExtensionMirror() was expected to return an instance of "
-                        + expectedMirrorClass + ", but returned an instance of " + mirror.getClass());
-            }
-        } else if (mirror.getClass() != ExtensionMirror.class) {
-            // Extensions are are allowed to return ExtensionMirror from newExtensionMirror in which case we have no additional
-            // checks
-
-            // If expectedMirrorClass == null we don't know what type of mirror to expect. Other than it must be parameterized with
-            // the right extension
-
-            // Must return a mirror for the same extension
-            Class<? extends Extension<?>> mirrorExtensionType = EXTENSION_TYPES.get(mirror.getClass());
-            if (mirrorExtensionType != extension.extensionType) {
-                throw new InternalExtensionException("Extension " + extension.descriptor().fullName()
-                        + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
-            }
-        }
-
-        mirror.initialize(new ExtensionNavigator(extension, extension.extensionType));
-        return mirror;
-    }
-
     /**
      * Creates a new mirror if an. Otherwise returns {@code null}
      * 
@@ -285,7 +267,6 @@ public non-sealed class ContainerMirror implements ContextualizedElement, Mirror
      *            the type of mirror to return
      * @return a mirror of the specified type or null if no extension of the matching type was used in the container
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Nullable
     static ExtensionMirror<?> newMirrorOrNull(ContainerSetup container, Class<? extends ExtensionMirror<?>> mirrorClass) {
         // First find what extension the mirror belongs to by extracting <E> from ExtensionMirror<E extends Extension>
@@ -298,7 +279,14 @@ public non-sealed class ContainerMirror implements ContextualizedElement, Mirror
             return null;
         }
 
-        ExtensionMirror<?> mirror = extension.instance().newExtensionMirror();
+        Extension<?> instance = extension.instance();
+        
+        ExtensionMirror<?> mirror;
+        try {
+            mirror = (ExtensionMirror<?>) MH_NEW_MIRROR.invokeExact(instance);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
 
         // Cannot return a null mirror
         if (mirror == null) {
@@ -328,7 +316,11 @@ public non-sealed class ContainerMirror implements ContextualizedElement, Mirror
             }
         }
 
-        mirror.initialize(new ExtensionNavigator(extension, extension.extensionType));
+        try {
+            MH_MIRROR_INITIALIZE.invokeExact(mirror, extension, extension.extensionType);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
         return mirror;
     }
 }

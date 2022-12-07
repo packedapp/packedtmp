@@ -5,6 +5,7 @@ module app.packed {
     exports app.packed.bean;
     exports app.packed.context;
     exports app.packed.container;
+    exports app.packed.extension;
     exports app.packed.errorhandling;
     exports app.packed.framework;
     exports app.packed.operation;
@@ -15,6 +16,7 @@ module app.packed {
     exports app.packed.service;
 
     // temporary sandbox thingies
+    exports app.packed.extension.bridge;
     exports app.packed.operation.bindings;
     exports app.packed.operation.bindings.sandbox;
 

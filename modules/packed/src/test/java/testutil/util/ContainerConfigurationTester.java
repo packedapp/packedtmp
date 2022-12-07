@@ -25,8 +25,8 @@ import app.packed.application.NamespacePath;
 import app.packed.bean.BeanExtension;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.Extension;
 import app.packed.container.Wirelet;
+import app.packed.extension.Extension;
 import app.packed.service.ProvideableBeanConfiguration;
 
 /**

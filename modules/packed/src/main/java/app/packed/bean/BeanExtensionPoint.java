@@ -9,10 +9,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.function.Consumer;
 
-import app.packed.container.Extension;
-import app.packed.container.ExtensionBeanConfiguration;
-import app.packed.container.ExtensionPoint;
 import app.packed.context.ContextUnavailableException;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionBeanConfiguration;
+import app.packed.extension.ExtensionPoint;
 import app.packed.context.Context;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
@@ -119,7 +119,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      * are limited.
      * 
      * @see BeanExtensionPoint#newApplicationBean(BeanKind)
-     * @see BeanExtensionPoint#newExtensionBean(BeanKind, app.packed.container.ExtensionPoint.UsageContext)
+     * @see BeanExtensionPoint#newExtensionBean(BeanKind, app.packed.extension.ExtensionPoint.UsageContext)
      */
     // Maybe put it back on handle. If we get OperationInstaller
     // Maybe Builder after all... Alle ved hvad en builder er

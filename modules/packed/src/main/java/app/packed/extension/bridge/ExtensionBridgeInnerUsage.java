@@ -13,33 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.extension.bridge;
 
-import static java.util.Objects.requireNonNull;
+import java.lang.invoke.MethodHandles;
 
-import java.util.List;
-import java.util.Set;
-
-import app.packed.service.Key;
-import internal.app.packed.application.PackedBridge;
+import app.packed.operation.Op1;
+import app.packed.service.ServiceExtension;
 
 /**
  *
  */
-public final class BridgeOuter {
+class ExtensionBridgeInnerUsage {
 
-    /** The actual lifetime bridge. */
-    final PackedBridge<?> bridge;
+    public static void main(String[] args) {
+        ExtensionBridgeInner<ServiceExtension> b = ExtensionBridgeInner.builder(MethodHandles.lookup(), ServiceExtension.class);
+        b.onUse(s -> s.exportAll());
+        b.provideUp(new Op1<MyExtBean, String>(e -> e.foo) {});
+        b.build();
+    }
 
-    BridgeOuter(PackedBridge<?> bridge) {
-        this.bridge = requireNonNull(bridge);
-    }
-    
-    public List<Class<?>> invocationArguments() {
-        return bridge.invocationArguments();
-    }
-    
-    public Set<Key<?>> keys() {
-        return bridge.keys();
+    public class MyExtBean {
+        String foo;
     }
 }
