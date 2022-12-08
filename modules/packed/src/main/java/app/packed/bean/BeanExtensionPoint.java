@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.function.Consumer;
 
-import app.packed.context.ContextUnavailableException;
+import app.packed.context.NotInContextException;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.extension.ExtensionPoint;
@@ -240,7 +240,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         /**
          * Contexts that are required in order to use the binding class or annotation.
          * <p>
-         * If this binding is attempted to be used without the context being available a {@link ContextUnavailableException}
+         * If this binding is attempted to be used without the context being available a {@link NotInContextException}
          * will be thrown.
          * <p>
          * If this method returns multiple contexts they will <strong>all</strong> be required.

@@ -144,9 +144,9 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /**
-     * Returns an extension navigator with this extension instance as current.
+     * Returns an extension navigator with this extension instance as the current extension.
      * 
-     * @return a new extension navigator
+     * @return an extension navigator
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final ExtensionNavigator<E> navigator() {

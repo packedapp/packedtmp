@@ -41,31 +41,27 @@ import internal.app.packed.container.Mirror;
 // SExt.schedule(Op<?>) 
 // @Schedule foo() on SExt.registerScheduler(Bean) ->OperationSpan
 // @Schedule
-public interface ContextSpanMirror extends Mirror {
+public interface ContextMirror extends Mirror {
 
     /** {@return the context.} */
     Class<? extends Context<?>> contextClass();
 
+    ContextualizedElement element();
+
     /** {@return the extension that defines the context.} */
     Class<? extends Extension<?>> extensionType();
-
+    
     /**
      * All the operations that may create the context.
      * 
      * @return
      */
     Collection<OperationMirror> initiatedFrom();
-    
+
     /** {@return services that are made specially available because of the context.} */
     Set<Key<?>> keys();
 
-    ContextualizedElement element();
-
     ContextSpan span();
-
-    enum ContextSpan {
-        APPLICATION, BEAN, CONTAINER, OPERATION;
-    }
 }
 // Tror ikke vi supporter Tree downward
 // ContextSpan -> Operation, Bean, Container, (RestOfTree), Application

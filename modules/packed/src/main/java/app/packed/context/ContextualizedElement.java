@@ -42,7 +42,7 @@ public sealed interface ContextualizedElement permits ContainerMirror, BeanMirro
     /** {@return an immutable set of any contexts that the element operates within.} */
 
     // Operation will also inherit for beans
-    default Set<ContextSpanMirror> contexts() {
+    default Set<ContextMirror> contexts() {
         return Set.of();
     }
 }

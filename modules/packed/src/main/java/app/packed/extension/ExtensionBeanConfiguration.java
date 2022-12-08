@@ -36,6 +36,7 @@ import app.packed.service.Key;
 /**
  *
  */
+// Her siger vi at extension beans er instance beans... Det behoever de vel ikke at vaere
 public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
     static final Key<MethodHandle[]> KEY_MH_ARRAY = Key.of(MethodHandle[].class);

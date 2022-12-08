@@ -15,7 +15,7 @@
  */
 package app.packed.operation.bindings;
 
-import app.packed.context.ContextSpanMirror;
+import app.packed.context.ContextMirror;
 import app.packed.service.Key;
 
 /**
@@ -27,7 +27,7 @@ import app.packed.service.Key;
 public non-sealed class ContextServiceBindingMirror extends KeyBasedBindingMirror {
 
     /** {@return the context that provided the binding.} */
-    public ContextSpanMirror context() {
+    public ContextMirror context() {
         throw new UnsupportedOperationException();
     }
 

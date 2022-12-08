@@ -18,7 +18,8 @@ package app.packed.context;
 /**
  *
  */
-public enum ContextRootKind {
+// Alternativt ContextScope
+public enum ContextSpan {
     CONTAINER, BEAN, 
     
     /** The contexts are available only for the particular operation. 
@@ -31,3 +32,7 @@ public enum ContextRootKind {
 // Men man kan ContextWirelets.removeContexts(SessionContext.class);
 
 // alternativt ContextWirelets.propagateContexts(SessionContext.class);
+
+
+// Hmm hvis vi propagater contexts bryder vi jo lidt i en container...
+// Just saying... Det er mest det med at resolve keys Hvor man lige pludselig kan injecte ting...

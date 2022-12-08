@@ -22,11 +22,9 @@ import app.packed.extension.InternalExtensionException;
 import app.packed.extension.MirrorExtension;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
-import app.packed.operation.OperationMirror;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
-import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -61,10 +59,10 @@ public non-sealed class ContainerMirror implements ContextualizedElement , Mirro
     };
 
     /** A MethodHandle for invoking {@link ExtensionMirror#initialize(ExtensionSetup)}. */
-    private static final MethodHandle MH_EXTENSION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionMirror.class, "initialize",
-            void.class, ExtensionSetup.class);
+    private static final MethodHandle MH_EXTENSION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionMirror.class,
+            "initialize", void.class, ExtensionSetup.class);
 
-    /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
+    /** A MethodHandle for invoking {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_NEW_EXTENSION_MIRROR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "newExtensionMirror",
             ExtensionMirror.class);
 
@@ -280,7 +278,7 @@ public non-sealed class ContainerMirror implements ContextualizedElement , Mirro
         }
 
         Extension<?> instance = extension.instance();
-        
+
         ExtensionMirror<?> mirror;
         try {
             mirror = (ExtensionMirror<?>) MH_NEW_EXTENSION_MIRROR.invokeExact(instance);

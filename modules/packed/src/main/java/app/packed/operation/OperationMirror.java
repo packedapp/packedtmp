@@ -29,7 +29,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.context.ContextSpanMirror;
+import app.packed.context.ContextMirror;
 import app.packed.context.ContextualizedElement;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
@@ -74,7 +74,7 @@ public non-sealed class OperationMirror implements ContextualizedElement, Mirror
     }
 
     /** {@return a set of any contexts initiated by invoking the operation.} */
-    public Set<ContextSpanMirror> createsContexts() {
+    public Set<ContextMirror> createsContexts() {
         throw new UnsupportedOperationException();
     }
     
@@ -111,7 +111,7 @@ public non-sealed class OperationMirror implements ContextualizedElement, Mirror
     // operations on the bean will include the key under which the bean is being provided.
     public Set<Key<?>> keys() {
         Set<Key<?>> set = new HashSet<>(operation().bean.container.sm.keysAvailableInternally());
-        for (ContextSpanMirror ocm : contexts()) {
+        for (ContextMirror ocm : contexts()) {
             set.addAll(ocm.keys());
         }
         return Set.copyOf(set);

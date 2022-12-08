@@ -22,7 +22,7 @@ import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.service.Key;
 
 /**
- *
+ * A template
  */
 // Featuress
 

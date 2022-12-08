@@ -22,15 +22,15 @@ import app.packed.application.BuildException;
  */
 // Hmm StaticContextUnavilable?
 // TransactionContext.get()
-public class ContextUnavailableException extends BuildException {
+
+public class NotInContextException extends BuildException {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * @param message
      */
-    public ContextUnavailableException(String message) {
+    public NotInContextException(String message) {
         super(message);
     }
-
-    private static final long serialVersionUID = 1L;
-
 }
