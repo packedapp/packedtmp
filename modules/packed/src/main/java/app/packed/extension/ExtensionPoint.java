@@ -146,10 +146,6 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     protected final Class<? extends Extension<?>> usedBy() {
         return context().usedBy().extensionType;
     }
-
-    public interface ExtensionBeanContext {
-        
-    }
     
     /**
      * A context object that can be injected into subclasses of {@link ExtensionPoint}.

@@ -81,7 +81,6 @@ public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
     public <K> ExtensionBeanConfiguration<T> injectMethodHandleFrom(OperationHandle handle) {
         // Tror det er en god ide saa kan jeg skjule invokeFrom...
         // Og saa maaske bare have en relativizeTo
-        handle.invokeFrom(this);
         initializeWithCodeGenerated(Key.of(MethodHandle.class), () -> handle.generateMethodHandle());
         return this;
     }
@@ -89,7 +88,6 @@ public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
     public <K> ExtensionBeanConfiguration<T> injectMethodHandleFrom(OperationHandle handle, Key<MethodHandle> key) {
         // Tror det er en god ide saa kan jeg skjule invokeFrom...
         // Og saa maaske bare have en relativizeTo
-        handle.invokeFrom(this);
         initializeWithCodeGenerated(Key.of(MethodHandle.class), () -> handle.generateMethodHandle());
         return this;
     }

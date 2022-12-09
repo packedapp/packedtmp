@@ -57,7 +57,7 @@ public final /* primitive */ class ExtensionNavigator<E extends Extension<E>> im
         return obj instanceof ExtensionNavigator<?> en && (originExtension == en.originExtension);
     }
 
-    public ExtensionDescriptor extensionDescriptor() {
+    ExtensionDescriptor extensionDescriptor() {
         return originExtension.descriptor();
     }
 

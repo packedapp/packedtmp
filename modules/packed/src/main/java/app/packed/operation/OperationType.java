@@ -43,7 +43,7 @@ import java.util.StringJoiner;
 public final /* primitive */ class OperationType {
 
     /** May be used for operation types without parameter variables. */
-    private static volatile Variable[] NO_PARAMETERS = {};
+    private static final Variable[] NO_PARAMETERS = {};
 
     /** The parameter variables. */
     private final Variable[] parameterVars;
@@ -52,8 +52,8 @@ public final /* primitive */ class OperationType {
     private final Variable returnVar;
 
     private OperationType(Variable returnVar, Variable... variables) {
-        this.returnVar = returnVar;
-        this.parameterVars = variables;
+        this.returnVar = requireNonNull(returnVar);
+        this.parameterVars = requireNonNull(variables);
     }
 
     /**

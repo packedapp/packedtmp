@@ -30,10 +30,9 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.BeanIntrospector.OnMethod;
-import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionBeanConfiguration;
+import app.packed.extension.ExtensionContext;
 import internal.app.packed.bean.IntrospectedBeanBinding;
 import internal.app.packed.operation.OperationSetup;
 
@@ -101,11 +100,6 @@ public final /* primitive */ class OperationHandle {
         this.operation = requireNonNull(operation);
     }
 
-    /** {@return any contexts that is available for the operation.} */
-    public Set<Class<? extends Context<?>>> contexts() {
-        throw new UnsupportedOperationException();
-    }
-    
     /**
      * Creates a binding for the parameter with the specified index.
      * <p>
@@ -121,13 +115,14 @@ public final /* primitive */ class OperationHandle {
     // Det er jo kun meningen at man skal binden den hvis man kalder denne metode.
     // Saa maaske skal vi have en Mode i IBB
 
+    // bindManually
     // bind(index).toConstant("Foo");
-    public OnBinding bindParameter(int index) {
+    public OnBinding bindManually(int index) {
         // This method does not throw IllegalStateExtension, but OnBinding may.
         operation.isClosed = true;
         // custom invocationContext must have been set before calling this method
         checkIndex(index, operation.type.parameterCount());
-        
+
         return new IntrospectedBeanBinding(operation.bean.introspecting, operation, index, operation.operator, null, operation.type.parameter(index));
     }
 
@@ -136,6 +131,11 @@ public final /* primitive */ class OperationHandle {
         if (operation.isClosed) {
             throw new IllegalStateException("This operation is no longer configurable");
         }
+    }
+
+    /** {@return any contexts this operation operates within.} */
+    public Set<Class<? extends Context<?>>> contexts() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -147,11 +147,9 @@ public final /* primitive */ class OperationHandle {
     /**
      * Generates a method handle that can be used to invoke the underlying operation.
      * <p>
-     * This method can only be called in the code generating phase of application build process.
-     * And will typically be called by {@link ExtensionBeanConfiguration}.
-     * 
+     * This method can only be called in the code generating phase of the application's build process.
      * <p>
-     * The returned method handle will have a method type identical to {@code invocationType()}.
+     * The type of the returned method handle is {@code invocationType()}.
      * 
      * @return the generated method handle
      * 
@@ -168,19 +166,12 @@ public final /* primitive */ class OperationHandle {
         return operation.hashCode();
     }
 
-    /** {@return the invocation type of this operation.} */
+    /**
+     * {@return the invocation type of this operation.}. Any method handle generated via {@link #generateMethodHandle()}
+     * will the returned method type as its {@link MethodHandle#type()}
+     */
     public MethodType invocationType() {
         return operation.invocationType.invocationType();
-    }
-    //
-    public void invokeFrom(InstanceBeanConfiguration<?> bean) {
-        // Vi kan have et application.HashMap<BeanSetup, Map<Key, Supplier>> delayedCodegen;
-        // Som de bruger.
-        // BeanSetup.codegenInjectIntoBean(IBC<?>, Key, Supplier);
-        if (operation.invocationSite != null) {
-            throw new IllegalStateException("This method can only be called once for an operation");
-        }
-        throw new UnsupportedOperationException();
     }
 
     // Ogsaa en template ting taenker jeg? IDK
@@ -220,13 +211,96 @@ public final /* primitive */ class OperationHandle {
 }
 
 interface ZandboxOperationHandle {
-    
+
+    // Must not have a classifier
+    //// Will have a MH injected at runtime...
+    // public void generateInto(InstanceBeanConfiguration<?> bean) {
+    // generateInto(bean, Key.of(MethodHandle.class));
+    // }
+    //
+    // public void generateInto(InstanceBeanConfiguration<?> bean, Key<MethodHandle> key) {
+    // // En anden mulighed er at det er bundet i InvocationSite...
+    // throw new UnsupportedOperationException();
+    // }
+    //
+    //// Must not have a classifier
+    //// Will have a MH injected at runtime...
+    //
+    // public <T> T generateIntoWithAutoClassifier(InstanceBeanConfiguration<?> bean, Class<T> classifierType) {
+    // return generateIntoWithAutoClassifier(bean, Key.of(MethodHandle.class), classifierType);
+    // }
+    //
+    // public <T> T generateIntoWithAutoClassifier(InstanceBeanConfiguration<?> bean, Key<MethodHandle> key, Class<T>
+    // classifierType) {
+    // throw new UnsupportedOperationException();
+    // }
+    //
+    // public void generateIntoWithClassifier(InstanceBeanConfiguration<?> bean, Key<MethodHandle> key, Object classifier) {
+    // // InvocationType must have a classifier with an assignable type
+    // }
+    //
+    // public void generateIntoWithClassifier(InstanceBeanConfiguration<?> bean, Object classifier) {
+    // generateIntoWithClassifier(bean, Key.of(MethodHandle.class), classifier);
+    // }
+    //
+//     public void injectMethodHandleArrayInto(InstanceBeanConfiguration<?> bean, Object classifier) {
+//         throw new UnsupportedOperationException();
+//     }
+    //
+//     public int injectMethodHandleArrayInto(InstanceBeanConfiguration<?> bean) {
+//         requireNonNull(bean, "bean is null");
+    //
+//         // Hvorfor maa man egentlig ikke det her???
+//         // Vi kan jo altid bare lave vores egen og injecte den...
+//         if (bean.owner().isApplication() || bean.owner().extension() != operation.operator.extensionType) {
+//             throw new IllegalArgumentException("Can only specify a bean that has extension " + operation.operator.extensionType.getSimpleName() + " as owner");
+//         }
+//         return operation.bean.container.application.codegenHelper.addArray(bean, this);
+//     }
+    //
+//     public <T> void injectMethodHandleMapInto(InstanceBeanConfiguration<?> bean, Class<T> keyType, T key) {
+//         // check is type
+//         throw new UnsupportedOperationException();
+//     }
+    default <T> void attach(Class<T> t, T value) {
+        // detach <- removes
+        // Skal vi remove??? Taenker kun det er noget vi kan goere mens vi builder
+        // Det er ikke noget der giver mening senere hen
+        // Gem i et map i application <OperationHandle, Class> -> Value
+    }
+
+    default boolean hasBindingsBeenResolved() {
+        return false;
+    }
+
     // Can be used to optimize invocation...
     // Very advanced though
     // Ideen er nok at vi har den model hvad der er til raadighed...
     // Hvilke argumenter skal du egentlig bruge...
     boolean isInvocationArgumentUsed(int index);
-    
+
+    default <F, T> OperationHandle mapReturn(Class<F> fromType, Class<T> toType, Function<F, T> function) {
+        // Vi kan fx sige String -> StringReturnWrapper
+        throw new UnsupportedOperationException();
+    }
+
+    // Hvad hvis vi vil injecte ting??? Return is always the first parameter I would think
+    // Additional parameters will be like any other bindings
+    // Will it create an additional operation? I would think so if it needs injection
+    default OperationHandle mapReturn(MethodHandle mh) {
+        // Vi kan fx sige String -> StringReturnWrapper
+        throw new UnsupportedOperationException();
+    }
+
+    // non void return matching invocation type
+    default OperationHandle mapReturn(Op<?> op) {
+        // Vi kan fx sige String -> StringReturnWrapper
+        throw new UnsupportedOperationException();
+    }
+
+    // We have on the extension now
+    void onCodegen(Consumer<OperationHandle> action);
+
     // I think this needs to be first operation...
     // Once we start calling onBuild() which schedules it for the extension its over
     default void operatedBy(Object extensionHandle) {
@@ -235,7 +309,14 @@ interface ZandboxOperationHandle {
         // checkConfigurable();
         // Do we create a new handle, and invalidate this handle?
     }
+
+    // Hmm, kan jo ikke bare tage en tilfaeldig...
+    default void invokeFromAncestor(Extension<?> extension) {
+    }
     
+    default void invokeFromAncestor(ExtensionContext context) {
+    }
+
     default void relativise(Extension<?> extension) {
 
     }
@@ -245,6 +326,43 @@ interface ZandboxOperationHandle {
     // For example, LifetimeOperationMirror.
     // However, the best thing we can do is a runtime exception. As the supplier is lazy
     void requireMirrorSubClassOf(Class<? extends OperationMirror> mclass);
+
+    // /**
+//  * If this operation is created from a variable (typically a field), returns its accessMode. Otherwise empty.
+//  * 
+//  * @return
+//  */
+// default Optional<AccessMode> accessMode() {
+//     return Optional.empty();
+// }
+//    default <T> T computeInvoker(TypeToken<T> invokerType) {
+//
+//        /// computeInvoker(new TypeToken<Function<Boo, Sddd>);
+//        throw new UnsupportedOperationException();
+//    }
+
+    default void resolveParameter() {
+        // we need the introspected bean...
+
+        // Hmm, I don't like it
+
+        // If we don't call this ourselves. It will be called immediately after
+        // onMethod, onField, ect
+    }
+
+    Sandbox resultAssignableToOrFail(Class<?> clz); // ignores any return value
+
+    // dependencies skal vaere her, fordi de er mutable. Ved ikke om vi skal have 2 klasser.
+    // Eller vi bare kan genbruge BeanDependency
+
+    // Resolves all parameters that have not already been resolved via bindParameter
+    // Idea was to act on all those that werent resolved
+
+    // boolean isBound(int parameterIndex)
+
+    Sandbox resultVoid(); // returnIgnore?
+
+    Sandbox resultVoidOrFail(); // fails if non-void with BeanDeclarationException
 
     // spawn NewBean/NewContainer/NewApplication...
     default void spawnNewBean() {
@@ -261,124 +379,6 @@ interface ZandboxOperationHandle {
     // If immutable... IDK
     // Fx fra mirrors. Har composite operations ogsaa templates???
     OperationTemplate template();
- // Must not have a classifier
- //// Will have a MH injected at runtime...
- //public void generateInto(InstanceBeanConfiguration<?> bean) {
- //  generateInto(bean, Key.of(MethodHandle.class));
- //}
- //
- //public void generateInto(InstanceBeanConfiguration<?> bean, Key<MethodHandle> key) {
- //  // En anden mulighed er at det er bundet i InvocationSite...
- //  throw new UnsupportedOperationException();
- //}
- //
- //// Must not have a classifier
- //// Will have a MH injected at runtime...
- //
- //public <T> T generateIntoWithAutoClassifier(InstanceBeanConfiguration<?> bean, Class<T> classifierType) {
- //  return generateIntoWithAutoClassifier(bean, Key.of(MethodHandle.class), classifierType);
- //}
- //
- //public <T> T generateIntoWithAutoClassifier(InstanceBeanConfiguration<?> bean, Key<MethodHandle> key, Class<T> classifierType) {
- //  throw new UnsupportedOperationException();
- //}
- //
- //public void generateIntoWithClassifier(InstanceBeanConfiguration<?> bean, Key<MethodHandle> key, Object classifier) {
- //  // InvocationType must have a classifier with an assignable type
- //}
- //
- //public void generateIntoWithClassifier(InstanceBeanConfiguration<?> bean, Object classifier) {
- //  generateIntoWithClassifier(bean, Key.of(MethodHandle.class), classifier);
- //}
- //
-//     public void injectMethodHandleArrayInto(InstanceBeanConfiguration<?> bean, Object classifier) {
-//         throw new UnsupportedOperationException();
-//     }
- //
-//     public int injectMethodHandleArrayInto(InstanceBeanConfiguration<?> bean) {
-//         requireNonNull(bean, "bean is null");
- //
-//         // Hvorfor maa man egentlig ikke det her???
-//         // Vi kan jo altid bare lave vores egen og injecte den...
-//         if (bean.owner().isApplication() || bean.owner().extension() != operation.operator.extensionType) {
-//             throw new IllegalArgumentException("Can only specify a bean that has extension " + operation.operator.extensionType.getSimpleName() + " as owner");
-//         }
-//         return operation.bean.container.application.codegenHelper.addArray(bean, this);
-//     }
- //
-//     public <T> void injectMethodHandleMapInto(InstanceBeanConfiguration<?> bean, Class<T> keyType, T key) {
-//         // check is type
-//         throw new UnsupportedOperationException();
-//     }
-    default <T> void attach(Class<T> t, T value) {
-        // detach <- removes
-        // Skal vi remove??? Taenker kun det er noget vi kan goere mens vi builder
-        // Det er ikke noget der giver mening senere hen
-        // Gem i et map i application <OperationHandle, Class> -> Value
-    }
-
-    default boolean hasBindingsBeenResolved() {
-        return false;
-    }
-
-    default <F, T> OperationHandle mapReturn(Class<F> fromType, Class<T> toType, Function<F, T> function) {
-        // Vi kan fx sige String -> StringReturnWrapper
-        throw new UnsupportedOperationException();
-    }
-
-    // Hvad hvis vi vil injecte ting??? Return is always the first parameter I would think
-    // Additional parameters will be like any other bindings
-    // Will it create an additional operation? I would think so if it needs injection
-    default OperationHandle mapReturn(MethodHandle mh) {
-        // Vi kan fx sige String -> StringReturnWrapper
-        throw new UnsupportedOperationException();
-    }
-
-    // /**
-//  * If this operation is created from a variable (typically a field), returns its accessMode. Otherwise empty.
-//  * 
-//  * @return
-//  */
-// default Optional<AccessMode> accessMode() {
-//     return Optional.empty();
-// }
-//    default <T> T computeInvoker(TypeToken<T> invokerType) {
-//
-//        /// computeInvoker(new TypeToken<Function<Boo, Sddd>);
-//        throw new UnsupportedOperationException();
-//    }
-
-    // non void return matching invocation type
-    default OperationHandle mapReturn(Op<?> op) {
-        // Vi kan fx sige String -> StringReturnWrapper
-        throw new UnsupportedOperationException();
-    }
-
-    // We have on the extension now
-    void onCodegen(Consumer<OperationHandle> action);
-
-    // dependencies skal vaere her, fordi de er mutable. Ved ikke om vi skal have 2 klasser.
-    // Eller vi bare kan genbruge BeanDependency
-
-    // Resolves all parameters that have not already been resolved via bindParameter
-    // Idea was to act on all those that werent resolved
-
-    // boolean isBound(int parameterIndex)
-
-    default void resolveParameter() {
-        // we need the introspected bean...
-
-        // Hmm, I don't like it
-
-        // If we don't call this ourselves. It will be called immediately after
-        // onMethod, onField, ect
-    }
-
-    Sandbox resultAssignableToOrFail(Class<?> clz); // ignores any return value
-
-    Sandbox resultVoid(); // returnIgnore?
-
-    Sandbox resultVoidOrFail(); // fails if non-void with BeanDeclarationException
 
     //
 //  private static <K, U, V> Map<K, U> copyOf(Map<K, V> map, Function<V, U> valueMapper) {

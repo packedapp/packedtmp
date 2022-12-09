@@ -256,7 +256,7 @@ public sealed abstract class OperationSetup {
     }
 
     /** An operation that invokes the abstract method on a {@link FunctionalInterface}. */
-    public static final class FunctionOperationSetup extends OperationSetup implements OperationTarget.OfFunctionCall {
+    public static final class FunctionOperationSetup extends OperationSetup implements OperationTarget.OfFunction {
 
         private final Method implementationMethod;
 
@@ -324,7 +324,7 @@ public sealed abstract class OperationSetup {
         }
 
         /** An operation that invokes an underlying {@link Method}. */
-        public static final class ConstructorOperationSetup extends MemberOperationSetup<Constructor<?>> implements OperationTarget.OfConstructorInvoke {
+        public static final class ConstructorOperationSetup extends MemberOperationSetup<Constructor<?>> implements OperationTarget.OfConstructor {
 
             /**
              * @param operator
@@ -349,7 +349,7 @@ public sealed abstract class OperationSetup {
         }
 
         /** An operation that can access an underlying {@link Field}. */
-        public static final class FieldOperationSetup extends MemberOperationSetup<Field> implements OperationTarget.OfFieldAccess {
+        public static final class FieldOperationSetup extends MemberOperationSetup<Field> implements OperationTarget.OfField {
 
             /** The way we access the field. */
             private final AccessMode accessMode;
@@ -379,7 +379,7 @@ public sealed abstract class OperationSetup {
         }
 
         /** An operation that invokes an underlying {@link Method}. */
-        public static final class MethodOperationSetup extends MemberOperationSetup<Method> implements OperationTarget.OfMethodInvoke {
+        public static final class MethodOperationSetup extends MemberOperationSetup<Method> implements OperationTarget.OfMethod {
 
             /**
              * @param operator
@@ -402,7 +402,7 @@ public sealed abstract class OperationSetup {
     }
 
     /** An operation that invokes a method handle. */
-    public static final class MethodHandleOperationSetup extends OperationSetup implements OperationTarget.OfMethodHandleInvoke {
+    public static final class MethodHandleOperationSetup extends OperationSetup implements OperationTarget.OfMethodHandle {
 
         /**
          * @param operator

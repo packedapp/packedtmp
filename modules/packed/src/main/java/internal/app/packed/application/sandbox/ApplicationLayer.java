@@ -34,6 +34,8 @@ import internal.app.packed.application.sandbox.ThreeTier.Presentation;
 
 // Det giver ikke mening at en application root er i et layer...
 
+// I virkeligheden er et ApplicationLayer jo bare en masse regler...
+
 public abstract class ApplicationLayer {
 
     /** Create a root application layer. */
@@ -92,6 +94,28 @@ abstract sealed class ThreeTier<U extends ThreeTier<U>> extends ApplicationLayer
         protected void define() {}
     }
 }
+
+final class ThreeTierAlt extends ApplicationLayer {
+
+    public static final class Presentation extends ApplicationLayer {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void define() {}
+    }
+
+    public static final class FrontEnd extends ApplicationLayer {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void define() {}
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void define() {}
+}
+
 
 @InLayer(Presentation.class)
 abstract class Zaa extends BaseAssembly {}

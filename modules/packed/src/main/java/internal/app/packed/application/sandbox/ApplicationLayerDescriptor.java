@@ -17,33 +17,28 @@ package internal.app.packed.application.sandbox;
 
 import java.util.Optional;
 
-/**
- * An application layer descriptor.
- */
-// Det der lidt taeller for descriptor over mirror.
-// Er at den ligger fast naar den er defineret og kan bruges paa tvaers
-// af applicationer
+/** A descriptor of an application layer. */
 public interface ApplicationLayerDescriptor {
 
     /** {@return the application layer class.} */
     Class<? extends ApplicationLayer> applicationLayerClass();
-    
+
     /** {@return the name of the application layer.} */
     String name();
 
-    /** {@return any parent application layer this layer has.} */
+    /** {@return any parent layer of this layer.} */
     Optional<ApplicationLayerDescriptor> parent();
 
     /**
-     * Returns a descriptor for the specified application layer.
+     * Returns a descriptor for the specified application layer class.
      * 
-     * @param applicationLayer
+     * @param layerClass
      *            the type of application layer to return a descriptor for
-     * @return a descriptor for the specified application layer
+     * @return a descriptor for the specified application layer class
      * @throws RuntimeException
      *             if the definition of the application layer is invalid.
      */
-    static ApplicationLayerDescriptor of(Class<? extends ApplicationLayer> applicationLayer) {
+    static ApplicationLayerDescriptor of(Class<? extends ApplicationLayer> layerClass) {
         throw new UnsupportedOperationException();
     }
 }

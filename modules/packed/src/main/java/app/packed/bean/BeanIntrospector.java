@@ -344,7 +344,7 @@ public abstract class BeanIntrospector {
          * @return
          * 
          * @throws UnsupportedOperationException
-         *             if called via {@link OperationHandle#bindParameter(int)}
+         *             if called via {@link OperationHandle#bindManually(int)}
          */
         Class<?> hookClass(); // Skal vel ogsaa tilfoejes til BF, BM osv
 
@@ -524,7 +524,7 @@ public abstract class BeanIntrospector {
         /**
          * Creates a new operation that can read the field.
          * <p>
-         * If an {@link OperationMirror} is created for the operation. It will report {@link OperationTarget.OfFieldAccess} as
+         * If an {@link OperationMirror} is created for the operation. It will report {@link OperationTarget.OfField} as
          * its {@link OperationMirror#target()}.
          * 
          * @param template
@@ -537,7 +537,7 @@ public abstract class BeanIntrospector {
         /**
          * Creates a new operation that can read or/and write a field as specified by the provided access mode.
          * <p>
-         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfFieldAccess} as
+         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfField} as
          * its {@link OperationMirror#target()}.
          * 
          * @param template
@@ -558,7 +558,7 @@ public abstract class BeanIntrospector {
         /**
          * Creates a new operation that can write to a field.
          * <p>
-         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfFieldAccess} as
+         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfField} as
          * its {@link OperationMirror#target()}.
          * 
          * @param template
@@ -643,7 +643,7 @@ public abstract class BeanIntrospector {
          *            a template for the operation
          * @return an operation handle
          * 
-         * @see OperationTarget.OfMethodHandleInvoke
+         * @see OperationTarget.OfMethodHandle
          * @see Lookup#unreflect(Method)
          * @see BeanMethodHook#allowInvoke()
          * @see BeanClassHook#allowFullPrivilegeAccess()

@@ -33,17 +33,18 @@ import internal.app.packed.operation.OperationSetup.MethodHandleOperationSetup;
  * 
  * @see OperationMirror#target()
  */
+// Maybe ditch Invoke in OfConstructorInvoke and friends
 public sealed interface OperationTarget {
 
     /** Represents an operation that invokes a {@link Constructor constructor}. */
-    public sealed interface OfConstructorInvoke extends OperationTarget permits ConstructorOperationSetup {
+    sealed interface OfConstructor extends OperationTarget permits ConstructorOperationSetup {
 
         /** {@return the underlying constructor.} */
         Constructor<?> constructor();
     }
 
     /** Represents an operation that gets, sets or updates a {@link Field field}. */
-    public sealed interface OfFieldAccess extends OperationTarget permits FieldOperationSetup {
+    sealed interface OfField extends OperationTarget permits FieldOperationSetup {
 
         /** {@return the mode used when accessing the field.} */
         AccessMode accessMode(); // Could we have a list instead??? Or optional where is empty is VarHandle
@@ -53,7 +54,7 @@ public sealed interface OperationTarget {
     }
 
     /** Represents the invocation of a function on a functional interface. */
-    public sealed interface OfFunctionCall extends OperationTarget permits FunctionOperationSetup {
+    sealed interface OfFunction extends OperationTarget permits FunctionOperationSetup {
 
         /** {@return the functional interface.} */
         Class<?> functionalInterface();
@@ -65,18 +66,18 @@ public sealed interface OperationTarget {
         Method interfaceMethod();
     }
 
-    /** Represents an operation that invokes a {@link MethodHandle method handle}. */
-    public sealed interface OfMethodHandleInvoke extends OperationTarget permits MethodHandleOperationSetup {
-
-        /** {@return the method type of the method handle.} */
-        MethodType methodType();
-    }
-
     /** Represents an operation that invokes a {@link Method method}. */
-    public sealed interface OfMethodInvoke extends OperationTarget permits MethodOperationSetup {
+    sealed interface OfMethod extends OperationTarget permits MethodOperationSetup {
 
         /** {@return the invokable method.} */
         Method method();
+    }
+
+    /** Represents an operation that invokes a {@link MethodHandle method handle}. */
+    sealed interface OfMethodHandle extends OperationTarget permits MethodHandleOperationSetup {
+
+        /** {@return the method type of the method handle.} */
+        MethodType methodType();
     }
 }
 
