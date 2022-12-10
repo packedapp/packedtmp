@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.operation.bindings.BindingProviderKind;
+import app.packed.bindings.BindingProviderKind;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;

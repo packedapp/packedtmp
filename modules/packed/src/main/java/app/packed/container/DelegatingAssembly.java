@@ -27,13 +27,15 @@ import app.packed.bean.CustomBeanHook;
  * Delegating assemblies cannot use the {@link AssemblyHook} annotation or {@link CustomBeanHook custom bean hooks}.
  * Attempting to use any of these annotations on a delegating assembly will result in a {@link BuildException} being
  * thrown.
+ * <p>
+ * Delegated assemblies are never reported from {@link AssemblyMirror#assemblyClass()} instead they can be optained by
+ * calling {@link AssemblyMirror#delegatedFrom()}.
  */
 public non-sealed abstract class DelegatingAssembly extends Assembly {
 
     /** {@return the assembly to delegate to.} */
     protected abstract Assembly delegateTo();
 }
-
 
 //// Kan jo saa argumentere for hvorfor man ikke kan specificere wirelets for alle assemblies????
 //// Altsaa det ikke mening kun at give tilladelse til at have den her

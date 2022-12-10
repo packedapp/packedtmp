@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings;
+package app.packed.bindings;
+
+import app.packed.operation.OperationMirror;
 
 /**
- *
+ * A composite binding mirror
  */
+public class CompositeBindingMirror extends BindingMirror {
 
-// Hvis vi supportere context key bindings..... Saa er det her en..
-// Saa har vi kun et ekstra concept...
-// Og ikke noget vi gider have en separat klasse for vil jeg mene,...
-public class FactoryServiceBindingMirror extends ContextServiceBindingMirror {
-
+    public OperationMirror compositeOperation() {
+        return providingOperation().get();
+    }
 }
+
+//Functions bliver ikke laengere resolve som en composite. Istedet for er det 2 argumenter...
+// get(Req, Res) -> Har bare 2 parametere. (Maaske idk)
+// Jo, 2 arg bindings
+//public boolean isFuncionalInterface() {
+//    throw new UnsupportedOperationException();
+//}

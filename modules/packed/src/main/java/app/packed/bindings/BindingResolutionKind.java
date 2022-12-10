@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings;
+package app.packed.bindings;
 
 /**
  *
  */
-// Nullable? Det er vel en slags Optional
+enum BindingResolutionPhase {
+    // operation binding but instantly resolved at build time (@Now)
+    INSTANTLY,
 
-// Binding wrappers
+    // operation binding but delayed resolved at build time (services)
+    DELAYED,
 
-// OnBinding()
-
-public enum BindingWrapperType {
-    OPTIONAL, PROVIDER, LAZY;
+    // operation binding but instantly resolved at run time (transaction, @Param)
+    RUNTIME;
 }
+
+// Forskellen er lidt at delayed ikke smide BeanInstallationException

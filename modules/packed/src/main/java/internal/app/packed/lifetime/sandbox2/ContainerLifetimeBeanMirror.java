@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
+import app.packed.bindings.BindingMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.sandbox.LifetimeOperationMirror;
-import app.packed.operation.BindingMirror;
 
 // Why lifetime bean
 // Det startede lidt med problemet omkring Application "wrapper" objekter som AsyncApp/Injector osv.

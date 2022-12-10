@@ -24,7 +24,6 @@ import java.util.TreeSet;
 
 import app.packed.application.BuildGoal;
 import app.packed.container.AbstractComposer.ComposerAssembly;
-import app.packed.extension.Extension;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerAssembly;
@@ -32,6 +31,7 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.DelegatingAssembly;
 import app.packed.container.Realm;
 import app.packed.container.Wirelet;
+import app.packed.extension.Extension;
 import internal.app.packed.application.ApplicationBuildEvent;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationDriver;
@@ -49,7 +49,11 @@ public final class AssemblySetup extends RealmSetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. */
     private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ContainerAssembly.class, "doBuild",
-            void.class, AssemblySetup.class, AssemblyModel.class, ContainerSetup.class);
+            void.class, AssemblyModel.class, ContainerSetup.class);
+
+    /** A handle that can invoke {@link Assembly#doBuild()}. */
+    private static final MethodHandle MH_ABSTRACT_COMPOSER_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComposerAssembly.class, "doBuild",
+            void.class, AssemblyModel.class, ContainerSetup.class);
 
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
     private static final MethodHandle MH_DELEGATING_ASSEMBLY_DELEGATE_TO = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), DelegatingAssembly.class,
@@ -138,10 +142,20 @@ public final class AssemblySetup extends RealmSetup {
             abe.assemblyClass = assembly.getClass();
             abe.begin();
         }
-        try {
-            MH_ASSEMBLY_DO_BUILD.invokeExact((ContainerAssembly) assembly, this, assemblyModel, container);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
+
+        if (assembly instanceof ContainerAssembly ca) {
+            try {
+                MH_ASSEMBLY_DO_BUILD.invokeExact(ca, assemblyModel, container);
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
+        } else {
+            ComposerAssembly<?> cas = (ComposerAssembly<?>) assembly;
+            try {
+                MH_ABSTRACT_COMPOSER_DO_BUILD.invokeExact(cas, assemblyModel, container);
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
         }
 
         isClosed = true;
@@ -234,12 +248,7 @@ public final class AssemblySetup extends RealmSetup {
     /** {@inheritDoc} */
     @Override
     public Class<?> realmType() {
-        if (assembly instanceof ComposerAssembly) {
-            // TODO extract realm
-            return assembly.getClass();
-        } else {
-            return assembly.getClass();
-        }
+        return assembly.getClass();
     }
 
     private Assembly unpack(Assembly assembly, int depth) {

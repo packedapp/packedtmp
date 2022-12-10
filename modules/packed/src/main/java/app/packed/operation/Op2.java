@@ -20,32 +20,31 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.BiFunction;
 
 /**
- * A {@link Op} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input
- * to the bi-function being the two dependencies.
+ * A {@link Op} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input to the
+ * bi-function being the two dependencies.
+ * 
  * 
  * 
  * @param <T>
- *            The type of the first dependency that this factory takes
+ *            The type of the first argument this op takes
  * @param <U>
- *            The type of the second dependency that this factory takes
+ *            The type of the second argument this op takes
  * @param <R>
- *            the type of objects this factory constructs
- * 
+ *            the type of objects this op returns
  * @see Op0
- * @see Op1
+ * @see Op2
  */
 public abstract class Op2<T, U, R> extends CapturingOp<R> {
 
     /**
-     * Creates a new factory, that uses the specified function to provide instances.
+     * Creates a new op, that use the specified function to provide values.
      *
      * @param function
-     *            the function that provide instances.
+     *            the function that will provide values for the op.
      * @throws IllegalArgumentException
-     *             if any of type variables could not be determined.
+     *             if the type variable T, U or R could not be determined.
      */
     protected Op2(BiFunction<? super T, ? super U, ? extends R> function) {
         super(requireNonNull(function, "function is null"));
     }
-    
 }

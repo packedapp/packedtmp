@@ -105,7 +105,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
      * Returns a new operation that will perform the specified action with the result before returning it.
      * 
      * @param action
-     *            the consume action that will be run with the result on each invocation
+     *            the action that will be run with the result as an argument on each invocation
      * @return the new operation
      * @throws UnsupportedOperationException
      *             if this operation has void return type
@@ -126,6 +126,22 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
         requireNonNull(constructor, "constructor is null");
         throw new UnsupportedOperationException();
     }
+    // Tror vi maa droppe de her lookups, de fungere ikke rigtig
+    static Op<?> ofField(Lookup lookup, Field field) {
+        requireNonNull(field, "field is null");
+        MethodHandle handle;
+        try {
+            if (Modifier.isPrivate(field.getModifiers())) {
+                // vs MethodHandles.private???
+                lookup = lookup.in(field.getDeclaringClass());
+            }
+            handle = lookup.unreflectGetter(field);
+        } catch (IllegalAccessException e) {
+            throw new InaccessibleBeanMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
+        }
+        System.out.println(handle);
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * <p>
@@ -143,22 +159,6 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
     public static Op<?> ofMethod(Lookup lookup, Method method) {
         requireNonNull(method, "method is null");
 
-        throw new UnsupportedOperationException();
-    }
-
-    static Op<?> ofField(Lookup lookup, Field field) {
-        requireNonNull(field, "field is null");
-        MethodHandle handle;
-        try {
-            if (Modifier.isPrivate(field.getModifiers())) {
-                // vs MethodHandles.private???
-                lookup = lookup.in(field.getDeclaringClass());
-            }
-            handle = lookup.unreflectGetter(field);
-        } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
-        }
-        System.out.println(handle);
         throw new UnsupportedOperationException();
     }
 

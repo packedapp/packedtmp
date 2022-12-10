@@ -110,6 +110,10 @@ public final /* primitive */ class OperationHandle {
      * @return a object that can be used to specify the details of the binding
      * @throws IndexOutOfBoundsException
      *             if the parameter index is out of bounds
+     * @throws UnsupportedOperationException
+     *             if a function
+     * @throws IllegalStateException
+     *             if the bean of the operation is no longer configurable
      */
     // Tror vi force laver (reserves) en binding her.
     // Det er jo kun meningen at man skal binden den hvis man kalder denne metode.
@@ -118,8 +122,8 @@ public final /* primitive */ class OperationHandle {
     // bindManually
     // bind(index).toConstant("Foo");
     public OnBinding bindManually(int index) {
+        checkConfigurable();
         // This method does not throw IllegalStateExtension, but OnBinding may.
-        operation.isClosed = true;
         // custom invocationContext must have been set before calling this method
         checkIndex(index, operation.type.parameterCount());
 
@@ -167,8 +171,11 @@ public final /* primitive */ class OperationHandle {
     }
 
     /**
-     * {@return the invocation type of this operation.}. Any method handle generated via {@link #generateMethodHandle()}
-     * will the returned method type as its {@link MethodHandle#type()}
+     * {@return the invocation type of this operation.}
+     * <p>
+     * Method handles generated via {@link #generateMethodHandle()} will return it as its {@link MethodHandle#type()}
+     * 
+     * @see OperationTemplate
      */
     public MethodType invocationType() {
         return operation.invocationType.invocationType();
@@ -273,6 +280,11 @@ interface ZandboxOperationHandle {
         return false;
     }
 
+    // Hmm, kan jo ikke bare tage en tilfaeldig...
+    default void invokeFromAncestor(Extension<?> extension) {}
+
+    default void invokeFromAncestor(ExtensionContext context) {}
+
     // Can be used to optimize invocation...
     // Very advanced though
     // Ideen er nok at vi har den model hvad der er til raadighed...
@@ -310,13 +322,6 @@ interface ZandboxOperationHandle {
         // Do we create a new handle, and invalidate this handle?
     }
 
-    // Hmm, kan jo ikke bare tage en tilfaeldig...
-    default void invokeFromAncestor(Extension<?> extension) {
-    }
-    
-    default void invokeFromAncestor(ExtensionContext context) {
-    }
-
     default void relativise(Extension<?> extension) {
 
     }
@@ -350,7 +355,7 @@ interface ZandboxOperationHandle {
         // onMethod, onField, ect
     }
 
-    Sandbox resultAssignableToOrFail(Class<?> clz); // ignores any return value
+    ZandboxOperationHandle resultAssignableToOrFail(Class<?> clz); // ignores any return value
 
     // dependencies skal vaere her, fordi de er mutable. Ved ikke om vi skal have 2 klasser.
     // Eller vi bare kan genbruge BeanDependency
@@ -360,9 +365,9 @@ interface ZandboxOperationHandle {
 
     // boolean isBound(int parameterIndex)
 
-    Sandbox resultVoid(); // returnIgnore?
+    ZandboxOperationHandle resultVoid(); // returnIgnore?
 
-    Sandbox resultVoidOrFail(); // fails if non-void with BeanDeclarationException
+    ZandboxOperationHandle resultVoidOrFail(); // fails if non-void with BeanDeclarationException
 
     // spawn NewBean/NewContainer/NewApplication...
     default void spawnNewBean() {

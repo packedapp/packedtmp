@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings.sandbox;
-
-import java.util.List;
-
-import app.packed.operation.BindingMirror;
+package app.packed.bindings.sandbox;
 
 /**
  *
  */
-public interface DependencyChain extends Iterable<BindingMirror> {
-    BindingMirror first();
-    
-    BindingMirror last();
-    
-    List<BindingMirror> toList();
+public enum ResolutionState {
+    UNRESOLVED, RESOLVED, RUNTIME_RESOLVABLE;
+    // Resolved_At_Runtime when the application is initialized?
+    // Resolved_At_Runtime for each invocation
+    // Not sure we have this distiction
 }

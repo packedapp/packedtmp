@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings;
+package app.packed.bindings;
 
 /**
  *
  */
-enum BindingResolutionPhase {
-    // operation binding but instantly resolved at build time (@Now)
-    INSTANTLY,
 
-    // operation binding but delayed resolved at build time (services)
-    DELAYED,
+// Hvis vi supportere context key bindings..... Saa er det her en..
+// Saa har vi kun et ekstra concept...
+// Og ikke noget vi gider have en separat klasse for vil jeg mene,...
+public class FactoryServiceBindingMirror extends ContextServiceBindingMirror {
 
-    // operation binding but instantly resolved at run time (transaction, @Param)
-    RUNTIME;
 }
-
-// Forskellen er lidt at delayed ikke smide BeanInstallationException

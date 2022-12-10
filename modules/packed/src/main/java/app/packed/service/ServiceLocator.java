@@ -351,10 +351,11 @@ public interface ServiceLocator {
             private static final ApplicationDriver<ServiceLocator> DRIVER = ApplicationDriver.builder().build(ServiceLocator.class,
                     new Op1<ApplicationInitializationContext, ServiceLocator>(c -> c.serviceLocator()) {});
 
-            public ServiceLocatorAssembly(ComposerAction<? super Composer> action) {
+            ServiceLocatorAssembly(ComposerAction<? super Composer> action) {
                 super(new Composer(), action);
             }
         }
+        
         return ServiceLocatorAssembly.DRIVER.launch(new ServiceLocatorAssembly(action), wirelets);
     }
 

@@ -202,7 +202,7 @@ public class ContainerConfiguration {
      */
     @SuppressWarnings("unchecked")
     public final <E extends Extension<?>> E use(Class<E> extensionClass) {
-        ExtensionSetup extension = handle.container.safeUseExtensionSetup(extensionClass, null);
+        ExtensionSetup extension = handle.container.useExtension(extensionClass, null);
         return (E) extension.instance();
     }
 }

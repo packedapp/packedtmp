@@ -44,8 +44,10 @@ import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.util.ClassUtil;
 
 /**
- * Extensions are the primary way to extend Packed with new features. In fact most features provided by Packed itself is
- * using the same extension mechanism available to any user.
+ * Extensions are main mechanism by which the framework can be extended with new features.
+ * 
+ * Extensions are the primary way to extend the framework with new features. In fact most features provided by Packed
+ * itself is using the same extension mechanism available to any user.
  * <p>
  * 
  * For example, allows you to extend the basic functionality of containers.
@@ -76,7 +78,7 @@ import internal.app.packed.util.ClassUtil;
 public abstract class Extension<E extends Extension<E>> {
 
     /** The internal configuration of the extension. */
-    final ExtensionSetup extension; // handle + handle()
+    final ExtensionSetup extension = ExtensionSetup.initalizeExtension(this);
 
     /**
      * Creates a new extension. Subclasses should have a single package-private constructor.
@@ -84,9 +86,7 @@ public abstract class Extension<E extends Extension<E>> {
      * @throws IllegalStateException
      *             if attempting to construct the extension manually
      */
-    protected Extension() {
-        this.extension = ExtensionSetup.initalizeExtension(this);
-    }
+    protected Extension() {}
 
     /** {@return an extension point for the bean extension.} */
     protected final BeanExtensionPoint bean() {
@@ -136,9 +136,7 @@ public abstract class Extension<E extends Extension<E>> {
         return extension.container.isExtensionUsed(extensionType);
     }
 
-    /**
-     * @return
-     */
+    /** {@return whether or not the container is the root container in the application.} */
     protected final boolean isRoot() {
         return extension.treeParent == null;
     }
@@ -154,6 +152,8 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /**
+     * Returns a bean introspector
+     * 
      * Whenever a Hook annotation is found
      * <p>
      * This method is never called more than once for a single bean.
@@ -170,22 +170,22 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /**
-     * This method can be overridden to provide a customized mirror for the extension. For example, {@link ServiceExtension}
-     * overrides this method to provide an instance of {@link ServiceExtensionMirror}.
+     * This method can be overridden to provide a customized {@link ExtensionMirror mirror} for the extension. For example,
+     * {@link ServiceExtension} overrides this method to provide an instance of {@link ServiceExtensionMirror}.
      * <p>
      * This method should never return null.
      * 
-     * @return a mirror for the extension
+     * @return a customized mirror for the extension
      * @throws InternalExtensionException
      *             if the method is not overridden
      */
     protected ExtensionMirror<E> newExtensionMirror() {
-        // This method is only called if an exception forgot to override the method
-        throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
+        // This exception is only throw if the extension forgot to override the method
+        throw new InternalExtensionException("A customized extension mirror was declared, but this method was not overridden by " + extension.extensionType);
     }
 
     /**
-     * 
+     * Returns a new extension point for the extension
      * <p>
      * This method should never return null.
      * 
@@ -263,6 +263,8 @@ public abstract class Extension<E extends Extension<E>> {
      * @see #onAssemblyClose()
      * @see #onApplicationClose()
      */
+    // TODO Hmm doesnt work properly any more...
+    // I think either we need to fail for example
     protected void onNew() {}
 
     /** @return the parent of this extension if present. */
@@ -275,19 +277,23 @@ public abstract class Extension<E extends Extension<E>> {
     /**
      * Registers a action to run doing the code generation phase.
      * <p>
-     * If the application has no code generation phase. For example, if building a {@link BuildGoal#NEW_MIRROR}. The specified
-     * action will not be executed.
+     * If the application has no code generation phase. For example, if building a {@link BuildGoal#NEW_MIRROR}. The
+     * specified action will not be executed.
      * 
      * @param action
      *            the action to run
      * @throws IllegalStateException
-     *             if the application is already in the code generation phase or has finished building
+     *             if the extension is no longer configurable
      */
     protected final void registerCodeGenerator(Runnable action) {
+        // was ISE
+        // if the application is already in the code generation phase or has finished building the application
+        // Syntes bare ikke rigtig at der er nogen grund til at introducere flere ISEs tidspunkter
+        checkIsConfigurable(); // I
         extension.container.application.addCodegenAction(action);
     }
 
-    /** {@return the root extension in the application.} */
+    /** {@return instance of this extension that is used in the application's root container.} */
     @SuppressWarnings("unchecked")
     protected final E root() {
         ExtensionSetup s = extension;
@@ -336,8 +342,8 @@ public abstract class Extension<E extends Extension<E>> {
     /**
      * Returns an extension point of the specified type.
      * <p>
-     * Only extension points of extensions that have been explicitly registered as dependencies, for example, by using
-     * {@link DependsOn} may be specified as arguments to this method.
+     * Only extension points of extensions that have been explicitly registered as dependencies by using {@link DependsOn}
+     * may be specified as arguments to this method.
      * 
      * @param <P>
      *            the type of extension point to return
@@ -348,19 +354,19 @@ public abstract class Extension<E extends Extension<E>> {
      *             If the underlying container is no longer configurable and the extension which the extension point is a
      *             part of has not previously been used.
      * @throws InternalExtensionException
-     *             If the extension which the extension point is a part of has not explicitly been registered as a
-     *             dependency of this extension
+     *             If the extension which the extension point is a part of has not explicitly been declared as a dependency
+     *             of this extension
      */
     @SuppressWarnings("unchecked")
     protected final <P extends ExtensionPoint<?>> P use(Class<P> extensionPointClass) {
         requireNonNull(extensionPointClass, "extensionPointClass is null");
 
-        // Extract the extension class from ExtensionPoint<E>
+        // Extract the extension class (<E>) from ExtensionPoint<E>
         Class<? extends Extension<?>> otherExtensionClass = ExtensionPoint.EXTENSION_POINT_TO_EXTENSION_CLASS_EXTRACTOR.get(extensionPointClass);
 
-        // Check that the extension of requested extension point's is a direct dependency of the requesting extension
+        // Check that the extension of requested extension point's is a direct dependency of this extension
         if (!extension.descriptor().dependsOn(otherExtensionClass)) {
-            // Special message if you try to use your own extension point
+            // Cannot use your own extension point
             if (otherExtensionClass == getClass()) {
                 throw new InternalExtensionException(otherExtensionClass.getSimpleName() + " cannot use its own extension point " + extensionPointClass);
             }
@@ -368,7 +374,7 @@ public abstract class Extension<E extends Extension<E>> {
                     getClass().getSimpleName() + " must declare " + format(otherExtensionClass) + " as a dependency in order to use " + extensionPointClass);
         }
 
-        ExtensionSetup otherExtension = extension.container.safeUseExtensionSetup(otherExtensionClass, extension);
+        ExtensionSetup otherExtension = extension.container.useExtension(otherExtensionClass, extension);
 
         // Create a new extension point
         ExtensionPoint<?> newExtensionPoint = otherExtension.instance().newExtensionPoint();

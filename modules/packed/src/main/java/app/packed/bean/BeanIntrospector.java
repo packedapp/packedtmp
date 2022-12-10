@@ -30,11 +30,11 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanExtensionPoint.FieldHook;
+import app.packed.bindings.BindingMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
 import app.packed.framework.Nullable;
-import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;

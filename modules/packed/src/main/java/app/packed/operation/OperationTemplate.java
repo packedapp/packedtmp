@@ -20,7 +20,7 @@ import java.util.Map;
 
 import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.context.Context;
-import app.packed.context.ContextTemplate;
+import app.packed.context.ContextTemplateImpl;
 import app.packed.errorhandling.ErrorHandler;
 import internal.app.packed.operation.PackedOperationTemplate;
 
@@ -73,11 +73,11 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
      */
     MethodType invocationType();
 
-    default /* OrderedMap */ Map<Class<? extends Context<?>>, ContextTemplate> contexts() {
+    default /* OrderedMap */ Map<Class<? extends Context<?>>, ContextTemplateImpl> contexts() {
         throw new UnsupportedOperationException();
     }
 
-    default OperationTemplate addContext(ContextTemplate context) {
+    default OperationTemplate addContext(ContextTemplateImpl context) {
         throw new UnsupportedOperationException();
     }
 

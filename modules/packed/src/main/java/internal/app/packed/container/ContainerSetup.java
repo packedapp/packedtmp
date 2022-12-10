@@ -310,20 +310,21 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      *             configurable
      */
     // Any dependencies needed have been checked
-    public ExtensionSetup safeUseExtensionSetup(Class<? extends Extension<?>> extensionClass, @Nullable ExtensionSetup requestedByExtension) {
+    public ExtensionSetup useExtension(Class<? extends Extension<?>> extensionClass, @Nullable ExtensionSetup requestedByExtension) {
         requireNonNull(extensionClass, "extensionClass is null");
         ExtensionSetup extension = extensions.get(extensionClass);
 
         // We do not use #computeIfAbsent, because extensions might install other extensions when initializing.
         // Which would then fail with ConcurrentModificationException (see ExtensionDependenciesTest)
         if (extension == null) {
-            // Ny extensions skal installeres indefor Assembly::build
-
-            if (assembly.isClosed()) {
-                throw new IllegalStateException("New extensions cannot be installed outside of Assembly::build");
-            }
-            // Checks that container is still configurable
             if (requestedByExtension == null) {
+                // Ny extensions skal installeres indefor Assembly::build
+
+                if (assembly.isClosed()) {
+                    throw new IllegalStateException("Extensions cannot be installed outside of Assembly::build");
+                }
+                // Checks that container is still configurable
+
                 // A user has made a request, that requires an extension to be installed.
                 // Check that the realm is still open
 
@@ -340,10 +341,8 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
                 }
             }
 
-            // The extension must be recursively installed into the root container if not already installed in parent
-            ExtensionSetup extensionParent = treeParent == null ? null : treeParent.safeUseExtensionSetup(extensionClass, requestedByExtension);
-
-            // Create the extension. (This will also add an entry to #extensions)
+            // The extension must be recursively installed into all ancestors (if not already installed)
+            ExtensionSetup extensionParent = treeParent == null ? null : treeParent.useExtension(extensionClass, requestedByExtension);
 
             extension = new ExtensionSetup(extensionParent, this, extensionClass);
             extension.initialize();

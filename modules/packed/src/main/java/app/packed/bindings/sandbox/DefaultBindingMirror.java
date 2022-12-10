@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
-
-import app.packed.container.ContainerAssembly;
+package app.packed.bindings.sandbox;
 
 /**
  *
  */
-public abstract class ApplicationBootstrapAssembly extends ContainerAssembly {}
+public interface DefaultBindingMirror {
+
+}

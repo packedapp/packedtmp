@@ -22,19 +22,19 @@ import internal.app.packed.operation.PackedOp;
 
 /**
  * A abstract op that captures the type an annotated return type and annotated type apra
- * 
+ * <p>
+ * Currently, this class cannot be extended outside of this package.
  * @see Op0
  * @see Op1
  * @see Op2
  */
 public abstract non-sealed class CapturingOp<R> implements Op<R> {
 
-    /** The op that all calls are delegated to. */
+    /** The op that all calls delegate to. */
     private final PackedOp<R> op;
 
     /**
-     * Used by the various FactoryN constructor, because we cannot call {@link Object#getClass()} before calling a
-     * constructor in this (super) class.
+     * Create a new operation.
      * 
      * @param function
      *            the function instance

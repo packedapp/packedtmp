@@ -16,8 +16,8 @@
 package internal.app.packed.operation.binding;
 
 import app.packed.bean.BeanExtension;
+import app.packed.bindings.BindingMirror;
 import app.packed.container.Realm;
-import app.packed.operation.BindingMirror;
 import internal.app.packed.application.PackedBridge;
 
 /**

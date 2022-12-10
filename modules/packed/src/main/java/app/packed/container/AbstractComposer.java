@@ -19,66 +19,134 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.VarHandle;
+
+import app.packed.framework.Nullable;
+import internal.app.packed.container.AssemblyModel;
+import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.util.LookupUtil;
 
 /**
- * Composers does not usually have any public constructors.
- * 
- * Unlike applications created with an assembly.
- * 
- * You cannot build images/launchers You cannot get a mirror
- * 
- * A composer will always instantiate a single application instance
+ *
  */
-public abstract class AbstractComposer {
+public class AbstractComposer {
 
-    ComposerAssembly<?> assembly;
+    /** A var handle that can update the {@link #configuration} field in this class. */
+    private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);
 
     /**
-     * Checks that the underlying container is still configurable.
+     * The configuration of the container that this assembly defines.
+     * <p>
+     * The value of this field goes through 3 states:
+     * <p>
+     * <ul>
+     * <li>Initially, this field is null, indicating that the assembly has not yet been used to build anything.</li>
+     * <li>Then, as a part of the build process, it is initialized with a container configuration object.</li>
+     * <li>Finally, {@link ContainerConfiguration#USED} is set to indicate that the assembly has been used.</li>
+     * </ul>
+     * <p>
+     * This field is updated via var handle {@link #VH_CONFIGURATION}.
      */
-    protected final void checkIsConfigurable() {
-        if (container().handle.container.assembly.isClosed()) {
-            throw new IllegalStateException("This composer is no longer configurable");
+    @Nullable
+    ContainerConfiguration configuration;
+
+    /**
+     * Checks that {@link #build()} has not yet been invoked by the framework.
+     * <p>
+     * This method is typically used by assemblies that define configuration methods that can only be called before
+     * {@link #build()}. Making sure that the assembly is still in a state to be configurable.
+     * 
+     * @throws IllegalStateException
+     *             if {@link #build()} has already been invoked
+     */
+    protected void checkConfigurable() {
+        if (configuration != null) {
+            throw new IllegalStateException("Assembly#build has already been called");
         }
     }
 
     /**
-     * @return
+     * Returns the configuration of the <strong>root</strong> container defined by this composer.
+     * <p>
+     * This method must only be called from within the {@link ComposerAction#build(AbstractComposer)} method.
      * 
-     * @see Assembly#container()
+     * @return the configuration of the root container
+     * @throws IllegalStateException
+     *             if called from outside of the {@link ComposerAction#build(AbstractComposer)} method
      */
-    // Maybe another so can be exposed as container?
-    protected final ContainerConfiguration container() {
-        ContainerConfiguration c = assembly.configuration;
+    protected ContainerConfiguration container() {
+        ContainerConfiguration c = configuration;
         if (c == null) {
-            throw new IllegalStateException("This method cannot be called from the constructor of a composer");
+            throw new IllegalStateException("This method cannot be called from the constructor of an assembly");
         } else if (c == ContainerConfiguration.USED) {
-            throw new IllegalStateException("This method must be called from with ComposerAction::build");
+            throw new IllegalStateException("This method must be called from within the #build() method of an assembly.");
         }
         return c;
     }
 
     /**
-     * Sets a {@link Lookup lookup object} that will be used to access members (fields, constructors and methods) on
-     * registered objects. The lookup object will be used for all service bindings and component installations that happens
-     * after the invocation of this method.
-     * <p>
-     * This method can be invoked multiple times. In all cases the object being bound or installed will use the latest
-     * registered lookup object.
-     * <p>
-     * If no lookup is specified using this method, the runtime will use the public lookup object
-     * ({@link MethodHandles#publicLookup()}) for member access.
-     *
-     * @param lookup
-     *            the lookup object
+     * Invoked by the runtime (via a MethodHandle). This method is mostly machinery that makes sure that the assembly is not
+     * used more than once.
+     * 
+     * @param assembly
+     *            the realm used to call container hooks
+     * @param configuration
+     *            the configuration to use for the assembling process
      */
-    public final void lookup(MethodHandles.Lookup lookup) {
-        assembly.lookup(lookup);
+    @SuppressWarnings({  "rawtypes", "unchecked" })
+    private void doBuild(ComposerAction action, AssemblyModel assemblyModel, ContainerSetup container) {
+        ContainerConfiguration configuration = new ContainerConfiguration(new ContainerHandle(container));
+        // Do we really need to guard against concurrent usage of an assembly?
+        Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
+        if (existing == null) {
+            try {
+                // Run AssemblyHook.onPreBuild if hooks are present
+                assemblyModel.preBuild(configuration);
+
+                // Call the actual build() method
+                action.build(this);
+
+                // Run AssemblyHook.onPostBuild if hooks are present
+                assemblyModel.postBuild(configuration);
+            } finally {
+                // Sets #configuration to a marker object that indicates the assembly has been used
+                VH_CONFIGURATION.setVolatile(this, ContainerConfiguration.USED);
+            }
+        } else if (existing == ContainerConfiguration.USED) {
+            // Assembly has already been used (successfully or unsuccessfully)
+            throw new IllegalStateException("This assembly has already been used, assembly = " + getClass());
+        } else {
+            // Assembly is in the process of being used. Typically happens, if an assembly is linked recursively.
+            throw new IllegalStateException("This assembly is currently being used elsewhere, assembly = " + getClass());
+        }
     }
 
     /**
-    *
-    */
+     * Specifies a lookup object that the framework will use will be used when access bean members installed from within
+     * this assembly.
+     * <p>
+     * This method can be used as an alternative
+     * <p>
+     * Example
+     * 
+     * <p>
+     * The lookup object passed to this method is only used internally. And only for the sake of accessing those bean
+     * installed by the assembly
+     * <p>
+     * This method will typically never be called more than once.
+     * 
+     * @param lookup
+     *            the lookup object
+     * @throws IllegalStateException
+     *             if called from outside of {@link #build()}
+     */
+    public final void lookup(Lookup lookup) {
+        requireNonNull(lookup, "lookup cannot be null");
+        container().handle.container.assembly.lookup(lookup);
+    }
+    /**
+     * Represents an operation that operates on an composer.
+     */
     @FunctionalInterface
     public interface ComposerAction<C extends AbstractComposer> {
 
@@ -90,25 +158,19 @@ public abstract class AbstractComposer {
          */
         void build(C composer);
     }
-
-    // Kan annoteres og man kan override build
-    // Assembly and composer must be in the same module
-    public static abstract class ComposerAssembly<C extends AbstractComposer> extends ContainerAssembly {
-        private final C composer;
+    
+    public static abstract non-sealed class ComposerAssembly<C extends AbstractComposer> extends Assembly {
         private final ComposerAction<? super C> action;
+        private final AbstractComposer composer;
 
-        // Kunne tage en Supplier<C> og saa bruge en ExtentLocal
         protected ComposerAssembly(C composer, ComposerAction<? super C> action) {
             this.composer = requireNonNull(composer, "composer is null");
-            composer.assembly = this;
             this.action = requireNonNull(action, "action is null");
         }
-
-        /** {@inheritDoc} */
-        @Override
-        protected void build() {
-            // reset lookup?
-            action.build(composer);
+        
+        @SuppressWarnings("unused")
+        private void doBuild(AssemblyModel assemblyModel, ContainerSetup container) {
+            composer.doBuild(action, assemblyModel, container);
         }
     }
 }

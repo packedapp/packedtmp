@@ -13,11 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings.sandbox;
+package app.packed.bindings;
+
+import app.packed.context.ContextMirror;
+import app.packed.service.Key;
 
 /**
  *
  */
-public interface DefaultBindingMirror {
+// Ideen er at man kan provide nogle i en operation context...
+// Som ikke noedvendigvis er binding hooks
+// Er factory? En context??? Hmmm En slags jo...
+public non-sealed class ContextServiceBindingMirror extends KeyBasedBindingMirror {
 
+    /** {@return the context that provided the binding.} */
+    public ContextMirror context() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Key<?> key() {
+        throw new UnsupportedOperationException();
+    }
 }

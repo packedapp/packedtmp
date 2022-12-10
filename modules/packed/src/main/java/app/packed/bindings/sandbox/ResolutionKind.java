@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings;
-
-import app.packed.operation.BindingMirror;
-import app.packed.service.Key;
-import app.packed.service.ServiceBindingMirror;
+package app.packed.bindings.sandbox;
 
 /**
  *
- * @see BindingKind#KEY
  */
-// Er maaske nået til Context Services, Extension Services, Container Services
-public sealed abstract class KeyBasedBindingMirror extends BindingMirror permits ServiceBindingMirror, ContextServiceBindingMirror {
+public enum ResolutionKind {
+
+    BUILD_TIME_CONSTANT,
     
-    /** {@return the binding key.} */
-    public abstract Key<?> key();
+    RUNTIME_CONSTANT,
+    
+    RUNTIME_OPERATION,
+    
+    RUNTIME_MISSING_FROM_TIME_TO_TIME
 }

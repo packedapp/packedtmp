@@ -144,6 +144,10 @@ public class AssemblyMirror implements Mirror {
         return Optional.empty();
     }
 
+    public List<Class<? extends DelegatingAssembly>> delegatedFrom() {
+        return List.of();
+    }
+
     /** {@inheritDoc} */
     @Override
     public String toString() {

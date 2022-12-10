@@ -103,7 +103,7 @@ public final class OldServiceResolver {
             bis = new DependencyNode(o, accessor);
             addConsumer(o, accessor);
         }
-        o.bean.container.safeUseExtensionSetup(ServiceExtension.class, null);
+        o.bean.container.useExtension(ServiceExtension.class, null);
         nodes.put(provider.entry.key, bis);
     }
 

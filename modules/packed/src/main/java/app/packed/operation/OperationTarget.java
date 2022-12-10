@@ -33,7 +33,6 @@ import internal.app.packed.operation.OperationSetup.MethodHandleOperationSetup;
  * 
  * @see OperationMirror#target()
  */
-// Maybe ditch Invoke in OfConstructorInvoke and friends
 public sealed interface OperationTarget {
 
     /** Represents an operation that invokes a {@link Constructor constructor}. */
@@ -53,7 +52,7 @@ public sealed interface OperationTarget {
         Field field();
     }
 
-    /** Represents the invocation of a function on a functional interface. */
+    /** Represents a operation that invokes the single abstract method on a functional interface. */
     sealed interface OfFunction extends OperationTarget permits FunctionOperationSetup {
 
         /** {@return the functional interface.} */

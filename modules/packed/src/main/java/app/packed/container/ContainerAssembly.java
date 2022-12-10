@@ -23,7 +23,6 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.framework.Nullable;
 import internal.app.packed.container.AssemblyModel;
-import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.util.LookupUtil;
 
@@ -126,7 +125,7 @@ public non-sealed abstract class ContainerAssembly extends Assembly {
      *            the configuration to use for the assembling process
      */
     @SuppressWarnings("unused")
-    private void doBuild(AssemblySetup assembly, AssemblyModel assemblyModel, ContainerSetup container) {
+    private void doBuild(AssemblyModel assemblyModel, ContainerSetup container) {
         ContainerConfiguration configuration = new ContainerConfiguration(new ContainerHandle(container));
         // Do we really need to guard against concurrent usage of an assembly?
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);

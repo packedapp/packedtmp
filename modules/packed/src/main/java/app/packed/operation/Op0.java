@@ -20,29 +20,28 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Supplier;
 
 /**
- * A {@link Op} type that wraps a {@link Supplier} in order to dynamically provide new instances.
+ * An {@link Op} type that wraps a {@link Supplier} taking no arguments.
  * <p>
  * Is typically used like this:
  *
  * <pre> {@code
  * Op<Long> f = new Op0<>(System::currentTimeMillis) {}};</pre>
  * <p>
- * In this example we create a new class inheriting from Op0 is order to capture information about the suppliers type
- * variable (in this case {@code Long}). Thereby circumventing the limitations of Java's type system for retaining type
- * information at runtime.
+ * In this example we create an anonymous class inheriting from Op0 is order to capture information about the suppliers
+ * type variable (in this case {@code Long}).
  * 
  * @param <R>
- *            the type of objects this factory constructs
+ *            the type of objects this op returns
  * @see Op1
  * @see Op2
  */
 public abstract class Op0<R> extends CapturingOp<R> {
 
     /**
-     * Creates a new factory, that use the specified supplier to provide values.
+     * Creates a new op, that use the specified supplier to provide values.
      *
      * @param supplier
-     *            the supplier that will provide the actual values.
+     *            the supplier that will provide values for the op.
      * @throws IllegalArgumentException
      *             if the type variable R could not be determined.
      */

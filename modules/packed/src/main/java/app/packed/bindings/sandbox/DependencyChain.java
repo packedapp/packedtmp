@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings.sandbox;
+package app.packed.bindings.sandbox;
+
+import java.util.List;
+
+import app.packed.bindings.BindingMirror;
 
 /**
  *
  */
-public enum ResolutionKind {
-
-    BUILD_TIME_CONSTANT,
+public interface DependencyChain extends Iterable<BindingMirror> {
+    BindingMirror first();
     
-    RUNTIME_CONSTANT,
+    BindingMirror last();
     
-    RUNTIME_OPERATION,
-    
-    RUNTIME_MISSING_FROM_TIME_TO_TIME
+    List<BindingMirror> toList();
 }

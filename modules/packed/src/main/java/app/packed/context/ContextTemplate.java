@@ -15,57 +15,65 @@
  */
 package app.packed.context;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
-import app.packed.bean.BeanIntrospector.OnBinding;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionContext;
 import app.packed.service.Key;
 
+
+// ContainerLaunchContext
+
+// 2 muligheder context services...
+// or @FromChild
+
+
 /**
- * A template
+ *
  */
-// Featuress
+public interface ContextTemplate {
 
-// ContextClass
+    /** {@return the context this template is a part of.} */
+    Class<? extends Context<?>> contextClass();
 
-// InternalContextClass used when invoking <- Maybe actually an array...
+    /** {@return the extension this template is a part of.} */
+    Class<? extends Extension<?>> extensionClass();
 
-// Keys available -> MethodHandle extractor from parameters
+    /** {@return the type of arguments that must be provided.} */
+    List<Class<?>> invocationArguments(); // Not a method type because no return type
 
-// Det er jo en slags ContextModel??
+    Set<Key<?>> keys();
 
-// Kan ogsaa require argumenter fra OperationContext...
-// ExtensionBean er jo oplagt...
-public class ContextTemplate {
+    ContextTemplate withArgument(Class<?> argument);
 
-    // Is SchedulingContext available for injection
-    boolean isContextAvailableAsKey() {
-        return false;
+    default ContextTemplate withServiceFromArgument(Class<?> key, int index) {
+        return withServiceFromArgument(Key.of(key), index);
     }
+
+    ContextTemplate withDynamicServiceResolver(Function<Key<?>, ?> f); 
     
-    // Tror vi bliver noedt til at definere om vi operere 
-    // i en operation eller freeform (SessionContext)
-    
-    public List<Class<?>> invocationArguments() {
-        return List.of();
-    }
+    ContextTemplate withServiceFromArgument(Key<?> key, int index);
 
-    Class<? extends Context<?>> contextClass() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@return keys that are available for the context.} */
-    public Set<Key<?>> keys() {
-        return Set.of();
-    }
-
-    // IDK
-    protected void notInContext(OnBinding dep) {
-
-    }
-
-    public static ContextTemplate of(Class<? extends Context<?>> contextClass) {
+    static ContextTemplate of(MethodHandles.Lookup lookup, Class<? extends Context<?>> contextClass) {
         throw new UnsupportedOperationException();
     }
 }
-// requireContext
+
+class Usage {
+
+    public static void main(String[] args) {
+        ContextTemplate t = ContextTemplate.of(MethodHandles.lookup(), ExtensionContext.class);
+        t.withArgument(ScheContext.class).withServiceFromArgument(SchedulingContext.class, 0);
+    }
+
+    static class ScheContext implements SchedulingContext {
+
+    }
+
+    interface SchedulingContext {
+
+    }
+}
