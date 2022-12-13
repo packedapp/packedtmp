@@ -49,8 +49,7 @@ public final class ApplicationInitializationContext {
 
     /** If the application is stateful, the applications runtime. */
     @Nullable
-    public
-    final PackedManagedLifetime runtime;
+    public final PackedManagedLifetime runtime;
 
     /** Wirelets specified if instantiating an image. */
     @Nullable
@@ -61,7 +60,7 @@ public final class ApplicationInitializationContext {
         this.wirelets = wirelets;
         this.name = requireNonNull(application.container.name);
         this.lifetimeKind = requireNonNull(application.driver.lifetimeKind());
-        this.runtime = application.runtimeAccessor == null ? null : new PackedManagedLifetime(this);
+        this.runtime = application.launcher == null || application.launcher.runtimeAccessor == null ? null : new PackedManagedLifetime(this);
     }
 
     /** {@return the name of the application} */
@@ -128,7 +127,7 @@ public final class ApplicationInitializationContext {
                 throw ThrowableUtil.orUndeclared(e);
             }
         }
-        
+
         // INITIALIZATION IS DONE
 
         if (context.runtime != null) {

@@ -17,9 +17,7 @@ package app.packed.bean;
 
 import app.packed.application.BuildException;
 
-/**
- * An exception that is thrown if a bean could not be installed.
- */
+/** An exception that is thrown if a bean could not be installed. */
 public class BeanInstallationException extends BuildException {
 
     private static final long serialVersionUID = 1L;

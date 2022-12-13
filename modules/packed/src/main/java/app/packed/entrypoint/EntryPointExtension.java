@@ -11,10 +11,11 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.extension.Extension;
+import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.FrameworkExtension;
-import app.packed.extension.Extension.DependsOn;
 import app.packed.framework.Nullable;
+import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.EntryPointSetup;
@@ -34,6 +35,7 @@ import internal.app.packed.operation.OperationSetup;
 @DependsOn(extensions = BeanExtension.class)
 public class EntryPointExtension extends FrameworkExtension<EntryPointExtension> {
 
+    /** The configuration of the application. */
     final ApplicationSetup application;
 
     boolean hasMain;
@@ -55,14 +57,16 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
 
     // installMain
     // lazyMain()?
-    public <T extends Runnable> InstanceBeanConfiguration<?> installMain(Class<T> beanClass) {
+    <T extends Runnable> InstanceBeanConfiguration<?> installMain(Class<T> beanClass) {
         // IDK, skal vi vente med at tilfoeje dem
         throw new UnsupportedOperationException();
     }
 
-    public <T extends Runnable> InstanceBeanConfiguration<?> installMainInstance(T beanInstance) {
+    <T extends Runnable> InstanceBeanConfiguration<?> installMainInstance(T beanInstance) {
         throw new UnsupportedOperationException();
     }
+
+    void main(Op<?> operation) {}
 
     @Override
     protected BeanIntrospector newBeanIntrospector() {
@@ -85,7 +89,6 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
                 mc.cs = ((IntrospectedBeanMethod) method).introspectedBean.bean;
 
                 // We should be able to just take the method handle when needed
-                
 
                 OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
 

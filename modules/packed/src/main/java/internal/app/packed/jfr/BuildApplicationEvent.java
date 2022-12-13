@@ -1,11 +1,11 @@
-package internal.app.packed.application;
+package internal.app.packed.jfr;
 
 import app.packed.container.Assembly;
 
 /**
     *
     */
-public class ApplicationBuildEvent extends jdk.jfr.Event {
+public class BuildApplicationEvent extends jdk.jfr.Event {
 
     public String applicationName;
 

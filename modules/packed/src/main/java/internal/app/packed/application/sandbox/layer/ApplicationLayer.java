@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application.sandbox;
+package internal.app.packed.application.sandbox.layer;
 
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
-import internal.app.packed.application.sandbox.ThreeTier.Presentation;
+import internal.app.packed.application.sandbox.layer.ThreeTier.Presentation;
 
 /**
  * not to be confused with application layers in the OSI model.

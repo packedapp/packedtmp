@@ -26,9 +26,6 @@ import app.packed.container.Wirelet;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
-import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
-import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -40,53 +37,43 @@ public final class ApplicationSetup {
     private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationMirror.class,
             "initialize", void.class, ApplicationSetup.class);
 
-    /** Responsible for everything to do with code generation, is null if the application is not launchable. */
-    @Nullable
-    final ApplicationCodegen codegen;
-
-    /** The root container of the application (created in the constructor of this class). */
+    /** The root container of the application. */
     public final ContainerSetup container;
 
-    /** The driver of the application. */
+    /** The driver used to create the application. */
     public final PackedApplicationDriver<?> driver;
 
     /** Entry points in the application, is null if there are none. */
-    @Nullable
+    @Nullable // Maybe this a lifetime thingy?
     public EntryPointSetup entryPoints;
 
     /** The build goal. */
     public final BuildGoal goal;
 
-    /**
-     * A launcher for launching the application. Is not created for {@link BuildGoal#VERIFY} or
-     * {@link BuildGoal#NEW_MIRROR}.
-     */
+    /** Responsible for everything to do with code generation, is null if the application cannot be launched. */
     @Nullable
-    PackedApplicationLauncher launcher;
+    public final ApplicationLauncherSetup launcher;
 
     /** The current phase of the build process. */
     private ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
 
-    /** The index of the application's runtime in the constant pool, or -1 if the application has no runtime, */
-    @Nullable
-    public final DynamicAccessor runtimeAccessor;
-
     /**
-     * Create a new application setup
+     * Create a new application.
+     * 
+     * @param driver
+     *            the driver of the application
+     * @param goal
+     *            the build goal
+     * @param assembly
+     *            the assembly that defines the application
+     * @param wirelets
+     *            optional wirelets
      */
     public ApplicationSetup(PackedApplicationDriver<?> driver, BuildGoal goal, AssemblySetup assembly, Wirelet[] wirelets) {
         this.driver = requireNonNull(driver);
         this.goal = requireNonNull(goal);
-
-        // Only generate code if the application can be launched (not a mirror or verify)
-        this.codegen = goal.isLaunchable() ? new ApplicationCodegen() : null;
-
-        // Create the root container of the application
-        this.container = new ContainerSetup(this, assembly, null, wirelets);
-
-        // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
-        // constant pool
-        this.runtimeAccessor = driver.lifetimeKind() == OldLifetimeKind.MANAGED ? container.lifetime.pool.reserve(PackedManagedLifetime.class) : null;
+        this.container = new ContainerSetup(this, assembly, null, wirelets); // the root container of the application
+        this.launcher = goal.isLaunchable() ? new ApplicationLauncherSetup(this) : null;
     }
 
     public void addCodegenAction(Runnable action) {
@@ -95,8 +82,8 @@ public final class ApplicationSetup {
             throw new IllegalStateException("This method must be called before any code generating phase is started");
         }
         // Ignore the action if we are not going to do any code generation.
-        if (codegen != null) {
-            codegen.actions.add(action);
+        if (launcher != null) {
+            launcher.actions.add(action);
         }
     }
 
@@ -115,18 +102,9 @@ public final class ApplicationSetup {
     }
 
     public void finish() {
-        if (codegen != null) {
+        if (launcher != null) {
             phase = ApplicationBuildPhase.CODEGEN;
-            CodegenEvent ce = new CodegenEvent();
-            ce.begin();
-
-            container.lifetime.codegen();
-            for (Runnable r : codegen.actions) {
-                r.run();
-            }
-            ce.commit();
-
-            launcher = new PackedApplicationLauncher(this);
+            launcher.finish();
         }
         phase = ApplicationBuildPhase.COMPLETED;
     }
@@ -144,7 +122,7 @@ public final class ApplicationSetup {
         return mirror;
     }
 
-    public enum ApplicationBuildPhase {
+    enum ApplicationBuildPhase {
         ASSEMBLE, CLOSE, CODEGEN, COMPLETED;
     }
 }

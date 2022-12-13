@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package internal.app.packed.application.sandbox;
 
 /**
- *
+ * A "synthetic" extension that operates operations in bootstrap applications.
  */
-public class ManagedStartupContext {
-
-}
+// Don't know if need this. But I think we do
+public class ApplicationBootstrapExtension /*extends Extension<ApplicationBootstrapExtension> */ {}

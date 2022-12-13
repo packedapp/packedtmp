@@ -119,11 +119,11 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public A launch(Assembly assembly, Wirelet... wirelets) {
         // Build the application
-        AssemblySetup as = new AssemblySetup(this, BuildGoal.LAUNCH, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.LAUNCH, null, assembly, wirelets);
         as.build();
 
         // Launch the application
-        PackedApplicationLauncher launcher = as.application.launcher;
+        RuntimeApplicationLauncher launcher = as.application.launcher.launcher;
         // as= null? For GC?
         return launcher.launchImmediately(this);
     }
@@ -143,7 +143,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets) {
         // Build the application
-        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_IMAGE, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_IMAGE, null, assembly, wirelets);
         as.build();
 
         // Create a reusable launcher
@@ -172,7 +172,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public ApplicationLauncher<A> newLauncher(Assembly assembly, Wirelet... wirelets) {
         // Build the application
-        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_LAUNCHER, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_LAUNCHER, null, assembly, wirelets);
         as.build();
 
         // Create single shop image
@@ -183,7 +183,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets) {
         // Build the application
-        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_MIRROR, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_MIRROR, null, assembly, wirelets);
         as.build();
 
         // Create a mirror for the application
@@ -194,7 +194,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public void verify(Assembly assembly, Wirelet... wirelets) {
         // Build (and verify) the application
-        AssemblySetup as = new AssemblySetup(this, BuildGoal.VERIFY, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.VERIFY, null, assembly, wirelets);
         as.build();
     }
 
@@ -346,18 +346,18 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /**
      * Implementation of {@link ApplicationLauncher} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}.
      */
-    public /* primitive */ record ReusableApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application)
+    public /* primitive */ record ReusableApplicationImage<A>(PackedApplicationDriver<A> driver, ApplicationSetup application)
             implements ApplicationLauncher<A> {
 
         /** {@inheritDoc} */
         @Override
         public A launch(Wirelet... wirelets) {
-            return application.launcher.launchFromImage(driver, wirelets);
+            return application.launcher.launcher.launchFromImage(driver, wirelets);
         }
     }
 
     /** A application launcher that maps the result of the launch. */
-    public record MappedApplicationImage<A, F> (ApplicationLauncher<F> image, Function<? super F, ? extends A> mapper) implements ApplicationLauncher<A> {
+    public record MappedApplicationImage<A, F>(ApplicationLauncher<F> image, Function<? super F, ? extends A> mapper) implements ApplicationLauncher<A> {
 
         /** {@inheritDoc} */
         @Override

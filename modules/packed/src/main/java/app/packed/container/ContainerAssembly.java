@@ -84,24 +84,25 @@ public non-sealed abstract class ContainerAssembly extends Assembly {
     /**
      * Checks that {@link #build()} has not yet been invoked by the framework.
      * <p>
-     * This method is typically used by assemblies that define configuration methods that can only be called before
-     * {@link #build()}. Making sure that the assembly is still in a state to be configurable.
+     * This method is typically used by assemblies that define configuration methods that must only be called before
+     * {@link #build()} is invoked.
      * 
      * @throws IllegalStateException
      *             if {@link #build()} has already been invoked
      */
-    protected final void checkConfigurable() {
+    protected final void checkBuildNotStarted() {
         if (configuration != null) {
-            throw new IllegalStateException("Assembly#build has already been called");
+            throw new IllegalStateException("This method must be called Assembly#build is invoked");
         }
     }
 
     /**
      * Returns the configuration of the <strong>root</strong> container defined by this assembly.
      * <p>
-     * This method must only be called from within the {@link #build()} method.
+     * This method can only be called from within the {@link #build()} method. Trying to call it outside of {@link #build()}
+     * will throw an {@link IllegalStateException}.
      * 
-     * @return the configuration of the root container
+     * @return the configuration of the container
      * @throws IllegalStateException
      *             if called from outside of the {@link #build()} method
      */

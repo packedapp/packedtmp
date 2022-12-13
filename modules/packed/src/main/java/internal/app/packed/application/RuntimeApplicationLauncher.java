@@ -24,11 +24,11 @@ import internal.app.packed.container.WireletWrapper;
 /**
  *
  */
-public class PackedApplicationLauncher {
+public class RuntimeApplicationLauncher {
 
     private final ApplicationSetup application;
 
-    public PackedApplicationLauncher(ApplicationSetup application) {
+    public RuntimeApplicationLauncher(ApplicationSetup application) {
         this.application = application;
     }
 

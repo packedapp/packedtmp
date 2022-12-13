@@ -1,4 +1,4 @@
-package internal.app.packed.application;
+package internal.app.packed.application.sandbox;
 
 /**
  * Represents a single namespace. An instance of this class maintained across different builds that are in

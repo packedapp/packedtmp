@@ -382,7 +382,7 @@ public interface ServiceLocator {
          */
         private ServiceExtension extension() {
             // container().onFirstUse(ServiceExtension.class, e -> e.exportAll());
-            ServiceExtension se = container().use(ServiceExtension.class);
+            ServiceExtension se = configuration().use(ServiceExtension.class);
             if (!initialized) {
                 se.exportAll();
                 initialized = true;
@@ -397,7 +397,7 @@ public interface ServiceLocator {
          *            optional import/export wirelets
          */
         public AssemblyMirror link(Assembly assembly, Wirelet... wirelets) {
-            return container().link(assembly, wirelets);
+            return configuration().link(assembly, wirelets);
         }
 
         /**
@@ -432,7 +432,7 @@ public interface ServiceLocator {
          */
         public <T> ProvideableBeanConfiguration<T> provide(Class<T> implementation) {
             extension();
-            return container().use(BeanExtension.class).install(implementation).provide();
+            return configuration().use(BeanExtension.class).install(implementation).provide();
         }
 
         /**
@@ -449,22 +449,22 @@ public interface ServiceLocator {
          */
         public <T> ProvideableBeanConfiguration<T> provide(Op<T> op) {
             extension();
-            return container().use(BeanExtension.class).install(op).provide();
+            return configuration().use(BeanExtension.class).install(op).provide();
         }
 
         public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
             extension();
-            return container().use(BeanExtension.class).install(op);
+            return configuration().use(BeanExtension.class).install(op);
         }
 
         public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
             extension();
-            return container().use(BeanExtension.class).installInstance(instance);
+            return configuration().use(BeanExtension.class).installInstance(instance);
         }
 
         public <T> ProvideableBeanConfiguration<T> install(Class<T> op) {
             extension();
-            return container().use(BeanExtension.class).install(op);
+            return configuration().use(BeanExtension.class).install(op);
         }
 
         /**
@@ -528,17 +528,17 @@ public interface ServiceLocator {
         // Should not fail if we fx have two public constructors of equal lenght
         public <T> ProvideableBeanConfiguration<T> provideInstance(T instance) {
             extension();
-            return container().use(BeanExtension.class).installInstance(instance).provide();
+            return configuration().use(BeanExtension.class).installInstance(instance).provide();
         }
 
         public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
             extension();
-            return container().use(ServiceExtension.class).providePrototype(implementation);
+            return configuration().use(ServiceExtension.class).providePrototype(implementation);
         }
 
         public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> factory) {
             extension();
-            return container().use(ServiceExtension.class).providePrototype(factory);
+            return configuration().use(ServiceExtension.class).providePrototype(factory);
         }
 
     }

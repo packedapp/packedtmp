@@ -101,7 +101,7 @@ public class ContainerConfiguration {
         checkIsConfigurable();
 
         // Create a new assembly
-        AssemblySetup as = new AssemblySetup(handle.container, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(null, null, handle.container, assembly, wirelets);
 
         // Build the assembly
         as.build();

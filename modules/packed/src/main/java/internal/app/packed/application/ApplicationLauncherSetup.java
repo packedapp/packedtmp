@@ -22,10 +22,15 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.framework.Nullable;
 import app.packed.operation.OperationHandle;
+import internal.app.packed.jfr.CodegenEvent;
+import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
+import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
+import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 
 /**
- *
+ * This class is responsible for creating an application launcher that can be used to create application instances.
  */
 // Alt bliver koert recursivt... Der er ingen order
 
@@ -37,20 +42,34 @@ import app.packed.operation.OperationHandle;
 //// * ?.registerCodegenResource(IBC<?> ibc, Class, Supplier<?>>);
 ////* ?.registerCodegenResource(IBC<?> ibc, Key, Supplier<?>>);
 
-
-
 // Strategies
 //// * Single MethodHandle from a single OperationHandle
 //// * MethodHandle[] from multiple operation handles 
 //// * X by combining multiple operation handles. (Kan man selv lave via regCodRes)
 //// * Classifier
 
-final class ApplicationCodegen {
+public final class ApplicationLauncherSetup {
 
     /** A list of actions that will be executed doing the code generating phase. */
     final ArrayList<Runnable> actions = new ArrayList<>();
 
+    private final ApplicationSetup application;
     private final HashMap<InstanceBeanConfiguration<?>, MethodHandleArray> arrayInvokers = new HashMap<>();
+
+    /** The application launcher that is being built. */
+    @Nullable
+    RuntimeApplicationLauncher launcher;
+
+    /** The index of the application's runtime in the constant pool, or -1 if the application has no runtime, */
+    @Nullable
+    public final DynamicAccessor runtimeAccessor;
+
+    ApplicationLauncherSetup(ApplicationSetup application) {
+        this.application = application;
+        this.runtimeAccessor = application.driver.lifetimeKind() == OldLifetimeKind.MANAGED
+                ? application.container.lifetime.pool.reserve(PackedManagedLifetime.class)
+                : null;
+    }
 
     public int addArray(InstanceBeanConfiguration<?> beanConfiguration, OperationHandle operation) {
         arrayInvokers.compute(beanConfiguration, (k, v) -> {
@@ -77,5 +96,21 @@ final class ApplicationCodegen {
             }
             return mh; // freeze
         }
+    }
+
+    /**
+     * 
+     */
+    void finish() {
+        CodegenEvent ce = new CodegenEvent();
+        ce.begin();
+
+        application.container.lifetime.codegen();
+        for (Runnable r : actions) {
+            r.run();
+        }
+        ce.commit();
+
+        launcher = new RuntimeApplicationLauncher(application);
     }
 }

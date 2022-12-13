@@ -17,7 +17,7 @@ import app.packed.container.DelegatingAssembly;
 import internal.app.packed.bean.BeanHookModel;
 import internal.app.packed.util.ThrowableUtil;
 
-/** A model of an {@link Assembly}. */
+/** A model of an {@link Assembly} class. */
 public final /* primitive */ class AssemblyModel {
 
     /** Cached models of assembly classes. */
@@ -71,10 +71,10 @@ public final /* primitive */ class AssemblyModel {
         }
     };
 
+    public final BeanHookModel hookModel;
+
     /** Any hooks that have been specified on the assembly. */
     private final AssemblyHook.Processor[] hooks;
-
-    public final BeanHookModel hookModel;
 
     private AssemblyModel(Class<?> assemblyClass, AssemblyHook.Processor[] hooks) {
         this.hooks = requireNonNull(hooks);
@@ -93,7 +93,14 @@ public final /* primitive */ class AssemblyModel {
         }
     }
 
-    public static AssemblyModel of(Class<?> assemblyOrComposer) {
-        return MODELS.get(assemblyOrComposer);
+    /**
+     * Return an assembly model for the specified class.
+     * 
+     * @param assemblyClass
+     *            the type of assembly to return a model for
+     * @return a model for the specified assembly
+     */
+    static AssemblyModel of(Class<? extends Assembly> assemblyClass) {
+        return MODELS.get(assemblyClass);
     }
 }

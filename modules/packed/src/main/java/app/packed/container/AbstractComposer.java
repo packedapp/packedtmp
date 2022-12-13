@@ -29,20 +29,20 @@ import internal.app.packed.util.LookupUtil;
 /**
  *
  */
-public class AbstractComposer {
+public abstract class AbstractComposer {
 
     /** A var handle that can update the {@link #configuration} field in this class. */
     private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);
 
     /**
-     * The configuration of the container that this assembly defines.
+     * The configuration of the container that this composer defines.
      * <p>
      * The value of this field goes through 3 states:
      * <p>
      * <ul>
-     * <li>Initially, this field is null, indicating that the assembly has not yet been used to build anything.</li>
+     * <li>Initially, this field is null, indicating that the composer has not yet been used to build anything.</li>
      * <li>Then, as a part of the build process, it is initialized with a container configuration object.</li>
-     * <li>Finally, {@link ContainerConfiguration#USED} is set to indicate that the assembly has been used.</li>
+     * <li>Finally, {@link ContainerConfiguration#USED} is set to indicate that the composer has been used.</li>
      * </ul>
      * <p>
      * This field is updated via var handle {@link #VH_CONFIGURATION}.
@@ -51,74 +51,23 @@ public class AbstractComposer {
     ContainerConfiguration configuration;
 
     /**
-     * Checks that {@link #build()} has not yet been invoked by the framework.
-     * <p>
-     * This method is typically used by assemblies that define configuration methods that can only be called before
-     * {@link #build()}. Making sure that the assembly is still in a state to be configurable.
-     * 
-     * @throws IllegalStateException
-     *             if {@link #build()} has already been invoked
-     */
-    protected void checkConfigurable() {
-        if (configuration != null) {
-            throw new IllegalStateException("Assembly#build has already been called");
-        }
-    }
-
-    /**
      * Returns the configuration of the <strong>root</strong> container defined by this composer.
      * <p>
-     * This method must only be called from within the {@link ComposerAction#build(AbstractComposer)} method.
+     * This method can only be called from within the {@link ComposerAction#build(AbstractComposer)} method. Otherwise, an
+     * {@link IllegalStateException} is thrown.
      * 
-     * @return the configuration of the root container
+     * @return the configuration of the container this composer defines
      * @throws IllegalStateException
-     *             if called from outside of the {@link ComposerAction#build(AbstractComposer)} method
+     *             if called from outside of {@link ComposerAction#build(AbstractComposer)}
      */
-    protected ContainerConfiguration container() {
+    protected ContainerConfiguration configuration() {
         ContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of an assembly");
         } else if (c == ContainerConfiguration.USED) {
-            throw new IllegalStateException("This method must be called from within the #build() method of an assembly.");
+            throw new IllegalStateException("Cannot call this method outside of ComposerAction::build(Composer)");
         }
         return c;
-    }
-
-    /**
-     * Invoked by the runtime (via a MethodHandle). This method is mostly machinery that makes sure that the assembly is not
-     * used more than once.
-     * 
-     * @param assembly
-     *            the realm used to call container hooks
-     * @param configuration
-     *            the configuration to use for the assembling process
-     */
-    @SuppressWarnings({  "rawtypes", "unchecked" })
-    private void doBuild(ComposerAction action, AssemblyModel assemblyModel, ContainerSetup container) {
-        ContainerConfiguration configuration = new ContainerConfiguration(new ContainerHandle(container));
-        // Do we really need to guard against concurrent usage of an assembly?
-        Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
-        if (existing == null) {
-            try {
-                // Run AssemblyHook.onPreBuild if hooks are present
-                assemblyModel.preBuild(configuration);
-
-                // Call the actual build() method
-                action.build(this);
-
-                // Run AssemblyHook.onPostBuild if hooks are present
-                assemblyModel.postBuild(configuration);
-            } finally {
-                // Sets #configuration to a marker object that indicates the assembly has been used
-                VH_CONFIGURATION.setVolatile(this, ContainerConfiguration.USED);
-            }
-        } else if (existing == ContainerConfiguration.USED) {
-            // Assembly has already been used (successfully or unsuccessfully)
-            throw new IllegalStateException("This assembly has already been used, assembly = " + getClass());
-        } else {
-            // Assembly is in the process of being used. Typically happens, if an assembly is linked recursively.
-            throw new IllegalStateException("This assembly is currently being used elsewhere, assembly = " + getClass());
-        }
     }
 
     /**
@@ -130,10 +79,10 @@ public class AbstractComposer {
      * Example
      * 
      * <p>
-     * The lookup object passed to this method is only used internally. And only for the sake of accessing those bean
-     * installed by the assembly
+     * The lookup object passed to this method is only to used to access members on beans that are installed via this
+     * composer. It is never exposed directly to extensions.
      * <p>
-     * This method will typically never be called more than once.
+     * This method is typically never called more than once.
      * 
      * @param lookup
      *            the lookup object
@@ -142,11 +91,10 @@ public class AbstractComposer {
      */
     public final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
-        container().handle.container.assembly.lookup(lookup);
+        configuration().handle.container.assembly.lookup(lookup);
     }
-    /**
-     * Represents an operation that operates on an composer.
-     */
+
+    /** Represents an operation that operates on a composer. */
     @FunctionalInterface
     public interface ComposerAction<C extends AbstractComposer> {
 
@@ -158,19 +106,58 @@ public class AbstractComposer {
          */
         void build(C composer);
     }
-    
+
+    /**
+     * A special assembly that accompanies a composer.
+     */
     public static abstract non-sealed class ComposerAssembly<C extends AbstractComposer> extends Assembly {
+
+        /** The action to run. */
         private final ComposerAction<? super C> action;
-        private final AbstractComposer composer;
+
+        /** The composer argument to the action */
+        private final C composer;
 
         protected ComposerAssembly(C composer, ComposerAction<? super C> action) {
             this.composer = requireNonNull(composer, "composer is null");
             this.action = requireNonNull(action, "action is null");
         }
-        
-        @SuppressWarnings("unused")
-        private void doBuild(AssemblyModel assemblyModel, ContainerSetup container) {
-            composer.doBuild(action, assemblyModel, container);
+
+        /**
+         * Invoked by the runtime (via a MethodHandle). This method is mostly machinery that makes sure that the assembly is not
+         * used more than once.
+         * 
+         * @param assembly
+         *            the realm used to call container hooks
+         * @param configuration
+         *            the configuration to use for the assembling process
+         */
+        void doBuild(AssemblyModel assemblyModel, ContainerSetup container) {
+            ContainerConfiguration configuration = new ContainerConfiguration(new ContainerHandle(container));
+            // Do we really need to guard against concurrent usage of an assembly?
+            Object existing = VH_CONFIGURATION.compareAndExchange(composer, null, configuration);
+            if (existing == null) {
+                try {
+                    // Run AssemblyHook.onPreBuild if hooks are present
+                    assemblyModel.preBuild(configuration);
+
+                    // Call actions build method with this composer
+                    action.build((C) composer);
+
+                    // Run AssemblyHook.onPostBuild if hooks are present
+                    assemblyModel.postBuild(configuration);
+                } finally {
+                    // Sets #configuration to a marker object that indicates the assembly has been used
+                    VH_CONFIGURATION.setVolatile(composer, ContainerConfiguration.USED);
+                }
+            } else if (existing == ContainerConfiguration.USED) {
+                // Assembly has already been used (successfully or unsuccessfully)
+                throw new IllegalStateException("This assembly has already been used, assembly = " + getClass());
+            } else {
+                // Assembly is in the process of being used. Typically happens, if an assembly is linked recursively.
+                throw new IllegalStateException("This assembly is currently being used elsewhere, assembly = " + getClass());
+            }
+
         }
     }
 }

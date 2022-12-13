@@ -131,7 +131,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
 
         // The rest of the constructor is just processing any wirelets that have been specified by
         // the user or extension when wiring the component. The wirelet's have not been null checked.
-        // and may contained any number of CombinedWirelet instances.
+        // and may contain any number of CombinedWirelet instances.
         Wirelet prefix = null;
         if (application.container == null) {
             prefix = application.driver.wirelet;
@@ -205,7 +205,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
-    protected final void initializeNameWithPrefix(String name) {
+    private void initializeNameWithPrefix(String name) {
         String n = name;
         if (treeParent != null) {
             HashMap<String, Object> c = treeParent.children;

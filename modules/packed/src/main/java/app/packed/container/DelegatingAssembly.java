@@ -21,15 +21,17 @@ import app.packed.bean.CustomBeanHook;
 /**
  * An assembly that delegates all calls to another assembly.
  * <p>
- * A typical use case for using a delegating assembly is to hide methods on the original assembly. Or to configure the
- * assembly, for example, in test scenarios where you want to specify an assembly class in an annotation.
+ * Typical use cases for delegating assembly are:
+ * 
+ * Hide methods on the original assembly. Or to configure a assembly, for example, in test scenarios where you want to
+ * specify an assembly class in an annotation.
  * <p>
  * Delegating assemblies cannot use the {@link AssemblyHook} annotation or {@link CustomBeanHook custom bean hooks}.
  * Attempting to use any of these annotations on a delegating assembly will result in a {@link BuildException} being
  * thrown.
  * <p>
- * Delegated assemblies are never reported from {@link AssemblyMirror#assemblyClass()} instead they can be optained by
- * calling {@link AssemblyMirror#delegatedFrom()}.
+ * Delegated assemblies are never reported from {@link AssemblyMirror#assemblyClass()}, but can be obtained by calling
+ * {@link AssemblyMirror#delegatedFrom()}.
  */
 public non-sealed abstract class DelegatingAssembly extends Assembly {
 

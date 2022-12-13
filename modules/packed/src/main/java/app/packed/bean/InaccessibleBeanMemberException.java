@@ -18,7 +18,7 @@ package app.packed.bean;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.container.AbstractComposer;
-import app.packed.container.Assembly;
+import app.packed.container.ContainerAssembly;
 import app.packed.extension.InternalExtensionException;
 
 /**
@@ -27,7 +27,7 @@ import app.packed.extension.InternalExtensionException;
  * <p>
  * In order to make the member accessible, the right access must be provided to the framework. This can be done either
  * by opening the package in which the bean is located to {@code app.packed} using a module descriptor. Or by specifying
- * a lookup object using {@link Assembly#lookup(Lookup)} or {@link AbstractComposer#lookup(Lookup)}.
+ * a lookup object using {@link ContainerAssembly#lookup(Lookup)} or {@link AbstractComposer#lookup(Lookup)}.
  * <p>
  * If an extension tries to install one of its own beans without sufficient access, {@link InternalExtensionException}
  * is thrown instead.

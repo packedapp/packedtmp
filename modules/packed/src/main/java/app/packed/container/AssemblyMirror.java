@@ -95,6 +95,10 @@ public class AssemblyMirror implements Mirror {
         return assembly().container.mirror();
     }
 
+    public List<Class<? extends DelegatingAssembly>> delegatedFrom() {
+        return assembly().delegatingAssemblies;
+    }
+
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
@@ -142,10 +146,6 @@ public class AssemblyMirror implements Mirror {
             }
         }
         return Optional.empty();
-    }
-
-    public List<Class<? extends DelegatingAssembly>> delegatedFrom() {
-        return List.of();
     }
 
     /** {@inheritDoc} */
