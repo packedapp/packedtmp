@@ -14,12 +14,12 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.NamespacePath;
 import app.packed.bean.BeanMirror;
 import app.packed.context.ContextualizedElement;
+import app.packed.extension.BaseExtensionPoint.BindingHook;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import app.packed.extension.MirrorExtension;
-import app.packed.extension.BaseExtensionPoint.BindingHook;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.container.ContainerSetup;
@@ -289,7 +289,7 @@ public non-sealed class ContainerMirror implements ContextualizedElement , Mirro
         // Cannot return a null mirror
         if (mirror == null) {
             throw new InternalExtensionException(
-                    "Extension " + extension.descriptor().fullName() + " returned null from " + extension.descriptor().name() + ".newExtensionMirror()");
+                    "Extension " + extension.model.fullName() + " returned null from " + extension.model.name() + ".newExtensionMirror()");
         }
 
         // If we expect a mirror of a particular type, check it
@@ -309,7 +309,7 @@ public non-sealed class ContainerMirror implements ContextualizedElement , Mirro
             // Must return a mirror for the same extension
             Class<? extends Extension<?>> mirrorExtensionType = EXTENSION_TYPES.get(mirror.getClass());
             if (mirrorExtensionType != extension.extensionType) {
-                throw new InternalExtensionException("Extension " + extension.descriptor().fullName()
+                throw new InternalExtensionException("Extension " + extension.model.fullName()
                         + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
             }
         }

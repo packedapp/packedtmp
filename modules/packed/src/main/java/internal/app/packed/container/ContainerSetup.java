@@ -101,8 +101,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     @Nullable
     public final WireletWrapper wirelets;
 
-    public final ExtensionSetup baseExtension;
-
     /**
      * Create a new container.
      * 
@@ -130,7 +128,8 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             this.lifetime = parent.lifetime;
         }
 
-        baseExtension = new ExtensionSetup(treeParent == null ? null : treeParent.baseExtension, this, BaseExtension.class);
+        ExtensionSetup baseExtension = new ExtensionSetup(treeParent == null ? null : treeParent.extensions.get(BaseExtension.class), this,
+                BaseExtension.class);
         baseExtension.initialize();
 
         requireNonNull(wirelets, "wirelets is null");
@@ -300,6 +299,10 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         };
     }
 
+    public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * If an extension of the specified type has not already been installed, installs it. Returns the extension's context.
      * <p>
@@ -354,9 +357,5 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             extension.initialize();
         }
         return extension;
-    }
-
-    public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
-        throw new UnsupportedOperationException();
     }
 }

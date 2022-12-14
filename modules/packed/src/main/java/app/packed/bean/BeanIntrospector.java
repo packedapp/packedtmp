@@ -30,11 +30,11 @@ import java.util.function.Supplier;
 
 import app.packed.bindings.BindingMirror;
 import app.packed.extension.BaseExtensionPoint;
+import app.packed.extension.BaseExtensionPoint.BindingHook;
+import app.packed.extension.BaseExtensionPoint.FieldHook;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
-import app.packed.extension.BaseExtensionPoint.BindingHook;
-import app.packed.extension.BaseExtensionPoint.FieldHook;
 import app.packed.framework.Nullable;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
@@ -135,7 +135,7 @@ public abstract class BeanIntrospector {
         if (this.setup != null) {
             throw new IllegalStateException("This scanner has already been initialized.");
         }
-        this.setup = new Setup(operator.descriptor(), bean);
+        this.setup = new Setup(operator.model, bean);
     }
 
     /**

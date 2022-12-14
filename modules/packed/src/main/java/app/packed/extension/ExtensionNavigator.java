@@ -58,7 +58,7 @@ public final /* primitive */ class ExtensionNavigator<E extends Extension<E>> im
     }
 
     ExtensionDescriptor extensionDescriptor() {
-        return originExtension.descriptor();
+        return originExtension.model;
     }
 
     @Override

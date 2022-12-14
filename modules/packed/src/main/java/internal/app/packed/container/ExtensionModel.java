@@ -52,7 +52,7 @@ import internal.app.packed.util.StringFormatter;
  * @implNote This could have been a record, but there are so many fields that that we get a better overview as a plain
  *           class.
  */
-// Kan kalde dem Info klasser istedet for, hvis vi vil brug model
+// Kan kalde dem Info klasser istedet for, hvis vi vil brug model externt i APIen
 public final class ExtensionModel implements ExtensionDescriptor {
 
     /** A cache of all encountered extension models. */

@@ -32,6 +32,9 @@ public final class ExtensionTreeSetup extends RealmSetup {
     /** Whether or not this type of extension is still configurable. */
     private boolean isClosed;
 
+    /** The root extension. */
+    private final ExtensionSetup root;
+
     /**
      * Creates a new realm.
      * <p>
@@ -47,16 +50,14 @@ public final class ExtensionTreeSetup extends RealmSetup {
         this.root = root;
     }
 
-    private final ExtensionSetup root;
+    void close() {
+        this.isClosed = true;
+        root.close();
+    }
 
     /** {@return whether or not the realm is closed.} */
     public boolean isClosed() {
         return isClosed;
-    }
-
-    public void close() {
-        this.isClosed = true;
-        root.close();
     }
 
     /** {@inheritDoc} */

@@ -325,7 +325,7 @@ public abstract class Extension<E extends Extension<E>> {
         // Otherwise people could do wirelets(ServiceWirelet.provide(..).getClass())...
         if (getClass().getModule() != wireletClass.getModule()) {
             throw new IllegalArgumentException("The specified wirelet class is not in the same module (" + getClass().getModule().getName() + ") as '"
-                    + /* simple extension name */ extension.descriptor().name() + ", wireletClass.getModule() = " + wireletClass.getModule());
+                    + /* simple extension name */ extension.model.name() + ", wireletClass.getModule() = " + wireletClass.getModule());
         }
 
         // Find the containers wirelet wrapper and return early if no wirelets have been specified, or all of them have already
@@ -364,7 +364,7 @@ public abstract class Extension<E extends Extension<E>> {
         Class<? extends Extension<?>> otherExtensionClass = ExtensionPoint.EXTENSION_POINT_TO_EXTENSION_CLASS_EXTRACTOR.get(extensionPointClass);
 
         // Check that the extension of requested extension point's is a direct dependency of this extension
-        if (!extension.descriptor().dependsOn(otherExtensionClass)) {
+        if (!extension.model.dependsOn(otherExtensionClass)) {
             // Cannot use your own extension point
             if (otherExtensionClass == getClass()) {
                 throw new InternalExtensionException(otherExtensionClass.getSimpleName() + " cannot use its own extension point " + extensionPointClass);
@@ -381,8 +381,8 @@ public abstract class Extension<E extends Extension<E>> {
         // Make sure it is a proper type of the requested extension point
         if (!extensionPointClass.isInstance(newExtensionPoint)) {
             if (newExtensionPoint == null) {
-                throw new NullPointerException("Extension " + otherExtension.descriptor().fullName() + " returned null from "
-                        + otherExtension.descriptor().name() + ".newExtensionPoint()");
+                throw new NullPointerException("Extension " + otherExtension.model.fullName() + " returned null from "
+                        + otherExtension.model.name() + ".newExtensionPoint()");
             }
             throw new InternalExtensionException(otherExtension.extensionType.getSimpleName() + ".newExtensionPoint() was expected to return an instance of "
                     + extensionPointClass + ", but returned an instance of " + newExtensionPoint.getClass());

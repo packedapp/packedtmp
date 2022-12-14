@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
 import app.packed.framework.Nullable;
 import internal.app.packed.bean.BeanSetup;
@@ -50,7 +49,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     private Extension<?> instance;
 
     /** A static model of the extension. */
-    private final ExtensionModel model;
+    public final ExtensionModel model;
 
     /**
      * Creates a new extension setup.
@@ -76,10 +75,13 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         this.model = requireNonNull(extensionRealm.extensionModel);
     }
 
-    public void close() {
-        for (ExtensionSetup c = treeFirstChild; c != null; c = c.treeNextSiebling) {
-            c.close();
+    void close() {
+        // Close all children first
+        for (ExtensionSetup child = treeFirstChild; child != null; child = child.treeNextSiebling) {
+            child.close();
         }
+
+        // Resolve all bindings
         for (ExtensionServiceBindingSetup binding : bindings) {
             Class<?> ebc = binding.extensionBeanClass;
             ExtensionSetup e = this;
@@ -103,10 +105,6 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     @Override
     public int compareTo(ExtensionSetup o) {
         return model.compareTo(o.model);
-    }
-
-    public ExtensionDescriptor descriptor() {
-        return model;
     }
 
     void initialize() {
