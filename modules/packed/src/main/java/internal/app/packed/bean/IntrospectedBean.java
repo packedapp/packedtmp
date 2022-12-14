@@ -130,7 +130,7 @@ public final class IntrospectedBean {
             }
 
             // Notify the bean introspector that it is being used
-            introspector.onIntrospectionStart();
+            introspector.beforeIntrospection();
             return new Contributor(extension, introspector, fullAccess);
         });
     }

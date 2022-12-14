@@ -26,9 +26,9 @@ import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.BeanExtension;
 import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerConfiguration;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.service.ServiceExtension;
 import internal.app.packed.util.ThrowableUtil;
@@ -46,8 +46,8 @@ public abstract class VerifyingTestCase {
 
     private TestA testA;
 
-    protected final BeanExtension bean() {
-        return use(BeanExtension.class);
+    protected final BaseExtension bean() {
+        return use(BaseExtension.class);
     }
 
     private ContainerConfiguration cc() {

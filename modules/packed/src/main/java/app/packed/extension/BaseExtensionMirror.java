@@ -1,14 +1,14 @@
-package app.packed.bean;
+package app.packed.extension;
 
 import java.util.stream.Stream;
 
-import app.packed.extension.ExtensionMirror;
+import app.packed.bean.BeanMirror;
 
-/** A specialized extension mirror for the {@link BeanExtension}. */
+/** A specialized extension mirror for the {@link BaseExtension}. */
 // Let's see how useful this will end up being
-public final class BeanExtensionMirror extends ExtensionMirror<BeanExtension> {
+public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {
 
-    /* package-private */ BeanExtensionMirror() {}
+    /* package-private */ BaseExtensionMirror() {}
 
     /** {@return the total number of installed beans.} */
     public int beanCount() {

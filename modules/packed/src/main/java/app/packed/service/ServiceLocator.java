@@ -26,11 +26,11 @@ import java.util.function.Consumer;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.AbstractComposer.ComposerAssembly;
+import app.packed.extension.BaseExtension;
+import app.packed.extension.BaseExtensionPoint.BindingHook;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.BaseAssembly;
@@ -432,7 +432,7 @@ public interface ServiceLocator {
          */
         public <T> ProvideableBeanConfiguration<T> provide(Class<T> implementation) {
             extension();
-            return configuration().use(BeanExtension.class).install(implementation).provide();
+            return configuration().use(BaseExtension.class).install(implementation).provide();
         }
 
         /**
@@ -449,22 +449,22 @@ public interface ServiceLocator {
          */
         public <T> ProvideableBeanConfiguration<T> provide(Op<T> op) {
             extension();
-            return configuration().use(BeanExtension.class).install(op).provide();
+            return configuration().use(BaseExtension.class).install(op).provide();
         }
 
         public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
             extension();
-            return configuration().use(BeanExtension.class).install(op);
+            return configuration().use(BaseExtension.class).install(op);
         }
 
         public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
             extension();
-            return configuration().use(BeanExtension.class).installInstance(instance);
+            return configuration().use(BaseExtension.class).installInstance(instance);
         }
 
         public <T> ProvideableBeanConfiguration<T> install(Class<T> op) {
             extension();
-            return configuration().use(BeanExtension.class).install(op);
+            return configuration().use(BaseExtension.class).install(op);
         }
 
         /**
@@ -528,7 +528,7 @@ public interface ServiceLocator {
         // Should not fail if we fx have two public constructors of equal lenght
         public <T> ProvideableBeanConfiguration<T> provideInstance(T instance) {
             extension();
-            return configuration().use(BeanExtension.class).installInstance(instance).provide();
+            return configuration().use(BaseExtension.class).installInstance(instance).provide();
         }
 
         public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {

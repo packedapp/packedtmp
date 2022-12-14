@@ -22,10 +22,10 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.application.NamespacePath;
-import app.packed.bean.BeanExtension;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.service.ProvideableBeanConfiguration;
 
@@ -59,13 +59,13 @@ public class ContainerConfigurationTester {
     }
 
     public <T> ProvideableBeanConfiguration<T> stateless(Class<T> implementation) {
-        ProvideableBeanConfiguration<T> conf = cc.use(BeanExtension.class).install(implementation);
+        ProvideableBeanConfiguration<T> conf = cc.use(BaseExtension.class).install(implementation);
         assertThat(conf).isNotNull();
         return conf;
     }
 
     public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-        ProvideableBeanConfiguration<T> conf = cc.use(BeanExtension.class).installInstance(instance);
+        ProvideableBeanConfiguration<T> conf = cc.use(BaseExtension.class).installInstance(instance);
         assertThat(conf).isNotNull();
         return conf;
     }

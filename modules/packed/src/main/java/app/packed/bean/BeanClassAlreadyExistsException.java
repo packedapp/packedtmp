@@ -15,15 +15,17 @@
  */
 package app.packed.bean;
 
+import app.packed.extension.BaseExtension;
+
 /**
  * An exception thrown when a bean is being installed, and there is another bean in the same container with the same
  * bean class.
  * <p>
  * Installation of beans with a {@code void} bean class (functional beans) never fails.
  * 
- * @see BeanExtension#multiInstall(Class)
- * @see BeanExtension#multiInstall(app.packed.operation.Op)
- * @see BeanExtension#multiInstallInstance(Object)
+ * @see BaseExtension#multiInstall(Class)
+ * @see BaseExtension#multiInstall(app.packed.operation.Op)
+ * @see BaseExtension#multiInstallInstance(Object)
  */
 public class BeanClassAlreadyExistsException extends BeanInstallationException {
 

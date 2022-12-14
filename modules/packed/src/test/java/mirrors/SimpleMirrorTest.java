@@ -26,11 +26,11 @@ import org.junit.jupiter.api.Test;
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
-import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanExtensionMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerMirror;
+import app.packed.extension.BaseExtension;
+import app.packed.extension.BaseExtensionMirror;
 
 /**
  *
@@ -76,13 +76,13 @@ public class SimpleMirrorTest {
 
 //        BeanMirror bm = cm.beans().iterator().next();
 
-        assertThat(am.extensionTypes()).containsExactly(BeanExtension.class);
+        assertThat(am.extensionTypes()).containsExactly(BaseExtension.class);
 
         // Equals HashCode
         assertEquals(am, am);
 
         am.lifetime();
-        assertNotNull(am.use(BeanExtensionMirror.class));
+        assertNotNull(am.use(BaseExtensionMirror.class));
 
         // Name
         assertEquals(MyAss.class.getSimpleName(), "MyAss");

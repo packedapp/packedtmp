@@ -17,27 +17,34 @@ package internal.app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.bean.BeanExtensionPoint;
-import app.packed.bean.BeanExtensionPoint.BeanInstaller;
-import app.packed.extension.InternalExtensionException;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
+import app.packed.container.AbstractComposer.ComposerAssembly;
+import app.packed.extension.BaseExtensionPoint;
+import app.packed.extension.BaseExtensionPoint.BeanInstaller;
+import app.packed.extension.InternalExtensionException;
 import app.packed.framework.Nullable;
 import app.packed.operation.Op;
 import app.packed.operation.Provider;
 import app.packed.service.Key;
+import internal.app.packed.container.AssemblyModel;
+import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.PackedOp;
+import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.ThrowableUtil;
 
-public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller {
+public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstaller {
 
     /** Illegal bean classes. */
     static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
@@ -53,13 +60,24 @@ public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller 
 
     private boolean synthetic;
 
-    final ExtensionSetup beanExtension;
+    final ExtensionSetup baseExtension;
 
     @Nullable
     final PackedExtensionPointContext useSite;
 
-    public PackedBeanInstaller(ExtensionSetup beanExtension, BeanKind kind, @Nullable PackedExtensionPointContext useSite) {
-        this.beanExtension = requireNonNull(beanExtension);
+    /** A handle that can invoke {@link ComposerAssembly#doBuild(AssemblyModel, ContainerSetup)}. */
+    private static final MethodHandle MH_NEW_BEAN_HANDLE = LookupUtil.lookupConstructorPrivate(MethodHandles.lookup(), BeanHandle.class, BeanSetup.class);
+
+    private <T> BeanHandle<T> from(BeanSetup bs) {
+        try {
+            return (BeanHandle<T>) MH_NEW_BEAN_HANDLE.invokeExact(bs);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+    }
+
+    public PackedBeanInstaller(ExtensionSetup baseExtension, BeanKind kind, @Nullable PackedExtensionPointContext useSite) {
+        this.baseExtension = requireNonNull(baseExtension);
         this.kind = requireNonNull(kind, "kind is null");
         this.useSite = useSite;
     }
@@ -144,7 +162,7 @@ public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller 
     @Override
     public <T> BeanHandle<T> installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle<T>> onInstall) {
         requireNonNull(beanClass, "beanClass is null");
-        HashMap<Class<?>, Object> bcm = beanExtension.container.beanClassMap;
+        HashMap<Class<?>, Object> bcm = baseExtension.container.beanClassMap;
         if (useSite != null) {
             bcm = useSite.usedBy().beanClassMap;
         }

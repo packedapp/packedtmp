@@ -15,11 +15,33 @@
  */
 package app.packed.container;
 
+import app.packed.bean.InstanceBeanConfiguration;
+
 /**
  *
  */
-public interface ContainerInstaller {
 
+// Bliver noedt til at lave et Handle. Da kalderen som minim har brug for
+// OperationHandles for lifetimen...
+
+public interface ContainerInstaller {
+    
+    ContainerInstaller newLifetime();
+    
+    ContainerInstaller allowRuntimeWirelets();
+
+    // Only Managed-Operation does not require a wrapper
+    default ContainerInstaller wrapIn(InstanceBeanConfiguration<?> wrapperBeanConfiguration) {
+        // Gaar udfra vi maa definere wrapper beanen alene...Eller som minimum supportere det
+        // Hvis vi vil dele den...
+
+        // Det betyder ogsaa vi skal lave en wrapper bean alene
+        return null;
+    }
+    
+    ContainerHandle link(Assembly assembly, Wirelet... wirelets);
+
+    ContainerHandle newContainer(Wirelet... wirelets);
 }
 // Ejer
 

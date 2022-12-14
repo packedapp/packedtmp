@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.ContainerConfiguration;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import testutil.util.AbstractApplicationTest;
 
@@ -45,13 +46,13 @@ public class ContainerConfigurationExtensionTest extends AbstractApplicationTest
     @Test
     public void extensions() {
         appOf(e -> {
-            assertThat(e.extensions()).isEmpty();
+            assertThat(e.extensions()).containsExactly(BaseExtension.class);
             e.use(TestExtension1.class);
-            assertThat(e.extensions()).containsExactlyInAnyOrder(TestExtension1.class);
+            assertThat(e.extensions()).containsExactlyInAnyOrder(BaseExtension.class, TestExtension1.class);
             e.use(TestExtension1.class);
-            assertThat(e.extensions()).containsExactlyInAnyOrder(TestExtension1.class);
+            assertThat(e.extensions()).containsExactlyInAnyOrder(BaseExtension.class, TestExtension1.class);
             e.use(TestExtension2.class);
-            assertThat(e.extensions()).containsExactlyInAnyOrder(TestExtension1.class, TestExtension2.class);
+            assertThat(e.extensions()).containsExactlyInAnyOrder(BaseExtension.class, TestExtension1.class, TestExtension2.class);
         });
     }
 
@@ -68,7 +69,7 @@ public class ContainerConfigurationExtensionTest extends AbstractApplicationTest
 
         // Test empty
         appOf(e -> r.set(e.configuration()));
-        assertThat(r.get().extensionTypes()).isEmpty();
+        assertThat(r.get().extensionTypes()).containsExactly(BaseExtension.class);
         assertThatIllegalStateException().isThrownBy(() -> r.get().use(TestExtension1.class));
 
         AtomicReference<TestExtension1> t1 = new AtomicReference<>();
@@ -82,7 +83,7 @@ public class ContainerConfigurationExtensionTest extends AbstractApplicationTest
         assertThatIllegalStateException().isThrownBy(() -> r.get().use(TestExtension2.class));
     }
 
-    public static final class TestExtension1 extends Extension<TestExtension1 > {
+    public static final class TestExtension1 extends Extension<TestExtension1> {
         TestExtension1() {}
     }
 

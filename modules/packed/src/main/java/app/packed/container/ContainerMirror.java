@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.NamespacePath;
-import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanMirror;
 import app.packed.context.ContextualizedElement;
 import app.packed.extension.Extension;
@@ -20,6 +19,7 @@ import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import app.packed.extension.MirrorExtension;
+import app.packed.extension.BaseExtensionPoint.BindingHook;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.container.ContainerSetup;

@@ -21,8 +21,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.BeanExtensionPoint.FieldHook;
-import app.packed.bean.BeanExtensionPoint.MethodHook;
+import app.packed.extension.BaseExtension;
+import app.packed.extension.BaseExtensionPoint.FieldHook;
+import app.packed.extension.BaseExtensionPoint.MethodHook;
 
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use
@@ -49,6 +50,6 @@ import app.packed.bean.BeanExtensionPoint.MethodHook;
 // Instead of FieldHook is is a provision hook long term.
 // IDK vi injecter vel kun services?
 
-@FieldHook(extension = BeanExtension.class, allowSet = true)
-@MethodHook(extension = BeanExtension.class, allowInvoke = true)
+@FieldHook(extension = BaseExtension.class, allowSet = true)
+@MethodHook(extension = BaseExtension.class, allowInvoke = true)
 public @interface Inject {}

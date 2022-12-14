@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.bridge;
+package app.packed.extension.bridge.usage;
 
 import java.lang.invoke.MethodHandles;
 
+import app.packed.extension.bridge.ExtensionBridgeTemplate;
 import app.packed.operation.Op1;
 import app.packed.service.ServiceExtension;
 
@@ -26,7 +27,7 @@ import app.packed.service.ServiceExtension;
 class ExtensionBridgeInnerUsage {
 
     public static void main(String[] args) {
-        ExtensionBridgeInner<ServiceExtension> b = ExtensionBridgeInner.builder(MethodHandles.lookup(), ServiceExtension.class);
+        ExtensionBridgeTemplate<ServiceExtension> b = ExtensionBridgeTemplate.builder(MethodHandles.lookup(), ServiceExtension.class);
         b.onUse(s -> s.exportAll());
         b.provideUp(new Op1<MyExtBean, String>(e -> e.foo) {});
         b.build();

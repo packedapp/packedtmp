@@ -31,6 +31,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import internal.app.packed.application.ApplicationSetup;
@@ -100,6 +101,8 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     @Nullable
     public final WireletWrapper wirelets;
 
+    public final ExtensionSetup baseExtension;
+
     /**
      * Create a new container.
      * 
@@ -118,7 +121,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
         this.sm = new ServiceManager();
-        
+
         if (parent == null) {
             this.depth = 0;
             this.lifetime = new ContainerLifetimeSetup(this, null);
@@ -126,6 +129,9 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             this.depth = parent.depth + 1;
             this.lifetime = parent.lifetime;
         }
+
+        baseExtension = new ExtensionSetup(treeParent == null ? null : treeParent.baseExtension, this, BaseExtension.class);
+        baseExtension.initialize();
 
         requireNonNull(wirelets, "wirelets is null");
 

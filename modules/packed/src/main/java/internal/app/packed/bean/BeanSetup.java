@@ -130,9 +130,9 @@ public final class BeanSetup {
         this.sourceKind = requireNonNull(sourceKind);
         this.source = source;
 
-        ExtensionSetup installedBy = installer.useSite == null ? installer.beanExtension : installer.useSite.usedBy();
+        ExtensionSetup installedBy = installer.useSite == null ? installer.baseExtension : installer.useSite.usedBy();
 
-        RealmSetup realm = installer.useSite == null ? installer.beanExtension.container.assembly : installedBy.extensionRealm;
+        RealmSetup realm = installer.useSite == null ? installer.baseExtension.container.assembly : installedBy.extensionRealm;
 
         this.installedBy = requireNonNull(installedBy);
         this.container = requireNonNull(installedBy.container);
@@ -272,7 +272,7 @@ public final class BeanSetup {
         // TODO virker ikke med functional beans og naming
         String n = prefix;
 
-        HashMap<Class<?>, Object> bcm = installer.beanExtension.container.beanClassMap;
+        HashMap<Class<?>, Object> bcm = installer.baseExtension.container.beanClassMap;
         if (installer.useSite != null) {
             bcm = installer.useSite.usedBy().beanClassMap;
 

@@ -1,11 +1,19 @@
-package app.packed.bean;
+package app.packed.extension;
 
-import app.packed.bean.BeanExtensionPoint.BeanInstaller;
+import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanKind;
+import app.packed.bean.BeanSourceKind;
+import app.packed.bean.Inject;
+import app.packed.bean.OnInitialize;
+import app.packed.bean.OnStart;
+import app.packed.bean.OnStop;
 import app.packed.container.BaseAssembly;
-import app.packed.extension.FrameworkExtension;
+import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.lifetime.RunState;
-import app.packed.operation.OperationTemplate;
 import app.packed.operation.Op;
+import app.packed.operation.OperationTemplate;
 import app.packed.service.ProvideableBeanConfiguration;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.ExtensionSetup;
@@ -13,18 +21,17 @@ import internal.app.packed.lifetime.LifetimeOperation;
 import internal.app.packed.operation.OperationSetup;
 
 /**
- * An extension that is used for installing new beans into a container.
+ * An extension that defines the foundational APIs managing beans, containers and applications.
  * <p>
- * All containers use this extension either directly or indirectly. As every container either defines at least 1 bean.
- * Or has a container descendants who does.
+ * This extension is automatically used by every container.
  */
-public class BeanExtension extends FrameworkExtension<BeanExtension> {
+public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /** The internal configuration of the extension. */
     final ExtensionSetup extensionSetup = ExtensionSetup.crack(this);
 
     /** Create a new bean extension. */
-    BeanExtension() {}
+    BaseExtension() {}
 
     /**
      * Installs a bean that will use the specified {@link Class} to instantiate a single instance of the bean when the
@@ -183,14 +190,14 @@ public class BeanExtension extends FrameworkExtension<BeanExtension> {
 
     /** {@inheritDoc} */
     @Override
-    protected BeanExtensionMirror newExtensionMirror() {
-        return new BeanExtensionMirror();
+    protected BaseExtensionMirror newExtensionMirror() {
+        return new BaseExtensionMirror();
     }
 
     /** {@inheritDoc} */
     @Override
-    protected BeanExtensionPoint newExtensionPoint() {
-        return new BeanExtensionPoint();
+    protected BaseExtensionPoint newExtensionPoint() {
+        return new BaseExtensionPoint();
     }
 
     BeanInstaller newInstaller(BeanKind kind) {

@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bindings.BindingMirror;
 import app.packed.bindings.sandbox.DependenciesMirror;
 import app.packed.bean.BeanMirror;
@@ -36,6 +35,7 @@ import app.packed.context.ContextualizedElement;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.MirrorExtension;
+import app.packed.extension.BaseExtensionPoint.BindingHook;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.service.ExportedServiceMirror;

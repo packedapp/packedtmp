@@ -41,7 +41,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
     /** The method handle. */
     public final MethodHandle mhOperation;
 
-    /** The operation type of this op. */
+    /** The type of this op. */
     public final OperationType type;
 
     PackedOp(OperationType type, MethodHandle operation) {

@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
+import app.packed.extension.BaseExtension;
 import internal.app.packed.application.sandbox.Program;
 
 /** Tests {@link Program} (PackedApp). */
@@ -46,7 +47,7 @@ public class AppTest {
         ContainerConfiguration cc = requireNonNull(ar.get());
 
         // Checks that no extensions are installed by default
-        assertThat(cc.extensionTypes()).isEmpty();
+        assertThat(cc.extensionTypes()).containsExactly(BaseExtension.class);
 
         // Checks the config site of the app is the same as the config site of the configuration
     }

@@ -15,9 +15,9 @@
  */
 package internal.app.packed.operation.binding;
 
-import app.packed.bean.BeanExtension;
 import app.packed.bindings.BindingMirror;
 import app.packed.container.Realm;
+import app.packed.extension.BaseExtension;
 import internal.app.packed.application.PackedBridge;
 
 /**
@@ -47,7 +47,7 @@ public class CompanionBinding  {
 
     /** {@inheritDoc} */
     public Realm boundBy() {
-        return Realm.extension(BeanExtension.class);
+        return Realm.extension(BaseExtension.class);
     }
 
     /** {@inheritDoc} */

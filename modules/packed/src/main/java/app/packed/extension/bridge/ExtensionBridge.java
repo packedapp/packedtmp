@@ -26,12 +26,13 @@ import internal.app.packed.application.PackedBridge;
 /**
  *
  */
-public final class ExtensionBridgeOuter {
+// Alternativt samler man sammen til en ContextTemplate....
+public final class ExtensionBridge {
 
     /** The actual lifetime bridge. */
     final PackedBridge<?> bridge;
 
-    ExtensionBridgeOuter(PackedBridge<?> bridge) {
+    ExtensionBridge(PackedBridge<?> bridge) {
         this.bridge = requireNonNull(bridge);
     }
     

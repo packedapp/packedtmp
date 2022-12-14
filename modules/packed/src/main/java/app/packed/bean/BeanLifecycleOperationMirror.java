@@ -17,6 +17,7 @@ package app.packed.bean;
 
 import java.util.Optional;
 
+import app.packed.extension.BaseExtension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.RunState;
 import app.packed.operation.OperationMirror;
@@ -66,7 +67,7 @@ public class BeanLifecycleOperationMirror extends OperationMirror {
     /**
      * A mirror for an operation that creates a new instance of a bean.
      * <p>
-     * The operator of this operation is always {@link BeanExtension}.
+     * The operator of this operation is always {@link BaseExtension}.
      */
     // IDK know if we want this
     public static class BeanInstantiationOperationMirror extends BeanLifecycleOperationMirror {}

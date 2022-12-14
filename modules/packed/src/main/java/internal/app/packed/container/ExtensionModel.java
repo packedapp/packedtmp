@@ -35,11 +35,12 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import app.packed.container.Realm;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
+import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.FrameworkExtension;
 import app.packed.extension.InternalExtensionException;
-import app.packed.extension.Extension.DependsOn;
 import app.packed.framework.Framework;
 import app.packed.framework.Nullable;
 import internal.app.packed.util.ClassUtil;
@@ -295,7 +296,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
             if (depende != null) {
                 dependsOn(false, depende.extensions());
             }
-
+            if (extensionClass != BaseExtension.class) {
+                pendingLoadDependencies.add(BaseExtension.class);
+            }
             for (Class<? extends Extension<?>> dependencyType : pendingLoadDependencies) {
                 ExtensionModel model = Loader.load(dependencyType, loader);
                 depth = Math.max(depth, model.ordringDepth + 1);
@@ -350,7 +353,10 @@ public final class ExtensionModel implements ExtensionDescriptor {
             requireNonNull(extensions, "extensions is null");
             for (Class<? extends Extension<?>> dependencyType : extensions) {
                 requireNonNull(dependencyType);
-                if (extensionClass == dependencyType) {
+                if (dependencyType == BaseExtension.class) {
+                    throw new InternalExtensionException(BaseExtension.class.getSimpleName() + " is a mandated dependency, and cannot be declared using @"
+                            + DependsOn.class.getSimpleName() + " on extension " + extensionClass.getCanonicalName());
+                } else if (extensionClass == dependencyType) {
                     throw new InternalExtensionException("Extension " + extensionClass + " cannot depend on itself");
                 } else if (pendingLoadDependencies.contains(dependencyType)) {
                     throw new InternalExtensionException("A dependency on " + dependencyType + " has already been added");

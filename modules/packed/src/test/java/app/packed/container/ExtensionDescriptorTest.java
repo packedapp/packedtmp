@@ -19,9 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.Extension.DependsOn;
+import app.packed.extension.ExtensionDescriptor;
 
 /** Tests {@link ExtensionDescriptor}. */
 public class ExtensionDescriptorTest {
@@ -29,14 +30,14 @@ public class ExtensionDescriptorTest {
     @Test
     public void empty() {
         ExtensionDescriptor ed = ExtensionDescriptor.of(EmptyExtension.class);
-        assertThat(ed.dependencies()).isEmpty();
+        assertThat(ed.dependencies()).containsExactly(BaseExtension.class);
         assertThat(ed.type()).isSameAs(EmptyExtension.class);
     }
 
     @Test
     public void various() {
         ExtensionDescriptor ed = ExtensionDescriptor.of(VariousExtension.class);
-        assertThat(ed.dependencies()).containsExactly(EmptyExtension.class);
+        assertThat(ed.dependencies()).containsExactlyInAnyOrder(BaseExtension.class, EmptyExtension.class);
         assertThat(ed.type()).isSameAs(VariousExtension.class);
     }
 

@@ -11,14 +11,15 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.NamespacePath;
-import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bindings.sandbox.DependenciesMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Realm;
 import app.packed.context.ContextualizedElement;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.MirrorExtension;
+import app.packed.extension.BaseExtensionPoint.BindingHook;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
@@ -361,7 +362,7 @@ interface SSandbox {
         // The extension that performed the actual installation of the bean
         // Den burde ligge paa Component???
         // Nah
-        return BeanExtension.class;
+        return BaseExtension.class;
     }
 
     // No instances, Instantiable, ConstantInstance

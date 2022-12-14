@@ -2,8 +2,8 @@ package app.packed.container;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
-import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
@@ -46,28 +46,29 @@ public final class ContainerHandle {
         return !container.assembly.isClosed();
     }
 
-    public void setErrorHandler(ErrorHandler errorHandler) {
-        
-    }
-
-    // Hmm, skal vi have selve handles'ene?
-    // Jo det skal vi faktisk nok...
+    /**
+     * If the bean is registered with its own lifetime. This method returns a list of the lifetime operations of the bean.
+     * <p>
+     * The operations in the returned list must be computed exactly once. For example, via
+     * {@link OperationHandle#generateMethodHandle()}. Otherwise a build exception will be thrown. Maybe this goes for all
+     * operation customizers.
+     * 
+     * @return a list of lifetime operations
+     * 
+     */
     public List<OperationHandle> lifetimeOperations() {
         return List.of();
     }
 
-    public interface InstallOption {
+    // Hmm, skal vi have selve handles'ene?
+    // Jo det skal vi faktisk nok...
 
-        static InstallOption allowRuntimeWirelets() {
-            return null;
-        }
+    public void setErrorHandler(ErrorHandler errorHandler) {
 
-        // Only Managed-Operation does not require a wrapper
-        default void wrapIn(InstanceBeanConfiguration<?> wrapperBeanConfiguration) {
-            // Gaar udfra vi maa definere wrapper beanen alene...Eller som minimum supportere det
-            // Hvis vi vil dele den...
-
-            // Det betyder ogsaa vi skal lave en wrapper bean alene
-        }
     }
+
+    public void specializeMirror(Supplier<? extends ContainerMirror> supplier) {
+
+    }
+
 }

@@ -28,12 +28,13 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanExtensionPoint.BindingHook;
-import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.bindings.BindingMirror;
+import app.packed.extension.BaseExtensionPoint;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
+import app.packed.extension.BaseExtensionPoint.BindingHook;
+import app.packed.extension.BaseExtensionPoint.FieldHook;
 import app.packed.framework.Nullable;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
@@ -99,6 +100,17 @@ public abstract class BeanIntrospector {
     }
 
     /**
+     * A callback method that is called after any other callback methods on this class.
+     * <p>
+     * This method can be used to provide final validation or registration of the bean.
+     * <p>
+     * If an exception is thrown at any time doing processing of the bean this method will not be called.
+     * 
+     * @see #onIntrospectionStop()
+     */
+    public void beforeIntrospection() {}
+
+    /**
      * @param postFix
      *            the message to include in the final message
      * 
@@ -159,23 +171,12 @@ public abstract class BeanIntrospector {
     }
 
     /**
-     * A callback method that is called after any other callback methods on this class.
-     * <p>
-     * This method can be used to provide final validation or registration of the bean.
-     * <p>
-     * If an exception is thrown at any time doing processing of the bean this method will not be called.
-     * 
-     * @see #onIntrospectionStop()
-     */
-    public void onIntrospectionStart() {}
-
-    /**
      * A callback method that is invoked before any calls to {@link #onClass(OnClass)}, {@link #onField(OnField)},
      * {@link #onMethod(OnMethod)} or {@link #onBinding(OnBinding)}.
      * <p>
      * This method can be used to setup data structures or perform validation.
      * 
-     * @see #onIntrospectionStart()
+     * @see #beforeIntrospection()
      */
     public void onIntrospectionStop() {}
 
@@ -461,7 +462,7 @@ public abstract class BeanIntrospector {
     /**
      * This class represents a {@link Field} on a bean.
      * 
-     * @see BeanExtensionPoint.FieldHook
+     * @see BaseExtensionPoint.FieldHook
      * @see BeanIntrospector#onField(BeanProcessor$BeanField)
      * 
      * @apiNote There are currently no support for obtaining a {@link VarHandle} for a field.

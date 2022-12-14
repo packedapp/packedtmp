@@ -24,12 +24,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.IdentityHashMap;
 
-import app.packed.bean.BeanExtensionPoint.BindingHook;
-import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.extension.Extension;
+import app.packed.extension.BaseExtensionPoint.BindingHook;
+import app.packed.extension.BaseExtensionPoint.FieldHook;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bean.InvalidBeanDefinitionException;
 import app.packed.operation.OperationHandle;

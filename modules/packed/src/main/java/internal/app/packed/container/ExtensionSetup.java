@@ -121,7 +121,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
             container.assembly.extensions.add(this);
         }
 
-        // Invoke Extension#onNew() before returning the new extension to the end-user
+        // Invoke Extension#onNew() before returning the extension/extension-point
         try {
             MH_EXTENSION_ON_NEW.invokeExact(instance);
         } catch (Throwable t) {

@@ -23,13 +23,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import app.packed.bean.BeanExtensionPoint.BindingHook;
-import app.packed.bean.BeanExtensionPoint.FieldHook;
-import app.packed.bean.BeanExtensionPoint.MethodHook;
 import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
+import app.packed.extension.BaseExtensionPoint.BindingHook;
+import app.packed.extension.BaseExtensionPoint.FieldHook;
+import app.packed.extension.BaseExtensionPoint.MethodHook;
 import app.packed.bean.CustomBeanHook;
 import app.packed.framework.Nullable;
 import internal.app.packed.util.ClassUtil;

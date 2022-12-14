@@ -17,8 +17,8 @@ package app.packed.container;
 
 import java.util.function.Consumer;
 
-import app.packed.bean.BeanExtension;
 import app.packed.bean.CustomBeanHook.JavaBaseSupport;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.bean.OnStart;
 import app.packed.operation.Op;
@@ -78,15 +78,15 @@ import app.packed.service.ServiceExtension;
 public abstract class BaseAssembly extends ContainerAssembly {
 
     /**
-     * Returns a {@link BeanExtension} instance.
+     * Returns a {@link BaseExtension} instance.
      * <p>
      * Calling this method is short for {@code use(BeanExtension.class)}
      * 
      * @return a bean extension instance
      * @see #use(Class)
      */
-    protected final BeanExtension bean() {
-        return use(BeanExtension.class);
+    protected final BaseExtension bean() {
+        return use(BaseExtension.class);
     }
 
     protected final void exportAll() {
@@ -101,7 +101,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
      * @param implementation
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
-     * @see BeanExtension#install(Class)
+     * @see BaseExtension#install(Class)
      */
     // add? i virkeligheden wire vi jo class komponenten...
     // Og taenker, vi har noget a.la. configuration().wire(ClassComponent.Default.bind(implementation))

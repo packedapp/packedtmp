@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.extension;
 
-import app.packed.context.Context;
-import app.packed.extension.BaseExtension;
+import app.packed.application.App;
+import app.packed.container.BaseAssembly;
 
 /**
- * A context for selected operations if a bean has been configured with initialization elements.
- * <p>
- * If a bean is not initialized with any values, the context is not present.
- * 
- * @see InstanceBeanConfiguration#initializeWithInstance(Class, Object)
- * @see InstanceBeanConfiguration#initializeWithInstance(app.packed.service.Key, Object)
+ *
  */
-public interface InitializeWithContext extends Context<BaseExtension> {}
+public class Foo extends BaseAssembly {
+
+    public static void main(String[] args) {
+        App.run(new Foo());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {
+        provideInstance("asdasd");
+    }
+}

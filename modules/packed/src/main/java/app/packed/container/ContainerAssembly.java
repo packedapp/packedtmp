@@ -51,6 +51,7 @@ import internal.app.packed.util.LookupUtil;
  * 
  * @see BaseAssembly
  */
+// LinkedAssembly, LinkableAssembly
 public non-sealed abstract class ContainerAssembly extends Assembly {
 
     /** A var handle that can update the {@link #configuration} field in this class. */

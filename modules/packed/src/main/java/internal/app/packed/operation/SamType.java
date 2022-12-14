@@ -24,7 +24,6 @@ import app.packed.operation.OperationType;
  *
  */
 public record SamType(Class<?> functionInterface, Method saMethod, MethodHandle methodHandle, OperationType type) {
-    
     public static SamType of(Class<?> functionInstance) {
         return new SamType(functionInstance, null, null, null);
     }

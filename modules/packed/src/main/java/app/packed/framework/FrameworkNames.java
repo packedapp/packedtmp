@@ -17,7 +17,7 @@ package app.packed.framework;
 
 import java.util.Set;
 
-import app.packed.bean.BeanExtension;
+import app.packed.extension.BaseExtension;
 import app.packed.service.ServiceExtension;
 
 /**
@@ -35,7 +35,7 @@ public final class FrameworkNames {
     /** The name of the module that defines the framework. */
     public static final String BASE_MODULE = "app.packed";
 
-    /** The class name of {@link BeanExtension}. */
+    /** The class name of {@link BaseExtension}. */
     public static final String BASE_BEAN_EXTENSION = BASE_MODULE + ".bean.BeanExtension";
 
     /** The class name of {@link ServiceExtension}. */

@@ -19,12 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.extension.FrameworkExtension;
-import app.packed.extension.Extension.DependsOn;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.container.ExtensionSetup;
@@ -73,7 +71,6 @@ import internal.app.packed.operation.binding.BindingProvider.FromOperation;
 // D.v.s. install(Class c) -> aktivere denne extension, hvis der er unresolved dependencies...
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
 
-@DependsOn(extensions = BeanExtension.class)
 public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
 
     private final ExtensionSetup setup = ExtensionSetup.crack(this);
@@ -206,12 +203,12 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
     // providePerRequest <-- every time the service is requested
     // Also these beans, can typically just be composites??? Nah
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        BeanHandle<T> handle = bean().newApplicationBean(BeanKind.MANYTON).lifetimes().install(implementation);
+        BeanHandle<T> handle = base().newBean(BeanKind.MANYTON).lifetimes().install(implementation);
         return new ProvideableBeanConfiguration<T>(handle).provide();
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> op) {
-        BeanHandle<T> handle = bean().newApplicationBean(BeanKind.MANYTON).lifetimes().install(op);
+        BeanHandle<T> handle = base().newBean(BeanKind.MANYTON).lifetimes().install(op);
         return new ProvideableBeanConfiguration<T>(handle).provide();
     }
 

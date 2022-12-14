@@ -20,6 +20,7 @@ import java.util.Map;
 
 import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.context.Context;
+import app.packed.context.ContextTemplate;
 import app.packed.context.ContextTemplateImpl;
 import app.packed.errorhandling.ErrorHandler;
 import internal.app.packed.operation.PackedOperationTemplate;
@@ -90,6 +91,10 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     // Kan man have have loese args som ikke er del af en context???
     OperationTemplate withArg(Class<?> type);
 
+    default OperationTemplate withContext(ContextTemplate context) {
+        throw new UnsupportedOperationException();
+    }
+    
     default OperationTemplate withBeanInstance() {
         return withBeanInstance(Object.class);
     }

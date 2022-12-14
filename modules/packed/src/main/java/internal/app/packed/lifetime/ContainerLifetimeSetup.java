@@ -31,8 +31,11 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.operation.OperationSetup;
 
-/** The lifetime of a container. */
+/** The lifetime of an independent container. */
 public final class ContainerLifetimeSetup extends LifetimeSetup {
+
+    // All eagerly instantiated beans in order
+    public final ArrayList<BeanSetup> beans = new ArrayList<>();
 
     /** Any child lifetimes. */
     private List<LifetimeSetup> children;
@@ -44,17 +47,16 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
 
     ArrayList<MethodHandle> initializeMh = new ArrayList<>();
 
-    // All eagerly instantiated beans in order
-    public final ArrayList<BeanSetup> beans = new ArrayList<>();
-
     // Skal kopieres ind i internal lifetime launcher
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
+    LinkedHashSet<BeanSetup> orderedBeans = new LinkedHashSet<>();
+
     /** The lifetime constant pool. */
     public final LifetimeObjectArenaSetup pool = new LifetimeObjectArenaSetup();
-
     ArrayList<LifetimeOperation> start = new ArrayList<>();
     ArrayList<MethodHandle> startMh = new ArrayList<>();
+
     ArrayList<LifetimeOperation> stop = new ArrayList<>();
 
     ArrayList<MethodHandle> stopMh = new ArrayList<>();
@@ -73,19 +75,19 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
         return addChild(l);
     }
 
-    public void codegen() {
-        for (BeanSetup bs : beans) {
-            orderBeans(bs);
-        }
-        // generate MH
-    }
-
     public LifetimeSetup addChild(LifetimeSetup lifetime) {
         if (children == null) {
             children = new ArrayList<>(1);
         }
         children.add(lifetime);
         return lifetime;
+    }
+
+    public void codegen() {
+        for (BeanSetup bs : beans) {
+            orderBeans(bs);
+        }
+        // generate MH
     }
 
     public ContainerLifetimeMirror mirror() {
@@ -98,15 +100,13 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
         return new ContainerLifetimeMirror();
     }
 
-    LinkedHashSet<BeanSetup> orderedBeans = new LinkedHashSet<>();
-
     private void orderBeans(BeanSetup bean) {
         Set<BeanSetup> dependsOn = bean.dependsOn();
         for (BeanSetup b : dependsOn) {
             orderBeans(b);
         }
         if (orderedBeans.add(bean)) {
-           // System.out.println("Codegen " + bean.path());
+            // System.out.println("Codegen " + bean.path());
             processBean(bean);
             // addFactory, that installs the bean into Object[]
             // then all initiali
@@ -123,7 +123,7 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
                 initializeMh.add(bs.operations.get(0).generateMethodHandle());
             }
         }
-        
+
         for (LifetimeOperation lop : bs.operationsLifetime) {
             if (lop.state() == RunState.INITIALIZING) {
                 initialize.add(lop.os());

@@ -17,7 +17,7 @@ package app.packed.bindings;
 
 import java.lang.reflect.Field;
 
-import app.packed.bean.BeanExtensionPoint.BindingHook;
+import app.packed.extension.BaseExtensionPoint.BindingHook;
 
 /**
  *

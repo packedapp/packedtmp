@@ -15,13 +15,12 @@
  */
 package app.packed.extension;
 
-import app.packed.bean.BeanExtension;
 import app.packed.context.Context;
 import internal.app.packed.lifetime.PackedExtensionContext;
 
 /**
  * All beans that are owned by an extension operates within an ExtensionContext.
  * <p>
- * This extension context is typically required when invoking operations.
+ * An instance of this class is typically required when invoking operations.
  */
-public sealed interface ExtensionContext extends Context<BeanExtension>permits PackedExtensionContext {}
+public sealed interface ExtensionContext extends Context<BaseExtension> permits PackedExtensionContext {}

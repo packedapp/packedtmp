@@ -23,7 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.BeanExtensionPoint.FieldHook;
+import app.packed.extension.BaseExtensionPoint.FieldHook;
 
 /**
  *

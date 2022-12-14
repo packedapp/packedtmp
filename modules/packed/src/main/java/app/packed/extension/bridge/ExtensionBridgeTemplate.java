@@ -29,49 +29,50 @@ import internal.app.packed.application.PackedBridge;
 /**
  *
  */
-public final class ExtensionBridgeInner<E extends Extension<E>> {
+// Det er jo egentlig lidt en context i context'en...
+public final class ExtensionBridgeTemplate<E extends Extension<E>> {
 
     private PackedBridge<E> bridge;
 
-    ExtensionBridgeInner(PackedBridge<E> bridge) {
+    ExtensionBridgeTemplate(PackedBridge<E> bridge) {
         this.bridge = requireNonNull(bridge);
     }
 
-    public ExtensionBridgeOuter build() {
-        return new ExtensionBridgeOuter(bridge);
+    public ExtensionBridge build() {
+        return new ExtensionBridge(bridge);
     }
 
     // A runtime argument passed along to ???
-    public ExtensionBridgeInner<E> addInvocationArgument(Class<?> key) {
+    public ExtensionBridgeTemplate<E> addInvocationArgument(Class<?> key) {
         throw new UnsupportedOperationException();
     }
 
-    public ExtensionBridgeInner<E> addInvocationArgument(Key<?> key) {
+    public ExtensionBridgeTemplate<E> addInvocationArgument(Key<?> key) {
         throw new UnsupportedOperationException();
     }
 
-    public ExtensionBridgeInner<E> onNeverUsed(Runnable action) {
+    public ExtensionBridgeTemplate<E> onNeverUsed(Runnable action) {
         throw new UnsupportedOperationException();
     }
 
-    public ExtensionBridgeInner<E> onUse(Consumer<E> action) {
+    public ExtensionBridgeTemplate<E> onUse(Consumer<E> action) {
         bridge = bridge.onUse(action);
         return this;
     }
 
-    public ExtensionBridgeInner<E> provideUp(Op<?> op) {
+    public ExtensionBridgeTemplate<E> provideUp(Op<?> op) {
         throw new UnsupportedOperationException();
     }
 
-    public <S> ExtensionBridgeInner<E> provideOutOr(Op<?> op, Supplier<S> supplier) {
+    public <S> ExtensionBridgeTemplate<E> provideOutOr(Op<?> op, Supplier<S> supplier) {
         throw new UnsupportedOperationException();
     }
 
-    public <S> ExtensionBridgeInner<E> provideOutOrInstance(Op<S> op, S constant) {
+    public <S> ExtensionBridgeTemplate<E> provideOutOrInstance(Op<S> op, S constant) {
         throw new UnsupportedOperationException();
     }
 
-    public static <E extends Extension<E>> ExtensionBridgeInner<E> builder(MethodHandles.Lookup lookup, Class<E> extensionType) {
+    public static <E extends Extension<E>> ExtensionBridgeTemplate<E> builder(MethodHandles.Lookup lookup, Class<E> extensionType) {
         throw new UnsupportedOperationException();
     }
 }

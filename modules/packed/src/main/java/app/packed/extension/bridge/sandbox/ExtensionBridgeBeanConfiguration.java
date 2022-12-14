@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.bridge;
+package app.packed.extension.bridge.sandbox;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
@@ -48,11 +48,11 @@ public class ExtensionBridgeBeanConfiguration<T> extends InstanceBeanConfigurati
     }
     // addCompanion 
     
-    public ContainerHandle linkNewManyContainer(Assembly assembly, Wirelet[] wirelets, ContainerHandle.InstallOption... options) {
+    public ContainerHandle linkNewManyContainer(Assembly assembly, Wirelet[] wirelets) {
         throw new UnsupportedOperationException();
     }
     
-    public ContainerHandle newManyContainer(Wirelet[] wirelets, ContainerHandle.InstallOption... options) {
+    public ContainerHandle newManyContainer(Wirelet[] wirelets) {
         throw new UnsupportedOperationException();
     } 
 }

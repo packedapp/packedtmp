@@ -22,7 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.BeanExtensionPoint.MethodHook;
+import app.packed.extension.BaseExtension;
+import app.packed.extension.BaseExtensionPoint.MethodHook;
 import app.packed.lifetime.RunState;
 
 /**
@@ -37,7 +38,7 @@ import app.packed.lifetime.RunState;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@MethodHook(allowInvoke = true, extension = BeanExtension.class)
+@MethodHook(allowInvoke = true, extension = BaseExtension.class)
 public @interface OnStop {
 
     boolean async() default false;

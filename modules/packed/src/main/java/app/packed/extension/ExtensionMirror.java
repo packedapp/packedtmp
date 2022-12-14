@@ -23,7 +23,7 @@ import internal.app.packed.container.Mirror;
  * Noget omkring local mode and non-local mode.
  * <p>
  * This class can be extended by an extension to provide more detailed information about the extension. For example,
- * {@link app.packed.bean.BeanExtension} extends this class via {@link app.packed.bean.BeanExtensionMirror}.
+ * {@link app.packed.extension.BaseExtension} extends this class via {@link app.packed.extension.BaseExtensionMirror}.
  * <p>
  * Extension mirror instances are typically obtained via calls to {@link ApplicationMirror#use(Class)} or
  * {@link ContainerMirror#use(Class)}.

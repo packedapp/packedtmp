@@ -27,7 +27,6 @@ import java.util.Optional;
 
 import app.packed.application.BuildGoal;
 import app.packed.application.NamespacePath;
-import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanIntrospector;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
@@ -88,9 +87,9 @@ public abstract class Extension<E extends Extension<E>> {
      */
     protected Extension() {}
 
-    /** {@return an extension point for the bean extension.} */
-    protected final BeanExtensionPoint bean() {
-        return use(BeanExtensionPoint.class);
+    /** {@return the base extension point.} */
+    protected final BaseExtensionPoint base() {
+        return use(BaseExtensionPoint.class);
     }
 
     /** {@return the build goal.} */

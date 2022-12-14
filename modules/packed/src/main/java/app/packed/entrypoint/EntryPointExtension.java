@@ -7,11 +7,9 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.extension.Extension;
-import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.FrameworkExtension;
 import app.packed.framework.Nullable;
@@ -32,7 +30,6 @@ import internal.app.packed.operation.OperationSetup;
 
 // ExecutionModel
 
-@DependsOn(extensions = BeanExtension.class)
 public class EntryPointExtension extends FrameworkExtension<EntryPointExtension> {
 
     /** The configuration of the application. */
@@ -158,7 +155,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
                 throw new IllegalStateException();
             }
             this.dispatcher = takeOver;
-            ebc = bean().install(EntryPointDispatcher.class);
+            ebc = base().install(EntryPointDispatcher.class);
         }
     }
 

@@ -16,8 +16,8 @@
 package app.packed.micro.application;
 
 import app.packed.application.App;
-import app.packed.bean.BeanExtension;
 import app.packed.container.BaseAssembly;
+import app.packed.extension.BaseExtension;
 
 /**
  *
@@ -35,7 +35,7 @@ public class VariousImages {
 
             @Override
             public void build() {
-                BeanExtension b = bean();
+                BaseExtension b = bean();
                 for (int i = 0; i < beanCount; i++) {
                    b.multiInstallInstance("foo");
                 }

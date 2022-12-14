@@ -17,7 +17,7 @@ package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.bean.BeanExtension;
+import app.packed.extension.BaseExtension;
 import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanHookModel.ParameterTypeRecord;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
@@ -51,7 +51,7 @@ final class IntrospectedBeanParameter {
         }
 
         // Finally, we resolve it as a service
-        boolean resolveAsService = operation.operator.extensionType == BeanExtension.class;
+        boolean resolveAsService = operation.operator.extensionType == BaseExtension.class;
 
         if (resolveAsService) {
             InternalDependency ia = InternalDependency.fromOperationType(operation.type).get(index);

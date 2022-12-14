@@ -41,7 +41,7 @@ import app.packed.lifetime.sandbox.LifetimeOperationMirror;
  * A bean that manages one or more lifetime instances.
  * <p>
  * All lifetimes are managed by a bean of this type except for the lifetime of a bootstrap application. Where
- * {@link LifetimeMirror#bean()} return empty.
+ * {@link LifetimeMirror#base()} return empty.
  * <p>
  * A lifetime management bean typically only manages lifetime.
  * <p>

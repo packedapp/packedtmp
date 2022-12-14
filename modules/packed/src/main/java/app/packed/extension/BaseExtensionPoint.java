@@ -1,4 +1,4 @@
-package app.packed.bean;
+package app.packed.extension;
 
 import static java.util.Objects.requireNonNull;
 
@@ -9,25 +9,27 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.function.Consumer;
 
-import app.packed.context.NotInContextException;
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionBeanConfiguration;
-import app.packed.extension.ExtensionPoint;
+import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanKind;
+import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.container.ContainerInstaller;
 import app.packed.context.Context;
+import app.packed.context.NotInContextException;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.PackedExtensionPointContext;
 
-/** An {@link ExtensionPoint extension point} class for {@link BeanExtension}. */
-public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
+/** An {@link ExtensionPoint extension point} class for {@link BaseExtension}. */
+public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     /** Creates a new bean extension point */
-    BeanExtensionPoint() {}
+    BaseExtensionPoint() {}
 
     public <T> InstanceBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = newExtensionBean(BeanKind.CONTAINER, usageContext()).install(implementation);
+        BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, usageContext()).install(implementation);
         return new InstanceBeanConfiguration<>(handle);
     }
 
@@ -39,7 +41,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      * @return a configuration object representing the installed bean
      */
     public <T> InstanceBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<T> handle = newExtensionBean(BeanKind.CONTAINER, usageContext()).install(op);
+        BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, usageContext()).install(op);
         return new InstanceBeanConfiguration<>(handle);
     }
 
@@ -61,13 +63,13 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      */
     public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
-        BeanHandle<T> handle = newExtensionBean(BeanKind.CONTAINER, usageContext()).installIfAbsent(clazz,
+        BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, usageContext()).installIfAbsent(clazz,
                 h -> action.accept(new InstanceBeanConfiguration<>(h)));
         return new ExtensionBeanConfiguration<>(handle);
     }
 
     public <T> InstanceBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = newExtensionBean(BeanKind.CONTAINER, usageContext()).installInstance(instance);
+        BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, usageContext()).installInstance(instance);
         return new InstanceBeanConfiguration<>(handle);
     }
 
@@ -79,7 +81,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      * @return a configuration object representing the installed bean
      */
     public BeanConfiguration installStatic(Class<?> beanClass) {
-        BeanHandle<?> handle = newExtensionBean(BeanKind.STATIC, usageContext()).install(beanClass);
+        BeanHandle<?> handle = newBeanForExtension(BeanKind.STATIC, usageContext()).install(beanClass);
         return new BeanConfiguration(handle);
     }
 
@@ -90,8 +92,12 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      *            the kind of bean to installer
      * @return the installer
      */
-    public BeanInstaller newApplicationBean(BeanKind kind) {
+    public BeanInstaller newBean(BeanKind kind) {
         return new PackedBeanInstaller(extension().extensionSetup, kind, (PackedExtensionPointContext) usageContext());
+    }
+
+    public ContainerInstaller newContainer() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -101,16 +107,16 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      *            the kind of bean to installer
      * @return the installer
      */
-    public BeanInstaller newExtensionBean(BeanKind kind, UsageContext forExtension) {
+    public BeanInstaller newBeanForExtension(BeanKind kind, UsageContext forExtension) {
         requireNonNull(forExtension, "forExtension is null");
         return new PackedBeanInstaller(extension().extensionSetup, kind, (PackedExtensionPointContext) forExtension);
     }
 
-    BeanHandle<?> unwrap(BeanConfiguration configuration) {
-        // Can only call this on bean configurations that have been created by the extension itself.
-        // But then could people just store it in a map...
-        throw new UnsupportedOperationException();
-    }
+//    BeanHandle<?> unwrap(BeanConfiguration configuration) {
+//        // Can only call this on bean configurations that have been created by the extension itself.
+//        // But then could people just store it in a map...
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * An installer for installing beans into a container.
@@ -118,16 +124,12 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      * The various install methods can be called multiple times to install multiple beans. However, the use cases for this
      * are limited.
      * 
-     * @see BeanExtensionPoint#newApplicationBean(BeanKind)
-     * @see BeanExtensionPoint#newExtensionBean(BeanKind, app.packed.extension.ExtensionPoint.UsageContext)
+     * @see BaseExtensionPoint#newBean(BeanKind)
+     * @see BaseExtensionPoint#newBeanForExtension(BeanKind, app.packed.extension.ExtensionPoint.UsageContext)
      */
     // Maybe put it back on handle. If we get OperationInstaller
     // Maybe Builder after all... Alle ved hvad en builder er
-    public sealed static abstract class BeanInstaller permits PackedBeanInstaller {
-
-        protected <T> BeanHandle<T> from(BeanSetup bs) {
-            return new BeanHandle<>(bs);
-        }
+    public sealed interface BeanInstaller permits PackedBeanInstaller {
 
         /**
          * Installs the bean using the specified class as the bean source.
@@ -172,11 +174,11 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
         // MANYTONE -> Controlled
 
-        public BeanInstaller lifetimeFromOperations() {
+        default BeanInstaller lifetimeFromOperations() {
             return this;
         }
 
-        public BeanInstaller lifetimes(OperationTemplate... confs) {
+        default BeanInstaller lifetimes(OperationTemplate... confs) {
             return this;
         }
 
@@ -193,7 +195,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
         public abstract BeanInstaller namePrefix(String prefix);
 
-        BeanInstaller spawnNew() {
+        default BeanInstaller spawnNew() {
             // A bean that is created per operation.
             // Obvious manyton, but should we have own kind?
             // I actually think so because, because for now it always requires manyton
@@ -240,8 +242,8 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         /**
          * Contexts that are required in order to use the binding class or annotation.
          * <p>
-         * If this binding is attempted to be used without the context being available a {@link NotInContextException}
-         * will be thrown.
+         * If this binding is attempted to be used without the context being available a {@link NotInContextException} will be
+         * thrown.
          * <p>
          * If this method returns multiple contexts they will <strong>all</strong> be required.
          * 
@@ -253,6 +255,8 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         // Den virker jo kun for annotering..completesavings
         enum BindingOtherKind {
             // Peek -> Giver ikke mening vil jeg mene?
+            // Convert er vel bare en interceptor som man kan bede om fra ConverterExtension.
+
             ADAPT, CONVERT, DEFAULT, PEEK, PROVIDE, REPLACE, TRANSFORM
         }
     }
@@ -268,7 +272,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
         /** The extension the hook is a part of. */
         Class<? extends Extension<?>> extension();
-        
+
         Class<? extends Context<?>>[] requiresContext() default {};
     }
 
@@ -292,7 +296,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
         /** The extension the hook is a part of. */
         Class<? extends Extension<?>> extension();
-        
+
         Class<? extends Context<?>>[] requiresContext() default {};
     }
 
@@ -321,11 +325,11 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         /** The extension the hook is a part of. */
         Class<? extends Extension<?>> extension();
 
+        Class<? extends Context<?>>[] requiresContext() default {};
+
         // IDK, don't we just want to ignore it most of the time???
         // Nah maybe fail. People might think it does something
         boolean requiresVoidReturn() default false;
-        
-        Class<? extends Context<?>>[] requiresContext() default {};
     }
 }
 

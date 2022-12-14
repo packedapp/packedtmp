@@ -22,11 +22,11 @@ import java.lang.annotation.Target;
 import java.util.List;
 
 import app.packed.application.App;
-import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
+import app.packed.extension.BaseExtensionPoint.BindingHook;
 import app.packed.service.ProvideService;
 import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.ServiceBindingMirror;

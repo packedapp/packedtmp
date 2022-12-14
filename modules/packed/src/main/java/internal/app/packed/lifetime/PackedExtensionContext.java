@@ -44,7 +44,6 @@ public final /* primitive */ class PackedExtensionContext implements ExtensionCo
         } else {
             return new PackedExtensionContext(size);
         }
-
     }
 
     public void print() {

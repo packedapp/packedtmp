@@ -21,8 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.BeanExtensionPoint.FieldHook;
-import app.packed.bean.BeanExtensionPoint.MethodHook;
+import app.packed.extension.BaseExtensionPoint.FieldHook;
+import app.packed.extension.BaseExtensionPoint.MethodHook;
 
 /**
  * An annotation indicating that an annotated method or field on a bean provides a service to the container in which the
