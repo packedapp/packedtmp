@@ -10,8 +10,8 @@ import app.packed.bean.OnInitialize;
 import app.packed.bean.OnStart;
 import app.packed.bean.OnStop;
 import app.packed.container.Assembly;
-import app.packed.container.AssemblyMirror;
 import app.packed.container.BaseAssembly;
+import app.packed.container.ContainerInstaller;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.lifetime.RunState;
@@ -19,7 +19,7 @@ import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import app.packed.service.ProvideableBeanConfiguration;
 import internal.app.packed.bean.PackedBeanInstaller;
-import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifetime.LifetimeOperation;
 import internal.app.packed.operation.OperationSetup;
 
@@ -33,6 +33,16 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     /** Create a new base extension. */
     BaseExtension() {}
 
+
+    final void embed(Assembly assembly) {
+        /// MHT til hooks. Saa tror jeg faktisk at man tager de bean hooks
+        // der er paa den assembly der definere dem
+
+        // Men der er helt klart noget arbejde der
+        throw new UnsupportedOperationException();
+    }
+
+    
     /**
      * Installs a bean that will use the specified {@link Class} to instantiate a single instance of the bean when the
      * application is initialized.
@@ -45,7 +55,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).install(implementation);
+        BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).install(implementation);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -58,7 +68,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @see CommonContainerAssembly#install(Op)
      */
     public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).install(op);
+        BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).install(op);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -74,17 +84,17 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return this configuration
      */
     public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).installInstance(instance);
+        BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).installInstance(instance);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> installLazy(Class<T> implementation) {
-        BeanHandle<T> handle = newInstaller(BeanKind.LAZY).install(implementation);
+        BeanHandle<T> handle = newBeanInstaller(BeanKind.LAZY).install(implementation);
         return new ProvideableBeanConfiguration<>(handle); // Providable???
     }
 
     public <T> ProvideableBeanConfiguration<T> installLazy(Op<T> op) {
-        BeanHandle<T> handle = newInstaller(BeanKind.LAZY).install(op);
+        BeanHandle<T> handle = newBeanInstaller(BeanKind.LAZY).install(op);
         return new ProvideableBeanConfiguration<>(handle); // Providable???
     }
 
@@ -99,7 +109,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @see BeanSourceKind#CLASS
      */
     public BeanConfiguration installStatic(Class<?> implementation) {
-        BeanHandle<?> handle = newInstaller(BeanKind.STATIC).install(implementation);
+        BeanHandle<?> handle = newBeanInstaller(BeanKind.STATIC).install(implementation);
         return new BeanConfiguration(handle);
     }
 
@@ -114,17 +124,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      *            optional wirelets
      * @return the component that was linked
      */
-    public AssemblyMirror link(Assembly assembly, Wirelet... wirelets) {
-        // Check that the assembly is still configurable
-        checkIsConfigurable();
-
-        // Create a new assembly
-        AssemblySetup as = new AssemblySetup(null, null, extension.container, assembly, wirelets);
-
-        // Build the assembly
-        as.build();
-
-        return as.mirror();
+    public void link(Assembly assembly, Wirelet... wirelets) {
+        newContainerInstaller().link(assembly, wirelets);
     }
 
     /**
@@ -133,31 +134,36 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @see BeanHandle.InstallOption#multi()
      */
     public <T> ProvideableBeanConfiguration<T> multiInstall(Class<T> implementation) {
-        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).multi().install(implementation);
+        BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).multi().install(implementation);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstall(Op<T> op) {
-        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).multi().install(op);
+        BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).multi().install(op);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallInstance(T instance) {
-        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).multi().installInstance(instance);
+        BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).multi().installInstance(instance);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     // Skriv usecases naeste gang. Taenker over det hver gang
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Class<T> implementation) {
-        BeanHandle<T> handle = newInstaller(BeanKind.LAZY).multi().install(implementation);
+        BeanHandle<T> handle = newBeanInstaller(BeanKind.LAZY).multi().install(implementation);
         return new ProvideableBeanConfiguration<>(handle); // Providable???
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Op<T> op) {
-        BeanHandle<T> handle = newInstaller(BeanKind.LAZY).multi().install(op);
+        BeanHandle<T> handle = newBeanInstaller(BeanKind.LAZY).multi().install(op);
         return new ProvideableBeanConfiguration<>(handle); // Providable???
     }
 
+    BeanInstaller newBeanInstaller(BeanKind kind) {
+        return new PackedBeanInstaller(extension, kind, null);
+    }
+
+    
     /**
      * Creates a new BeanIntrospector for handling annotations managed by BeanExtension.
      * 
@@ -212,19 +218,13 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         };
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected BaseExtensionMirror newExtensionMirror() {
-        return new BaseExtensionMirror();
+    ContainerInstaller newContainerInstaller() {
+        return new PackedContainerInstaller(extension.container);
     }
 
     /** {@inheritDoc} */
     @Override
     protected BaseExtensionPoint newExtensionPoint() {
         return new BaseExtensionPoint();
-    }
-
-    BeanInstaller newInstaller(BeanKind kind) {
-        return new PackedBeanInstaller(extension, kind, null);
     }
 }

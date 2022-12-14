@@ -13,7 +13,10 @@ import internal.app.packed.container.ExtensionSetup;
 /**
  * The configuration of a container.
  */
-public class ContainerConfiguration {
+// We don't allow extension of ContainerConfiguration... It doesn't really work
+// assemblies, or composers. Works fine though when return newContainer().
+// 
+public final class ContainerConfiguration {
 
     /**
      * A marker configuration object indicating that an assembly (or composer) has already been used for building. Should
@@ -51,12 +54,10 @@ public class ContainerConfiguration {
         }
     }
 
-    final void embed(Assembly assembly) {
-        /// MHT til hooks. Saa tror jeg faktisk at man tager de bean hooks
-        // der er paa den assembly der definere dem
-
-        // Men der er helt klart noget arbejde der
-        throw new UnsupportedOperationException();
+    /** {@inheritDoc} */
+    @Override
+    public final boolean equals(Object obj) {
+        return obj instanceof ContainerConfiguration bc && handle == bc.handle;
     }
 
     /**
@@ -68,6 +69,12 @@ public class ContainerConfiguration {
      */
     public final Set<Class<? extends Extension<?>>> extensionTypes() {
         return handle.container.extensionTypes();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final int hashCode() {
+        return handle.hashCode();
     }
 
     /**
@@ -127,7 +134,6 @@ public class ContainerConfiguration {
         handle.named(name);
         return this;
     }
-
 
     /**
      * Registers a callback that will be invoked whenever

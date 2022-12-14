@@ -17,7 +17,6 @@ import internal.app.packed.container.ContainerSetup;
 
 // Vi skal vel have de samme genererings metoder som OperationSetup
 // Taenker ikke man skal have adgang direkte til handled
-
 public final class ContainerHandle {
 
     /** The container that can be configured. */
@@ -44,10 +43,22 @@ public final class ContainerHandle {
      * @throws IllegalStateException
      *             if the container is no longer configurable
      */
-    protected void checkIsConfigurable() {
+    public void checkIsConfigurable() {
         if (!isConfigurable()) {
             throw new IllegalStateException("This container is no longer configurable");
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof ContainerHandle h && container == h.container;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return container.hashCode();
     }
 
     /**
@@ -63,31 +74,25 @@ public final class ContainerHandle {
     // Jo det skal vi faktisk nok...
 
     /**
-     * If the bean is registered with its own lifetime. This method returns a list of the lifetime operations of the bean.
-     * <p>
-     * The operations in the returned list must be computed exactly once. For example, via
-     * {@link OperationHandle#generateMethodHandle()}. Otherwise a build exception will be thrown. Maybe this goes for all
-     * operation customizers.
+     * If the container is registered with its own lifetime. This method returns a list of the container's lifetime
+     * operations.
      * 
-     * @return a list of lifetime operations
-     * 
+     * @return a list of lifetime operations if the container has its own lifetime
      */
     public List<OperationHandle> lifetimeOperations() {
         return List.of();
     }
-   
+
     public void named(String name) {
         container.named(name);
     }
-    
-
 
     public void setErrorHandler(ErrorHandler errorHandler) {
-
+        checkIsConfigurable();
     }
 
+    // Hvis vi linker skal vi jo saette det inde...
     public void specializeMirror(Supplier<? extends ContainerMirror> supplier) {
-
+        checkIsConfigurable();
     }
-
 }

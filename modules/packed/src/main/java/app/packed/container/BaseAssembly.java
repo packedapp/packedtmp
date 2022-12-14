@@ -160,8 +160,8 @@ public abstract class BaseAssembly extends ContainerAssembly {
      *            optional wirelets
      * @return a mirror of the container that was linked
      */
-    protected final AssemblyMirror link(Assembly assembly, Wirelet... wirelets) {
-        return base().link(assembly, wirelets);
+    protected final void link(Assembly assembly, Wirelet... wirelets) {
+        base().link(assembly, wirelets);
     }
 
     protected final AssemblyMirror link2(Assembly assembly, Consumer<Linker> linker) {

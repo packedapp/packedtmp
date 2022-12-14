@@ -21,6 +21,9 @@ import app.packed.bean.InstanceBeanConfiguration;
  *
  */
 
+// Vi har brug ContainerInstaller fordi, man ikke konfigure noget efter man har linket
+// Saa alt skal goeres inde
+
 // Bliver noedt til at lave et Handle. Da kalderen som minim har brug for
 // OperationHandles for lifetimen...
 
@@ -33,9 +36,9 @@ import app.packed.bean.InstanceBeanConfiguration;
 //Hosting (Long term)
 
 public interface ContainerInstaller {
-    
+
     ContainerInstaller newLifetime();
-    
+
     ContainerInstaller allowRuntimeWirelets();
 
     // Only Managed-Operation does not require a wrapper
@@ -46,7 +49,17 @@ public interface ContainerInstaller {
         // Det betyder ogsaa vi skal lave en wrapper bean alene
         return null;
     }
-    
+
+    /**
+     * <p>
+     * The container handle returned by this method is no longer {@link ContainerHandle#isConfigurable() configurable}
+     * 
+     * @param assembly
+     *            the assembly to link
+     * @param wirelets
+     *            optional wirelets
+     * @return a container handle representing the linked container
+     */
     ContainerHandle link(Assembly assembly, Wirelet... wirelets);
 
     ContainerHandle newContainer(Wirelet... wirelets);

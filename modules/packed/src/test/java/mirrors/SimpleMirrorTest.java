@@ -17,7 +17,6 @@ package mirrors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -30,7 +29,6 @@ import app.packed.container.AssemblyMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BaseExtensionMirror;
 
 /**
  *
@@ -82,7 +80,6 @@ public class SimpleMirrorTest {
         assertEquals(am, am);
 
         am.lifetime();
-        assertNotNull(am.use(BaseExtensionMirror.class));
 
         // Name
         assertEquals(MyAss.class.getSimpleName(), "MyAss");

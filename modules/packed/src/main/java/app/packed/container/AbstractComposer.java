@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.AssemblyModel;
@@ -50,6 +51,11 @@ public abstract class AbstractComposer {
      */
     @Nullable
     ContainerConfiguration configuration;
+
+    /** {@return the base extension.} */
+    protected BaseExtension base() {
+        return use(BaseExtension.class);
+    }
 
     /**
      * Returns the configuration of the <strong>root</strong> container defined by this composer.
@@ -94,7 +100,7 @@ public abstract class AbstractComposer {
         requireNonNull(lookup, "lookup cannot be null");
         configuration().handle.container.assembly.lookup(lookup);
     }
-    
+
     protected <E extends Extension<?>> E use(Class<E> extensionClass) {
         return configuration().use(extensionClass);
     }
