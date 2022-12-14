@@ -103,6 +103,17 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return new BeanConfiguration(handle);
     }
 
+    /**
+     * Links a new assembly.
+     * 
+     * @param assembly
+     *            the assembly to link
+     * @param realm
+     *            realm
+     * @param wirelets
+     *            optional wirelets
+     * @return the component that was linked
+     */
     public AssemblyMirror link(Assembly assembly, Wirelet... wirelets) {
         // Check that the assembly is still configurable
         checkIsConfigurable();

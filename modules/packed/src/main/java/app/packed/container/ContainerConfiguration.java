@@ -128,9 +128,6 @@ public class ContainerConfiguration {
         return this;
     }
 
-    public ContainerConfiguration newContainer(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Registers a callback that will be invoked whenever

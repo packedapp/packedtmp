@@ -1,5 +1,7 @@
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -7,7 +9,6 @@ import java.util.function.Supplier;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
-import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 
 /**
@@ -23,7 +24,7 @@ public final class ContainerHandle {
     final ContainerSetup container;
 
     ContainerHandle(ContainerSetup container) {
-        this.container = container;
+        this.container = requireNonNull(container);
     }
 
     /**
@@ -39,6 +40,17 @@ public final class ContainerHandle {
     }
 
     /**
+     * 
+     * @throws IllegalStateException
+     *             if the container is no longer configurable
+     */
+    protected void checkIsConfigurable() {
+        if (!isConfigurable()) {
+            throw new IllegalStateException("This container is no longer configurable");
+        }
+    }
+
+    /**
      * Returns whether or not the bean is still configurable.
      * 
      * @return {@code true} if the bean is still configurable
@@ -46,6 +58,9 @@ public final class ContainerHandle {
     public boolean isConfigurable() {
         return !container.assembly.isClosed();
     }
+
+    // Hmm, skal vi have selve handles'ene?
+    // Jo det skal vi faktisk nok...
 
     /**
      * If the bean is registered with its own lifetime. This method returns a list of the lifetime operations of the bean.
@@ -60,52 +75,15 @@ public final class ContainerHandle {
     public List<OperationHandle> lifetimeOperations() {
         return List.of();
     }
+   
+    public void named(String name) {
+        container.named(name);
+    }
+    
 
-    // Hmm, skal vi have selve handles'ene?
-    // Jo det skal vi faktisk nok...
 
     public void setErrorHandler(ErrorHandler errorHandler) {
 
-    }
-   
-    /**
-     * 
-     * @throws IllegalStateException
-     *             if the container is no longer configurable
-     */
-    protected void checkIsConfigurable() {
-        if (!isConfigurable()) {
-            throw new IllegalStateException("This container is no longer configurable");
-        }
-    }
-    
-    /**
-     * Links a new assembly.
-     * 
-     * @param assembly
-     *            the assembly to link
-     * @param realm
-     *            realm
-     * @param wirelets
-     *            optional wirelets
-     * @return the component that was linked
-     */
-    public AssemblyMirror link(Assembly assembly, Wirelet... wirelets) {
-        // Check that the assembly is still configurable
-        checkIsConfigurable();
-
-        // Create a new assembly
-        AssemblySetup as = new AssemblySetup(null, null, container, assembly, wirelets);
-
-        // Build the assembly
-        as.build();
-
-        return as.mirror();
-    }
-
-
-    public void named(String name) {
-        container.named(name);
     }
 
     public void specializeMirror(Supplier<? extends ContainerMirror> supplier) {
