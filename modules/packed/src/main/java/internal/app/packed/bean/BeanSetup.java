@@ -132,7 +132,7 @@ public final class BeanSetup {
 
         ExtensionSetup installedBy = installer.useSite == null ? installer.baseExtension : installer.useSite.usedBy();
 
-        RealmSetup realm = installer.useSite == null ? installer.baseExtension.container.assembly : installedBy.extensionRealm;
+        RealmSetup realm = installer.useSite == null ? installer.baseExtension.container.assembly : installedBy.extensionTree;
 
         this.installedBy = requireNonNull(installedBy);
         this.container = requireNonNull(installedBy.container);

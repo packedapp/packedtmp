@@ -29,12 +29,12 @@ import app.packed.application.ApplicationMirror;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.AbstractComposer.ComposerAssembly;
-import app.packed.extension.BaseExtension;
-import app.packed.extension.BaseExtensionPoint.BindingHook;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
+import app.packed.extension.BaseExtension;
+import app.packed.extension.BaseExtensionPoint.BindingHook;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.operation.Provider;
@@ -397,7 +397,7 @@ public interface ServiceLocator {
          *            optional import/export wirelets
          */
         public AssemblyMirror link(Assembly assembly, Wirelet... wirelets) {
-            return configuration().link(assembly, wirelets);
+            return configuration().use(BaseExtension.class).link(assembly, wirelets);
         }
 
         /**

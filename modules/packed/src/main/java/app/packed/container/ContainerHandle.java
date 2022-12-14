@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
+import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 
 /**
@@ -65,6 +66,46 @@ public final class ContainerHandle {
 
     public void setErrorHandler(ErrorHandler errorHandler) {
 
+    }
+   
+    /**
+     * 
+     * @throws IllegalStateException
+     *             if the container is no longer configurable
+     */
+    protected void checkIsConfigurable() {
+        if (!isConfigurable()) {
+            throw new IllegalStateException("This container is no longer configurable");
+        }
+    }
+    
+    /**
+     * Links a new assembly.
+     * 
+     * @param assembly
+     *            the assembly to link
+     * @param realm
+     *            realm
+     * @param wirelets
+     *            optional wirelets
+     * @return the component that was linked
+     */
+    public AssemblyMirror link(Assembly assembly, Wirelet... wirelets) {
+        // Check that the assembly is still configurable
+        checkIsConfigurable();
+
+        // Create a new assembly
+        AssemblySetup as = new AssemblySetup(null, null, container, assembly, wirelets);
+
+        // Build the assembly
+        as.build();
+
+        return as.mirror();
+    }
+
+
+    public void named(String name) {
+        container.named(name);
     }
 
     public void specializeMirror(Supplier<? extends ContainerMirror> supplier) {

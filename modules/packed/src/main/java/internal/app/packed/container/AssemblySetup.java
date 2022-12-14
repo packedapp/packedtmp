@@ -219,7 +219,7 @@ public final class AssemblySetup extends RealmSetup {
                     throw ThrowableUtil.orUndeclared(t);
                 }
 
-                extension.extensionRealm.close();
+                extension.extensionTree.close();
             }
 
             // The application has been built successfully.

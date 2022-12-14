@@ -93,7 +93,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return the installer
      */
     public BeanInstaller newBean(BeanKind kind) {
-        return new PackedBeanInstaller(extension().extensionSetup, kind, (PackedExtensionPointContext) usageContext());
+        return new PackedBeanInstaller(extension().extension, kind, (PackedExtensionPointContext) usageContext());
     }
 
     public ContainerInstaller newContainer() {
@@ -109,7 +109,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public BeanInstaller newBeanForExtension(BeanKind kind, UsageContext forExtension) {
         requireNonNull(forExtension, "forExtension is null");
-        return new PackedBeanInstaller(extension().extensionSetup, kind, (PackedExtensionPointContext) forExtension);
+        return new PackedBeanInstaller(extension().extension, kind, (PackedExtensionPointContext) forExtension);
     }
 
 //    BeanHandle<?> unwrap(BeanConfiguration configuration) {

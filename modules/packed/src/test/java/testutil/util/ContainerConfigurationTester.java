@@ -71,7 +71,7 @@ public class ContainerConfigurationTester {
     }
 
     public ContainerConfigurationTester link(BaseAssembly child, Wirelet... wirelets) {
-        cc.link(child, wirelets);
+        use(BaseExtension.class).link(child, wirelets);
         return this;
     }
 

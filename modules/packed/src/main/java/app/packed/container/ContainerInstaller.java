@@ -24,6 +24,14 @@ import app.packed.bean.InstanceBeanConfiguration;
 // Bliver noedt til at lave et Handle. Da kalderen som minim har brug for
 // OperationHandles for lifetimen...
 
+//Ejer
+
+//Support enten linkage(Assembly) or lav en ny XContetainerConfiguration
+//Eager, Lazy, ManyTone
+//ContainerCompanions (extension configuration)
+//Bean <- er taet knyttet til ContainerCompanions
+//Hosting (Long term)
+
 public interface ContainerInstaller {
     
     ContainerInstaller newLifetime();
@@ -43,10 +51,3 @@ public interface ContainerInstaller {
 
     ContainerHandle newContainer(Wirelet... wirelets);
 }
-// Ejer
-
-// Support enten linkage(Assembly) or lav en ny XContetainerConfiguration
-// Eager, Lazy, ManyTone
-// ContainerCompanions (extension configuration)
-// Bean <- er taet knyttet til ContainerCompanions
-// Hosting (Long term)

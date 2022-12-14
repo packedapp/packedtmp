@@ -41,7 +41,7 @@ public class Sss {
             public void build() {
                // long start = System.nanoTime();
                 for (int i = 0; i < beanCount; i++) {
-                    bean().multiInstallInstance(new MyClass());
+                    base().multiInstallInstance(new MyClass());
                 }
                // System.out.println((System.nanoTime() - start) / C);
             }

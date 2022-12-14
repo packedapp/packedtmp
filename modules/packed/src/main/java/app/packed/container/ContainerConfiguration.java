@@ -8,7 +8,6 @@ import java.util.function.Consumer;
 import app.packed.application.NamespacePath;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
-import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
@@ -85,29 +84,29 @@ public class ContainerConfiguration {
         return handle.container.isExtensionUsed(extensionType);
     }
 
-    /**
-     * Links a new assembly.
-     * 
-     * @param assembly
-     *            the assembly to link
-     * @param realm
-     *            realm
-     * @param wirelets
-     *            optional wirelets
-     * @return the component that was linked
-     */
-    public AssemblyMirror link(Assembly assembly, Wirelet... wirelets) {
-        // Check that the assembly is still configurable
-        checkIsConfigurable();
-
-        // Create a new assembly
-        AssemblySetup as = new AssemblySetup(null, null, handle.container, assembly, wirelets);
-
-        // Build the assembly
-        as.build();
-
-        return as.mirror();
-    }
+//    /**
+//     * Links a new assembly.
+//     * 
+//     * @param assembly
+//     *            the assembly to link
+//     * @param realm
+//     *            realm
+//     * @param wirelets
+//     *            optional wirelets
+//     * @return the component that was linked
+//     */
+//    public AssemblyMirror link(Assembly assembly, Wirelet... wirelets) {
+//        // Check that the assembly is still configurable
+//        checkIsConfigurable();
+//
+//        // Create a new assembly
+//        AssemblySetup as = new AssemblySetup(null, null, handle.container, assembly, wirelets);
+//
+//        // Build the assembly
+//        as.build();
+//
+//        return as.mirror();
+//    }
 
     /**
      * Sets the name of the component. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name
@@ -125,7 +124,7 @@ public class ContainerConfiguration {
      * @see Wirelet#named(String)
      */
     public ContainerConfiguration named(String name) {
-        handle.container.named(name);
+        handle.named(name);
         return this;
     }
 

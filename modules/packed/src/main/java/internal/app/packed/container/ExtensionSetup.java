@@ -36,7 +36,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     public final ContainerSetup container;
 
     /** The extension realm this extension is a part of. */
-    public final ExtensionTreeSetup extensionRealm;
+    public final ExtensionTreeSetup extensionTree;
 
     /** The type of extension. */
     public final Class<? extends Extension<?>> extensionType;
@@ -66,13 +66,13 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         this.container = requireNonNull(container);
         this.extensionType = requireNonNull(extensionType);
         if (parent == null) {
-            this.extensionRealm = new ExtensionTreeSetup(this, extensionType);
+            this.extensionTree = new ExtensionTreeSetup(this, extensionType);
             this.injectionManager = new ExtensionInjectionManager(null);
         } else {
-            this.extensionRealm = parent.extensionRealm;
+            this.extensionTree = parent.extensionTree;
             this.injectionManager = new ExtensionInjectionManager(parent.injectionManager);
         }
-        this.model = requireNonNull(extensionRealm.extensionModel);
+        this.model = requireNonNull(extensionTree.extensionModel);
     }
 
     void close() {

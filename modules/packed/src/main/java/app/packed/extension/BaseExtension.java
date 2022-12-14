@@ -9,14 +9,17 @@ import app.packed.bean.Inject;
 import app.packed.bean.OnInitialize;
 import app.packed.bean.OnStart;
 import app.packed.bean.OnStop;
+import app.packed.container.Assembly;
+import app.packed.container.AssemblyMirror;
 import app.packed.container.BaseAssembly;
+import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import app.packed.service.ProvideableBeanConfiguration;
 import internal.app.packed.bean.PackedBeanInstaller;
-import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.lifetime.LifetimeOperation;
 import internal.app.packed.operation.OperationSetup;
 
@@ -27,10 +30,7 @@ import internal.app.packed.operation.OperationSetup;
  */
 public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
-    /** The internal configuration of the extension. */
-    final ExtensionSetup extensionSetup = ExtensionSetup.crack(this);
-
-    /** Create a new bean extension. */
+    /** Create a new base extension. */
     BaseExtension() {}
 
     /**
@@ -103,6 +103,19 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return new BeanConfiguration(handle);
     }
 
+    public AssemblyMirror link(Assembly assembly, Wirelet... wirelets) {
+        // Check that the assembly is still configurable
+        checkIsConfigurable();
+
+        // Create a new assembly
+        AssemblySetup as = new AssemblySetup(null, null, extension.container, assembly, wirelets);
+
+        // Build the assembly
+        as.build();
+
+        return as.mirror();
+    }
+
     /**
      * @see BeanKind#CONTAINER
      * @see BeanSourceKind#CLASS
@@ -158,8 +171,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                 AnnotationReader ar = method.annotations();
 
                 OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
-                //(PackedInvocationType) operation.invocationType.withReturnType(type.returnType());
-                
+                // (PackedInvocationType) operation.invocationType.withReturnType(type.returnType());
+
                 if (ar.isAnnotationPresent(OnInitialize.class)) {
                     @SuppressWarnings("unused")
                     OnInitialize oi = ar.readRequired(OnInitialize.class);
@@ -201,6 +214,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     BeanInstaller newInstaller(BeanKind kind) {
-        return new PackedBeanInstaller(extensionSetup, kind, null);
+        return new PackedBeanInstaller(extension, kind, null);
     }
 }

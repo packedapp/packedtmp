@@ -116,6 +116,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     public ContainerSetup(ApplicationSetup application, AssemblySetup assembly, @Nullable ContainerSetup parent, Wirelet[] wirelets) {
         super(parent);
 
+        requireNonNull(wirelets, "wirelets is null");
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
         this.sm = new ServiceManager();
@@ -128,14 +129,13 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             this.lifetime = parent.lifetime;
         }
 
+        // Initialize BaseExtension which is mandated in every container
         ExtensionSetup baseExtension = new ExtensionSetup(treeParent == null ? null : treeParent.extensions.get(BaseExtension.class), this,
                 BaseExtension.class);
         baseExtension.initialize();
 
-        requireNonNull(wirelets, "wirelets is null");
-
         // The rest of the constructor is just processing any wirelets that have been specified by
-        // the user or extension when wiring the component. The wirelet's have not been null checked.
+        // the user or extension when wiring the component. The wirelets have not been null checked.
         // and may contain any number of CombinedWirelet instances.
         Wirelet prefix = null;
         if (application.container == null) {
@@ -345,7 +345,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
                 // TODO check that the extensionClass is not banned for users
 
                 // TODO Check that the extension user model has not been closed
-                if (requestedByExtension.extensionRealm.isClosed()) {
+                if (requestedByExtension.extensionTree.isClosed()) {
                     throw new IllegalStateException();
                 }
             }

@@ -35,7 +35,7 @@ public class VariousImages {
 
             @Override
             public void build() {
-                BaseExtension b = bean();
+                BaseExtension b = base();
                 for (int i = 0; i < beanCount; i++) {
                    b.multiInstallInstance("foo");
                 }

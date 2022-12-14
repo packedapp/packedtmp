@@ -18,9 +18,9 @@ package app.packed.container;
 import java.util.function.Consumer;
 
 import app.packed.bean.CustomBeanHook.JavaBaseSupport;
+import app.packed.bean.OnStart;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.bean.OnStart;
 import app.packed.operation.Op;
 import app.packed.service.ProvideService;
 import app.packed.service.ProvideableBeanConfiguration;
@@ -85,7 +85,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
      * @return a bean extension instance
      * @see #use(Class)
      */
-    protected final BaseExtension bean() {
+    protected final BaseExtension base() {
         return use(BaseExtension.class);
     }
 
@@ -106,7 +106,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
     // add? i virkeligheden wire vi jo class komponenten...
     // Og taenker, vi har noget a.la. configuration().wire(ClassComponent.Default.bind(implementation))
     protected final <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
-        return bean().install(implementation);
+        return base().install(implementation);
     }
 
     /**
@@ -120,7 +120,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
      * @see BaseAssembly#install(Op)
      */
     protected final <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
-        return bean().install(op);
+        return base().install(op);
     }
 
     /**
@@ -135,7 +135,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
      * @return this configuration
      */
     protected final <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-        return bean().installInstance(instance);
+        return base().installInstance(instance);
     }
 
     /**
@@ -161,7 +161,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
      * @return a mirror of the container that was linked
      */
     protected final AssemblyMirror link(Assembly assembly, Wirelet... wirelets) {
-        return configuration().link(assembly, wirelets);
+        return base().link(assembly, wirelets);
     }
 
     protected final AssemblyMirror link2(Assembly assembly, Consumer<Linker> linker) {
@@ -208,7 +208,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
      * @return a configuration object for the service bean
      */
     protected final <T> ProvideableBeanConfiguration<T> provide(Class<T> implementation) {
-        ProvideableBeanConfiguration<T> configuration = bean().install(implementation);
+        ProvideableBeanConfiguration<T> configuration = base().install(implementation);
         return configuration.provide();
     }
 
@@ -224,7 +224,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
      * @return the configuration of the component that was installed
      */
     protected final <T> ProvideableBeanConfiguration<T> provide(Op<T> factory) {
-        ProvideableBeanConfiguration<T> configuration = bean().install(factory);
+        ProvideableBeanConfiguration<T> configuration = base().install(factory);
         return configuration.provide();
     }
 

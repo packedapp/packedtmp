@@ -37,7 +37,7 @@ public class CheckCycles extends BaseAssembly {
     @Override
     protected void build() {
         //bean().multiInstall(A.class).provide();
-        ProvideableBeanConfiguration<A> aaa = bean().multiInstall(A.class);
+        ProvideableBeanConfiguration<A> aaa = base().multiInstall(A.class);
         aaa.provide();
         aaa.provide();
         provide(A.class);
