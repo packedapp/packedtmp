@@ -42,6 +42,7 @@ public class ApplicationConfiguration {
         // Taenker man fejler hvis man ikke er root
     }
 
+    //?
     public boolean isRoot() {
         return true;
     }

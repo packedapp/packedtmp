@@ -108,7 +108,7 @@ public abstract class VerifyingTestCase {
         }
 
         ContainerConfiguration cc() {
-            return configuration();
+            return container();
         }
     }
 

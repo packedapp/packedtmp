@@ -14,7 +14,9 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.container.ContainerInstaller;
+import app.packed.container.Assembly;
+import app.packed.container.ContainerHandle;
+import app.packed.container.Wirelet;
 import app.packed.context.Context;
 import app.packed.context.NotInContextException;
 import app.packed.operation.Op;
@@ -25,7 +27,7 @@ import internal.app.packed.container.PackedExtensionPointContext;
 /** An {@link ExtensionPoint extension point} class for {@link BaseExtension}. */
 public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
-    /** Creates a new bean extension point */
+    /** Creates a new base extension point */
     BaseExtensionPoint() {}
 
     public <T> InstanceBeanConfiguration<T> install(Class<T> implementation) {
@@ -118,6 +120,54 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 //        throw new UnsupportedOperationException();
 //    }
 
+    
+ // Vi har brug ContainerInstaller fordi, man ikke konfigure noget efter man har linket
+ // Saa alt skal goeres inde
+
+ // Bliver noedt til at lave et Handle. Da kalderen som minim har brug for
+ // OperationHandles for lifetimen...
+
+ //Ejer
+
+ //Support enten linkage(Assembly) or lav en ny XContetainerConfiguration
+ //Eager, Lazy, ManyTone
+ //ContainerCompanions (extension configuration)
+ //Bean <- er taet knyttet til ContainerCompanions
+ //Hosting (Long term)
+
+
+ // Lifetime -> In Operation, Start/Stop, stateless?
+
+
+ public interface ContainerInstaller {
+
+     ContainerInstaller newLifetime();
+
+     ContainerInstaller allowRuntimeWirelets();
+
+     // Only Managed-Operation does not require a wrapper
+     default ContainerInstaller wrapIn(InstanceBeanConfiguration<?> wrapperBeanConfiguration) {
+         // Gaar udfra vi maa definere wrapper beanen alene...Eller som minimum supportere det
+         // Hvis vi vil dele den...
+
+         // Det betyder ogsaa vi skal lave en wrapper bean alene
+         return null;
+     }
+
+     /**
+      * <p>
+      * The container handle returned by this method is no longer {@link ContainerHandle#isConfigurable() configurable}
+      * 
+      * @param assembly
+      *            the assembly to link
+      * @param wirelets
+      *            optional wirelets
+      * @return a container handle representing the linked container
+      */
+     ContainerHandle link(Assembly assembly, Wirelet... wirelets);
+
+     ContainerHandle newContainer(Wirelet... wirelets);
+ }
     /**
      * An installer for installing beans into a container.
      * <p>

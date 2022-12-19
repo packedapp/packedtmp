@@ -66,7 +66,7 @@ public final class ApplicationLauncherSetup {
 
     ApplicationLauncherSetup(ApplicationSetup application) {
         this.application = application;
-        this.runtimeAccessor = application.driver.lifetimeKind() == OldLifetimeKind.MANAGED
+        this.runtimeAccessor = application.lifetimeKind == OldLifetimeKind.MANAGED
                 ? application.container.lifetime.pool.reserve(PackedManagedLifetime.class)
                 : null;
     }

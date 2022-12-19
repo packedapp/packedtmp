@@ -37,7 +37,7 @@ public class AppTest {
         Program app = Program.start(new BaseAssembly() {
             @Override
             public void build() {
-                ar.set(configuration());
+                ar.set(container());
             }
         });
 

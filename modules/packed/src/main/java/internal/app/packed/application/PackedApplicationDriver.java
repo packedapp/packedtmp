@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.application.ApplicationDriver;
+import app.packed.application.BootstrapApp;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
@@ -46,13 +46,13 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.deprecated.invoke.InternalInfuser;
 
-/** Implementation of {@link ApplicationDriver}. */
-public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
+/** Implementation of {@link BootstrapApp}. */
+public final class PackedApplicationDriver<A> implements BootstrapApp<A> {
 
     /** An application driver for application drivers. */
     public static PackedApplicationDriver<Void> PRIMORDIAL = new PackedApplicationDriver<>();
 
-    final Set<Class<? extends Extension<?>>> bannedExtensions;
+    final Set<Class<? extends Extension<?>>> extensionDenyList;
 
     private final OldLifetimeKind lifetimeKind;
 
@@ -68,7 +68,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     public final Wirelet wirelet;
 
     private PackedApplicationDriver() {
-        this.bannedExtensions = Set.of();
+        this.extensionDenyList = Set.of();
         this.lifetimeKind = OldLifetimeKind.UNMANAGED; // The primordial application does not need to be closed
         // We need to create the exception as well
         this.mhConstructor = MethodHandles.throwException(void.class, Error.class);
@@ -85,7 +85,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         this.wirelet = builder.wirelet;
         this.mhConstructor = requireNonNull(builder.mhConstructor);
         this.lifetimeKind = builder.lifetimeKind;
-        this.bannedExtensions = Set.copyOf(builder.disabledExtensions);
+        this.extensionDenyList = Set.copyOf(builder.disabledExtensions);
     }
 
     /**
@@ -100,7 +100,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         this.wirelet = existing.wirelet;
         this.lifetimeKind = existing.lifetimeKind;
         this.mhConstructor = existing.mhConstructor;
-        this.bannedExtensions = existing.bannedExtensions;
+        this.extensionDenyList = existing.extensionDenyList;
     }
 
     /**
@@ -112,7 +112,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      * @return a set of disabled extensions
      */
     public Set<Class<? extends Extension<?>>> bannedExtensions() {
-        return bannedExtensions;
+        return extensionDenyList;
     }
 
     /** {@inheritDoc} */
@@ -135,7 +135,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      * 
      * @return whether or not the applications produced by this driver are runnable
      */
-    public OldLifetimeKind lifetimeKind() {
+    OldLifetimeKind lifetimeKind() {
         return lifetimeKind;
     }
 
@@ -200,7 +200,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationDriver<A> with(Wirelet... wirelets) {
+    public BootstrapApp<A> with(Wirelet... wirelets) {
         // Skal vi checke noget med components
         Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
         return new PackedApplicationDriver<>(this, w);
@@ -212,8 +212,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 //        throw new UnsupportedOperationException();
 //    }
 
-    /** Single implementation of {@link ApplicationDriver.Builder}. */
-    public static final class Builder<A> implements ApplicationDriver.Builder<A> {
+    /** Single implementation of {@link BootstrapApp.Builder}. */
+    public static final class Builder<A> implements BootstrapApp.Builder<A> {
 
         /** A MethodHandle for invoking {@link ApplicationInitializationContext#name()}. */
         private static final MethodHandle MH_NAME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class, "name",
@@ -256,7 +256,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public <S> ApplicationDriver<S> build(Class<S> wrapperType, Op<S> op, Wirelet... wirelets) {
+        public <S> BootstrapApp<S> build(Class<S> wrapperType, Op<S> op, Wirelet... wirelets) {
             this.mhConstructor = PackedOp.crack(op).mhOperation;
 
             return new PackedApplicationDriver<>(this);
@@ -264,7 +264,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public <S> ApplicationDriver<S> build(Lookup caller, Class<? extends S> implementation, Wirelet... wirelets) {
+        public <S> BootstrapApp<S> build(Lookup caller, Class<? extends S> implementation, Wirelet... wirelets) {
             // Find a method handle for the application shell's constructor
             InternalInfuser.Builder builder = InternalInfuser.builder(caller, implementation, ApplicationInitializationContext.class);
             // builder.provide(Component.class).invokeExact(MH_COMPONENT, 0);
@@ -304,7 +304,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
 
         /** {@inheritDoc} */
-        @Override
         public Builder<A> disableExtension(Class<? extends Extension<?>> extensionType) {
             ClassUtil.checkProperSubclass(Extension.class, extensionType, "extensionType");
             disabledExtensions.add(extensionType);
@@ -320,7 +319,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     }
 
     /**
-     * Implementation of {@link ApplicationLauncher} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}.
+     * Implementation of {@link ApplicationLauncher} used by {@link BootstrapApp#newImage(Assembly, Wirelet...)}.
      */
     public static final class SingleShotApplicationImage<A> implements ApplicationLauncher<A> {
 
@@ -344,7 +343,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     }
 
     /**
-     * Implementation of {@link ApplicationLauncher} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}.
+     * Implementation of {@link ApplicationLauncher} used by {@link BootstrapApp#newImage(Assembly, Wirelet...)}.
      */
     public /* primitive */ record ReusableApplicationImage<A>(PackedApplicationDriver<A> driver, ApplicationSetup application)
             implements ApplicationLauncher<A> {

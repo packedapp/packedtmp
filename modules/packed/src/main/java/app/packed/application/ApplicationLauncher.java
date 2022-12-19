@@ -94,7 +94,7 @@ public sealed interface ApplicationLauncher<A> permits SingleShotApplicationImag
      * Launches an instance of the application that this image represents.
      * <p>
      * Launches an instance of the application. What happens here is dependent on application driver that created the image.
-     * The behaviour of this method is identical to {@link ApplicationDriver#launch(Assembly, Wirelet...)}.
+     * The behaviour of this method is identical to {@link BootstrapApp#launch(Assembly, Wirelet...)}.
      * 
      * @param wirelets
      *            optional wirelets

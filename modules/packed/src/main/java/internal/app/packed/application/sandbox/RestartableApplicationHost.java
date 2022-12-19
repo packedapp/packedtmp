@@ -15,14 +15,14 @@
  */
 package internal.app.packed.application.sandbox;
 
-import app.packed.application.ApplicationDriver;
+import app.packed.application.BootstrapApp;
 
 /**
  *
  */
 public interface RestartableApplicationHost {
     
-    static void restartImmediately(ApplicationDriver<?> driver) {
+    static void restartImmediately(BootstrapApp<?> driver) {
         
     }
 }

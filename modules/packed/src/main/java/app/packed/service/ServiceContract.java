@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import app.packed.application.ApplicationDriver;
+import app.packed.application.BootstrapApp;
 import app.packed.application.ApplicationMirror;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
@@ -72,7 +72,7 @@ public final class ServiceContract {
 
     /** The driver used for creating mirrors daemon driver. */
     // I think we need to expose ServiceCompanion... otherwise this should be empty
-    public static final ApplicationDriver<Void> MIRROR_DRIVER = ApplicationDriver.builder().buildVoid();
+    public static final BootstrapApp<Void> MIRROR_DRIVER = BootstrapApp.builder().buildVoid();
 
     /** A contract with no requirements and no services provided. */
     public static final ServiceContract EMPTY = new ServiceContract(Set.of(), Set.of(), Set.of());

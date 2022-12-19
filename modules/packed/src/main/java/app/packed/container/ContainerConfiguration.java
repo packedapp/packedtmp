@@ -202,9 +202,8 @@ public final class ContainerConfiguration {
      * @see #extensionsTypes()
      * @see BaseAssembly#use(Class)
      */
-    @SuppressWarnings("unchecked")
     public final <E extends Extension<?>> E use(Class<E> extensionClass) {
         ExtensionSetup extension = handle.container.useExtension(extensionClass, null);
-        return (E) extension.instance();
+        return extensionClass.cast(extension.instance());
     }
 }

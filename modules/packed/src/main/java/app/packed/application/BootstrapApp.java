@@ -16,17 +16,15 @@
 package app.packed.application;
 
 import java.lang.invoke.MethodHandles;
-import java.util.function.Supplier;
 
+import app.packed.container.AbstractComposer;
+import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.extension.Extension;
-import app.packed.extension.bridge.ExtensionBridge;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.PackedApplicationDriver;
-import internal.app.packed.operation.PackedOp;
 
 /**
  * Application drivers are responsible for creating (root) applications.
@@ -52,7 +50,7 @@ import internal.app.packed.operation.PackedOp;
  */
 @SuppressWarnings("rawtypes")
 // A root application has a bootstrap application? or is the driver a bootstrap application
-public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
+public sealed interface BootstrapApp<A> permits PackedApplicationDriver {
 
     /**
      * Builds an application using the specified assembly and optional wirelets and returns a new instance of it.
@@ -141,7 +139,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * @return the augmented application driver
      */
     // Hvis vi ikke expo
-    ApplicationDriver<A> with(Wirelet... wirelets);
+    BootstrapApp<A> with(Wirelet... wirelets);
 
     /**
      * Returns a new {@code ApplicationDriver} builder that will build an application driver without a wrapper bean.
@@ -151,19 +149,35 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     static Builder<Void> builder() {
         return new PackedApplicationDriver.Builder<>(null);
     }
-
-    static <A> Builder<A> builder(MethodHandles.Lookup lookup, Class<A> wrapper) {
+    static <A> BootstrapApp<A> of(Class<A> applicationClass, ComposerAction<Composer> action) {
         throw new UnsupportedOperationException();
     }
 
-    static <A> Builder<A> builder(Op<A> wrapperFactory) {
-        PackedOp<A> op = PackedOp.crack(wrapperFactory);
-        return new PackedApplicationDriver.Builder<>(op);
+    static <A> BootstrapApp<A> of(Op<A> op, ComposerAction<Composer> action) {
+        throw new UnsupportedOperationException();
+    }
+    
+    static BootstrapApp<Void> ofVoid(ComposerAction<Composer> action) {
+        return null;
     }
 
+    public final class Composer extends AbstractComposer {
+        Composer() {}
+        
+        /**
+         * Application produced by the driver are executable. And will be launched by the specified launch mode by default.
+         * <p>
+         * The default launchState can be overridden at later point by using XYZ
+         * 
+         * @return this builder
+         */
+       public Composer managedLifetime() {
+           return this;
+       }
+    }
     /**
      * A builder for an application driver. An instance of this interface is acquired by calling
-     * {@link ApplicationDriver#builder()}.
+     * {@link BootstrapApp#builder()}.
      */
     /* sealed */ interface Builder<A> /* permits PackedApplicationDriver.Builder */ {
         // Environment + Application Interface + Result
@@ -186,11 +200,11 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
          * @throws UnsupportedOperationException
          *             if this builder does not have a wrapper
          */
-        default Builder addCompanion(ExtensionBridge... companions) {
-            return this;
-        }
+//        default Builder addCompanion(ExtensionBridge... companions) {
+//            return this;
+//        }
 
-        <S> ApplicationDriver<S> build(Class<S> wrapperType, Op<S> op, Wirelet... wirelets);
+        <S> BootstrapApp<S> build(Class<S> wrapperType, Op<S> op, Wirelet... wirelets);
 
         /**
          * Creates a new artifact driver.
@@ -210,23 +224,23 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
          *            the implementation of the artifact
          * @return a new driver
          */
-        <S> ApplicationDriver<S> build(MethodHandles.Lookup caller, Class<? extends S> wrapperType, Wirelet... wirelets);
+        <S> BootstrapApp<S> build(MethodHandles.Lookup caller, Class<? extends S> wrapperType, Wirelet... wirelets);
 
-        default ApplicationDriver<A> build(Wirelet... wirelets) {
-            throw new UnsupportedOperationException();
-        }
+//        default ApplicationDriver<A> build(Wirelet... wirelets) {
+//            throw new UnsupportedOperationException();
+//        }
 
-        ApplicationDriver<Void> buildVoid(Wirelet... wirelets);
+        BootstrapApp<Void> buildVoid(Wirelet... wirelets);
 
-        /**
-         * Disables 1 or more extensions. Attempting to use a disabled extension will result in an RestrictedExtensionException
-         * being thrown
-         * 
-         * @param extensionTypes
-         *            the types of extension to disable
-         * @return
-         */
-        Builder<A> disableExtension(Class<? extends Extension<?>> extensionType);
+//        /**
+//         * Disables 1 or more extensions. Attempting to use a disabled extension will result in an RestrictedExtensionException
+//         * being thrown
+//         * 
+//         * @param extensionTypes
+//         *            the types of extension to disable
+//         * @return
+//         */
+//        Builder<A> disableExtension(Class<? extends Extension<?>> extensionType);
 
         /**
          * Application produced by the driver are executable. And will be launched by the specified launch mode by default.
@@ -237,25 +251,25 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
          */
         Builder<A> managedLifetime();
 
-        @SuppressWarnings("unchecked")
-        default Builder<A> requireExtension(Class<? extends Extension>... extensionTypes) {
-
-            return this;
-        }
-
-        default Builder<A> restartable() {
-            return this;
-        }
-
-        // Det er jo ogsaa en companion
-        default Builder<A> resultType(Class<?> resultType) {
-            throw new UnsupportedOperationException();
-        }
-
-        // overrideMirror???
-        default Builder<A> specializeMirror(Supplier<? extends ApplicationMirror> supplier) {
-            throw new UnsupportedOperationException();
-        }
+//        @SuppressWarnings("unchecked")
+//        default Builder<A> requireExtension(Class<? extends Extension>... extensionTypes) {
+//
+//            return this;
+//        }
+//
+//        default Builder<A> restartable() {
+//            return this;
+//        }
+//
+//        // Det er jo ogsaa en companion
+//        default Builder<A> resultType(Class<?> resultType) {
+//            throw new UnsupportedOperationException();
+//        }
+//
+//        // overrideMirror???
+//        default Builder<A> specializeMirror(Supplier<? extends ApplicationMirror> supplier) {
+//            throw new UnsupportedOperationException();
+//        }
 
         // Maaske kan man have et form for accept filter...
 

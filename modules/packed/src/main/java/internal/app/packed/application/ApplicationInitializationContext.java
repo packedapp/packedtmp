@@ -59,7 +59,7 @@ public final class ApplicationInitializationContext {
         this.application = application;
         this.wirelets = wirelets;
         this.name = requireNonNull(application.container.name);
-        this.lifetimeKind = requireNonNull(application.driver.lifetimeKind());
+        this.lifetimeKind = requireNonNull(application.lifetimeKind);
         this.runtime = application.launcher == null || application.launcher.runtimeAccessor == null ? null : new PackedManagedLifetime(this);
     }
 
@@ -103,7 +103,6 @@ public final class ApplicationInitializationContext {
      * @return the application instance
      */
     public static <A> A launch(PackedApplicationDriver<A> driver, ApplicationSetup application, @Nullable WireletWrapper wirelets) {
-        assert driver == application.driver; // it is just here because of <A>
 
         // Create a launch context
         ApplicationInitializationContext context = new ApplicationInitializationContext(application, wirelets);

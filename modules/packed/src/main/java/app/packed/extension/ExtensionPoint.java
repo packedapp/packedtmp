@@ -102,7 +102,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     protected final void checkIsConfigurable() {
         // We only check the extension that uses the extension point.
         // Because the extension the extension points belongs to, is always a direct
-        // dependency and will be closed later.
+        // dependency and will be closed before the extension that provides the extension point.
         ExtensionTreeSetup extensionTree = context().usedBy().extensionTree;
         if (extensionTree.isClosed()) {
             throw new IllegalStateException(extensionTree.realmType() + " is no longer configurable");

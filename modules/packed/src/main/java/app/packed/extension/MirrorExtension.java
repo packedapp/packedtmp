@@ -26,7 +26,7 @@ import internal.app.packed.bean.IntrospectedBeanBinding;
 import internal.app.packed.operation.OperationSetup;
 
 /**
- * This extension is used to provide mirror instances at runtime.
+ * An extension that can be used to provide mirror instances at runtime.
  * <p>
  * This extension is used to inject mirrors of type {@link ApplicationMirror}, {@link ContainerMirror} or
  * {@link BeanMirror} at runtime.

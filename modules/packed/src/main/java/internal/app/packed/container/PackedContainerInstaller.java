@@ -23,8 +23,8 @@ import java.lang.invoke.MethodHandles;
 import app.packed.container.AbstractComposer.ComposerAssembly;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerHandle;
-import app.packed.container.ContainerInstaller;
 import app.packed.container.Wirelet;
+import app.packed.extension.BaseExtensionPoint.ContainerInstaller;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 

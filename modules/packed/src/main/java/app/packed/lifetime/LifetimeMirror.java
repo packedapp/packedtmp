@@ -96,7 +96,7 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
     }
 
     /**
-     * empty for statelss
+     * empty for statelss (or BootstrapApps)
      * 
      * 1 for unmananged
      * 

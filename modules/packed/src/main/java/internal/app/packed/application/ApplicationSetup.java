@@ -26,6 +26,7 @@ import app.packed.container.Wirelet;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -57,6 +58,8 @@ public final class ApplicationSetup {
     /** The current phase of the build process. */
     private ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
 
+    public final OldLifetimeKind lifetimeKind;
+
     /**
      * Create a new application.
      * 
@@ -71,6 +74,7 @@ public final class ApplicationSetup {
      */
     public ApplicationSetup(PackedApplicationDriver<?> driver, BuildGoal goal, AssemblySetup assembly, Wirelet[] wirelets) {
         this.driver = requireNonNull(driver);
+        this.lifetimeKind = driver.lifetimeKind();
         this.goal = requireNonNull(goal);
         this.container = new ContainerSetup(this, assembly, null, wirelets); // the root container of the application
         this.launcher = goal.isLaunchable() ? new ApplicationLauncherSetup(this) : null;

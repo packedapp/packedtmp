@@ -11,9 +11,9 @@ import app.packed.bean.OnStart;
 import app.packed.bean.OnStop;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
-import app.packed.container.ContainerInstaller;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
+import app.packed.extension.BaseExtensionPoint.ContainerInstaller;
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
@@ -26,13 +26,13 @@ import internal.app.packed.operation.OperationSetup;
 /**
  * An extension that defines the foundational APIs managing beans, containers and applications.
  * <p>
- * This extension is automatically used by every container.
+ * Every container will automatically have this extension added. And every extension automatically has a direct
+ * dependency on this extension.
  */
 public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /** Create a new base extension. */
     BaseExtension() {}
-
 
     final void embed(Assembly assembly) {
         /// MHT til hooks. Saa tror jeg faktisk at man tager de bean hooks
@@ -42,7 +42,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         throw new UnsupportedOperationException();
     }
 
-    
     /**
      * Installs a bean that will use the specified {@link Class} to instantiate a single instance of the bean when the
      * application is initialized.
@@ -163,7 +162,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return new PackedBeanInstaller(extension, kind, null);
     }
 
-    
     /**
      * Creates a new BeanIntrospector for handling annotations managed by BeanExtension.
      * 
@@ -216,6 +214,19 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                 }
             }
         };
+    }
+
+    boolean isLinking;
+    @Override
+    protected void onAssemblyClose() {
+        // 3 ways to form trees
+        // Application, Assembly, Lifetime
+        
+        boolean isLinking = parent().map(e -> e.isLinking).orElse(false);
+        if (isLinking) {
+            //navigator().forEachInAssembly()->
+        }
+        super.onAssemblyClose();
     }
 
     ContainerInstaller newContainerInstaller() {

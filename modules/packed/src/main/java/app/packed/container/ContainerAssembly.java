@@ -71,7 +71,7 @@ public non-sealed abstract class ContainerAssembly extends Assembly {
      * This field is updated via var handle {@link #VH_CONFIGURATION}.
      */
     @Nullable
-    ContainerConfiguration configuration;
+    private ContainerConfiguration configuration;
 
     /**
      * This method must be overridden by the application developer in order to configure the application.
@@ -83,9 +83,9 @@ public non-sealed abstract class ContainerAssembly extends Assembly {
     protected abstract void build();
 
     /**
-     * Checks that {@link #build()} has not yet been invoked by the framework.
+     * Checks that {@link #build()} has not yet been called by the framework.
      * <p>
-     * This method is typically used by assemblies that define configuration methods that must only be called before
+     * This method is typically used by assemblies that define configuration methods that must be called before
      * {@link #build()} is invoked.
      * 
      * @throws IllegalStateException
@@ -93,12 +93,12 @@ public non-sealed abstract class ContainerAssembly extends Assembly {
      */
     protected final void checkBuildNotStarted() {
         if (configuration != null) {
-            throw new IllegalStateException("This method must be called Assembly#build is invoked");
+            throw new IllegalStateException("This method must be called before the assembly is used to build an application");
         }
     }
 
     /**
-     * Returns the configuration of the <strong>root</strong> container defined by this assembly.
+     * Returns the configuration of the main container defined by this assembly.
      * <p>
      * This method can only be called from within the {@link #build()} method. Trying to call it outside of {@link #build()}
      * will throw an {@link IllegalStateException}.
@@ -107,7 +107,7 @@ public non-sealed abstract class ContainerAssembly extends Assembly {
      * @throws IllegalStateException
      *             if called from outside of the {@link #build()} method
      */
-    protected final ContainerConfiguration configuration() {
+    protected final ContainerConfiguration container() {
         ContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of an assembly");
@@ -175,6 +175,6 @@ public non-sealed abstract class ContainerAssembly extends Assembly {
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
-        configuration().handle.container.assembly.lookup(lookup);
+        container().handle.container.assembly.lookup(lookup);
     }
 }

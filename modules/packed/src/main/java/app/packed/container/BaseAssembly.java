@@ -15,14 +15,10 @@
  */
 package app.packed.container;
 
-import java.util.function.Consumer;
-
 import app.packed.bean.CustomBeanHook.JavaBaseSupport;
-import app.packed.bean.OnStart;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
-import app.packed.service.ProvideService;
 import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.Qualifier;
 import app.packed.service.ServiceExtension;
@@ -62,7 +58,7 @@ import app.packed.service.ServiceExtension;
  * 
  * Assemblies are the main source of system configuration. Basically a assembly is just a thin wrapper around
  * {@link ContainerConfiguration}. Delegating every invocation in the class to an instance of
- * {@link ContainerConfiguration} available via {@link #configuration()}.
+ * {@link ContainerConfiguration} available via {@link #container()}.
  * <p>
  * A assembly instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with
  * an {@link IllegalStateException}.
@@ -80,9 +76,9 @@ public abstract class BaseAssembly extends ContainerAssembly {
     /**
      * Returns a {@link BaseExtension} instance.
      * <p>
-     * Calling this method is short for {@code use(BeanExtension.class)}
+     * Calling this method is short for {@code use(BaseExtension.class)}
      * 
-     * @return a bean extension instance
+     * @return a base extension instance
      * @see #use(Class)
      */
     protected final BaseExtension base() {
@@ -148,7 +144,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
      *             if the specified extension type is {@link Extension}
      */
     protected final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-        return configuration().isExtensionUsed(extensionType);
+        return container().isExtensionUsed(extensionType);
     }
 
     /**
@@ -162,10 +158,6 @@ public abstract class BaseAssembly extends ContainerAssembly {
      */
     protected final void link(Assembly assembly, Wirelet... wirelets) {
         base().link(assembly, wirelets);
-    }
-
-    protected final AssemblyMirror link2(Assembly assembly, Consumer<Linker> linker) {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -187,7 +179,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
      *             if called from outside {@link #build()}
      */
     protected final void named(String name) {
-        configuration().named(name);
+        container().named(name);
     }
 
     /**
@@ -214,8 +206,6 @@ public abstract class BaseAssembly extends ContainerAssembly {
 
     /**
      *
-     * <p>
-     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link ProvideService}.
      *
      * @param <T>
      *            the type of bean to provide as a service
@@ -263,7 +253,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
      * @see ContainerConfiguration#selectWirelets(Class)
      */
     protected final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
-        return configuration().selectWirelets(wireletClass);
+        return container().selectWirelets(wireletClass);
     }
 
     /**
@@ -296,11 +286,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
      * @implNote this method delegates all calls to ContainerConfiguration#use(Class)
      */
     protected final <E extends Extension<E>> E use(Class<E> extensionClass) {
-        return configuration().use(extensionClass);
-    }
-
-    public interface Linker {
-
+        return container().use(extensionClass);
     }
 }
 

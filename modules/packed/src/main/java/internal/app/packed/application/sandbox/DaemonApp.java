@@ -15,7 +15,7 @@
  */
 package internal.app.packed.application.sandbox;
 
-import app.packed.application.ApplicationDriver;
+import app.packed.application.BootstrapApp;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.container.Assembly;
@@ -80,7 +80,7 @@ public interface DaemonApp extends AutoCloseable {
         throw new UnsupportedOperationException();
     }
     
-    static ApplicationDriver<DaemonApp> driver() {
+    static BootstrapApp<DaemonApp> driver() {
         throw new UnsupportedOperationException();
     }
 }

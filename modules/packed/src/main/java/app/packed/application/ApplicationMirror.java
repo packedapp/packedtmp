@@ -27,7 +27,7 @@ import internal.app.packed.container.Mirror;
  * automatically install the {@link MirrorExtension} which will provide an instance at runtime.
  * <p>
  * Like many other mirrors this class is overridable via
- * {@link ApplicationDriver.Builder#specializeMirror(java.util.function.Supplier)}
+ * {@link BootstrapApp.Builder#specializeMirror(java.util.function.Supplier)}
  */
 @BindingHook(extension = MirrorExtension.class)
 public class ApplicationMirror implements Mirror {

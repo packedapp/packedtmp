@@ -23,9 +23,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
+import app.packed.application.BootstrapApp;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.AbstractComposer.ComposerAssembly;
@@ -292,7 +292,7 @@ public interface ServiceLocator {
      * @see #of(Consumer)
      * @see #of(Assembly, Wirelet...)
      */
-    private static ApplicationDriver<ServiceLocator> driver() {
+    private static BootstrapApp<ServiceLocator> driver() {
         throw new UnsupportedOperationException();
     }
 
@@ -346,14 +346,14 @@ public interface ServiceLocator {
     static ServiceLocator of(ComposerAction<? super Composer> action, Wirelet... wirelets) {
         class ServiceLocatorAssembly extends ComposerAssembly<Composer> {
 
-            private static final ApplicationDriver<ServiceLocator> DRIVER = ApplicationDriver.builder().build(ServiceLocator.class,
+            private static final BootstrapApp<ServiceLocator> DRIVER = BootstrapApp.builder().build(ServiceLocator.class,
                     new Op1<ApplicationInitializationContext, ServiceLocator>(c -> c.serviceLocator()) {});
 
             ServiceLocatorAssembly(ComposerAction<? super Composer> action) {
                 super(new Composer(), action);
             }
         }
-        
+
         return ServiceLocatorAssembly.DRIVER.launch(new ServiceLocatorAssembly(action), wirelets);
     }
 

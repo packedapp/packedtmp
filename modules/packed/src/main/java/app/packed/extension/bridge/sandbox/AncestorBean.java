@@ -41,7 +41,7 @@ import app.packed.extension.BaseExtensionPoint.BindingHook;
 
 // Alternativt, hvis man proever at injecte sig selv.. faar man en parent...
 @BindingHook(extension = BaseExtension.class, requiresContext = ExtensionContext.class)
-public @interface FromChildContainer {} // childExtension? instead
+public @interface AncestorBean {} // childExtension? instead
 
 //Alternativt en ContainerLaucherContext? med context services.
 //Saa kan vi ogsaa se praecis hvad der er tilgaengelig via OperationContext

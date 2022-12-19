@@ -33,7 +33,9 @@ import app.packed.lifetime.RunState;
 public final class App {
 
     /** The default driver. */
-    private static final ApplicationDriver<Void> DEFAULT_DRIVER = ApplicationDriver.builder().managedLifetime().buildVoid();
+    private static final BootstrapApp<Void> DEFAULT_DRIVER = BootstrapApp.builder().managedLifetime().buildVoid();
+
+    static final BootstrapApp<Void> BOOTSTRAP = BootstrapApp.ofVoid(c -> c.managedLifetime());
 
     /** Not today Satan, not today. */
     private App() {}
@@ -53,8 +55,8 @@ public final class App {
     /**
      * Builds an application and returns a launcher that can be used to launch a <b>single</b> instance of the application.
      * <p>
-     * If you need to launch multiple instances of the same application use {@link #newImage(Assembly, Wirelet...)}.
-     * Or maybe use that Application wirelet... I don't really think it is that common
+     * If you need to launch multiple instances of the same application use {@link #newImage(Assembly, Wirelet...)}. Or
+     * maybe use that Application wirelet... I don't really think it is that common
      * 
      * @param assembly
      *            the application's assembly
@@ -128,7 +130,7 @@ public final class App {
     }
 
     public static final class Launcher {
-        
+
         private final ApplicationLauncher<?> original;
 
         Launcher(ApplicationLauncher<?> original) {
@@ -139,7 +141,7 @@ public final class App {
             original.launch();
         }
 
-        public void run(Wirelet...wirelets) {
+        public void run(Wirelet... wirelets) {
             original.launch(wirelets);
         }
     }

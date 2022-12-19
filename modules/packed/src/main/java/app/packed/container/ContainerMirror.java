@@ -156,10 +156,9 @@ public non-sealed class ContainerMirror implements ContextualizedElement , Mirro
      *            the mirror type
      * @return a mirror of the specified type, or empty if the extension the mirror represents is not used in the container
      */
-    @SuppressWarnings("unchecked")
     public <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> mirrorType) {
         ClassUtil.checkProperSubclass(ExtensionMirror.class, mirrorType, "mirrorType");
-        return (Optional<T>) Optional.ofNullable(newMirrorOrNull(container(), mirrorType));
+        return Optional.ofNullable(newMirrorOrNull(container(), mirrorType));
     }
 
     /** {@inheritDoc} */
@@ -266,7 +265,7 @@ public non-sealed class ContainerMirror implements ContextualizedElement , Mirro
      * @return a mirror of the specified type or null if no extension of the matching type was used in the container
      */
     @Nullable
-    static ExtensionMirror<?> newMirrorOrNull(ContainerSetup container, Class<? extends ExtensionMirror<?>> mirrorClass) {
+    static <T extends ExtensionMirror<?>> T newMirrorOrNull(ContainerSetup container, Class<T> mirrorClass) {
         // First find what extension the mirror belongs to by extracting <E> from ExtensionMirror<E extends Extension>
         Class<? extends Extension<?>> extensionClass = EXTENSION_TYPES.get(mirrorClass);
 
@@ -309,8 +308,8 @@ public non-sealed class ContainerMirror implements ContextualizedElement , Mirro
             // Must return a mirror for the same extension
             Class<? extends Extension<?>> mirrorExtensionType = EXTENSION_TYPES.get(mirror.getClass());
             if (mirrorExtensionType != extension.extensionType) {
-                throw new InternalExtensionException("Extension " + extension.model.fullName()
-                        + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
+                throw new InternalExtensionException(
+                        "Extension " + extension.model.fullName() + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
             }
         }
 
@@ -319,7 +318,7 @@ public non-sealed class ContainerMirror implements ContextualizedElement , Mirro
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
-        return mirror;
+        return mirrorClass.cast(mirror);
     }
 }
 //// Taken from ComponentMirror

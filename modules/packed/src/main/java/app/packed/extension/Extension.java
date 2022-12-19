@@ -31,7 +31,6 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.service.ServiceExtension;
@@ -110,10 +109,6 @@ public abstract class Extension<E extends Extension<E>> {
         }
     }
 
-    protected final ContainerHandle containerBuilder(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
     /** {@return the path of the container that this extension belongs to.} */
     protected final NamespacePath containerPath() {
         return extension.container.path();
@@ -146,6 +141,7 @@ public abstract class Extension<E extends Extension<E>> {
      * @return an extension navigator
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
+    // ApplicationNavigator?
     protected final ExtensionNavigator<E> navigator() {
         return new ExtensionNavigator(extension, extension.extensionType);
     }
@@ -284,6 +280,7 @@ public abstract class Extension<E extends Extension<E>> {
      * @throws IllegalStateException
      *             if the extension is no longer configurable
      */
+    // runOnCodegen
     protected final void registerCodeGenerator(Runnable action) {
         // was ISE
         // if the application is already in the code generation phase or has finished building the application
@@ -381,8 +378,8 @@ public abstract class Extension<E extends Extension<E>> {
         // Make sure it is a proper type of the requested extension point
         if (!extensionPointClass.isInstance(newExtensionPoint)) {
             if (newExtensionPoint == null) {
-                throw new NullPointerException("Extension " + otherExtension.model.fullName() + " returned null from "
-                        + otherExtension.model.name() + ".newExtensionPoint()");
+                throw new NullPointerException(
+                        "Extension " + otherExtension.model.fullName() + " returned null from " + otherExtension.model.name() + ".newExtensionPoint()");
             }
             throw new InternalExtensionException(otherExtension.extensionType.getSimpleName() + ".newExtensionPoint() was expected to return an instance of "
                     + extensionPointClass + ", but returned an instance of " + newExtensionPoint.getClass());
@@ -410,7 +407,11 @@ public abstract class Extension<E extends Extension<E>> {
     @Documented
     public @interface DependsOn {
 
-        /** {@return other extensions the annotated extension depends on.} */
+        /**
+         * {@return other extensions the annotated extension depends on.}
+         * <p>
+         * {@link BaseExtension} is a mandated extension, and cannot be specified.
+         */
         Class<? extends Extension<?>>[] extensions() default {};
 
         // Den der $dependsOnOptionally(String, Class, Supplier) kan vi stadig have

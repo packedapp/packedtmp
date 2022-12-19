@@ -6,10 +6,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationMirror;
-import app.packed.extension.MirrorExtension;
 import app.packed.extension.BaseExtensionPoint.BindingHook;
+import app.packed.extension.MirrorExtension;
 import app.packed.framework.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.AssemblySetup;
@@ -24,9 +23,6 @@ import internal.app.packed.container.Mirror;
  * <p>
  * Instances of ApplicationMirror can be injected at runtime simply by declaring a dependency on it. This will
  * automatically install the {@link MirrorExtension} which will provide an instance at runtime.
- * <p>
- * Like many other mirrors this class is overridable via
- * {@link ApplicationDriver.Builder#specializeMirror(java.util.function.Supplier)}
  */
 @BindingHook(extension = MirrorExtension.class)
 public class AssemblyMirror implements Mirror {
