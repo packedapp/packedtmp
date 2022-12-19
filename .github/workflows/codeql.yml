@@ -30,6 +30,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: 19
+          distribution: 'adopt'
     
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
