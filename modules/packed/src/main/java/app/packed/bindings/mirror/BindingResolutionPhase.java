@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings;
+package app.packed.bindings.mirror;
 
 /**
  *
  */
-enum BindingResolutionPhase {
+public enum BindingResolutionPhase {
     // operation binding but instantly resolved at build time (@Now)
     INSTANTLY,
 

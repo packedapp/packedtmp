@@ -34,7 +34,7 @@ import app.packed.service.Key;
 
 public final class PackedBridge<E> {
 
-    final Class<? extends Extension<?>> extensionClass;
+    public final Class<? extends Extension<?>> extensionClass;
 
     PackedBridge(Class<? extends Extension<?>> extensionClass) {
         this.extensionClass = extensionClass;
@@ -52,7 +52,7 @@ public final class PackedBridge<E> {
      * @param action
      * @return
      */
-    public PackedBridge<E> onUse(Consumer<E> action) {
+    public PackedBridge<E> onUse(Consumer<? super E> action) {
         return null;
     }
 

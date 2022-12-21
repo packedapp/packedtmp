@@ -31,6 +31,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
+import app.packed.bindings.Variable;
+
 /**
  * An operation type represents the arguments and return variable for an operation.
  * 
@@ -133,14 +135,14 @@ public final /* primitive */ class OperationType {
     private Class<?>[] rawParameterTypeArray() {
         Class<?>[] params = new Class<?>[parameterVars.length];
         for (int i = 0; i < params.length; i++) {
-            params[i] = parameterVars[i].getType();
+            params[i] = parameterVars[i].getRawType();
         }
         return params;
     }
 
     /** {@return the return variable.} */
     public Class<?> returnType() {
-        return returnVar.getType();
+        return returnVar.getRawType();
     }
 
     /** {@return the return variable.} */
@@ -153,9 +155,9 @@ public final /* primitive */ class OperationType {
      */
     public MethodType toMethodType() {
         return switch (parameterVars.length) {
-        case 0 -> MethodType.methodType(returnVar.getType());
-        case 1 -> MethodType.methodType(returnVar.getType(), parameterVars[0].getType());
-        default -> MethodType.methodType(returnVar.getType(), rawParameterTypeArray());
+        case 0 -> MethodType.methodType(returnVar.getRawType());
+        case 1 -> MethodType.methodType(returnVar.getRawType(), parameterVars[0].getRawType());
+        default -> MethodType.methodType(returnVar.getRawType(), rawParameterTypeArray());
         };
     }
 

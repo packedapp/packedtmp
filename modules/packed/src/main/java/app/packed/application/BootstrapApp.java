@@ -21,15 +21,14 @@ import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.PackedApplicationDriver;
 
 /**
- * Application drivers are responsible for creating (root) applications.
+ * A bootstrap app is a special application that can be used to creating other (non-bootstrap) application.
  * <p>
- * Packed comes with a number of predefined application drivers:
+ * Bootstrap application Packed comes with a number of predefined application drivers:
  * <p>
  * Application drivers are normally never exposed to end users.
  * 
@@ -45,11 +44,9 @@ import internal.app.packed.application.PackedApplicationDriver;
  * Normally, you never create more than a single instance of an application driver.
  * 
  * @param <A>
- *            the type of application interface this driver creates.
- * @see App#driver()
+ *            the type of applications this bootstrap app creates.
  */
 @SuppressWarnings("rawtypes")
-// A root application has a bootstrap application? or is the driver a bootstrap application
 public sealed interface BootstrapApp<A> permits PackedApplicationDriver {
 
     /**
@@ -89,11 +86,12 @@ public sealed interface BootstrapApp<A> permits PackedApplicationDriver {
     // Andre image optimizations
     //// Don't cache beans info
     /// Nu bliver jeg i tvivl igen... Fx med Tester
+
+    // launchLazily?
     ApplicationLauncher<A> newLauncher(Assembly assembly, Wirelet... wirelets);
 
     /**
      * Creates a new application mirror from the specified assembly and optional wirelets.
-     * <p>
      * 
      * @param assembly
      *            the assembly to create an application mirror from
@@ -107,13 +105,14 @@ public sealed interface BootstrapApp<A> permits PackedApplicationDriver {
     ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets);
 
     /**
+     * Verifies that a valid application can be build.
+     * 
      * @param assembly
      *            the assembly defining the application that should be verified
      * @param wirelets
      *            optional wirelets
-     * 
      * @throws RuntimeException
-     *             if the application was not valid
+     *             if a valid application cannot be created
      */
     void verify(Assembly assembly, Wirelet... wirelets);
 
@@ -141,106 +140,42 @@ public sealed interface BootstrapApp<A> permits PackedApplicationDriver {
     // Hvis vi ikke expo
     BootstrapApp<A> with(Wirelet... wirelets);
 
-    /**
-     * Returns a new {@code ApplicationDriver} builder that will build an application driver without a wrapper bean.
-     *
-     * @return the new builder
-     */
-    static Builder<Void> builder() {
-        return new PackedApplicationDriver.Builder<>(null);
-    }
     static <A> BootstrapApp<A> of(Class<A> applicationClass, ComposerAction<Composer> action) {
-        throw new UnsupportedOperationException();
+        Composer c = new Composer();
+        action.build(c);
+        return c.b.build(MethodHandles.lookup(), applicationClass);
     }
 
+    static BootstrapApp<Void> of(ComposerAction<Composer> action) {
+        Composer c = new Composer();
+        action.build(c);
+        return c.b.buildVoid();
+    }
+
+    @SuppressWarnings("unchecked")
     static <A> BootstrapApp<A> of(Op<A> op, ComposerAction<Composer> action) {
-        throw new UnsupportedOperationException();
-    }
-    
-    static BootstrapApp<Void> ofVoid(ComposerAction<Composer> action) {
-        return null;
+        Composer c = new Composer();
+        action.build(c);
+        return c.b.build((Class) op.type().returnType(), op);
     }
 
-    public final class Composer extends AbstractComposer {
-        Composer() {}
-        
-        /**
-         * Application produced by the driver are executable. And will be launched by the specified launch mode by default.
-         * <p>
-         * The default launchState can be overridden at later point by using XYZ
-         * 
-         * @return this builder
-         */
-       public Composer managedLifetime() {
-           return this;
-       }
-    }
     /**
-     * A builder for an application driver. An instance of this interface is acquired by calling
-     * {@link BootstrapApp#builder()}.
+     * A composer used for creating bootstrap app instances.
+     * 
+     * @see BootstrapApp#of(Class, ComposerAction)
+     * @see BootstrapApp#of(Op, ComposerAction)
+     * @see BootstrapApp#of(ComposerAction)
      */
-    /* sealed */ interface Builder<A> /* permits PackedApplicationDriver.Builder */ {
-        // Environment + Application Interface + Result
 
-        // Refactoring
-        //// En build(Wirelet... wirelets) metode
-        //// Companion objects must be added in order of the recieving MethodHandle
+    // ? ApplicationWrapper
+    // Bridge types
+    // Compiler -> Deployable<ApplicationWrapper>
+    public static final class Composer extends AbstractComposer {
+        PackedApplicationDriver.Builder b = new PackedApplicationDriver.Builder(null);
 
-        // Maaske konfigure man dem direkte paa extension support klassen
-        //// Det jeg taener er at man maaske har mulighed for at konfigure dem. F.eks.
-        // ServiceApplicationController.alwaysWrap();
+        boolean managedLifetime;
 
-        // Problemet her er at vi gerne maaske fx vil angive LaunchState for Lifetime.
-        // Hvilket ikke er muligt
-
-        // noget optional??? ellers
-        /**
-         * @param companions
-         * @return this builder
-         * @throws UnsupportedOperationException
-         *             if this builder does not have a wrapper
-         */
-//        default Builder addCompanion(ExtensionBridge... companions) {
-//            return this;
-//        }
-
-        <S> BootstrapApp<S> build(Class<S> wrapperType, Op<S> op, Wirelet... wirelets);
-
-        /**
-         * Creates a new artifact driver.
-         * <p>
-         * The specified implementation can have the following types injected.
-         * 
-         * If the specified implementation implements {@link AutoCloseable} a {@link ManagedLifetimeController} can also be
-         * injected.
-         * <p>
-         * Fields and methods are not processed.
-         * 
-         * @param <A>
-         *            the type of artifacts the driver creates
-         * @param caller
-         *            a lookup object that must have full access to the specified implementation
-         * @param wrapperType
-         *            the implementation of the artifact
-         * @return a new driver
-         */
-        <S> BootstrapApp<S> build(MethodHandles.Lookup caller, Class<? extends S> wrapperType, Wirelet... wirelets);
-
-//        default ApplicationDriver<A> build(Wirelet... wirelets) {
-//            throw new UnsupportedOperationException();
-//        }
-
-        BootstrapApp<Void> buildVoid(Wirelet... wirelets);
-
-//        /**
-//         * Disables 1 or more extensions. Attempting to use a disabled extension will result in an RestrictedExtensionException
-//         * being thrown
-//         * 
-//         * @param extensionTypes
-//         *            the types of extension to disable
-//         * @return
-//         */
-//        Builder<A> disableExtension(Class<? extends Extension<?>> extensionType);
+        private Composer() {}
 
         /**
          * Application produced by the driver are executable. And will be launched by the specified launch mode by default.
@@ -249,109 +184,17 @@ public sealed interface BootstrapApp<A> permits PackedApplicationDriver {
          * 
          * @return this builder
          */
-        Builder<A> managedLifetime();
+        public Composer managedLifetime() {
+            b.managedLifetime();
+            managedLifetime = true;
+            return this;
+        }
 
-//        @SuppressWarnings("unchecked")
-//        default Builder<A> requireExtension(Class<? extends Extension>... extensionTypes) {
-//
-//            return this;
-//        }
-//
-//        default Builder<A> restartable() {
-//            return this;
-//        }
-//
-//        // Det er jo ogsaa en companion
-//        default Builder<A> resultType(Class<?> resultType) {
-//            throw new UnsupportedOperationException();
-//        }
-//
-//        // overrideMirror???
-//        default Builder<A> specializeMirror(Supplier<? extends ApplicationMirror> supplier) {
-//            throw new UnsupportedOperationException();
-//        }
+        static class BootstrapAppAssembly extends ComposerAssembly<Composer> {
 
-        // Maaske kan man have et form for accept filter...
-
-        // Vi skal soerge for vi ikke klasse initialisere... Det er det
-
-        // Bliver de arvet??? Vil mene ja...
-        // Naa men vi laver bare en host/app der saa kan goere det...
-
-        // Kan ogsaa lave noget BiPredicate der tager
-        // <Requesting extension, extension that was requested>
-
-        // Spies
-
-        // Kan jo altsaa ogsaa vaere en Wirelet...
-        // WireletScope...
-
-        /**
-         * Indicates that the any application create by this driver is not runnable.
-         * 
-         * @return this builder
-         */
-        // https://en.wikipedia.org/wiki/Runtime_system
-        // noRuntimeEnvironment appénwerwer wer
-
-        // Add ApplicationRuntimeExtension to list of unsupported extensions
-        // noApplicationRuntime
-//        Builder disableApplicationRuntime(); // or notRunnable() (it was this originally)
-
-        // Application can only take an assembly of this type...
-
-        // fx disallow(BytecodeGenExtension.class);
-        // fx disallow(ThreadExtension.class);
-        // fx disallow(FileExtension.class);
-        // fx disallow(NetExtension.class); -> you want to use network.. to bad for you...
-
-//        default Builder linkExtensionBean(Class<? extends Extension> extensionType, Class<?> extensionBean) {
-//            
-//            // Taenker lidt den bliver erstattet af ApplicationController?
-//            
-//            // extension must be available...
-//            // An extensionBean of the specified type must be installed by the extension in the root container
-//            return this;
-//        }
-
+            BootstrapAppAssembly(ComposerAction<? super Composer> action) {
+                super(new Composer(), action);
+            }
+        }
     }
-
-//    static <A> ApplicationDriver<A> of(Class<A> type, ComposerAction<Composer<A>> action) {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    // Ville jo vaere fedt at genbruge den for ikke application-drivere.
-//    // Apps on Apps.
-//    
-//    // Den fungere bare ikke geniferciret
-//    public final class Composer<A> extends AbstractComposer {
-//
-//        static <A> ApplicationDriver<A> of(Class<A> application, ComposerAction<? super Composer<A>> action, Wirelet... wirelets) {
-//            throw new UnsupportedOperationException();
-//        }
-//
-//        /// Hmm interessant
-//        // fungere dog ikke super godt mht til den generiske parameter
-//        static ApplicationDriver<Void> of(ComposerAction<? super Composer<Void>> action, Wirelet... wirelets) {
-//            throw new UnsupportedOperationException();
-//        }
-//    }
 }
-
-// Foer var den som wirelet.
-// Men Problemet med en wirelet og ikke en metode er at vi ikke beregne ApplicationBuildKind foerend
-// vi har processeret alle wirelets
-
-// Alternativ paa Driveren -> Fungere daarlig naar vi har child apps
-
-// eller selvstaendig metode -> Er nok den bedste for nu
-
-// og saa ServiceLocator.newReusableImage
-///**
-//* @param launchMode
-//* @return
-//* @throws UnsupportedOperationException
-//*             if the driver was not built as executable.
-//* @see Builder#executable(RunState)
-//*/
-//ApplicationDriver<A> withLaunchMode(RunState launchMode);

@@ -15,9 +15,9 @@
  */
 package internal.app.packed.application.sandbox;
 
-import app.packed.application.BootstrapApp;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
+import app.packed.application.BootstrapApp;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;

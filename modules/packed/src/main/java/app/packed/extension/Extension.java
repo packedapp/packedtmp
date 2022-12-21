@@ -15,7 +15,6 @@
  */
 package app.packed.extension;
 
-import static internal.app.packed.util.StringFormatter.format;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Documented;
@@ -40,6 +39,7 @@ import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.PackedWireletSelection;
 import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.util.ClassUtil;
+import internal.app.packed.util.StringFormatter;
 
 /**
  * Extensions are main mechanism by which the framework can be extended with new features.
@@ -299,6 +299,18 @@ public abstract class Extension<E extends Extension<E>> {
         return (E) s.instance();
     }
 
+    /** {@return instance of this extension that is used in the lifetimes root container.} */
+    @SuppressWarnings("unchecked")
+    protected final E lifetimeRoot() {
+        ExtensionSetup s = extension;
+        while (s.treeParent != null) {
+            if (s.container.lifetime != s.treeParent.container.lifetime) {
+                s = s.treeParent;
+            }
+        }
+        return (E) s.instance();
+    }
+
     /**
      * Returns a selection of all wirelets of the specified type that have not already been processed.
      * <p>
@@ -367,7 +379,7 @@ public abstract class Extension<E extends Extension<E>> {
                 throw new InternalExtensionException(otherExtensionClass.getSimpleName() + " cannot use its own extension point " + extensionPointClass);
             }
             throw new InternalExtensionException(
-                    getClass().getSimpleName() + " must declare " + format(otherExtensionClass) + " as a dependency in order to use " + extensionPointClass);
+                    getClass().getSimpleName() + " must declare " + StringFormatter.format(otherExtensionClass) + " as a dependency in order to use " + extensionPointClass);
         }
 
         ExtensionSetup otherExtension = extension.container.useExtension(otherExtensionClass, extension);

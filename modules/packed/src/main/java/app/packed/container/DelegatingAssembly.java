@@ -16,7 +16,7 @@
 package app.packed.container;
 
 import app.packed.application.BuildException;
-import app.packed.bean.CustomBeanHook;
+import app.packed.extension.CustomBeanHook;
 
 /**
  * An assembly that delegates all calls to another assembly.

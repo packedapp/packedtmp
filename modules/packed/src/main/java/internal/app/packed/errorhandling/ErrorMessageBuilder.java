@@ -20,7 +20,7 @@ import static internal.app.packed.util.StringFormatter.format;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Parameter;
 
-import app.packed.operation.Variable;
+import app.packed.bindings.Variable;
 
 /**
  *

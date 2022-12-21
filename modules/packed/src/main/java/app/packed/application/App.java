@@ -32,10 +32,8 @@ import app.packed.lifetime.RunState;
 // [Checked|Not-Checked]Launch, Mirror, Launcher, ReuseableLauncher
 public final class App {
 
-    /** The default driver. */
-    private static final BootstrapApp<Void> DEFAULT_DRIVER = BootstrapApp.builder().managedLifetime().buildVoid();
-
-    static final BootstrapApp<Void> BOOTSTRAP = BootstrapApp.ofVoid(c -> c.managedLifetime());
+    /** The bootstrap app. */
+    private static final BootstrapApp<Void> BOOTSTRAP = BootstrapApp.of(c -> c.managedLifetime());
 
     /** Not today Satan, not today. */
     private App() {}
@@ -49,7 +47,7 @@ public final class App {
     }
 
     public static App.Launcher newImage(Assembly assembly, Wirelet... wirelets) {
-        return new Launcher(DEFAULT_DRIVER.newImage(assembly, wirelets));
+        return new Launcher(BOOTSTRAP.newImage(assembly, wirelets));
     }
 
     /**
@@ -65,7 +63,7 @@ public final class App {
      * @return a launcher that can be used to launch a single instance of the application
      */
     public static App.Launcher newLauncher(Assembly assembly, Wirelet... wirelets) {
-        return new Launcher(DEFAULT_DRIVER.newLauncher(assembly, wirelets));
+        return new Launcher(BOOTSTRAP.newLauncher(assembly, wirelets));
     }
 
     /**
@@ -80,7 +78,7 @@ public final class App {
      *             if the application could not be build
      */
     public static ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets) {
-        return DEFAULT_DRIVER.newMirror(assembly, wirelets);
+        return BOOTSTRAP.newMirror(assembly, wirelets);
     }
 
     public static void print(Assembly assembly, Object printDetails, Wirelet... wirelets) {
@@ -111,11 +109,11 @@ public final class App {
      * @see #checkedRun(Assembly, Wirelet...)
      */
     public static void run(Assembly assembly, Wirelet... wirelets) {
-        DEFAULT_DRIVER.launch(assembly, wirelets);
+        BOOTSTRAP.launch(assembly, wirelets);
     }
 
     public static void verify(Assembly assembly, Wirelet... wirelets) {
-        DEFAULT_DRIVER.verify(assembly, wirelets);
+        BOOTSTRAP.verify(assembly, wirelets);
     }
 
     // class probably... no need for an interface. Noone is going to call in

@@ -21,13 +21,13 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
-import app.packed.bean.BeanIntrospector.OnBinding;
-import app.packed.bindings.BindingMirror;
+import app.packed.bean.BeanIntrospector.OnVariableProvideRaw;
+import app.packed.bindings.Variable;
+import app.packed.bindings.mirror.BindingMirror;
 import app.packed.container.Realm;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import app.packed.operation.Op;
-import app.packed.operation.Variable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
@@ -36,8 +36,8 @@ import internal.app.packed.operation.binding.BindingProvider.FromOperation;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.operation.binding.BindingSetup.HookBindingSetup;
 
-/** Implementation of {@link BeanIntrospector.OnBinding}. */
-public final class IntrospectedBeanBinding implements OnBinding {
+/** Implementation of {@link BeanIntrospector.OnVariableProvideRaw}. */
+public non-sealed class IntrospectedBeanVariable implements OnVariableProvideRaw {
 
     /** The extension that manages the binding. */
     private final ExtensionSetup bindingExtension;
@@ -45,7 +45,7 @@ public final class IntrospectedBeanBinding implements OnBinding {
     @Nullable
     final Class<?> bindingHookClass;
 
-    /** The index of the binding. */
+    /** The index of the binding into the operation. */
     private final int index;
 
     /** A specialized mirror for the binding. */
@@ -59,7 +59,7 @@ public final class IntrospectedBeanBinding implements OnBinding {
 
     final IntrospectedBean iBean;
 
-    public IntrospectedBeanBinding(IntrospectedBean iBean, OperationSetup operation, int index, ExtensionSetup bindingExtension,
+    public IntrospectedBeanVariable(IntrospectedBean iBean, OperationSetup operation, int index, ExtensionSetup bindingExtension,
             @Nullable Class<?> bindingHookClass, Variable var) {
         this.operation = requireNonNull(operation);
         this.iBean = iBean;
@@ -77,18 +77,18 @@ public final class IntrospectedBeanBinding implements OnBinding {
 
     /** {@inheritDoc} */
     @Override
-    public void bind(@Nullable Object obj) {
+    public void bindConstant(@Nullable Object obj) {
         checkIsBindable();
         if (obj == null) {
-            if (variable.getType().isPrimitive()) {
+            if (variable.getRawType().isPrimitive()) {
                 throw new IllegalArgumentException(variable + " is a primitive type and cannot be bound to null");
             }
         } else {
-            if (!variable.getType().isAssignableFrom(obj.getClass())) {
+            if (!variable.getRawType().isAssignableFrom(obj.getClass())) {
                 // Maybe throw an InternalExtensionException?
                 // As it is the responsibility of the extension
                 // to throw a more fitting exception
-                throw new ClassCastException("? of type " + variable.getType() + " cannot be bound to object of type " + obj.getClass());
+                throw new ClassCastException("? of type " + variable.getRawType() + " cannot be bound to object of type " + obj.getClass());
             }
 
         }
@@ -101,12 +101,6 @@ public final class IntrospectedBeanBinding implements OnBinding {
         operation.bindings[index] = bs;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void bindEmpty() {
-        throw new UnsupportedOperationException();
-    }
-
     private void checkIsBindable() {
         if (isBound()) {
             throw new IllegalStateException("A binding has already been created");
@@ -116,12 +110,13 @@ public final class IntrospectedBeanBinding implements OnBinding {
     /** {@inheritDoc} */
     @Override
     public Class<?> hookClass() {
+        // Javadoc says throw UOE if Nullable
         return bindingHookClass;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Class<? extends Extension<?>> invokingExtension() {
+    public Class<? extends Extension<?>> invokedBy() {
         return operation.operator.extensionType;
     }
 
@@ -132,7 +127,7 @@ public final class IntrospectedBeanBinding implements OnBinding {
 
     /** {@inheritDoc} */
     @Override
-    public void provide(Op<?> op) {
+    public void bindTo(Op<?> op) {
         checkIsBindable();
         PackedOp<?> pop = PackedOp.crack(op);
 
@@ -144,7 +139,7 @@ public final class IntrospectedBeanBinding implements OnBinding {
         
         //OperationBindingSetup obs = new OperationBindingSetup(os, index, User.application(), os);
 
-        if (variable.getType() != os.methodHandle.type().returnType()) {
+        if (variable.getRawType() != os.methodHandle.type().returnType()) {
 //            System.out.println("FixIt");
         }
         if (iBean != null) {
@@ -158,13 +153,7 @@ public final class IntrospectedBeanBinding implements OnBinding {
 
     /** {@inheritDoc} */
     @Override
-    public OnBinding runtimeBindable() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public OnBinding specializeMirror(Supplier<? extends BindingMirror> supplier) {
+    public OnVariableProvideRaw specializeMirror(Supplier<? extends BindingMirror> supplier) {
         checkIsBindable();
         this.mirrorSupplier = requireNonNull(supplier);
         return this;

@@ -305,6 +305,7 @@ public final class BeanSetup {
                     if (o == null) {
                         return bean;
                     } else if (o instanceof BeanSetup) {
+                        // singular???
                         throw new BeanClassAlreadyExistsException("A non-multi bean has already been defined for " + bean.beanClass);
                     } else {
                         // We already have some multiple beans installed

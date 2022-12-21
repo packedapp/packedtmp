@@ -13,18 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings;
+package app.packed.bindings.mirror;
 
+import app.packed.context.ContextMirror;
 import app.packed.service.Key;
-import app.packed.service.ServiceBindingMirror;
 
 /**
  *
- * @see BindingKind#KEY
  */
-// Er maaske nået til Context Services, Extension Services, Container Services
-public sealed abstract class KeyBasedBindingMirror extends BindingMirror permits ServiceBindingMirror, ContextServiceBindingMirror {
-    
-    /** {@return the binding key.} */
-    public abstract Key<?> key();
+// Ideen er at man kan provide nogle i en operation context...
+// Som ikke noedvendigvis er binding hooks
+// Er factory? En context??? Hmmm En slags jo...
+public non-sealed class ContextServiceBindingMirror extends KeyBasedBindingMirror {
+
+    /** {@return the context that provided the binding.} */
+    public ContextMirror context() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Key<?> key() {
+        throw new UnsupportedOperationException();
+    }
 }

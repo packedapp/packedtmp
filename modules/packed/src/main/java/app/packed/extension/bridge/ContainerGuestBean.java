@@ -13,23 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings;
+package app.packed.extension.bridge;
 
-import app.packed.operation.OperationMirror;
+import app.packed.bean.BeanHandle;
+import app.packed.bean.InstanceBeanConfiguration;
 
 /**
- * A composite binding mirror
+ *
  */
-public class CompositeBindingMirror extends BindingMirror {
+// Har ikke nogle host objekter. Det er jo en almindelige bean...
 
-    public OperationMirror compositeOperation() {
-        return providingOperation().get();
+// Saa hvis vi endelig ville lave det, skal det generisks for beans.
+public class ContainerGuestBean<T> extends InstanceBeanConfiguration<T> {
+
+    /**
+     * @param handle
+     */
+    public ContainerGuestBean(BeanHandle<T> handle) {
+        super(handle);
+    }
+    
+    public ContainerGuestBean<T> addBridge(ExtensionBridge bridge) {
+        return this;
     }
 }
-
-//Functions bliver ikke laengere resolve som en composite. Istedet for er det 2 argumenter...
-// get(Req, Res) -> Har bare 2 parametere. (Maaske idk)
-// Jo, 2 arg bindings
-//public boolean isFuncionalInterface() {
-//    throw new UnsupportedOperationException();
-//}
+// Guest -> 

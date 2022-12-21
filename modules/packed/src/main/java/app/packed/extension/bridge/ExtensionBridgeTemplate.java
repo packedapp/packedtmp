@@ -23,7 +23,6 @@ import java.util.function.Supplier;
 
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
-import app.packed.service.Key;
 import internal.app.packed.application.PackedBridge;
 
 /**
@@ -42,37 +41,34 @@ public final class ExtensionBridgeTemplate<E extends Extension<E>> {
         return new ExtensionBridge(bridge);
     }
 
-    // A runtime argument passed along to ???
     public ExtensionBridgeTemplate<E> addInvocationArgument(Class<?> key) {
         throw new UnsupportedOperationException();
     }
-
-    public ExtensionBridgeTemplate<E> addInvocationArgument(Key<?> key) {
-        throw new UnsupportedOperationException();
+    
+    public ExtensionBridgeTemplate<E> onUse(Consumer<? super E> action) {
+        bridge = bridge.onUse(action);
+        return this;
     }
-
+    
     public ExtensionBridgeTemplate<E> onNeverUsed(Runnable action) {
         throw new UnsupportedOperationException();
     }
 
-    public ExtensionBridgeTemplate<E> onUse(Consumer<E> action) {
-        bridge = bridge.onUse(action);
-        return this;
-    }
 
-    public ExtensionBridgeTemplate<E> provideUp(Op<?> op) {
+    public ExtensionBridgeTemplate<E> expose(Op<?> op) {
         throw new UnsupportedOperationException();
     }
 
-    public <S> ExtensionBridgeTemplate<E> provideOutOr(Op<?> op, Supplier<S> supplier) {
+    public <S> ExtensionBridgeTemplate<E> exposeOr(Op<S> op, Supplier<S> supplier) {
         throw new UnsupportedOperationException();
     }
 
-    public <S> ExtensionBridgeTemplate<E> provideOutOrInstance(Op<S> op, S constant) {
+    //exposeOrInstace(ServiceBean->SL.wrap, ServiceLocator.empty())
+    public <S> ExtensionBridgeTemplate<E> exposeOrInstance(Op<S> op, S constant) {
         throw new UnsupportedOperationException();
     }
 
-    public static <E extends Extension<E>> ExtensionBridgeTemplate<E> builder(MethodHandles.Lookup lookup, Class<E> extensionType) {
+    public static <E extends Extension<E>> ExtensionBridgeTemplate<E> of(MethodHandles.Lookup lookup, Class<E> extensionType) {
         throw new UnsupportedOperationException();
     }
 }

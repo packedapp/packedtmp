@@ -18,7 +18,7 @@ package app.packed.context;
 import java.util.List;
 import java.util.Set;
 
-import app.packed.bean.BeanIntrospector.OnBinding;
+import app.packed.bean.BeanIntrospector.OnVariableProvideRaw;
 import app.packed.service.Key;
 
 /**
@@ -60,7 +60,7 @@ public class ContextTemplateImpl {
     }
 
     // IDK
-    protected void notInContext(OnBinding dep) {
+    protected void notInContext(OnVariableProvideRaw dep) {
 
     }
 

@@ -27,8 +27,8 @@ import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Optional;
 
+import app.packed.bindings.Variable;
 import app.packed.framework.Nullable;
-import app.packed.operation.Variable;
 import app.packed.service.Key;
 import internal.app.packed.operation.binding.InternalDependency;
 import internal.app.packed.util.MethodHandleUtil;

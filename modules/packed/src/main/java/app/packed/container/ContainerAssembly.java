@@ -90,9 +90,10 @@ public non-sealed abstract class ContainerAssembly extends Assembly {
      * 
      * @throws IllegalStateException
      *             if {@link #build()} has already been invoked
+     * @see #isPreBuild()
      */
-    protected final void checkBuildNotStarted() {
-        if (configuration != null) {
+    protected final void checkIsPreBuild() {
+        if (!isPreBuild()) {
             throw new IllegalStateException("This method must be called before the assembly is used to build an application");
         }
     }
@@ -152,6 +153,17 @@ public non-sealed abstract class ContainerAssembly extends Assembly {
             // Assembly is in the process of being used. Typically happens, if an assembly is linked recursively.
             throw new IllegalStateException("This assembly is currently being used elsewhere, assembly = " + getClass());
         }
+    }
+
+    /**
+     * Returns whether or not {@link #build()} has been called.
+     * 
+     * @return {@code true} if {@link #build()} has not been called yet, otherwise {@code false}
+     * 
+     * @see #checkIsPreBuild()
+     */
+    protected final boolean isPreBuild() {
+        return configuration == null;
     }
 
     /**

@@ -51,10 +51,6 @@ public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
         super(handle);
     }
 
-    public <C> void anyClassifierMethodHandleArrayFrom(OperationHandle handle, Class<C> classifierType, C value) {}
-
-    public <C> void anyClassifierMethodHandleArrayFrom(OperationHandle handle, Class<C> classifierType, C value, Key<MethodHandle[]> key) {}
-
     @SuppressWarnings("unchecked")
     <X extends NewX<?>> X getOrCreate(Class<X> type, Key<?> key, MethodType mt, BiFunction<MethodType, Key<?>, X> supplier) {
         NewX<?> n = node;
@@ -70,29 +66,30 @@ public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
         return (X) n;
     }
 
-    public <K> ExtensionBeanConfiguration<T> initializeWithCodeGenerated(Class<K> key, Supplier<? extends K> supplier) {
-        return initializeWithCodeGenerated(Key.of(key), supplier);
+    // Problemet 
+    public <K> ExtensionBeanConfiguration<T> initializeWith(Class<K> key, Supplier<? extends K> supplier) {
+        return initializeWith(Key.of(key), supplier);
     }
 
-    public <K> ExtensionBeanConfiguration<T> initializeWithCodeGenerated(Key<K> key, Supplier<? extends K> supplier) {
+    public <K> ExtensionBeanConfiguration<T> initializeWith(Key<K> key, Supplier<? extends K> supplier) {
         return this;
     }
 
-    public <K> ExtensionBeanConfiguration<T> injectMethodHandleFrom(OperationHandle handle) {
+    public <C> void initializeWithClassifiedMethodHandle(OperationHandle handle, Class<C> classifierType, C value) {}
+
+    public <C> void initializeWithClassifiedMethodHandle(OperationHandle handle, Class<C> classifierType, C value, Key<MethodHandle> key) {}
+
+    public <K> void initializeWithMethodHandle(OperationHandle handle) {
+        initializeWithMethodHandle(handle, Key.of(MethodHandle.class));
+    }
+
+    public <K> void initializeWithMethodHandle(OperationHandle handle, Key<MethodHandle> key) {
         // Tror det er en god ide saa kan jeg skjule invokeFrom...
         // Og saa maaske bare have en relativizeTo
-        initializeWithCodeGenerated(Key.of(MethodHandle.class), () -> handle.generateMethodHandle());
-        return this;
+        initializeWith(key, () -> handle.generateMethodHandle());
     }
 
-    public <K> ExtensionBeanConfiguration<T> injectMethodHandleFrom(OperationHandle handle, Key<MethodHandle> key) {
-        // Tror det er en god ide saa kan jeg skjule invokeFrom...
-        // Og saa maaske bare have en relativizeTo
-        initializeWithCodeGenerated(Key.of(MethodHandle.class), () -> handle.generateMethodHandle());
-        return this;
-    }
-
-    public int intClassifierMethodHandleArrayFrom(OperationHandle handle) {
+    public int initializeWithIntClassifierMethodHandle(OperationHandle handle) {
         // First argument of the MethodHandle will now take an int...
 
         // Tror det er en god ide saa kan jeg skjule invokeFrom...
@@ -100,7 +97,7 @@ public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
         return 0;
     }
 
-    public int intClassifierMethodHandleArrayFrom(OperationHandle handle, Key<MethodHandle[]> key) {
+    public int initializeWithIntClassifierMethodHandle(OperationHandle handle, Key<MethodHandle> key) {
         requireNonNull(key, "key is null");
         AutoXClassifier axc = getOrCreate(AutoXClassifier.class, key, handle.invocationType(), AutoXClassifier::new);
         axc.operations.add(handle);
@@ -130,6 +127,20 @@ public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
         }
     }
 
+    enum Foo {
+        
+        // Adds a <T> param to the operation, which uses a predestioned key
+        CLASSIFIED,
+        
+        // Custom generated
+        CUSTOM,
+        
+        
+        INT_CLASSIFIED, // Injects a single MethodHandle
+        
+        SINGLE;
+    }
+    
     static final class MapLookup<T> extends NewX<MethodHandle> {
 
         private final LinkedHashMap<T, OperationHandle> operations = new LinkedHashMap<>();

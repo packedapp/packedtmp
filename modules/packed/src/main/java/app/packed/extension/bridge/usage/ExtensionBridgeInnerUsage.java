@@ -27,9 +27,9 @@ import app.packed.service.ServiceExtension;
 class ExtensionBridgeInnerUsage {
 
     public static void main(String[] args) {
-        ExtensionBridgeTemplate<ServiceExtension> b = ExtensionBridgeTemplate.builder(MethodHandles.lookup(), ServiceExtension.class);
+        ExtensionBridgeTemplate<ServiceExtension> b = ExtensionBridgeTemplate.of(MethodHandles.lookup(), ServiceExtension.class);
         b.onUse(s -> s.exportAll());
-        b.provideUp(new Op1<MyExtBean, String>(e -> e.foo) {});
+        b.expose(new Op1<MyExtBean, String>(e -> e.foo) {});
         b.build();
     }
 

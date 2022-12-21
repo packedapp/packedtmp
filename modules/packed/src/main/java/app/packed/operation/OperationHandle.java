@@ -27,13 +27,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.BeanIntrospector.OnMethod;
+import app.packed.bean.BeanIntrospector.OnVariableProvide;
+import app.packed.bean.BeanIntrospector.OnVariableProvideRaw;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
-import internal.app.packed.bean.IntrospectedBeanBinding;
+import internal.app.packed.bean.IntrospectedBeanVariable;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -119,15 +120,26 @@ public final /* primitive */ class OperationHandle {
     // Det er jo kun meningen at man skal binden den hvis man kalder denne metode.
     // Saa maaske skal vi have en Mode i IBB
 
+    
+    // overrideParameter?
+    // bindParameter
     // bindManually
     // bind(index).toConstant("Foo");
-    public OnBinding bindManually(int index) {
+    public OnVariableProvide bindManually(int index) {
+        checkConfigurable();
+        // This method does not throw IllegalStateExtension, but OnBinding may.
+        // custom invocationContext must have been set before calling this method
+        checkIndex(index, operation.type.parameterCount());
+        throw new UnsupportedOperationException();
+    }
+
+    public OnVariableProvideRaw bindManuallyRaw(int index) {
         checkConfigurable();
         // This method does not throw IllegalStateExtension, but OnBinding may.
         // custom invocationContext must have been set before calling this method
         checkIndex(index, operation.type.parameterCount());
 
-        return new IntrospectedBeanBinding(operation.bean.introspecting, operation, index, operation.operator, null, operation.type.parameter(index));
+        return new IntrospectedBeanVariable(operation.bean.introspecting, operation, index, operation.operator, null, operation.type.parameter(index));
     }
 
     /** Checks that the operation is still configurable. */
@@ -217,7 +229,7 @@ public final /* primitive */ class OperationHandle {
     }
 }
 
-interface ZandboxOperationHandle {
+interface ZandboxOH {
 
     // Must not have a classifier
     //// Will have a MH injected at runtime...
@@ -355,7 +367,7 @@ interface ZandboxOperationHandle {
         // onMethod, onField, ect
     }
 
-    ZandboxOperationHandle resultAssignableToOrFail(Class<?> clz); // ignores any return value
+    ZandboxOH resultAssignableToOrFail(Class<?> clz); // ignores any return value
 
     // dependencies skal vaere her, fordi de er mutable. Ved ikke om vi skal have 2 klasser.
     // Eller vi bare kan genbruge BeanDependency
@@ -365,9 +377,9 @@ interface ZandboxOperationHandle {
 
     // boolean isBound(int parameterIndex)
 
-    ZandboxOperationHandle resultVoid(); // returnIgnore?
+    ZandboxOH resultVoid(); // returnIgnore?
 
-    ZandboxOperationHandle resultVoidOrFail(); // fails if non-void with BeanDeclarationException
+    ZandboxOH resultVoidOrFail(); // fails if non-void with BeanDeclarationException
 
     // spawn NewBean/NewContainer/NewApplication...
     default void spawnNewBean() {

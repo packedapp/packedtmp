@@ -22,16 +22,21 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.bindings.BindingMirror;
+import app.packed.bean.BeanHook.AnnotatedFieldHook;
+import app.packed.bean.BeanHook.AnnotatedMethodHook;
+import app.packed.bean.BeanHook.VariableTypeHook;
+import app.packed.bindings.Variable;
+import app.packed.bindings.mirror.BindingMirror;
+import app.packed.container.Realm;
+import app.packed.context.Context;
 import app.packed.extension.BaseExtensionPoint;
-import app.packed.extension.BaseExtensionPoint.BindingHook;
-import app.packed.extension.BaseExtensionPoint.FieldHook;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
@@ -42,15 +47,15 @@ import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
-import app.packed.operation.Variable;
 import app.packed.service.InvalidKeyException;
 import app.packed.service.Key;
 import internal.app.packed.bean.BeanAnnotationReader;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.IntrospectedBeanBinding;
 import internal.app.packed.bean.IntrospectedBeanField;
 import internal.app.packed.bean.IntrospectedBeanMethod;
+import internal.app.packed.bean.IntrospectedBeanVariable;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.service.KeyHelper;
 
 /**
  * 
@@ -74,24 +79,39 @@ public abstract class BeanIntrospector {
     @Nullable
     private Setup setup;
 
+    /**
+     * A callback method that is invoked before any calls to {@link #onClass(OnClass)}, {@link #onField(OnField)},
+     * {@link #onMethod(OnMethod)} or {@link #onVariableProvideRaw(OnVariableProvideRaw)}.
+     * <p>
+     * This method can be used to setup data structures or perform validation.
+     * 
+     * @see #beforeIntrospection()
+     */
+    public void afterIntrospection() {}
+
     /** {@return an annotation reader for the bean class.} */
     public final AnnotationReader beanAnnotations() {
         return new BeanAnnotationReader(beanClass().getAnnotations());
     }
 
-    /** {@return the class that is being introspected.} */
+    /** {@return the bean class that is being introspected.} */
     public final Class<?> beanClass() {
         return setup().bean.beanClass;
     }
 
-    /** {@return the type of extension that installed the bean.} */
-    public final Class<? extends Extension<?>> beanInstalledBy() {
+    /** {@return the extension the bean was installed via.} */
+    public final Class<? extends Extension<?>> beanInstalledVia() {
         return setup().bean.installedBy.extensionType;
     }
 
     /** {@return an annotation reader for the bean class.} */
     public final BeanKind beanKind() {
         return setup().bean.beanKind;
+    }
+
+    /** {@return the owner of the bean.} */
+    public final Realm beanOwner() {
+        return setup().bean.realm.realm();
     }
 
     /** {@return an annotation reader for the bean class.} */
@@ -106,7 +126,7 @@ public abstract class BeanIntrospector {
      * <p>
      * If an exception is thrown at any time doing processing of the bean this method will not be called.
      * 
-     * @see #onIntrospectionStop()
+     * @see #afterIntrospection()
      */
     public void beforeIntrospection() {}
 
@@ -138,52 +158,55 @@ public abstract class BeanIntrospector {
         this.setup = new Setup(operator.model, bean);
     }
 
-    /**
-     * @param binding
-     *            a binding
-     * 
-     * @see BindingHook
-     */
-    public void onBinding(OnBinding binding) {
-        // could test if getClass is beanIntrospector, in which case they probably forgot to override extension.newIntrospector
-        // Otherwise they forgot to implement binding hook
-        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle parameter hook annotation(s) " + binding.hookClass());
+    public void onMethod(OnMethod on) {
+        // Test if getClass()==BeanScanner forgot to implement
+        // Not we want to return generic bean scanner from newBeanScanner
+        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle method annotation(s) " + on.hooks());
     }
 
-    public void onClass(OnClass clazz) {}
+    public void onClass(OnClass on) {}
 
     /**
      * A callback method that is called for fields that are annotated with a field hook annotation defined by the extension:
      * 
-     * is annotated with an annotation that itself is annotated with {@link FieldHook} and where
-     * {@link FieldHook#extension()} matches the type of this extension.
+     * is annotated with an annotation that itself is annotated with {@link AnnotatedFieldHook} and where
+     * {@link AnnotatedFieldHook#extension()} matches the type of this extension.
      * <p>
      * This method is never invoked more than once for a given field and extension. Even if there are multiple matching hook
      * annotations on the same field.
      * 
-     * @param field
+     * @param on
      *            a field
-     * @see FieldHook
+     * @see AnnotatedFieldHook
      */
     // onFieldHook(Set<Class<? extends Annotation<>> hooks, BeanField));
-    public void onField(OnField field) {
-        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle field annotation(s) " + field.hooks());
+    public void onField(OnField on) {
+        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle field annotation(s) " + on.hooks());
+    }
+
+    public void onVariablePeek(OnVariablePeek on) {
+        throw new UnsupportedOperationException();
     }
 
     /**
-     * A callback method that is invoked before any calls to {@link #onClass(OnClass)}, {@link #onField(OnField)},
-     * {@link #onMethod(OnMethod)} or {@link #onBinding(OnBinding)}.
-     * <p>
-     * This method can be used to setup data structures or perform validation.
+     * @param on
      * 
-     * @see #beforeIntrospection()
+     * @see VariableTypeHook.Mode#PROVIDE
      */
-    public void onIntrospectionStop() {}
+    public void onVariableProvide(OnVariableProvide on) {
+        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle parameter hook annotation(s) " + on.hookClass());
+    }
 
-    public void onMethod(OnMethod method) {
-        // Test if getClass()==BeanScanner forgot to implement
-        // Not we want to return generic bean scanner from newBeanScanner
-        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle method annotation(s) " + method.hooks());
+    /**
+     * @param variable
+     *            a binding
+     * 
+     * @see VariableTypeHook.Mode#PROVIDE_RAW
+     */
+    public void onVariableProvideRaw(OnVariableProvideRaw on) {
+        // could test if getClass is beanIntrospector, in which case they probably forgot to override extension.newIntrospector
+        // Otherwise they forgot to implement binding hook
+        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle parameter hook annotation(s) " + on.hookClass());
     }
 
     /**
@@ -261,145 +284,6 @@ public abstract class BeanIntrospector {
         Class<?>[] value();
     }
 
-    /**
-    *
-    */
-    // Eller ogsaa peeler vi inde vi kalder provide
-
-    // Med alle de andre bean ting. Saa har vi en BeanField->Operation
-    // Skal vi have noget lige saadan her BeanDependency->Provisioning
-    // eller BeanVariable -> Dependency???
-    // Saa kan vi strippe af paa BeanVariable
-    // Saa bliver BeanVariable
-
-    // Can be on the bean. Or on a composite.
-    public sealed interface OnBinding permits IntrospectedBeanBinding {
-
-        // Hmm idk about the unwrapping and stuff here
-        AnnotationReader annotations();
-
-        /**
-         * Binds the specified value to the parameter.
-         * <p>
-         * Vi tager Nullable med saa vi bruge raw.
-         * <p>
-         * Tror vi smider et eller andet hvis vi er normal og man angiver null. Kan kun bruges for raw
-         * 
-         * @param value
-         *            the value to bind
-         * @throws ClassCastException
-         *             if the type of the value does not match the underlying parameter
-         * @throws IllegalStateException
-         *             if a binding has already been created for the underlying parameter.
-         */
-        // Syntes bindConstant..
-        void bind(@Nullable Object value);
-
-        /**
-         * <p>
-         * For raw er det automatisk en fejl
-         * 
-         * @throws Giver
-         *             ikke mening for rawModel
-         */
-        void bindEmpty();
-
-        /**
-         * @param argumentIndex
-         *            the index of the argument
-         * 
-         * @throws IndexOutOfBoundsException
-         * @throws IllegalArgumentException
-         *             if the invocation argument is not of kind {@link OperationTemplate.ArgumentKind#ARGUMENT}
-         * @throws UnsupportedOperationException
-         *             if the {@link #invokingExtension()} is not identical to the binding extension
-         * @throws ClassCastException
-         * 
-         * @see OperationTemplate
-         */
-        default OnBinding bindToInvocationArgument(int argumentIndex) {
-            throw new UnsupportedOperationException();
-        }
-
-        // bindLazy-> Per Binding? PerOperation? PerBean, ?PerBeanInstance ?PerContainer ? PerContainerInstance ?
-        // PerApplicationInstance
-
-        // Kan only do this if is invoking extension!!
-
-        default boolean canUseInvocationArguments() {
-            return false;
-        }
-
-        /**
-         * @param postFix
-         *            the message to include in the final message
-         * 
-         * @throws InvalidBeanDefinitionException
-         *             always thrown
-         */
-        default void failWith(String postFix) {
-            throw new InvalidBeanDefinitionException("OOPS " + postFix);
-        }
-
-        /**
-         * @return
-         * 
-         * @throws UnsupportedOperationException
-         *             if called via {@link OperationHandle#bindManually(int)}
-         */
-        Class<?> hookClass(); // Skal vel ogsaa tilfoejes til BF, BM osv
-
-        /** {@return the extension that is responsible for invoking the underlying operation.} */
-        Class<? extends Extension<?>> invokingExtension();
-
-        default boolean isOperation(OperationHandle operation) {
-            return false;
-        }
-
-        void provide(Op<?> op);
-
-        default void provide(Op<?> op, Map<Integer, Integer> argumentMappings) {
-            throw new UnsupportedOperationException();
-        }
-
-        /**
-         * @return
-         * 
-         * @throws InvalidKeyException
-         *             if a valid key could not be read
-         */
-        default Key<?> readKey() {
-            throw new UnsupportedOperationException();
-        }
-
-        /**
-         * Variable is resolvable at runtime.
-         * <p>
-         * Cannot provide instance. Must provide an optional class or Null will represent a missing value. Maybe just optional
-         * class for now
-         * 
-         * @return
-         */
-        OnBinding runtimeBindable();
-
-        OnBinding specializeMirror(Supplier<? extends BindingMirror> supplier);
-
-        default TypeInfo type() {
-            throw new UnsupportedOperationException();
-        }
-
-        Variable variable();
-
-        interface TypeInfo {
-
-            void checkAssignableTo(Class<?> clazz, Class<?>... additionalClazzes);
-
-            boolean isAssignable(Class<?> clazz, Class<?>... additionalClazzes);
-
-            Class<?> rawType();
-        }
-    }
-
     // CheckRealmIsApplication
     // CheckRealmIsExtension
     /**
@@ -462,7 +346,7 @@ public abstract class BeanIntrospector {
     /**
      * This class represents a {@link Field} on a bean.
      * 
-     * @see BaseExtensionPoint.FieldHook
+     * @see BaseExtensionPoint.AnnotatedFieldHook
      * @see BeanIntrospector#onField(BeanProcessor$BeanField)
      * 
      * @apiNote There are currently no support for obtaining a {@link VarHandle} for a field.
@@ -505,7 +389,7 @@ public abstract class BeanIntrospector {
          *             if the field does not represent a proper key
          */
         default Key<?> fieldToKey() {
-            return Key.convertField(field());
+            return KeyHelper.convertField(field());
         }
 
         /**
@@ -525,8 +409,8 @@ public abstract class BeanIntrospector {
         /**
          * Creates a new operation that can read the field.
          * <p>
-         * If an {@link OperationMirror} is created for the operation. It will report {@link OperationTarget.OfField} as
-         * its {@link OperationMirror#target()}.
+         * If an {@link OperationMirror} is created for the operation. It will report {@link OperationTarget.OfField} as its
+         * {@link OperationMirror#target()}.
          * 
          * @param template
          *            a template for the operation
@@ -538,8 +422,8 @@ public abstract class BeanIntrospector {
         /**
          * Creates a new operation that can read or/and write a field as specified by the provided access mode.
          * <p>
-         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfField} as
-         * its {@link OperationMirror#target()}.
+         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfField} as its
+         * {@link OperationMirror#target()}.
          * 
          * @param template
          *            a template for the operation
@@ -559,8 +443,8 @@ public abstract class BeanIntrospector {
         /**
          * Creates a new operation that can write to a field.
          * <p>
-         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfField} as
-         * its {@link OperationMirror#target()}.
+         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfField} as its
+         * {@link OperationMirror#target()}.
          * 
          * @param template
          *            a template for the operation
@@ -580,8 +464,9 @@ public abstract class BeanIntrospector {
 
     /**
      * This class represents a {@link Method} on a bean.
-     * 
      */
+    // checkStatic()
+    // checkNonStatic
     public sealed interface OnMethod permits IntrospectedBeanMethod {
 
         /** {@return an annotation reader for the method.} */
@@ -599,43 +484,43 @@ public abstract class BeanIntrospector {
         }
 
         /**
-         * {@return the modifiers of the underlying method.}
-         *
-         * @see Method#getModifiers()
-         * @apiNote the method is named getModifiers instead of modifiers to be consistent with {@link Method#getModifiers()}
-         */
-        int getModifiers();
-
-        /**
          * @return
+         * @see AnnotatedMethodHook#allowInvoke()
          */
         boolean hasInvokeAccess();
 
         /**
+         * Returns a set of hooks
+         * 
          * @return
+         * 
+         * @see AnnotatedMethodHook
          */
-        default Set<Class<?>> hooks() {
-            return Set.of();
-        }
+        Set<Class<? extends Annotation>> hooks();
 
         /** {@return the underlying method.} */
         Method method();
 
         /**
-         * Attempts to convert field to a {@link Key} or fails by throwing {@link InvalidBeanDefinitionException} if the field
-         * does not represent a proper key.
+         * Attempts to convert the annotated return type of the method to a {@link Key}, or fails by throwing
+         * {@link InvalidBeanDefinitionException} if the annotated return type does not represent a valid key.
          * <p>
          * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
-         * key. As a binding hook is typically used in cases where this would be needed.
+         * key.
          * 
-         * @return a key representing the field
+         * @return a key representing the return type of the method
          * 
-         * @throws InvalidBeanDefinitionException
-         *             if the field does not represent a proper key
+         * @throws InvalidKeyException
+         *             if the return type of the method does not represent a proper key
          */
-        default Key<?> methodToKey() {
-            return Key.convertMethodReturnType(method());
-        }
+        Key<?> methodToKey();
+
+        /**
+         * {@return the modifiers of the underlying method.}
+         *
+         * @see Method#getModifiers()
+         */
+        int modifiers();
 
         /**
          * Creates a new operation that can invoke the underlying method.
@@ -651,8 +536,215 @@ public abstract class BeanIntrospector {
          */
         OperationHandle newOperation(OperationTemplate template);
 
-        /** {@return a operation type for this method.} */
+        /** {@return the default type of operation that will be created.} */
         OperationType operationType();
+    }
+
+
+    public interface OnVariablePeek {
+        // Hmm, den bliver noedt til at passe til den mode der har bundet den....
+        // Kan jo ikke unwrappe alt muligt fis.
+        // Den skal vel ogsaa forstaa None?
+        // Og Hvad med defaults
+    }
+
+    /**
+     * Opts into
+     * 
+     * Optional
+     * 
+     * Provider
+     * 
+     * Lazy
+     * 
+     * Nullable
+     * 
+     * Validate (Er jo i virkeligheden peek??
+     * 
+     * Default
+     */
+    public interface OnVariableProvide extends BaseVariableProvide {
+
+        /**
+         * @return
+         * 
+         * @throws UnsupportedOperationException
+         *             if called via {@link OperationHandle#bindManually(int)}
+         */
+        Class<?> hookClass(); // Skal vel ogsaa tilfoejes til BF, BM osv
+        
+        /**
+         * Binds to {@link Nullable}, {@link Optional}, Default value.
+         * 
+         * <p>
+         * For raw er det automatisk en fejl
+         * 
+         * @throws UnsupportedOperationException
+         *             if the underlying field does not support
+         */
+        void bindNone();
+
+        // Problemet er vi gerne vil smide en god fejlmeddelse
+        // Det kan man vel ogsaa...
+        //// isOptional()->bindOptionallTo()
+        //// else provide()
+        // Will automatically handle, @Nullable, and Default
+        default void bindToOptional(Op<Optional<?>> op) {}
+
+        default void bindToOptional(Op<Optional<?>> op, Runnable missing) {}
+
+        void checkNotRequired();
+
+        void checkRequired();
+
+        boolean hasDefaults();
+
+        boolean isLazy();
+
+        boolean isNullable();
+
+        boolean isOptional();
+
+        boolean isProvider();
+
+        boolean isRequired();
+
+        Variable originalVariable();
+
+        default boolean tryBindNone() {
+            return false;
+        }
+    }
+
+    public interface BaseVariableProvide {
+
+        AnnotationReader annotations();
+
+        default Map<Class<? extends Context<?>>, List<Class<?>>> availableContexts() {
+            return Map.of();
+        }
+
+        // Hmm, vi vil jo ogsaa gerne have contexts med...
+        // Map<Context.class, List<>>
+        default List<Class<?>> availableInvocationArguments() {
+            return List.of();
+        }
+        
+        /**
+         * Binds the specified value to the parameter.
+         * <p>
+         * Vi tager Nullable med saa vi bruge raw.
+         * <p>
+         * Tror vi smider et eller andet hvis vi er normal og man angiver null. Kan kun bruges for raw
+         * 
+         * @param value
+         *            the value to bind
+         * @throws ClassCastException
+         *             if the type of the value does not match the underlying parameter
+         * @throws IllegalStateException
+         *             if a binding has already been created for the underlying parameter.
+         */
+        void bindConstant(@Nullable Object value);
+
+        /**
+         * 
+         * 
+         * @param op
+         */
+        // provideConverted(new Op2<@InvocationArgument(index = 0, context = HttpRequestContext.class) RequestImpl, String)
+
+        // provide(new Op2<@InvocationArgument(index = 0, context = HttpRequestContext.class) RequestImpl, String)
+        void bindTo(Op<?> op);
+
+        /**
+         * @param argumentIndex
+         *            the index of the argument
+         * 
+         * @throws IndexOutOfBoundsException
+         * @throws IllegalArgumentException
+         *             if the invocation argument is not of kind {@link OperationTemplate.ArgumentKind#ARGUMENT}
+         * @throws UnsupportedOperationException
+         *             if the {@link #invokedBy()} is not identical to the binding extension
+         * @throws ClassCastException
+         * 
+         * @see OperationTemplate
+         */
+        default void bindToInvocationArgument(int argumentIndex) {
+            throw new UnsupportedOperationException();
+        }
+
+        // bindLazy-> Per Binding? PerOperation? PerBean, ?PerBeanInstance ?PerContainer ? PerContainerInstance ?
+        // PerApplicationInstance
+
+        // Kan only do this if is invoking extension!!
+
+        default void bindToInvocationArgument(int argumentIndex, Class<? extends Context<?>> context) {
+            throw new UnsupportedOperationException();
+        }
+
+        default void checkAssignableTo(Class<?> clazz, Class<?>... additionalClazzes) {
+
+        }
+
+        /**
+         * @param postFix
+         *            the message to include in the final message
+         * 
+         * @throws InvalidBeanDefinitionException
+         *             always thrown
+         */
+        default void failWith(String postFix) {
+            throw new InvalidBeanDefinitionException("OOPS " + postFix);
+        }
+        
+
+        /** {@return the extension that is responsible for invoking the underlying operation.} */
+        Class<? extends Extension<?>> invokedBy();
+
+        default boolean isAssignable(Class<?> clazz, Class<?>... additionalClazzes) {
+            return false;
+        }
+
+        /** {@return the raw type of the variable.} */
+        default Class<?> rawType() {
+            return variable().getRawType();
+        }
+
+        // we are actually specializing the binding and not the variable.
+        // But don't really want to create a BindingHandle... just for this method
+        OnVariableProvideRaw specializeMirror(Supplier<? extends BindingMirror> supplier);
+
+        Variable variable();
+
+        /**
+         * @return
+         * 
+         * @throws InvalidKeyException
+         *             if a valid key could not be read
+         */
+        // readAsKey, parseKey?
+        default Key<?> variableToKey() {
+            throw new UnsupportedOperationException();
+        }
+    }
+    
+    public sealed interface OnVariableProvideRaw extends BaseVariableProvide permits IntrospectedBeanVariable {
+
+        /**
+         * 
+         * @throws UnsupportedOperationException
+         *             if the underlying variable is not a {@link Record}
+         */
+        default void bindCompositeRecord() {} // bindComposite?
+
+        /**
+         * @return
+         * 
+         * @throws UnsupportedOperationException
+         *             if called via {@link OperationHandle#bindManually(int)}
+         */
+        Class<?> hookClass(); // Skal vel ogsaa tilfoejes til BF, BM osv
+
     }
 
     /** A small utility record to hold the both the extension model and the bean in one field. */

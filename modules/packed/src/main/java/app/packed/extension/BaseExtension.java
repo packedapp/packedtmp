@@ -24,12 +24,14 @@ import internal.app.packed.lifetime.LifetimeOperation;
 import internal.app.packed.operation.OperationSetup;
 
 /**
- * An extension that defines the foundational APIs managing beans, containers and applications.
+ * An extension that defines the foundational APIs for managing beans, containers and applications.
  * <p>
  * Every container will automatically have this extension added. And every extension automatically has a direct
  * dependency on this extension.
  */
 public class BaseExtension extends FrameworkExtension<BaseExtension> {
+
+    boolean isLinking;
 
     /** Create a new base extension. */
     BaseExtension() {}
@@ -43,10 +45,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     /**
-     * Installs a bean that will use the specified {@link Class} to instantiate a single instance of the bean when the
-     * application is initialized.
-     * <p>
-     * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
+     * Installs a bean of the specified type. A single instance of the specified class will be instantiated when the
+     * container is initialized.
      * 
      * @param implementation
      *            the type of bean to install
@@ -113,15 +113,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     /**
-     * Links a new assembly.
+     * Creates a new child container by linking the specified assembly.
      * 
      * @param assembly
      *            the assembly to link
-     * @param realm
-     *            realm
      * @param wirelets
      *            optional wirelets
-     * @return the component that was linked
      */
     public void link(Assembly assembly, Wirelet... wirelets) {
         newContainerInstaller().link(assembly, wirelets);
@@ -216,19 +213,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         };
     }
 
-    boolean isLinking;
-    @Override
-    protected void onAssemblyClose() {
-        // 3 ways to form trees
-        // Application, Assembly, Lifetime
-        
-        boolean isLinking = parent().map(e -> e.isLinking).orElse(false);
-        if (isLinking) {
-            //navigator().forEachInAssembly()->
-        }
-        super.onAssemblyClose();
-    }
-
     ContainerInstaller newContainerInstaller() {
         return new PackedContainerInstaller(extension.container);
     }
@@ -237,5 +221,17 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     @Override
     protected BaseExtensionPoint newExtensionPoint() {
         return new BaseExtensionPoint();
+    }
+
+    @Override
+    protected void onAssemblyClose() {
+        // 3 ways to form trees
+        // Application, Assembly, Lifetime
+
+        boolean isLinking = parent().map(e -> e.isLinking).orElse(false);
+        if (isLinking) {
+            // navigator().forEachInAssembly()->
+        }
+        super.onAssemblyClose();
     }
 }

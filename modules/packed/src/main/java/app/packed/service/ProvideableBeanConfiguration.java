@@ -55,19 +55,19 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public <K> ProvideableBeanConfiguration<T> initializeWithInstance(Class<K> key, K instance) {
-        super.initializeWithInstance(key, instance);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <K> ProvideableBeanConfiguration<T> initializeWithInstance(Key<K> key, K instance) {
-        super.initializeWithInstance(key, instance);
-        return this;
-    }
+//    /** {@inheritDoc} */
+//    @Override
+//    public <K> ProvideableBeanConfiguration<T> initializeWithInstance(Class<K> key, K instance) {
+//        super.initializeWithInstance(key, instance);
+//        return this;
+//    }
+//
+//    /** {@inheritDoc} */
+//    @Override
+//    public <K> ProvideableBeanConfiguration<T> initializeWithInstance(Key<K> key, K instance) {
+//        super.initializeWithInstance(key, instance);
+//        return this;
+//    }
 
     /** {@inheritDoc} */
     @Override

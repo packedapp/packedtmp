@@ -270,7 +270,7 @@ public final class IntrospectedBean {
         
         // Call into every BeanIntrospector and tell them it is all over
         for (Contributor e : extensions.values()) {
-            e.introspector.onIntrospectionStop();
+            e.introspector.afterIntrospection();
         }
     }
 

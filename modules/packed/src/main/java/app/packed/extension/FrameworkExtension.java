@@ -28,5 +28,5 @@ import app.packed.framework.Framework;
  * 
  * @implNote This class is not a sealed class as the framework may consists of multiple modules in the future.
  */
-// Are test extensions part of the framework?? Hmm Maybe have a FrameworkTestExtension?
+// I think test extensions are part of the framework?? Or maybe have a FrameworkTestExtension?
 public abstract class FrameworkExtension<E extends FrameworkExtension<E>> extends Extension<E> {}

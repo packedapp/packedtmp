@@ -16,12 +16,13 @@
 package app.packed.operation;
 
 import java.lang.invoke.MethodType;
+import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 
-import app.packed.bean.BeanIntrospector.OnBinding;
+import app.packed.bean.BeanIntrospector.OnVariableProvideRaw;
 import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
-import app.packed.context.ContextTemplateImpl;
 import app.packed.errorhandling.ErrorHandler;
 import internal.app.packed.operation.PackedOperationTemplate;
 
@@ -34,7 +35,6 @@ import internal.app.packed.operation.PackedOperationTemplate;
 // I can't see why we should not define context here
 // I think we should have a builder probably.
 // So we can condense information
-
 
 // Components
 //// ExtensionContext  (Or InvocationContext??? IDK bliver jo brugt across multi usage) 
@@ -61,12 +61,28 @@ import internal.app.packed.operation.PackedOperationTemplate;
 
 public sealed interface OperationTemplate permits PackedOperationTemplate {
 
-    boolean requiresExtensionContext();
+    // return -1 instead...
+    default OptionalInt indexOfBeanInstance() {
+        return OptionalInt.empty();
+    }
+
+    default OptionalInt indexOfExtensionContext() {
+        return OptionalInt.empty();
+    }
 
     int beanInstanceIndex();
 
     // Tror vi styrer return type her.
     // Man boer smide custom fejl beskeder
+
+    default /* Ordered */ Map<Class<? extends Context<?>>, List<Class<?>>> contexts() {
+        throw new UnsupportedOperationException();
+    }
+
+    // All but noErrorHandling will install an outward interceptor
+    default OperationTemplate handleErrors(ErrorHandler errorHandler) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * 
@@ -74,53 +90,42 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
      */
     MethodType invocationType();
 
-    default /* OrderedMap */ Map<Class<? extends Context<?>>, ContextTemplateImpl> contexts() {
-        throw new UnsupportedOperationException();
-    }
-
-    default OperationTemplate addContext(ContextTemplateImpl context) {
-        throw new UnsupportedOperationException();
-    }
+    boolean requiresExtensionContext();
 
     /**
      * @param type
      * @return
      * 
-     * @see OnBinding#provideFromInvocationArgument(int)
+     * @see OnVariableProvideRaw#provideFromInvocationArgument(int)
      */
     // Kan man have have loese args som ikke er del af en context???
     OperationTemplate withArg(Class<?> type);
 
-    default OperationTemplate withContext(ContextTemplate context) {
-        throw new UnsupportedOperationException();
-    }
-    
     default OperationTemplate withBeanInstance() {
         return withBeanInstance(Object.class);
     }
+
+    OperationTemplate withBeanInstance(Class<?> beanClass);
 
     default OperationTemplate withClassifier(Class<?> type) {
         throw new UnsupportedOperationException();
     }
 
-    OperationTemplate withBeanInstance(Class<?> beanClass);
+    default OperationTemplate withContext(ContextTemplate context) {
+        throw new UnsupportedOperationException();
+    }
 
     OperationTemplate withReturnType(Class<?> type);
+
+    // 3 choices?
+    // No ErrorHandling (Exception will propagate directly)
+    // ParentHandling
+    // This errorHandler
 
     default OperationTemplate withReturnTypeObject() {
         return withReturnType(Object.class);
     }
 
-    // 3 choices? 
-    // No ErrorHandling (Exception will propagate directly)
-    // ParentHandling
-    // This errorHandler
-    
-    // All but noErrorHandling will install an outward interceptor
-    default OperationTemplate handleErrors(ErrorHandler errorHandler) {
-        throw new UnsupportedOperationException();
-    }
-    
     // Takes EBC returns void
     static OperationTemplate defaults() {
         return PackedOperationTemplate.DEFAULTS;

@@ -20,7 +20,6 @@ import java.util.function.Function;
 
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
-import app.packed.service.Key;
 import internal.app.packed.util.sandbox.SpecFix;
 
 /**
@@ -47,18 +46,18 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
         return (BeanHandle<T>) super.handle();
     }
 
-    public <K> InstanceBeanConfiguration<T> initializeWith(Class<K> key, Op<K> operation) {
-        throw new UnsupportedOperationException();
-    }
-
-    public <K> InstanceBeanConfiguration<T> initializeWithInstance(Class<K> key, K instance) {
-        return initializeWithInstance(Key.of(key), instance);
-    }
-
-    public <K> InstanceBeanConfiguration<T> initializeWithInstance(Key<K> key, K instance) {
-        handle().initializeWithInstance(key, instance);
-        return this;
-    }
+//    public <K> InstanceBeanConfiguration<T> initializeWith(Class<K> key, Op<K> operation) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public <K> InstanceBeanConfiguration<T> initializeWithInstance(Class<K> key, K instance) {
+//        return initializeWithInstance(Key.of(key), instance);
+//    }
+//    
+//    public <K> InstanceBeanConfiguration<T> initializeWithInstance(Key<K> key, K instance) {
+//        handle().initializeWithInstance(key, instance);
+//        return this;
+//    }
 
     /** {@inheritDoc} */
     @Override

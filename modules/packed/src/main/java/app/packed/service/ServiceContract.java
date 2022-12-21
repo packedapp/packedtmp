@@ -24,8 +24,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import app.packed.application.BootstrapApp;
 import app.packed.application.ApplicationMirror;
+import app.packed.application.BootstrapApp;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 
@@ -72,7 +72,7 @@ public final class ServiceContract {
 
     /** The driver used for creating mirrors daemon driver. */
     // I think we need to expose ServiceCompanion... otherwise this should be empty
-    public static final BootstrapApp<Void> MIRROR_DRIVER = BootstrapApp.builder().buildVoid();
+    public static final BootstrapApp<Void> MIRROR_DRIVER = BootstrapApp.of(c -> {});
 
     /** A contract with no requirements and no services provided. */
     public static final ServiceContract EMPTY = new ServiceContract(Set.of(), Set.of(), Set.of());
@@ -356,7 +356,7 @@ public final class ServiceContract {
         }
 
         public ServiceContract.Builder provide(Class<?>... keys) {
-            return provide(Key.of(keys));
+            return provide(Key.ofAll(keys));
         }
 
         /**
@@ -373,7 +373,7 @@ public final class ServiceContract {
         }
 
         public ServiceContract.Builder remove(Class<?>... keys) {
-            return remove(Key.of(keys));
+            return remove(Key.ofAll(keys));
         }
 
         /**
@@ -396,7 +396,7 @@ public final class ServiceContract {
          * @return this builder
          */
         public ServiceContract.Builder require(Class<?>... keys) {
-            return require(Key.of(keys));
+            return require(Key.ofAll(keys));
         }
 
         /**
@@ -411,7 +411,7 @@ public final class ServiceContract {
         }
 
         public ServiceContract.Builder requireOptional(Class<?>... keys) {
-            return requireOptional(Key.of(keys));
+            return requireOptional(Key.ofAll(keys));
         }
 
         /**

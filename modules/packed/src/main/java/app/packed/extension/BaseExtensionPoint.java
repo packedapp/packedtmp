@@ -14,11 +14,11 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.bean.BeanHook.AnnotatedVariableHook;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
 import app.packed.context.Context;
-import app.packed.context.NotInContextException;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.PackedBeanInstaller;
@@ -88,7 +88,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     /**
-     * Creates a new installer for installing a bean for the application.
+     * Creates a new bean installer for the application.
      * 
      * @param kind
      *            the kind of bean to installer
@@ -98,12 +98,8 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         return new PackedBeanInstaller(extension().extension, kind, (PackedExtensionPointContext) usageContext());
     }
 
-    public ContainerInstaller newContainer() {
-        throw new UnsupportedOperationException();
-    }
-
     /**
-     * Creates a new installer for installing a bean for another extension.
+     * Creates a new bean installer for an extension.
      * 
      * @param kind
      *            the kind of bean to installer
@@ -114,60 +110,32 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         return new PackedBeanInstaller(extension().extension, kind, (PackedExtensionPointContext) forExtension);
     }
 
+    public ContainerInstaller newContainer() {
+        throw new UnsupportedOperationException();
+    }
+
 //    BeanHandle<?> unwrap(BeanConfiguration configuration) {
 //        // Can only call this on bean configurations that have been created by the extension itself.
 //        // But then could people just store it in a map...
 //        throw new UnsupportedOperationException();
 //    }
 
-    
- // Vi har brug ContainerInstaller fordi, man ikke konfigure noget efter man har linket
- // Saa alt skal goeres inde
+    // Vi har brug ContainerInstaller fordi, man ikke konfigure noget efter man har linket
+    // Saa alt skal goeres inde
 
- // Bliver noedt til at lave et Handle. Da kalderen som minim har brug for
- // OperationHandles for lifetimen...
+    // Bliver noedt til at lave et Handle. Da kalderen som minim har brug for
+    // OperationHandles for lifetimen...
 
- //Ejer
+    // Ejer
 
- //Support enten linkage(Assembly) or lav en ny XContetainerConfiguration
- //Eager, Lazy, ManyTone
- //ContainerCompanions (extension configuration)
- //Bean <- er taet knyttet til ContainerCompanions
- //Hosting (Long term)
+    // Support enten linkage(Assembly) or lav en ny XContetainerConfiguration
+    // Eager, Lazy, ManyTone
+    // ContainerCompanions (extension configuration)
+    // Bean <- er taet knyttet til ContainerCompanions
+    // Hosting (Long term)
 
+    // Lifetime -> In Operation, Start/Stop, stateless?
 
- // Lifetime -> In Operation, Start/Stop, stateless?
-
-
- public interface ContainerInstaller {
-
-     ContainerInstaller newLifetime();
-
-     ContainerInstaller allowRuntimeWirelets();
-
-     // Only Managed-Operation does not require a wrapper
-     default ContainerInstaller wrapIn(InstanceBeanConfiguration<?> wrapperBeanConfiguration) {
-         // Gaar udfra vi maa definere wrapper beanen alene...Eller som minimum supportere det
-         // Hvis vi vil dele den...
-
-         // Det betyder ogsaa vi skal lave en wrapper bean alene
-         return null;
-     }
-
-     /**
-      * <p>
-      * The container handle returned by this method is no longer {@link ContainerHandle#isConfigurable() configurable}
-      * 
-      * @param assembly
-      *            the assembly to link
-      * @param wirelets
-      *            optional wirelets
-      * @return a container handle representing the linked container
-      */
-     ContainerHandle link(Assembly assembly, Wirelet... wirelets);
-
-     ContainerHandle newContainer(Wirelet... wirelets);
- }
     /**
      * An installer for installing beans into a container.
      * <p>
@@ -177,8 +145,10 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @see BaseExtensionPoint#newBean(BeanKind)
      * @see BaseExtensionPoint#newBeanForExtension(BeanKind, app.packed.extension.ExtensionPoint.UsageContext)
      */
-    // Maybe put it back on handle. If we get OperationInstaller
-    // Maybe Builder after all... Alle ved hvad en builder er
+// Maybe put it back on handle. If we get OperationInstaller
+// Maybe Builder after all... Alle ved hvad en builder er
+
+
     public sealed interface BeanInstaller permits PackedBeanInstaller {
 
         /**
@@ -275,112 +245,49 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         public abstract BeanInstaller synthetic();
     }
 
-    /**
-     *
-     */
-    @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    // ClassBindingHook, AnnotationBindingHook
-    public @interface BindingHook {
+    public interface ContainerInstaller {
 
-        Class<?>[] allowedTypes() default {}; // ??
-
-        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
-        Class<? extends Extension<?>> extension();
+        ContainerInstaller allowRuntimeWirelets();
 
         /**
-         * Contexts that are required in order to use the binding class or annotation.
          * <p>
-         * If this binding is attempted to be used without the context being available a {@link NotInContextException} will be
-         * thrown.
-         * <p>
-         * If this method returns multiple contexts they will <strong>all</strong> be required.
+         * The container handle returned by this method is no longer {@link ContainerHandle#isConfigurable() configurable}
          * 
-         * @return stuff
+         * @param assembly
+         *            the assembly to link
+         * @param wirelets
+         *            optional wirelets
+         * @return a container handle representing the linked container
          */
-        Class<? extends Context<?>>[] requiresContext() default {};
+        ContainerHandle link(Assembly assembly, Wirelet... wirelets);
 
-        // IDK about this...
-        // Den virker jo kun for annotering..completesavings
-        enum BindingOtherKind {
-            // Peek -> Giver ikke mening vil jeg mene?
-            // Convert er vel bare en interceptor som man kan bede om fra ConverterExtension.
+        ContainerHandle newContainer(Wirelet... wirelets);
 
-            ADAPT, CONVERT, DEFAULT, PEEK, PROVIDE, REPLACE, TRANSFORM
+        ContainerInstaller newLifetime();
+
+        // Only Managed-Operation does not require a wrapper
+        default ContainerInstaller wrapIn(InstanceBeanConfiguration<?> wrapperBeanConfiguration) {
+            // Gaar udfra vi maa definere wrapper beanen alene...Eller som minimum supportere det
+            // Hvis vi vil dele den...
+
+            // Det betyder ogsaa vi skal lave en wrapper bean alene
+            return null;
         }
     }
 
-    @Target(ElementType.ANNOTATION_TYPE)
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    public @interface ClassHook {
-
-        /** Whether or not the sidecar is allow to get the contents of a field. */
-        // maybe allowAllAccess
-        boolean allowFullPrivilegeAccess() default false;
-
-        /** The extension the hook is a part of. */
-        Class<? extends Extension<?>> extension();
-
-        Class<? extends Context<?>>[] requiresContext() default {};
-    }
-
     /**
-     *
-     */
-    @Target(ElementType.ANNOTATION_TYPE)
+    *
+    */
+    @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    public @interface FieldHook {
+    @AnnotatedVariableHook(extension = BaseExtension.class)
+    public @interface InvocationArgument {
+        Class<? extends Context<?>>[] context() default {};
 
-        /** Whether or not the owning extension is allow to get the contents of the field. */
-        boolean allowGet()
-
-        default false;
-
-        /** Whether or not the owning extension is allow to set the contents of the field. */
-        boolean allowSet()
-
-        default false;
-
-        /** The extension the hook is a part of. */
-        Class<? extends Extension<?>> extension();
-
-        Class<? extends Context<?>>[] requiresContext() default {};
+        int index() default 0;
     }
 
-    /**
-     * An annotation that indicates that the target is a method hook annotation.
-     */
-    @Target(ElementType.ANNOTATION_TYPE)
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    public @interface MethodHook {
-
-        /**
-         * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
-         * <p>
-         * Methods such as {@link BeanIntrospector.OnMethod#operationBuilder(ExtensionBeanConfiguration)} and... will fail with
-         * {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
-         * 
-         * @return whether or not the implementation is allowed to invoke the target method
-         * 
-         * @see BeanIntrospector.OnMethod#operationBuilder(ExtensionBeanConfiguration)
-         */
-        // maybe just invokable = true, idk og saa Field.gettable and settable
-        // invocationAccess
-        boolean allowInvoke() default false; // allowIntercept...
-
-        /** The extension the hook is a part of. */
-        Class<? extends Extension<?>> extension();
-
-        Class<? extends Context<?>>[] requiresContext() default {};
-
-        // IDK, don't we just want to ignore it most of the time???
-        // Nah maybe fail. People might think it does something
-        boolean requiresVoidReturn() default false;
-    }
 }
 
 //// Ideen er at man fx kan have en handle.onInitialize(MyEBC, BeanHandle<Driver>, (b,p)->b.drivers[i]=p);

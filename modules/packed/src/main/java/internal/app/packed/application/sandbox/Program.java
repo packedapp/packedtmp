@@ -15,11 +15,10 @@
  */
 package internal.app.packed.application.sandbox;
 
-import java.lang.invoke.MethodHandles;
 import java.util.NoSuchElementException;
 
-import app.packed.application.BootstrapApp;
 import app.packed.application.ApplicationLauncher;
+import app.packed.application.BootstrapApp;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.RunState;
@@ -105,7 +104,7 @@ public interface Program extends AutoCloseable {
      * 
      * @return an artifact driver for App
      */
-    private static BootstrapApp<Program> driver() {
+    private static BootstrapApp<ProgramImplementation> driver() {
         return ProgramImplementation.DRIVER;
     }
 
@@ -124,7 +123,7 @@ public interface Program extends AutoCloseable {
      * @see BootstrapApp#newImage(Assembly, Wirelet...)
      */
     static ApplicationLauncher<Program> imageOf(Assembly assembly, Wirelet... wirelets) {
-        return driver().newLauncher(assembly, wirelets);
+        return driver().newLauncher(assembly, wirelets).map(e -> e);
     }
 
     /**
@@ -153,7 +152,7 @@ public interface Program extends AutoCloseable {
 record ProgramImplementation(String name, ServiceLocator services, ManagedLifetimeController runtime) implements Program {
 
     /** An driver for creating App instances. */
-    static final BootstrapApp<Program> DRIVER = BootstrapApp.builder().managedLifetime().build(MethodHandles.lookup(), ProgramImplementation.class);
+    static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ProgramImplementation.class, c -> c.managedLifetime());
 
     /** {@inheritDoc} */
     @Override

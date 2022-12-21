@@ -22,6 +22,8 @@ import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.bindings.Variable;
+
 /**
  *
  */
@@ -35,8 +37,8 @@ public class VariableTest {
         }
         for (Field f : XX.class.getDeclaredFields()) {
             Variable v = Variable.ofField(f);
-            assertThat(v.getType()).isEqualTo(f.getType());
-            assertThat(v.getType()).isEqualTo(f.getGenericType());    
+            assertThat(v.getRawType()).isEqualTo(f.getType());
+            assertThat(v.getRawType()).isEqualTo(f.getGenericType());    
         }
         
     }

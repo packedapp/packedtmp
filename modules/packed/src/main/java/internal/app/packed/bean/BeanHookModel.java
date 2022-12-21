@@ -23,14 +23,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import app.packed.bean.BeanIntrospector.OnBinding;
+import app.packed.bean.BeanHook.AnnotatedFieldHook;
+import app.packed.bean.BeanHook.AnnotatedMethodHook;
+import app.packed.bean.BeanHook.VariableTypeHook;
 import app.packed.bean.BeanIntrospector.OnField;
+import app.packed.bean.BeanIntrospector.OnVariableProvideRaw;
+import app.packed.extension.CustomBeanHook;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
-import app.packed.extension.BaseExtensionPoint.BindingHook;
-import app.packed.extension.BaseExtensionPoint.FieldHook;
-import app.packed.extension.BaseExtensionPoint.MethodHook;
-import app.packed.bean.CustomBeanHook;
 import app.packed.framework.Nullable;
 import internal.app.packed.util.ClassUtil;
 
@@ -44,7 +44,7 @@ public final class BeanHookModel {
 
         @Override
         protected AnnotatedMethod computeValue(Class<?> type) {
-            MethodHook h = type.getAnnotation(MethodHook.class);
+            AnnotatedMethodHook h = type.getAnnotation(AnnotatedMethodHook.class);
             if (h == null) {
                 return null;
             }
@@ -84,16 +84,16 @@ public final class BeanHookModel {
             // Der er ingen grund til vi laeser typen flere gange vel
             AnnotatedField result = null;
 
-            FieldHook fieldHook = type.getAnnotation(FieldHook.class);
+            AnnotatedFieldHook fieldHook = type.getAnnotation(AnnotatedFieldHook.class);
             if (fieldHook != null) {
                 checkExtensionClass(type, fieldHook.extension());
                 result = new AnnotatedField(fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet(), false);
             }
 
-            BindingHook bindingHook = type.getAnnotation(BindingHook.class);
+            VariableTypeHook bindingHook = type.getAnnotation(VariableTypeHook.class);
             if (bindingHook != null) {
                 if (result != null) {
-                    throw new InternalExtensionException(annotationType + " cannot both be annotated with " + FieldHook.class + " and " + BindingHook.class);
+                    throw new InternalExtensionException(annotationType + " cannot both be annotated with " + AnnotatedFieldHook.class + " and " + VariableTypeHook.class);
                 }
                 checkExtensionClass(type, bindingHook.extension());
                 result = new AnnotatedField(bindingHook.extension(), false, true, true);
@@ -120,7 +120,7 @@ public final class BeanHookModel {
 
         @Override
         protected ParameterTypeRecord computeValue(Class<?> type) {
-            BindingHook h = type.getAnnotation(BindingHook.class);
+            VariableTypeHook h = type.getAnnotation(VariableTypeHook.class);
             Class<? extends Annotation> cl = bindings.get(type.getName());
             if (cl != null) {
                 Class<?> declaringClass = cl.getDeclaringClass();
@@ -207,7 +207,7 @@ public final class BeanHookModel {
     record ParameterTypeRecord(Class<? extends Extension<?>> extensionType) {}
 
     /**
-     * A hook annotation on a field, is either a plain {@link OnBinding} hook or a {@link OnField} hook.
+     * A hook annotation on a field, is either a plain {@link OnVariableProvideRaw} hook or a {@link OnField} hook.
      */
     record AnnotatedField(Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable, boolean isBindingHook) {}
 }

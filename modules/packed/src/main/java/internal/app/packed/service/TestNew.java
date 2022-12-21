@@ -24,9 +24,9 @@ import java.util.List;
 import app.packed.application.App;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.BeanHook.VariableTypeHook;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
-import app.packed.extension.BaseExtensionPoint.BindingHook;
 import app.packed.service.ProvideService;
 import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.ServiceBindingMirror;
@@ -92,10 +92,10 @@ public class TestNew extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void onBinding(OnBinding h) {
+                public void onVariableProvideRaw(OnVariableProvideRaw h) {
                     XX rr = h.annotations().readRequired(XX.class);
                     System.out.println(rr);
-                    h.bind("123");
+                    h.bindConstant("123");
                     System.out.println("Got h " + h.hookClass());
                 }
             };
@@ -104,7 +104,7 @@ public class TestNew extends BaseAssembly {
 
     @Target({ ElementType.PARAMETER })
     @Retention(RetentionPolicy.RUNTIME)
-    @BindingHook(extension = MyExt.class)
+    @VariableTypeHook(extension = MyExt.class)
     @interface XX {
         String value();
     }

@@ -57,15 +57,15 @@ public class ClassUtilTest {
     }
     
 
-    /** Tests {@link ClassUtil#isOptional(Class)}. */
+    /** Tests {@link ClassUtil#isOptionalType(Class)}. */
     @Test
     public void isOptional() {
-        assertThat(ClassUtil.isOptional(String.class)).isFalse();
-        assertThat(ClassUtil.isOptional(null)).isFalse();
-        assertThat(ClassUtil.isOptional(Optional.class)).isTrue();
-        assertThat(ClassUtil.isOptional(OptionalLong.class)).isTrue();
-        assertThat(ClassUtil.isOptional(OptionalInt.class)).isTrue();
-        assertThat(ClassUtil.isOptional(OptionalDouble.class)).isTrue();
+        assertThat(ClassUtil.isOptionalType(String.class)).isFalse();
+        assertThat(ClassUtil.isOptionalType(null)).isFalse();
+        assertThat(ClassUtil.isOptionalType(Optional.class)).isTrue();
+        assertThat(ClassUtil.isOptionalType(OptionalLong.class)).isTrue();
+        assertThat(ClassUtil.isOptionalType(OptionalInt.class)).isTrue();
+        assertThat(ClassUtil.isOptionalType(OptionalDouble.class)).isTrue();
     }
 
     /** Tests {@link ClassUtil#unwrap(Class)}. */

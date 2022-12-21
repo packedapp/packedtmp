@@ -20,8 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BaseExtensionPoint.MethodHook;
 import app.packed.lifetime.RunState;
 
 /**
@@ -75,7 +75,7 @@ import app.packed.lifetime.RunState;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@MethodHook(allowInvoke = true, extension = BaseExtension.class)
+@AnnotatedMethodHook(allowInvoke = true, extension = BaseExtension.class)
 public @interface OnStart {
 
     /**

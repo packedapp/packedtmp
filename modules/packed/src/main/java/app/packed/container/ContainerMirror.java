@@ -13,8 +13,8 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.NamespacePath;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.BeanHook.VariableTypeHook;
 import app.packed.context.ContextualizedElement;
-import app.packed.extension.BaseExtensionPoint.BindingHook;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.ExtensionMirror;
@@ -30,8 +30,15 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
-/** A mirror of a container. */
-@BindingHook(extension = MirrorExtension.class)
+/**
+ * A mirror of a container.
+ * <p>
+ * At build-time you typically obtain a ContainerMirror by calling {@link ApplicationMirror#}
+ * 
+ * <p>
+ * At runtime you can have a ContainerMirror injected 
+ */
+@VariableTypeHook(extension = MirrorExtension.class)
 public non-sealed class ContainerMirror implements ContextualizedElement , Mirror {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */

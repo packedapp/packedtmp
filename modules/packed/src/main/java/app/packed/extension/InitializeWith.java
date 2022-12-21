@@ -13,15 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings;
+package app.packed.extension;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import app.packed.bean.BeanHook.AnnotatedVariableHook;
 
 /**
  *
  */
-
-// Hvis vi supportere context key bindings..... Saa er det her en..
-// Saa har vi kun et ekstra concept...
-// Og ikke noget vi gider have en separat klasse for vil jeg mene,...
-public class FactoryServiceBindingMirror extends ContextServiceBindingMirror {
-
-}
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@AnnotatedVariableHook(extension = BaseExtension.class)
+public @interface InitializeWith {}

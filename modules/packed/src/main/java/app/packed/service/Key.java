@@ -21,8 +21,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +28,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
-import java.util.function.Function;
 
 import app.packed.framework.Nullable;
 import app.packed.service.TypeToken.CanonicalizedTypeToken;
@@ -76,7 +73,7 @@ import internal.app.packed.util.TypeUtil;
 public abstract class Key<T> {
 
     // TODO I think want something similar to PackedOp. A small wrapper
-    
+
     /** A cache of keys used by {@link #of(Class)}. */
     private static final ClassValue<Key<?>> CLASS_TO_KEY_CACHE = new ClassValue<>() {
 
@@ -94,7 +91,7 @@ public abstract class Key<T> {
     static final List<Class<?>> FORBIDDEN = List.of(Optional.class/* , ....., */);
 
     /** A cache of keys computed from type variables. */
-    private static final ClassValue<Key<?>> TYPE_VARIABLE_TO_KEY_CACHE = new ClassValue<>() {
+    private static final ClassValue<Key<?>> KEY_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -118,7 +115,7 @@ public abstract class Key<T> {
     /** Constructs a new key. Derives the type from this class's type parameter. */
     @SuppressWarnings("unchecked")
     protected Key() {
-        Key<T> cached = (Key<T>) TYPE_VARIABLE_TO_KEY_CACHE.get(getClass());
+        Key<T> cached = (Key<T>) KEY_CACHE.get(getClass());
         this.qualifiers = cached.qualifiers;
         this.typeToken = cached.typeToken;
         this.hash = cached.hash;
@@ -394,56 +391,6 @@ public abstract class Key<T> {
 //    }
 
     /**
-     * Returns a key matching the type of the specified field and any qualifier that may be present on the field.
-     * 
-     * @param field
-     *            the field to return a key for
-     * @return a key matching the type of the field and any qualifier that may be present on the field
-     * @throws RuntimeException
-     *             if the field does not represent a valid key. For example, if the type is an optional type such as
-     *             {@link Optional} or {@link OptionalInt}. Or if there are more than 1 qualifier present on the field
-     * @see Field#getType()
-     * @see Field#getGenericType()
-     */
-    // I think throw IAE. And then have package private methods that take a ThrowableFactory.
-    // RuntimeException -> should be ConversionException
-    
-    // TODO move to introspector, And then we can throw BeanDE
-    // Or at least have their own version
-    public static Key<?> convertField(Field field) {
-        TypeToken<?> tl = TypeToken.fromField(field).wrap(); // checks null
-        Annotation[] annotation = QualifierUtil.findQualifier(field.getAnnotations());
-        return convertTypeLiteralNullableAnnotation(field, tl, annotation);
-    }
-
-    public static <T extends Throwable> Key<?> convertField(Field field, Function<String, T> supplier) throws T {
-        // Jeg har lyst til at fjerne dem...
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns a key matching the return type of the specified method and any qualifier that may be present on the method.
-     * 
-     * @param method
-     *            the method for to return a key for
-     * @return the key matching the return type of the method and any qualifier that may be present on the method
-     * @throws RuntimeException
-     *             if the specified method has a void return type. Or returns an optional type such as {@link Optional} or
-     *             {@link OptionalInt}. Or if there are more than 1 qualifier present on the method
-     * @see Method#getReturnType()
-     * @see Method#getGenericReturnType()
-     */
-    public static Key<?> convertMethodReturnType(Method method) {
-        requireNonNull(method, "method is null");
-        if (method.getReturnType() == void.class) {
-            throw new RuntimeException("@Provides method " + method + " cannot have void return type");
-        }
-        TypeToken<?> tl = TypeToken.fromMethodReturnType(method).wrap();
-        Annotation[] annotation = QualifierUtil.findQualifier(method.getAnnotations());
-        return convertTypeLiteralNullableAnnotation(method, tl, annotation);
-    }
-
-    /**
      * Returns a key with no qualifier and the same type as this instance.
      * 
      * @param <T>
@@ -485,7 +432,7 @@ public abstract class Key<T> {
         // From field, fromTypeLiteral, from Variable, from class, arghhh....
 
         typeLiteral = typeLiteral.wrap();
-        if (ClassUtil.isOptional(typeLiteral.rawType())) {
+        if (ClassUtil.isOptionalType(typeLiteral.rawType())) {
             throw new RuntimeException("Cannot convert an optional type (" + typeLiteral.toStringSimple() + ") to a Key, as keys cannot be optional");
         } else if (!TypeUtil.isFreeFromTypeVariables(typeLiteral.type())) {
             throw new RuntimeException("Can only convert type literals that are free from type variables to a Key, however TypeVariable<"
@@ -504,7 +451,7 @@ public abstract class Key<T> {
         return Key.convertTypeLiteralNullableAnnotation(superClass, t, qa);
     }
 
-    public static Key<?>[] of(Class<?>... keys) {
+    public static Key<?>[] ofAll(Class<?>... keys) {
         requireNonNull(keys, "keys is null");
         Key<?>[] result = new Key<?>[keys.length];
         for (int i = 0; i < result.length; i++) {
@@ -513,7 +460,6 @@ public abstract class Key<T> {
         return result;
     }
 
-    
     /**
      * Returns a class key with no qualifiers from the specified class.
      *
@@ -522,30 +468,14 @@ public abstract class Key<T> {
      * @param key
      *            the class key to return a key from
      * @return a key matching the specified class with no qualifiers
+     * 
+     * @throws InvalidKeyException
+     *             if the specified class does not represent a valid key
      */
     @SuppressWarnings("unchecked")
     public static <T> Key<T> of(Class<T> key) {
         requireNonNull(key, "key is null");
         return (Key<T>) CLASS_TO_KEY_CACHE.get(key);
-    }
-
-    /**
-     * Returns a key of the specified type and with the specified qualifier.
-     *
-     * @param <T>
-     *            the type to construct a key of
-     * @param type
-     *            the type to construct a key of
-     * @param qualifier
-     *            the qualifier of the key
-     * @return a key of the specified type with the specified qualifier
-     */
-    public static <T> Key<T> of(Class<T> type, Annotation qualifier) {
-        return of(type).with(qualifier);
-    }
-
-    public static <T> Key<T> ofTypeToken(TypeToken<T> token) {
-        return new CanonicalizedKey<>(token.canonicalize(), (Annotation[]) null);
     }
 
     /** See {@link CanonicalizedTypeToken}. */

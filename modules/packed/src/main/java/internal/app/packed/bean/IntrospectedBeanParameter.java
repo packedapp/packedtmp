@@ -17,8 +17,8 @@ package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
 
+import app.packed.bindings.Variable;
 import app.packed.extension.BaseExtension;
-import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanHookModel.ParameterTypeRecord;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;
@@ -40,11 +40,11 @@ final class IntrospectedBeanParameter {
         }
 
         // Next, let us see if the parameter type is a binding class 
-        ParameterTypeRecord hook = iBean.hookModel.lookupParameterType(var.getType());
+        ParameterTypeRecord hook = iBean.hookModel.lookupParameterType(var.getRawType());
         if (hook != null) {
             Contributor contributor = iBean.computeContributor(hook.extensionType(), false);
-            IntrospectedBeanBinding h = new IntrospectedBeanBinding(iBean, operation, index, contributor.extension(), var.getType(), var);
-            contributor.introspector().onBinding(h);
+            IntrospectedBeanVariable h = new IntrospectedBeanVariable(iBean, operation, index, contributor.extension(), var.getRawType(), var);
+            contributor.introspector().onVariableProvideRaw(h);
             if (operation.bindings[index] != null) {
                 return;
             }
@@ -57,7 +57,7 @@ final class IntrospectedBeanParameter {
             InternalDependency ia = InternalDependency.fromOperationType(operation.type).get(index);
             operation.bindings[index] = iBean.bean.container.sm.serviceBind(ia.key(), !ia.isOptional(), operation, index);
         } else {
-            ExtensionServiceBindingSetup b = new ExtensionServiceBindingSetup(operation, index, var.getType());
+            ExtensionServiceBindingSetup b = new ExtensionServiceBindingSetup(operation, index, var.getRawType());
             operation.bindings[index] = b;
             operation.operator.bindings.add(b);
         }
@@ -71,7 +71,6 @@ final class IntrospectedBeanParameter {
      * @return
      */
     private static boolean tryResolveAsAnnotatedBindingHook(IntrospectedBean introspector, Variable var, OperationSetup os, int index) {
-
         Annotation[] annotations = var.getAnnotations();
 
         for (int i = 0; i < annotations.length; i++) {
@@ -81,12 +80,11 @@ final class IntrospectedBeanParameter {
             if (hook != null) {
                 Contributor ei = introspector.computeContributor(hook.extensionType(), false);
 
-                IntrospectedBeanBinding h = new IntrospectedBeanBinding(introspector, os, index, ei.extension(), a1Type, var);
-                ei.introspector().onBinding(h);
+                IntrospectedBeanVariable h = new IntrospectedBeanVariable(introspector, os, index, ei.extension(), a1Type, var);
+                ei.introspector().onVariableProvideRaw(h);
                 return true;
             }
         }
         return false;
     }
-
 }

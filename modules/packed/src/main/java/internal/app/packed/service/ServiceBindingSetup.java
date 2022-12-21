@@ -18,7 +18,7 @@ package internal.app.packed.service;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.bindings.BindingKind;
+import app.packed.bindings.mirror.BindingResolutionKind;
 import app.packed.container.Realm;
 import app.packed.framework.Nullable;
 import app.packed.service.ServiceBindingMirror;
@@ -68,7 +68,7 @@ public final class ServiceBindingSetup extends BindingSetup {
         return entry.provider != null;
     }
 
-    public BindingKind kind() {
-        return BindingKind.KEY;
+    public BindingResolutionKind kind() {
+        return BindingResolutionKind.KEY;
     }
 }

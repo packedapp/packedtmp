@@ -31,9 +31,9 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.application.BuildException;
+import app.packed.bindings.Variable;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationType;
-import app.packed.operation.Variable;
 import app.packed.service.Key;
 import app.packed.service.TypeToken;
 import internal.app.packed.errorhandling.ErrorMessageBuilder;
@@ -311,7 +311,7 @@ public final class InternalDependency {
         // Illegal
         // Optional<Optional*>
         Optionality optionallaity = null;
-        Class<?> rawType = tl.rawType();
+        Class<?> rawType = v.getRawType();
 
         // if (desc instanceof ParameterDescriptor) {
         // ParameterDescriptor pd = (ParameterDescriptor) desc;
@@ -326,7 +326,7 @@ public final class InternalDependency {
             optionallaity = Optionality.OPTIONAL;
             Type cl = ((ParameterizedType) tl.type()).getActualTypeArguments()[0];
             tl = BasePackageAccess.base().toTypeLiteral(cl);
-            if (ClassUtil.isOptional(tl.rawType())) {
+            if (ClassUtil.isOptionalType(tl.rawType())) {
                 throw new BuildException(ErrorMessageBuilder.of(v).cannot("have multiple layers of optionals such as " + cl).toString());
             }
         } else if (rawType == OptionalLong.class) {
@@ -355,7 +355,7 @@ public final class InternalDependency {
         // TL is free from Optional
         Key<?> key = Key.convertTypeLiteralNullableAnnotation(v, tl, qualifiers);
 
-        return new InternalDependency(v.getType(), key, optionallaity);
+        return new InternalDependency(v.getRawType(), key, optionallaity);
     }
 
     /**

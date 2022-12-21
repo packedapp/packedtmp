@@ -3,6 +3,7 @@ package app.packed.application;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import app.packed.bean.BeanHook.VariableTypeHook;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
@@ -10,7 +11,6 @@ import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.MirrorExtension;
-import app.packed.extension.BaseExtensionPoint.BindingHook;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.application.ApplicationSetup;
@@ -27,9 +27,8 @@ import internal.app.packed.container.Mirror;
  * automatically install the {@link MirrorExtension} which will provide an instance at runtime.
  * <p>
  * Like many other mirrors this class is overridable via
- * {@link BootstrapApp.Builder#specializeMirror(java.util.function.Supplier)}
  */
-@BindingHook(extension = MirrorExtension.class)
+@VariableTypeHook(extension = MirrorExtension.class)
 public class ApplicationMirror implements Mirror {
 
     /**

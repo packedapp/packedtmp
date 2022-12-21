@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings;
+package app.packed.bindings.mirror;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
 import java.util.Optional;
 
+import app.packed.bindings.Variable;
 import app.packed.bindings.sandbox.DependenciesMirror;
 import app.packed.bindings.sandbox.ResolutionState;
 import app.packed.container.Realm;
@@ -25,7 +27,6 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.Variable;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.binding.BindingSetup;
 
@@ -128,12 +129,21 @@ public class BindingMirror implements Mirror {
         return Optional.empty();
     }
 
+    /**
+     * Returns the field or parameter underlying the binding. Or empty if the underlying operation is a {@link MethodHandle}.
+     * 
+     * @return stuff
+     */
+    public Optional<BindingTarget> target() {
+        return Optional.empty();
+    }
+
     /** {@return the underlying variable that has been bound.} */
     public Variable variable() {
         BindingSetup b = binding();
         return b.operation.type.parameter(b.index);
     }
-    
+
     public String toString() {
         return binding.toString();
     }
@@ -166,7 +176,7 @@ interface Sandbox {
     // RuntimeResolvable
     // Composite -> composite.all.isSatisfiable
 
-    //Optional<DefaultBindingMirror> fallback(); // Do we parse it even if we have been build-time resolved????
+    // Optional<DefaultBindingMirror> fallback(); // Do we parse it even if we have been build-time resolved????
 
     boolean isConstant();
 

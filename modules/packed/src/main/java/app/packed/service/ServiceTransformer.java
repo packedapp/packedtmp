@@ -303,7 +303,7 @@ public interface ServiceTransformer {
      *            the keys that should be removed
      */
     default void remove(Class<?>... keys) {
-        remove(Key.of(keys));
+        remove(Key.ofAll(keys));
     }
 
     /**
@@ -377,7 +377,7 @@ public interface ServiceTransformer {
     public abstract void replace(Op<?> factory);
 
     default void retain(Class<?>... keys) {
-        retain(Key.of(keys));
+        retain(Key.ofAll(keys));
     }
     
     default void retain(Key<?>... keys) {

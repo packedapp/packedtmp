@@ -18,15 +18,15 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
 
 /**
- * Provides generic information about the usage of an extension.
- * <p>
- * Noget omkring local mode and non-local mode.
+ * The base class for specialized extension mirrors.
  * <p>
  * This class can be extended by an extension to provide more detailed information about the extension. For example,
  * {@link app.packed.extension.BaseExtension} extends this class via {@link app.packed.extension.BaseExtensionMirror}.
  * <p>
  * Extension mirror instances are typically obtained via calls to {@link ApplicationMirror#use(Class)} or
  * {@link ContainerMirror#use(Class)}.
+ * <p>
+ * Noget omkring local mode and non-local mode.
  * <p>
  * NOTE: In order to properly implement a specialized extension mirror you:
  * <ul>
@@ -145,7 +145,7 @@ public abstract class ExtensionMirror<E extends Extension<E>> implements Mirror 
         return navigator().extensionDescriptor();
     }
 
-    /** {@return stuff.} */
+    /** {@return the class of the extension.} */
     public final Class<? extends Extension<?>> extensionClass() {
         return navigator().extensionDescriptor().type();
     }

@@ -215,7 +215,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
     // requires bliver automatisk anchoret...
     // anchorAllChildExports-> requireAllChildExports();
     public void require(Class<?>... keys) {
-        require(Key.of(keys));
+        require(Key.ofAll(keys));
     }
 
     /**
@@ -247,7 +247,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
     }
 
     public void requireOptionally(Class<?>... keys) {
-        requireOptionally(Key.of(keys));
+        requireOptionally(Key.ofAll(keys));
     }
 
     /**

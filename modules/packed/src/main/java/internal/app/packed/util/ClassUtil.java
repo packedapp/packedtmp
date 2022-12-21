@@ -94,7 +94,7 @@ public class ClassUtil {
      * @see OptionalDouble
      * @see OptionalInt
      */
-    public static boolean isOptional(Class<?> type) {
+    public static boolean isOptionalType(Class<?> type) {
         return (type == Optional.class || type == OptionalLong.class || type == OptionalInt.class || type == OptionalDouble.class);
     }
 

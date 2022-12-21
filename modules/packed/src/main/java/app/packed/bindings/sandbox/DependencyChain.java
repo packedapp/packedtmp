@@ -17,7 +17,7 @@ package app.packed.bindings.sandbox;
 
 import java.util.List;
 
-import app.packed.bindings.BindingMirror;
+import app.packed.bindings.mirror.BindingMirror;
 
 /**
  *

@@ -27,15 +27,15 @@ import java.util.IdentityHashMap;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OnField;
-import app.packed.extension.Extension;
-import app.packed.extension.BaseExtensionPoint.BindingHook;
-import app.packed.extension.BaseExtensionPoint.FieldHook;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bean.InvalidBeanDefinitionException;
+import app.packed.bean.BeanHook.AnnotatedFieldHook;
+import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.bindings.Variable;
+import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
-import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanHookModel.AnnotatedField;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;
@@ -135,7 +135,8 @@ public final class IntrospectedBeanField implements OnField {
     }
 
     private OperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
-        OperationSetup operation = new FieldOperationSetup(contributer.extension(), iBean.bean, OperationType.ofFieldAccess(field, accessMode), mh, field, accessMode);
+        OperationSetup operation = new FieldOperationSetup(contributer.extension(), iBean.bean, OperationType.ofFieldAccess(field, accessMode), mh, field,
+                accessMode);
         operation.invocationType = (PackedOperationTemplate) operation.invocationType.withReturnType(field.getType());
         iBean.unBoundOperations.add(operation);
         iBean.bean.operations.add(operation);
@@ -172,11 +173,11 @@ public final class IntrospectedBeanField implements OnField {
      *            the field to introspect
      * 
      * @throws InvalidBeanDefinitionException
-     *             if there are multiple {@link BindingHook} on the field. Or if there are both {@link FieldHook} and
-     *             {@link BindingHook} annotations
+     *             if there are multiple {@link AnnotatedVariableHook} on the field. Or if there are both
+     *             {@link AnnotatedFieldHook} and {@link AnnotatedVariableHook} annotations
      * 
-     * @apiNote Currently we allow multiple {@link FieldHook} on a field. This might change in the future, but for now we
-     *          allow it.
+     * @apiNote Currently we allow multiple {@link AnnotatedFieldHook} on a field. This might change in the future, but for
+     *          now we allow it.
      */
     static void introspectFieldForAnnotations(IntrospectedBean iBean, Field field) {
         // Get all annotations on the field

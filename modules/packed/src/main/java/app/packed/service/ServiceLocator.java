@@ -26,16 +26,16 @@ import java.util.function.Consumer;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
+import app.packed.bean.BeanHook.VariableTypeHook;
+import app.packed.bindings.Provider;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.AbstractComposer.ComposerAssembly;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
-import app.packed.extension.BaseExtensionPoint.BindingHook;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
-import app.packed.operation.Provider;
 import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.service.PackedServiceLocator;
@@ -107,8 +107,9 @@ import internal.app.packed.service.PackedServiceLocator;
  * <p>
  * Unless otherwise specified the set of services provided by a service locator is always unchangeable.
  */
-@BindingHook(extension = ServiceExtension.class)
+@VariableTypeHook(extension = ServiceExtension.class)
 public interface ServiceLocator {
+
 
     /**
      * Returns {@code true} if this service locator provides a service with the specified key.
@@ -134,7 +135,7 @@ public interface ServiceLocator {
         requireNonNull(key, "key is null");
         return keys().contains(key);
     }
-
+    
     /**
      * Returns a service instance with the given key if available, otherwise an empty optional.
      * <p>
@@ -225,6 +226,26 @@ public interface ServiceLocator {
      */
     Set<Key<?>> keys();
 
+    /**
+     * Returns a service selection with all of the services in this locator.
+     * 
+     * @return a service selection with all of the services in this locator
+     */
+    ServiceSelection<?> selectAll();
+
+    /**
+     * Returns a service selection where the raw type of every service key is assignable to the specified type.
+     * <p>
+     * Unlike this method {@link #selectWithAnyQualifiers(Class)} this method will also select any
+     * 
+     * @param <T>
+     *            the assignable type
+     * @param type
+     *            the assignable type
+     * @return the service selection
+     */
+    <T> ServiceSelection<T> selectAssignableTo(Class<T> type);
+
     /** {@return the number of services provided by this locator} */
     default int size() {
         return keys().size();
@@ -296,12 +317,12 @@ public interface ServiceLocator {
         throw new UnsupportedOperationException();
     }
 
-    // maaske har vi launcher og Image...
-
-    static <T> T lookup(Class<T> type, Assembly assembly, Wirelet... wirelets) {
-        // Hvad med empty
-        throw new UnsupportedOperationException();
-    }
+//    // maaske har vi launcher og Image...
+//
+//    static <T> T lookup(Class<T> type, Assembly assembly, Wirelet... wirelets) {
+//        // Hvad med empty
+//        throw new UnsupportedOperationException();
+//    }
 
     static ApplicationLauncher<ServiceLocator> newImage(Assembly assembly, Wirelet... wirelets) {
         return driver().newImage(assembly, wirelets);
@@ -346,8 +367,8 @@ public interface ServiceLocator {
     static ServiceLocator of(ComposerAction<? super Composer> action, Wirelet... wirelets) {
         class ServiceLocatorAssembly extends ComposerAssembly<Composer> {
 
-            private static final BootstrapApp<ServiceLocator> DRIVER = BootstrapApp.builder().build(ServiceLocator.class,
-                    new Op1<ApplicationInitializationContext, ServiceLocator>(c -> c.serviceLocator()) {});
+            private static final BootstrapApp<ServiceLocator> DRIVER = BootstrapApp
+                    .of(new Op1<ApplicationInitializationContext, ServiceLocator>(c -> c.serviceLocator()) {}, c -> {});
 
             ServiceLocatorAssembly(ComposerAction<? super Composer> action) {
                 super(new Composer(), action);
@@ -358,7 +379,7 @@ public interface ServiceLocator {
     }
 
     /**
-     * A lightweight configuration object that can be used to create injectors via. This is thought of a alternative to
+     * A lightweight configuration object that can be used to create injectors via. This is thought of alternative to
      * using a {@link BaseAssembly}. Unlike assemblies all services are automatically exported once defined. For example
      * useful in tests.
      * 
@@ -386,6 +407,21 @@ public interface ServiceLocator {
                 initialized = true;
             }
             return se;
+        }
+
+        public <T> ProvideableBeanConfiguration<T> install(Class<T> op) {
+            extension();
+            return base().install(op);
+        }
+
+        public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
+            extension();
+            return base().install(op);
+        }
+
+        public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
+            extension();
+            return base().installInstance(instance);
         }
 
         /**
@@ -448,21 +484,6 @@ public interface ServiceLocator {
         public <T> ProvideableBeanConfiguration<T> provide(Op<T> op) {
             extension();
             return base().install(op).provide();
-        }
-
-        public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
-            extension();
-            return base().install(op);
-        }
-
-        public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-            extension();
-            return base().installInstance(instance);
-        }
-
-        public <T> ProvideableBeanConfiguration<T> install(Class<T> op) {
-            extension();
-            return base().install(op);
         }
 
         /**

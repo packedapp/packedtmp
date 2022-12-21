@@ -26,16 +26,16 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.bindings.BindingMirror;
-import app.packed.bindings.sandbox.DependenciesMirror;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.BeanHook.VariableTypeHook;
+import app.packed.bindings.mirror.BindingMirror;
+import app.packed.bindings.sandbox.DependenciesMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.context.ContextMirror;
 import app.packed.context.ContextualizedElement;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.MirrorExtension;
-import app.packed.extension.BaseExtensionPoint.BindingHook;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.service.ExportedServiceMirror;
@@ -56,7 +56,7 @@ import internal.app.packed.operation.binding.BindingSetup;
  * <li>Must be located in the same module as the extension it is a member of.</li>
  * </ul>
  */
-@BindingHook(extension = MirrorExtension.class)
+@VariableTypeHook(extension = MirrorExtension.class)
 public non-sealed class OperationMirror implements ContextualizedElement, Mirror {
 
     /**
@@ -72,21 +72,6 @@ public non-sealed class OperationMirror implements ContextualizedElement, Mirror
     /** {@return the bean that this operation is a part of.} */
     public BeanMirror bean() {
         return operation().bean.mirror();
-    }
-
-    /** {@return a set of any contexts initiated by invoking the operation.} */
-    public Set<ContextMirror> createsContexts() {
-        throw new UnsupportedOperationException();
-    }
-    
-    public Optional<LifetimeMirror> createsLifetime() {
-        throw new UnsupportedOperationException();
-    }
-    
-    // Composites, What about services???
-    // Services no, because one operation may be used multiple places
-    public Optional<BindingMirror> nestedIn() {
-        return Optional.ofNullable(operation().onBinding).map(b -> b.mirror());
     }
 
     /** {@return the bindings of this operation.} */
@@ -107,22 +92,20 @@ public non-sealed class OperationMirror implements ContextualizedElement, Mirror
         return List.of(hooks);
     }
     
-    // The returned set of keys may contains key that result in a cycle.
-    // For example, if a bean is provided as a service. Calling this method on any of the
-    // operations on the bean will include the key under which the bean is being provided.
-    public Set<Key<?>> keys() {
-        Set<Key<?>> set = new HashSet<>(operation().bean.container.sm.keysAvailableInternally());
-        for (ContextMirror ocm : contexts()) {
-            set.addAll(ocm.keys());
-        }
-        return Set.copyOf(set);
+    /** {@return a set of any contexts initiated by invoking the operation.} */
+    public Set<ContextMirror> createsContexts() {
+        throw new UnsupportedOperationException();
+    }
+    
+    public Optional<LifetimeMirror> createsLifetime() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@return the dependencies this operation introduces.} */
     DependenciesMirror dependencies() {
         throw new UnsupportedOperationException();
     }
-
+    
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
@@ -157,6 +140,23 @@ public non-sealed class OperationMirror implements ContextualizedElement, Mirror
         throw new UnsupportedOperationException();
     }
 
+    // The returned set of keys may contains key that result in a cycle.
+    // For example, if a bean is provided as a service. Calling this method on any of the
+    // operations on the bean will include the key under which the bean is being provided.
+    public Set<Key<?>> keys() {
+        Set<Key<?>> set = new HashSet<>(operation().bean.container.sm.keysAvailableInternally());
+        for (ContextMirror ocm : contexts()) {
+            set.addAll(ocm.keys());
+        }
+        return Set.copyOf(set);
+    }
+
+    // Composites, What about services???
+    // Services no, because one operation may be used multiple places
+    public Optional<BindingMirror> nestedIn() {
+        return Optional.ofNullable(operation().onBinding).map(b -> b.mirror());
+    }
+
     /**
      * {@return the internal configuration of operation.}
      * 
@@ -188,7 +188,7 @@ public non-sealed class OperationMirror implements ContextualizedElement, Mirror
 //Bean -> Operation
 
 //Does an operation always introduce a dependency between two beans???
-class SandboxOp {
+class ZandboxOM {
 
     /** {@return the services that are available at this injection site.} */
     final Set<Key<?>> availableServices() {

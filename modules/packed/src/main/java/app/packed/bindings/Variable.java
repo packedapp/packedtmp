@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package app.packed.bindings;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -69,7 +69,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
      * @see Method#getReturnType()
      * @see ParameterizedType#getRawType()
      */
-    Class<?> getType();
+    Class<?> getRawType();
 
     default Type getGenericType() {
         throw new UnsupportedOperationException();

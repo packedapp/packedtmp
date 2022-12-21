@@ -31,6 +31,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.service.Key;
+import internal.app.packed.service.KeyHelper;
 
 /**
  *
@@ -59,17 +60,17 @@ public class KeyMicro {
 
     @Benchmark
     public Key<?> keyFromFieldMapStringInteger() {
-        return Key.convertField(MAP_STRING_INTEGER$);
+        return KeyHelper.convertField(MAP_STRING_INTEGER$);
     }
 
     @Benchmark
     public Key<?> keyFromFieldString() {
-        return Key.convertField(STRING$);
+        return KeyHelper.convertField(STRING$);
     }
 
     @Benchmark
     public Key<?> keyFromFieldStringQualified() {
-        return Key.convertField(STRING_QUALIFIED$);
+        return KeyHelper.convertField(STRING_QUALIFIED$);
     }
 
     @Benchmark

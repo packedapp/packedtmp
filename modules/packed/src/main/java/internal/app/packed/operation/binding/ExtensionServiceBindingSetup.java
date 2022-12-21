@@ -17,7 +17,7 @@ package internal.app.packed.operation.binding;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.bindings.BindingKind;
+import app.packed.bindings.mirror.BindingResolutionKind;
 import app.packed.container.Realm;
 import app.packed.extension.BaseExtension;
 import internal.app.packed.bean.BeanSetup;
@@ -49,7 +49,7 @@ public final class ExtensionServiceBindingSetup extends BindingSetup {
 //        return MethodHandles.collectArguments(methodHandle, index, mh);
     }
 
-    public BindingKind kind() {
-        return BindingKind.KEY;
+    public BindingResolutionKind kind() {
+        return BindingResolutionKind.KEY;
     }
 }

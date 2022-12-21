@@ -15,5 +15,9 @@ SEP.childLifetimeRequireAndInject(ContainerHandle newContainer, Key<?> key);
 SEP.childLifetimeOptionalRequireAndInject(ContainerHandle newContainer, Key<?> key); 
 SE.childLifetime
 
+ContainerHandle.createsNewLifetime()-
 
-ContainerHandle.createsNewLifetime()
+
+---------
+Syntes maaske extension bridge er bundet til bean'en.
+Vi kan ikke have en bean med flere forskellige bridges...

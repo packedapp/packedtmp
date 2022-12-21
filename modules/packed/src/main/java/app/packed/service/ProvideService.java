@@ -21,8 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.extension.BaseExtensionPoint.FieldHook;
-import app.packed.extension.BaseExtensionPoint.MethodHook;
+import app.packed.bean.BeanHook.AnnotatedFieldHook;
+import app.packed.bean.BeanHook.AnnotatedMethodHook;
 
 /**
  * An annotation indicating that an annotated method or field on a bean provides a service to the container in which the
@@ -52,8 +52,8 @@ import app.packed.extension.BaseExtensionPoint.MethodHook;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@MethodHook(allowInvoke = true, extension = ServiceExtension.class)
-@FieldHook(allowGet = true, extension = ServiceExtension.class)
+@AnnotatedMethodHook(allowInvoke = true, extension = ServiceExtension.class)
+@AnnotatedFieldHook(allowGet = true, extension = ServiceExtension.class)
 public @interface ProvideService {
 
     /**

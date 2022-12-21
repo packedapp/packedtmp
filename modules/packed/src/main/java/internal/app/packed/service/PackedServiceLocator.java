@@ -22,9 +22,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.operation.Provider;
+import app.packed.bindings.Provider;
 import app.packed.service.Key;
 import app.packed.service.ServiceLocator;
+import app.packed.service.ServiceSelection;
 import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -59,5 +60,17 @@ public record PackedServiceLocator(PackedExtensionContext pec, Map<Key<?>, Metho
     @Override
     public Set<Key<?>> keys() {
         return map.keySet();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ServiceSelection<?> selectAll() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> ServiceSelection<T> selectAssignableTo(Class<T> type) {
+       throw new UnsupportedOperationException();
     }
 }

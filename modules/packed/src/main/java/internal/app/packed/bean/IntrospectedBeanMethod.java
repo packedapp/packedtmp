@@ -19,6 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
+import java.util.Set;
 
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OnMethod;
@@ -27,11 +28,13 @@ import app.packed.framework.Nullable;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
+import app.packed.service.Key;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
 import internal.app.packed.operation.PackedOperationTemplate;
+import internal.app.packed.service.KeyHelper;
 
 /** Internal implementation of BeanMethod. Discard after use. */
 public final class IntrospectedBeanMethod implements OnMethod {
@@ -58,17 +61,11 @@ public final class IntrospectedBeanMethod implements OnMethod {
         this.method = method;
         this.annotations = annotations;
     }
-    
 
     /** {@inheritDoc} */
     @Override
     public AnnotationReader annotations() {
         return new BeanAnnotationReader(annotations);
-    }
-
-    /** {@return modifiers for the member.} */
-    public int getModifiers() {
-        return method.getModifiers();
     }
 
     /** {@inheritDoc} */
@@ -79,8 +76,26 @@ public final class IntrospectedBeanMethod implements OnMethod {
 
     /** {@inheritDoc} */
     @Override
+    public Set<Class<? extends Annotation>> hooks() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public Method method() {
         return method;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Key<?> methodToKey() {
+        return KeyHelper.convertMethodReturnType(method);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int modifiers() {
+        return method.getModifiers();
     }
 
     /** {@inheritDoc} */
@@ -115,7 +130,6 @@ public final class IntrospectedBeanMethod implements OnMethod {
         }
         return t;
     }
-
 
     /**
      * Look for hook annotations on a single method.

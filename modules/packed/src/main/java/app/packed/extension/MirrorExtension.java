@@ -22,20 +22,20 @@ import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.IntrospectedBeanBinding;
+import internal.app.packed.bean.IntrospectedBeanVariable;
 import internal.app.packed.operation.OperationSetup;
 
 /**
  * An extension that can be used to provide mirror instances at runtime.
  * <p>
- * This extension is used to inject mirrors of type {@link ApplicationMirror}, {@link ContainerMirror} or
- * {@link BeanMirror} at runtime.
+ * This extension is used to inject mirrors of type {@link ApplicationMirror}, {@link ContainerMirror},
+ * {@link AssemblyMirror}, {@link BeanMirror} or {@link OperationMirror} at runtime.
  * <p>
  * This extension is mainly here as a kind of "marker extension". Indicating that somewhere in the application someone
- * has decided to reference a mirror. In which case the mirroring of the whole application is available at runtime.
+ * has decided to reference a mirror. In which case mirrors for the whole application is available at runtime.
  * <p>
- * Maybe at some point we will support a compact mirror mode where each extension can keep a minimal set of information
- * that is needed at runtime.
+ * At some point we might support a compact mirror mode where each extension can keep a minimal set of information that
+ * is needed at runtime.
  * 
  * @see ApplicationMirror
  * @see ContainerMirror
@@ -57,32 +57,25 @@ public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
     @Override
     protected BeanIntrospector newBeanIntrospector() {
         return new BeanIntrospector() {
-
             @Override
-            public void onBinding(OnBinding binding) {
-                IntrospectedBeanBinding ibb = ((IntrospectedBeanBinding) binding);
+            public void onVariableProvideRaw(OnVariableProvideRaw binding) {
+                IntrospectedBeanVariable ibb = ((IntrospectedBeanVariable) binding);
                 OperationSetup operation = ibb.operation;
                 BeanSetup bean = ibb.operation.bean;
                 if (binding.hookClass() == ApplicationMirror.class) {
-                    binding.bind(bean.container.application.mirror());
+                    binding.bindConstant(bean.container.application.mirror());
                 } else if (binding.hookClass() == AssemblyMirror.class) {
-                    binding.bind(bean.container.assembly.mirror());
+                    binding.bindConstant(bean.container.assembly.mirror());
                 } else if (binding.hookClass() == ContainerMirror.class) {
-                    binding.bind(bean.container.mirror());
+                    binding.bindConstant(bean.container.mirror());
                 } else if (binding.hookClass() == BeanMirror.class) {
-                    binding.bind(bean.mirror());
+                    binding.bindConstant(bean.mirror());
                 } else if (binding.hookClass() == OperationMirror.class) {
-                    binding.bind(operation.mirror());
+                    binding.bindConstant(operation.mirror());
                 } else {
-                    super.onBinding(binding);
+                    super.onVariableProvideRaw(binding);
                 }
             }
         };
     }
-}
-
-//https://docs.scala-lang.org/overviews/reflection/environment-universes-mirrors.html
-//reflect = build time, introspect = runtime.. IDK
-enum MirrorEnvironment { // ApplicationEnvironment???
-    BUILD_TIME, RUN_TIME;
 }

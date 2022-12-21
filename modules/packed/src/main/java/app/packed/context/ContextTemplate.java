@@ -20,16 +20,22 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanHook.AnnotatedMethodHook;
+import app.packed.bean.BeanHook.VariableTypeHook;
+import app.packed.extension.BaseExtensionPoint.InvocationArgument;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.extension.ExtensionContext;
+import app.packed.operation.Op1;
+import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationTemplate;
 import app.packed.service.Key;
-
 
 // ContainerLaunchContext
 
 // 2 muligheder context services...
 // or @FromChild
-
 
 /**
  *
@@ -53,27 +59,73 @@ public interface ContextTemplate {
         return withServiceFromArgument(Key.of(key), index);
     }
 
-    ContextTemplate withDynamicServiceResolver(Function<Key<?>, ?> f); 
-    
+    ContextTemplate withDynamicServiceResolver(Function<Key<?>, ?> f);
+
     ContextTemplate withServiceFromArgument(Key<?> key, int index);
 
-    static ContextTemplate of(MethodHandles.Lookup lookup, Class<? extends Context<?>> contextClass) {
+    static ContextTemplate of(MethodHandles.Lookup lookup, Class<? extends Context<?>> contextClass, Class<?>... invocationArguments) {
         throw new UnsupportedOperationException();
     }
 }
 
 class Usage {
 
-    public static void main(String[] args) {
-        ContextTemplate t = ContextTemplate.of(MethodHandles.lookup(), ExtensionContext.class);
-        t.withArgument(ScheContext.class).withServiceFromArgument(SchedulingContext.class, 0);
+    static class SchedulingBean {
+
     }
 
     static class ScheContext implements SchedulingContext {
-
+        SchedulingHistory history;
     }
 
-    interface SchedulingContext {
+    @AnnotatedMethodHook(extension = MyExt.class, requiresContext = SchedulingContext.class, allowInvoke = true)
+    @interface Cron {
+        String value();
+    }
+
+    @VariableTypeHook(extension = MyExt.class, requiresContext = SchedulingContext.class)
+    interface SchedulingContext extends Context<MyExt> {}
+
+    @VariableTypeHook(extension = MyExt.class, requiresContext = SchedulingContext.class)
+    interface SchedulingHistory {}
+
+    static class MyExt extends Extension<MyExt> {
+        static final ContextTemplate CT = ContextTemplate.of(MethodHandles.lookup(), ExtensionContext.class, ScheContext.class);
+
+        static final OperationTemplate ot = OperationTemplate.defaults().withContext(CT);
+
+        @Override
+        protected BeanIntrospector newBeanIntrospector() {
+            return new BeanIntrospector() {
+
+                @SuppressWarnings("unused")
+                @Override
+                public void onMethod(OnMethod method) {
+                    Cron c = method.annotations().readRequired(Cron.class);
+                    OperationHandle oh = method.newOperation(ot);
+                    ExtensionBeanConfiguration<SchedulingBean> bean = lifetimeRoot().base().installIfAbsent(SchedulingBean.class);
+
+                    // bean, add scheduling + 
+                    // Manytons dur ikke direkte
+                    
+                    // 
+                    // bean.addSchedule
+                    // parse expresion
+
+                }
+
+                @Override
+                public void onVariableProvide(OnVariableProvide binding) {
+                    if (binding.hookClass() == SchedulingContext.class) {
+                        binding.bindToInvocationArgument(0, SchedulingContext.class);
+                    } else if (binding.hookClass() == SchedulingHistory.class) {
+                        binding.bindTo(new Op1<@InvocationArgument(context = SchedulingContext.class) ScheContext, SchedulingHistory>(c -> c.history) {});
+                    } else {
+                        super.onVariableProvide(binding);
+                    }
+                }
+            };
+        }
 
     }
 }

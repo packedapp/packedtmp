@@ -227,7 +227,7 @@ class TDropped {
 
     // Ideen er lidt at de ikke skal ind i containeren...
     static Wirelet exportTransitive(Class<?>... keys) {
-        return exportTransitive(Key.of(keys));
+        return exportTransitive(Key.ofAll(keys));
     }
 
     static Wirelet exportTransitive(Key<?>... keys) {

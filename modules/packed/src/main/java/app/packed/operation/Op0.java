@@ -22,12 +22,12 @@ import java.util.function.Supplier;
 /**
  * An {@link Op} type that wraps a {@link Supplier} taking no arguments.
  * <p>
- * Is typically used like this:
+ * Can be used like this:
  *
  * <pre> {@code
  * Op<Long> f = new Op0<>(System::currentTimeMillis) {}};</pre>
  * <p>
- * In this example we create an anonymous class inheriting from Op0 is order to capture information about the suppliers
+ * In this example we create an anonymous class inheriting from Op0 in order to capture information about the suppliers
  * type variable (in this case {@code Long}).
  * 
  * @param <R>
