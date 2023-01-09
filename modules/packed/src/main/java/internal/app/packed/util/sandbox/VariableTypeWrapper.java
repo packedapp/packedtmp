@@ -26,7 +26,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.Optional;
 
 import app.packed.bindings.Variable;
-import app.packed.service.TypeToken;
+import app.packed.service.GenericType;
 import internal.app.packed.util.ReflectionUtil;
 
 /**
@@ -36,7 +36,7 @@ public interface VariableTypeWrapper {
 
     Class<?> getType();
 
-    TypeToken<?> typeToken();
+    GenericType<?> typeToken();
 
     record OfClass(Class<?> clazz) implements VariableTypeWrapper {
         public OfClass {
@@ -59,8 +59,8 @@ public interface VariableTypeWrapper {
 
         /** {@inheritDoc} */
         @Override
-        public TypeToken<?> typeToken() {
-            return TypeToken.of(clazz);
+        public GenericType<?> typeToken() {
+            return GenericType.of(clazz);
         }
     }
 
@@ -86,7 +86,7 @@ public interface VariableTypeWrapper {
 
         /** {@inheritDoc} */
         @Override
-        public TypeToken<?> typeToken() {
+        public GenericType<?> typeToken() {
             throw new UnsupportedOperationException();
         }
     }
@@ -113,9 +113,9 @@ public interface VariableTypeWrapper {
         }
 
         /** {@inheritDoc} */
-        public TypeToken<?> typeToken() {
+        public GenericType<?> typeToken() {
             Type t = ReflectionUtil.getParameterizedType(parameter, ReflectionUtil.getIndex(parameter));
-            return TypeToken.fromType(t);
+            return GenericType.fromType(t);
         }
     }
 
@@ -138,7 +138,7 @@ public interface VariableTypeWrapper {
 
         /** {@inheritDoc} */
         @Override
-        public TypeToken<?> typeToken() {
+        public GenericType<?> typeToken() {
             throw new UnsupportedOperationException();
         }
     }
@@ -162,8 +162,8 @@ public interface VariableTypeWrapper {
 
         /** {@inheritDoc} */
         @Override
-        public TypeToken<?> typeToken() {
-            return TypeToken.fromMethodReturnType(method);
+        public GenericType<?> typeToken() {
+            return GenericType.fromMethodReturnType(method);
         }
     }
 
@@ -190,8 +190,8 @@ public interface VariableTypeWrapper {
 
         /** {@inheritDoc} */
         @Override
-        public TypeToken<?> typeToken() {
-            return TypeToken.fromField(field);
+        public GenericType<?> typeToken() {
+            return GenericType.fromField(field);
         }
     }
 }

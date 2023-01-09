@@ -20,8 +20,6 @@ import java.lang.invoke.MethodHandle;
 import java.util.Optional;
 
 import app.packed.bindings.Variable;
-import app.packed.bindings.sandbox.DependenciesMirror;
-import app.packed.bindings.sandbox.ResolutionState;
 import app.packed.container.Realm;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
@@ -218,7 +216,7 @@ interface Sandbox {
     // Her er constructeren for CustomerManager...
     // Til gengaeld
 
-    public ResolutionState resolutionState();
+//    public ResolutionState resolutionState();
 
     // Unresolved->Empty or Composite->Empty
     Optional<Realm> resolvedBy();

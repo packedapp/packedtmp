@@ -23,14 +23,15 @@ import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.IdentityHashMap;
+import java.util.Set;
 
-import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanIntrospector.AnnotationReader;
-import app.packed.bean.BeanIntrospector.OnField;
-import app.packed.bean.InaccessibleBeanMemberException;
-import app.packed.bean.InvalidBeanDefinitionException;
 import app.packed.bean.BeanHook.AnnotatedFieldHook;
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanIntrospector.AnnotationReader;
+import app.packed.bean.BeanIntrospector.OperationalField;
+import app.packed.bean.InaccessibleBeanMemberException;
+import app.packed.bean.InvalidBeanDefinitionException;
 import app.packed.bindings.Variable;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
@@ -43,7 +44,7 @@ import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOp
 import internal.app.packed.operation.PackedOperationTemplate;
 
 /** Responsible for introspecting fields on a bean. */
-public final class IntrospectedBeanField implements OnField {
+public final class IntrospectedOperationalField implements OperationalField {
 
     /** Whether or not the field can be read. */
     final boolean allowGet;
@@ -66,8 +67,8 @@ public final class IntrospectedBeanField implements OnField {
     /** Whether or not we can create new operations from this class. */
     private boolean isConfigurationDisabled;
 
-    private IntrospectedBeanField(IntrospectedBean iBean, Contributor contributer, Field field, boolean allowGet, boolean allowSet, Annotation[] annotations,
-            AnnotatedField... annotatedFields) {
+    private IntrospectedOperationalField(IntrospectedBean iBean, Contributor contributer, Field field, boolean allowGet, boolean allowSet,
+            Annotation[] annotations, AnnotatedField... annotatedFields) {
         this.iBean = iBean;
         this.contributer = contributer;
         this.field = field;
@@ -82,9 +83,9 @@ public final class IntrospectedBeanField implements OnField {
         return new BeanAnnotationReader(annotations);
     }
 
-    /** Callback into an extension's {@link BeanIntrospector#onField(OnField)} method. */
+    /** Callback into an extension's {@link BeanIntrospector#hookOnAnnotatedField(OperationalField)} method. */
     private void callBeanIntrospectorOnField() {
-        contributer.introspector().onField(this);
+        contributer.introspector().hookOnAnnotatedField(Set.of(), this);
         isConfigurationDisabled = true;
         iBean.resolveOperations(); // resolve bindings for any operation(s) that have been created
     }
@@ -188,9 +189,9 @@ public final class IntrospectedBeanField implements OnField {
             Annotation annotation = annotations[i];
 
             // Look in the field annotation cache to see if the annotation is a meta annotation
-            AnnotatedField e = iBean.hookModel.lookupAnnotationOnField(annotation.annotationType());
+            AnnotatedField e = iBean.hookModel.testFieldAnnotation(annotation.annotationType());
 
-            // The annotation is neither a field or binding annotation
+            // The annotation is neither a annotated field or variable annotation
             if (e == null) {
                 continue;
             }
@@ -204,14 +205,15 @@ public final class IntrospectedBeanField implements OnField {
                 Annotation annotation2 = annotations[j];
 
                 // Look in the annotation cache to see if the annotation is a meta annotation
-                AnnotatedField e2 = iBean.hookModel.lookupAnnotationOnField(annotation2.annotationType());
+                AnnotatedField e2 = iBean.hookModel.testFieldAnnotation(annotation2.annotationType());
 
                 // The annotation is neither a field or provision annotation
                 if (e2 == null) {
                     continue;
                 }
 
-                if (e.isBindingHook() || e2.isBindingHook()) {
+                // Cannot have multiple AnnotatedVariableHook annotations
+                if (!e.isFieldHook() || !e2.isFieldHook()) {
                     throw new InvalidBeanDefinitionException("Cannot use both " + annotation + " and " + annotation2);
                 }
 
@@ -245,7 +247,7 @@ public final class IntrospectedBeanField implements OnField {
                 IntrospectedBean.Contributor contributor = iBean.computeContributor(e.extensionType(), false);
 
                 // Create the wrapped field that is exposed to the extension
-                IntrospectedBeanField f = new IntrospectedBeanField(iBean, contributor, field, e.isGettable() || contributor.hasFullAccess(),
+                IntrospectedOperationalField f = new IntrospectedOperationalField(iBean, contributor, field, e.isGettable() || contributor.hasFullAccess(),
                         e.isSettable() || contributor.hasFullAccess(), annotations);
                 f.callBeanIntrospectorOnField();
             } else {
@@ -254,7 +256,7 @@ public final class IntrospectedBeanField implements OnField {
                     IntrospectedBean.Contributor contributor = iBean.computeContributor(mf.extensionClass, false);
 
                     // Create the wrapped field that is exposed to the extension
-                    IntrospectedBeanField f = new IntrospectedBeanField(iBean, contributor, field, mf.allowGet || contributor.hasFullAccess(),
+                    IntrospectedOperationalField f = new IntrospectedOperationalField(iBean, contributor, field, mf.allowGet || contributor.hasFullAccess(),
                             mf.allowSet || contributor.hasFullAccess(), annotations);
                     f.callBeanIntrospectorOnField();
                 }

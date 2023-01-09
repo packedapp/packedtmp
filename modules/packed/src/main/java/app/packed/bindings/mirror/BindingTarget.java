@@ -28,18 +28,19 @@ public sealed interface BindingTarget {
         /** {@return the field.} */
         Field field();
     }
+    
+    non-sealed interface OfMethodHandleParameter extends BindingTarget {}
 
+    //(@Foo fff)
     /** Represents an operation that gets, sets or updates a {@link Field field}. */
     non-sealed interface OfParameter extends BindingTarget {
 
         /** {@return the parameter.} */
         Parameter parameter();
     }
+    
+    // Op1<@Foo fff, String> IDK kunne ogsaa vaere parameter...
+    non-sealed interface OfTypeParameter extends BindingTarget {
+        
+    }
 }
-
-
-
-//// Maaske er det bedre at have en Optional<BindingTarget> target()
-//// istedet for at have den her...
-///** Represents an operation that gets, sets or updates a {@link Field field}. */
-//non-sealed interface OfMethodHandleParameter extends BindingTarget {}

@@ -23,7 +23,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.BeanHook;
 import app.packed.bean.BeanHook.AnnotatedFieldHook;
+import app.packed.framework.FrameworkNames;
 
 /**
  *
@@ -34,6 +36,8 @@ import app.packed.bean.BeanHook.AnnotatedFieldHook;
 @Inherited
 // override, force
 
+// foreign, external
+
 // Masake Paa BEP alligevel
 // CustomHook
 // CustomBindingHook
@@ -42,16 +46,23 @@ import app.packed.bean.BeanHook.AnnotatedFieldHook;
 // IDK maaske hoere den til i .bean alligevel
 
 // Flyt den til BeanHook hvis vi kommer til at supportere dem
+
+
+
+// Alternativt require at custom hooks skal defineres paa den extension hvor de skal bruges...
+// Hmm...
 public @interface CustomBeanHook {
 
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @Inherited
-    @Repeatable(CustomBeanHook.CustomBindingHook.All.class)
+    @Repeatable(CustomBindingHook.All.class)
     @interface CustomBindingHook {
 
         String className();
+
+        String extensionClass();
 
         @Retention(RetentionPolicy.RUNTIME)
         @Target(ElementType.ANNOTATION_TYPE)
@@ -70,17 +81,19 @@ public @interface CustomBeanHook {
     @Target(ElementType.ANNOTATION_TYPE)
     @Documented
     @Inherited
-    @Repeatable(CustomBeanHook.CustomFieldHook.All.class)
-    @interface CustomFieldHook {
+    @Repeatable(ForeignAnnotatedFieldHook.All.class)
+    @interface ForeignAnnotatedFieldHook {
 
-        String annotation();
+        String annotationClass();
+
+        String extensionClass();
 
         @Retention(RetentionPolicy.RUNTIME)
         @Target(ElementType.ANNOTATION_TYPE)
         @Inherited
         @Documented
         @interface All {
-            CustomFieldHook[] value();
+            ForeignAnnotatedFieldHook[] value();
         }
     }
 
@@ -88,8 +101,10 @@ public @interface CustomBeanHook {
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @Inherited
-    @CustomBeanHook
+    @BeanHook
     // Logger, Net, File
     // Meta annotation hooks annotations does not have to live on the extension
+    @ForeignAnnotatedFieldHook(annotationClass = "sdfsdf", extensionClass = FrameworkNames.BASE_BEAN_EXTENSION)
+    @ForeignAnnotatedFieldHook(annotationClass = "sdfsdf", extensionClass = FrameworkNames.BASE_BEAN_EXTENSION)
     public @interface JavaBaseSupport {}
 }

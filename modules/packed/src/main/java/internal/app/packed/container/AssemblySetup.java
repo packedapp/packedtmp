@@ -28,7 +28,7 @@ import app.packed.application.BuildGoal;
 import app.packed.container.AbstractComposer.ComposerAssembly;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
-import app.packed.container.ContainerAssembly;
+import app.packed.container.BuildableAssembly;
 import app.packed.container.DelegatingAssembly;
 import app.packed.container.Realm;
 import app.packed.container.Wirelet;
@@ -45,8 +45,8 @@ import internal.app.packed.util.ThrowableUtil;
 /** The internal configuration of an assembly. */
 public final class AssemblySetup extends RealmSetup {
 
-    /** A handle that can invoke {@link ContainerAssembly#doBuild(AssemblyModel, ContainerSetup)}. */
-    private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ContainerAssembly.class, "doBuild",
+    /** A handle that can invoke {@link BuildableAssembly#doBuild(AssemblyModel, ContainerSetup)}. */
+    private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BuildableAssembly.class, "doBuild",
             void.class, AssemblyModel.class, ContainerSetup.class);
 
     /** A MethodHandle for invoking {@link AssemblyMirror#initialize(AssemblySetup)}. */
@@ -144,7 +144,7 @@ public final class AssemblySetup extends RealmSetup {
         } else {
             if (a instanceof ComposerAssembly) {
                 throw new IllegalArgumentException("Cannot link an instance of " + ComposerAssembly.class + ", assembly must extend "
-                        + ContainerAssembly.class.getSimpleName() + " instead");
+                        + BuildableAssembly.class.getSimpleName() + " instead");
             }
             this.application = linkTo.application;
             this.container = new ContainerSetup(application, this, linkTo, wirelets);
@@ -163,7 +163,7 @@ public final class AssemblySetup extends RealmSetup {
         }
 
         // We need to call two different, depending on on the type of the assembly
-        if (assembly instanceof ContainerAssembly ca) {
+        if (assembly instanceof BuildableAssembly ca) {
             // Invoke Assembly::doBuild, which in turn will invoke Assembly::build
             try {
                 MH_ASSEMBLY_DO_BUILD.invokeExact(ca, assemblyModel, container);

@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
 import app.packed.bindings.mirror.BindingMirror;
-import app.packed.bindings.mirror.BindingResolutionKind;
+import app.packed.bindings.mirror.BindingClassifierKind;
 import app.packed.container.Realm;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationMirror;
@@ -61,7 +61,7 @@ public abstract class BindingSetup {
 
     public abstract MethodHandle bindIntoOperation(MethodHandle methodHandle);
 
-    public abstract BindingResolutionKind kind();
+    public abstract BindingClassifierKind kind();
 
     /** {@return a new mirror.} */
     public BindingMirror mirror() {
@@ -95,8 +95,8 @@ public abstract class BindingSetup {
 
         /** {@inheritDoc} */
         @Override
-        public BindingResolutionKind kind() {
-            return BindingResolutionKind.HOOK;
+        public BindingClassifierKind kind() {
+            return BindingClassifierKind.BINDING_ANNOTATION;
         }
     }
 
@@ -119,8 +119,8 @@ public abstract class BindingSetup {
 
         /** {@inheritDoc} */
         @Override
-        public BindingResolutionKind kind() {
-            return BindingResolutionKind.MANUAL;
+        public BindingClassifierKind kind() {
+            return BindingClassifierKind.MANUAL;
         }
     }
 }

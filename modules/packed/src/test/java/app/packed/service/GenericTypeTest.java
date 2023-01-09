@@ -32,18 +32,18 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.service.TypeToken.CanonicalizedTypeToken;
+import app.packed.service.GenericType.CanonicalizedTypeToken;
 import testutil.stubs.annotation.AnnotationInstances;
 
-/** Tests {@link TypeToken}. */
-public class TypeLiteralTest {
+/** Tests {@link GenericType}. */
+public class GenericTypeTest {
 
-    static final TypeToken<Integer> TL_INTEGER = new TypeToken<Integer>() {};
-    static final TypeToken<List<?>> TL_LIST_WILDCARD = new TypeToken<List<?>>() {};
+    static final GenericType<Integer> TL_INTEGER = new GenericType<Integer>() {};
+    static final GenericType<List<?>> TL_LIST_WILDCARD = new GenericType<List<?>>() {};
 
     @Test
     public void canonicalize() {
-        TypeToken<Integer> tl1 = TypeToken.of(Integer.class);
+        GenericType<Integer> tl1 = GenericType.of(Integer.class);
 
         assertThat(tl1).isEqualTo(TL_INTEGER);
 
@@ -51,7 +51,7 @@ public class TypeLiteralTest {
         assertThat(TL_INTEGER).isNotSameAs(TL_INTEGER.canonicalize());
     }
 
-    /** Tests {@link TypeToken#fromField(Field)}. */
+    /** Tests {@link GenericType#fromField(Field)}. */
     @Test
     public void fromField() throws Exception {
         @SuppressWarnings("unused")
@@ -60,14 +60,14 @@ public class TypeLiteralTest {
             List<?> fq;
         }
         Field f = findField(Tmpx.class, "f");
-        npe(TypeToken::fromField, f, "field");
+        npe(GenericType::fromField, f, "field");
 
-        assertThat(TypeToken.of(Integer.class)).isEqualTo(TypeToken.fromField(f));
+        assertThat(GenericType.of(Integer.class)).isEqualTo(GenericType.fromField(f));
 
-        assertThat(LIST_WILDCARD).isEqualTo(TypeToken.fromField(findField(Tmpx.class, "fq")).type());
+        assertThat(LIST_WILDCARD).isEqualTo(GenericType.fromField(findField(Tmpx.class, "fq")).type());
     }
 
-    /** Tests {@link TypeToken#fromMethodReturnType(Method)}. */
+    /** Tests {@link GenericType#fromMethodReturnType(Method)}. */
     @Test
     public void fromMethodReturnType() throws Exception {
         class Tmpx<T> {
@@ -77,8 +77,8 @@ public class TypeLiteralTest {
             }
         }
         Method m = Tmpx.class.getMethod("foo");
-        npe(TypeToken::fromMethodReturnType, m, "method");
-        assertThat(LIST_WILDCARD).isEqualTo(TypeToken.fromMethodReturnType(m).type());
+        npe(GenericType::fromMethodReturnType, m, "method");
+        assertThat(LIST_WILDCARD).isEqualTo(GenericType.fromMethodReturnType(m).type());
     }
 
 //  /** Tests {@link TypeToken#fromParameter(Parameter)}. */
@@ -101,7 +101,7 @@ public class TypeLiteralTest {
     public void tl_extendTypeLiterable() {
 
         /** A custom type literal to check that T is passed down to super classes. */
-        class MyTypeLiteral<T> extends TypeToken<T> {}
+        class MyTypeLiteral<T> extends GenericType<T> {}
 
         MyTypeLiteral<Integer> integerNew = new MyTypeLiteral<Integer>() {};
 
@@ -111,16 +111,16 @@ public class TypeLiteralTest {
         assertThat(integerNew.type()).isSameAs(Integer.class);
 
         assertThat(integerNew).hasSameHashCodeAs(Integer.class);
-        assertThat(integerNew).hasSameHashCodeAs(TypeToken.of(Integer.class).hashCode());
+        assertThat(integerNew).hasSameHashCodeAs(GenericType.of(Integer.class).hashCode());
         assertThat(integerNew).hasSameHashCodeAs(new CanonicalizedTypeToken<>(Integer.class).hashCode());
 
-        assertThat(integerNew).isEqualTo(TypeToken.of(Integer.class));
+        assertThat(integerNew).isEqualTo(GenericType.of(Integer.class));
         assertThat(integerNew).isEqualTo(integerNew.canonicalize());
         assertThat(integerNew).isNotSameAs(integerNew.canonicalize());
         assertThat(integerNew).isEqualTo(new CanonicalizedTypeToken<>(Integer.class));
 
         assertThat(integerNew).isNotEqualTo(Integer.class);
-        assertThat(integerNew).isNotEqualTo(TypeToken.of(Long.class));
+        assertThat(integerNew).isNotEqualTo(GenericType.of(Long.class));
 
         assertThat(integerNew).hasToString("java.lang.Integer");
         assertThat(integerNew.toStringSimple()).isEqualTo("Integer");
@@ -129,7 +129,7 @@ public class TypeLiteralTest {
     /** Tests an primitive int type literal. */
     @Test
     public void tl_int() {
-        TypeToken<Integer> intOf = TypeToken.of(int.class);
+        GenericType<Integer> intOf = GenericType.of(int.class);
 
         assertThat(intOf.wrap().type()).isSameAs(Integer.class);
 
@@ -137,13 +137,13 @@ public class TypeLiteralTest {
         assertThat(intOf.type()).isSameAs(int.class);
 
         assertThat(intOf).hasSameHashCodeAs(int.class);
-        assertThat(intOf).hasSameHashCodeAs(TypeToken.of(int.class).hashCode());
+        assertThat(intOf).hasSameHashCodeAs(GenericType.of(int.class).hashCode());
 
-        assertThat(intOf).isEqualTo(TypeToken.of(int.class));
+        assertThat(intOf).isEqualTo(GenericType.of(int.class));
         assertThat(intOf).isEqualTo(intOf.canonicalize());
 
         assertThat(intOf).isNotEqualTo(int.class);
-        assertThat(intOf).isNotEqualTo(TypeToken.of(long.class));
+        assertThat(intOf).isNotEqualTo(GenericType.of(long.class));
 
         assertThat(intOf).hasToString("int");
         assertThat(intOf.toStringSimple()).isEqualTo("int");
@@ -152,7 +152,7 @@ public class TypeLiteralTest {
     /** Tests {@code int[]} as a type literal. */
     @Test
     public void tl_intArray() {
-        TypeToken<int[]> intArrayOf = TypeToken.of(int[].class);
+        GenericType<int[]> intArrayOf = GenericType.of(int[].class);
 
         assertThat(intArrayOf.wrap().type()).isSameAs(int[].class);
 
@@ -160,13 +160,13 @@ public class TypeLiteralTest {
         assertThat(intArrayOf.type()).isSameAs(int[].class);
 
         assertThat(intArrayOf).hasSameHashCodeAs(int[].class);
-        assertThat(intArrayOf).hasSameHashCodeAs(TypeToken.of(int[].class).hashCode());
+        assertThat(intArrayOf).hasSameHashCodeAs(GenericType.of(int[].class).hashCode());
 
-        assertThat(intArrayOf).isEqualTo(TypeToken.of(int[].class));
+        assertThat(intArrayOf).isEqualTo(GenericType.of(int[].class));
         assertThat(intArrayOf).isEqualTo(intArrayOf.canonicalize());
 
         assertThat(intArrayOf).isNotEqualTo(int[].class);
-        assertThat(intArrayOf).isNotEqualTo(TypeToken.of(long[].class));
+        assertThat(intArrayOf).isNotEqualTo(GenericType.of(long[].class));
 
         assertThat(intArrayOf).hasToString("int[]");
         assertThat(intArrayOf.toStringSimple()).isEqualTo("int[]");
@@ -181,15 +181,15 @@ public class TypeLiteralTest {
         assertThat(TL_INTEGER.type()).isSameAs(Integer.class);
 
         assertThat(TL_INTEGER).hasSameHashCodeAs(Integer.class);
-        assertThat(TL_INTEGER).hasSameHashCodeAs(TypeToken.of(Integer.class).hashCode());
+        assertThat(TL_INTEGER).hasSameHashCodeAs(GenericType.of(Integer.class).hashCode());
         assertThat(TL_INTEGER).hasSameHashCodeAs(new CanonicalizedTypeToken<>(Integer.class).hashCode());
 
-        assertThat(TL_INTEGER).isEqualTo(TypeToken.of(Integer.class));
+        assertThat(TL_INTEGER).isEqualTo(GenericType.of(Integer.class));
         assertThat(TL_INTEGER).isEqualTo(new CanonicalizedTypeToken<>(Integer.class));
         assertThat(TL_INTEGER).isEqualTo(TL_INTEGER.canonicalize());
 
         assertThat(TL_INTEGER).isNotEqualTo(Integer.class);
-        assertThat(TL_INTEGER).isNotEqualTo(TypeToken.of(Long.class));
+        assertThat(TL_INTEGER).isNotEqualTo(GenericType.of(Long.class));
 
         assertThat(TL_INTEGER).hasToString("java.lang.Integer");
         assertThat(TL_INTEGER.toStringSimple()).isEqualTo("Integer");
@@ -198,7 +198,7 @@ public class TypeLiteralTest {
     /** Tests an primitive int type literal. */
     @Test
     public void tl_IntegerArray() {
-        TypeToken<Integer[]> integerNew = new TypeToken<Integer[]>() {};
+        GenericType<Integer[]> integerNew = new GenericType<Integer[]>() {};
 
         assertThat(integerNew.wrap().type()).isSameAs(Integer[].class);
 
@@ -206,15 +206,15 @@ public class TypeLiteralTest {
         assertThat(integerNew.type()).isSameAs(Integer[].class);
 
         assertThat(integerNew).hasSameHashCodeAs(Integer[].class);
-        assertThat(integerNew).hasSameHashCodeAs(TypeToken.of(Integer[].class).hashCode());
+        assertThat(integerNew).hasSameHashCodeAs(GenericType.of(Integer[].class).hashCode());
         assertThat(integerNew).hasSameHashCodeAs(new CanonicalizedTypeToken<>(Integer[].class).hashCode());
 
-        assertThat(integerNew).isEqualTo(TypeToken.of(Integer[].class));
+        assertThat(integerNew).isEqualTo(GenericType.of(Integer[].class));
         assertThat(integerNew).isEqualTo(new CanonicalizedTypeToken<>(Integer[].class));
         assertThat(integerNew).isEqualTo(integerNew.canonicalize());
 
         assertThat(integerNew).isNotEqualTo(Integer[].class);
-        assertThat(integerNew).isNotEqualTo(TypeToken.of(Long[].class));
+        assertThat(integerNew).isNotEqualTo(GenericType.of(Long[].class));
 
         assertThat(integerNew).hasToString("java.lang.Integer[]");
         assertThat(integerNew.toStringSimple()).isEqualTo("Integer[]");
@@ -223,7 +223,7 @@ public class TypeLiteralTest {
     /** Tests an primitive int type literal. */
     @Test
     public void tl_IntegerArrayArray() {
-        TypeToken<Integer[][]> integerArrayArrayNew = new TypeToken<Integer[][]>() {};
+        GenericType<Integer[][]> integerArrayArrayNew = new GenericType<Integer[][]>() {};
 
         assertThat(integerArrayArrayNew.wrap().type()).isSameAs(Integer[][].class);
 
@@ -231,10 +231,10 @@ public class TypeLiteralTest {
         assertThat(integerArrayArrayNew.type()).isSameAs(Integer[][].class);
 
         assertThat(integerArrayArrayNew).hasSameHashCodeAs(Integer[][].class);
-        assertThat(integerArrayArrayNew).hasSameHashCodeAs(TypeToken.of(Integer[][].class).hashCode());
+        assertThat(integerArrayArrayNew).hasSameHashCodeAs(GenericType.of(Integer[][].class).hashCode());
         assertThat(integerArrayArrayNew).hasSameHashCodeAs(new CanonicalizedTypeToken<>(Integer[][].class).hashCode());
 
-        assertThat(integerArrayArrayNew).isEqualTo(TypeToken.of(Integer[][].class));
+        assertThat(integerArrayArrayNew).isEqualTo(GenericType.of(Integer[][].class));
         assertThat(integerArrayArrayNew).isEqualTo(new CanonicalizedTypeToken<>(Integer[][].class));
         assertThat(integerArrayArrayNew).isEqualTo(integerArrayArrayNew.canonicalize());
 
@@ -247,7 +247,7 @@ public class TypeLiteralTest {
     /** Tests {@code List<String>}. */
     @Test
     public void tl_ListString() throws Exception {
-        TypeToken<List<String>> listStringNew = new TypeToken<List<String>>() {};
+        GenericType<List<String>> listStringNew = new GenericType<List<String>>() {};
 
         assertThat(listStringNew.wrap().type()).isEqualTo(LIST_STRING);
 
@@ -289,7 +289,7 @@ public class TypeLiteralTest {
     /** Tests {@code Map<? extends String, ? super Integer>}. */
     @Test
     public void tl_mapItsComplicated() throws Exception {
-        TypeToken<Map<? extends String, ? super Integer>> listStringNew = new TypeToken<Map<? extends String, ? super Integer>>() {};
+        GenericType<Map<? extends String, ? super Integer>> listStringNew = new GenericType<Map<? extends String, ? super Integer>>() {};
         // Type
         class Tmpx {
             @SuppressWarnings("unused")
@@ -317,7 +317,7 @@ public class TypeLiteralTest {
     /** Tests an primitive int type literal. */
     @Test
     public void tl_String() {
-        TypeToken<String> stringNew = new TypeToken<String>() {};
+        GenericType<String> stringNew = new GenericType<String>() {};
 
         assertThat(stringNew.wrap().type()).isSameAs(String.class);
 
@@ -325,11 +325,11 @@ public class TypeLiteralTest {
         assertThat(stringNew.type()).isSameAs(String.class);
 
         assertThat(stringNew).hasSameHashCodeAs(String.class);
-        assertThat(stringNew).hasSameHashCodeAs(TypeToken.of(String.class).hashCode());
+        assertThat(stringNew).hasSameHashCodeAs(GenericType.of(String.class).hashCode());
         assertThat(stringNew).hasSameHashCodeAs(new CanonicalizedTypeToken<>(String.class).hashCode());
 
         assertThat(stringNew).isEqualTo(stringNew.canonicalize());
-        assertThat(stringNew).isEqualTo(TypeToken.of(String.class));
+        assertThat(stringNew).isEqualTo(GenericType.of(String.class));
         assertThat(stringNew).isEqualTo(new CanonicalizedTypeToken<>(String.class));
 
         assertThat(stringNew).isNotEqualTo(String.class);
@@ -341,7 +341,7 @@ public class TypeLiteralTest {
     /** Tests an primitive int type literal. */
     @Test
     public void tl_void() {
-        TypeToken<Void> voidOf = TypeToken.of(void.class);
+        GenericType<Void> voidOf = GenericType.of(void.class);
 
         assertThat(voidOf.wrap().type()).isSameAs(Void.class);
 
@@ -349,13 +349,13 @@ public class TypeLiteralTest {
         assertThat(voidOf.type()).isSameAs(void.class);
 
         assertThat(voidOf).hasSameHashCodeAs(void.class);
-        assertThat(voidOf).hasSameHashCodeAs(TypeToken.of(void.class).hashCode());
+        assertThat(voidOf).hasSameHashCodeAs(GenericType.of(void.class).hashCode());
 
-        assertThat(voidOf).isEqualTo(TypeToken.of(void.class));
+        assertThat(voidOf).isEqualTo(GenericType.of(void.class));
         assertThat(voidOf).isEqualTo(voidOf.canonicalize());
 
         assertThat(voidOf).isNotEqualTo(void.class);
-        assertThat(voidOf).isNotEqualTo(TypeToken.of(long.class));
+        assertThat(voidOf).isNotEqualTo(GenericType.of(long.class));
 
         assertThat(voidOf).hasToString("void");
         assertThat(voidOf.toStringSimple()).isEqualTo("void");
@@ -370,7 +370,7 @@ public class TypeLiteralTest {
             Map<T, ?> f;
         }
         Type fGenericType = findField(Tmpx.class, "f").getGenericType();
-        TypeToken<?> typeVariable = new CanonicalizedTypeToken<>(fGenericType);
+        GenericType<?> typeVariable = new CanonicalizedTypeToken<>(fGenericType);
 
         assertThat(typeVariable.wrap().type()).isEqualTo(fGenericType);
 
@@ -391,7 +391,7 @@ public class TypeLiteralTest {
     public <S> void toKeyAnnotation() {
         npe(() -> Key.convertTypeLiteral(TL_INTEGER, null), "qualifier");
 
-        Annotation nonQualified = Arrays.stream(TypeLiteralTest.class.getDeclaredMethods()).filter(m -> m.getName().equals("toKeyAnnotation")).findFirst().get()
+        Annotation nonQualified = Arrays.stream(GenericTypeTest.class.getDeclaredMethods()).filter(m -> m.getName().equals("toKeyAnnotation")).findFirst().get()
                 .getAnnotations()[0];
         assertThatThrownBy(() -> Key.convertTypeLiteral(TL_INTEGER, nonQualified)).isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("@org.junit.jupiter.api.Test is not a valid qualifier. The annotation must be annotated with @Qualifier");
@@ -404,14 +404,14 @@ public class TypeLiteralTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void UnknownTypeVariable() {
-        assertThatThrownBy(() -> new TypeToken() {}).hasNoCause();
-        assertThatThrownBy(() -> new TypeToken() {}).isExactlyInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new TypeToken() {})
-                .hasMessageStartingWith("Cannot determine type variable <T> for TypeToken<T> on class " + TypeLiteralTest.class.getCanonicalName());
+        assertThatThrownBy(() -> new GenericType() {}).hasNoCause();
+        assertThatThrownBy(() -> new GenericType() {}).isExactlyInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new GenericType() {})
+                .hasMessageStartingWith("Cannot determine type variable <T> for " + GenericType.class.getSimpleName() +"<T> on class " + GenericTypeTest.class.getCanonicalName());
 
         /** A custom type literal to check that T is passed down to super classes. */
-        class MyTypeLiteral<T> extends TypeToken<T> {}
+        class MyTypeLiteral<T> extends GenericType<T> {}
         assertThatThrownBy(() -> new MyTypeLiteral() {})
-                .hasMessageStartingWith("Cannot determine type variable <T> for TypeToken<T> on class " + TypeLiteralTest.class.getCanonicalName());
+                .hasMessageStartingWith("Cannot determine type variable <T> for " + GenericType.class.getSimpleName() +"<T> on class " + GenericTypeTest.class.getCanonicalName());
     }
 }

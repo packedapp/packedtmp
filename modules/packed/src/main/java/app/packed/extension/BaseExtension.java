@@ -1,5 +1,8 @@
 package app.packed.extension;
 
+import java.lang.annotation.Annotation;
+import java.util.Set;
+
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
@@ -172,14 +175,14 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return new BeanIntrospector() {
 
             @Override
-            public void onField(OnField field) {
+            public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks, OperationalField field) {
                 if (field.annotations().isAnnotationPresent(Inject.class)) {
 
                 }
             }
 
             @Override
-            public void onMethod(OnMethod method) {
+            public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod method) {
                 AnnotationReader ar = method.annotations();
 
                 OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());

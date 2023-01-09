@@ -15,8 +15,8 @@
  */
 package app.packed.service;
 
-import static app.packed.service.TypeLiteralTest.TL_INTEGER;
-import static app.packed.service.TypeLiteralTest.TL_LIST_WILDCARD;
+import static app.packed.service.GenericTypeTest.TL_INTEGER;
+import static app.packed.service.GenericTypeTest.TL_LIST_WILDCARD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
@@ -268,7 +268,7 @@ public class KeyTest {
 
     @Test
     public <S> void toKey() {
-        TypeToken<Integer> tl1 = TypeToken.of(Integer.class);
+        GenericType<Integer> tl1 = GenericType.of(Integer.class);
 
         Key<Integer> k1 = Key.convertTypeLiteral(tl1);
         Key<Integer> k2 = Key.convertTypeLiteral(TL_INTEGER);
@@ -281,18 +281,18 @@ public class KeyTest {
         assertThat(k2.hasQualifiers()).isFalse();
 
         // Optional
-        assertThatThrownBy(() -> Key.convertTypeLiteral(new TypeToken<Optional<Integer>>() {})).isExactlyInstanceOf(RuntimeException.class)
+        assertThatThrownBy(() -> Key.convertTypeLiteral(new GenericType<Optional<Integer>>() {})).isExactlyInstanceOf(RuntimeException.class)
                 .hasMessage("Cannot convert an optional type (Optional<Integer>) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> Key.convertTypeLiteral(new TypeToken<OptionalInt>() {})).isExactlyInstanceOf(RuntimeException.class)
+        assertThatThrownBy(() -> Key.convertTypeLiteral(new GenericType<OptionalInt>() {})).isExactlyInstanceOf(RuntimeException.class)
                 .hasMessage("Cannot convert an optional type (OptionalInt) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> Key.convertTypeLiteral(new TypeToken<OptionalLong>() {})).isExactlyInstanceOf(RuntimeException.class)
+        assertThatThrownBy(() -> Key.convertTypeLiteral(new GenericType<OptionalLong>() {})).isExactlyInstanceOf(RuntimeException.class)
                 .hasMessage("Cannot convert an optional type (OptionalLong) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> Key.convertTypeLiteral(new TypeToken<OptionalDouble>() {})).isExactlyInstanceOf(RuntimeException.class)
+        assertThatThrownBy(() -> Key.convertTypeLiteral(new GenericType<OptionalDouble>() {})).isExactlyInstanceOf(RuntimeException.class)
                 .hasMessage("Cannot convert an optional type (OptionalDouble) to a Key, as keys cannot be optional");
 
         // We need to use this old fashion way because of
         try {
-            Key.convertTypeLiteral(new TypeToken<List<S>>() {});
+            Key.convertTypeLiteral(new GenericType<List<S>>() {});
             fail("should have failed");
         } catch (RuntimeException e) {
             assertThat(e).hasMessage("Can only convert type literals that are free from type variables to a Key, however TypeVariable<List<S>> defined: [S]");

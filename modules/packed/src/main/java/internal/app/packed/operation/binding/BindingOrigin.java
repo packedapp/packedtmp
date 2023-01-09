@@ -23,7 +23,7 @@ import internal.app.packed.bean.BeanSetup;
 // Hvad skal vi bruge den til???? Naar vi har Mirror??? Mirror'et skal maaske bruge den
 public abstract sealed class BindingOrigin {
 
-    public static final class OpTarget extends BindingOrigin {
+    public static final class BindingHookTarget extends BindingOrigin {
 
     }
 
@@ -42,11 +42,11 @@ public abstract sealed class BindingOrigin {
 
     }
 
-    public static final class ServiceBindingTarget extends BindingOrigin {
+    public static final class OpTarget extends BindingOrigin {
 
     }
 
-    public static final class BindingHookTarget extends BindingOrigin {
+    public static final class ServiceBindingTarget extends BindingOrigin {
 
     }
 }

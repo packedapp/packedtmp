@@ -35,7 +35,7 @@ import app.packed.bindings.Variable;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationType;
 import app.packed.service.Key;
-import app.packed.service.TypeToken;
+import app.packed.service.GenericType;
 import internal.app.packed.errorhandling.ErrorMessageBuilder;
 import internal.app.packed.util.BasePackageAccess;
 import internal.app.packed.util.ClassUtil;
@@ -304,7 +304,7 @@ public final class InternalDependency {
     public static <T> InternalDependency fromVariable(Variable v) {
         requireNonNull(v, "variable is null");
 
-        TypeToken<?> tl = v.typeToken();
+        GenericType<?> tl = v.typeToken();
 
         Annotation[] qualifiers = QualifierUtil.findQualifier(v.getAnnotations());
 
@@ -331,13 +331,13 @@ public final class InternalDependency {
             }
         } else if (rawType == OptionalLong.class) {
             optionallaity = Optionality.OPTIONAL_LONG;
-            tl = TypeToken.of(Long.class);
+            tl = GenericType.of(Long.class);
         } else if (rawType == OptionalInt.class) {
             optionallaity = Optionality.OPTIONAL_INT;
-            tl = TypeToken.of(Integer.class);
+            tl = GenericType.of(Integer.class);
         } else if (rawType == OptionalDouble.class) {
             optionallaity = Optionality.OPTIONAL_DOUBLE;
-            tl = TypeToken.of(Double.class);
+            tl = GenericType.of(Double.class);
         }
 
         if (v.isAnnotationPresent(Nullable.class)) {

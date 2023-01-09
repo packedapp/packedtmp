@@ -168,7 +168,6 @@ public abstract class AbstractComposer {
                 // Assembly is in the process of being used. Typically happens, if an assembly is linked recursively.
                 throw new IllegalStateException("This assembly is currently being used elsewhere, assembly = " + getClass());
             }
-
         }
     }
 }

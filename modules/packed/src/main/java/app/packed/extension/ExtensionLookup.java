@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings.mirror;
-
-import app.packed.operation.OperationMirror;
+package app.packed.extension;
 
 /**
- * A composite binding mirror
+ * <p>
+ * If you have an instance of ExtensionLookup<E> you can do anything you want for that particular extension
  */
-public class CompositeBindingMirror extends BindingMirror {
+// Hvor skal vi bruges
 
-    public OperationMirror compositeOperation() {
-        return providingOperation().get();
+// ContextTemplate
+
+class ExtensionLookup<E extends Extension<E>> {
+
+    static <E extends Extension<E>> ExtensionLookup<E> of(Class<E> extensionClass) {
+        return new ExtensionLookup<>();
     }
 }
-
-//Functions bliver ikke laengere resolve som en composite. Istedet for er det 2 argumenter...
-// get(Req, Res) -> Har bare 2 parametere. (Maaske idk)
-// Jo, 2 arg bindings
-//public boolean isFuncionalInterface() {
-//    throw new UnsupportedOperationException();
-//}

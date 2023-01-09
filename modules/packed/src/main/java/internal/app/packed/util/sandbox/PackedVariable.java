@@ -19,7 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
 import app.packed.bindings.Variable;
-import app.packed.service.TypeToken;
+import app.packed.service.GenericType;
 
 /** Implementation of {@link Variable}. We basically wrap an annotation part and a type part. */
 public record PackedVariable(AnnotatedElement annotatedElement, VariableTypeWrapper typeWrapper) implements Variable {
@@ -88,7 +88,7 @@ public record PackedVariable(AnnotatedElement annotatedElement, VariableTypeWrap
 
     /** {@inheritDoc} */
     @Override
-    public TypeToken<?> typeToken() {
+    public GenericType<?> typeToken() {
         return typeWrapper.typeToken();
     }
 }

@@ -4,7 +4,8 @@ package app.packed.bean;
  * A generic exception that is thrown when An exception that is thrown if
  */
 // Hmmm, a generic extension why not BeanInstallationException then. That is pretty generic
-//
+// Tror meningen er at sige der er noget galt med klassen
+// Saa maaske InvalidBeanClassException
 public class InvalidBeanDefinitionException extends BeanInstallationException {
 
     /** <code>serialVersionUID</code>. */

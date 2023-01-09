@@ -1,9 +1,11 @@
 package app.packed.entrypoint;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
@@ -18,7 +20,7 @@ import app.packed.operation.OperationTemplate;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.EntryPointSetup;
 import internal.app.packed.application.EntryPointSetup.MainThreadOfControl;
-import internal.app.packed.bean.IntrospectedBeanMethod;
+import internal.app.packed.bean.IntrospectedOperationalMethod;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 
@@ -75,7 +77,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
              * {@inheritDoc}
              */
             @Override
-            public void onMethod(OnMethod method) {
+            public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod method) {
                 registerEntryPoint(null, true);
 
                 application.entryPoints = new EntryPointSetup();
@@ -83,7 +85,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
                 MainThreadOfControl mc = application.entryPoints.mainThread();
 
                 mc.isStatic = Modifier.isStatic(method.modifiers());
-                mc.cs = ((IntrospectedBeanMethod) method).introspectedBean.bean;
+                mc.cs = ((IntrospectedOperationalMethod) method).introspectedBean.bean;
 
                 // We should be able to just take the method handle when needed
 

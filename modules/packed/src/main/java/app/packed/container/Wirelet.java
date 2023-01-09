@@ -175,7 +175,7 @@ public abstract class Wirelet {
     // Folk maa gerne smide en MainArgsWirelet ind.
     // Vi kan nemlig ikke rigtig wrappe den.
     // Da det ikke er en statisk metode.
-
+    
     protected void onUnprocessed() {
         // Invoked by the runtime if the wirelet is not processed in some way
 

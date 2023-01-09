@@ -17,6 +17,8 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Annotation;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanHandle;
@@ -137,7 +139,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
 
             /** {@inheritDoc} */
             @Override
-            public void onField(OnField field) {
+            public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks, OperationalField field) {
                 Key<?> key = field.fieldToKey();
                 boolean constant = field.annotations().readRequired(ProvideService.class).constant();
 
@@ -147,7 +149,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
 
             /** {@inheritDoc} */
             @Override
-            public void onMethod(OnMethod method) {
+            public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod method) {
                 Key<?> key = method.methodToKey();
                 boolean isProviding = method.annotations().isAnnotationPresent(ProvideService.class);
                 boolean isExporting = method.annotations().isAnnotationPresent(ExportService.class);

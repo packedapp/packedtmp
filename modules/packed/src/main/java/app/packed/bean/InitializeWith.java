@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings.mirror;
+package app.packed.bean;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.extension.BaseExtension;
 
 /**
  *
  */
-public enum BindingResolutionPhase {
-    // operation binding but instantly resolved at build time (@Now)
-    INSTANTLY,
-
-    // operation binding but delayed resolved at build time (services)
-    DELAYED,
-
-    // operation binding but instantly resolved at run time (transaction, @Param)
-    RUNTIME;
-}
-
-// Forskellen er lidt at delayed ikke smide BeanInstallationException
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@AnnotatedVariableHook(extension = BaseExtension.class)
+public @interface InitializeWith {}

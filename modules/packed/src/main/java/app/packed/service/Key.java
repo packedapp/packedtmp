@@ -30,7 +30,7 @@ import java.util.OptionalLong;
 import java.util.Set;
 
 import app.packed.framework.Nullable;
-import app.packed.service.TypeToken.CanonicalizedTypeToken;
+import app.packed.service.GenericType.CanonicalizedTypeToken;
 import internal.app.packed.util.AnnotationUtil;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.QualifierUtil;
@@ -80,7 +80,7 @@ public abstract class Key<T> {
         /** {@inheritDoc} */
         @Override
         protected Key<?> computeValue(Class<?> key) {
-            return Key.convertTypeLiteral(TypeToken.of(key).wrap());
+            return Key.convertTypeLiteral(GenericType.of(key).wrap());
         }
     };
 
@@ -266,7 +266,7 @@ public abstract class Key<T> {
     }
 
     /** {@return the generic type of this key.} */
-    public final TypeToken<T> typeToken() {
+    public final GenericType<T> typeToken() {
         return typeToken;
     }
 
@@ -351,7 +351,7 @@ public abstract class Key<T> {
 
     // Takes any qualifier annotation on the typeLiteral
     // withQualifier(new TypeLiteral<@Named("dddd") Void>() {});
-    final Key<T> withQualifier(TypeToken<Void> typeLiteral) {
+    final Key<T> withQualifier(GenericType<Void> typeLiteral) {
         throw new UnsupportedOperationException();
     }
 
@@ -402,7 +402,7 @@ public abstract class Key<T> {
      *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}. Or if the
      *             specified type literal it not free from type parameters
      */
-    public static <T> Key<T> convertTypeLiteral(TypeToken<T> typeLiteral) {
+    public static <T> Key<T> convertTypeLiteral(GenericType<T> typeLiteral) {
         return convertTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, (Annotation[]) null);
     }
 
@@ -421,13 +421,13 @@ public abstract class Key<T> {
      * @throws IllegalArgumentException
      *             if the qualifier type is not annotated with {@link Qualifier}.
      */
-    public static <T> Key<T> convertTypeLiteral(TypeToken<T> typeLiteral, Annotation qualifier) {
+    public static <T> Key<T> convertTypeLiteral(GenericType<T> typeLiteral, Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
         QualifierUtil.checkQualifierAnnotationPresent(qualifier);
         return convertTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, qualifier);
     }
 
-    public static <T> Key<T> convertTypeLiteralNullableAnnotation(Object source, TypeToken<T> typeLiteral, Annotation... qualifier) {
+    public static <T> Key<T> convertTypeLiteralNullableAnnotation(Object source, GenericType<T> typeLiteral, Annotation... qualifier) {
         requireNonNull(typeLiteral, "typeLiteral is null");
         // From field, fromTypeLiteral, from Variable, from class, arghhh....
 
@@ -442,7 +442,7 @@ public abstract class Key<T> {
     }
 
     public static <T> Key<?> convertTypeVariable(Class<? extends T> subClass, Class<T> superClass, int parameterIndex) {
-        TypeToken<?> t = TypeToken.fromTypeVariable(subClass, superClass, parameterIndex);
+        GenericType<?> t = GenericType.fromTypeVariable(subClass, superClass, parameterIndex);
 
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) subClass.getAnnotatedSuperclass();

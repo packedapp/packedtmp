@@ -25,7 +25,11 @@ import app.packed.extension.Extension;
  * @param <E>
  *            the extension the runtime context is a part of
  */
-// StaticContext
+
+// A context has a 
+//// ContextClass
+//// ContextSpan
+
 public interface Context<E extends Extension<E>> {}
 // Protected typeClass for configuration...
 
@@ -35,7 +39,3 @@ public interface Context<E extends Extension<E>> {}
 
 // Ved ikke om det er problematisk at tage E med paa runtime...
 // Den er jo ikke super needed. Og bliver jo encoded i klassen
-
-//interface SchedulingContext extends RuntimeContext<ScheduledJobExtension> {}
-
-//BuildTimeContext? IDK

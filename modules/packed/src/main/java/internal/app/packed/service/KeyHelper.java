@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 
 import app.packed.service.Key;
-import app.packed.service.TypeToken;
+import app.packed.service.GenericType;
 import internal.app.packed.util.QualifierUtil;
 
 /**
@@ -51,7 +51,7 @@ public class KeyHelper {
     // TODO move to introspector, And then we can throw BeanDE
     // Or at least have their own version
     public static Key<?> convertField(Field field) {
-        TypeToken<?> tl = TypeToken.fromField(field).wrap(); // checks null
+        GenericType<?> tl = GenericType.fromField(field).wrap(); // checks null
         Annotation[] annotation = QualifierUtil.findQualifier(field.getAnnotations());
         return Key.convertTypeLiteralNullableAnnotation(field, tl, annotation);
     }
@@ -75,7 +75,7 @@ public class KeyHelper {
         if (at.getType() == void.class) {
             throw new RuntimeException("@Provides method " + method + " cannot have void return type");
         }
-        TypeToken<?> tl = TypeToken.fromMethodReturnType(method).wrap();
+        GenericType<?> tl = GenericType.fromMethodReturnType(method).wrap();
         Annotation[] annotation = QualifierUtil.findQualifier(at.getAnnotations());
         return Key.convertTypeLiteralNullableAnnotation(method, tl, annotation);
     }

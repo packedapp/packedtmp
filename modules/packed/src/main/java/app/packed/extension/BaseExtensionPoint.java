@@ -2,11 +2,6 @@ package app.packed.extension;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanConfiguration;
@@ -14,11 +9,9 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
-import app.packed.context.Context;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.PackedBeanInstaller;
@@ -27,7 +20,7 @@ import internal.app.packed.container.PackedExtensionPointContext;
 /** An {@link ExtensionPoint extension point} class for {@link BaseExtension}. */
 public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
-    /** Creates a new base extension point */
+    /** Creates a new base extension point. */
     BaseExtensionPoint() {}
 
     public <T> InstanceBeanConfiguration<T> install(Class<T> implementation) {
@@ -114,12 +107,6 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         throw new UnsupportedOperationException();
     }
 
-//    BeanHandle<?> unwrap(BeanConfiguration configuration) {
-//        // Can only call this on bean configurations that have been created by the extension itself.
-//        // But then could people just store it in a map...
-//        throw new UnsupportedOperationException();
-//    }
-
     // Vi har brug ContainerInstaller fordi, man ikke konfigure noget efter man har linket
     // Saa alt skal goeres inde
 
@@ -147,7 +134,6 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
 // Maybe put it back on handle. If we get OperationInstaller
 // Maybe Builder after all... Alle ved hvad en builder er
-
 
     public sealed interface BeanInstaller permits PackedBeanInstaller {
 
@@ -274,21 +260,13 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
             return null;
         }
     }
-
-    /**
-    *
-    */
-    @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    @AnnotatedVariableHook(extension = BaseExtension.class)
-    public @interface InvocationArgument {
-        Class<? extends Context<?>>[] context() default {};
-
-        int index() default 0;
-    }
-
 }
+
+//BeanHandle<?> unwrap(BeanConfiguration configuration) {
+//  // Can only call this on bean configurations that have been created by the extension itself.
+//  // But then could people just store it in a map...
+//  throw new UnsupportedOperationException();
+//}
 
 //// Ideen er at man fx kan have en handle.onInitialize(MyEBC, BeanHandle<Driver>, (b,p)->b.drivers[i]=p);
 

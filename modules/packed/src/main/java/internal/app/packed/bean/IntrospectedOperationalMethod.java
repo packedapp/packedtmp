@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 import java.util.Set;
 
 import app.packed.bean.BeanIntrospector.AnnotationReader;
-import app.packed.bean.BeanIntrospector.OnMethod;
+import app.packed.bean.BeanIntrospector.OperationalMethod;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationHandle;
@@ -37,7 +37,7 @@ import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.service.KeyHelper;
 
 /** Internal implementation of BeanMethod. Discard after use. */
-public final class IntrospectedBeanMethod implements OnMethod {
+public final class IntrospectedOperationalMethod implements OperationalMethod {
 
     /** Annotations on the method read via {@link Method#getAnnotations()}. */
     private final Annotation[] annotations;
@@ -55,7 +55,7 @@ public final class IntrospectedBeanMethod implements OnMethod {
     @Nullable
     private OperationType type;
 
-    IntrospectedBeanMethod(IntrospectedBean analyzer, Contributor contributor, Method method, Annotation[] annotations, boolean allowInvoke) {
+    IntrospectedOperationalMethod(IntrospectedBean analyzer, Contributor contributor, Method method, Annotation[] annotations, boolean allowInvoke) {
         this.introspectedBean = analyzer;
         this.contributor = contributor;
         this.method = method;
@@ -72,12 +72,6 @@ public final class IntrospectedBeanMethod implements OnMethod {
     @Override
     public boolean hasInvokeAccess() {
         return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Set<Class<? extends Annotation>> hooks() {
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -142,13 +136,13 @@ public final class IntrospectedBeanMethod implements OnMethod {
         for (int i = 0; i < annotations.length; i++) {
             Annotation a1 = annotations[i];
             Class<? extends Annotation> a1Type = a1.annotationType();
-            AnnotatedMethod fh = iBean.hookModel.lookupAnnotationOnMethod(a1Type);
+            AnnotatedMethod fh = iBean.hookModel.testMethodAnnotation(a1Type);
             if (fh != null) {
                 Contributor contributor = iBean.computeContributor(fh.extensionType(), false);
 
-                IntrospectedBeanMethod pbm = new IntrospectedBeanMethod(iBean, contributor, method, annotations, fh.isInvokable());
+                IntrospectedOperationalMethod pbm = new IntrospectedOperationalMethod(iBean, contributor, method, annotations, fh.isInvokable());
 
-                contributor.introspector().onMethod(pbm);
+                contributor.introspector().hookOnAnnotatedMethod(Set.of(), pbm);
             }
         }
     }

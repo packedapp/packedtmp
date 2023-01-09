@@ -56,16 +56,16 @@ import internal.app.packed.util.typevariable.TypeVariableExtractor;
 // We always va
 
 // I don't think we will touch until we see where Valhalla goes
-public abstract class TypeToken<T> {
+public abstract class GenericType<T> {
 
     /** A cache of factories used by. */
-    private static final ClassValue<TypeToken<?>> TYPE_VARIABLE_CACHE = new ClassValue<>() {
+    private static final ClassValue<GenericType<?>> TYPE_VARIABLE_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected TypeToken<?> computeValue(Class<?> implementation) {
-            return fromTypeVariable((Class) implementation, TypeToken.class, 0);
+        protected GenericType<?> computeValue(Class<?> implementation) {
+            return fromTypeVariable((Class) implementation, GenericType.class, 0);
         }
     };
 
@@ -75,13 +75,13 @@ public abstract class TypeToken<T> {
             /** {@inheritDoc} */
             @Override
             public Key<?> toKeyNullableQualifier(Type type, Annotation[] qualifier) {
-                TypeToken<?> tl = new TypeToken.CanonicalizedTypeToken<>(type);
+                GenericType<?> tl = new GenericType.CanonicalizedTypeToken<>(type);
                 return Key.convertTypeLiteralNullableAnnotation(type, tl, qualifier);
             }
 
             /** {@inheritDoc} */
             @Override
-            public TypeToken<?> toTypeLiteral(Type type) {
+            public GenericType<?> toTypeLiteral(Type type) {
                 return new CanonicalizedTypeToken<>(type);
             }
         });
@@ -106,8 +106,8 @@ public abstract class TypeToken<T> {
      *             if the type could not be determined
      */
     @SuppressWarnings("unchecked")
-    protected TypeToken() {
-        TypeToken<?> tl = TYPE_VARIABLE_CACHE.get(getClass());
+    protected GenericType() {
+        GenericType<?> tl = TYPE_VARIABLE_CACHE.get(getClass());
         this.type = tl.type;
         this.rawType = (Class<? super T>) tl.rawType;
     }
@@ -119,7 +119,7 @@ public abstract class TypeToken<T> {
      *            the type to create a type token from
      */
     @SuppressWarnings("unchecked")
-    TypeToken(Type type) {
+    GenericType(Type type) {
         // This was a test to make sure all types are canonicalized
         // assert (type.getClass().getModule() == null || type.getClass().getModule().getName().equals("java.base"));
         this.type = requireNonNull(type, "type is null");
@@ -140,10 +140,25 @@ public abstract class TypeToken<T> {
         return new CanonicalizedTypeToken<>(type);
     }
 
+    /**
+     * Casts the specified object to the type represented by this {@code GenericType} object.
+     *
+     * @param obj
+     *            instance to cast
+     * @return the object after casting, or null if obj is null
+     * @throws ClassCastException
+     *             if the specified object is not of the expected type
+     */
+    // Maaske egentlig drop den...
+    @SuppressWarnings("unchecked")
+    public @Nullable T cast(@Nullable Object obj) {
+        return (T) rawType.cast(obj);
+    }
+
     /** {@inheritDoc} */
     @Override
     public final boolean equals(@Nullable Object obj) {
-        return obj instanceof TypeToken<?> tt && type.equals(tt.type);
+        return obj instanceof GenericType<?> tt && type.equals(tt.type);
     }
 
     /** {@inheritDoc} */
@@ -202,10 +217,10 @@ public abstract class TypeToken<T> {
      */
     // wrap instead of box
     @SuppressWarnings("unchecked")
-    public final TypeToken<T> wrap() {
+    public final GenericType<T> wrap() {
         // TODO fix for Valhalla? reference type, inline type...
         if (rawType().isPrimitive()) {
-            return (TypeToken<T>) of(ClassUtil.wrap(rawType()));
+            return (GenericType<T>) of(ClassUtil.wrap(rawType()));
         }
         return this;
     }
@@ -218,7 +233,7 @@ public abstract class TypeToken<T> {
      * @return the type token for the field
      * @see Field#getGenericType()
      */
-    public static TypeToken<?> fromField(Field field) {
+    public static GenericType<?> fromField(Field field) {
         requireNonNull(field, "field is null");
         return new CanonicalizedTypeToken<>(field.getGenericType());
     }
@@ -231,7 +246,7 @@ public abstract class TypeToken<T> {
      * @return the type token for the return type of the specified method
      * @see Method#getGenericReturnType()
      */
-    public static TypeToken<?> fromMethodReturnType(Method method) {
+    public static GenericType<?> fromMethodReturnType(Method method) {
         requireNonNull(method, "method is null");
         return new CanonicalizedTypeToken<>(method.getGenericReturnType());
     }
@@ -244,7 +259,7 @@ public abstract class TypeToken<T> {
      * @return the type token for the parameter
      * @see Parameter#getParameterizedType()
      */
-    public static TypeToken<?> fromType(Type type) {
+    public static GenericType<?> fromType(Type type) {
         requireNonNull(type, "type is null");
         return new CanonicalizedTypeToken<>(type);
     }
@@ -279,7 +294,7 @@ public abstract class TypeToken<T> {
      * @throws IllegalArgumentException
      *             if the extraction could not be performed for some other reason
      */
-    public static <T> TypeToken<?> fromTypeVariable(Class<? extends T> subClass, Class<T> superClass, int parameterIndex) {
+    public static <T> GenericType<?> fromTypeVariable(Class<? extends T> subClass, Class<T> superClass, int parameterIndex) {
         Type t = TypeVariableExtractor.of(superClass, parameterIndex).extract(subClass);
         return new CanonicalizedTypeToken<>(t);
     }
@@ -293,7 +308,7 @@ public abstract class TypeToken<T> {
      *            the class to return a type token for
      * @return a type token for the specified class type
      */
-    public static <T> TypeToken<T> of(Class<T> type) {
+    public static <T> GenericType<T> of(Class<T> type) {
         requireNonNull(type, "type is null");
         return new CanonicalizedTypeToken<T>(type);
     }
@@ -313,7 +328,7 @@ public abstract class TypeToken<T> {
      * both of them into instances of the same InternalParameterizedType. While this is not impossible, it is just a lot of
      * work, and has some overhead.
      */
-    static final class CanonicalizedTypeToken<T> extends TypeToken<T> {
+    static final class CanonicalizedTypeToken<T> extends GenericType<T> {
 
         /**
          * Creates a new type token instance

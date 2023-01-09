@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.service.Key;
 import app.packed.service.Qualifier;
-import app.packed.service.TypeToken;
+import app.packed.service.GenericType;
 import internal.app.packed.operation.binding.InternalDependency;
 
 /**
@@ -49,7 +49,7 @@ public class DependencyTest {
 
         @Test
         public void fromTypeAttribute() {
-            InternalDependency opString = InternalDependency.fromTypeVariable(new TypeToken<Optional<String>>() {}.getClass(), TypeToken.class, 0);
+            InternalDependency opString = InternalDependency.fromTypeVariable(new GenericType<Optional<String>>() {}.getClass(), GenericType.class, 0);
             assertThat(opString).keyIs(String.class);
         }
     }
@@ -64,7 +64,7 @@ public class DependencyTest {
             // assertThat(new Dependency<OptionalInt>() {}).keyIs(new Dependency<Optional<Integer>>() {}.getKey());
 
             // fromTypeParameter
-            InternalDependency opInt = InternalDependency.fromTypeVariable(new TypeToken<OptionalInt>() {}.getClass(), TypeToken.class, 0);
+            InternalDependency opInt = InternalDependency.fromTypeVariable(new GenericType<OptionalInt>() {}.getClass(), GenericType.class, 0);
             assertThat(opInt).isOptionalInt();
 
             // Annotated

@@ -26,7 +26,7 @@ import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
-import app.packed.container.ContainerAssembly;
+import app.packed.container.BuildableAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
@@ -85,7 +85,7 @@ public abstract class VerifyingTestCase {
         }
     }
 
-    private static class TestA extends ContainerAssembly {
+    private static class TestA extends BuildableAssembly {
 
         final InvocationInterceptor.Invocation<Void> invocation;
         final VerifyingTestCase lse;

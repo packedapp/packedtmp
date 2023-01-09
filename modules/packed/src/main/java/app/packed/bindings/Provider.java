@@ -53,6 +53,7 @@ public interface Provider<T> {
      *            the instance
      * @return a new provider that provides the specified instance
      */
+    // or ofConstant? or just of?
     static <T> Provider<T> ofInstance(T instance) {
         return new InstanceProvider<>(instance);
     }

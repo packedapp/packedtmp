@@ -15,6 +15,7 @@
  */
 package internal.app.packed.service;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -22,9 +23,9 @@ import java.lang.annotation.Target;
 import java.util.List;
 
 import app.packed.application.App;
+import app.packed.bean.BeanHook.AnnotatedVariableHook;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanHook.VariableTypeHook;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.service.ProvideService;
@@ -62,24 +63,23 @@ public class TestNew extends BaseAssembly {
     }
 
     public static class Gop {
-        public Gop() {
+        public Gop(Integer i) {
 
         }
 
-        @ProvideService
-        public Long sss(Integer i) {
-            return 34L;
-        }
+//        
+//        @ProvideService
+//        public Long sss(Integer i) {
+//            return 34L;
+//        }
 
     }
 
     public static class Fop {
-        public Fop(String s) {
-
-        }
 
         @ProvideService
-        public int foo(@XX("Nice") String s) {
+        public Integer foo(@XX("Nice") String s) {
+            System.out.println("Got " + s);
             return 34;
         }
     }
@@ -92,11 +92,13 @@ public class TestNew extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void onVariableProvideRaw(OnVariableProvideRaw h) {
-                    XX rr = h.annotations().readRequired(XX.class);
-                    System.out.println(rr);
-                    h.bindConstant("123");
-                    System.out.println("Got h " + h.hookClass());
+                public void hookOnAnnotatedVariable(Class<? extends Annotation> hook, BindableVariable h) {
+                    if (hook == XX.class) {
+                        String str = h.annotations().readRequired(XX.class).value();
+                        h.bindConstant(str.toUpperCase());
+                    } else {
+                        super.hookOnAnnotatedVariable(hook, h);
+                    }
                 }
             };
         }
@@ -104,7 +106,7 @@ public class TestNew extends BaseAssembly {
 
     @Target({ ElementType.PARAMETER })
     @Retention(RetentionPolicy.RUNTIME)
-    @VariableTypeHook(extension = MyExt.class)
+    @AnnotatedVariableHook(extension = MyExt.class)
     @interface XX {
         String value();
     }

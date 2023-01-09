@@ -27,10 +27,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanIntrospector.OnField;
-import app.packed.bean.BeanIntrospector.OnMethod;
-import app.packed.bean.BeanIntrospector.OnVariableProvide;
-import app.packed.bean.BeanIntrospector.OnVariableProvideRaw;
+import app.packed.bean.BeanIntrospector.BindableVariable;
+import app.packed.bean.BeanIntrospector.OperationalField;
+import app.packed.bean.BeanIntrospector.OperationalMethod;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
@@ -44,14 +43,14 @@ import internal.app.packed.operation.OperationSetup;
  * <p>
  * An operation handle can be constructed by an {@link Extension extension} in any of the following ways:
  * <ul>
- * <li>By calling {@link OnMethod#newOperation} to create a new operation that can {@code invoke} the underlying
- * {@link Method}.
- * <li>By calling {@link OnField#newGetOperation} to create a new operation that can {@code get} the value of the
- * underlying {@link Field}.
- * <li>By calling {@link OnField#newSetOperation} to create a new operation that car {@code set} the value of the
- * underlying {@link Field}.
- * <li>By calling {@link OnField#newOperation(java.lang.invoke.VarHandle.AccessMode)} to create a new operation that can
- * {@code access} the underlying {@link Field}.
+ * <li>By calling {@link OperationalMethod#newOperation} to create a new operation that can {@code invoke} the
+ * underlying {@link Method}.
+ * <li>By calling {@link OperationalField#newGetOperation} to create a new operation that can {@code get} the value of
+ * the underlying {@link Field}.
+ * <li>By calling {@link OperationalField#newSetOperation} to create a new operation that car {@code set} the value of
+ * the underlying {@link Field}.
+ * <li>By calling {@link OperationalField#newOperation(java.lang.invoke.VarHandle.AccessMode)} to create a new operation
+ * that can {@code access} the underlying {@link Field}.
  * </ul>
  * 
  * 
@@ -77,10 +76,10 @@ import internal.app.packed.operation.OperationSetup;
  * </ul>
  * <p>
  * 
- * @see OnMethod#newOperation()
- * @see OnField#newGetOperation()
- * @see OnField#newSetOperation()
- * @see OnField#newOperation(java.lang.invoke.VarHandle.AccessMode)
+ * @see OperationalMethod#newOperation()
+ * @see OperationalField#newGetOperation()
+ * @see OperationalField#newSetOperation()
+ * @see OperationalField#newOperation(java.lang.invoke.VarHandle.AccessMode)
  */
 
 // interceptor().add(...);
@@ -120,26 +119,18 @@ public final /* primitive */ class OperationHandle {
     // Det er jo kun meningen at man skal binden den hvis man kalder denne metode.
     // Saa maaske skal vi have en Mode i IBB
 
-    
     // overrideParameter?
     // bindParameter
     // bindManually
     // bind(index).toConstant("Foo");
-    public OnVariableProvide bindManually(int index) {
-        checkConfigurable();
-        // This method does not throw IllegalStateExtension, but OnBinding may.
-        // custom invocationContext must have been set before calling this method
-        checkIndex(index, operation.type.parameterCount());
-        throw new UnsupportedOperationException();
-    }
-
-    public OnVariableProvideRaw bindManuallyRaw(int index) {
+    // Maybe take an consumer to make sure it is "executed"
+    public BindableVariable bindable(int index) {
         checkConfigurable();
         // This method does not throw IllegalStateExtension, but OnBinding may.
         // custom invocationContext must have been set before calling this method
         checkIndex(index, operation.type.parameterCount());
 
-        return new IntrospectedBeanVariable(operation.bean.introspecting, operation, index, operation.operator, null, operation.type.parameter(index));
+        return new IntrospectedBeanVariable(operation.bean.introspecting, operation, index, operation.operator, operation.type.parameter(index));
     }
 
     /** Checks that the operation is still configurable. */

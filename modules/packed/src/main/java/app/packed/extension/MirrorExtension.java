@@ -58,22 +58,22 @@ public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
     protected BeanIntrospector newBeanIntrospector() {
         return new BeanIntrospector() {
             @Override
-            public void onVariableProvideRaw(OnVariableProvideRaw binding) {
+            public void hookOnVariableType(Class<?> hook, BindableBaseVariable binding) {
                 IntrospectedBeanVariable ibb = ((IntrospectedBeanVariable) binding);
                 OperationSetup operation = ibb.operation;
                 BeanSetup bean = ibb.operation.bean;
-                if (binding.hookClass() == ApplicationMirror.class) {
+                if (hook == ApplicationMirror.class) {
                     binding.bindConstant(bean.container.application.mirror());
-                } else if (binding.hookClass() == AssemblyMirror.class) {
+                } else if (hook == AssemblyMirror.class) {
                     binding.bindConstant(bean.container.assembly.mirror());
-                } else if (binding.hookClass() == ContainerMirror.class) {
+                } else if (hook == ContainerMirror.class) {
                     binding.bindConstant(bean.container.mirror());
-                } else if (binding.hookClass() == BeanMirror.class) {
+                } else if (hook == BeanMirror.class) {
                     binding.bindConstant(bean.mirror());
-                } else if (binding.hookClass() == OperationMirror.class) {
+                } else if (hook == OperationMirror.class) {
                     binding.bindConstant(operation.mirror());
                 } else {
-                    super.onVariableProvideRaw(binding);
+                    super.hookOnVariableType(hook, binding);
                 }
             }
         };

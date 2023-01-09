@@ -16,6 +16,11 @@ Altsaa hvis vi har en SessionContext maa den jo altsaa vaere tilgaengelig langt 
 // Kan man have en context som ikke laver en ny lifetime???? Tror ikke det giver mening
 // Saa maa det vaere en OnBinding
 
+------------------- Contexts and Extensions ----------
+Er det kun realm'en der er i en context??
+
+Fx SessionContext giver det mening at sige extension beans ogsaa er der?
+
 -----------------------
 Would be nice to say
 
@@ -47,7 +52,6 @@ Det er er i modsaetning til fx TransactionalContext...
 Som jo aendrer sig... static contexts vs dynamic contexts?
 
 Hvor der nok kan opstaa nogle misforstaaelser
-
 
 -------- ContextGuard -----
 Makes sure that a TransactionalContext is always available in the DatabaseContainer.

@@ -24,7 +24,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
-import app.packed.service.TypeToken;
+import app.packed.service.GenericType;
 import internal.app.packed.util.sandbox.PackedVariable;
 import internal.app.packed.util.sandbox.VariableTypeWrapper;
 
@@ -75,7 +75,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
         throw new UnsupportedOperationException();
     }
 
-    TypeToken<?> typeToken();
+    GenericType<?> typeToken();
 
     // ofClassType <--- will not retain annotations on the class
 

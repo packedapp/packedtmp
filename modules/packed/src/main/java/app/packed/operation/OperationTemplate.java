@@ -15,15 +15,22 @@
  */
 package app.packed.operation;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
 
-import app.packed.bean.BeanIntrospector.OnVariableProvideRaw;
+import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.bean.BeanIntrospector.BindableVariable;
 import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
 import app.packed.errorhandling.ErrorHandler;
+import app.packed.extension.BaseExtension;
 import internal.app.packed.operation.PackedOperationTemplate;
 
 /**
@@ -96,7 +103,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
      * @param type
      * @return
      * 
-     * @see OnVariableProvideRaw#provideFromInvocationArgument(int)
+     * @see BindableVariable#provideFromInvocationArgument(int)
      */
     // Kan man have have loese args som ikke er del af en context???
     OperationTemplate withArg(Class<?> type);
@@ -145,5 +152,17 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         /** The invocation argument is an extension bean context. */
         // Maaske noget andet end context, given dens mening
         EXTENSION_BEAN_CONTEXT; // InvocationContext
+    }
+    
+
+    /**
+     * Move to operation template?
+     */
+    @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.PARAMETER })
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @AnnotatedVariableHook(extension = BaseExtension.class)
+    public @interface InvocationArgument {
+        int index() default 0;
     }
 }

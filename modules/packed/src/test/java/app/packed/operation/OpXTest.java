@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.service.TypeToken;
+import app.packed.service.GenericType;
 
 /** Tests {@link Op}. */
 public class OpXTest {
@@ -47,11 +47,11 @@ public class OpXTest {
     @Test
     public void listIntegerFactory0() {
         Op<List<Integer>> f = new Op0<>(() -> List.of(1)) {};
-        checkThat(f).is(new TypeToken<List<Integer>>() {});
+        checkThat(f).is(new GenericType<List<Integer>>() {});
         checkThat(f).hasNoDependencies();
 
         f = new Intermediate<>(() -> List.of(1)) {};
-        checkThat(f).is(new TypeToken<List<Integer>>() {});
+        checkThat(f).is(new GenericType<List<Integer>>() {});
         checkThat(f).hasNoDependencies();
     }
 

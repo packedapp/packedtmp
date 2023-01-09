@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
-import app.packed.bindings.mirror.KeyBasedBindingMirror;
+import app.packed.bindings.mirror.BindingMirror;
 import internal.app.packed.service.ServiceBindingSetup;
 
 /**
@@ -27,7 +27,7 @@ import internal.app.packed.service.ServiceBindingSetup;
  */
 // findAll(SBM.class).filterOn(key.equals(String.class)).toList();
 
-public non-sealed class ServiceBindingMirror extends KeyBasedBindingMirror {
+public class ServiceBindingMirror extends BindingMirror {
 
     /** The service binding */
     private final ServiceBindingSetup binding;

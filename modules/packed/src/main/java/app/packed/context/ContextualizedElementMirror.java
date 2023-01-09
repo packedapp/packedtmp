@@ -15,38 +15,34 @@
  */
 package app.packed.context;
 
-import java.util.Set;
+import java.util.Map;
 
+import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.operation.OperationMirror;
-import app.packed.service.Key;
 
 /**
+ * An element that can operate within one or more {@link Context contexts}.
+ * <p>
  * Something operates within a static context.
  * <p>
  * By static we mean that it can be determined at build time to always be present. It may be possible that contexts are
  * added dynamically at runtime. For example, by starting a transaction in raw code.
- * 
- * 
  */
-// An element that can operate within a context
-public sealed interface ContextualizedElement permits ContainerMirror, BeanMirror, OperationMirror {
+public sealed interface ContextualizedElementMirror permits ApplicationMirror, ContainerMirror, BeanMirror, OperationMirror {
 
-    /** {@return a set of keys that are available to all operations within this component.} */
-    // Som default er context key'en tilgaengelig? Nej det skal man vaelge
-    default Set<Key<?>> contextKeys() {
-        return Set.copyOf(contexts().stream().flatMap(m -> m.keys().stream()).toList());
-    }
-
-    /** {@return an immutable set of any contexts that the element operates within.} */
-
-    // Operation will also inherit for beans
-    default Set<ContextMirror> contexts() {
-        return Set.of();
+    /** {@return an immutable set of all the contexts that the element operates within.} */
+    default Map<Class<? extends Context<?>>, ContextMirror> contexts() {
+        return Map.of();
     }
 }
 
+///** {@return a set of keys that are available to all operations within this component.} */
+//// Som default er context key'en tilgaengelig? Nej det skal man vaelge
+//default Set<Key<?>> contextKeys() {
+//  return Set.copyOf(contexts().values().stream().flatMap(m -> m.keys().stream()).toList());
+//}
 // Fx for operationMirror, the contexts that only available in the operation
 // Tror maaske bare den forvirre mere en den gavner
 //default Set<ContextSpanMirror> declaredContexts() {

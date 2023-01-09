@@ -21,8 +21,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.BeanIntrospector.OperationalField;
 import app.packed.context.Context;
-import app.packed.context.NotInContextException;
+import app.packed.context.OutOfContextException;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionBeanConfiguration;
 
@@ -32,6 +33,7 @@ import app.packed.extension.ExtensionBeanConfiguration;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
+// or Maybe just interface BeanHooks?
 public @interface BeanHook {
 
     @Target(ElementType.ANNOTATION_TYPE)
@@ -51,7 +53,10 @@ public @interface BeanHook {
     }
 
     /**
-     *
+     * In order to process fields that are annotated with the target annotation,
+     * {@link BeanIntrospector#hookOnAnnotatedField(OperationalField)} must be overridden.
+     * 
+     * @see BeanIntrospector#hookOnAnnotatedField(OperationalField)
      */
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RetentionPolicy.RUNTIME)
@@ -60,18 +65,15 @@ public @interface BeanHook {
     public @interface AnnotatedFieldHook {
 
         /** Whether or not the owning extension is allow to get the contents of the field. */
-        boolean allowGet()
-
-        default false;
+        boolean allowGet() default false;
 
         /** Whether or not the owning extension is allow to set the contents of the field. */
-        boolean allowSet()
-
-        default false;
+        boolean allowSet() default false;
 
         /** The extension the hook is a part of. */
         Class<? extends Extension<?>> extension();
 
+        /** {@return any contexts that are required to use the target annotation.} */
         Class<? extends Context<?>>[] requiresContext() default {};
     }
 
@@ -87,12 +89,12 @@ public @interface BeanHook {
         /**
          * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
          * <p>
-         * Methods such as {@link BeanIntrospector.OnMethod#operationBuilder(ExtensionBeanConfiguration)} and... will fail with
-         * {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
+         * Methods such as {@link BeanIntrospector.OperationalMethod#operationBuilder(ExtensionBeanConfiguration)} and... will
+         * fail with {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
          * 
          * @return whether or not the implementation is allowed to invoke the target method
          * 
-         * @see BeanIntrospector.OnMethod#operationBuilder(ExtensionBeanConfiguration)
+         * @see BeanIntrospector.OperationalMethod#operationBuilder(ExtensionBeanConfiguration)
          */
         // maybe just invokable = true, idk og saa Field.gettable and settable
         // invocationAccess
@@ -103,60 +105,58 @@ public @interface BeanHook {
 
         Class<? extends Context<?>>[] requiresContext() default {};
 
-        // IDK, don't we just want to ignore it most of the time???
-        // Nah maybe fail. People might think it does something
-        boolean requiresVoidReturn() default false;
+//        // IDK, don't we just want to ignore it most of the time???
+//        // Nah maybe fail. People might think it does something
+//        boolean requiresVoidReturn() default false;
     }
-    
-    
+
     /**
-    *
-    */
-   @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
-   @Retention(RetentionPolicy.RUNTIME)
-   @Documented
-   @BeanHook
-   public @interface AnnotatedVariableHook {
+     * <p>
+     * Attempting to place multiple annotated variable hook annotations on a single field or parameter will result in a
+     * {@link InvalidBeanDefinitionException} being thrown at build-time.
+     */
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @BeanHook
+    public @interface AnnotatedVariableHook {
 
-       /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
-       Class<? extends Extension<?>> extension();
+        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
+        Class<? extends Extension<?>> extension();
 
-       /**
-        * Contexts that are required in order to use the binding class or annotation.
-        * <p>
-        * If this binding is attempted to be used without the context being available a {@link NotInContextException} will be
-        * thrown.
-        * <p>
-        * If this method returns multiple contexts they will <strong>all</strong> be required.
-        * 
-        * @return stuff
-        */
-       Class<? extends Context<?>>[] requiresContext() default {};
+        /**
+         * Contexts that are required in order to use the binding class or annotation.
+         * <p>
+         * If this binding is attempted to be used without the context being available a {@link OutOfContextException} will be
+         * thrown.
+         * <p>
+         * If this method returns multiple contexts they will <strong>all</strong> be required.
+         * 
+         * @return stuff
+         */
+        Class<? extends Context<?>>[] requiresContext() default {};
 
-       enum Mode {
-           ADAPT, CONVERT, DECORATE, // Peek -> Fx validering
-           DEFAULT,
+        enum Mode {
 
-           // Convert er vel bare en interceptor som man kan bede om fra ConverterExtension.
-           // Adapt, replace, transform lyder rimelig ens
+            // Tror maaske vi skal overskrive en eller anden klasse
+            // Som siger hvad vi skal goere i de enkelte tilfaelde
 
-           // Decorate -> // fx generic @TimerProxy
-           // Alternativt kan man peele det ud...
-           /// Fx Trace<SomeService> -> IDK om man kan lave det generisk? Peel en TypeVariable ud.
-           /// og saa fortsaette med den binding?
-           
-           
-           PEEK, PROVIDE, PROVIDE_RAW, REPLACE, TRANSFORM
-       }
-   }
+            PEEK, DECORATE, DEFAULT;
+
+            // Kan kun vaere en Default annotering (Default og @Nullable?)
+            
+            // Alle decorates er altid koert foerned peek.
+            //// fx vil vi altid have Peek efter decorate ved validering
+            //// selvom decorate annotering er efter peek
+        }
+    }
 
     /**
      *
      */
-    @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
+    @Target(ElementType.TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    // ClassBindingHook, AnnotationBindingHook
     @BeanHook
     public @interface VariableTypeHook {
 
@@ -166,7 +166,7 @@ public @interface BeanHook {
         /**
          * Contexts that are required in order to use the binding class or annotation.
          * <p>
-         * If this binding is attempted to be used without the context being available a {@link NotInContextException} will be
+         * If this binding is attempted to be used without the context being available a {@link OutOfContextException} will be
          * thrown.
          * <p>
          * If this method returns multiple contexts they will <strong>all</strong> be required.

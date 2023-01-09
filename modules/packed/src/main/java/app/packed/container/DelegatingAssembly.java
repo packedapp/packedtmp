@@ -16,7 +16,7 @@
 package app.packed.container;
 
 import app.packed.application.BuildException;
-import app.packed.extension.CustomBeanHook;
+import app.packed.bean.BeanHook;
 
 /**
  * An assembly that delegates all calls to another assembly.
@@ -26,13 +26,14 @@ import app.packed.extension.CustomBeanHook;
  * Hide methods on the original assembly. Or to configure a assembly, for example, in test scenarios where you want to
  * specify an assembly class in an annotation.
  * <p>
- * Delegating assemblies cannot use the {@link AssemblyHook} annotation or {@link CustomBeanHook custom bean hooks}.
+ * Delegating assemblies cannot use the {@link AssemblyHook} annotation or {@link BeanHook custom bean hooks}.
  * Attempting to use any of these annotations on a delegating assembly will result in a {@link BuildException} being
  * thrown.
  * <p>
  * Delegated assemblies are never reported from {@link AssemblyMirror#assemblyClass()}, but can be obtained by calling
  * {@link AssemblyMirror#delegatedFrom()}.
  */
+// Alternativt tager den i constructeren, har noget kode jeg ikke lige kan huske der ikke fungere super godt
 public non-sealed abstract class DelegatingAssembly extends Assembly {
 
     /** {@return the assembly to delegate to.} */

@@ -21,8 +21,8 @@ import app.packed.operation.OperationHandle;
 /**
  *
  */
-public enum BindingResolutionKind {
-    
+public enum BindingClassifierKind {
+
     /**
      * The binding has been created manually.
      * 
@@ -33,35 +33,16 @@ public enum BindingResolutionKind {
     MANUAL,
 
     /**
-     * The binding has been created because of a Hook.
-     * Either the variable is annotated with a binding hook.
-     * Or the variable class is annotated with BindingHook
+     * The binding has been created because of a Hook. Either the variable is annotated with a binding hook. Or the variable
+     * class is annotated with BindingHook
      * 
      * 
      * 
      * @see BindingHook
      **/
-    HOOK, // There is a class...
+    BINDING_ANNOTATION, // There is a class...
 
-    // Key? Service, OperationContext, ExtensionService, LocalService, InitializationBinding
-    // Maaske er det FactoryBinding??? A binding that takes a service and can only be used when creating
-    // a bean instance
-    // method of the bean
+    BINDING_CLASS, // or BindingType
+    
     KEY, // There is a key
 }
-
-//All dependencies have a resolution kind even those that are unresolved
-
-//Algorithm is completely fixed. But lots of ways to customization
-
-//Binding
-////OnAnnotation
-////OnClass
-//Composite
-//Key
-////Service
-////FactoryService
-
-// Check if already manually bound
-// Check annotation for Prime annotations
-// check raw class for Prime Class

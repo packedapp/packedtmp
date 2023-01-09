@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.context;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.application.BuildException;
 
 /**
  *
  */
-@Target(ElementType.PARAMETER)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@AnnotatedVariableHook(extension = BaseExtension.class)
-public @interface InitializeWith {}
+// Hmm StaticContextUnavilable?
+// TransactionContext.get()
+
+// ProvisionException
+
+public class OutOfContextException extends BuildException {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * @param message
+     */
+    public OutOfContextException(String message) {
+        super(message);
+    }
+}

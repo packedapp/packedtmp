@@ -16,11 +16,9 @@
 package app.packed.context;
 
 import java.util.Collection;
-import java.util.Set;
 
 import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
-import app.packed.service.Key;
 import internal.app.packed.container.Mirror;
 
 /**
@@ -46,20 +44,17 @@ public interface ContextMirror extends Mirror {
     /** {@return the context.} */
     Class<? extends Context<?>> contextClass();
 
-    ContextualizedElement element();
+    ContextualizedElementMirror element();
 
     /** {@return the extension that defines the context.} */
-    Class<? extends Extension<?>> extensionType();
+    Class<? extends Extension<?>> extensionClass();
     
     /**
      * All the operations that may create the context.
      * 
      * @return
      */
-    Collection<OperationMirror> initiatedFrom();
-
-    /** {@return services that are made specially available because of the context.} */
-    Set<Key<?>> keys();
+    Collection<OperationMirror> initiatingOperations();
 
     ContextSpan span();
 }

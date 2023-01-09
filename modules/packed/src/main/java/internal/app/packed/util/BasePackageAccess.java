@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.framework.Nullable;
 import app.packed.service.Key;
-import app.packed.service.TypeToken;
+import app.packed.service.GenericType;
 
 /** A mechanism for calling package private methods in public packages without using reflection. */
 public final class BasePackageAccess {
@@ -80,7 +80,7 @@ public final class BasePackageAccess {
     private static class BaseSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedBaseAccess INSTANCE = singleton(AppPackedBaseAccess.class, TypeToken.class);
+        private static final AppPackedBaseAccess INSTANCE = singleton(AppPackedBaseAccess.class, GenericType.class);
     }
 
     /** A support class for calling package private methods in the app.packed.base package. */
@@ -95,6 +95,6 @@ public final class BasePackageAccess {
          *            the type to convert
          * @return the type literal
          */
-        TypeToken<?> toTypeLiteral(Type type);
+        GenericType<?> toTypeLiteral(Type type);
     }
 }

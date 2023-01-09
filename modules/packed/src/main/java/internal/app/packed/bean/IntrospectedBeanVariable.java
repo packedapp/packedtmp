@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
-import app.packed.bean.BeanIntrospector.OnVariableProvideRaw;
+import app.packed.bean.BeanIntrospector.BindableVariable;
 import app.packed.bindings.Variable;
 import app.packed.bindings.mirror.BindingMirror;
 import app.packed.container.Realm;
@@ -36,14 +36,11 @@ import internal.app.packed.operation.binding.BindingProvider.FromOperation;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.operation.binding.BindingSetup.HookBindingSetup;
 
-/** Implementation of {@link BeanIntrospector.OnVariableProvideRaw}. */
-public non-sealed class IntrospectedBeanVariable implements OnVariableProvideRaw {
+/** Implementation of {@link BeanIntrospector.BindableVariable}. */
+public class IntrospectedBeanVariable implements BindableVariable {
 
     /** The extension that manages the binding. */
     private final ExtensionSetup bindingExtension;
-
-    @Nullable
-    final Class<?> bindingHookClass;
 
     /** The index of the binding into the operation. */
     private final int index;
@@ -60,13 +57,12 @@ public non-sealed class IntrospectedBeanVariable implements OnVariableProvideRaw
     final IntrospectedBean iBean;
 
     public IntrospectedBeanVariable(IntrospectedBean iBean, OperationSetup operation, int index, ExtensionSetup bindingExtension,
-            @Nullable Class<?> bindingHookClass, Variable var) {
+            Variable var) {
         this.operation = requireNonNull(operation);
         this.iBean = iBean;
         this.index = index;
         this.bindingExtension = requireNonNull(bindingExtension);
         this.variable = var;
-        this.bindingHookClass = bindingHookClass;
     }
 
     /** {@inheritDoc} */
@@ -109,13 +105,6 @@ public non-sealed class IntrospectedBeanVariable implements OnVariableProvideRaw
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> hookClass() {
-        // Javadoc says throw UOE if Nullable
-        return bindingHookClass;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Class<? extends Extension<?>> invokedBy() {
         return operation.operator.extensionType;
     }
@@ -153,7 +142,7 @@ public non-sealed class IntrospectedBeanVariable implements OnVariableProvideRaw
 
     /** {@inheritDoc} */
     @Override
-    public OnVariableProvideRaw specializeMirror(Supplier<? extends BindingMirror> supplier) {
+    public BindableVariable specializeMirror(Supplier<? extends BindingMirror> supplier) {
         checkIsBindable();
         this.mirrorSupplier = requireNonNull(supplier);
         return this;

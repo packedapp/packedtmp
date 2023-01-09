@@ -33,7 +33,7 @@ import app.packed.container.AbstractComposer.ComposerAssembly;
  * 
  */
 @SuppressWarnings("rawtypes")
-public sealed abstract class Assembly permits ContainerAssembly, DelegatingAssembly, ComposerAssembly {}
+public sealed abstract class Assembly permits BuildableAssembly, DelegatingAssembly, ComposerAssembly {}
 /*
  * 
  * Assemblies contain instructions on how to build an application

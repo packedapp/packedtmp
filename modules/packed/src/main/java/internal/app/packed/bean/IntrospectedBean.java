@@ -130,7 +130,7 @@ public final class IntrospectedBean {
             }
 
             // Notify the bean introspector that it is being used
-            introspector.beforeIntrospection();
+            introspector.beforeHooks();
             return new Contributor(extension, introspector, fullAccess);
         });
     }
@@ -219,7 +219,7 @@ public final class IntrospectedBean {
             // TODO add check for
             if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
                 types.put(new MethodHelper(m), packages);
-                IntrospectedBeanMethod.introspectMethodForAnnotations(this, m);
+                IntrospectedOperationalMethod.introspectMethodForAnnotations(this, m);
             }
         }
 
@@ -238,7 +238,7 @@ public final class IntrospectedBean {
                         // static methods on any interfaces this class implements.
                         // But it would also be strange to include static methods on sub classes
                         // but not include static methods on interfaces.
-                        IntrospectedBeanMethod.introspectMethodForAnnotations(this, m);
+                        IntrospectedOperationalMethod.introspectMethodForAnnotations(this, m);
                     }
                 } else if (!m.isBridge() && !m.isSynthetic()) { // TODO should we include synthetic methods??
                     switch (mod & (Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE)) {
@@ -259,7 +259,7 @@ public final class IntrospectedBean {
                     case Modifier.PRIVATE:
                         // Private methods are never overridden
                     }
-                    IntrospectedBeanMethod.introspectMethodForAnnotations(this, m);
+                    IntrospectedOperationalMethod.introspectMethodForAnnotations(this, m);
                 }
             }
         }
@@ -270,7 +270,7 @@ public final class IntrospectedBean {
         
         // Call into every BeanIntrospector and tell them it is all over
         for (Contributor e : extensions.values()) {
-            e.introspector.afterIntrospection();
+            e.introspector.afterHooks();
         }
     }
 
@@ -291,7 +291,7 @@ public final class IntrospectedBean {
         for (int i = 0; i < operation.bindings.length; i++) {
             BindingSetup binding = operation.bindings[i];
             if (binding == null) {
-                IntrospectedBeanParameter.resolveParameter(this, operation, i);
+                BindingResolver.resolveBinding(this, operation, i);
             }
         }
     }
@@ -307,7 +307,7 @@ public final class IntrospectedBean {
 
             // Iterate over all declared fields
             for (Field field : clazz.getDeclaredFields()) {
-                IntrospectedBeanField.introspectFieldForAnnotations(introspector, field);
+                IntrospectedOperationalField.introspectFieldForAnnotations(introspector, field);
             }
         }
     }

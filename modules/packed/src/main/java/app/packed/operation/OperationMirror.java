@@ -26,13 +26,13 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanHook.VariableTypeHook;
+import app.packed.bean.BeanMirror;
 import app.packed.bindings.mirror.BindingMirror;
-import app.packed.bindings.sandbox.DependenciesMirror;
+import app.packed.bindings.mirror.DependenciesMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.context.ContextMirror;
-import app.packed.context.ContextualizedElement;
+import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.MirrorExtension;
@@ -57,7 +57,7 @@ import internal.app.packed.operation.binding.BindingSetup;
  * </ul>
  */
 @VariableTypeHook(extension = MirrorExtension.class)
-public non-sealed class OperationMirror implements ContextualizedElement, Mirror {
+public non-sealed class OperationMirror implements ContextualizedElementMirror, Mirror {
 
     /**
      * The internal configuration of the operation we are mirrored. Is initially null but populated via
@@ -145,9 +145,9 @@ public non-sealed class OperationMirror implements ContextualizedElement, Mirror
     // operations on the bean will include the key under which the bean is being provided.
     public Set<Key<?>> keys() {
         Set<Key<?>> set = new HashSet<>(operation().bean.container.sm.keysAvailableInternally());
-        for (ContextMirror ocm : contexts()) {
-            set.addAll(ocm.keys());
-        }
+//        for (ContextMirror ocm : contexts()) {
+//            set.addAll(ocm.keys());
+//        }
         return Set.copyOf(set);
     }
 

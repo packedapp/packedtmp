@@ -52,7 +52,7 @@ import internal.app.packed.util.LookupUtil;
  * @see BaseAssembly
  */
 // LinkedAssembly, LinkableAssembly
-public non-sealed abstract class ContainerAssembly extends Assembly {
+public non-sealed abstract class BuildableAssembly extends Assembly {
 
     /** A var handle that can update the {@link #configuration} field in this class. */
     private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);

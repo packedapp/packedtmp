@@ -71,7 +71,7 @@ import app.packed.service.ServiceExtension;
 // og hvilke metoder fra disse extensions vi har med
 // TODO tror vi sortere metoderne efter extension og saa efter navn
 @JavaBaseSupport
-public abstract class BaseAssembly extends ContainerAssembly {
+public abstract class BaseAssembly extends BuildableAssembly {
 
     /**
      * Returns a {@link BaseExtension} instance.

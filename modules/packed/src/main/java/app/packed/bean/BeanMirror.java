@@ -12,11 +12,11 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.NamespacePath;
 import app.packed.bean.BeanHook.VariableTypeHook;
-import app.packed.bindings.sandbox.DependenciesMirror;
+import app.packed.bindings.mirror.DependenciesMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Realm;
-import app.packed.context.ContextualizedElement;
+import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.MirrorExtension;
@@ -35,7 +35,7 @@ import internal.app.packed.util.StreamUtil;
  * Instances of this class is typically obtained from calls to {@link ApplicationMirror} or {@link ContainerMirror}.
  */
 @VariableTypeHook(extension = MirrorExtension.class)
-public non-sealed class BeanMirror implements ContextualizedElement, Mirror {
+public non-sealed class BeanMirror implements ContextualizedElementMirror, Mirror {
 
     /**
      * The internal configuration of the bean we are mirroring. Is initially null but populated via

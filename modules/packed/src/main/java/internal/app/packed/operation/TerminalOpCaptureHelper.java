@@ -30,7 +30,7 @@ import app.packed.operation.Op0;
 import app.packed.operation.Op1;
 import app.packed.operation.Op2;
 import app.packed.operation.OperationType;
-import app.packed.service.TypeToken;
+import app.packed.service.GenericType;
 import internal.app.packed.operation.TerminalOp.FunctionInvocationOp;
 import internal.app.packed.operation.binding.InternalDependency;
 import internal.app.packed.util.LookupUtil;
@@ -42,12 +42,12 @@ import internal.app.packed.util.MethodHandleUtil;
 class TerminalOpCaptureHelper {
 
     /** A cache of extracted type variables from subclasses of this class. */
-    static final ClassValue<TypeToken<?>> CACHE = new ClassValue<>() {
+    static final ClassValue<GenericType<?>> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        protected TypeToken<?> computeValue(Class<?> type) {
-            return TypeToken.fromTypeVariable((Class) type, CapturingOp.class, 0);
+        protected GenericType<?> computeValue(Class<?> type) {
+            return GenericType.fromTypeVariable((Class) type, CapturingOp.class, 0);
         }
     };
 
@@ -110,7 +110,7 @@ class TerminalOpCaptureHelper {
     @SuppressWarnings("unchecked")
     public static <R> PackedOp<R> create(Class<?> clazz, Object function) {
         requireNonNull(function, "function is null"); // should have already been checked by subclasses
-        TypeToken<R> typeLiteral = (TypeToken<R>) TerminalOpCaptureHelper.CACHE.get(clazz);
+        GenericType<R> typeLiteral = (GenericType<R>) TerminalOpCaptureHelper.CACHE.get(clazz);
         // analyze();
 
         final MethodHandle methodHandle;
@@ -216,12 +216,12 @@ class TerminalOpCaptureHelper {
 
 
     /** A cache of extracted type variables from subclasses of this class. */
-    static final ClassValue<TypeToken<?>> FUNCTION_CACHE = new ClassValue<>() {
+    static final ClassValue<GenericType<?>> FUNCTION_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        protected TypeToken<?> computeValue(Class<?> type) {
-            return TypeToken.fromTypeVariable((Class) type, CapturingOp.class, 0);
+        protected GenericType<?> computeValue(Class<?> type) {
+            return GenericType.fromTypeVariable((Class) type, CapturingOp.class, 0);
         }
     };
 

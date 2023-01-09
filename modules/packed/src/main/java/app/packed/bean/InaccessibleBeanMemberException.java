@@ -18,16 +18,16 @@ package app.packed.bean;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.container.AbstractComposer;
-import app.packed.container.ContainerAssembly;
+import app.packed.container.BuildableAssembly;
 import app.packed.extension.InternalExtensionException;
 
 /**
- * This exception is thrown when installing a bean, if a member (constructor, field or method) of the bean is not
- * accessible by the framework.
+ * This exception is thrown when installing a bean, and the framework does not have reflective permissions to access one
+ * or more members (constructor, field or method) of the bean.
  * <p>
- * In order to make the member accessible, the right access must be provided to the framework. This can be done either
- * by opening the package in which the bean is located to {@code app.packed} using a module descriptor. Or by specifying
- * a lookup object using {@link ContainerAssembly#lookup(Lookup)} or {@link AbstractComposer#lookup(Lookup)}.
+ * In order to make the bean's member accessible, the right access must be provided to the framework. This can be done
+ * either by opening the package in which the bean is located to {@code app.packed} using a module descriptor. Or by
+ * specifying a lookup object using {@link BuildableAssembly#lookup(Lookup)} or {@link AbstractComposer#lookup(Lookup)}.
  * <p>
  * If an extension tries to install one of its own beans without sufficient access, {@link InternalExtensionException}
  * is thrown instead.

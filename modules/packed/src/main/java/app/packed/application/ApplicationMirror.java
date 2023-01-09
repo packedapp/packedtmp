@@ -8,6 +8,7 @@ import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
+import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.MirrorExtension;
@@ -29,7 +30,7 @@ import internal.app.packed.container.Mirror;
  * Like many other mirrors this class is overridable via
  */
 @VariableTypeHook(extension = MirrorExtension.class)
-public class ApplicationMirror implements Mirror {
+public non-sealed class ApplicationMirror implements Mirror, ContextualizedElementMirror {
 
     /**
      * The internal configuration of the application we are mirrored. Is initially null but populated via

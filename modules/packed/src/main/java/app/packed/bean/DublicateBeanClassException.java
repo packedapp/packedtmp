@@ -27,7 +27,7 @@ import app.packed.extension.BaseExtension;
  * @see BaseExtension#multiInstall(app.packed.operation.Op)
  * @see BaseExtension#multiInstallInstance(Object)
  */
-public class BeanClassAlreadyExistsException extends BeanInstallationException {
+public class DublicateBeanClassException extends BeanInstallationException {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,7 +39,7 @@ public class BeanClassAlreadyExistsException extends BeanInstallationException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public BeanClassAlreadyExistsException(String message) {
+    public DublicateBeanClassException(String message) {
         super(message);
     }
 
@@ -53,7 +53,7 @@ public class BeanClassAlreadyExistsException extends BeanInstallationException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public BeanClassAlreadyExistsException(String message, Throwable cause) {
+    public DublicateBeanClassException(String message, Throwable cause) {
         super(message, cause);
     }
 }

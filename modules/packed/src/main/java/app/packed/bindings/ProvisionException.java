@@ -16,9 +16,9 @@
 package app.packed.bindings;
 
 /**
- * Thrown at runtime.
+ * Thrown at runtime if a value cannot be provided for a binding.
  */
-public class ProvisionException extends Exception {
+public class ProvisionException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;

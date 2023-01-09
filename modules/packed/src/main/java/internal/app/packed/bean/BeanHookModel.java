@@ -25,9 +25,10 @@ import java.util.Map;
 
 import app.packed.bean.BeanHook.AnnotatedFieldHook;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
+import app.packed.bean.BeanHook.AnnotatedVariableHook;
 import app.packed.bean.BeanHook.VariableTypeHook;
-import app.packed.bean.BeanIntrospector.OnField;
-import app.packed.bean.BeanIntrospector.OnVariableProvideRaw;
+import app.packed.bean.BeanIntrospector.BindableVariable;
+import app.packed.bean.BeanIntrospector.OperationalField;
 import app.packed.extension.CustomBeanHook;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
@@ -40,7 +41,7 @@ import internal.app.packed.util.ClassUtil;
 public final class BeanHookModel {
 
     /** A cache of any extensions a particular annotation activates. */
-    private static final ClassValue<AnnotatedMethod> ANNOTATED_METHOD_CACHE = new ClassValue<>() {
+    private static final ClassValue<AnnotatedMethod> METHOD_ANNOTATION_CACHE = new ClassValue<>() {
 
         @Override
         protected AnnotatedMethod computeValue(Class<?> type) {
@@ -87,16 +88,17 @@ public final class BeanHookModel {
             AnnotatedFieldHook fieldHook = type.getAnnotation(AnnotatedFieldHook.class);
             if (fieldHook != null) {
                 checkExtensionClass(type, fieldHook.extension());
-                result = new AnnotatedField(fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet(), false);
+                result = new AnnotatedField(fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet(), true);
             }
 
-            VariableTypeHook bindingHook = type.getAnnotation(VariableTypeHook.class);
+            AnnotatedVariableHook bindingHook = type.getAnnotation(AnnotatedVariableHook.class);
             if (bindingHook != null) {
                 if (result != null) {
-                    throw new InternalExtensionException(annotationType + " cannot both be annotated with " + AnnotatedFieldHook.class + " and " + VariableTypeHook.class);
+                    throw new InternalExtensionException(
+                            annotationType + " cannot both be annotated with " + AnnotatedFieldHook.class + " and " + AnnotatedVariableHook.class);
                 }
                 checkExtensionClass(type, bindingHook.extension());
-                result = new AnnotatedField(bindingHook.extension(), false, true, true);
+                result = new AnnotatedField(bindingHook.extension(), false, true, false);
             }
 
             // See if we have a custom hook
@@ -106,7 +108,7 @@ public final class BeanHookModel {
                 if (result != null) {
                     throw new InternalExtensionException("POOPS");
                 }
-                result = new AnnotatedField(extract(annotationType), customHook.allowGet, customHook.allowSet, customHook.isBindingHook);
+                result = new AnnotatedField(extract(annotationType), customHook.allowGet, customHook.allowSet, customHook.isFieldHook);
             }
 
             return result;
@@ -116,10 +118,40 @@ public final class BeanHookModel {
     private final Map<String, CustomAnnotatedField> fieldHooks = Map.of();
 
     /** A cache of any extensions a particular annotation activates. */
-    private final ClassValue<ParameterTypeRecord> PARAMETER_TYPE_CACHE = new ClassValue<>() {
+    private final ClassValue<AnnotatedParameterType> PARAMETER_ANNOTATION_CACHE = new ClassValue<>() {
 
         @Override
-        protected ParameterTypeRecord computeValue(Class<?> type) {
+        protected AnnotatedParameterType computeValue(Class<?> type) {
+            
+            AnnotatedVariableHook h = type.getAnnotation(AnnotatedVariableHook.class);
+            
+
+            
+            Class<? extends Annotation> cl = bindings.get(type.getName());
+            if (cl != null) {
+                Class<?> declaringClass = cl.getDeclaringClass();
+                if (!Extension.class.isAssignableFrom(declaringClass)) {
+                    throw new InternalExtensionException("oops");
+                }
+                @SuppressWarnings("unchecked")
+                Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) declaringClass;
+                return new AnnotatedParameterType(extensionClass);
+            }
+
+            if (h == null) {
+                return null;
+            }
+
+            // checkExtensionClass(type, h.extension());
+            return new AnnotatedParameterType(h.extension());
+        }
+    };
+
+    /** A cache of any extensions a particular annotation activates. */
+    private final ClassValue<ParameterType> PARAMETER_TYPE_CACHE = new ClassValue<>() {
+
+        @Override
+        protected ParameterType computeValue(Class<?> type) {
             VariableTypeHook h = type.getAnnotation(VariableTypeHook.class);
             Class<? extends Annotation> cl = bindings.get(type.getName());
             if (cl != null) {
@@ -129,7 +161,7 @@ public final class BeanHookModel {
                 }
                 @SuppressWarnings("unchecked")
                 Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) declaringClass;
-                return new ParameterTypeRecord(extensionClass);
+                return new ParameterType(extensionClass);
             }
 
             if (h == null) {
@@ -137,7 +169,7 @@ public final class BeanHookModel {
             }
 
             // checkExtensionClass(type, h.extension());
-            return new ParameterTypeRecord(h.extension());
+            return new ParameterType(h.extension());
         }
     };
 
@@ -167,15 +199,23 @@ public final class BeanHookModel {
         this.bindings = Map.copyOf(bindings);
     }
 
-    AnnotatedField lookupAnnotationOnField(Class<? extends Annotation> fieldAnnotation) {
-        return FIELD_ANNOTATION_CACHE.get(fieldAnnotation);
+    @Nullable
+    AnnotatedField testFieldAnnotation(Class<? extends Annotation> annotation) {
+        return FIELD_ANNOTATION_CACHE.get(annotation);
     }
 
-    AnnotatedMethod lookupAnnotationOnMethod(Class<? extends Annotation> fieldAnnotation) {
-        return ANNOTATED_METHOD_CACHE.get(fieldAnnotation);
+    @Nullable
+    AnnotatedMethod testMethodAnnotation(Class<? extends Annotation> annotation) {
+        return METHOD_ANNOTATION_CACHE.get(annotation);
     }
 
-    ParameterTypeRecord lookupParameterType(Class<?> parameterType) {
+    @Nullable
+    AnnotatedParameterType testParameterAnnotation(Class<? extends Annotation> annotation) {
+        return PARAMETER_ANNOTATION_CACHE.get(annotation);
+    }
+
+    @Nullable
+    ParameterType testParameterType(Class<?> parameterType) {
         return PARAMETER_TYPE_CACHE.get(parameterType);
     }
 
@@ -200,14 +240,16 @@ public final class BeanHookModel {
         return MODELS.get(clazz);
     }
 
-    private record CustomAnnotatedField(Class<? extends Annotation> annotationType, boolean isBindingHook, boolean allowGet, boolean allowSet) {}
+    private record CustomAnnotatedField(Class<? extends Annotation> annotationType, boolean isFieldHook, boolean allowGet, boolean allowSet) {}
 
     record AnnotatedMethod(Class<? extends Extension<?>> extensionType, boolean isInvokable) {}
 
-    record ParameterTypeRecord(Class<? extends Extension<?>> extensionType) {}
+    record AnnotatedParameterType(Class<? extends Extension<?>> extensionType) {}
+
+    record ParameterType(Class<? extends Extension<?>> extensionType) {}
 
     /**
-     * A hook annotation on a field, is either a plain {@link OnVariableProvideRaw} hook or a {@link OnField} hook.
+     * A hook annotation on a field, is either a plain {@link BindableVariable} hook or a {@link OperationalField} hook.
      */
-    record AnnotatedField(Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable, boolean isBindingHook) {}
+    record AnnotatedField(Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable, boolean isFieldHook) {}
 }

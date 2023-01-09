@@ -25,8 +25,7 @@ import app.packed.extension.BaseExtension;
 import app.packed.lifetime.RunState;
 
 /**
- * An annotation used to indicate that a particular method on bean should be invoked as part of the bean's
- * initialization.
+ * An annotation used to indicate that a method on a bean should be invoked as part of the bean's initialization.
  * <p>
  * This annotation can, for example, be used like this:
  *
@@ -92,6 +91,4 @@ public @interface OnInitialize {
     //// @ReverseOrderLifecycle
     // or just lifetimeOrderReversed default false();
     boolean preOrder() default true;
-
-    // Maaske har vi en ENUM PRE_DEPENDENCIES, ASYNC, POST_DEPENDENCIES
 }
