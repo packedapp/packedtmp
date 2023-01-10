@@ -23,9 +23,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import app.packed.bean.BeanHandle;
+import app.packed.binding.Key;
 import app.packed.service.ExportedServiceCollisionException;
 import app.packed.service.ExportedServiceMirror;
-import app.packed.service.Key;
 import app.packed.service.ProvideService;
 import app.packed.service.ProvidedServiceCollisionException;
 import app.packed.service.ProvidedServiceMirror;
@@ -33,12 +33,12 @@ import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 import app.packed.service.UnsatisfiableServiceDependencyException;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.binding.BindingProvider;
+import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
+import internal.app.packed.binding.BindingProvider.FromOperation;
 import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
-import internal.app.packed.operation.binding.BindingProvider;
-import internal.app.packed.operation.binding.BindingProvider.FromLifetimeArena;
-import internal.app.packed.operation.binding.BindingProvider.FromOperation;
 import internal.app.packed.util.StringFormatter;
 
 /** Manages services in a single container. */

@@ -43,8 +43,8 @@ import app.packed.extension.FrameworkExtension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.framework.Framework;
 import app.packed.framework.Nullable;
-import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.StringFormatter;
+import internal.app.packed.util.types.ClassUtil;
 
 /**
  * A model of an {@link Extension}. Exposed to end-users as {@link ExtensionDescriptor}.

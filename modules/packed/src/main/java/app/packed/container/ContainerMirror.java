@@ -12,8 +12,8 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.NamespacePath;
-import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanHook.VariableTypeHook;
+import app.packed.bean.BeanMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
@@ -25,10 +25,10 @@ import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
-import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
-import internal.app.packed.util.typevariable.TypeVariableExtractor;
+import internal.app.packed.util.types.ClassUtil;
+import internal.app.packed.util.types.TypeVariableExtractor;
 
 /**
  * A mirror of a container.
@@ -45,14 +45,14 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
 
         /** A type variable extractor. */
-        private static final TypeVariableExtractor TYPE_LITERAL_EP_EXTRACTOR = TypeVariableExtractor.of(ExtensionMirror.class);
+        private static final TypeVariableExtractor TYPE_VARIABLE_EP_EXTRACTOR = TypeVariableExtractor.of(ExtensionMirror.class);
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
         protected Class<? extends Extension<?>> computeValue(Class<?> type) {
             // Extract the type of extension from ExtensionMirror<E>
-            Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) TYPE_LITERAL_EP_EXTRACTOR.extractProperSubClassOf(type,
+            Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) TYPE_VARIABLE_EP_EXTRACTOR.extractProperSubClassOf(type,
                     Extension.class, InternalExtensionException::new);
 
             // Check that the mirror is in the same module as the extension itself

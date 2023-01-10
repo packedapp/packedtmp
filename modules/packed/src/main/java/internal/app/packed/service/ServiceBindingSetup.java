@@ -23,8 +23,8 @@ import app.packed.container.Realm;
 import app.packed.framework.Nullable;
 import app.packed.service.ServiceBindingMirror;
 import app.packed.service.ServiceExtension;
+import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.binding.BindingSetup;
 
 /**
  * A binding to a service.

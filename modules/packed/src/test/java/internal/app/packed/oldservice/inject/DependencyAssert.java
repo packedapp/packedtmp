@@ -17,8 +17,8 @@ package internal.app.packed.oldservice.inject;
 
 import org.assertj.core.api.AbstractAssert;
 
-import app.packed.service.Key;
-import internal.app.packed.operation.binding.InternalDependency;
+import app.packed.binding.Key;
+import internal.app.packed.binding.InternalDependency;
 
 /**
  *

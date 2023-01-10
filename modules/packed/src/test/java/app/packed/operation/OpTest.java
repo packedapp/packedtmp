@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Disabled;
 
-import app.packed.service.Qualifier;
+import app.packed.binding.Qualifier;
 
 /** Test of {@link Op}. */
 @Disabled

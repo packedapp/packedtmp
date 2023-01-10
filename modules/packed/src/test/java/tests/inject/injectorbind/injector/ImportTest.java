@@ -22,10 +22,10 @@ import java.lang.annotation.Target;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import app.packed.binding.Key;
+import app.packed.binding.Qualifier;
 import app.packed.container.BaseAssembly;
 import app.packed.operation.Op1;
-import app.packed.service.Key;
-import app.packed.service.Qualifier;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceWirelets;
 

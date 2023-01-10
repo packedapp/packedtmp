@@ -20,7 +20,7 @@ import java.util.function.Function;
 
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
-import internal.app.packed.util.sandbox.SpecFix;
+import internal.app.packed.util.SpecFix;
 
 /**
  * A base configuration class for beans that are instantiable.

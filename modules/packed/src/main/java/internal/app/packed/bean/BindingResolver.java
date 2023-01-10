@@ -22,9 +22,9 @@ import app.packed.extension.BaseExtension;
 import internal.app.packed.bean.BeanHookModel.AnnotatedParameterType;
 import internal.app.packed.bean.BeanHookModel.ParameterType;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
+import internal.app.packed.binding.ExtensionServiceBindingSetup;
+import internal.app.packed.binding.InternalDependency;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.binding.ExtensionServiceBindingSetup;
-import internal.app.packed.operation.binding.InternalDependency;
 
 /**
  *

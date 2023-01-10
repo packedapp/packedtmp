@@ -31,12 +31,11 @@ import app.packed.operation.Op0;
 import app.packed.operation.Op1;
 import app.packed.operation.Op2;
 import app.packed.operation.OperationType;
+import internal.app.packed.binding.InternalDependency;
 import internal.app.packed.operation.TerminalOp.FunctionInvocationOp;
-import internal.app.packed.operation.binding.InternalDependency;
 import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.MethodHandleUtil;
-import internal.app.packed.util.Types;
-import internal.app.packed.util.typevariable.TypeVariableExtractor;
+import internal.app.packed.util.types.TypeVariableExtractor;
+import internal.app.packed.util.types.Types;
 
 /**
  *
@@ -118,7 +117,8 @@ class TerminalOpCaptureHelper {
 
         if (Op0.class.isAssignableFrom(clazz)) {
             MethodHandle mh = CREATE0.bindTo(function).bindTo(rawType); // (Supplier, Class)Object -> ()Object
-            methodHandle = MethodHandleUtil.castReturnType(mh, rawType); // ()Object -> ()R
+            
+            methodHandle = mh.asType(mh.type().changeReturnType(rawType));
         } else if (Op1.class.isAssignableFrom(clazz)) {
             List<InternalDependency> dependencies = OP1_CACHE.get(clazz);
 

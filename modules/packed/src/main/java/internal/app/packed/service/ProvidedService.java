@@ -18,8 +18,8 @@ package internal.app.packed.service;
 import java.lang.invoke.MethodHandle;
 
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.binding.BindingProvider;
 
 /**
  *

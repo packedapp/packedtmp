@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanHook.VariableTypeHook;
+import app.packed.binding.Key;
 import app.packed.binding.mirror.BindingMirror;
 import app.packed.binding.mirror.DependenciesMirror;
 import app.packed.bean.BeanMirror;
@@ -39,10 +40,9 @@ import app.packed.extension.MirrorExtension;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.service.ExportedServiceMirror;
-import app.packed.service.Key;
+import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.binding.BindingSetup;
 
 /**
  * A mirror for an operation on a bean.

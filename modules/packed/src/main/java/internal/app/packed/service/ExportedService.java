@@ -15,8 +15,8 @@
  */
 package internal.app.packed.service;
 
+import app.packed.binding.Key;
 import app.packed.framework.Nullable;
-import app.packed.service.Key;
 import internal.app.packed.operation.OperationSetup;
 
 /**

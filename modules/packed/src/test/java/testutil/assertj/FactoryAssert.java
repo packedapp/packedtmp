@@ -17,8 +17,8 @@ package testutil.assertj;
 
 import org.assertj.core.api.AbstractAssert;
 
+import app.packed.binding.Key;
 import app.packed.operation.Op;
-import app.packed.service.Key;
 
 /**
  *

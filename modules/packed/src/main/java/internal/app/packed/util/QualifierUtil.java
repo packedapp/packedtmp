@@ -19,8 +19,8 @@ import static internal.app.packed.util.StringFormatter.format;
 
 import java.lang.annotation.Annotation;
 
+import app.packed.binding.Qualifier;
 import app.packed.framework.Nullable;
-import app.packed.service.Qualifier;
 
 /** Limited support for javax.inject classes. */
 public final class QualifierUtil {

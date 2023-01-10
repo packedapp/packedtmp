@@ -15,12 +15,12 @@
  */
 package app.packed.container;
 
+import app.packed.binding.Qualifier;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.CustomBeanHook.JavaBaseSupport;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.service.ProvideableBeanConfiguration;
-import app.packed.service.Qualifier;
 import app.packed.service.ServiceExtension;
 
 /**

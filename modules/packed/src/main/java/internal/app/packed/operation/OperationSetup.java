@@ -38,18 +38,18 @@ import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.binding.BindingSetup;
+import internal.app.packed.binding.ExtensionServiceBindingSetup;
+import internal.app.packed.binding.BindingProvider.FromOperation;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
-import internal.app.packed.operation.binding.BindingProvider.FromOperation;
-import internal.app.packed.operation.binding.BindingSetup;
-import internal.app.packed.operation.binding.ExtensionServiceBindingSetup;
 import internal.app.packed.service.ServiceBindingSetup;
-import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.ThrowableUtil;
+import internal.app.packed.util.types.ClassUtil;
 
 /** Represents an operation on a bean. */
 public sealed abstract class OperationSetup {

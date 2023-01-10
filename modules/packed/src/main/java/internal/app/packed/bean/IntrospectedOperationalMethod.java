@@ -23,12 +23,12 @@ import java.util.Set;
 
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OperationalMethod;
+import app.packed.binding.Key;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
-import app.packed.service.Key;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;

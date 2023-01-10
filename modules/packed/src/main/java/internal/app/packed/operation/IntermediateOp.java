@@ -25,10 +25,10 @@ import app.packed.container.Realm;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.binding.BindingSetup;
+import internal.app.packed.binding.BindingProvider.FromConstant;
+import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.binding.BindingProvider.FromConstant;
-import internal.app.packed.operation.binding.BindingSetup;
-import internal.app.packed.operation.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.util.LookupUtil;
 
 /** An intermediate (non-terminal) op. */

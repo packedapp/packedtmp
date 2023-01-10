@@ -24,12 +24,13 @@ import java.util.function.Consumer;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
+import app.packed.binding.Key;
 import app.packed.extension.FrameworkExtension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
+import internal.app.packed.binding.BindingProvider.FromOperation;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.binding.BindingProvider.FromOperation;
 
 /**
  * An extension that deals with the service functionality of a container.

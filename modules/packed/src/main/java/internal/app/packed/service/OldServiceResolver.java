@@ -22,7 +22,7 @@ import java.util.Map;
 
 import app.packed.application.BuildException;
 import app.packed.bean.BeanSourceKind;
-import app.packed.service.Key;
+import app.packed.binding.Key;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.lifetime.LifetimeAccessor;

@@ -39,10 +39,10 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.service.ServiceManager;
 import internal.app.packed.util.AbstractTreeNode;
-import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
+import internal.app.packed.util.types.ClassUtil;
 
 /** The internal configuration of a container. */
 public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {

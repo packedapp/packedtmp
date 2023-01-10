@@ -41,9 +41,9 @@ import app.packed.service.ServiceLocator;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 import internal.app.packed.operation.PackedOp;
-import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
+import internal.app.packed.util.types.ClassUtil;
 import internal.deprecated.invoke.InternalInfuser;
 
 /** Implementation of {@link BootstrapApp}. */

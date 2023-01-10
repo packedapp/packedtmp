@@ -33,7 +33,7 @@ import app.packed.extension.CustomBeanHook;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.framework.Nullable;
-import internal.app.packed.util.ClassUtil;
+import internal.app.packed.util.types.ClassUtil;
 
 /**
  *

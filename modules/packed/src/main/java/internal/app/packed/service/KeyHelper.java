@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-import app.packed.service.Key;
+import app.packed.binding.Key;
 import internal.app.packed.util.QualifierUtil;
 
 /**

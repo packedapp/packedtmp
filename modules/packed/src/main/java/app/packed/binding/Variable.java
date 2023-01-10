@@ -24,9 +24,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
-import internal.app.packed.util.sandbox.PackedVariable;
-import internal.app.packed.util.sandbox.VariableTypeWrapper;
-
 /**
  * In Packed a variable (this interface) represents an annotated type of some kind This interface represents a variable of some kind, for example, a {@link Field}, Pa 
  * 
@@ -76,7 +73,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
     }
 
     static Variable ofConstructor(Constructor<?> constructor) {
-        return new PackedVariable(constructor, new VariableTypeWrapper.OfConstructor(constructor));
+        return new PackedVariable(constructor, new PackedVariableType.OfConstructor(constructor));
     }
 
     /**
@@ -87,7 +84,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
      * @return the variable
      */
     static Variable ofField(Field field) {
-        return new PackedVariable(field, new VariableTypeWrapper.OfField(field));
+        return new PackedVariable(field, new PackedVariableType.OfField(field));
     }
 
     /**
@@ -98,7 +95,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
      * @return the variable
      */
     static Variable ofMethodReturnType(Method method) {
-        return new PackedVariable(method, new VariableTypeWrapper.OfMethodReturnType(method));
+        return new PackedVariable(method, new PackedVariableType.OfMethodReturnType(method));
     }
 
     /**
@@ -109,12 +106,12 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
      * @return the variable
      */
     static Variable ofParameter(Parameter parameter) {
-        return new PackedVariable(parameter, new VariableTypeWrapper.OfParameter(parameter));
+        return new PackedVariable(parameter, new PackedVariableType.OfParameter(parameter));
     }
 
     // Do we really want to support type variables??? I don't think so
     // I think we want
     static Variable ofTypeVariable(TypeVariable<?> typeVariable) {
-        return new PackedVariable(typeVariable, new VariableTypeWrapper.OfTypeVariable(typeVariable));
+        return new PackedVariable(typeVariable, new PackedVariableType.OfTypeVariable(typeVariable));
     }
 }

@@ -27,9 +27,9 @@ import app.packed.framework.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
-import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
+import internal.app.packed.util.types.ClassUtil;
 
 /** Internal configuration of an application. */
 public final class ApplicationSetup {

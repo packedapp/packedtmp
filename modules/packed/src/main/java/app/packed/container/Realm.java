@@ -4,7 +4,7 @@ import java.util.NoSuchElementException;
 
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
-import internal.app.packed.util.ClassUtil;
+import internal.app.packed.util.types.ClassUtil;
 
 // Registrant
 // Operator, Contractor

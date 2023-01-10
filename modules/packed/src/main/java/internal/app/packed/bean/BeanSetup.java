@@ -23,6 +23,10 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanClassMapContainer.MuInst;
+import internal.app.packed.binding.BindingProvider;
+import internal.app.packed.binding.BindingProvider.FromConstant;
+import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
+import internal.app.packed.binding.BindingProvider.FromOperation;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
@@ -38,15 +42,11 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.LifetimePoolOperationSetup;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.operation.PackedOperationTemplate;
-import internal.app.packed.operation.binding.BindingProvider;
-import internal.app.packed.operation.binding.BindingProvider.FromConstant;
-import internal.app.packed.operation.binding.BindingProvider.FromLifetimeArena;
-import internal.app.packed.operation.binding.BindingProvider.FromOperation;
 import internal.app.packed.service.ProvidedService;
-import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
+import internal.app.packed.util.types.ClassUtil;
 
 /** The internal configuration of a bean. */
 public final class BeanSetup {

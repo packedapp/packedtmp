@@ -7,8 +7,8 @@ import app.packed.framework.Nullable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
-import internal.app.packed.util.ClassUtil;
-import internal.app.packed.util.typevariable.TypeVariableExtractor;
+import internal.app.packed.util.types.ClassUtil;
+import internal.app.packed.util.types.TypeVariableExtractor;
 
 /**
  * Extension points are the main mechanism by which an extension can use another extension. Developers that do not

@@ -28,13 +28,13 @@ import app.packed.container.Realm;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import app.packed.operation.Op;
+import internal.app.packed.binding.BindingSetup;
+import internal.app.packed.binding.BindingProvider.FromConstant;
+import internal.app.packed.binding.BindingProvider.FromOperation;
+import internal.app.packed.binding.BindingSetup.HookBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
-import internal.app.packed.operation.binding.BindingProvider.FromConstant;
-import internal.app.packed.operation.binding.BindingProvider.FromOperation;
-import internal.app.packed.operation.binding.BindingSetup;
-import internal.app.packed.operation.binding.BindingSetup.HookBindingSetup;
 
 /** Implementation of {@link BeanIntrospector.BindableVariable}. */
 public class IntrospectedBeanVariable implements BindableVariable {

@@ -32,10 +32,10 @@ import java.util.OptionalLong;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import app.packed.service.Key;
-import app.packed.service.Qualifier;
-import app.packed.service.GenericType;
-import internal.app.packed.operation.binding.InternalDependency;
+import app.packed.binding.Key;
+import app.packed.binding.Qualifier;
+import internal.app.packed.binding.InternalDependency;
+import internal.app.packed.util.types.GenericType;
 
 /**
  *

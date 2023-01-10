@@ -21,11 +21,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import app.packed.binding.Key;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
-import app.packed.service.Key;
 
 /**
  * Bruges til at kommunikere med en extension paa tvaers af en container lifetime

@@ -25,6 +25,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.application.NamespacePath;
+import app.packed.binding.Key;
 import app.packed.container.Realm;
 import app.packed.context.Context;
 import app.packed.errorhandling.ErrorHandler;
@@ -32,7 +33,6 @@ import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
-import app.packed.service.Key;
 import app.packed.service.ProvideableBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.service.InternalServiceUtil;

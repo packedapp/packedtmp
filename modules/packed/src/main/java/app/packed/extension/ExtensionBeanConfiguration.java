@@ -29,9 +29,9 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.binding.Key;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationHandle;
-import app.packed.service.Key;
 
 /**
  *

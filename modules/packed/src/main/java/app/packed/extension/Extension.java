@@ -38,8 +38,8 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.PackedWireletSelection;
 import internal.app.packed.container.WireletWrapper;
-import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.StringFormatter;
+import internal.app.packed.util.types.ClassUtil;
 
 /**
  * Extensions are main mechanism by which the framework can be extended with new features.

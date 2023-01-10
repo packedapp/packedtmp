@@ -25,8 +25,8 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationMirror;
+import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.Mirror;
-import internal.app.packed.operation.binding.BindingSetup;
 
 /**
  * A mirror representing the bound parameter of an operation.

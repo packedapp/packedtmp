@@ -38,9 +38,9 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationDriver;
 import internal.app.packed.jfr.BuildApplicationEvent;
 import internal.app.packed.service.CircularServiceDependencyChecker;
-import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
+import internal.app.packed.util.types.ClassUtil;
 
 /** The internal configuration of an assembly. */
 public final class AssemblySetup extends RealmSetup {

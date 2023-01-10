@@ -27,11 +27,10 @@ import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Optional;
 
+import app.packed.binding.Key;
 import app.packed.binding.Variable;
 import app.packed.framework.Nullable;
-import app.packed.service.Key;
-import internal.app.packed.operation.binding.InternalDependency;
-import internal.app.packed.util.MethodHandleUtil;
+import internal.app.packed.binding.InternalDependency;
 
 /**
  *
@@ -155,7 +154,8 @@ class MethodHandleBuilderHelper {
                             // } // else should fail...
                         }
                         if (sd.isOptional()) {
-                            mh = MethodHandleUtil.replaceParameter(mh, is.size() + add, MethodHandleUtil.optionalOfTo(askingForType));
+                            // replace parameter
+                            mh = MethodHandles.filterArguments(mh, is.size() + add, MethodHandleUtil.optionalOfTo(askingForType));
                         }
                     }
                     is.push(entry.indexes());
@@ -183,8 +183,8 @@ class MethodHandleBuilderHelper {
                     // We need to the return value of transformer to an optional, may be null
                     tmp = MethodHandles.filterReturnValue(tmp, MethodHandleUtil.optionalOfNullableTo(askingForType));
                 }
-
-                mh = MethodHandleUtil.replaceParameter(mh, is.size() + add, tmp);
+                // replace parameter
+                mh = MethodHandles.filterArguments(mh, is.size() + add, tmp);
                 is.push(anno.index);
             }
         }
@@ -210,13 +210,17 @@ class MethodHandleBuilderHelper {
             // USed for example, for constructors to change the actually type being made
             // F.x Extension instead of ServiceExtension (so we can use invokeExact
             if (input.returnType() != mh.type().returnType()) {
-                mh = MethodHandleUtil.castReturnType(mh, input.returnType()); // need to upcast to extension to invokeExact
+                mh = castReturnType(mh, input.returnType()); // need to upcast to extension to invokeExact
             }
             mh = MethodHandles.permuteArguments(mh, input, is.toArray());
         }
         return mh;
     }
 
+
+    static MethodHandle castReturnType(MethodHandle target, Class<?> newReturnType) {
+        return target.asType(target.type().changeReturnType(newReturnType));
+    }
     private MethodHandleBuilder.@Nullable AnnoClassEntry find(MethodHandleBuilder aa, Parameter p) {
         for (Annotation a : p.getAnnotations()) {
             if (aa.annoations.containsKey(a.annotationType())) {

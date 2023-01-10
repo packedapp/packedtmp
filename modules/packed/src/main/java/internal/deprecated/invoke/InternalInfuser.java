@@ -13,8 +13,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
+import app.packed.binding.Key;
 import app.packed.framework.Nullable;
-import app.packed.service.Key;
 
 // MemberInjector
 
