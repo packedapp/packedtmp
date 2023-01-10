@@ -114,7 +114,7 @@ public final class AssemblySetup extends RealmSetup {
             AssemblyModel model = null;
             while (a instanceof DelegatingAssembly da) {
                 if (attempts-- == 0) {
-                    throw new BuildException("Inifite loop suspected, cannot have more than 100 delegating assemblies");
+                    throw new BuildException("Inifite loop suspected, cannot have more than 100 delegating assemblies, assemblyClass = " + da.getClass().getCanonicalName());
                 }
                 try {
                     a = (Assembly) MH_DELEGATING_ASSEMBLY_DELEGATE_TO.invokeExact(da);

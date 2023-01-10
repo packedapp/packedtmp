@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.NamespacePath;
 import app.packed.bean.BeanHook.VariableTypeHook;
-import app.packed.bindings.mirror.DependenciesMirror;
+import app.packed.binding.mirror.DependenciesMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Realm;
@@ -108,6 +108,9 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror, Mirro
      * @return operation that creates instances of the bean. Or empty if instances are never created
      */
     // instantiatedBy
+    
+    // Syntes maaske bare skal lede efter den i operations()?
+    // Saa supportere vi ogsaa flere factory metodes hvis vi har brug for det en gang
     public Optional<OperationMirror> factoryOperation() {
         BeanSetup bean = bean();
         if (bean.beanKind.hasInstances() && bean.sourceKind != BeanSourceKind.INSTANCE) {

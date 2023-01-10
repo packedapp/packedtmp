@@ -17,7 +17,7 @@ package app.packed.service;
 
 import java.util.Optional;
 
-import app.packed.bindings.mirror.BindingTarget;
+import app.packed.binding.mirror.BindingTarget;
 import app.packed.context.Context;
 
 /**

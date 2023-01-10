@@ -33,8 +33,8 @@ import app.packed.bean.BeanHook.AnnotatedFieldHook;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
 import app.packed.bean.BeanHook.VariableTypeHook;
-import app.packed.bindings.Variable;
-import app.packed.bindings.mirror.BindingMirror;
+import app.packed.binding.Variable;
+import app.packed.binding.mirror.BindingMirror;
 import app.packed.container.Realm;
 import app.packed.context.Context;
 import app.packed.context.ContextTemplate.InvocationContextArgument;
@@ -143,7 +143,8 @@ public abstract class BeanIntrospector {
         throw new InvalidBeanDefinitionException("OOPS " + postFix);
     }
 
-    public void hookOnAnnotatedClass(Set<Class<? extends Annotation>> hooks,OperationalClass on) {}
+    // Replace set with something like AnnotatedHookSet
+    public void hookOnAnnotatedClass(Set<Class<? extends Annotation>> hooks, OperationalClass on) {}
 
     /**
      * A callback method that is called for fields that are annotated with a field hook annotation defined by the extension:
@@ -159,7 +160,7 @@ public abstract class BeanIntrospector {
      * @see AnnotatedFieldHook
      */
     // onFieldHook(Set<Class<? extends Annotation<>> hooks, BeanField));
-    public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks,OperationalField of) {
+    public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks, OperationalField of) {
         throw new InternalExtensionException(setup().extension.fullName() + " failed to handle field annotation(s) " + hooks);
     }
 
@@ -180,7 +181,7 @@ public abstract class BeanIntrospector {
      * 
      * @see AnnotatedVariableHook
      */
-    public void hookOnAnnotatedVariable(Class<? extends Annotation> hook, BindableVariable v) {
+    public void hookOnAnnotatedVariable(Annotation hook, BindableVariable v) {
         // could test if getClass is beanIntrospector, in which case they probably forgot to override extension.newIntrospector
         // Otherwise they forgot to implement binding hook
         throw new InternalExtensionException(setup().extension.fullName() + " failed to handle parameter hook annotation(s) " + hook);
@@ -325,14 +326,6 @@ public abstract class BeanIntrospector {
 
         boolean hasDefaults();
 
-        /**
-         * @return
-         * 
-         * @throws UnsupportedOperationException
-         *             if called via {@link OperationHandle#bindable(int)}
-         */
-        Class<?> hookClass(); // Skal vel ogsaa tilfoejes til BF, BM osv
-
         boolean isLazy();
 
         boolean isNullable();
@@ -353,6 +346,8 @@ public abstract class BeanIntrospector {
     /**
      *
      */
+    // Hoved problemet er wrappers og denne gradvise peeling
+    // Hvordan det praecis skal foregaa er lidt ukendt
     public interface BindableVariable {
 
         AnnotationReader annotations();
@@ -424,7 +419,7 @@ public abstract class BeanIntrospector {
          * 
          * @see InvocationContextArgument
          */
-        default void bindToInvocationContextArgument(int argumentIndex, Class<? extends Context<?>> context) {
+        default void bindToInvocationContextArgument(Class<? extends Context<?>> context, int argumentIndex) {
             throw new UnsupportedOperationException();
         }
 
@@ -556,15 +551,10 @@ public abstract class BeanIntrospector {
         /** {@return an annotation reader for the field.} */
         AnnotationReader annotations();
 
+        // newBindableOperation?
         default BindableVariable bindable() {
             // get access is checked when we create the bindinable
             throw new UnsupportedOperationException();
-        }
-
-        default void failIf(boolean condition, String postFix) {
-            if (condition) {
-                throw new InvalidBeanDefinitionException("Field " + field() + ": " + postFix);
-            }
         }
 
         /**

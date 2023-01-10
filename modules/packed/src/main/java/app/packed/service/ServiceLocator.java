@@ -27,7 +27,7 @@ import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.bean.BeanHook.VariableTypeHook;
-import app.packed.bindings.Provider;
+import app.packed.binding.Provider;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.AbstractComposer.ComposerAssembly;

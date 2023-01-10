@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings;
+package app.packed.binding;
 
 /**
  * Thrown at runtime if a value cannot be provided for a binding.

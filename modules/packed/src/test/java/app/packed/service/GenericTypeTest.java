@@ -22,18 +22,15 @@ import static testutil.stubs.TypeStubs.LIST_STRING;
 import static testutil.stubs.TypeStubs.LIST_WILDCARD;
 import static testutil.util.TestMemberFinder.findField;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.service.GenericType.CanonicalizedTypeToken;
-import testutil.stubs.annotation.AnnotationInstances;
+import app.packed.service.GenericType.CanonicalizedGenericType;
 
 /** Tests {@link GenericType}. */
 public class GenericTypeTest {
@@ -112,12 +109,12 @@ public class GenericTypeTest {
 
         assertThat(integerNew).hasSameHashCodeAs(Integer.class);
         assertThat(integerNew).hasSameHashCodeAs(GenericType.of(Integer.class).hashCode());
-        assertThat(integerNew).hasSameHashCodeAs(new CanonicalizedTypeToken<>(Integer.class).hashCode());
+        assertThat(integerNew).hasSameHashCodeAs(new CanonicalizedGenericType<>(Integer.class).hashCode());
 
         assertThat(integerNew).isEqualTo(GenericType.of(Integer.class));
         assertThat(integerNew).isEqualTo(integerNew.canonicalize());
         assertThat(integerNew).isNotSameAs(integerNew.canonicalize());
-        assertThat(integerNew).isEqualTo(new CanonicalizedTypeToken<>(Integer.class));
+        assertThat(integerNew).isEqualTo(new CanonicalizedGenericType<>(Integer.class));
 
         assertThat(integerNew).isNotEqualTo(Integer.class);
         assertThat(integerNew).isNotEqualTo(GenericType.of(Long.class));
@@ -182,10 +179,10 @@ public class GenericTypeTest {
 
         assertThat(TL_INTEGER).hasSameHashCodeAs(Integer.class);
         assertThat(TL_INTEGER).hasSameHashCodeAs(GenericType.of(Integer.class).hashCode());
-        assertThat(TL_INTEGER).hasSameHashCodeAs(new CanonicalizedTypeToken<>(Integer.class).hashCode());
+        assertThat(TL_INTEGER).hasSameHashCodeAs(new CanonicalizedGenericType<>(Integer.class).hashCode());
 
         assertThat(TL_INTEGER).isEqualTo(GenericType.of(Integer.class));
-        assertThat(TL_INTEGER).isEqualTo(new CanonicalizedTypeToken<>(Integer.class));
+        assertThat(TL_INTEGER).isEqualTo(new CanonicalizedGenericType<>(Integer.class));
         assertThat(TL_INTEGER).isEqualTo(TL_INTEGER.canonicalize());
 
         assertThat(TL_INTEGER).isNotEqualTo(Integer.class);
@@ -207,10 +204,10 @@ public class GenericTypeTest {
 
         assertThat(integerNew).hasSameHashCodeAs(Integer[].class);
         assertThat(integerNew).hasSameHashCodeAs(GenericType.of(Integer[].class).hashCode());
-        assertThat(integerNew).hasSameHashCodeAs(new CanonicalizedTypeToken<>(Integer[].class).hashCode());
+        assertThat(integerNew).hasSameHashCodeAs(new CanonicalizedGenericType<>(Integer[].class).hashCode());
 
         assertThat(integerNew).isEqualTo(GenericType.of(Integer[].class));
-        assertThat(integerNew).isEqualTo(new CanonicalizedTypeToken<>(Integer[].class));
+        assertThat(integerNew).isEqualTo(new CanonicalizedGenericType<>(Integer[].class));
         assertThat(integerNew).isEqualTo(integerNew.canonicalize());
 
         assertThat(integerNew).isNotEqualTo(Integer[].class);
@@ -232,10 +229,10 @@ public class GenericTypeTest {
 
         assertThat(integerArrayArrayNew).hasSameHashCodeAs(Integer[][].class);
         assertThat(integerArrayArrayNew).hasSameHashCodeAs(GenericType.of(Integer[][].class).hashCode());
-        assertThat(integerArrayArrayNew).hasSameHashCodeAs(new CanonicalizedTypeToken<>(Integer[][].class).hashCode());
+        assertThat(integerArrayArrayNew).hasSameHashCodeAs(new CanonicalizedGenericType<>(Integer[][].class).hashCode());
 
         assertThat(integerArrayArrayNew).isEqualTo(GenericType.of(Integer[][].class));
-        assertThat(integerArrayArrayNew).isEqualTo(new CanonicalizedTypeToken<>(Integer[][].class));
+        assertThat(integerArrayArrayNew).isEqualTo(new CanonicalizedGenericType<>(Integer[][].class));
         assertThat(integerArrayArrayNew).isEqualTo(integerArrayArrayNew.canonicalize());
 
         assertThat(integerArrayArrayNew).isNotEqualTo(Integer[][].class);
@@ -256,9 +253,9 @@ public class GenericTypeTest {
         assertThat(listStringNew.type()).isEqualTo(LIST_STRING);
 
         assertThat(listStringNew).hasSameHashCodeAs(LIST_STRING);
-        assertThat(listStringNew).hasSameHashCodeAs(new CanonicalizedTypeToken<>(LIST_STRING).hashCode());
+        assertThat(listStringNew).hasSameHashCodeAs(new CanonicalizedGenericType<>(LIST_STRING).hashCode());
 
-        assertThat(listStringNew).isEqualTo(new CanonicalizedTypeToken<>(LIST_STRING));
+        assertThat(listStringNew).isEqualTo(new CanonicalizedGenericType<>(LIST_STRING));
         assertThat(listStringNew).isNotEqualTo(List.class);
         assertThat(listStringNew).isEqualTo(listStringNew.canonicalize());
 
@@ -276,9 +273,9 @@ public class GenericTypeTest {
         assertThat(TL_LIST_WILDCARD.type()).isEqualTo(LIST_WILDCARD);
 
         assertThat(TL_LIST_WILDCARD).hasSameHashCodeAs(LIST_WILDCARD);
-        assertThat(TL_LIST_WILDCARD).hasSameHashCodeAs(new CanonicalizedTypeToken<>(LIST_WILDCARD).hashCode());
+        assertThat(TL_LIST_WILDCARD).hasSameHashCodeAs(new CanonicalizedGenericType<>(LIST_WILDCARD).hashCode());
 
-        assertThat(TL_LIST_WILDCARD).isEqualTo(new CanonicalizedTypeToken<>(LIST_WILDCARD));
+        assertThat(TL_LIST_WILDCARD).isEqualTo(new CanonicalizedGenericType<>(LIST_WILDCARD));
         assertThat(TL_LIST_WILDCARD).isNotEqualTo(List.class);
         assertThat(TL_LIST_WILDCARD).isEqualTo(TL_LIST_WILDCARD.canonicalize());
 
@@ -304,9 +301,9 @@ public class GenericTypeTest {
         assertThat(listStringNew.type()).isEqualTo(fGenericType);
 
         assertThat(listStringNew).hasSameHashCodeAs(fGenericType);
-        assertThat(listStringNew).hasSameHashCodeAs(new CanonicalizedTypeToken<>(fGenericType).hashCode());
+        assertThat(listStringNew).hasSameHashCodeAs(new CanonicalizedGenericType<>(fGenericType).hashCode());
 
-        assertThat(listStringNew).isEqualTo(new CanonicalizedTypeToken<>(fGenericType));
+        assertThat(listStringNew).isEqualTo(new CanonicalizedGenericType<>(fGenericType));
         assertThat(listStringNew).isEqualTo(listStringNew.canonicalize());
         assertThat(listStringNew).isNotEqualTo(Map.class);
 
@@ -326,11 +323,11 @@ public class GenericTypeTest {
 
         assertThat(stringNew).hasSameHashCodeAs(String.class);
         assertThat(stringNew).hasSameHashCodeAs(GenericType.of(String.class).hashCode());
-        assertThat(stringNew).hasSameHashCodeAs(new CanonicalizedTypeToken<>(String.class).hashCode());
+        assertThat(stringNew).hasSameHashCodeAs(new CanonicalizedGenericType<>(String.class).hashCode());
 
         assertThat(stringNew).isEqualTo(stringNew.canonicalize());
         assertThat(stringNew).isEqualTo(GenericType.of(String.class));
-        assertThat(stringNew).isEqualTo(new CanonicalizedTypeToken<>(String.class));
+        assertThat(stringNew).isEqualTo(new CanonicalizedGenericType<>(String.class));
 
         assertThat(stringNew).isNotEqualTo(String.class);
 
@@ -370,7 +367,7 @@ public class GenericTypeTest {
             Map<T, ?> f;
         }
         Type fGenericType = findField(Tmpx.class, "f").getGenericType();
-        GenericType<?> typeVariable = new CanonicalizedTypeToken<>(fGenericType);
+        GenericType<?> typeVariable = new CanonicalizedGenericType<>(fGenericType);
 
         assertThat(typeVariable.wrap().type()).isEqualTo(fGenericType);
 
@@ -387,19 +384,19 @@ public class GenericTypeTest {
         assertThat(typeVariable.toStringSimple()).isEqualTo("Map<T, ?>");
     }
 
-    @Test
-    public <S> void toKeyAnnotation() {
-        npe(() -> Key.convertTypeLiteral(TL_INTEGER, null), "qualifier");
-
-        Annotation nonQualified = Arrays.stream(GenericTypeTest.class.getDeclaredMethods()).filter(m -> m.getName().equals("toKeyAnnotation")).findFirst().get()
-                .getAnnotations()[0];
-        assertThatThrownBy(() -> Key.convertTypeLiteral(TL_INTEGER, nonQualified)).isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("@org.junit.jupiter.api.Test is not a valid qualifier. The annotation must be annotated with @Qualifier");
-
-        Key<Integer> key = Key.convertTypeLiteral(TL_INTEGER, AnnotationInstances.NO_VALUE_QUALIFIER);
-        assertThat(key.typeToken()).isEqualTo(TL_INTEGER);
-        assertThat(key.qualifiers()).containsExactly(AnnotationInstances.NO_VALUE_QUALIFIER);
-    }
+//    @Test
+//    public <S> void toKeyAnnotation() {
+//        npe(() -> Key.convertTypeLiteral(TL_INTEGER, null), "qualifier");
+//
+//        Annotation nonQualified = Arrays.stream(GenericTypeTest.class.getDeclaredMethods()).filter(m -> m.getName().equals("toKeyAnnotation")).findFirst().get()
+//                .getAnnotations()[0];
+//        assertThatThrownBy(() -> Key.convertTypeLiteral(TL_INTEGER, nonQualified)).isExactlyInstanceOf(IllegalArgumentException.class)
+//                .hasMessage("@org.junit.jupiter.api.Test is not a valid qualifier. The annotation must be annotated with @Qualifier");
+//
+////        Key<Integer> key = Key.convertTypeLiteral(TL_INTEGER, AnnotationInstances.NO_VALUE_QUALIFIER);
+////        assertThat(key.typeToken()).isEqualTo(TL_INTEGER);
+////        assertThat(key.qualifiers()).containsExactly(AnnotationInstances.NO_VALUE_QUALIFIER);
+//    }
 
     @SuppressWarnings("rawtypes")
     @Test

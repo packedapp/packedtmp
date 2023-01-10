@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings.mirror;
+package app.packed.binding.mirror;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;

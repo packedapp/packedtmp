@@ -15,11 +15,13 @@
  */
 package app.packed.extension.bridge;
 
-import app.packed.context.Context;
+import app.packed.bean.BeanHook.AnnotatedVariableHook;
 import app.packed.extension.BaseExtension;
 
 /**
  *
  */
-// @ExtensionBridge qualifier istedet for context...
-public interface ContainerGuestContext extends Context<BaseExtension> {}
+@AnnotatedVariableHook(extension = BaseExtension.class)
+public @interface FromContainerGuest {}
+// Alternativt en Qualifier og saa local services...
+// Og evt ingen context...

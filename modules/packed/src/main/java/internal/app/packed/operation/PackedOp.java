@@ -23,7 +23,7 @@ import java.lang.invoke.MethodType;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import app.packed.bindings.Variable;
+import app.packed.binding.Variable;
 import app.packed.framework.Nullable;
 import app.packed.operation.CapturingOp;
 import app.packed.operation.Op;

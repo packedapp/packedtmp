@@ -15,6 +15,8 @@
  */
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.application.BuildException;
 import app.packed.bean.BeanHook;
 
@@ -46,3 +48,12 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
 //static Assembly wireWith(Assembly assembly, Wirelet... wirelets) {
 //    return assembly;
 //}
+
+abstract class ZalternativDesignAssembly<T extends Assembly> {
+
+    protected final T assembly;
+
+    ZalternativDesignAssembly(T assembly, Wirelet... wirelets) {
+        this.assembly = requireNonNull(assembly);
+    }
+}

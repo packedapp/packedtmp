@@ -17,9 +17,9 @@ package internal.app.packed.util.sandbox;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Type;
 
-import app.packed.bindings.Variable;
-import app.packed.service.GenericType;
+import app.packed.binding.Variable;
 
 /** Implementation of {@link Variable}. We basically wrap an annotation part and a type part. */
 public record PackedVariable(AnnotatedElement annotatedElement, VariableTypeWrapper typeWrapper) implements Variable {
@@ -31,7 +31,7 @@ public record PackedVariable(AnnotatedElement annotatedElement, VariableTypeWrap
     public String toString() {
 //        StringBuilder sb = new StringBuilder();
 
-        return typeWrapper.getType().getSimpleName();
+        return typeWrapper.rawType().getSimpleName();
     }
 
     public PackedVariable(VariableTypeWrapper typeWrapper) {
@@ -83,12 +83,12 @@ public record PackedVariable(AnnotatedElement annotatedElement, VariableTypeWrap
     /** {@inheritDoc} */
     @Override
     public Class<?> getRawType() {
-        return typeWrapper.getType();
+        return typeWrapper.rawType();
     }
 
     /** {@inheritDoc} */
     @Override
-    public GenericType<?> typeToken() {
-        return typeWrapper.typeToken();
+    public Type getType() {
+        return typeWrapper.type();
     }
 }

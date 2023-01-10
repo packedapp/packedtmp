@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings.mirror;
+package app.packed.binding.mirror;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.util.Optional;
 
-import app.packed.bindings.Variable;
+import app.packed.binding.Variable;
 import app.packed.container.Realm;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;

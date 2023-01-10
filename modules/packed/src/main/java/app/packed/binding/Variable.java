@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings;
+package app.packed.binding;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -24,7 +24,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
-import app.packed.service.GenericType;
 import internal.app.packed.util.sandbox.PackedVariable;
 import internal.app.packed.util.sandbox.VariableTypeWrapper;
 
@@ -56,8 +55,9 @@ import internal.app.packed.util.sandbox.VariableTypeWrapper;
 // extends AnnotatedType???? It is more or less AnnotatedType...
 // VariableType, VarType?
 // Maaske supportere vi capture... 
-// Man kan sige at Class<?> er jo egentlig ikke noget der genere vaesentligt
 public sealed interface Variable extends AnnotatedElement permits PackedVariable {
+
+    Type getType();
 
     /**
      * Returns the raw type (Class) of the variable.
@@ -71,33 +71,23 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
      */
     Class<?> getRawType();
 
-    default Type getGenericType() {
-        throw new UnsupportedOperationException();
-    }
-
-    GenericType<?> typeToken();
-
-    // ofClassType <--- will not retain annotations on the class
-
     static Variable of(Class<?> clazz) {
         return new PackedVariable(clazz);
     }
 
+    static Variable ofConstructor(Constructor<?> constructor) {
+        return new PackedVariable(constructor, new VariableTypeWrapper.OfConstructor(constructor));
+    }
+
     /**
-     * Returns a variable from the specified field.
-     * <p>
+     * Returns a variable representing the type of the specified field as well as any annotations present on the field.
      * 
      * @param field
      *            the field to return a variable from
-     * @return a variable representing the field
+     * @return the variable
      */
-    // convert or from
     static Variable ofField(Field field) {
         return new PackedVariable(field, new VariableTypeWrapper.OfField(field));
-    }
-
-    static Variable ofConstructor(Constructor<?> constructor) {
-        return new PackedVariable(constructor, new VariableTypeWrapper.OfConstructor(constructor));
     }
 
     /**
@@ -112,7 +102,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
     }
 
     /**
-     * Returns a variable from the specified parameter.
+     * Returns a variable representing the specified parameter.
      * 
      * @param parameter
      *            the parameter to return a variable from
@@ -123,6 +113,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
     }
 
     // Do we really want to support type variables??? I don't think so
+    // I think we want
     static Variable ofTypeVariable(TypeVariable<?> typeVariable) {
         return new PackedVariable(typeVariable, new VariableTypeWrapper.OfTypeVariable(typeVariable));
     }

@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
-import app.packed.bindings.Variable;
+import app.packed.binding.Variable;
 
 /**
  * An operation type represents the arguments and return variable for an operation.

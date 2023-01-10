@@ -31,15 +31,14 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.application.BuildException;
-import app.packed.bindings.Variable;
+import app.packed.binding.Variable;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationType;
 import app.packed.service.Key;
-import app.packed.service.GenericType;
 import internal.app.packed.errorhandling.ErrorMessageBuilder;
-import internal.app.packed.util.BasePackageAccess;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.QualifierUtil;
+import internal.app.packed.util.Types;
 import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
 /**
@@ -290,7 +289,7 @@ public final class InternalDependency {
             optionalType = Optionality.REQUIRED;
         }
         // TODO check that there are no qualifier annotations on the type.
-        return new InternalDependency(type, BasePackageAccess.base().toKeyNullableQualifier(type, qa), optionalType);
+        return new InternalDependency(type, Key.convertTypeNullableAnnotation(type, type, qa), optionalType);
     }
 
     public static <T> List<InternalDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
@@ -304,40 +303,31 @@ public final class InternalDependency {
     public static <T> InternalDependency fromVariable(Variable v) {
         requireNonNull(v, "variable is null");
 
-        GenericType<?> tl = v.typeToken();
+        Type t = v.getType();
 
         Annotation[] qualifiers = QualifierUtil.findQualifier(v.getAnnotations());
 
-        // Illegal
-        // Optional<Optional*>
         Optionality optionallaity = null;
         Class<?> rawType = v.getRawType();
 
-        // if (desc instanceof ParameterDescriptor) {
-        // ParameterDescriptor pd = (ParameterDescriptor) desc;
-        // if (pd.isVarArgs()) {
-        // throw new InvalidDeclarationException(ErrorMessageBuilder.of(desc).cannot("use varargs for injection for " +
-        // pd.getDeclaringExecutable()));
-        // }
-        // }
         if (rawType.isPrimitive()) {
-            tl = tl.wrap();
+            throw new UnsupportedOperationException();
         } else if (rawType == Optional.class) {
             optionallaity = Optionality.OPTIONAL;
-            Type cl = ((ParameterizedType) tl.type()).getActualTypeArguments()[0];
-            tl = BasePackageAccess.base().toTypeLiteral(cl);
-            if (ClassUtil.isOptionalType(tl.rawType())) {
+            Type cl = ((ParameterizedType) t).getActualTypeArguments()[0];
+            if (ClassUtil.isOptionalType(Types.findRawType(cl))) {
                 throw new BuildException(ErrorMessageBuilder.of(v).cannot("have multiple layers of optionals such as " + cl).toString());
             }
+            t = cl;
         } else if (rawType == OptionalLong.class) {
             optionallaity = Optionality.OPTIONAL_LONG;
-            tl = GenericType.of(Long.class);
+            t = Long.class;
         } else if (rawType == OptionalInt.class) {
             optionallaity = Optionality.OPTIONAL_INT;
-            tl = GenericType.of(Integer.class);
+            t = Integer.class;
         } else if (rawType == OptionalDouble.class) {
             optionallaity = Optionality.OPTIONAL_DOUBLE;
-            tl = GenericType.of(Double.class);
+            t = Double.class;
         }
 
         if (v.isAnnotationPresent(Nullable.class)) {
@@ -353,7 +343,7 @@ public final class InternalDependency {
             optionallaity = Optionality.REQUIRED;
         }
         // TL is free from Optional
-        Key<?> key = Key.convertTypeLiteralNullableAnnotation(v, tl, qualifiers);
+        Key<?> key = Key.convertTypeNullableAnnotation(v, t, qualifiers);
 
         return new InternalDependency(v.getRawType(), key, optionallaity);
     }

@@ -21,6 +21,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -30,10 +31,11 @@ import java.util.OptionalLong;
 import java.util.Set;
 
 import app.packed.framework.Nullable;
-import app.packed.service.GenericType.CanonicalizedTypeToken;
+import app.packed.service.GenericType.CanonicalizedGenericType;
 import internal.app.packed.util.AnnotationUtil;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.QualifierUtil;
+import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.TypeUtil;
 
 /**
@@ -80,7 +82,8 @@ public abstract class Key<T> {
         /** {@inheritDoc} */
         @Override
         protected Key<?> computeValue(Class<?> key) {
-            return Key.convertTypeLiteral(GenericType.of(key).wrap());
+            Class<?> cl = ClassUtil.wrap(key);
+            return Key.convertTypeNullableAnnotation(cl, cl, (Annotation[]) null);
         }
     };
 
@@ -91,7 +94,7 @@ public abstract class Key<T> {
     static final List<Class<?>> FORBIDDEN = List.of(Optional.class/* , ....., */);
 
     /** A cache of keys computed from type variables. */
-    private static final ClassValue<Key<?>> KEY_CACHE = new ClassValue<>() {
+    private static final ClassValue<Key<?>> CAPTURED_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -101,7 +104,11 @@ public abstract class Key<T> {
         }
     };
 
-    /** We eagerly compute the hash code, as we assume most keys are going to be used in some kind of hash table. */
+    /**
+     * We eagerly compute the hash code, as we assume most keys are going to be used in some kind of hash table. We cache
+     * the hash code of the type, as many Type implementations calculate it every time. See, for example,
+     * https://github.com/frohoff/jdk8u-jdk/blob/master/src/share/classes/sun/reflect/generics/reflectiveObjects/ParameterizedTypeImpl.java
+     */
     private final int hash;
 
     /** Qualifiers for this key. */
@@ -109,16 +116,18 @@ public abstract class Key<T> {
     // Object, null->no annotation, Annotation ->1, Annotation[] -> multiple annotations...
     private final Annotation[] qualifiers;
 
-    /** The (canonicalized) type literal for this key. */
-    private final CanonicalizedTypeToken<T> typeToken;
+    private final Class<?> rawType;
+
+    private final Type type;
 
     /** Constructs a new key. Derives the type from this class's type parameter. */
     @SuppressWarnings("unchecked")
     protected Key() {
-        Key<T> cached = (Key<T>) KEY_CACHE.get(getClass());
+        Key<T> cached = (Key<T>) CAPTURED_CACHE.get(getClass());
         this.qualifiers = cached.qualifiers;
-        this.typeToken = cached.typeToken;
         this.hash = cached.hash;
+        this.rawType = cached.rawType;
+        this.type = cached.type;
     }
 
     /**
@@ -129,13 +138,15 @@ public abstract class Key<T> {
      * @param qualifiers
      *            the (optional) qualifier
      */
-    private Key(CanonicalizedTypeToken<T> typeToken, Annotation[] qualifiers) {
-        this.typeToken = typeToken;
+    private Key(Type type, Annotation[] qualifiers) {
         this.qualifiers = qualifiers;
+        this.type = type;
+        this.rawType = TypeUtil.rawTypeOf(type);
+
         if (qualifiers == null) {
-            this.hash = typeToken.hashCode();
+            this.hash = type.hashCode();
         } else {
-            this.hash = typeToken.hashCode() ^ Arrays.hashCode(qualifiers);
+            this.hash = type.hashCode() ^ Arrays.hashCode(qualifiers);
         }
     }
 
@@ -149,13 +160,13 @@ public abstract class Key<T> {
         if (getClass() == CanonicalizedKey.class) {
             return this;
         }
-        return new CanonicalizedKey<>(typeToken, qualifiers);
+        return new CanonicalizedKey<>(type, qualifiers);
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean equals(@Nullable Object obj) {
-        return obj instanceof Key<?> key && Arrays.equals(qualifiers, key.qualifiers) && typeToken.equals(key.typeToken);
+        return obj instanceof Key<?> key && Arrays.equals(qualifiers, key.qualifiers) && type.equals(key.type);
     }
 
     /**
@@ -167,7 +178,7 @@ public abstract class Key<T> {
      * @return true if a class key, otherwise false
      */
     public final boolean equalsTo(Class<?> c) {
-        return qualifiers == null && typeToken.type() == c;
+        return qualifiers == null && type == c;
     }
 
     /** {@inheritDoc} */
@@ -238,17 +249,21 @@ public abstract class Key<T> {
 
     /** {@return the raw type of the key} */
     public final Class<?> rawType() {
-        return typeToken.rawType();
+        return rawType;
     }
 
+    public final Type type() {
+        return type;
+    }
+    
     /** {@inheritDoc} */
     @Override
     public final String toString() {
         if (qualifiers == null) {
-            return typeToken.toString();
+            return StringFormatter.format(type);
         }
         // TODO fix formatting
-        return format(qualifiers[0]) + " " + typeToken.toString();
+        return format(qualifiers[0]) + " " + StringFormatter.format(type);
     }
 
     /**
@@ -259,15 +274,16 @@ public abstract class Key<T> {
      */
     public final String toStringSimple() {
         if (qualifiers == null) {
-            return typeToken.toStringSimple();
+            return StringFormatter.formatSimple(type);
         }
         // TODO fix
-        return formatSimple(qualifiers[0]) + " " + typeToken.toStringSimple();
+        return formatSimple(qualifiers[0]) + " " + StringFormatter.formatSimple(type);
     }
 
     /** {@return the generic type of this key.} */
-    public final GenericType<T> typeToken() {
-        return typeToken;
+    @SuppressWarnings("unchecked")
+    final GenericType<T> typeToken() {
+        return (GenericType<T>) GenericType.ofType(type);
     }
 
     /**
@@ -289,7 +305,7 @@ public abstract class Key<T> {
         requireNonNull(qualifier, "qualifier is null");
         QualifierUtil.checkQualifierAnnotationPresent(qualifier);
         if (qualifiers == null) {
-            return new CanonicalizedKey<>(typeToken, qualifier);
+            return new CanonicalizedKey<>(type, qualifier);
         }
         for (int i = 0; i < qualifiers.length; i++) {
             if (qualifiers[i].annotationType() == qualifier.annotationType()) {
@@ -298,13 +314,13 @@ public abstract class Key<T> {
                 } else {
                     Annotation[] an = Arrays.copyOf(qualifiers, qualifiers.length);
                     an[i] = qualifier;
-                    return new CanonicalizedKey<>(typeToken, an);
+                    return new CanonicalizedKey<>(type, an);
                 }
             }
         }
         Annotation[] an = Arrays.copyOf(qualifiers, qualifiers.length + 1);
         an[an.length - 1] = qualifier;
-        return new CanonicalizedKey<>(typeToken, an);
+        return new CanonicalizedKey<>(type, an);
     }
 
     public final Key<T> without(Class<? extends Annotation> qualifierType) {
@@ -322,7 +338,7 @@ public abstract class Key<T> {
      * @return this key with no qualifier
      */
     public final Key<T> withoutQualifiers() {
-        return qualifiers == null ? this : new CanonicalizedKey<>(typeToken, (Annotation[]) null);
+        return qualifiers == null ? this : new CanonicalizedKey<>(type, (Annotation[]) null);
     }
 
     /**
@@ -346,12 +362,6 @@ public abstract class Key<T> {
         // Problemet er hvordan vi instantiere den...
         // Hvis Packed nu ikke kan laese annoteringen...
         //
-        throw new UnsupportedOperationException();
-    }
-
-    // Takes any qualifier annotation on the typeLiteral
-    // withQualifier(new TypeLiteral<@Named("dddd") Void>() {});
-    final Key<T> withQualifier(GenericType<Void> typeLiteral) {
         throw new UnsupportedOperationException();
     }
 
@@ -382,13 +392,32 @@ public abstract class Key<T> {
         return with(new TaggedAnno());
     }
 
-//    public final <S> Key<S> withType(Class<S> type) {
-//        return of(type).withQualifier(qualifier);
-//    }
-//
-//    public final <S> Key<S> withType(TypeLiteral<S> typeLiteral) {
-//        return fromTypeLiteral(typeLiteral, qualifier);
-//    }
+    public static <T> Key<T> convertTypeNullableAnnotation(Object source, Type type, Annotation... qualifier) {
+        requireNonNull(type, "typeLiteral is null");
+        // From field, fromTypeLiteral, from Variable, from class, arghhh....
+
+        @SuppressWarnings("unchecked")
+        GenericType<T> typeLiteral = (GenericType<T>) GenericType.ofType(type);
+
+        typeLiteral = typeLiteral.wrap();
+        if (ClassUtil.isOptionalType(typeLiteral.rawType())) {
+            throw new RuntimeException("Cannot convert an optional type (" + typeLiteral.toStringSimple() + ") to a Key, as keys cannot be optional");
+        } else if (!TypeUtil.isFreeFromTypeVariables(typeLiteral.type())) {
+            throw new RuntimeException("Can only convert type literals that are free from type variables to a Key, however TypeVariable<"
+                    + typeLiteral.toStringSimple() + "> defined: " + TypeUtil.typeVariableNamesOf(typeLiteral.type()));
+        }
+        return new CanonicalizedKey<T>(typeLiteral.canonicalize().type(), qualifier);
+    }
+
+    static <T> Key<?> convertTypeVariable(Class<? extends T> subClass, Class<T> superClass, int parameterIndex) {
+        GenericType<?> t = GenericType.fromTypeVariable(subClass, superClass, parameterIndex);
+
+        // Find any qualifier annotation that might be present
+        AnnotatedParameterizedType pta = (AnnotatedParameterizedType) subClass.getAnnotatedSuperclass();
+        Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[parameterIndex].getAnnotations();
+        Annotation[] qa = QualifierUtil.findQualifier(annotations);
+        return Key.convertTypeVariable0(superClass, t, qa);
+    }
 
     /**
      * Returns a key with no qualifier and the same type as this instance.
@@ -402,32 +431,7 @@ public abstract class Key<T> {
      *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}. Or if the
      *             specified type literal it not free from type parameters
      */
-    public static <T> Key<T> convertTypeLiteral(GenericType<T> typeLiteral) {
-        return convertTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, (Annotation[]) null);
-    }
-
-    /**
-     * Returns a key with the specified qualifier and the same type as this instance.
-     * 
-     * @param <T>
-     *            the type of key
-     * @param typeLiteral
-     *            the typeLiteral of the new
-     * @param qualifier
-     *            the qualifier of the new
-     * @return a key with the specified qualifier and the same type as this instance
-     * @throws RuntimeException
-     *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}.
-     * @throws IllegalArgumentException
-     *             if the qualifier type is not annotated with {@link Qualifier}.
-     */
-    public static <T> Key<T> convertTypeLiteral(GenericType<T> typeLiteral, Annotation qualifier) {
-        requireNonNull(qualifier, "qualifier is null");
-        QualifierUtil.checkQualifierAnnotationPresent(qualifier);
-        return convertTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, qualifier);
-    }
-
-    public static <T> Key<T> convertTypeLiteralNullableAnnotation(Object source, GenericType<T> typeLiteral, Annotation... qualifier) {
+    private static <T> Key<T> convertTypeVariable0(Object source, GenericType<T> typeLiteral, Annotation... qualifier) {
         requireNonNull(typeLiteral, "typeLiteral is null");
         // From field, fromTypeLiteral, from Variable, from class, arghhh....
 
@@ -438,26 +442,7 @@ public abstract class Key<T> {
             throw new RuntimeException("Can only convert type literals that are free from type variables to a Key, however TypeVariable<"
                     + typeLiteral.toStringSimple() + "> defined: " + TypeUtil.typeVariableNamesOf(typeLiteral.type()));
         }
-        return new CanonicalizedKey<T>(typeLiteral.canonicalize(), qualifier);
-    }
-
-    public static <T> Key<?> convertTypeVariable(Class<? extends T> subClass, Class<T> superClass, int parameterIndex) {
-        GenericType<?> t = GenericType.fromTypeVariable(subClass, superClass, parameterIndex);
-
-        // Find any qualifier annotation that might be present
-        AnnotatedParameterizedType pta = (AnnotatedParameterizedType) subClass.getAnnotatedSuperclass();
-        Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[parameterIndex].getAnnotations();
-        Annotation[] qa = QualifierUtil.findQualifier(annotations);
-        return Key.convertTypeLiteralNullableAnnotation(superClass, t, qa);
-    }
-
-    public static Key<?>[] ofAll(Class<?>... keys) {
-        requireNonNull(keys, "keys is null");
-        Key<?>[] result = new Key<?>[keys.length];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = of(keys[i]);
-        }
-        return result;
+        return new CanonicalizedKey<T>(typeLiteral.canonicalize().type(), qualifier);
     }
 
     /**
@@ -478,7 +463,16 @@ public abstract class Key<T> {
         return (Key<T>) CLASS_TO_KEY_CACHE.get(key);
     }
 
-    /** See {@link CanonicalizedTypeToken}. */
+    public static Key<?>[] ofAll(Class<?>... keys) {
+        requireNonNull(keys, "keys is null");
+        Key<?>[] result = new Key<?>[keys.length];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = of(keys[i]);
+        }
+        return result;
+    }
+
+    /** See {@link CanonicalizedGenericType}. */
     private static final class CanonicalizedKey<T> extends Key<T> {
 
         /**
@@ -489,8 +483,8 @@ public abstract class Key<T> {
          * @param qualifiers
          *            a nullable qualifier annotation
          */
-        private CanonicalizedKey(CanonicalizedTypeToken<T> typeLiteral, Annotation... qualifiers) {
-            super(typeLiteral, qualifiers);
+        private CanonicalizedKey(Type type, Annotation... qualifiers) {
+            super(type, qualifiers);
         }
     }
 }

@@ -17,7 +17,7 @@ package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.bindings.Variable;
+import app.packed.binding.Variable;
 import app.packed.extension.BaseExtension;
 import internal.app.packed.bean.BeanHookModel.AnnotatedParameterType;
 import internal.app.packed.bean.BeanHookModel.ParameterType;
@@ -85,7 +85,7 @@ final class BindingResolver {
                 Contributor ei = introspector.computeContributor(hook.extensionType(), false);
 
                 IntrospectedBeanVariable h = new IntrospectedBeanVariable(introspector, os, index, ei.extension(), var);
-                ei.introspector().hookOnAnnotatedVariable(a1Type, h);
+                ei.introspector().hookOnAnnotatedVariable(a1, h);
                 return true;
             }
         }

@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -30,11 +31,12 @@ import app.packed.operation.Op0;
 import app.packed.operation.Op1;
 import app.packed.operation.Op2;
 import app.packed.operation.OperationType;
-import app.packed.service.GenericType;
 import internal.app.packed.operation.TerminalOp.FunctionInvocationOp;
 import internal.app.packed.operation.binding.InternalDependency;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
+import internal.app.packed.util.Types;
+import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
 /**
  *
@@ -42,12 +44,11 @@ import internal.app.packed.util.MethodHandleUtil;
 class TerminalOpCaptureHelper {
 
     /** A cache of extracted type variables from subclasses of this class. */
-    static final ClassValue<GenericType<?>> CACHE = new ClassValue<>() {
+    static final ClassValue<Type> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        protected GenericType<?> computeValue(Class<?> type) {
-            return GenericType.fromTypeVariable((Class) type, CapturingOp.class, 0);
+        protected Type computeValue(Class<?> type) {
+            return TypeVariableExtractor.of(CapturingOp.class, 0).extract(type);
         }
     };
 
@@ -84,7 +85,6 @@ class TerminalOpCaptureHelper {
         }
     };
 
-
     static void checkReturnValue(Class<?> expectedType, Object value, Object supplierOrFunction) {
         if (!expectedType.isInstance(value)) {
             String type = Supplier.class.isAssignableFrom(supplierOrFunction.getClass()) ? "supplier" : "function";
@@ -107,14 +107,14 @@ class TerminalOpCaptureHelper {
      * @param function
      *            the function instance
      */
-    @SuppressWarnings("unchecked")
     public static <R> PackedOp<R> create(Class<?> clazz, Object function) {
         requireNonNull(function, "function is null"); // should have already been checked by subclasses
-        GenericType<R> typeLiteral = (GenericType<R>) TerminalOpCaptureHelper.CACHE.get(clazz);
+        Type typeLiteral = TerminalOpCaptureHelper.CACHE.get(clazz);
         // analyze();
 
         final MethodHandle methodHandle;
-        Class<?> rawType = typeLiteral.rawType();
+        // @SuppressWarnings("null")
+        Class<?> rawType = Types.findRawType(typeLiteral);
 
         if (Op0.class.isAssignableFrom(clazz)) {
             MethodHandle mh = CREATE0.bindTo(function).bindTo(rawType); // (Supplier, Class)Object -> ()Object
@@ -135,9 +135,9 @@ class TerminalOpCaptureHelper {
             methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType, parem1, parem2)); // (Object, Object)Object -> (T, U)R
         }
         OperationType type = OperationType.ofMethodType(methodHandle.type()); // TODO fix
-        
+
         SamType st = SamType.of(function.getClass());
-        
+
         return new FunctionInvocationOp<>(type, methodHandle, st, function.getClass().getMethods()[0]);
 
     }
@@ -214,18 +214,16 @@ class TerminalOpCaptureHelper {
         return value;
     }
 
+//    /** A cache of extracted type variables from subclasses of this class. */
+//    static final ClassValue<GenericType<?>> FUNCTION_CACHE = new ClassValue<>() {
+//
+//        /** {@inheritDoc} */
+//        @SuppressWarnings({ "unchecked", "rawtypes" })
+//        protected GenericType<?> computeValue(Class<?> type) {
+//            return GenericType.fromTypeVariable((Class) type, CapturingOp.class, 0);
+//        }
+//    };
 
-    /** A cache of extracted type variables from subclasses of this class. */
-    static final ClassValue<GenericType<?>> FUNCTION_CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        protected GenericType<?> computeValue(Class<?> type) {
-            return GenericType.fromTypeVariable((Class) type, CapturingOp.class, 0);
-        }
-    };
-
-    
 //    // Vi har 2 af dem, ind omkring Factory0 og en for ExtendsFactory0
 //    // Den for Factory0 skal have MethodHandlen... og noget omkring antallet af dependencies
 //

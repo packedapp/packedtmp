@@ -92,8 +92,8 @@ public class TestNew extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void hookOnAnnotatedVariable(Class<? extends Annotation> hook, BindableVariable h) {
-                    if (hook == XX.class) {
+                public void hookOnAnnotatedVariable(Annotation hook, BindableVariable h) {
+                    if (hook.annotationType() == XX.class) {
                         String str = h.annotations().readRequired(XX.class).value();
                         h.bindConstant(str.toUpperCase());
                     } else {

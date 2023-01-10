@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
-import app.packed.bindings.mirror.BindingMirror;
+import app.packed.binding.mirror.BindingMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.sandbox.LifetimeOperationMirror;
 

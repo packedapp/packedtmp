@@ -15,7 +15,7 @@
  */
 package internal.app.packed.operation.binding;
 
-import app.packed.bindings.mirror.BindingMirror;
+import app.packed.binding.mirror.BindingMirror;
 import app.packed.container.Realm;
 import app.packed.extension.BaseExtension;
 import internal.app.packed.application.PackedBridge;

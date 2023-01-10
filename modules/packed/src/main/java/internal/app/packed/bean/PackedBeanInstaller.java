@@ -28,7 +28,7 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bindings.Provider;
+import app.packed.binding.Provider;
 import app.packed.container.AbstractComposer.ComposerAssembly;
 import app.packed.extension.BaseExtensionPoint;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;

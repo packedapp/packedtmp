@@ -25,19 +25,19 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Optional;
 
-import app.packed.bindings.Variable;
-import app.packed.service.GenericType;
-import internal.app.packed.util.ReflectionUtil;
+import app.packed.binding.Variable;
 
 /**
  * A wrapper for the type part of a {@link Variable}.
  */
 public interface VariableTypeWrapper {
 
-    Class<?> getType();
+    Optional<String> name();
+    
+    Class<?> rawType();
 
-    GenericType<?> typeToken();
-
+    Type type();
+    
     record OfClass(Class<?> clazz) implements VariableTypeWrapper {
         public OfClass {
             requireNonNull(clazz, "clazz is null");
@@ -45,7 +45,7 @@ public interface VariableTypeWrapper {
 
         /** {@inheritDoc} */
         @Override
-        public Class<?> getType() {
+        public Class<?> rawType() {
             return clazz;
         }
 
@@ -59,8 +59,8 @@ public interface VariableTypeWrapper {
 
         /** {@inheritDoc} */
         @Override
-        public GenericType<?> typeToken() {
-            return GenericType.of(clazz);
+        public Type type() {
+            return rawType();
         }
     }
 
@@ -72,7 +72,7 @@ public interface VariableTypeWrapper {
 
         /** {@inheritDoc} */
         @Override
-        public Class<?> getType() {
+        public Class<?> rawType() {
             return typeVariable.getGenericDeclaration().getClass();
         }
 
@@ -86,8 +86,8 @@ public interface VariableTypeWrapper {
 
         /** {@inheritDoc} */
         @Override
-        public GenericType<?> typeToken() {
-            throw new UnsupportedOperationException();
+        public Type type() {
+            return typeVariable;
         }
     }
 
@@ -104,7 +104,7 @@ public interface VariableTypeWrapper {
 
         /** {@inheritDoc} */
         @Override
-        public Class<?> getType() {
+        public Class<?> rawType() {
             return parameter.getType();
         }
 
@@ -113,9 +113,9 @@ public interface VariableTypeWrapper {
         }
 
         /** {@inheritDoc} */
-        public GenericType<?> typeToken() {
-            Type t = ReflectionUtil.getParameterizedType(parameter, ReflectionUtil.getIndex(parameter));
-            return GenericType.fromType(t);
+        @Override
+        public Type type() {
+            return parameter.getParameterizedType();
         }
     }
 
@@ -127,19 +127,19 @@ public interface VariableTypeWrapper {
 
         /** {@inheritDoc} */
         public Optional<String> name() {
-            return Optional.of(constructor.getName()); // ??? or returnVar? IDK
+            return Optional.of(constructor.getName());
         }
 
         /** {@inheritDoc} */
         @Override
-        public Class<?> getType() {
+        public Class<?> rawType() {
             return constructor.getDeclaringClass();
         }
 
         /** {@inheritDoc} */
         @Override
-        public GenericType<?> typeToken() {
-            throw new UnsupportedOperationException();
+        public Type type() {
+            return rawType();
         }
     }
 
@@ -156,14 +156,14 @@ public interface VariableTypeWrapper {
 
         /** {@inheritDoc} */
         @Override
-        public Class<?> getType() {
+        public Class<?> rawType() {
             return method.getReturnType();
         }
 
         /** {@inheritDoc} */
         @Override
-        public GenericType<?> typeToken() {
-            return GenericType.fromMethodReturnType(method);
+        public Type type() {
+            return method.getGenericReturnType();
         }
     }
 
@@ -180,7 +180,7 @@ public interface VariableTypeWrapper {
 
         /** {@inheritDoc} */
         @Override
-        public Class<?> getType() {
+        public Class<?> rawType() {
             return field.getType();
         }
 
@@ -190,8 +190,8 @@ public interface VariableTypeWrapper {
 
         /** {@inheritDoc} */
         @Override
-        public GenericType<?> typeToken() {
-            return GenericType.fromField(field);
+        public Type type() {
+            return field.getGenericType();
         }
     }
 }

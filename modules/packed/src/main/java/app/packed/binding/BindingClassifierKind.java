@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings.mirror;
+package app.packed.binding;
 
+import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.bean.BeanHook.VariableTypeHook;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 
@@ -26,7 +28,7 @@ public enum BindingClassifierKind {
     /**
      * The binding has been created manually.
      * 
-     * @see OperationHandle#bindManually(int)
+     * @see OperationHandle#bindable(int)
      * @see Op#bind(Object)
      * @see Op#bind(int, Object, Object...)
      */
@@ -38,11 +40,19 @@ public enum BindingClassifierKind {
      * 
      * 
      * 
-     * @see BindingHook
+     * @see AnnotatedVariableHook
      **/
-    BINDING_ANNOTATION, // There is a class...
+    BINDING_ANNOTATION,
 
-    BINDING_CLASS, // or BindingType
+    /**
+     * The binding has been created because of a Hook. Either the variable is annotated with a binding hook. Or the variable
+     * class is annotated with BindingHook
+     * 
+     * 
+     * 
+     * @see VariableTypeHook
+     **/
+    BINDING_TYPE, // or BINDING_TYPE
     
     KEY, // There is a key
 }

@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
-import app.packed.bindings.mirror.BindingMirror;
+import app.packed.binding.mirror.BindingMirror;
 import internal.app.packed.service.ServiceBindingSetup;
 
 /**

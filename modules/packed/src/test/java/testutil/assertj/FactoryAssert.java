@@ -19,7 +19,6 @@ import org.assertj.core.api.AbstractAssert;
 
 import app.packed.operation.Op;
 import app.packed.service.Key;
-import app.packed.service.GenericType;
 
 /**
  *
@@ -41,10 +40,6 @@ public class FactoryAssert<T> extends AbstractAssert<FactoryAssert<T>, Op<T>> {
 
     public FactoryAssert<T> is(Class<?> type) {
         return is(Key.of(type));
-    }
-
-    public FactoryAssert<T> is(GenericType<?> type) {
-        return is(Key.convertTypeLiteral(type));
     }
 
     public FactoryAssert<T> is(Key<?> type) {
