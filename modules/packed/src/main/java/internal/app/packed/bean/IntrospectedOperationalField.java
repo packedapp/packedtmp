@@ -30,9 +30,9 @@ import app.packed.bean.BeanHook.AnnotatedVariableHook;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OperationalField;
-import app.packed.binding.Variable;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bean.InvalidBeanDefinitionException;
+import app.packed.binding.Variable;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
@@ -136,9 +136,10 @@ public final class IntrospectedOperationalField implements OperationalField {
     }
 
     private OperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
-        OperationSetup operation = new FieldOperationSetup(contributer.extension(), iBean.bean, OperationType.ofFieldAccess(field, accessMode), mh, field,
+        OperationSetup operation = new FieldOperationSetup(contributer.extension(), iBean.bean, OperationType.ofFieldAccess(field, accessMode), template, mh, field,
                 accessMode);
-        operation.invocationType = (PackedOperationTemplate) operation.invocationType.withReturnType(field.getType());
+        operation.template = (PackedOperationTemplate) OperationTemplate.defaults().withReturnType(field.getType());
+
         iBean.unBoundOperations.add(operation);
         iBean.bean.operations.add(operation);
         return operation.toHandle();

@@ -24,6 +24,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,6 +46,7 @@ import app.packed.framework.Framework;
 import app.packed.framework.Nullable;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
+import internal.app.packed.util.types.TypeVariableExtractor;
 
 /**
  * A model of an {@link Extension}. Exposed to end-users as {@link ExtensionDescriptor}.
@@ -54,6 +56,8 @@ import internal.app.packed.util.types.ClassUtil;
  */
 // Kan kalde dem Info klasser istedet for, hvis vi vil brug model externt i APIen
 public final class ExtensionModel implements ExtensionDescriptor {
+
+    static final ThreadLocal<Wrapper> CONSTRUCT = new ThreadLocal<>();
 
     /** A cache of all encountered extension models. */
     private static final ClassValue<ExtensionModel> MODELS = new ClassValue<>() {
@@ -78,9 +82,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** The direct dependencies of the extension. */
     private final Set<Class<? extends Extension<?>>> dependencies;
 
-    /** The {@link ExtensionDescriptor#orderingDepth() depth} of this extension. */
-    private final int ordringDepth;
-
     /** The extension we model. */
     private final Class<? extends Extension<?>> extensionClass;
 
@@ -92,6 +93,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /** The (canonical) full name of the extension. Used to deterministically sort extensions. */
     private final String nameFull;
+
+    /** The {@link ExtensionDescriptor#orderingDepth() depth} of this extension. */
+    private final int ordringDepth;
 
     private final Realm realm;
 
@@ -183,17 +187,24 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return name;
     }
 
-    static class Wrapper {
+    public static Class<? extends Extension<?>> extractE(TypeVariableExtractor tve, Class<?> type) {
+        // Extract the type of extension from ExtensionMirror<E>
+        Type t = tve.extractType(type, InternalExtensionException::new);
 
-        @Nullable
-        ExtensionSetup setup;
+        @SuppressWarnings("unchecked")
+        Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) t; //
 
-        private Wrapper(ExtensionSetup setup) {
-            this.setup = setup;
+        // Check that we are a proper subclass of
+        ClassUtil.checkProperSubclass(Extension.class, extensionClass, InternalExtensionException::new);
+
+        // Check that the mirror is in the same module as the extension itself
+        if (extensionClass.getModule() != type.getModule()) {
+            throw new InternalExtensionException("The extension support class " + type + " must in the same module (" + extensionClass.getModule() + ") as "
+                    + extensionClass + ", but was in '" + type.getModule() + "'");
         }
-    }
 
-    static final ThreadLocal<Wrapper> CONSTRUCT = new ThreadLocal<>();
+        return ExtensionDescriptor.of(extensionClass).type(); // Check that the extension is valid
+    }
 
     /**
      * Creates a new instance of the extension.
@@ -509,6 +520,16 @@ public final class ExtensionModel implements ExtensionDescriptor {
             } finally {
                 GLOBAL_LOCK.unlock();
             }
+        }
+    }
+
+    static class Wrapper {
+
+        @Nullable
+        ExtensionSetup setup;
+
+        private Wrapper(ExtensionSetup setup) {
+            this.setup = setup;
         }
     }
 }

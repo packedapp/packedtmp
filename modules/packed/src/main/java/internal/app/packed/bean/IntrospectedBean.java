@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
@@ -38,6 +39,7 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
+import app.packed.operation.OperationTemplate;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
@@ -61,7 +63,7 @@ public final class IntrospectedBean {
 
     /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
     private static final MethodHandle MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(),
-            BeanIntrospector.class, "initialize", void.class, ExtensionSetup.class, BeanSetup.class);
+            BeanIntrospector.class, "initialize", void.class, ExtensionSetup.class, IntrospectedBean.class);
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
@@ -69,6 +71,9 @@ public final class IntrospectedBean {
 
     /** An internal lookup object. */
     private static final MethodHandles.Lookup PACKED = MethodHandles.lookup();
+
+    @Nullable
+    public Map<Class<?>, Object> attachments;
 
     /** The bean that is being introspected. */
     public final BeanSetup bean;
@@ -91,11 +96,13 @@ public final class IntrospectedBean {
 
     final ArrayDeque<OperationSetup> unBoundOperations = new ArrayDeque<>();
 
-    IntrospectedBean(BeanSetup bean, @Nullable BeanIntrospector beanIntrospector) {
+    IntrospectedBean(BeanSetup bean, @Nullable BeanIntrospector beanIntrospector, @Nullable Map<Class<?>, Object> attachments) {
         this.bean = bean;
         this.hookModel = bean.container.assembly.assemblyModel.hookModel;
         this.beanIntrospector = beanIntrospector;
         this.oc = new OpenClass(PACKED, bean.beanClass);
+        // We need to make a copy of attachments, as the the map may be updated in the BeanInstaller
+        this.attachments = attachments == null ? null : new HashMap<>(attachments);
     }
 
     /**
@@ -124,7 +131,7 @@ public final class IntrospectedBean {
 
             // Call BeanIntrospector#initialize
             try {
-                MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, extension, bean);
+                MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, extension, this);
             } catch (Throwable t) {
                 throw ThrowableUtil.orUndeclared(t);
             }
@@ -141,8 +148,15 @@ public final class IntrospectedBean {
 
         MethodHandle mh = oc.unreflectConstructor(constructor.constructor());
 
-        OperationSetup os = new ConstructorOperationSetup(bean.installedBy, bean, constructor.constructor(), mh);
-        os.invocationType = (PackedOperationTemplate) os.invocationType.withReturnType(constructor.constructor().getDeclaringClass());
+        OperationTemplate ot;
+        if (bean.lifetime.lifetimes.isEmpty()) {
+            ot = OperationTemplate.defaults();
+        } else {
+            ot = bean.lifetime.lifetimes.get(0);
+        }
+        OperationSetup os = new ConstructorOperationSetup(bean.installedBy, bean, ot, constructor.constructor(), mh);
+        os.template = os.template = (PackedOperationTemplate) OperationTemplate.defaults().withReturnType(constructor.constructor().getDeclaringClass());
+
         bean.operations.add(os);
         unBoundOperations.add(os);
         resolveOperations();
@@ -153,6 +167,10 @@ public final class IntrospectedBean {
         bean.introspecting = this;
         // First, we process all annotations on the class
         introspectClass();
+
+        if (bean.sourceKind == BeanSourceKind.OP) {
+            resolveOperation(bean.operations.get(0));
+        }
 
         // If a we have a (instantiating) class source, we need to find a constructor we can use
         if (bean.sourceKind == BeanSourceKind.CLASS && bean.beanKind.hasInstances()) {
@@ -267,7 +285,7 @@ public final class IntrospectedBean {
         resolveOperations();
 
         bean.introspecting = null; // move up down?
-        
+
         // Call into every BeanIntrospector and tell them it is all over
         for (Contributor e : extensions.values()) {
             e.introspector.afterHooks();
@@ -275,15 +293,6 @@ public final class IntrospectedBean {
     }
 
     private void introspectClass() {}
-
-    /**
-     * 
-     */
-    void resolveOperations() {
-        for (OperationSetup operation = unBoundOperations.pollFirst(); operation != null; operation = unBoundOperations.pollFirst()) {
-            resolveOperation(operation);
-        }
-    }
 
     void resolveOperation(OperationSetup operation) {
         // System.out.println(operation.target + " " + operation.bindings.length);
@@ -293,6 +302,15 @@ public final class IntrospectedBean {
             if (binding == null) {
                 BindingResolver.resolveBinding(this, operation, i);
             }
+        }
+    }
+
+    /**
+     * 
+     */
+    void resolveOperations() {
+        for (OperationSetup operation = unBoundOperations.pollFirst(); operation != null; operation = unBoundOperations.pollFirst()) {
+            resolveOperation(operation);
         }
     }
 

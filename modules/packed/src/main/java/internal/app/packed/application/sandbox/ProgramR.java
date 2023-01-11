@@ -13,23 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.bridge;
+package internal.app.packed.application.sandbox;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
-import app.packed.extension.BaseExtension;
+import app.packed.container.BaseAssembly;
+import app.packed.entrypoint.Main;
 
 /**
  *
  */
-@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
-@Retention(RetentionPolicy.RUNTIME)
-@AnnotatedVariableHook(extension = BaseExtension.class)
-public @interface FromContainerGuest {}
+public class ProgramR extends BaseAssembly {
 
-// Alternativt en Qualifier og saa local services...
-// Og evt ingen context...
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {
+        provide(Foo.class).export();
+    }
+
+    public static void main(String[] args) {
+        Program.start(new ProgramR());
+    }
+    
+    public static class Foo {
+        
+        @Main
+        public void main() {
+            System.out.println("Dav");
+        }
+    }
+}

@@ -3,6 +3,7 @@ module app.packed {
     
     exports app.packed.application;
     exports app.packed.bean;
+    exports app.packed.binding;
     exports app.packed.context;
     exports app.packed.container;
     exports app.packed.extension;
@@ -16,13 +17,10 @@ module app.packed {
     exports app.packed.service;
 
     // temporary sandbox thingies
-    exports app.packed.extension.bridge;
-    exports app.packed.binding;
     exports app.packed.binding.mirror;
+    exports app.packed.extension.bridge;
 
     /* Special support for packed-devtoolks */
     uses internal.app.packed.framework.devtools.PackedDevToolsIntegration;
     exports internal.app.packed.framework.devtools to app.packed.devtools;
 }
-
-// requires static org.graalvm.sdk;

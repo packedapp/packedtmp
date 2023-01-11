@@ -24,7 +24,7 @@ import java.lang.reflect.Type;
  */
 // Field, Method, TypeVariable
 // new Type
-public abstract class TypeAnnotationConverter<T> extends TypeConverter<T> {
+public abstract class TypeAnnotationConverter<T> extends OldTypeConverter<T> {
 
     /** {@inheritDoc} */
     @Override

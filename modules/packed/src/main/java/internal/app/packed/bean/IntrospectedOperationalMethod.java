@@ -15,6 +15,8 @@
  */
 package internal.app.packed.bean;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -23,8 +25,8 @@ import java.util.Set;
 
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OperationalMethod;
-import app.packed.binding.Key;
 import app.packed.bean.InaccessibleBeanMemberException;
+import app.packed.binding.Key;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
@@ -33,7 +35,6 @@ import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
-import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.service.KeyHelper;
 
 /** Internal implementation of BeanMethod. Discard after use. */
@@ -95,6 +96,7 @@ public final class IntrospectedOperationalMethod implements OperationalMethod {
     /** {@inheritDoc} */
     @Override
     public OperationHandle newOperation(OperationTemplate template) {
+        requireNonNull(template);
         // TODO check that we are still introspecting? Or maybe on bean.addOperation
 
         // We should be able to create this lazily
@@ -107,9 +109,9 @@ public final class IntrospectedOperationalMethod implements OperationalMethod {
             throw new InaccessibleBeanMemberException("stuff", e);
         }
 
-        OperationSetup operation = new MethodOperationSetup(contributor.extension(), introspectedBean.bean, operationType(), method, methodHandle);
-        operation.invocationType = (PackedOperationTemplate) template;
+        OperationSetup operation = new MethodOperationSetup(contributor.extension(), introspectedBean.bean, operationType(), template, method, methodHandle);
 
+        
         introspectedBean.bean.operations.add(operation);
         introspectedBean.unBoundOperations.add(operation);
         return operation.toHandle();

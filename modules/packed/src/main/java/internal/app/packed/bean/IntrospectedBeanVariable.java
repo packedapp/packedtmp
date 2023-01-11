@@ -17,6 +17,7 @@ package internal.app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanIntrospector;
@@ -28,9 +29,9 @@ import app.packed.container.Realm;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import app.packed.operation.Op;
-import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.BindingProvider.FromConstant;
 import internal.app.packed.binding.BindingProvider.FromOperation;
+import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.BindingSetup.HookBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
@@ -56,8 +57,7 @@ public class IntrospectedBeanVariable implements BindableVariable {
 
     final IntrospectedBean iBean;
 
-    public IntrospectedBeanVariable(IntrospectedBean iBean, OperationSetup operation, int index, ExtensionSetup bindingExtension,
-            Variable var) {
+    public IntrospectedBeanVariable(IntrospectedBean iBean, OperationSetup operation, int index, ExtensionSetup bindingExtension, Variable var) {
         this.operation = requireNonNull(operation);
         this.iBean = iBean;
         this.index = index;
@@ -120,13 +120,14 @@ public class IntrospectedBeanVariable implements BindableVariable {
         checkIsBindable();
         PackedOp<?> pop = PackedOp.crack(op);
 
-        OperationSetup os = pop.newOperationSetup(operation.bean, bindingExtension);
-        
+        OperationSetup os = pop.newOperationSetup(operation.bean, bindingExtension, operation.template);
+
+        os.parent = operation;
+
         BindingSetup bs = new HookBindingSetup(os, index, Realm.application());
         bs.provider = new FromOperation(os);
 
-        
-        //OperationBindingSetup obs = new OperationBindingSetup(os, index, User.application(), os);
+        // OperationBindingSetup obs = new OperationBindingSetup(os, index, User.application(), os);
 
         if (variable.getRawType() != os.methodHandle.type().returnType()) {
 //            System.out.println("FixIt");
@@ -152,5 +153,11 @@ public class IntrospectedBeanVariable implements BindableVariable {
     @Override
     public Variable variable() {
         return variable;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<Class<?>> availableInvocationArguments() {
+        return operation.template.invocationType().parameterList();
     }
 }

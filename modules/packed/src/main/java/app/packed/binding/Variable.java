@@ -69,7 +69,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
     Class<?> getRawType();
 
     static Variable of(Class<?> clazz) {
-        return new PackedVariable(clazz);
+        return new PackedVariable(Variable.class, new PackedVariableType.OfClass(clazz));
     }
 
     static Variable ofConstructor(Constructor<?> constructor) {
@@ -113,5 +113,9 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
     // I think we want
     static Variable ofTypeVariable(TypeVariable<?> typeVariable) {
         return new PackedVariable(typeVariable, new PackedVariableType.OfTypeVariable(typeVariable));
+    }
+    
+    static Variable ofTypeAndAnnotations(Type type, AnnotatedElement element) {
+        return new PackedVariable(element, new PackedVariableType.OfType(type));
     }
 }

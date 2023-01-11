@@ -19,19 +19,24 @@ import static internal.app.packed.util.StringFormatter.format;
 import static internal.app.packed.util.StringFormatter.formatSimple;
 import static java.util.Objects.requireNonNull;
 
+import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.StringJoiner;
-import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import app.packed.binding.Key;
+import app.packed.binding.Variable;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionPoint;
+import app.packed.framework.Nullable;
 import app.packed.operation.Op;
+import app.packed.operation.Op1;
+import internal.app.packed.errorhandling.ErrorProcessor;
 import internal.app.packed.util.StringFormatter;
 
 /**
@@ -43,17 +48,12 @@ import internal.app.packed.util.StringFormatter;
  * @see GenericType
  * @see Op
  */
-//// Naeh hov.. det er bare ting der ogsaa skal bruge type converters...
-// Field
-// Method Return type + Method Annotations
-// Parameter
-// Constructor
 
-// Vi har kun 2 metoder...
-// Fordi vi ogsaa gerne vil have dem paa FieldDescriptor og friends..
-// Proever vi at begraense os
+// Tror vi skal smide en exception
 
-// extractAndConvert
+// Tror ikke vi skal tillade at returne TypeVariable
+// Kan ikke se det er brugbart
+
 public final class TypeVariableExtractor {
 
     /** The base type where the type variables are located. */
@@ -75,66 +75,78 @@ public final class TypeVariableExtractor {
         this.isInterface = Modifier.isInterface(baseType.getModifiers());
     }
 
-    public <T extends Throwable> Class<?> extractProperSubClassOf(Class<?> from, Class<?> expectedType, Function<String, T> f) throws T {
-        // "The type variable <E> on " + type + "<E> must be a proper subclass of Extension.class")
-        Class<?> c = (Class<?>) extract(from);
-        return c;
-    }
+    public <T extends Throwable> Variable[] extractAllVariables(Class<?> from, ErrorProcessor<T> ep) throws T {
+        Type[] types = extractAllTypes(from, ep);
+        Variable[] variables = new Variable[types.length];
 
-    public Type extract(Class<?> from) {
-        if (indexes.length != 1) {
-            throw new UnsupportedOperationException("This method can only be used when the extractor was created with a single index, baseType = "
-                    + StringFormatter.format(baseType) + ", indexes = " + Arrays.toString(indexes));
+        for (int i = 0; i < variables.length; i++) {
+            Type t = types[i];
+            AnnotatedParameterizedType pta = (AnnotatedParameterizedType) from.getAnnotatedSuperclass();
+
+            AnnotatedType aa = pta.getAnnotatedActualTypeArguments()[i];
+
+            variables[i] = Variable.ofTypeAndAnnotations(t, aa);
         }
-        return extractAll(from)[0];
+
+        return variables;
     }
 
-    public <T> T extract(Class<?> from, TypeConverter<T> converter) {
-        requireNonNull(from, "from is null");
-        if (indexes.length != 1) {
-            throw new UnsupportedOperationException(
-                    "This method can only be used when the extractor was created with a single index, indexes = " + Arrays.toString(indexes));
-        }
-        throw new UnsupportedOperationException();
+    public static void main(String[] args) {
+        Op1<@Nullable String, Long> o = new Op1<@Nullable String, Long>(s -> 12L) {};
+        
+        TypeVariableExtractor tve = TypeVariableExtractor.of(Op1.class);
+        
+        System.out.println(tve.extractAllVariables(o.getClass(), Error::new)[0]);
+        System.out.println(tve.extractAllVariables(o.getClass(), Error::new)[1]);
+        
     }
 
-    public Type[] extractAll(Class<?> from) {
+    public <T extends Throwable> Type[] extractAllTypes(Class<?> from, ErrorProcessor<T> ep) throws T {
         if (!baseType.isAssignableFrom(from)) {
             String op = Modifier.isInterface(from.getModifiers()) == isInterface ? "extend" : "implement";
             throw new IllegalArgumentException(StringFormatter.format(from) + " does not " + op + " " + StringFormatter.format(baseType));
         }
         Type[] result = new Type[indexes.length];
         if (isInterface) {
-            fromInterface0(from, result);
+            fromInterface0(from, result, ep);
         } else {
             for (int i = 0; i < result.length; i++) {
-                result[i] = findTypeParameterFromSuperClass(from, indexes[i]);
+                result[i] = findTypeParameterFromSuperClass(from, indexes[i], ep);
             }
         }
         return result;
     }
 
-    // number of converters must match number of indexes...
-    public Object[] extractAll(Class<?> from, TypeConverter<?>... converters) {
-        requireNonNull(from, "from is null");
-        // Type[] result = new Type[indexes.length];
-        throw new UnsupportedOperationException();
+
+    public <T extends Throwable> Variable extractVariable(Class<?> from, ErrorProcessor<T> ep) throws T {
+        if (indexes.length != 1) {
+            throw new UnsupportedOperationException("This method can only be used when the extractor was extracts a single index, baseType = "
+                    + StringFormatter.format(baseType) + ", indexes = " + Arrays.toString(indexes));
+        }
+        return extractAllVariables(from, ep)[0];
+    }
+    
+    public <T extends Throwable> Type extractType(Class<?> from, ErrorProcessor<T> ep) throws T {
+        if (indexes.length != 1) {
+            throw new UnsupportedOperationException("This method can only be used when the extractor was extracts a single index, baseType = "
+                    + StringFormatter.format(baseType) + ", indexes = " + Arrays.toString(indexes));
+        }
+        return extractAllTypes(from, ep)[0];
     }
 
-    public <T> Type findTypeParameterFromSuperClass(Class<? extends T> childClass, int typeVariableIndexOnBaseClass) {
+    private <T extends Throwable> Type findTypeParameterFromSuperClass(Class<?> childClass, int typeVariableIndexOnBaseClass, ErrorProcessor<T> ep) throws T {
         // This method works by first recursively calling all the way down to the first class that extends baseClass.
         // And then we keep going finding out which of the actual type parameters matches the super classes type parameters
 
         if (baseType == childClass.getSuperclass()) {
-            return findTypeParameterFromSuperClass0(childClass, typeVariableIndexOnBaseClass);
+            return findTypeParameterFromSuperClass0(childClass, typeVariableIndexOnBaseClass, ep);
         }
-        @SuppressWarnings("unchecked")
-        Type pp = findTypeParameterFromSuperClass((Class<? extends T>) childClass.getSuperclass(), typeVariableIndexOnBaseClass);
+        Type pp = findTypeParameterFromSuperClass((Class<?>) childClass.getSuperclass(), typeVariableIndexOnBaseClass, ep);
         if (pp instanceof TypeVariable) {
             TypeVariable<?>[] tvs = childClass.getSuperclass().getTypeParameters();
             for (int i = 0; i < tvs.length; i++) {
                 if (tvs[i].equals(pp)) {
-                    return findTypeParameterFromSuperClass0(childClass, i);
+                    return findTypeParameterFromSuperClass0(childClass, i, ep);
                 }
             }
         }
@@ -148,8 +160,9 @@ public final class TypeVariableExtractor {
      * @param index
      *            the index of type parameter in superClass
      * @return the resolved type parameter
+     * @throws T
      */
-    private Type findTypeParameterFromSuperClass0(Class<?> superClass, int index) {
+    private <T extends Throwable> Type findTypeParameterFromSuperClass0(Class<?> superClass, int index, ErrorProcessor<T> ep) throws T {
         Type t = superClass.getGenericSuperclass();
         if (!(t instanceof ParameterizedType)) {
             String name = superClass.getSuperclass().getTypeParameters()[index].getName();
@@ -157,14 +170,14 @@ public final class TypeVariableExtractor {
             for (Type ty : baseType.getTypeParameters()) {
                 sj.add(formatSimple(ty));
             }
-            // TODO this is not for Factory0
-            throw new IllegalArgumentException("Cannot determine type variable <" + name + "> for " + sj.toString() + " on class " + format(superClass));
+            // TODO I think we have a special extension for this
+            throw ep.onError("Cannot determine type variable <" + name + "> for " + sj.toString() + " on class " + format(superClass));
         }
         ParameterizedType pt = (ParameterizedType) t;
         return pt.getActualTypeArguments()[index];
     }
 
-    boolean fromInterface0(Class<?> cc, Type[] result) {
+    <T extends Throwable> boolean fromInterface0(Class<?> cc, Type[] result, ErrorProcessor<T> ep) {
         for (Type t : cc.getGenericInterfaces()) {
             if (t instanceof ParameterizedType pt) {
                 if (pt.getRawType() == baseType) {
@@ -180,7 +193,7 @@ public final class TypeVariableExtractor {
                     // Ahh fuck skal lave noget ledt her ogsaa....
                 }
             } else if (t instanceof Class<?> cl) {
-                if (fromInterface0(cl, result)) {
+                if (fromInterface0(cl, result, ep)) {
                     return true;
                 }
             }
@@ -188,22 +201,7 @@ public final class TypeVariableExtractor {
         return false;
     }
 
-    /**
-     * Returns the number of type variables this extractor extracts.
-     * 
-     * @return the number of type variables this extractor extracts
-     */
-    public int size() {
-        return indexes.length;
-    }
-
     // If no indexes specified, choose all..
-    // Maaske returnere TypeVE<? extends Type>
-    // TypeVE<Class<? extends Doo>> = of(Class<?> baseType, Class<Doo>, int index)
-    // TypeVE<Class<?>[]> = of(Class<?> baseType, int... indexes)
-
-    // Det er jo faktisk en Variable vi extracter fra...
-
     public static <T> TypeVariableExtractor of(Class<?> baseType, int... indexes) {
         requireNonNull(baseType, "baseType is null");
         requireNonNull(indexes, "indexes is null");
@@ -223,21 +221,3 @@ public final class TypeVariableExtractor {
         }
     }
 }
-
-// public static <T> TypeVariableExtractor<T> of(Class<?> baseClass, TypeConverter<T> converter) {
-// return of(baseClass, converter, 0);
-// }
-//
-// public static <T> TypeVariableExtractor<T> of(Class<?> baseClass, TypeConverter<T> converter, int index) {
-// throw new UnsupportedOperationException();
-// }
-//
-// public static <T> TypeVariableExtractor<List<Object>> ofMany(Class<?> baseClass, TypeConverter<?>... converters) {
-// requireNonNull(converters, "converters is null");
-// return ofMany(baseClass, converters, IntStream.range(0, converters.length).toArray());
-// }
-//
-// public static <T> TypeVariableExtractor<List<Object>> ofMany(Class<?> baseClass, TypeConverter<?>[] converters,
-// int... indexes) {
-// throw new UnsupportedOperationException();
-// }

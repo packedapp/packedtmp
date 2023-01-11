@@ -23,6 +23,7 @@ import static testutil.util.TestMemberFinder.findField;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,8 +40,8 @@ import testutil.stubs.annotation.IntQualifier;
 /** Tests {@link Key}. */
 public class KeyTest {
 
-    static final GenericType<Integer> TL_INTEGER = new GenericType<Integer>() {};
-    static final GenericType<List<?>> TL_LIST_WILDCARD = new GenericType<List<?>>() {};
+    static final Type TL_INTEGER = new GenericType<Integer>() {}.type();
+    static final Type TL_LIST_WILDCARD = new GenericType<List<?>>() {}.type();
 
     static final Key<Integer> KEY_INT_OF = Key.of(int.class);
     static final Key<Integer> KEY_INTEGER = new Key<Integer>() {};
@@ -117,22 +118,22 @@ public class KeyTest {
         npe(() -> KeyHelper.convertField((Field) null), "field");
 
         Field f = findField(Tmpx.class, "ok");
-        assertThat(KeyHelper.convertField(f).typeToken()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(KeyHelper.convertField(f).type()).isEqualTo(TL_LIST_WILDCARD);
         assertThat(KeyHelper.convertField(f).hasQualifiers()).isFalse();
         assertThat(KeyHelper.convertField(f).qualifiers()).isEmpty();
 
         f = findField(Tmpx.class, "okQualified");
-        assertThat(KeyHelper.convertField(f).typeToken()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(KeyHelper.convertField(f).type()).isEqualTo(TL_LIST_WILDCARD);
         assertThat(KeyHelper.convertField(f).hasQualifiers()).isTrue();
         assertThat(KeyHelper.convertField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         f = findField(Tmpx.class, "primitive");
-        assertThat(KeyHelper.convertField(f).typeToken()).isEqualTo(TL_INTEGER);
+        assertThat(KeyHelper.convertField(f).type()).isEqualTo(TL_INTEGER);
         assertThat(KeyHelper.convertField(f).hasQualifiers()).isFalse();
         assertThat(KeyHelper.convertField(f).qualifiers()).isEmpty();
 
         f = findField(Tmpx.class, "primitiveQualified");
-        assertThat(KeyHelper.convertField(f).typeToken()).isEqualTo(TL_INTEGER);
+        assertThat(KeyHelper.convertField(f).type()).isEqualTo(TL_INTEGER);
         assertThat(KeyHelper.convertField(f).hasQualifiers()).isTrue();
         assertThat(KeyHelper.convertField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
@@ -197,22 +198,22 @@ public class KeyTest {
         npe(() -> KeyHelper.convertMethodReturnType((Method) null), "method");
 
         Method m = Tmpx.class.getDeclaredMethod("ok");
-        assertThat(KeyHelper.convertMethodReturnType(m).typeToken()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(KeyHelper.convertMethodReturnType(m).type()).isEqualTo(TL_LIST_WILDCARD);
         assertThat(KeyHelper.convertMethodReturnType(m).hasQualifiers()).isFalse();
         assertThat(KeyHelper.convertMethodReturnType(m).qualifiers()).isEmpty();
 
         m = Tmpx.class.getDeclaredMethod("okQualified");
-        assertThat(KeyHelper.convertMethodReturnType(m).typeToken()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(KeyHelper.convertMethodReturnType(m).type()).isEqualTo(TL_LIST_WILDCARD);
         assertThat(KeyHelper.convertMethodReturnType(m).hasQualifiers()).isTrue();
         assertThat(KeyHelper.convertMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         m = Tmpx.class.getDeclaredMethod("primitive");
-        assertThat(KeyHelper.convertMethodReturnType(m).typeToken()).isEqualTo(TL_INTEGER);
+        assertThat(KeyHelper.convertMethodReturnType(m).type()).isEqualTo(TL_INTEGER);
         assertThat(KeyHelper.convertMethodReturnType(m).hasQualifiers()).isFalse();
         assertThat(KeyHelper.convertMethodReturnType(m).qualifiers()).isEmpty();
 
         m = Tmpx.class.getDeclaredMethod("primitiveQualified");
-        assertThat(KeyHelper.convertMethodReturnType(m).typeToken()).isEqualTo(TL_INTEGER);
+        assertThat(KeyHelper.convertMethodReturnType(m).type()).isEqualTo(TL_INTEGER);
         assertThat(KeyHelper.convertMethodReturnType(m).hasQualifiers()).isTrue();
         assertThat(KeyHelper.convertMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
@@ -242,17 +243,17 @@ public class KeyTest {
     /** Tests {@link Key#typeToken()}. */
     @Test
     public void getTypeLiteral() {
-        assertThat(KEY_INT_OF.typeToken()).isEqualTo(TL_INTEGER);
-        assertThat(KEY_INTEGER.typeToken()).isEqualTo(TL_INTEGER);
-        assertThat(KEY_INTEGER_X.typeToken()).isEqualTo(TL_INTEGER);
-        assertThat(KEY_LIST_WILDCARD.typeToken()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(KEY_LIST_WILDCARD_X.typeToken()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(KEY_INT_OF.type()).isEqualTo(TL_INTEGER);
+        assertThat(KEY_INTEGER.type()).isEqualTo(TL_INTEGER);
+        assertThat(KEY_INTEGER_X.type()).isEqualTo(TL_INTEGER);
+        assertThat(KEY_LIST_WILDCARD.type()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(KEY_LIST_WILDCARD_X.type()).isEqualTo(TL_LIST_WILDCARD);
 
-        assert KEY_INT_OF.typeToken().equals(TL_INTEGER);
-        assert KEY_INTEGER.typeToken().equals(TL_INTEGER);
-        assert KEY_INTEGER_X.typeToken().equals(TL_INTEGER);
-        assert KEY_LIST_WILDCARD.typeToken().equals(TL_LIST_WILDCARD);
-        assert KEY_LIST_WILDCARD_X.typeToken().equals(TL_LIST_WILDCARD);
+        assert KEY_INT_OF.type().equals(TL_INTEGER);
+        assert KEY_INTEGER.type().equals(TL_INTEGER);
+        assert KEY_INTEGER_X.type().equals(TL_INTEGER);
+        assert KEY_LIST_WILDCARD.type().equals(TL_LIST_WILDCARD);
+        assert KEY_LIST_WILDCARD_X.type().equals(TL_LIST_WILDCARD);
     }
 
     @Test
@@ -309,30 +310,15 @@ public class KeyTest {
 
     @Test
     public void toString$() {
-        assertThat(KEY_INT_OF.toString()).isEqualTo(TL_INTEGER.toString());
-        assertThat(KEY_INTEGER.toString()).isEqualTo(TL_INTEGER.toString());
+        assertThat(KEY_INT_OF.toString()).isEqualTo("java.lang.Integer");
+        assertThat(KEY_INTEGER.toString()).isEqualTo("java.lang.Integer");
 
-        if (Runtime.version().feature() <= 13) {
-            assertThat(KEY_INTEGER_X.toString()).isEqualTo("@" + CharQualifier.class.getName() + "(value='X') " + TL_INTEGER.toString());
-            assertThat(KEY_LIST_WILDCARD.toString()).isEqualTo(TL_LIST_WILDCARD.toString());
-            assertThat(KEY_LIST_WILDCARD_X.toString()).isEqualTo("@" + CharQualifier.class.getName() + "(value='X') " + TL_LIST_WILDCARD.toString());
-        }
     }
 
     @Test
     public void toStringSimple() {
-        assertThat(KEY_INT_OF.toStringSimple()).isEqualTo(TL_INTEGER.toStringSimple());
-        assertThat(KEY_INTEGER.toStringSimple()).isEqualTo(TL_INTEGER.toStringSimple());
-        // Does not work in Java 14-EA uncomment if they keep the new behaviour
-        // Java 13 -> @testutil.stubs.annotation.CharQualifier(value='X') java.lang.Integer
-        // Java 14 -> @testutil.stubs.annotation.CharQualifier('X') java.lang.Integer
-        // TODO fix when we settle on >11
-        if (Runtime.version().feature() <= 13) {
-            assertThat(KEY_INTEGER_X.toStringSimple()).isEqualTo("@" + CharQualifier.class.getSimpleName() + "(value='X') " + TL_INTEGER.toStringSimple());
-            assertThat(KEY_LIST_WILDCARD.toStringSimple()).isEqualTo(TL_LIST_WILDCARD.toStringSimple());
-            assertThat(KEY_LIST_WILDCARD_X.toStringSimple())
-                    .isEqualTo("@" + CharQualifier.class.getSimpleName() + "(value='X') " + TL_LIST_WILDCARD.toStringSimple());
-        }
+        assertThat(KEY_INT_OF.toStringSimple()).isEqualTo("Integer");
+        assertThat(KEY_INTEGER.toStringSimple()).isEqualTo("Integer");
     }
 
     @Test
@@ -358,7 +344,7 @@ public class KeyTest {
 
     @Test
     public void typeParameters() {
-        assertThat(KEY_LIST_WILDCARD.typeToken()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(KEY_LIST_WILDCARD_X.typeToken()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(KEY_LIST_WILDCARD.type()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(KEY_LIST_WILDCARD_X.type()).isEqualTo(TL_LIST_WILDCARD);
     }
 }

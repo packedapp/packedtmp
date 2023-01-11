@@ -22,6 +22,7 @@ import app.packed.application.BootstrapApp;
 import app.packed.binding.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.extension.bridge.FromContainerGuest;
 import app.packed.lifetime.RunState;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
@@ -149,7 +150,12 @@ public interface Program extends AutoCloseable {
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementation(String name, ServiceLocator services, ManagedLifetimeController runtime) implements Program {
+record ProgramImplementation(@FromContainerGuest String name, @FromContainerGuest ServiceLocator services,
+        @FromContainerGuest ManagedLifetimeController runtime) implements Program {
+
+    ProgramImplementation {
+        //System.out.println(services.keys());
+    }
 
     /** An driver for creating App instances. */
     static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ProgramImplementation.class, c -> c.managedLifetime());

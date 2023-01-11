@@ -13,23 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.bridge;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
-import app.packed.extension.BaseExtension;
+package internal.app.packed.errorhandling;
 
 /**
  *
  */
-@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
-@Retention(RetentionPolicy.RUNTIME)
-@AnnotatedVariableHook(extension = BaseExtension.class)
-public @interface FromContainerGuest {}
-
-// Alternativt en Qualifier og saa local services...
-// Og evt ingen context...
+@FunctionalInterface
+public interface ErrorProcessor<T extends Throwable> {
+    T onError(String message);
+}

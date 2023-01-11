@@ -20,10 +20,12 @@ import static internal.app.packed.util.StringFormatter.formatSimple;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -35,13 +37,16 @@ import internal.app.packed.util.AnnotationUtil;
 import internal.app.packed.util.QualifierUtil;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
-import internal.app.packed.util.types.GenericType;
+import internal.app.packed.util.types.GenericType.CanonicalizedGenericType;
 import internal.app.packed.util.types.TypeUtil;
+import internal.app.packed.util.types.TypeVariableExtractor;
 
 /**
- * A key defines a unique identifier with two parts: a mandatory type literal and an optional annotation called a
- * qualifier. It does so by requiring users to create a subclass of this class which enables retrieval of the type
- * information even at runtime. Some examples of non-qualified keys are:
+ * A key defines a unique identifier with two parts: a {@link Type type} part and an optional set of special annotations
+ * called {@link Qualifier qualifiers}.
+ * <p>
+ * It does so by requiring users to create a subclass of this class which enables retrieval of the type information even
+ * at runtime. Some examples of non-qualified keys are:
  *
  * <pre> {@code
  * Key<List<String>> list = new Key<List<String>>() {};
@@ -60,19 +65,50 @@ import internal.app.packed.util.types.TypeUtil;
  * 
  * In order for a key to be valid, it must:
  * <ul>
- * <li><b>Not be an optional type.</b> The key cannot be of type {@link Optional}, {@link OptionalInt},
- * {@link OptionalLong} or {@link OptionalDouble} as they are a reserved type.</li>
- * <li><b>Have none or a single qualifier.</b> A valid key cannot have more than 1 annotations whose type is annotated
- * with {@link Qualifier}</li>
+ * <li>Not be one of the following types: {@link Provider}, {@link Void}, {@link Key}, {@link Optional},
+ * {@link OptionalInt}, {@link OptionalLong} or {@link OptionalDouble} as they are reserved types.</li>
+ * <li>Have free type thingies</li>
  * </ul>
  * <p>
- * Keys do <b>not</b> differentiate between primitive types (long, double, etc.) and their corresponding wrapper types
- * (Long, Double, etc.). Primitive types will be replaced with their wrapper types when keys are created. This means
- * that, for example, {@code Key.of(int.class) is equivalent to Key.of(Integer.class)}.
+ * Keys do not differentiate between primitive types (long, double, etc.) and their corresponding wrapper types (Long,
+ * Double, etc.). When construction a key, primitive types will automatically be replaced with their wrapper types. This
+ * means, for example, that calling {@code Key.of(int.class)} will return the equivalent of
+ * {@code Key.of(Integer.class)}.
+ * <p>
+ * When creating a key, any usage of {@link WildcardType wildcard types} will automatically be replaced by its
+ * respective {@link WildcardType#getUpperBounds() upper} or {@link WildcardType#getLowerBounds() lower} bound. This
+ * means, for example, that {@code new Key<Map<? extends String, ? super Long>>} is equivalent to
+ * {@code Key<Map<String, Long>>}. This is done in order to avoid various
+ * <a href= "https://github.com/google/guice/issues/1282">issues</a> in relation to other JVM languages.
+ * <p>
+ * This class is heavily inspired by a similar named class in the
+ * <a href="https://google.github.io/guice/api-docs/latest/javadoc/com/google/inject/Key.html">Guice</a> project.
  */
+
+//Fail on
+////TypeVariables
+////Provider, Lazy, Optional, ..., keys
+////Void.class
+////Non-qualifting annotation
+
+//Changes
+////Reduce wildcards
+////wrap primitives
+
 public abstract class Key<T> {
 
-    // TODO I think want something similar to PackedOp. A small wrapper
+    /** A cache of keys created by {@link #Key()}. */
+    private static final ClassValue<Key<?>> CAPTURED_KEY_CACHE = new ClassValue<>() {
+
+        private static final TypeVariableExtractor TVE = TypeVariableExtractor.of(Key.class);
+
+        /** {@inheritDoc} */
+        @Override
+        protected Key<?> computeValue(Class<?> implementation) {
+            Variable v = TVE.extractVariable(implementation, IllegalArgumentException::new);
+            return convertCaptured(v);
+        }
+    };
 
     /** A cache of keys used by {@link #of(Class)}. */
     private static final ClassValue<Key<?>> CLASS_TO_KEY_CACHE = new ClassValue<>() {
@@ -85,47 +121,40 @@ public abstract class Key<T> {
         }
     };
 
-    // Fail on type variables.
-    // Strip wildcards
-    // fail on void, optional*, Provider
-    // I think we need to test this
-    static final List<Class<?>> FORBIDDEN = List.of(Optional.class/* , ....., */);
+    /** Various classes that are not allowed as the type part of a key. */
+    private static final Set<Class<?>> FORBIDDEN_TYPES = Set.of(Optional.class, OptionalDouble.class, OptionalInt.class, OptionalLong.class, Void.class,
+            Provider.class, Key.class);
 
-    /** A cache of keys computed from type variables. */
-    private static final ClassValue<Key<?>> CAPTURED_KEY_CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        protected Key<?> computeValue(Class<?> implementation) {
-            return convertTypeVariable((Class) implementation, Key.class, 0);
-        }
-    };
-
-    /**
-     * We eagerly compute the hash code, as we assume most keys are going to be used in some kind of hash table. We cache
-     * the hash code of the type, as many Type implementations calculate it every time. See, for example,
-     * https://github.com/frohoff/jdk8u-jdk/blob/master/src/share/classes/sun/reflect/generics/reflectiveObjects/ParameterizedTypeImpl.java
-     */
+    /** We eagerly compute the hash code, as we assume most keys are going to be used in some kind of hash table. */
     private final int hash;
 
-    /** Qualifiers for this key. */
+    /**
+     * Qualifiers for this key.
+     * 
+     * Object,
+     * 
+     * null = no annotation,
+     * 
+     * Annotation = 1,
+     * 
+     * Annotation[] -> multiple annotations...
+     */
     @Nullable
-    // Object, null->no annotation, Annotation ->1, Annotation[] -> multiple annotations...
     private final Annotation[] qualifiers;
 
+    /** The raw type of the key. */
     private final Class<?> rawType;
 
+    /** The type part of the key. */
     private final Type type;
 
-    /** Constructs a new key. Derives the type from this class's type parameter. */
-    @SuppressWarnings("unchecked")
+    /** Constructs a new key. Derives the type from the type parameter {@code <T>} of the extending class. */
     protected Key() {
-        Key<T> cached = (Key<T>) CAPTURED_KEY_CACHE.get(getClass());
+        Key<?> cached = CAPTURED_KEY_CACHE.get(getClass());
+        this.type = cached.type;
+        this.rawType = cached.rawType;
         this.qualifiers = cached.qualifiers;
         this.hash = cached.hash;
-        this.rawType = cached.rawType;
-        this.type = cached.type;
     }
 
     /**
@@ -140,15 +169,19 @@ public abstract class Key<T> {
         this.qualifiers = qualifiers;
         this.type = type;
         this.rawType = TypeUtil.rawTypeOf(type);
-
-        if (qualifiers == null) {
-            this.hash = type.hashCode();
-        } else {
-            this.hash = type.hashCode() ^ Arrays.hashCode(qualifiers);
+        int h = type.hashCode();
+        if (qualifiers != null) {
+            h ^= Arrays.hashCode(qualifiers);
         }
+        this.hash = h;
     }
 
     /**
+     * When constructing a key using type capture
+     * <p>
+     * As an end-user there is rarely any no reason to use this method. All extensions that takes keys must canonicalize
+     * them is storing them
+     * <p>
      * To avoid accidentally holding on to any instance that defines this key as an anonymous class. This method creates a
      * new key instance without any reference to the instance that defined the anonymous class.
      * 
@@ -164,20 +197,24 @@ public abstract class Key<T> {
     /** {@inheritDoc} */
     @Override
     public final boolean equals(@Nullable Object obj) {
-        return obj instanceof Key<?> key && Arrays.equals(qualifiers, key.qualifiers) && type.equals(key.type);
-    }
-
-    /**
-     * Returns whether or not this key is equivalent to a key with no qualifiers of the specified type. Is shorthand for
-     * {@code key.equals(Key.of(c))}.
-     * 
-     * @param c
-     *            the class
-     * @return true if a class key, otherwise false
-     */
-    // better name
-    public final boolean equalsTo(Class<?> c) {
-        return qualifiers == null && type == c;
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof Key<?> key && type.equals(key.type)) {
+            Annotation[] a = key.qualifiers;
+            if (qualifiers == null) {
+                return a == null;
+            }
+            // Virker ikke med arrays
+            if (a != null && qualifiers.length == a.length) {
+                if (qualifiers.length == 1) {
+                    return qualifiers[0].equals(a[0]);
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            }
+        }
+        return false;
     }
 
     /** {@inheritDoc} */
@@ -234,27 +271,32 @@ public abstract class Key<T> {
         return qualifiers != null;
     }
 
-    // Not sure we want to check this
-    // No, we def do not want to go there
-//    public boolean isAccessibleBy(Module module) {
-//        // All type List<Foo> Foo must also be accessible by the target
-//        throw new UnsupportedOperationException();
-//    }
+    /**
+     * Returns whether or not this key is equivalent to a key with no qualifiers of the specified type. Is shorthand for
+     * {@code key.equals(Key.of(c))}.
+     * 
+     * @param c
+     *            the class
+     * @return true if a class key, otherwise false
+     */
+    // better name
+    // A simple key is a key without any qualifiers
+    // A class key is a key where the type part is a Class
+    // a simple class key is a key of
+    final boolean isSimpleClassKey(Class<?> c) {
+        return qualifiers == null && type == c;
+    }
 
     /** {@return an immutable set of any qualifiers that are part of this key.} */
     public final Set<Annotation> qualifiers() {
         return qualifiers == null ? Set.of() : Set.of(qualifiers);
     }
 
-    /** {@return the raw type of the key} */
+    /** {@return the raw type of the type part of this key} */
     public final Class<?> rawType() {
         return rawType;
     }
 
-    public final Type type() {
-        return type;
-    }
-    
     /** {@inheritDoc} */
     @Override
     public final String toString() {
@@ -271,6 +313,8 @@ public abstract class Key<T> {
      * 
      * @return a simple string
      */
+    // Omvendt tror jeg vil have en lille key, men mulighed for at lave en lang
+    // toStringLong or toStringFull
     public final String toStringSimple() {
         if (qualifiers == null) {
             return StringFormatter.formatSimple(type);
@@ -279,10 +323,9 @@ public abstract class Key<T> {
         return formatSimple(qualifiers[0]) + " " + StringFormatter.formatSimple(type);
     }
 
-    /** {@return the generic type of this key.} */
-    @SuppressWarnings("unchecked")
-    final GenericType<T> typeToken() {
-        return (GenericType<T>) GenericType.ofType(type);
+    /** {@return the type part of this key} */
+    public final Type type() {
+        return type;
     }
 
     /**
@@ -391,57 +434,85 @@ public abstract class Key<T> {
         return with(new TaggedAnno());
     }
 
+    static <T> Key<?> convertCaptured(Variable v) {
+
+        Annotation[] qa = QualifierUtil.findQualifier(v.getAnnotations());
+        //// TODO check no non-qualifting annotation...
+        //// This is allowed elsewheres (ops, beans), just not when creating the Key directly.
+        //// Or via TypeCapture
+
+        Type t = convertType(v.getType());
+
+        return new CanonicalizedKey<T>(t, qa);
+    }
+
+    private static Type convertType(Type t) {
+        if (t instanceof Class<?> cl) {
+            if (cl.isPrimitive()) {
+                t = ClassUtil.wrap(cl);
+            }
+        }
+        Class<?> rawType = TypeUtil.rawTypeOf(t);
+
+        if (FORBIDDEN_TYPES.contains(rawType)) {
+            if (ClassUtil.isOptionalType(rawType)) {
+                throw new RuntimeException("Cannot convert an optional type (" + t.toString() + ") to a Key, as keys cannot be optional");
+            }
+        }
+
+        if (!TypeUtil.isFreeFromTypeVariables(t)) {
+            throw new RuntimeException("Can only convert type literals that are free from type variables to a Key, however TypeVariable<" + t.toString()
+                    + "> defined: " + TypeUtil.typeVariableNamesOf(t));
+        }
+
+        // TODO reduce wildcards
+
+        return t;
+    }
+
     public static <T> Key<T> convertTypeNullableAnnotation(Object source, Type type, Annotation... qualifier) {
         requireNonNull(type, "typeLiteral is null");
         // From field, fromTypeLiteral, from Variable, from class, arghhh....
 
-        @SuppressWarnings("unchecked")
-        GenericType<T> typeLiteral = (GenericType<T>) GenericType.ofType(type);
+        Type t = convertType(type);
 
-        typeLiteral = typeLiteral.wrap();
-        if (ClassUtil.isOptionalType(typeLiteral.rawType())) {
-            throw new RuntimeException("Cannot convert an optional type (" + typeLiteral.toStringSimple() + ") to a Key, as keys cannot be optional");
-        } else if (!TypeUtil.isFreeFromTypeVariables(typeLiteral.type())) {
-            throw new RuntimeException("Can only convert type literals that are free from type variables to a Key, however TypeVariable<"
-                    + typeLiteral.toStringSimple() + "> defined: " + TypeUtil.typeVariableNamesOf(typeLiteral.type()));
-        }
-        return new CanonicalizedKey<T>(typeLiteral.canonicalize().type(), qualifier);
+        return new CanonicalizedKey<T>(t, qualifier);
     }
 
-    static <T> Key<?> convertTypeVariable(Class<? extends T> subClass, Class<T> superClass, int parameterIndex) {
-        GenericType<?> t = GenericType.fromTypeVariable(subClass, superClass, parameterIndex);
-
-        // Find any qualifier annotation that might be present
-        AnnotatedParameterizedType pta = (AnnotatedParameterizedType) subClass.getAnnotatedSuperclass();
-        Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[parameterIndex].getAnnotations();
-        Annotation[] qa = QualifierUtil.findQualifier(annotations);
-        return Key.convertTypeVariable0(superClass, t, qa);
-    }
-
-    /**
-     * Returns a key with no qualifier and the same type as this instance.
-     * 
-     * @param <T>
-     *            the type of key
-     * @param typeLiteral
-     *            the type literal
-     * @return a key with no qualifier and the same type as this instance
-     * @throws RuntimeException
-     *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}. Or if the
-     *             specified type literal it not free from type parameters
-     */
-    private static <T> Key<T> convertTypeVariable0(Object source, GenericType<T> typeLiteral, Annotation... qualifier) {
-        requireNonNull(typeLiteral, "typeLiteral is null");
-        // From field, fromTypeLiteral, from Variable, from class, arghhh....
-
-        typeLiteral = typeLiteral.wrap();
-        if (ClassUtil.isOptionalType(typeLiteral.rawType())) {
-            throw new RuntimeException("Cannot convert an optional type (" + typeLiteral.toStringSimple() + ") to a Key, as keys cannot be optional");
-        } else if (!TypeUtil.isFreeFromTypeVariables(typeLiteral.type())) {
-            throw new RuntimeException("Can only convert type literals that are free from type variables to a Key, however TypeVariable<"
-                    + typeLiteral.toStringSimple() + "> defined: " + TypeUtil.typeVariableNamesOf(typeLiteral.type()));
+    public static Type convertx(Object source, Type originalType, Type type) {
+        requireNonNull(type, "type is null");
+        if (type instanceof Class<?>) {
+            return type;
+        } else if (type instanceof ParameterizedType pt) {
+            throw new UnsupportedOperationException();
+//            pt.get
+//            if (pt.getOwnerType() != null && !isFreeFromTypeVariables(pt.getOwnerType())) {
+//                return false;
+//            }
+//            for (Type t : pt.getActualTypeArguments()) {
+//                if (!isFreeFromTypeVariables(t)) {
+//                    return false;
+//                }
+//            }
+//            // To be safe we check the raw type as well, I expect it should always be a class, but the method signature says
+//            // something else
+//            return isFreeFromTypeVariables(pt.getRawType());
+        } else if (type instanceof GenericArrayType gat) {
+            return gat;
+        } else if (type instanceof TypeVariable) {
+            throw new InvalidKeyException("opps");
+        } else if (type instanceof WildcardType wt) {
+            Type t = wt.getLowerBounds()[0];
+            if (t == null) {
+                t = wt.getUpperBounds()[0];
+                if (t == null) {
+                    throw new InvalidKeyException("opps");
+                }
+            }
+            return convertx(source, originalType, t);
+        } else {
+            throw new InvalidKeyException("Unknown type: " + type);
         }
-        return new CanonicalizedKey<T>(typeLiteral.canonicalize().type(), qualifier);
     }
 
     /**

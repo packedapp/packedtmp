@@ -370,7 +370,7 @@ public abstract class Extension<E extends Extension<E>> {
         requireNonNull(extensionPointClass, "extensionPointClass is null");
 
         // Extract the extension class (<E>) from ExtensionPoint<E>
-        Class<? extends Extension<?>> otherExtensionClass = ExtensionPoint.EXTENSION_POINT_TO_EXTENSION_CLASS_EXTRACTOR.get(extensionPointClass);
+        Class<? extends Extension<?>> otherExtensionClass = ExtensionPoint.TYPE_VARIABLE_EXTRACTOR.get(extensionPointClass);
 
         // Check that the extension of requested extension point's is a direct dependency of this extension
         if (!extension.model.dependsOn(otherExtensionClass)) {

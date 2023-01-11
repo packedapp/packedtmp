@@ -12,15 +12,22 @@ import app.packed.bean.Inject;
 import app.packed.bean.OnInitialize;
 import app.packed.bean.OnStart;
 import app.packed.bean.OnStop;
+import app.packed.binding.Variable;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.extension.BaseExtensionPoint.ContainerInstaller;
+import app.packed.extension.bridge.FromContainerGuest;
 import app.packed.lifetime.RunState;
+import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.operation.Op;
+import app.packed.operation.Op1;
 import app.packed.operation.OperationTemplate;
+import app.packed.operation.OperationTemplate.InvocationArgument;
 import app.packed.service.ProvideableBeanConfiguration;
+import app.packed.service.ServiceLocator;
+import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifetime.LifetimeOperation;
@@ -173,6 +180,39 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     @Override
     protected BeanIntrospector newBeanIntrospector() {
         return new BeanIntrospector() {
+
+//            /** A MethodHandle for invoking {@link ApplicationInitializationContext#name()}. */
+//            private static final MethodHandle MH_NAME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class, "name",
+//                    String.class);
+//
+//            /** A MethodHandle for invoking {@link ApplicationInitializationContext#runtime()}. */
+//            private static final MethodHandle MH_RUNTIME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
+//                    "runtime", ManagedLifetimeController.class);
+//
+//            /** A MethodHandle for invoking {@link ApplicationInitializationContext#serviceLocator()}. */
+//            private static final MethodHandle MH_SERVICE_LOCATOR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
+//                    "serviceLocator", ServiceLocator.class);
+
+            @Override
+            public void hookOnAnnotatedVariable(Annotation hook, BindableVariable v) {
+                System.out.println(v.variable());
+                if (hook instanceof FromContainerGuest) {
+                    Variable va = v.variable();
+                    if (va.getRawType().equals(String.class)) {
+                        v.bindTo(new Op1<@InvocationArgument ApplicationInitializationContext, String>(a -> a.name()) {});
+                    } else if (va.getRawType().equals(ManagedLifetimeController.class)) {
+                        v.bindTo(new Op1<@InvocationArgument ApplicationInitializationContext, ManagedLifetimeController>(a -> a.runtime) {});
+                    } else if (va.getRawType().equals(ServiceLocator.class)) {
+                        v.bindTo(new Op1<@InvocationArgument ApplicationInitializationContext, ServiceLocator>(a -> a.serviceLocator()) {});
+                    } else {
+                        throw new UnsupportedOperationException();
+                    }
+                } else if (hook instanceof InvocationArgument) {
+                    System.out.println("XX " + v.variable());
+                } else {
+                    super.hookOnAnnotatedVariable(hook, v);
+                }
+            }
 
             @Override
             public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks, OperationalField field) {

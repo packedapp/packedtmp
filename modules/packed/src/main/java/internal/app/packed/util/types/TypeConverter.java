@@ -17,21 +17,13 @@ package internal.app.packed.util.types;
 
 import java.lang.reflect.Type;
 
+import internal.app.packed.errorhandling.ErrorProcessor;
+
 /**
  *
  */
-// Replaced by converter project...
-public abstract class TypeConverter<T> {
+@FunctionalInterface
+public interface TypeConverter<R> {
 
-    public static final TypeConverter<Type> IDENTITY = new TypeConverter<Type>() {
-
-        @Override
-        public Type convert(Type t) {
-            return t;
-        }
-    };
-
-    public static final TypeConverter<Class<?>> RAW = null;
-
-    public abstract T convert(Type t);
+    <T extends Throwable> R convert(Type type, ErrorProcessor<T> processor);
 }

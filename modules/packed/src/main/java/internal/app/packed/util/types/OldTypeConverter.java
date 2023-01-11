@@ -13,23 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.bridge;
+package internal.app.packed.util.types;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
-import app.packed.extension.BaseExtension;
+import java.lang.reflect.Type;
 
 /**
  *
  */
-@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
-@Retention(RetentionPolicy.RUNTIME)
-@AnnotatedVariableHook(extension = BaseExtension.class)
-public @interface FromContainerGuest {}
+// Replaced by converter project...
+public abstract class OldTypeConverter<T> {
 
-// Alternativt en Qualifier og saa local services...
-// Og evt ingen context...
+    public static final OldTypeConverter<Type> IDENTITY = new OldTypeConverter<Type>() {
+
+        @Override
+        public Type convert(Type t) {
+            return t;
+        }
+    };
+
+    public static final OldTypeConverter<Class<?>> RAW = null;
+
+    public abstract T convert(Type t);
+}

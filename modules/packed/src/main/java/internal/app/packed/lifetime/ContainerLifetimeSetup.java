@@ -27,6 +27,7 @@ import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.RunState;
+import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.operation.OperationSetup;
@@ -66,7 +67,7 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
      * @param parent
      */
     public ContainerLifetimeSetup(ContainerSetup container, @Nullable ContainerLifetimeSetup parent) {
-        super(parent);
+        super(parent, List.of(OperationTemplate.raw()));
         this.container = container;
     }
 

@@ -46,7 +46,7 @@ public class AppTest {
 
         ContainerConfiguration cc = requireNonNull(ar.get());
 
-        // Checks that no extensions are installed by default
+        // Checks that no other extensions than BaseExtension is installed by default
         assertThat(cc.extensionTypes()).containsExactly(BaseExtension.class);
 
         // Checks the config site of the app is the same as the config site of the configuration

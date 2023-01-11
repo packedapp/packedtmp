@@ -61,10 +61,10 @@ public class OpXTest {
     public void typeParameterIndeterminable() {
         // TODO change to Factory instead of BaseFactory
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Op0(() -> 1) {}).withNoCause()
-                .withMessageStartingWith("Cannot determine type variable <R> for " + CapturingOp.class.getSimpleName() + "<R> on class " + OpXTest.class.getPackageName());
+                .withMessageStartingWith("Cannot determine type variable <R> for " + Op0.class.getSimpleName() + "<R> on class " + OpXTest.class.getPackageName());
 
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Intermediate(() -> 1) {}).withNoCause()
-                .withMessageStartingWith("Cannot determine type variable <T> for " + CapturingOp.class.getSimpleName() + "<R> on class " + OpXTest.class.getCanonicalName());
+                .withMessageStartingWith("Cannot determine type variable <T> for " + Op0.class.getSimpleName() + "<R> on class " + OpXTest.class.getCanonicalName());
     }
 
     @Test

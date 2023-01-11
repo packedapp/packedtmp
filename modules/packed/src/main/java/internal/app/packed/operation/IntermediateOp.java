@@ -23,16 +23,17 @@ import java.util.function.Consumer;
 
 import app.packed.container.Realm;
 import app.packed.operation.Op;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.BindingProvider.FromConstant;
+import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.util.LookupUtil;
 
 /** An intermediate (non-terminal) op. */
-abstract non-sealed class IntermediateOp<R> extends PackedOp<R> {
+abstract sealed class IntermediateOp<R> extends PackedOp<R> {
 
     /** The next op in the chain. */
     private final PackedOp<?> nextOp;
@@ -43,15 +44,15 @@ abstract non-sealed class IntermediateOp<R> extends PackedOp<R> {
      * @param type
      * @param operation
      */
-    IntermediateOp(PackedOp<?> nextOp, OperationType type, MethodHandle operation) {
+    private IntermediateOp(PackedOp<?> nextOp, OperationType type, MethodHandle operation) {
         super(type, operation);
         this.nextOp = requireNonNull(nextOp);
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator) {
-        return nextOp.newOperationSetup(bean, operator);
+    public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template) {
+        return nextOp.newOperationSetup(bean, operator, template);
     }
 
     /** A op that binds 1 or more constants. */
@@ -73,8 +74,8 @@ abstract non-sealed class IntermediateOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator) {
-            OperationSetup os = super.newOperationSetup(bean, operator);
+        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template) {
+            OperationSetup os = super.newOperationSetup(bean, operator, template);
             for (int i = 0; i < indexes.length; i++) {
                 int index = indexes[i];
                 Object argument = arguments[i];

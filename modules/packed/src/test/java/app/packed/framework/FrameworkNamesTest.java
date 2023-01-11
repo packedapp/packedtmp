@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.bridge;
+package app.packed.framework;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import org.junit.jupiter.api.Test;
+
 import app.packed.extension.BaseExtension;
 
 /**
  *
  */
-@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
-@Retention(RetentionPolicy.RUNTIME)
-@AnnotatedVariableHook(extension = BaseExtension.class)
-public @interface FromContainerGuest {}
+public class FrameworkNamesTest {
 
-// Alternativt en Qualifier og saa local services...
-// Og evt ingen context...
+    @Test
+    void test() {
+        assertEquals(BaseExtension.class.getCanonicalName(), FrameworkNames.BASE_BASE_EXTENSION);
+    }
+}

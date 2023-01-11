@@ -40,7 +40,7 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
      * @param function
      *            the function instance
      */
-    CapturingOp(Object function) {
+    protected CapturingOp(Object function) {
         this.op = PackedOp.capture(getClass(), function);
     }
 

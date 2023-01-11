@@ -26,16 +26,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.Optional;
 import java.util.OptionalDouble;
-import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import app.packed.binding.Key;
 import app.packed.binding.Qualifier;
 import internal.app.packed.binding.InternalDependency;
-import internal.app.packed.util.types.GenericType;
 
 /**
  *
@@ -44,33 +41,6 @@ public class DependencyTest {
 
     static final Key<?> KEY_QA_INT = new Key< /* @Q("A") */ Integer>() {};
 
-    @Nested
-    public class OptionalsOf {
-
-        @Test
-        public void fromTypeAttribute() {
-            InternalDependency opString = InternalDependency.fromTypeVariable(new GenericType<Optional<String>>() {}.getClass(), GenericType.class, 0);
-            assertThat(opString).keyIs(String.class);
-        }
-    }
-
-    @Nested
-    public class OptionalsOfInts {
-
-        @Test
-        public void fromTypeParameter() {
-            assertThat(InternalDependency.of(OptionalInt.class)).isOptionalInt();
-            // assertThat(new Dependency<OptionalInt>() {}).isOptionalInt();
-            // assertThat(new Dependency<OptionalInt>() {}).keyIs(new Dependency<Optional<Integer>>() {}.getKey());
-
-            // fromTypeParameter
-            InternalDependency opInt = InternalDependency.fromTypeVariable(new GenericType<OptionalInt>() {}.getClass(), GenericType.class, 0);
-            assertThat(opInt).isOptionalInt();
-
-            // Annotated
-            // assertThat(new Dependency<@Q("A") OptionalInt>() {}).keyIs(KEY_QA_INT);
-        }
-    }
 
     @Test
     public void ofClass() {

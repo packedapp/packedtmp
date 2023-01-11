@@ -27,11 +27,14 @@ import app.packed.binding.Variable;
 import app.packed.framework.Nullable;
 import app.packed.operation.CapturingOp;
 import app.packed.operation.Op;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.operation.CapturedOpExtractor.Top;
 import internal.app.packed.operation.IntermediateOp.BoundOp;
 import internal.app.packed.operation.IntermediateOp.PeekingOp;
+import internal.app.packed.operation.TerminalOp.FunctionInvocationOp;
 
 /** The internal implementation of Op. */
 @SuppressWarnings("rawtypes")
@@ -88,7 +91,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
         return bind(0, argument);
     }
 
-    public abstract OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator);
+    public abstract OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template);
 
     /** {@inheritDoc} */
     public final Op<R> peek(Consumer<? super R> action) {
@@ -114,7 +117,10 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
     }
 
     public static <R> PackedOp<R> capture(Class<?> clazz, Object function) {
-        return TerminalOpCaptureHelper.create(clazz, function);
+        requireNonNull(function, "function is null"); // should have already been checked by subclasses
+        Top top = CapturedOpExtractor.TOP.get(clazz);
+
+        return new FunctionInvocationOp<>(top.ot, top.create(function), top.base.samType, function.getClass().getMethods()[0]);
     }
 
     public static <R> PackedOp<R> crack(Op<R> op) {

@@ -37,6 +37,7 @@ import app.packed.operation.OperationHandle;
  *
  */
 // Her siger vi at extension beans er instance beans... Det behoever de vel ikke at vaere
+// Ideelt set har vi ikke en speciel bean configurations klasse for instance beans
 public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
     static final Key<MethodHandle[]> KEY_MH_ARRAY = Key.of(MethodHandle[].class);
@@ -66,7 +67,7 @@ public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
         return (X) n;
     }
 
-    // Problemet 
+    // Problemet
     public <K> ExtensionBeanConfiguration<T> initializeWith(Class<K> key, Supplier<? extends K> supplier) {
         return initializeWith(Key.of(key), supplier);
     }
@@ -128,19 +129,18 @@ public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
     }
 
     enum Foo {
-        
+
         // Adds a <T> param to the operation, which uses a predestioned key
         CLASSIFIED,
-        
+
         // Custom generated
         CUSTOM,
-        
-        
+
         INT_CLASSIFIED, // Injects a single MethodHandle
-        
+
         SINGLE;
     }
-    
+
     static final class MapLookup<T> extends NewX<MethodHandle> {
 
         private final LinkedHashMap<T, OperationHandle> operations = new LinkedHashMap<>();
@@ -190,5 +190,4 @@ public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
             this.key = requireNonNull(key);
         }
     }
-
 }

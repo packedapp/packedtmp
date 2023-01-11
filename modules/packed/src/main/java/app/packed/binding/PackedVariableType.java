@@ -25,17 +25,46 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Optional;
 
+import internal.app.packed.util.types.TypeUtil;
+
 /**
  * A wrapper for the type part of a {@link Variable}.
  */
 sealed interface PackedVariableType {
 
+    // IDK. 
+    // Nu er det kun field og parameter
     Optional<String> name();
     
     Class<?> rawType();
 
     Type type();
     
+    record OfType(Type type) implements PackedVariableType {
+        public OfType {
+            requireNonNull(type, "clazz is null");
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Class<?> rawType() {
+            return TypeUtil.rawTypeOf(type);
+        }
+
+        public Optional<String> name() {
+            return Optional.empty();
+        }
+
+        public String toString() {
+            return type.getTypeName();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Type type() {
+            return type;
+        }
+    }
     record OfClass(Class<?> clazz) implements PackedVariableType {
         public OfClass {
             requireNonNull(clazz, "clazz is null");
@@ -79,7 +108,7 @@ sealed interface PackedVariableType {
         }
 
         public Optional<String> name() {
-            return Optional.of(typeVariable.getName());
+            return Optional.empty();
         }
 
         /** {@inheritDoc} */
@@ -125,7 +154,7 @@ sealed interface PackedVariableType {
 
         /** {@inheritDoc} */
         public Optional<String> name() {
-            return Optional.of(constructor.getName());
+            return Optional.empty();
         }
 
         /** {@inheritDoc} */
@@ -149,7 +178,7 @@ sealed interface PackedVariableType {
 
         /** {@inheritDoc} */
         public Optional<String> name() {
-            return Optional.of(method.getName()); // ??? or returnVar? IDK
+            return Optional.empty();
         }
 
         /** {@inheritDoc} */

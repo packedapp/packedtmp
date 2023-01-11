@@ -137,6 +137,10 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     public sealed interface BeanInstaller permits PackedBeanInstaller {
 
+        // can be used for inter
+        // Maybe use ScopedValues instead???
+        <A> BeanInstaller attach(Class<A> attachmentType, A attachment);
+        
         /**
          * Installs the bean using the specified class as the bean source.
          * 
@@ -145,15 +149,15 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
          * @param beanClass
          * @return a bean handle representing the installed bean
          */
-        public abstract <T> BeanHandle<T> install(Class<T> beanClass);
+        <T> BeanHandle<T> install(Class<T> beanClass);
 
-        public abstract <T> BeanHandle<T> install(Op<T> operation);
+        <T> BeanHandle<T> install(Op<T> operation);
 
-        public abstract <T> BeanHandle<T> installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle<T>> onInstall);
+        <T> BeanHandle<T> installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle<T>> onInstall);
 
-        public abstract <T> BeanHandle<T> installInstance(T instance);
+        <T> BeanHandle<T> installInstance(T instance);
 
-        public abstract BeanHandle<Void> installWithoutSource();
+        BeanHandle<Void> installWithoutSource();
 
         /**
          * An option that allows for a special bean introspector to be used when introspecting the bean for the extension.
@@ -165,7 +169,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
          * @return the option
          * @see Extension#newBeanIntrospector
          */
-        public abstract BeanInstaller introspectWith(BeanIntrospector introspector);
+        BeanInstaller introspectWith(BeanIntrospector introspector);
 
         // Hvad skal vi helt praecis goere her...
         // Vi bliver noedt til at vide hvilke kontekts der er...
@@ -184,9 +188,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
             return this;
         }
 
-        default BeanInstaller lifetimes(OperationTemplate... confs) {
-            return this;
-        }
+        BeanInstaller lifetimes(OperationTemplate... templates);
 
         /**
          * Allows multiple beans of the same type in a container.
@@ -197,9 +199,9 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
          * @throws UnsupportedOperationException
          *             if bean kind is {@link BeanKind#FUNCTIONAL} or {@link BeanKind#STATIC}
          */
-        public abstract BeanInstaller multi();
+        BeanInstaller multi();
 
-        public abstract BeanInstaller namePrefix(String prefix);
+        BeanInstaller namePrefix(String prefix);
 
         default BeanInstaller spawnNew() {
             // A bean that is created per operation.
@@ -228,7 +230,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
          * 
          * @return this installer
          */
-        public abstract BeanInstaller synthetic();
+        BeanInstaller synthetic();
     }
 
     public interface ContainerInstaller {

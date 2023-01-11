@@ -9,18 +9,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
 import app.packed.application.NamespacePath;
-import app.packed.bean.DublicateBeanClassException;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
+import app.packed.bean.DublicateBeanClassException;
 import app.packed.framework.Nullable;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanClassMapContainer.MuInst;
 import internal.app.packed.binding.BindingProvider;
@@ -118,9 +120,9 @@ public final class BeanSetup {
     /** Non-null while a bean is being introspected. */
     @Nullable
     public IntrospectedBean introspecting;
-    
+
     public ContextSetup contexts;
-    
+
     /**
      * Create a new bean.
      */
@@ -129,7 +131,6 @@ public final class BeanSetup {
         this.beanClass = requireNonNull(beanClass);
         this.sourceKind = requireNonNull(sourceKind);
         this.source = source;
-
         ExtensionSetup installedBy = installer.useSite == null ? installer.baseExtension : installer.useSite.usedBy();
 
         RealmSetup realm = installer.useSite == null ? installer.baseExtension.container.assembly : installedBy.extensionTree;
@@ -152,7 +153,7 @@ public final class BeanSetup {
             this.lifetime = cls;
             cls.beans.add(this);
         } else {
-            this.lifetime = new BeanLifetimeSetup(cls, this);
+            this.lifetime = new BeanLifetimeSetup(cls, this, installer);
         }
     }
 
@@ -179,8 +180,8 @@ public final class BeanSetup {
 
     // Relative to x
     public OperationSetup instanceAccessOperation() {
-        LifetimePoolOperationSetup os = new LifetimePoolOperationSetup(installedBy, this, OperationType.of(beanClass), accessBeanX().provideSpecial());
-        os.invocationType = (PackedOperationTemplate) os.invocationType.withReturnType(beanClass);
+        LifetimePoolOperationSetup os = new LifetimePoolOperationSetup(installedBy, this, OperationType.of(beanClass), OperationTemplate.defaults(), accessBeanX().provideSpecial());
+        os.template = (PackedOperationTemplate) OperationTemplate.defaults().withReturnType(beanClass);
         return os;
     }
 
@@ -255,7 +256,8 @@ public final class BeanSetup {
     }
 
     static BeanSetup install(PackedBeanInstaller installer, BeanKind beanKind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
-            @Nullable BeanIntrospector introspector, @Nullable String namePrefix, boolean multiInstall, boolean synthetic) {
+            @Nullable BeanIntrospector introspector, @Nullable Map<Class<?>, Object> attachments, @Nullable String namePrefix, boolean multiInstall,
+            boolean synthetic) {
         BeanSetup bean = new BeanSetup(installer, beanKind, beanClass, sourceKind, source);
 
         ContainerSetup container = bean.container;
@@ -323,13 +325,20 @@ public final class BeanSetup {
 
         if (sourceKind == BeanSourceKind.OP) {
             PackedOp<?> op = (PackedOp<?>) bean.source;
-            OperationSetup os = op.newOperationSetup(bean, bean.installedBy);
+            OperationTemplate ot;
+            if (bean.lifetime.lifetimes.isEmpty()) {
+                ot = OperationTemplate.defaults();
+            } else {
+                ot = bean.lifetime.lifetimes.get(0);
+            }
+            
+            OperationSetup os = op.newOperationSetup(bean, bean.installedBy, ot);
             bean.operations.add(os);
         }
 
         // Scan the bean class for annotations unless the bean class is void
         if (sourceKind != BeanSourceKind.NONE) {
-            new IntrospectedBean(bean, introspector).introspect();
+            new IntrospectedBean(bean, introspector, attachments).introspect();
         }
 
         // Bean was successfully created, add it to the container

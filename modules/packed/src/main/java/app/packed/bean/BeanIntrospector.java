@@ -15,6 +15,8 @@
  */
 package app.packed.bean;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
@@ -54,6 +56,7 @@ import app.packed.operation.OperationTemplate.InvocationArgument;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanAnnotationReader;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.IntrospectedBean;
 import internal.app.packed.bean.IntrospectedOperationalField;
 import internal.app.packed.bean.IntrospectedOperationalMethod;
 import internal.app.packed.container.ExtensionSetup;
@@ -91,6 +94,13 @@ public abstract class BeanIntrospector {
      */
     public void afterHooks() {}
 
+    @SuppressWarnings("unchecked")
+    public <A> Optional<A> attachment(Class<A> attachmentType) {
+        requireNonNull(attachmentType);
+        Map<Class<?>, Object> a = setup().bean.attachments;
+        return a == null ? Optional.empty() : Optional.ofNullable((A) a.get(attachmentType));
+    }
+
     /** {@return an annotation reader for the bean class.} */
     public final AnnotationReader beanAnnotations() {
         return new BeanAnnotationReader(beanClass().getAnnotations());
@@ -98,27 +108,27 @@ public abstract class BeanIntrospector {
 
     /** {@return the bean class that is being introspected.} */
     public final Class<?> beanClass() {
-        return setup().bean.beanClass;
+        return setup().bean.bean.beanClass;
     }
 
     /** {@return the extension the bean was installed via.} */
     public final Class<? extends Extension<?>> beanInstalledVia() {
-        return setup().bean.installedBy.extensionType;
+        return setup().bean.bean.installedBy.extensionType;
     }
 
     /** {@return an annotation reader for the bean class.} */
     public final BeanKind beanKind() {
-        return setup().bean.beanKind;
+        return setup().bean.bean.beanKind;
     }
 
     /** {@return the owner of the bean.} */
     public final Realm beanOwner() {
-        return setup().bean.realm.realm();
+        return setup().bean.bean.realm.realm();
     }
 
     /** {@return an annotation reader for the bean class.} */
     public final BeanSourceKind beanSourceKind() {
-        return setup().bean.sourceKind;
+        return setup().bean.bean.sourceKind;
     }
 
     /**
@@ -141,6 +151,12 @@ public abstract class BeanIntrospector {
      */
     public final void failWith(String postFix) {
         throw new InvalidBeanDefinitionException("OOPS " + postFix);
+    }
+
+    public boolean hasAttachment(Class<?> attachmentType) {
+        requireNonNull(attachmentType);
+        Map<Class<?>, Object> a = setup().bean.attachments;
+        return a != null && a.containsKey(attachmentType);
     }
 
     // Replace set with something like AnnotatedHookSet
@@ -181,6 +197,7 @@ public abstract class BeanIntrospector {
      * 
      * @see AnnotatedVariableHook
      */
+    // We have Annotation instead of Class<? super Annotation> because it is nice when we get pattern matching
     public void hookOnAnnotatedVariable(Annotation hook, BindableVariable v) {
         // could test if getClass is beanIntrospector, in which case they probably forgot to override extension.newIntrospector
         // Otherwise they forgot to implement binding hook
@@ -206,7 +223,7 @@ public abstract class BeanIntrospector {
      * @throws IllegalStateException
      *             if called more than once
      */
-    final void initialize(ExtensionSetup operator, BeanSetup bean) {
+    final void initialize(ExtensionSetup operator, IntrospectedBean bean) {
         if (this.setup != null) {
             throw new IllegalStateException("This scanner has already been initialized.");
         }
@@ -358,9 +375,7 @@ public abstract class BeanIntrospector {
 
         // Hmm, vi vil jo ogsaa gerne have contexts med...
         // Map<Context.class, List<>>
-        default List<Class<?>> availableInvocationArguments() {
-            return List.of();
-        }
+        List<Class<?>> availableInvocationArguments();
 
         /**
          * 
@@ -412,7 +427,7 @@ public abstract class BeanIntrospector {
         default void bindToInvocationArgument(int argumentIndex) {
             throw new UnsupportedOperationException();
         }
-
+        
         /**
          * @param argumentIndex
          * @param context
@@ -469,7 +484,10 @@ public abstract class BeanIntrospector {
          */
         // readAsKey, parseKey?
         default Key<?> variableToKey() {
-            throw new UnsupportedOperationException();
+            if (variable().getAnnotations().length != 0) {
+                throw new UnsupportedOperationException("Does not support anno conversion");
+            }
+            return Key.convertTypeNullableAnnotation(this, variable().getType());
         }
 
         default BindableBaseVariable wrapAsBaseBindable() {
@@ -724,7 +742,7 @@ public abstract class BeanIntrospector {
 
     /** A small utility record to hold the both the extension model and the bean in one field. */
     // Replace with Introspector???
-    private record Setup(ExtensionDescriptor extension, BeanSetup bean) {}
+    private record Setup(ExtensionDescriptor extension, IntrospectedBean bean) {}
 }
 
 interface ZandboxBI {

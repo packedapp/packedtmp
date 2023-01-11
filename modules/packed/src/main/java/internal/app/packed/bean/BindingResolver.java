@@ -35,7 +35,7 @@ final class BindingResolver {
 
         // Extracts the variable we want to resolve
         Variable var = operation.type.parameter(index);
-
+        
         // First, see if there are AnnotatedVariableHooks on the variable
         if (tryResolveWithBindingAnnotation(iBean, var, operation, index)) {
             return;

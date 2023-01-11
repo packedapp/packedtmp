@@ -17,10 +17,13 @@ package internal.app.packed.lifetime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.List;
+
 import app.packed.bean.BeanKind;
 import app.packed.lifetime.BeanLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.PackedBeanInstaller;
 
 /** The lifetime of a bean that is instantiated independently of the container in which it lives. */
 public final class BeanLifetimeSetup extends LifetimeSetup {
@@ -28,8 +31,8 @@ public final class BeanLifetimeSetup extends LifetimeSetup {
     /** The single bean this lifetime contains. */
     public final BeanSetup bean;
 
-    public BeanLifetimeSetup(ContainerLifetimeSetup container, BeanSetup bean) {
-        super(container);
+    public BeanLifetimeSetup(ContainerLifetimeSetup container, BeanSetup bean, PackedBeanInstaller installer) {
+        super(container, installer.lifetimes == null ? List.of() : List.copyOf(installer.lifetimes));
         this.bean = requireNonNull(bean);
     }
 

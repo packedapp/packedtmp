@@ -104,7 +104,7 @@ public @interface CustomBeanHook {
     @BeanHook
     // Logger, Net, File
     // Meta annotation hooks annotations does not have to live on the extension
-    @ForeignAnnotatedFieldHook(annotationClass = "sdfsdf", extensionClass = FrameworkNames.BASE_BEAN_EXTENSION)
-    @ForeignAnnotatedFieldHook(annotationClass = "sdfsdf", extensionClass = FrameworkNames.BASE_BEAN_EXTENSION)
+    @ForeignAnnotatedFieldHook(annotationClass = "sdfsdf", extensionClass = FrameworkNames.BASE_BASE_EXTENSION)
+    @ForeignAnnotatedFieldHook(annotationClass = "sdfsdf", extensionClass = FrameworkNames.BASE_BASE_EXTENSION)
     public @interface JavaBaseSupport {}
 }

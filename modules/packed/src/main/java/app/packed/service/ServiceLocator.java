@@ -316,7 +316,8 @@ public interface ServiceLocator {
      * @see #of(Assembly, Wirelet...)
      */
     private static BootstrapApp<ServiceLocator> driver() {
-        throw new UnsupportedOperationException();
+        return BootstrapApp
+        .of(new Op1<ApplicationInitializationContext, ServiceLocator>(c -> c.serviceLocator()) {}, c -> {});
     }
 
 //    // maaske har vi launcher og Image...
@@ -365,6 +366,8 @@ public interface ServiceLocator {
     static ServiceLocator of(Assembly assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }
+    
+
 
     static ServiceLocator of(ComposerAction<? super Composer> action, Wirelet... wirelets) {
         class ServiceLocatorAssembly extends ComposerAssembly<Composer> {

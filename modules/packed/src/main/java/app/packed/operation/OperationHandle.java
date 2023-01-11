@@ -181,7 +181,7 @@ public final /* primitive */ class OperationHandle {
      * @see OperationTemplate
      */
     public MethodType invocationType() {
-        return operation.invocationType.invocationType();
+        return operation.template.invocationType();
     }
 
     // Ogsaa en template ting taenker jeg? IDK

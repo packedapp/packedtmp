@@ -18,24 +18,33 @@ package app.packed.binding;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /** Implementation of {@link Variable}. We basically wrap an annotation part and a type part. */
-record PackedVariable(AnnotatedElement annotatedElement, PackedVariableType typeWrapper) implements Variable {
-
-    public PackedVariable(Class<?> clazz) {
-        this(PackedVariable.class, new PackedVariableType.OfClass(clazz));
-    }
+record PackedVariable(AnnotatedElement annotatedElement, PackedVariableType type) implements Variable {
 
     public String toString() {
-//        StringBuilder sb = new StringBuilder();
-
-        return typeWrapper.rawType().getSimpleName();
+        StringBuilder sb = new StringBuilder();
+        Annotation[] annotations = annotatedElement.getAnnotations();
+        sb.append(Stream.of(annotations).map(Annotation::toString).collect(Collectors.joining(" ")));
+        if (annotations.length > 0) {
+            sb.append(" ");
+        }
+        sb.append(type.toString());
+        return sb.toString();
     }
 
-    public PackedVariable(PackedVariableType typeWrapper) {
-        this(/* Class with no annotations */ PackedVariable.class, typeWrapper);
+    public boolean equals(Object obj) {
+        // We treat the ordering of annotations as significant
+        return obj instanceof Variable v && getType().equals(v.getType()) && Arrays.equals(getAnnotations(), v.getAnnotations());
     }
 
+    public int hashCode() {
+        return type.hashCode() ^ Arrays.hashCode(annotatedElement.getAnnotations());
+    }
+    
     /** {@inheritDoc} */
     @Override
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
@@ -81,12 +90,12 @@ record PackedVariable(AnnotatedElement annotatedElement, PackedVariableType type
     /** {@inheritDoc} */
     @Override
     public Class<?> getRawType() {
-        return typeWrapper.rawType();
+        return type.rawType();
     }
 
     /** {@inheritDoc} */
     @Override
     public Type getType() {
-        return typeWrapper.type();
+        return type.type();
     }
 }

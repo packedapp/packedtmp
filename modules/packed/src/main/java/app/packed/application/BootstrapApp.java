@@ -160,7 +160,7 @@ public sealed interface BootstrapApp<A> permits PackedApplicationDriver {
     }
 
     /**
-     * A composer used to create bootstrap app instances.
+     * A composer for creating bootstrap app instances.
      * 
      * @see BootstrapApp#of(Class, ComposerAction)
      * @see BootstrapApp#of(Op, ComposerAction)

@@ -21,7 +21,6 @@ import app.packed.bean.BeanMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.IntrospectedBeanVariable;
 import internal.app.packed.operation.OperationSetup;
 
@@ -59,19 +58,18 @@ public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
         return new BeanIntrospector() {
             @Override
             public void hookOnVariableType(Class<?> hook, BindableBaseVariable binding) {
-                IntrospectedBeanVariable ibb = ((IntrospectedBeanVariable) binding);
-                OperationSetup operation = ibb.operation;
-                BeanSetup bean = ibb.operation.bean;
+                OperationSetup os = ((IntrospectedBeanVariable) binding).operation;
+                
                 if (hook == ApplicationMirror.class) {
-                    binding.bindConstant(bean.container.application.mirror());
+                    binding.bindConstant(os.bean.container.application.mirror());
                 } else if (hook == AssemblyMirror.class) {
-                    binding.bindConstant(bean.container.assembly.mirror());
+                    binding.bindConstant(os.bean.container.assembly.mirror());
                 } else if (hook == ContainerMirror.class) {
-                    binding.bindConstant(bean.container.mirror());
+                    binding.bindConstant(os.bean.container.mirror());
                 } else if (hook == BeanMirror.class) {
-                    binding.bindConstant(bean.mirror());
+                    binding.bindConstant(os.bean.mirror());
                 } else if (hook == OperationMirror.class) {
-                    binding.bindConstant(operation.mirror());
+                    binding.bindConstant(os.mirror());
                 } else {
                     super.hookOnVariableType(hook, binding);
                 }

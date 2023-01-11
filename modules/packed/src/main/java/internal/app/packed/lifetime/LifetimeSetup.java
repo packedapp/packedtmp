@@ -2,9 +2,11 @@ package internal.app.packed.lifetime;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 
 import app.packed.framework.Nullable;
 import app.packed.lifetime.LifetimeMirror;
+import app.packed.operation.OperationTemplate;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -30,6 +32,8 @@ public abstract sealed class LifetimeSetup permits ContainerLifetimeSetup, BeanL
     private static final MethodHandle MH_LIFETIME_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), LifetimeMirror.class,
             "initialize", void.class, LifetimeSetup.class);
 
+    public final List<OperationTemplate> lifetimes;
+
     /** Any parent of this lifetime. The root lifetime always being identical to the application lifetime. */
     @Nullable
     public final ContainerLifetimeSetup parent;
@@ -40,8 +44,9 @@ public abstract sealed class LifetimeSetup permits ContainerLifetimeSetup, BeanL
      * @param parent
      *            a parent lifetime
      */
-    LifetimeSetup(@Nullable ContainerLifetimeSetup parent) {
+    LifetimeSetup(@Nullable ContainerLifetimeSetup parent, List<OperationTemplate> lifetimes) {
         this.parent = parent;
+        this.lifetimes = lifetimes;
     }
 
     /** {@return a mirror that can be exposed to end-users.} */
@@ -56,6 +61,6 @@ public abstract sealed class LifetimeSetup permits ContainerLifetimeSetup, BeanL
         }
         return mirror;
     }
-    
+
     abstract LifetimeMirror mirror0();
 }

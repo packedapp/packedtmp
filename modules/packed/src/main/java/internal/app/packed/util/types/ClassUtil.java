@@ -7,10 +7,10 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import internal.app.packed.container.Mirror;
+import internal.app.packed.errorhandling.ErrorProcessor;
 import internal.app.packed.util.StringFormatter;
 
 /** Various utility methods for working {@link Class classes}. */
@@ -29,12 +29,12 @@ public class ClassUtil {
     }
 
     @SuppressWarnings("unchecked")
-    public static <E extends Throwable, T> Class<T> checkProperSubclass(Class<T> clazz, Class<?> clazzToCheck, Function<String, E> f) throws E {
+    public static <E extends Throwable, T> Class<T> checkProperSubclass(Class<T> clazz, Class<?> clazzToCheck, ErrorProcessor<E> f) throws E {
         requireNonNull(clazzToCheck, "class is null");
         if (clazzToCheck == clazz) {
-            throw f.apply(clazz.getSimpleName() + ".class is not a valid argument to this method.");
+            throw f.onError(clazz.getSimpleName() + ".class is not a valid argument to this method.");
         } else if (!clazz.isAssignableFrom(clazzToCheck)) {
-            throw f.apply("The specified type '" + StringFormatter.format(clazz) + "' must extend '" + StringFormatter.format(clazzToCheck) + "'");
+            throw f.onError("The specified type '" + StringFormatter.format(clazz) + "' must extend '" + StringFormatter.format(clazzToCheck) + "'");
         }
         return (Class<T>) clazzToCheck;
     }

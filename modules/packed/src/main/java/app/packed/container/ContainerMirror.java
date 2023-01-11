@@ -16,13 +16,13 @@ import app.packed.bean.BeanHook.VariableTypeHook;
 import app.packed.bean.BeanMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import app.packed.extension.MirrorExtension;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.util.LookupUtil;
@@ -45,23 +45,12 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
 
         /** A type variable extractor. */
-        private static final TypeVariableExtractor TYPE_VARIABLE_EP_EXTRACTOR = TypeVariableExtractor.of(ExtensionMirror.class);
+        private static final TypeVariableExtractor EXTRACTOR = TypeVariableExtractor.of(ExtensionMirror.class);
 
         /** {@inheritDoc} */
-        @SuppressWarnings("unchecked")
         @Override
         protected Class<? extends Extension<?>> computeValue(Class<?> type) {
-            // Extract the type of extension from ExtensionMirror<E>
-            Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) TYPE_VARIABLE_EP_EXTRACTOR.extractProperSubClassOf(type,
-                    Extension.class, InternalExtensionException::new);
-
-            // Check that the mirror is in the same module as the extension itself
-            if (extensionClass.getModule() != type.getModule()) {
-                throw new InternalExtensionException("The extension mirror " + type + " must be a part of the same module (" + extensionClass.getModule()
-                        + ") as " + extensionClass + ", but was part of '" + type.getModule() + "'");
-            }
-
-            return ExtensionDescriptor.of(extensionClass).type(); // Check that the extension is valid
+            return ExtensionModel.extractE(EXTRACTOR, type);
         }
     };
 

@@ -16,7 +16,9 @@
 package internal.app.packed.operation;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import app.packed.operation.OperationType;
 
@@ -24,7 +26,34 @@ import app.packed.operation.OperationType;
  *
  */
 public record SamType(Class<?> functionInterface, Method saMethod, MethodHandle methodHandle, OperationType type) {
-    public static SamType of(Class<?> functionInstance) {
-        return new SamType(functionInstance, null, null, null);
+    
+    public static SamType of(Class<?> functionInterface) {
+        if (!functionInterface.isInterface()) {
+            throw new IllegalArgumentException(functionInterface + " is not an interface");
+        }
+        Method samMethod = null;
+        for (Method m : functionInterface.getMethods()) {
+            if (!m.isDefault() && !Modifier.isStatic(m.getModifiers())) {
+                if (samMethod != null) {
+                    throw new IllegalArgumentException(functionInterface + " is not a proper functional interface, as there are multiple non-default and non-static methods, ["
+                            + samMethod + ", " + m + "]");
+                }
+                samMethod = m;
+            }
+        }
+        if (samMethod == null) {
+            throw new IllegalArgumentException(functionInterface + " is not a proper functional interface, because there are no non-default instance methods");
+        }
+
+        // For now we require that the Single Abstract Method must be on a public available class
+        MethodHandle mh;
+        try {
+            mh = MethodHandles.publicLookup().unreflect(samMethod);
+        } catch (IllegalAccessException e) {
+            throw new Error(samMethod + " must be accessible via MethodHandles.publicLookup()", e);
+        }
+
+        OperationType ot = OperationType.ofExecutable(samMethod);
+        return new SamType(functionInterface, samMethod, mh, ot);
     }
 }

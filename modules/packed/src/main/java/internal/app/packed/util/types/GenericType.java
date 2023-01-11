@@ -19,8 +19,6 @@ import static internal.app.packed.util.StringFormatter.format;
 import static internal.app.packed.util.StringFormatter.formatSimple;
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -49,11 +47,13 @@ public abstract class GenericType<T> {
     /** A cache of generic types. */
     private static final ClassValue<GenericType<?>> CAPTURED_CACHE = new ClassValue<>() {
 
+        private static final TypeVariableExtractor EXTRACTOR = TypeVariableExtractor.of(GenericType.class);
+
         /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected GenericType<?> computeValue(Class<?> implementation) {
-            return fromTypeVariable((Class) implementation, GenericType.class, 0);
+            Type t = EXTRACTOR.extractType(implementation, IllegalArgumentException::new);
+            return new CanonicalizedGenericType<>(t);
         }
     };
 
@@ -171,84 +171,6 @@ public abstract class GenericType<T> {
     }
 
     /**
-     * If this type token is a {@link Class#isPrimitive() primitive type}, returns a boxed type token. Otherwise returns
-     * this.
-     * 
-     * @return if this type token is a primitive returns the boxed version, otherwise returns this
-     */
-    // wrap instead of box
-    @SuppressWarnings("unchecked")
-    public
-    final GenericType<T> wrap() {
-        // TODO fix for Valhalla? reference type, inline type...
-        if (rawType().isPrimitive()) {
-            return (GenericType<T>) of(ClassUtil.wrap(rawType()));
-        }
-        return this;
-    }
-
-    /**
-     * Returns the type of the specified field as a type token.
-     * 
-     * @param field
-     *            the field to return a type token for
-     * @return the type token for the field
-     * @see Field#getGenericType()
-     */
-    static GenericType<?> fromField(Field field) {
-        requireNonNull(field, "field is null");
-        return new CanonicalizedGenericType<>(field.getGenericType());
-    }
-
-    /**
-     * Returns the type of the specified method's return type as a type token.
-     * 
-     * @param method
-     *            the method whose return type to return a type token for
-     * @return the type token for the return type of the specified method
-     * @see Method#getGenericReturnType()
-     */
-    static GenericType<?> fromMethodReturnType(Method method) {
-        requireNonNull(method, "method is null");
-        return new CanonicalizedGenericType<>(method.getGenericReturnType());
-    }
-
-    /**
-     * Creates a new type token by extracting information from a type variable.
-     * <p>
-     * Given a class:
-     * 
-     * <pre> {@code
-     * public abstract class MyConsumer extends HashMap<String, List<String>>} 
-     * </pre>
-     * <p>
-     * The hash maps value type parameter can be extracted as a type token by calling:
-     * 
-     * <pre> {@code
-     * TypeLiteral<?> tl = TypeLiteral.fromTypeVariable(MyConsumer.class, HashMap.class, 1);
-     * System.out.println(tl); //prints List<String>}
-     * </pre>
-     * 
-     * @param <T>
-     *            the base type to read the type variables from
-     * @param subClass
-     *            the sub class
-     * @param superClass
-     *            the base class that defines the type variable we want to get information on
-     * @param parameterIndex
-     *            the index in the signature of superClass of the type variable to extract
-     * @return a type token matching the type variable
-     * @throws UnsupportedOperationException
-     *             this method does not currently support extracting type information from interfaces
-     * @throws IllegalArgumentException
-     *             if the extraction could not be performed for some other reason
-     */
-    public static <T> GenericType<?> fromTypeVariable(Class<? extends T> subClass, Class<T> superClass, int parameterIndex) {
-        Type t = TypeVariableExtractor.of(superClass, parameterIndex).extract(subClass);
-        return new CanonicalizedGenericType<>(t);
-    }
-
-    /**
      * Returns a type token for the specified class.
      *
      * @param <T>
@@ -290,7 +212,7 @@ public abstract class GenericType<T> {
      * both of them into instances of the same InternalParameterizedType. While this is not impossible, it is just a lot of
      * work, and has some overhead.
      */
-    static final class CanonicalizedGenericType<T> extends GenericType<T> {
+    public static final class CanonicalizedGenericType<T> extends GenericType<T> {
 
         /**
          * Creates a new type token instance
@@ -298,7 +220,7 @@ public abstract class GenericType<T> {
          * @param type
          *            the type
          */
-        CanonicalizedGenericType(Type type) {
+        public CanonicalizedGenericType(Type type) {
             super(type);
         }
     }

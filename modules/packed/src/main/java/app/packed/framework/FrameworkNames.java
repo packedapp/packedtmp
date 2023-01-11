@@ -36,7 +36,7 @@ public final class FrameworkNames {
     public static final String BASE_MODULE = "app.packed";
 
     /** The class name of {@link BaseExtension}. */
-    public static final String BASE_BEAN_EXTENSION = BASE_MODULE + ".bean.BeanExtension";
+    public static final String BASE_BASE_EXTENSION = BASE_MODULE + ".extension.BaseExtension";
 
     /** The class name of {@link ServiceExtension}. */
     public static final String BASE_SERVICE_EXTENSION = BASE_MODULE + ".service.ServiceExtension";

@@ -33,14 +33,16 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanFactoryMirror;
+import app.packed.framework.Nullable;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.binding.BindingProvider.FromOperation;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.ExtensionServiceBindingSetup;
-import internal.app.packed.binding.BindingProvider.FromOperation;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
@@ -81,7 +83,7 @@ public sealed abstract class OperationSetup {
     /** How the operation is invoked. */
     // Maaske tager vi det naar man laver operationen... Saa er vi sikker paa
     // Alle har taget stilling til det...
-    public PackedOperationTemplate invocationType = PackedOperationTemplate.DEFAULTS;
+    public PackedOperationTemplate template;
 
     /** Whether or not this operation can still be configured. */
     public boolean isClosed;
@@ -107,11 +109,15 @@ public sealed abstract class OperationSetup {
     /** The type of this operation. */
     public final OperationType type;
 
-    private OperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type) {
+    @Nullable
+    public OperationSetup parent;
+
+    private OperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type, OperationTemplate template) {
         this.operator = requireNonNull(operator);
         this.type = requireNonNull(type);
         this.bean = requireNonNull(bean);
         this.bindings = type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[type.parameterCount()];
+        this.template = requireNonNull((PackedOperationTemplate) template);
     }
 
     public final MethodHandle buildInvoker0() {
@@ -191,6 +197,9 @@ public sealed abstract class OperationSetup {
     // readOnly. Will not work if for example, resolving a binding
     public final void forEachBinding(Consumer<? super BindingSetup> binding) {
         for (BindingSetup bs : bindings) {
+            if (bs == null) {
+                System.out.println(type + " ");
+            }
             if (bs.provider != null && bs.provider instanceof FromOperation nested) {
                 nested.operation.forEachBinding(binding);
             }
@@ -208,9 +217,9 @@ public sealed abstract class OperationSetup {
             System.err.println(mh.type());
             throw new Error();
         }
-        if (!mh.type().equals(invocationType.methodType)) {
+        if (!mh.type().equals(template.methodType)) {
             System.err.println("OperationType " + this.toString());
-            System.err.println("Expected " + invocationType.methodType);
+            System.err.println("Expected " + template.methodType);
             System.err.println("Actual " + mh.type());
             throw new Error();
         }
@@ -266,9 +275,9 @@ public sealed abstract class OperationSetup {
          * @param operator
          * @param site
          */
-        public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle, SamType samType,
-                Method implementationMethod) {
-            super(operator, bean, operationType);
+        public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
+                MethodHandle methodHandle, SamType samType, Method implementationMethod) {
+            super(operator, bean, operationType, template);
             this.methodHandle = requireNonNull(methodHandle);
             this.samType = requireNonNull(samType);
             this.implementationMethod = requireNonNull(implementationMethod);
@@ -300,8 +309,9 @@ public sealed abstract class OperationSetup {
          * @param operator
          * @param site
          */
-        public LifetimePoolOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle) {
-            super(operator, bean, operationType);
+        public LifetimePoolOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
+                MethodHandle methodHandle) {
+            super(operator, bean, operationType, template);
             this.methodHandle = methodHandle;
             name = "InstantAccess";
         }
@@ -313,8 +323,8 @@ public sealed abstract class OperationSetup {
         /** The {@link Member member}. */
         final T member;
 
-        private MemberOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, T member) {
-            super(operator, bean, operationType);
+        private MemberOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template, T member) {
+            super(operator, bean, operationType, template);
             this.member = requireNonNull(member);
         }
 
@@ -330,8 +340,9 @@ public sealed abstract class OperationSetup {
              * @param operator
              * @param site
              */
-            public ConstructorOperationSetup(ExtensionSetup operator, BeanSetup bean, Constructor<?> constructor, MethodHandle methodHandle) {
-                super(operator, bean, OperationType.ofExecutable(constructor), constructor);
+            public ConstructorOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationTemplate template, Constructor<?> constructor,
+                    MethodHandle methodHandle) {
+                super(operator, bean, OperationType.ofExecutable(constructor), template, constructor);
                 this.methodHandle = methodHandle;
                 name = "constructor";
                 mirrorSupplier = BeanFactoryMirror::new;
@@ -358,9 +369,9 @@ public sealed abstract class OperationSetup {
              * @param operator
              * @param site
              */
-            public FieldOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle, Field field,
-                    AccessMode accessMode) {
-                super(operator, bean, operationType, field);
+            public FieldOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
+                    MethodHandle methodHandle, Field field, AccessMode accessMode) {
+                super(operator, bean, operationType, template, field);
                 this.methodHandle = methodHandle;
                 this.accessMode = requireNonNull(accessMode);
             }
@@ -385,8 +396,9 @@ public sealed abstract class OperationSetup {
              * @param operator
              * @param site
              */
-            public MethodOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type, Method method, MethodHandle methodHandle) {
-                super(operator, bean, type, method);
+            public MethodOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type, OperationTemplate template, Method method,
+                    MethodHandle methodHandle) {
+                super(operator, bean, type, template, method);
                 this.methodHandle = methodHandle;
             }
             // MH -> mirror - no gen
@@ -408,8 +420,9 @@ public sealed abstract class OperationSetup {
          * @param operator
          * @param site
          */
-        public MethodHandleOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle) {
-            super(operator, bean, operationType);
+        public MethodHandleOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
+                MethodHandle methodHandle) {
+            super(operator, bean, operationType, template);
             this.methodHandle = methodHandle;
         }
 

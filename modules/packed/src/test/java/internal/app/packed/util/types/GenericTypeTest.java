@@ -17,13 +17,10 @@ package internal.app.packed.util.types;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static testutil.assertj.Assertions.npe;
 import static testutil.stubs.TypeStubs.LIST_STRING;
 import static testutil.stubs.TypeStubs.LIST_WILDCARD;
 import static testutil.util.TestMemberFinder.findField;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -48,35 +45,62 @@ public class GenericTypeTest {
         assertThat(TL_INTEGER).isNotSameAs(TL_INTEGER.canonicalize());
     }
 
-    /** Tests {@link GenericType#fromField(Field)}. */
-    @Test
-    public void fromField() throws Exception {
-        @SuppressWarnings("unused")
-        class Tmpx<T> {
-            Integer f;
-            List<?> fq;
-        }
-        Field f = findField(Tmpx.class, "f");
-        npe(GenericType::fromField, f, "field");
-
-        assertThat(GenericType.of(Integer.class)).isEqualTo(GenericType.fromField(f));
-
-        assertThat(LIST_WILDCARD).isEqualTo(GenericType.fromField(findField(Tmpx.class, "fq")).type());
-    }
-
-    /** Tests {@link GenericType#fromMethodReturnType(Method)}. */
-    @Test
-    public void fromMethodReturnType() throws Exception {
-        class Tmpx<T> {
-            @SuppressWarnings("unused")
-            public List<?> foo() {
-                throw new UnsupportedOperationException();
-            }
-        }
-        Method m = Tmpx.class.getMethod("foo");
-        npe(GenericType::fromMethodReturnType, m, "method");
-        assertThat(LIST_WILDCARD).isEqualTo(GenericType.fromMethodReturnType(m).type());
-    }
+//    /** Tests {@link GenericType#fromField(Field)}. */
+//    @Test
+//    public void fromField() throws Exception {
+//        @SuppressWarnings("unused")
+//        class Tmpx<T> {
+//            Integer f;
+//            List<?> fq;
+//        }
+//        Field f = findField(Tmpx.class, "f");
+//        npe(GenericType::fromField, f, "field");
+//
+//        assertThat(GenericType.of(Integer.class)).isEqualTo(GenericType.fromField(f));
+//
+//        assertThat(LIST_WILDCARD).isEqualTo(GenericType.fromField(findField(Tmpx.class, "fq")).type());
+//    }
+//
+//    /** Tests {@link GenericType#fromMethodReturnType(Method)}. */
+//    @Test
+//    public void fromMethodReturnType() throws Exception {
+//        class Tmpx<T> {
+//            @SuppressWarnings("unused")
+//            public List<?> foo() {
+//                throw new UnsupportedOperationException();
+//            }
+//        }
+//        Method m = Tmpx.class.getMethod("foo");
+//        npe(GenericType::fromMethodReturnType, m, "method");
+//        assertThat(LIST_WILDCARD).isEqualTo(GenericType.fromMethodReturnType(m).type());
+//    }
+//    
+//
+//    /**
+//     * Returns the type of the specified field as a type token.
+//     * 
+//     * @param field
+//     *            the field to return a type token for
+//     * @return the type token for the field
+//     * @see Field#getGenericType()
+//     */
+//    static GenericType<?> fromField(Field field) {
+//        requireNonNull(field, "field is null");
+//        return new CanonicalizedGenericType<>(field.getGenericType());
+//    }
+//
+//    /**
+//     * Returns the type of the specified method's return type as a type token.
+//     * 
+//     * @param method
+//     *            the method whose return type to return a type token for
+//     * @return the type token for the return type of the specified method
+//     * @see Method#getGenericReturnType()
+//     */
+//    static GenericType<?> fromMethodReturnType(Method method) {
+//        requireNonNull(method, "method is null");
+//        return new CanonicalizedGenericType<>(method.getGenericReturnType());
+//    }
 
 //  /** Tests {@link TypeToken#fromParameter(Parameter)}. */
 //  @Test
@@ -102,8 +126,6 @@ public class GenericTypeTest {
 
         MyTypeLiteral<Integer> integerNew = new MyTypeLiteral<Integer>() {};
 
-        assertThat(integerNew.wrap().type()).isSameAs(Integer.class);
-
         assertThat(integerNew.rawType()).isSameAs(Integer.class);
         assertThat(integerNew.type()).isSameAs(Integer.class);
 
@@ -128,8 +150,6 @@ public class GenericTypeTest {
     public void tl_int() {
         GenericType<Integer> intOf = GenericType.of(int.class);
 
-        assertThat(intOf.wrap().type()).isSameAs(Integer.class);
-
         assertThat(intOf.rawType()).isSameAs(int.class);
         assertThat(intOf.type()).isSameAs(int.class);
 
@@ -151,8 +171,6 @@ public class GenericTypeTest {
     public void tl_intArray() {
         GenericType<int[]> intArrayOf = GenericType.of(int[].class);
 
-        assertThat(intArrayOf.wrap().type()).isSameAs(int[].class);
-
         assertThat(intArrayOf.rawType()).isSameAs(int[].class);
         assertThat(intArrayOf.type()).isSameAs(int[].class);
 
@@ -172,7 +190,6 @@ public class GenericTypeTest {
     /** Tests an primitive int type literal. */
     @Test
     public void tl_Integer() {
-        assertThat(TL_INTEGER.wrap().type()).isSameAs(Integer.class);
 
         assertThat(TL_INTEGER.rawType()).isSameAs(Integer.class);
         assertThat(TL_INTEGER.type()).isSameAs(Integer.class);
@@ -197,8 +214,6 @@ public class GenericTypeTest {
     public void tl_IntegerArray() {
         GenericType<Integer[]> integerNew = new GenericType<Integer[]>() {};
 
-        assertThat(integerNew.wrap().type()).isSameAs(Integer[].class);
-
         assertThat(integerNew.rawType()).isSameAs(Integer[].class);
         assertThat(integerNew.type()).isSameAs(Integer[].class);
 
@@ -222,8 +237,6 @@ public class GenericTypeTest {
     public void tl_IntegerArrayArray() {
         GenericType<Integer[][]> integerArrayArrayNew = new GenericType<Integer[][]>() {};
 
-        assertThat(integerArrayArrayNew.wrap().type()).isSameAs(Integer[][].class);
-
         assertThat(integerArrayArrayNew.rawType()).isSameAs(Integer[][].class);
         assertThat(integerArrayArrayNew.type()).isSameAs(Integer[][].class);
 
@@ -246,8 +259,6 @@ public class GenericTypeTest {
     public void tl_ListString() throws Exception {
         GenericType<List<String>> listStringNew = new GenericType<List<String>>() {};
 
-        assertThat(listStringNew.wrap().type()).isEqualTo(LIST_STRING);
-
         assertThat(listStringNew.rawType()).isSameAs(List.class);
 
         assertThat(listStringNew.type()).isEqualTo(LIST_STRING);
@@ -266,7 +277,6 @@ public class GenericTypeTest {
     /** Tests {@code List<?>}. */
     @Test
     public void tl_ListWildcard() throws Exception {
-        assertThat(TL_LIST_WILDCARD.wrap().type()).isEqualTo(LIST_WILDCARD);
 
         assertThat(TL_LIST_WILDCARD.rawType()).isSameAs(List.class);
 
@@ -294,8 +304,6 @@ public class GenericTypeTest {
         }
         Type fGenericType = findField(Tmpx.class, "f").getGenericType();
 
-        assertThat(listStringNew.wrap().type()).isEqualTo(fGenericType);
-
         assertThat(listStringNew.rawType()).isSameAs(Map.class);
 
         assertThat(listStringNew.type()).isEqualTo(fGenericType);
@@ -315,8 +323,6 @@ public class GenericTypeTest {
     @Test
     public void tl_String() {
         GenericType<String> stringNew = new GenericType<String>() {};
-
-        assertThat(stringNew.wrap().type()).isSameAs(String.class);
 
         assertThat(stringNew.rawType()).isSameAs(String.class);
         assertThat(stringNew.type()).isSameAs(String.class);
@@ -339,8 +345,6 @@ public class GenericTypeTest {
     @Test
     public void tl_void() {
         GenericType<Void> voidOf = GenericType.of(void.class);
-
-        assertThat(voidOf.wrap().type()).isSameAs(Void.class);
 
         assertThat(voidOf.rawType()).isSameAs(void.class);
         assertThat(voidOf.type()).isSameAs(void.class);
@@ -368,8 +372,6 @@ public class GenericTypeTest {
         }
         Type fGenericType = findField(Tmpx.class, "f").getGenericType();
         GenericType<?> typeVariable = new CanonicalizedGenericType<>(fGenericType);
-
-        assertThat(typeVariable.wrap().type()).isEqualTo(fGenericType);
 
         assertThat(typeVariable.rawType()).isSameAs(Map.class);
 

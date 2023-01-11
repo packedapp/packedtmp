@@ -18,11 +18,9 @@ package internal.app.packed.binding;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,7 +36,6 @@ import app.packed.operation.OperationType;
 import internal.app.packed.errorhandling.ErrorMessageBuilder;
 import internal.app.packed.util.QualifierUtil;
 import internal.app.packed.util.types.ClassUtil;
-import internal.app.packed.util.types.TypeVariableExtractor;
 import internal.app.packed.util.types.Types;
 
 /**
@@ -47,19 +44,6 @@ import internal.app.packed.util.types.Types;
  * {@link #variable()}. A descriptor can also be created from a field, in which case {@link #variable()} returns an
  * instance of. Dependencies can be optional in which case {@link #isOptional()} returns true.
  */
-// Declaring class for use with Type Variables???
-// Det her er ogsaa en Const..
-
-// Supporterer vi noget mht til AnnotatedProvider?????
-// Er det et nyt lag....
-// Det der er, er at vi jo faktisk kan overskriver provideren...
-// Dvs den er ikke statisk....
-
-// int = Integer
-// OptionalInt = Optional<Integer> = @Nullable Integer
-// @Nullable int (Forbidden)
-
-// Saa faar ogsaa lige pludselig.... Vi behoever vist en ny historie her......
 
 // DefaultValue... (We need some default values converters...... Unless we have default converters...)
 // Prime annotation (Den ødelægger jo lidt Key/Lazy/OSV, hvad hvis den nu vil noget andet...)
@@ -215,18 +199,6 @@ public final class InternalDependency {
     }
 
     /**
-     * The variable (field or parameter) from which this dependency originates. Or an empty {@link Optional} if this
-     * dependency was not created from a variable.
-     * 
-     * @return the variable that is being injected, or an empty {@link Optional} if this dependency was not created from a
-     *         variable.
-     */
-//    public Optional<Variable> variable() {
-//        return Optional.empty();
-//        // return Optional.ofNullable(variable);
-//    }
-
-    /**
      * TODO add nullable... Returns the specified object if not optional, or a the specified object in an optional type
      * (either {@link Optional}, {@link OptionalDouble}, {@link OptionalInt} or {@link OptionalLong}) if optional.
      *
@@ -257,47 +229,6 @@ public final class InternalDependency {
             yield List.of(sd);
         }
         };
-    }
-
-    public static <T> InternalDependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
-        Type type = TypeVariableExtractor.of(baseClass, baseClassTypeVariableIndex).extract(actualClass);
-
-        // Find any qualifier annotation that might be present
-        AnnotatedParameterizedType pta = (AnnotatedParameterizedType) actualClass.getAnnotatedSuperclass();
-        Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[0].getAnnotations();
-        Annotation[] qa = QualifierUtil.findQualifier(annotations);
-
-        Optionality optionalType = null;
-        if (type instanceof ParameterizedType pt && pt.getRawType() == Optional.class) {
-            type = pt.getActualTypeArguments()[0];
-            // TODO check that we do not have optional of OptionalX, also ServiceRequest can never be optionally
-            // Also Provider cannot be optionally...
-            // TODO include annotation
-            // Cannot have Nullable + Optional....
-            optionalType = Optionality.OPTIONAL;
-        } else if (type == OptionalInt.class) {
-            optionalType = Optionality.OPTIONAL_INT;
-            type = Integer.class;
-        } else if (type == OptionalLong.class) {
-            optionalType = Optionality.OPTIONAL_LONG;
-            type = Long.class;
-        } else if (type == OptionalDouble.class) {
-            optionalType = Optionality.OPTIONAL_DOUBLE;
-            type = Double.class;
-        }
-        if (optionalType == null) {
-            optionalType = Optionality.REQUIRED;
-        }
-        // TODO check that there are no qualifier annotations on the type.
-        return new InternalDependency(type, Key.convertTypeNullableAnnotation(type, type, qa), optionalType);
-    }
-
-    public static <T> List<InternalDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
-        ArrayList<InternalDependency> result = new ArrayList<>();
-        for (int i = 0; i < baseClassTypeVariableIndexes.length; i++) {
-            result.add(fromTypeVariable(actualClass, baseClass, baseClassTypeVariableIndexes[i]));
-        }
-        return List.copyOf(result);
     }
 
     public static <T> InternalDependency fromVariable(Variable v) {

@@ -20,25 +20,26 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 
 /** A terminal op. */
-abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
+abstract sealed class TerminalOp<R> extends PackedOp<R> {
 
     /**
      * @param type
      * @param operation
      */
-    TerminalOp(OperationType type, MethodHandle operation) {
+    private TerminalOp(OperationType type, MethodHandle operation) {
         super(type, operation);
     }
 
     /** An op that captures 1 or more type variables. */
     static final class FunctionInvocationOp<R> extends TerminalOp<R> {
 
-        /** The method extending the single abstract method.  */
+        /** The method extending the single abstract method. */
         private final Method implementationMethod;
 
         /** The single abstract method type of the function. */
@@ -52,9 +53,9 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator) {
-            OperationSetup os = new OperationSetup.FunctionOperationSetup(operator, bean, type, mhOperation, samType, implementationMethod);
-            os.invocationType = (PackedOperationTemplate) os.invocationType.withReturnType(type.returnType());
+        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template) {
+            OperationSetup os = new OperationSetup.FunctionOperationSetup(operator, bean, type, template, mhOperation, samType, implementationMethod);
+            os.template = (PackedOperationTemplate) OperationTemplate.defaults().withReturnType(type.returnType());
             return os;
         }
     }
@@ -68,8 +69,8 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator) {
-            return new OperationSetup.MethodHandleOperationSetup(operator, bean, type, mhOperation);
+        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template) {
+            return new OperationSetup.MethodHandleOperationSetup(operator, bean, type, template, mhOperation);
         }
     }
 }

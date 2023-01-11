@@ -13,23 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.bridge;
+package app.packed.extension;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
-import app.packed.extension.BaseExtension;
+import java.lang.annotation.Annotation;
+import java.util.function.Consumer;
 
 /**
  *
  */
-@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
-@Retention(RetentionPolicy.RUNTIME)
-@AnnotatedVariableHook(extension = BaseExtension.class)
-public @interface FromContainerGuest {}
 
-// Alternativt en Qualifier og saa local services...
-// Og evt ingen context...
+// Bare brug BeanInstrospector.AnnotationReader?
+public interface AnnotationHookSet {
+
+    <A extends Annotation> void ifPresent(Class<A> annotationType, Consumer<? super A> action);
+}
