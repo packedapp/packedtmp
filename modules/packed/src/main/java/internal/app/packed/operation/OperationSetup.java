@@ -44,7 +44,6 @@ import internal.app.packed.binding.BindingProvider.FromOperation;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.ExtensionServiceBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
 import internal.app.packed.service.ServiceBindingSetup;
@@ -81,18 +80,18 @@ public sealed abstract class OperationSetup {
     public InvocationSite invocationSite;
 
     /** How the operation is invoked. */
-    // Maaske tager vi det naar man laver operationen... Saa er vi sikker paa
-    // Alle har taget stilling til det...
-    public PackedOperationTemplate template;
+    public final PackedOperationTemplate template;
 
     /** Whether or not this operation can still be configured. */
     public boolean isClosed;
 
     /** Whether or not an invoker has been computed */
-    private boolean isComputed;
+    boolean isComputed;
 
     // Maybe store it in subclasses?
     public MethodHandle methodHandle;
+
+    private MethodHandle generatedMethodHandle;
 
     /** Supplies a mirror for the operation */
     public Supplier<? extends OperationMirror> mirrorSupplier;
@@ -120,18 +119,6 @@ public sealed abstract class OperationSetup {
         this.template = requireNonNull((PackedOperationTemplate) template);
     }
 
-    public final MethodHandle buildInvoker0() {
-        bean.container.application.checkInCodegenPhase();
-
-        if (isComputed) {
-            // throw new IllegalStateException("This method can only be called once");
-        }
-
-        isComputed = true;
-
-        return doBuild();
-    }
-
     public final Set<BeanSetup> dependsOn() {
         HashSet<BeanSetup> result = new HashSet<>();
         forEachBinding(b -> {
@@ -145,12 +132,16 @@ public sealed abstract class OperationSetup {
         return result;
     }
 
-    // Der hvor den er god, er jo hvis man gerne vil lave noget naar alle operationer er faerdige.
-    // Fx freeze arrayet
-
+    // Ideen er vi har et raw method, og naar vi returnere
+    // Skulle det gerne vaere et method handle der matcher template.invocationType
     protected MethodHandle doBuild() {
         MethodHandle mh = methodHandle;
 
+//        System.out.println("-------------");
+//        System.out.println("Generating MethodHandle for " + type);
+//        System.out.println("InvocationType : " + template.invocationType());
+//        System.out.println(getClass());
+//        System.out.println();
         if (this instanceof LifetimePoolOperationSetup) {
             return mh;
         }
@@ -173,22 +164,14 @@ public sealed abstract class OperationSetup {
         if (requiresBeanInstance) {
             mh = MethodHandles.collectArguments(mh, 0, bean.accessBeanX().provideSpecial());
         } else if (bindings.length == 0) {
-            return MethodHandles.dropArguments(mh, 0, PackedExtensionContext.class);
+            return MethodHandles.dropArguments(mh, 0, template.invocationType().parameterArray());
         }
 
         if (bindings.length > 0) {
-            for (int i = 0; i < bindings.length; i++) {
-                // System.out.println("BT " + bindings[i].getClass());
-                if (bindings[i].provider != null) {
-                    mh = bindings[i].provider.bindIntoOperation(bindings[i], mh);
-                } else {
-                    mh = bindings[i].bindIntoOperation(mh);
-                }
-            }
-
-            // reduce (LifetimeObjectArena, *)X -> (LifetimeObjectArena)X
-            MethodType mt = MethodType.methodType(methodHandle.type().returnType(), PackedExtensionContext.class);
-            mh = MethodHandles.permuteArguments(mh, mt, new int[mh.type().parameterCount()]);
+            Osi osi = new Osi();
+            osi.mh = mh;
+            osi.process(this);
+            mh = osi.mh;
         }
 
         return mh;
@@ -208,22 +191,22 @@ public sealed abstract class OperationSetup {
     }
 
     public final MethodHandle generateMethodHandle() {
-        MethodHandle mh = buildInvoker0();
-        if (mh.type().parameterCount() != 1) {
-            System.err.println(mh.type());
-            throw new Error("Bean : " + bean.path() + ", operation : " + name);
+        // Burde kun skulle laves en gang, men nogle forskellige steder der kalder
+        // den metode, skal lige finde ud af hvorfra
+        if (generatedMethodHandle != null) {
+            return generatedMethodHandle;
         }
-        if (mh.type().parameterType(0) != PackedExtensionContext.class) {
-            System.err.println(mh.type());
-            throw new Error();
-        }
+        bean.container.application.checkInCodegenPhase();
+
+        MethodHandle mh = doBuild();
+
         if (!mh.type().equals(template.methodType)) {
             System.err.println("OperationType " + this.toString());
             System.err.println("Expected " + template.methodType);
             System.err.println("Actual " + mh.type());
             throw new Error();
         }
-        return mh;
+        return generatedMethodHandle = mh;
     }
 
     /** {@return a new mirror.} */

@@ -58,7 +58,7 @@ public final class ApplicationLauncherSetup {
 
     /** The application launcher that is being built. */
     @Nullable
-    RuntimeApplicationLauncher launcher;
+    public RuntimeApplicationLauncher launcher;
 
     /** The index of the application's runtime in the constant pool, or -1 if the application has no runtime, */
     @Nullable

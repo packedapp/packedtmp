@@ -42,7 +42,7 @@ public final class ApplicationSetup {
     public final ContainerSetup container;
 
     /** The driver used to create the application. */
-    public final PackedApplicationDriver<?> driver;
+    public final ApplicationDriver<?> driver;
 
     /** Entry points in the application, is null if there are none. */
     @Nullable // Maybe this a lifetime thingy?
@@ -72,7 +72,7 @@ public final class ApplicationSetup {
      * @param wirelets
      *            optional wirelets
      */
-    public ApplicationSetup(PackedApplicationDriver<?> driver, BuildGoal goal, AssemblySetup assembly, Wirelet[] wirelets) {
+    public ApplicationSetup(ApplicationDriver<?> driver, BuildGoal goal, AssemblySetup assembly, Wirelet[] wirelets) {
         this.driver = requireNonNull(driver);
         this.lifetimeKind = driver.lifetimeKind();
         this.goal = requireNonNull(goal);
@@ -115,7 +115,7 @@ public final class ApplicationSetup {
 
     /** {@return a mirror that can be exposed to end-users.} */
     public ApplicationMirror mirror() {
-        ApplicationMirror mirror = ClassUtil.mirrorHelper(ApplicationMirror.class, ApplicationMirror::new, driver.mirrorSupplier);
+        ApplicationMirror mirror = ClassUtil.mirrorHelper(ApplicationMirror.class, ApplicationMirror::new, driver.mirrorSupplier());
 
         // Initialize ApplicationMirror by calling ApplicationMirror#initialize(ApplicationSetup)
         try {

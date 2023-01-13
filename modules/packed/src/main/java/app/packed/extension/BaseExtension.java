@@ -1,6 +1,7 @@
 package app.packed.extension;
 
 import java.lang.annotation.Annotation;
+import java.util.List;
 import java.util.Set;
 
 import app.packed.bean.BeanConfiguration;
@@ -181,21 +182,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     protected BeanIntrospector newBeanIntrospector() {
         return new BeanIntrospector() {
 
-//            /** A MethodHandle for invoking {@link ApplicationInitializationContext#name()}. */
-//            private static final MethodHandle MH_NAME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class, "name",
-//                    String.class);
-//
-//            /** A MethodHandle for invoking {@link ApplicationInitializationContext#runtime()}. */
-//            private static final MethodHandle MH_RUNTIME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
-//                    "runtime", ManagedLifetimeController.class);
-//
-//            /** A MethodHandle for invoking {@link ApplicationInitializationContext#serviceLocator()}. */
-//            private static final MethodHandle MH_SERVICE_LOCATOR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
-//                    "serviceLocator", ServiceLocator.class);
-
             @Override
             public void hookOnAnnotatedVariable(Annotation hook, BindableVariable v) {
-                System.out.println(v.variable());
                 if (hook instanceof FromContainerGuest) {
                     Variable va = v.variable();
                     if (va.getRawType().equals(String.class)) {
@@ -207,8 +195,18 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     } else {
                         throw new UnsupportedOperationException();
                     }
-                } else if (hook instanceof InvocationArgument) {
-                    System.out.println("XX " + v.variable());
+                } else if (hook instanceof InvocationArgument ia) {
+                    int index = ia.index();
+                    Class<?> cl = v.variable().getRawType();
+                    List<Class<?>> l = v.availableInvocationArguments();
+                    if (cl != l.get(index)) {
+                        throw new UnsupportedOperationException();
+                    }
+                    
+                    //v.b
+                    //v.bindToInvocationArgument(index);
+                    v.bindToInvocationArgument(index);
+                    
                 } else {
                     super.hookOnAnnotatedVariable(hook, v);
                 }
@@ -223,7 +221,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             @Override
             public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod method) {
-                AnnotationReader ar = method.annotations();
+                AnnotationCollection ar = method.annotations();
 
                 OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
                 // (PackedInvocationType) operation.invocationType.withReturnType(type.returnType());

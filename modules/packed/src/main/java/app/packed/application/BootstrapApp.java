@@ -15,23 +15,31 @@
  */
 package app.packed.application;
 
-import java.lang.invoke.MethodHandles;
+import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+
+import app.packed.application.BootstrapApp.Composer.BootstrapAppAssembly;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
-import internal.app.packed.application.PackedApplicationDriver;
+import internal.app.packed.application.ApplicationInitializationContext;
+import internal.app.packed.application.OldPackedBootstrapApp;
+import internal.app.packed.application.PremordialApplicationDriver;
+import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 
 /**
- * A bootstrap app is a special application that can be used to creating other (non-bootstrap) application.
+ * A bootstrap app is a special type of applications that can be used to create other (non-bootstrap) application.
  * <p>
  * Bootstrap application Packed comes with a number of predefined application drivers:
  * <p>
- * Application drivers are normally never exposed to end users.
- * 
+ * Bootstrap applications are normally never exposed to end users.
  * <p>
  * If these are not sufficient, it is very easy to build your own.
  * 
@@ -46,8 +54,13 @@ import internal.app.packed.application.PackedApplicationDriver;
  * @param <A>
  *            the type of applications this bootstrap app creates.
  */
-@SuppressWarnings("rawtypes")
-public sealed interface BootstrapApp<A> permits PackedApplicationDriver {
+public final class BootstrapApp<A> {
+
+    private final OldPackedBootstrapApp<A> app;
+
+    BootstrapApp(OldPackedBootstrapApp<A> app) {
+        this.app = requireNonNull(app);
+    }
 
     /**
      * Builds an application using the specified assembly and optional wirelets and returns a new instance of it.
@@ -68,9 +81,13 @@ public sealed interface BootstrapApp<A> permits PackedApplicationDriver {
      *             if the application had an executing phase and it fails
      * @see App#run(Assembly, Wirelet...)
      */
-    A launch(Assembly assembly, Wirelet... wirelets); // newInstance
+    public A launch(Assembly assembly, Wirelet... wirelets) {
+        return app.launch(assembly, wirelets);
+    }
 
-    ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets);
+    public ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets) {
+        return app.newImage(assembly, wirelets);
+    }
 
     /**
      * Create a new application image by using the specified assembly and optional wirelets.
@@ -83,12 +100,14 @@ public sealed interface BootstrapApp<A> permits PackedApplicationDriver {
      * @throws RuntimeException
      *             if the image could not be build
      */
-    // Andre image optimizations
+    public // Andre image optimizations
     //// Don't cache beans info
     /// Nu bliver jeg i tvivl igen... Fx med Tester
 
     // launchLazily?
-    ApplicationLauncher<A> newLauncher(Assembly assembly, Wirelet... wirelets);
+    ApplicationLauncher<A> newLauncher(Assembly assembly, Wirelet... wirelets) {
+        return app.newLauncher(assembly, wirelets);
+    }
 
     /**
      * Creates a new application mirror from the specified assembly and optional wirelets.
@@ -102,7 +121,9 @@ public sealed interface BootstrapApp<A> permits PackedApplicationDriver {
      * @throws RuntimeException
      *             if the mirror could not be build
      */
-    ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets);
+    public ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets) {
+        return app.newMirror(assembly, wirelets);
+    }
 
     /**
      * Verifies that a valid application can be build.
@@ -114,7 +135,9 @@ public sealed interface BootstrapApp<A> permits PackedApplicationDriver {
      * @throws RuntimeException
      *             if a valid application cannot be created
      */
-    void verify(Assembly assembly, Wirelet... wirelets);
+    public void verify(Assembly assembly, Wirelet... wirelets) {
+        app.verify(assembly, wirelets);
+    }
 
     /**
      * Augment the driver with the specified wirelets, that will be processed when building or instantiating new
@@ -138,25 +161,34 @@ public sealed interface BootstrapApp<A> permits PackedApplicationDriver {
      * @return the augmented application driver
      */
     // Hvis vi ikke expo
-    BootstrapApp<A> with(Wirelet... wirelets);
-
-    static <A> BootstrapApp<A> of(Class<A> applicationClass, ComposerAction<Composer> action) {
-        Composer c = new Composer();
-        action.build(c);
-        return c.b.build(MethodHandles.lookup(), applicationClass);
+    public BootstrapApp<A> with(Wirelet... wirelets) {
+        return new BootstrapApp<>(app.with(wirelets));
     }
 
-    static BootstrapApp<Void> of(ComposerAction<Composer> action) {
-        Composer c = new Composer();
-        action.build(c);
-        return c.b.buildVoid();
+    public static <A> BootstrapApp<A> of(Class<A> applicationClass, ComposerAction<Composer> action) {
+        return of0(applicationClass, action);
     }
 
-    @SuppressWarnings("unchecked")
-    static <A> BootstrapApp<A> of(Op<A> op, ComposerAction<Composer> action) {
-        Composer c = new Composer();
-        action.build(c);
-        return c.b.build((Class) op.type().returnType(), op);
+    public static BootstrapApp<Void> of(ComposerAction<? super Composer> action) {
+        return of0(null, action);
+    }
+
+    public static <A> BootstrapApp<A> of(Op<A> op, ComposerAction<? super Composer> action) {
+        return of0(op, action);
+    }
+
+    private static <A> BootstrapApp<A> of0(Object o, ComposerAction<? super Composer> action) {
+        Composer comp = new Composer(o);
+        PremordialApplicationDriver<A> pad = new PremordialApplicationDriver<>();
+        BootstrapAppAssembly<Object> baa = new Composer.BootstrapAppAssembly<>(comp, action);
+        AssemblySetup as = new AssemblySetup(pad, BuildGoal.LAUNCH, null, baa, new Wirelet[0]);
+        as.build();
+        MethodHandle mh = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationInitializationContext.class));
+        if (o != null) {
+            mh = comp.ahe.mh;
+        }
+        OldPackedBootstrapApp<A> a = new OldPackedBootstrapApp<>(comp.lifetimeKind, mh, null);
+        return new BootstrapApp<>(a);
     }
 
     /**
@@ -170,11 +202,23 @@ public sealed interface BootstrapApp<A> permits PackedApplicationDriver {
     // Bridge types
     // Compiler -> Deployable<ApplicationWrapper>
     public static final class Composer extends AbstractComposer {
-        PackedApplicationDriver.Builder b = new PackedApplicationDriver.Builder(null);
+        ApplicationHostExtension ahe;
+        OldLifetimeKind lifetimeKind = OldLifetimeKind.UNMANAGED;
+        final Object o;
 
-        boolean managedLifetime;
+        private Composer(Object o) {
+            this.o = o;
+        }
 
-        private Composer() {}
+        @Override
+        protected void preAction() {
+            ahe = use(ApplicationHostExtension.class);
+            if (o instanceof Class<?> cl) {
+                ahe.newApplication(cl);
+            } else if (o instanceof Op<?> op) {
+                ahe.newApplication(op);
+            } 
+        }
 
         /**
          * Application produced by the driver are executable. And will be launched by the specified launch mode by default.
@@ -184,15 +228,14 @@ public sealed interface BootstrapApp<A> permits PackedApplicationDriver {
          * @return this builder
          */
         public Composer managedLifetime() {
-            b.managedLifetime();
-            managedLifetime = true;
+            this.lifetimeKind = OldLifetimeKind.MANAGED;
             return this;
         }
 
-        static class BootstrapAppAssembly extends ComposerAssembly<Composer> {
+        static class BootstrapAppAssembly<A> extends ComposerAssembly<Composer> {
 
-            BootstrapAppAssembly(ComposerAction<? super Composer> action) {
-                super(new Composer(), action);
+            BootstrapAppAssembly(Composer c, ComposerAction<? super Composer> action) {
+                super(c, action);
             }
         }
     }

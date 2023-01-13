@@ -24,7 +24,7 @@ import app.packed.bean.DublicateBeanClassException;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
-import internal.app.packed.bean.BeanClassMapContainer.MuInst;
+import internal.app.packed.bean.BeanSetupClassMapContainer.MuInst;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromConstant;
 import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
@@ -43,7 +43,6 @@ import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.LifetimePoolOperationSetup;
 import internal.app.packed.operation.PackedOp;
-import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.service.ProvidedService;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.PackedNamespacePath;
@@ -119,7 +118,7 @@ public final class BeanSetup {
 
     /** Non-null while a bean is being introspected. */
     @Nullable
-    public IntrospectedBean introspecting;
+    public BeanScanner introspecting;
 
     public ContextSetup contexts;
 
@@ -180,8 +179,8 @@ public final class BeanSetup {
 
     // Relative to x
     public OperationSetup instanceAccessOperation() {
-        LifetimePoolOperationSetup os = new LifetimePoolOperationSetup(installedBy, this, OperationType.of(beanClass), OperationTemplate.defaults(), accessBeanX().provideSpecial());
-        os.template = (PackedOperationTemplate) OperationTemplate.defaults().withReturnType(beanClass);
+        OperationTemplate def = OperationTemplate.defaults().withReturnType(beanClass);
+        LifetimePoolOperationSetup os = new LifetimePoolOperationSetup(installedBy, this, OperationType.of(beanClass), def, accessBeanX().provideSpecial());
         return os;
     }
 
@@ -331,14 +330,14 @@ public final class BeanSetup {
             } else {
                 ot = bean.lifetime.lifetimes.get(0);
             }
-            
+
             OperationSetup os = op.newOperationSetup(bean, bean.installedBy, ot);
             bean.operations.add(os);
         }
 
         // Scan the bean class for annotations unless the bean class is void
         if (sourceKind != BeanSourceKind.NONE) {
-            new IntrospectedBean(bean, introspector, attachments).introspect();
+            new BeanScanner(bean, introspector, attachments).introspect();
         }
 
         // Bean was successfully created, add it to the container

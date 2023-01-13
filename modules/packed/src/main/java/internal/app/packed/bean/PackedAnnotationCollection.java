@@ -15,12 +15,17 @@
  */
 package internal.app.packed.bean;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Consumer;
 
-import app.packed.bean.BeanIntrospector.AnnotationReader;
+import app.packed.bean.BeanIntrospector.AnnotationCollection;
 
-/** Implementation of {@link AnnotationReader}. */
-public record BeanAnnotationReader(Annotation[] annotations) implements AnnotationReader {
+/** Implementation of {@link AnnotationCollection}. */
+public record PackedAnnotationCollection(Annotation[] annotations) implements AnnotationCollection {
 
     /** {@inheritDoc} */
     @Override
@@ -53,7 +58,27 @@ public record BeanAnnotationReader(Annotation[] annotations) implements Annotati
 
     /** {@inheritDoc} */
     @Override
-    public boolean hasAnnotations() {
+    public boolean isEmpty() {
         return annotations.length != 0;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int size() {
+        return annotations.length;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Iterator<Annotation> iterator() {
+        return List.of(annotations).iterator();
+    }
+
+    @Override
+    public void forEach(Consumer<? super Annotation> action) {
+        requireNonNull(action, "action is null");
+        for (int i = 0; i < annotations.length; i++) {
+            action.accept(annotations[i]);
+        }
     }
 }

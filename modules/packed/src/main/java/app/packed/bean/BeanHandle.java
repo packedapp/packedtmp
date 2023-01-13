@@ -83,6 +83,11 @@ public final /* primitive */ class BeanHandle<T> {
         return bean.beanKind;
     }
 
+    /** {@return the bean kind.} */
+    public BeanSourceKind beanSourceKind() {
+        return bean.sourceKind;
+    }
+
     /**
      * Checks that the bean is still configurable or throws an {@link IllegalStateException} if not
      * <p>
@@ -155,7 +160,7 @@ public final /* primitive */ class BeanHandle<T> {
      * @return {@code true} if the bean is still configurable
      */
     public boolean isConfigurable() {
-        return !bean.realm.isClosed();
+        return !bean.realm.isDone();
     }
 
     /**
@@ -170,6 +175,9 @@ public final /* primitive */ class BeanHandle<T> {
      * @see BeanInstaller#lifetimes(app.packed.operation.OperationTemplate...)
      */
     public List<OperationHandle> lifetimeOperations() {
+        if (beanKind().hasInstances() && beanSourceKind() != BeanSourceKind.NONE) {
+            return List.of(bean.operations.get(0).toHandle());
+        }
         return List.of();
     }
 

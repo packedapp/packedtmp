@@ -16,7 +16,6 @@
 package internal.app.packed.application.sandbox;
 
 import app.packed.container.BaseAssembly;
-import app.packed.entrypoint.Main;
 
 /**
  *
@@ -35,7 +34,6 @@ public class ProgramR extends BaseAssembly {
     
     public static class Foo {
         
-        @Main
         public void main() {
             System.out.println("Dav");
         }

@@ -66,7 +66,7 @@ public final class ContainerHandle {
      * @return {@code true} if the bean is still configurable
      */
     public boolean isConfigurable() {
-        return !container.assembly.isClosed();
+        return !container.assembly.isDone();
     }
 
     // Hmm, skal vi have selve handles'ene?

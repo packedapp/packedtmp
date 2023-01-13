@@ -20,7 +20,7 @@ import app.packed.operation.OperationTemplate;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.EntryPointSetup;
 import internal.app.packed.application.EntryPointSetup.MainThreadOfControl;
-import internal.app.packed.bean.IntrospectedOperationalMethod;
+import internal.app.packed.bean.BeanScannerMethod;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 
@@ -85,7 +85,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
                 MainThreadOfControl mc = application.entryPoints.mainThread();
 
                 mc.isStatic = Modifier.isStatic(method.modifiers());
-                mc.cs = ((IntrospectedOperationalMethod) method).introspectedBean.bean;
+                mc.cs = ((BeanScannerMethod) method).scanner.bean;
 
                 // We should be able to just take the method handle when needed
 

@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
-
-import java.util.HashMap;
+package app.packed.application;
 
 /**
  *
  */
-public final class BeanClassMapContainer {
+public class InstallingAppHost {
 
-    /** A map of all non-void bean classes. Used for controlling non-multi-install beans. */
-    public final HashMap<Class<?>, Object> beanClassMap = new HashMap<>();
-    
-    public static class MuInst {
-        int counter;
+
+    public InstallingAppHost() {
     }
 }

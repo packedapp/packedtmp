@@ -25,6 +25,7 @@ import app.packed.service.ServiceBindingMirror;
 import app.packed.service.ServiceExtension;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.Osi;
 
 /**
  * A binding to a service.
@@ -58,7 +59,9 @@ public final class ServiceBindingSetup extends BindingSetup {
 
     /** {@inheritDoc} */
     @Override
-    public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
+    public MethodHandle bindIntoOperation(Osi osi, MethodHandle methodHandle) {
+        // 0 Skal nok erstattest hvis vi ikke kun tager PackedExtensionContext
+        osi.is.push(0);
         MethodHandle mh = entry.provider.resolution.provideSpecial();
         return MethodHandles.collectArguments(methodHandle, index, mh);
     }

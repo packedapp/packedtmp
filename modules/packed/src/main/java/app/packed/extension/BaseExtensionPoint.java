@@ -23,9 +23,9 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     /** Creates a new base extension point. */
     BaseExtensionPoint() {}
 
-    public <T> InstanceBeanConfiguration<T> install(Class<T> implementation) {
+    public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
         BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, usageContext()).install(implementation);
-        return new InstanceBeanConfiguration<>(handle);
+        return new ExtensionBeanConfiguration<>(handle);
     }
 
     /**
@@ -35,9 +35,9 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            an operation responsible for creating an instance of the bean when the container is initialized
      * @return a configuration object representing the installed bean
      */
-    public <T> InstanceBeanConfiguration<T> install(Op<T> op) {
+    public <T> ExtensionBeanConfiguration<T> install(Op<T> op) {
         BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, usageContext()).install(op);
-        return new InstanceBeanConfiguration<>(handle);
+        return new ExtensionBeanConfiguration<>(handle);
     }
 
     public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz) {

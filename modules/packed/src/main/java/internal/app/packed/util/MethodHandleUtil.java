@@ -13,40 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.deprecated.invoke;
+package internal.app.packed.util;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Optional;
-
-import internal.app.packed.binding.InternalDependency;
-import internal.app.packed.util.LookupUtil;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 
 /**
  *
  */
 class MethodHandleUtil {
-    public static final MethodHandle WRAP_OPTIONAL = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), InternalDependency.class, "wrapIfOptional", Object.class,
-            Object.class);
+    
+    /** A method handle that calls {@link OptionalDouble#of(double)} (double)OptionalDouble. */
+    public static final MethodHandle OPTIONAL_DOUBLE_OF = LookupUtil.lookupStaticPublic(OptionalDouble.class, "of", OptionalDouble.class, double.class);
 
-    public static final MethodHandle OPTIONAL_EMPTY = LookupUtil.lookupStaticPublic(Optional.class, "empty", Optional.class);
+    /** A method handle that calls {@link OptionalInt#of(int)} (int)OptionalInt. */
+    public static final MethodHandle OPTIONAL_INT_OF = LookupUtil.lookupStaticPublic(OptionalInt.class, "of", OptionalInt.class, int.class);
 
-//    public static final MethodHandle SUPPLIER_GET = LookupUtil.lookupStaticPublic(Supplier.class, "get", Supplier.class, Object.class);
+    /** A method handle that calls {@link OptionalLong#of(long)} (long)OptionalLong. */
+    public static final MethodHandle OPTIONAL_LONG_OF = LookupUtil.lookupStaticPublic(OptionalLong.class, "of", OptionalLong.class, long.class);
 
     public static final MethodHandle OPTIONAL_OF = LookupUtil.lookupStaticPublic(Optional.class, "of", Optional.class, Object.class);
 
     public static final MethodHandle OPTIONAL_OF_NULLABLE = LookupUtil.lookupStaticPublic(Optional.class, "ofNullable", Optional.class, Object.class);
 
-    public static final MethodHandle optionalOfTo(Class<?> type) {
-        return MethodHandles.explicitCastArguments(OPTIONAL_OF, MethodType.methodType(Optional.class, type));
-    }
-
     public static final MethodHandle optionalOfNullableTo(Class<?> type) {
         return MethodHandles.explicitCastArguments(OPTIONAL_OF_NULLABLE, MethodType.methodType(Optional.class, type));
     }
-}
 
+    public static final MethodHandle optionalOfTo(Class<?> type) {
+        return MethodHandles.explicitCastArguments(OPTIONAL_OF, MethodType.methodType(Optional.class, type));
+    }
+    
+    public static void main(String[] args) {
+        System.out.println(OPTIONAL_DOUBLE_OF.type());
+        System.out.println(optionalOfTo(String.class).type());
+        
+    }
+}
 
 //
 //public static MethodHandle getFromField(int modifiers, VarHandle vh) {
@@ -75,4 +83,3 @@ class MethodHandleUtil {
 //   MethodHandles.filterArguments( OPTIONAL_EMPTY, 0, null)
 //    return MethodHandles.filterArguments(target, position, replaceWith);
 //}
-

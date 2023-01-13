@@ -57,6 +57,8 @@ public abstract class AbstractComposer {
         return use(BaseExtension.class);
     }
 
+    protected void preAction() {}
+
     /**
      * Returns the configuration of the <strong>root</strong> container defined by this composer.
      * <p>
@@ -149,6 +151,8 @@ public abstract class AbstractComposer {
             Object existing = VH_CONFIGURATION.compareAndExchange(composer, null, configuration);
             if (existing == null) {
                 try {
+                    composer.preAction();
+                    
                     // Run AssemblyHook.onPreBuild if hooks are present
                     assemblyModel.preBuild(configuration);
 

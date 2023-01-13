@@ -54,8 +54,8 @@ abstract sealed class TerminalOp<R> extends PackedOp<R> {
         /** {@inheritDoc} */
         @Override
         public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template) {
+            template = template.withReturnType(type.returnType());
             OperationSetup os = new OperationSetup.FunctionOperationSetup(operator, bean, type, template, mhOperation, samType, implementationMethod);
-            os.template = (PackedOperationTemplate) OperationTemplate.defaults().withReturnType(type.returnType());
             return os;
         }
     }

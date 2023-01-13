@@ -91,7 +91,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
         // Because the extension the extension points belongs to, is always a direct
         // dependency and will be closed before the extension that provides the extension point.
         ExtensionTreeSetup extensionTree = context().usedBy().extensionTree;
-        if (extensionTree.isClosed()) {
+        if (extensionTree.isDone()) {
             throw new IllegalStateException(extensionTree.realmType() + " is no longer configurable");
         }
     }

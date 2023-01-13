@@ -24,9 +24,12 @@ import app.packed.binding.mirror.BindingProviderKind;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.Osi;
 
 /** Provider of a value for a binding. */
 public sealed abstract class BindingProvider {
+
+    public abstract MethodHandle bindIntoOperation(Osi osi);
 
     public abstract MethodHandle bindIntoOperation(BindingSetup binding, MethodHandle methodHandle);
 
@@ -51,10 +54,18 @@ public sealed abstract class BindingProvider {
             this.argumentIndex = argumentIndex;
         }
 
+        @Override
+        public MethodHandle bindIntoOperation(Osi osi) {
+            return osi.bindArgument(argumentIndex);
+        }
+
         /** {@inheritDoc} */
         @Override
         public MethodHandle bindIntoOperation(BindingSetup binding, MethodHandle methodHandle) {
-            throw new UnsupportedOperationException();
+            System.out.println(methodHandle.type());
+            System.out.println(binding.operation.template.invocationType());
+            // new UnsupportedOperationException();
+            return methodHandle;
         }
 
         /** {@inheritDoc} */
@@ -89,9 +100,14 @@ public sealed abstract class BindingProvider {
             this.constantType = constantType;
         }
 
+        @Override
+        public MethodHandle bindIntoOperation(Osi osi) {
+            return osi.bindConstant(constant);
+        }
+
         /** {@inheritDoc} */
         public MethodHandle bindIntoOperation(BindingSetup binding, MethodHandle methodHandle) {
-            return MethodHandles.insertArguments(methodHandle, binding.index, constant);
+            return MethodHandles.insertArguments(methodHandle, 0, constant);
         }
 
         /** {@inheritDoc} */
@@ -134,16 +150,22 @@ public sealed abstract class BindingProvider {
         public BindingProviderKind kind() {
             return BindingProviderKind.OPERATION;
         }
-        
+
         /** {@inheritDoc} */
         @Override
         public MethodHandle provideSpecial() {
             // Must be calculated relative to the operation...
-            // 
+            //
             MethodHandle mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, index);
-            
+
             // (LifetimePool)Object -> (LifetimePool)type
             return mh.asType(mh.type().changeReturnType(type));
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle bindIntoOperation(Osi osi) {
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -157,11 +179,19 @@ public sealed abstract class BindingProvider {
             this.operation = requireNonNull(operation);
         }
 
+        @Override
+        public MethodHandle bindIntoOperation(Osi osi) {
+            return osi.bindOperation(operation);
+        }
+
         /** {@inheritDoc} */
         @Override
         public MethodHandle bindIntoOperation(BindingSetup binding, MethodHandle methodHandle) {
             MethodHandle mh = operation.generateMethodHandle();
-            return MethodHandles.collectArguments(methodHandle, binding.index, mh);
+            System.out.println("XX " + methodHandle.type());
+            MethodHandle m = MethodHandles.collectArguments(methodHandle, 0, mh);
+            System.out.println(m.type());
+            return m;
         }
 
         /** {@inheritDoc} */

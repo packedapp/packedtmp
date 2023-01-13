@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 import java.util.Set;
 
-import app.packed.bean.BeanIntrospector.AnnotationReader;
+import app.packed.bean.BeanIntrospector.AnnotationCollection;
 import app.packed.bean.BeanIntrospector.OperationalMethod;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.binding.Key;
@@ -32,22 +32,22 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
-import internal.app.packed.bean.IntrospectedBean.Contributor;
+import internal.app.packed.bean.BeanScanner.ContributingExtension;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
 import internal.app.packed.service.KeyHelper;
 
 /** Internal implementation of BeanMethod. Discard after use. */
-public final class IntrospectedOperationalMethod implements OperationalMethod {
+public final class BeanScannerMethod implements OperationalMethod {
 
-    /** Annotations on the method read via {@link Method#getAnnotations()}. */
+    /** Annotations ({@link Method#getAnnotations()}) on the method. */
     private final Annotation[] annotations;
 
     /** The extension that will operate any operations. */
-    public final Contributor contributor;
+    final ContributingExtension contributor;
 
-    /** The internal introspector */
-    public final IntrospectedBean introspectedBean;
+    /** The bean scanner. */
+    public final BeanScanner scanner;
 
     /** The underlying method. */
     private final Method method;
@@ -56,8 +56,8 @@ public final class IntrospectedOperationalMethod implements OperationalMethod {
     @Nullable
     private OperationType type;
 
-    IntrospectedOperationalMethod(IntrospectedBean analyzer, Contributor contributor, Method method, Annotation[] annotations, boolean allowInvoke) {
-        this.introspectedBean = analyzer;
+    BeanScannerMethod(BeanScanner scanner, ContributingExtension contributor, Method method, Annotation[] annotations, boolean allowInvoke) {
+        this.scanner = scanner;
         this.contributor = contributor;
         this.method = method;
         this.annotations = annotations;
@@ -65,8 +65,8 @@ public final class IntrospectedOperationalMethod implements OperationalMethod {
 
     /** {@inheritDoc} */
     @Override
-    public AnnotationReader annotations() {
-        return new BeanAnnotationReader(annotations);
+    public AnnotationCollection annotations() {
+        return new PackedAnnotationCollection(annotations);
     }
 
     /** {@inheritDoc} */
@@ -102,18 +102,17 @@ public final class IntrospectedOperationalMethod implements OperationalMethod {
         // We should be able to create this lazily
         // Probably need to store the lookup mechanism on the bean...
         MethodHandle methodHandle;
-        Lookup lookup = introspectedBean.oc.lookup(method);
+        Lookup lookup = scanner.oc.lookup(method);
         try {
             methodHandle = lookup.unreflect(method);
         } catch (IllegalAccessException e) {
             throw new InaccessibleBeanMemberException("stuff", e);
         }
 
-        OperationSetup operation = new MethodOperationSetup(contributor.extension(), introspectedBean.bean, operationType(), template, method, methodHandle);
+        OperationSetup operation = new MethodOperationSetup(contributor.extension(), scanner.bean, operationType(), template, method, methodHandle);
 
-        
-        introspectedBean.bean.operations.add(operation);
-        introspectedBean.unBoundOperations.add(operation);
+        scanner.bean.operations.add(operation);
+        scanner.unBoundOperations.add(operation);
         return operation.toHandle();
     }
 
@@ -133,16 +132,16 @@ public final class IntrospectedOperationalMethod implements OperationalMethod {
      * @param method
      *            the method to look for annotations on
      */
-    static void introspectMethodForAnnotations(IntrospectedBean iBean, Method method) {
+    static void introspectMethodForAnnotations(BeanScanner iBean, Method method) {
         Annotation[] annotations = method.getAnnotations();
         for (int i = 0; i < annotations.length; i++) {
             Annotation a1 = annotations[i];
             Class<? extends Annotation> a1Type = a1.annotationType();
             AnnotatedMethod fh = iBean.hookModel.testMethodAnnotation(a1Type);
             if (fh != null) {
-                Contributor contributor = iBean.computeContributor(fh.extensionType(), false);
+                ContributingExtension contributor = iBean.computeContributor(fh.extensionType(), false);
 
-                IntrospectedOperationalMethod pbm = new IntrospectedOperationalMethod(iBean, contributor, method, annotations, fh.isInvokable());
+                BeanScannerMethod pbm = new BeanScannerMethod(iBean, contributor, method, annotations, fh.isInvokable());
 
                 contributor.introspector().hookOnAnnotatedMethod(Set.of(), pbm);
             }

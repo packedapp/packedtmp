@@ -23,9 +23,9 @@ import java.util.function.Function;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.RunState;
-import internal.app.packed.application.PackedApplicationDriver.MappedApplicationImage;
-import internal.app.packed.application.PackedApplicationDriver.ReusableApplicationImage;
-import internal.app.packed.application.PackedApplicationDriver.SingleShotApplicationImage;
+import internal.app.packed.application.OldPackedBootstrapApp.MappedApplicationImage;
+import internal.app.packed.application.OldPackedBootstrapApp.ReusableApplicationImage;
+import internal.app.packed.application.OldPackedBootstrapApp.SingleShotApplicationImage;
 
 /**
  * An application image is a pre-built application that can be launched at a later time.
@@ -137,7 +137,6 @@ interface Zimgbox<A> {
 //     throw new UnsupportedOperationException();
 // }
 
-    
     default boolean isUseable() {
         // An image returns true always
 
@@ -146,7 +145,7 @@ interface Zimgbox<A> {
     }
 
     Optional<ApplicationMirror> mirror();
-    
+
     /**
      * Returns the launch mode of application(s) created by this image.
      * 

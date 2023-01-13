@@ -21,7 +21,7 @@ import app.packed.binding.Variable;
 import app.packed.extension.BaseExtension;
 import internal.app.packed.bean.BeanHookModel.AnnotatedParameterType;
 import internal.app.packed.bean.BeanHookModel.ParameterType;
-import internal.app.packed.bean.IntrospectedBean.Contributor;
+import internal.app.packed.bean.BeanScanner.ContributingExtension;
 import internal.app.packed.binding.ExtensionServiceBindingSetup;
 import internal.app.packed.binding.InternalDependency;
 import internal.app.packed.operation.OperationSetup;
@@ -29,9 +29,9 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
-final class BindingResolver {
+final class BeanScannerBindingResolver {
 
-    static void resolveBinding(IntrospectedBean iBean, OperationSetup operation, int index) {
+    static void resolveBinding(BeanScanner iBean, OperationSetup operation, int index) {
 
         // Extracts the variable we want to resolve
         Variable var = operation.type.parameter(index);
@@ -46,8 +46,8 @@ final class BindingResolver {
         // Next, see if there are any VariableTypeHooks on the variable
         ParameterType hook = iBean.hookModel.testParameterType(var.getRawType());
         if (hook != null) {
-            Contributor contributor = iBean.computeContributor(hook.extensionType(), false);
-            IntrospectedBeanVariable h = new IntrospectedBeanVariable(iBean, operation, index, contributor.extension(), var);
+            ContributingExtension contributor = iBean.computeContributor(hook.extensionType(), false);
+            BeanScannerBeanVariable h = new BeanScannerBeanVariable(iBean, operation, index, contributor.extension(), var);
             contributor.introspector().hookOnAnnotatedVariable(null, h);
             if (operation.bindings[index] != null) {
                 return;
@@ -74,7 +74,7 @@ final class BindingResolver {
      *            the method to look for annotations on
      * @return
      */
-    private static boolean tryResolveWithBindingAnnotation(IntrospectedBean introspector, Variable var, OperationSetup os, int index) {
+    private static boolean tryResolveWithBindingAnnotation(BeanScanner introspector, Variable var, OperationSetup os, int index) {
         Annotation[] annotations = var.getAnnotations();
 
         for (int i = 0; i < annotations.length; i++) {
@@ -82,9 +82,9 @@ final class BindingResolver {
             Class<? extends Annotation> a1Type = a1.annotationType();
             AnnotatedParameterType hook = introspector.hookModel.testParameterAnnotation(a1Type);
             if (hook != null) {
-                Contributor ei = introspector.computeContributor(hook.extensionType(), false);
+                ContributingExtension ei = introspector.computeContributor(hook.extensionType(), false);
 
-                IntrospectedBeanVariable h = new IntrospectedBeanVariable(introspector, os, index, ei.extension(), var);
+                BeanScannerBeanVariable h = new BeanScannerBeanVariable(introspector, os, index, ei.extension(), var);
                 ei.introspector().hookOnAnnotatedVariable(a1, h);
                 return true;
             }

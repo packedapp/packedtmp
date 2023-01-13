@@ -35,7 +35,7 @@ import internal.app.packed.util.StreamUtil;
  * Instances of this class is typically obtained from calls to {@link ApplicationMirror} or {@link ContainerMirror}.
  */
 @VariableTypeHook(extension = MirrorExtension.class)
-public non-sealed class BeanMirror implements ContextualizedElementMirror, Mirror {
+public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirror {
 
     /**
      * The internal configuration of the bean we are mirroring. Is initially null but populated via
@@ -44,12 +44,10 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror, Mirro
     @Nullable
     private BeanSetup bean;
 
-    /**
-     * Create a new bean mirror.
-     */
+    /** Create a new bean mirror. */
     public BeanMirror() {}
 
-    /** {@return the application where this bean is defined.} */
+    /** {@return the application the bean is a part of.} */
     public ApplicationMirror application() {
         return bean().container.application.mirror();
     }
@@ -108,7 +106,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror, Mirro
      * @return operation that creates instances of the bean. Or empty if instances are never created
      */
     // instantiatedBy
-    
+
     // Syntes maaske bare skal lede efter den i operations()?
     // Saa supportere vi ogsaa flere factory metodes hvis vi har brug for det en gang
     public Optional<OperationMirror> factoryOperation() {

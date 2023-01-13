@@ -50,15 +50,15 @@ import app.packed.operation.OperationType;
  *            the implementation type
  * @return a factory for the specified type
  */
-final record IntrospectedBeanConstructor(Constructor<?> constructor, OperationType operationType) {
+final record BeanScannerConstructor(Constructor<?> constructor, OperationType operationType) {
 
     /** A cache of constructor. */
-    static final ClassValue<IntrospectedBeanConstructor> CACHE = new ClassValue<>() {
+    static final ClassValue<BeanScannerConstructor> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
-        protected IntrospectedBeanConstructor computeValue(Class<?> implementation) {
-            Constructor<?> executable = IntrospectedBeanConstructor.getConstructor(implementation, true, e -> new IllegalArgumentException(e));
-            return new IntrospectedBeanConstructor(executable, OperationType.ofExecutable(executable));
+        protected BeanScannerConstructor computeValue(Class<?> implementation) {
+            Constructor<?> executable = BeanScannerConstructor.getConstructor(implementation, true, e -> new IllegalArgumentException(e));
+            return new BeanScannerConstructor(executable, OperationType.ofExecutable(executable));
         }
     };
 

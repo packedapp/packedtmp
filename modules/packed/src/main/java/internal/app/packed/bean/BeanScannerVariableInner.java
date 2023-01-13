@@ -18,9 +18,9 @@ package internal.app.packed.bean;
 /**
  *
  */
-abstract class IntrospectedBeanVariableInner {
+abstract class BeanScannerVariableInner {
 
-    public static class Normal extends IntrospectedBeanVariableInner {
+    public static class Normal extends BeanScannerVariableInner {
 
     }
 

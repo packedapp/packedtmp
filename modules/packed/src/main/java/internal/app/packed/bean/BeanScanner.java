@@ -48,7 +48,6 @@ import internal.app.packed.lifetime.LifetimeAccessor;
 import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.ConstructorOperationSetup;
-import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.ThrowableUtil;
@@ -56,14 +55,14 @@ import internal.app.packed.util.ThrowableUtil;
 /**
  * This class represents a single bean being introspected.
  */
-public final class IntrospectedBean {
+public final class BeanScanner {
 
     /** We never process classes that are located in the {@code java.base} module. */
     static final Module JAVA_BASE_MODULE = Object.class.getModule();
 
     /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
     private static final MethodHandle MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(),
-            BeanIntrospector.class, "initialize", void.class, ExtensionSetup.class, IntrospectedBean.class);
+            BeanIntrospector.class, "initialize", void.class, ExtensionSetup.class, BeanScanner.class);
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
@@ -86,7 +85,7 @@ public final class IntrospectedBean {
     // I think we sort in BeanFields...
     // But then should we sort annotations as well?
     /** Every extension that is activated by a hook. */
-    private final LinkedHashMap<Class<? extends Extension<?>>, Contributor> extensions = new LinkedHashMap<>();
+    private final LinkedHashMap<Class<? extends Extension<?>>, ContributingExtension> extensions = new LinkedHashMap<>();
 
     final BeanHookModel hookModel;
 
@@ -96,7 +95,7 @@ public final class IntrospectedBean {
 
     final ArrayDeque<OperationSetup> unBoundOperations = new ArrayDeque<>();
 
-    IntrospectedBean(BeanSetup bean, @Nullable BeanIntrospector beanIntrospector, @Nullable Map<Class<?>, Object> attachments) {
+    BeanScanner(BeanSetup bean, @Nullable BeanIntrospector beanIntrospector, @Nullable Map<Class<?>, Object> attachments) {
         this.bean = bean;
         this.hookModel = bean.container.assembly.assemblyModel.hookModel;
         this.beanIntrospector = beanIntrospector;
@@ -110,7 +109,7 @@ public final class IntrospectedBean {
      * @param fullAccess
      * @return the contributor
      */
-    Contributor computeContributor(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
+    ContributingExtension computeContributor(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
         return extensions.computeIfAbsent(extensionType, c -> {
             // Get the extension (installing it if necessary)
             ExtensionSetup extension = bean.container.useExtension(extensionType, null);
@@ -138,15 +137,24 @@ public final class IntrospectedBean {
 
             // Notify the bean introspector that it is being used
             introspector.beforeHooks();
-            return new Contributor(extension, introspector, fullAccess);
+            return new ContributingExtension(extension, introspector, fullAccess);
         });
     }
 
     /** Find a constructor on the bean and create an operation for it. */
     private void findConstructor() {
-        IntrospectedBeanConstructor constructor = IntrospectedBeanConstructor.CACHE.get(bean.beanClass);
+        BeanScannerConstructor constructor = BeanScannerConstructor.CACHE.get(bean.beanClass);
 
-        MethodHandle mh = oc.unreflectConstructor(constructor.constructor());
+        Constructor<?> con = constructor.constructor();
+
+        Lookup lookup = oc.lookup(con);
+
+        MethodHandle mh;
+        try {
+            mh = lookup.unreflectConstructor(constructor.constructor());
+        } catch (IllegalAccessException e) {
+            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+        }
 
         OperationTemplate ot;
         if (bean.lifetime.lifetimes.isEmpty()) {
@@ -154,8 +162,10 @@ public final class IntrospectedBean {
         } else {
             ot = bean.lifetime.lifetimes.get(0);
         }
+        ot = ot.withReturnType(bean.beanClass);
         OperationSetup os = new ConstructorOperationSetup(bean.installedBy, bean, ot, constructor.constructor(), mh);
-        os.template = os.template = (PackedOperationTemplate) OperationTemplate.defaults().withReturnType(constructor.constructor().getDeclaringClass());
+        // os.template = os.template = (PackedOperationTemplate)
+        // OperationTemplate.defaults().withReturnType(constructor.constructor().getDeclaringClass());
 
         bean.operations.add(os);
         unBoundOperations.add(os);
@@ -237,7 +247,7 @@ public final class IntrospectedBean {
             // TODO add check for
             if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
                 types.put(new MethodHelper(m), packages);
-                IntrospectedOperationalMethod.introspectMethodForAnnotations(this, m);
+                BeanScannerMethod.introspectMethodForAnnotations(this, m);
             }
         }
 
@@ -256,7 +266,7 @@ public final class IntrospectedBean {
                         // static methods on any interfaces this class implements.
                         // But it would also be strange to include static methods on sub classes
                         // but not include static methods on interfaces.
-                        IntrospectedOperationalMethod.introspectMethodForAnnotations(this, m);
+                        BeanScannerMethod.introspectMethodForAnnotations(this, m);
                     }
                 } else if (!m.isBridge() && !m.isSynthetic()) { // TODO should we include synthetic methods??
                     switch (mod & (Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE)) {
@@ -277,7 +287,7 @@ public final class IntrospectedBean {
                     case Modifier.PRIVATE:
                         // Private methods are never overridden
                     }
-                    IntrospectedOperationalMethod.introspectMethodForAnnotations(this, m);
+                    BeanScannerMethod.introspectMethodForAnnotations(this, m);
                 }
             }
         }
@@ -287,7 +297,7 @@ public final class IntrospectedBean {
         bean.introspecting = null; // move up down?
 
         // Call into every BeanIntrospector and tell them it is all over
-        for (Contributor e : extensions.values()) {
+        for (ContributingExtension e : extensions.values()) {
             e.introspector.afterHooks();
         }
     }
@@ -300,7 +310,7 @@ public final class IntrospectedBean {
         for (int i = 0; i < operation.bindings.length; i++) {
             BindingSetup binding = operation.bindings[i];
             if (binding == null) {
-                BindingResolver.resolveBinding(this, operation, i);
+                BeanScannerBindingResolver.resolveBinding(this, operation, i);
             }
         }
     }
@@ -314,10 +324,9 @@ public final class IntrospectedBean {
         }
     }
 
-    private static void introspectAllFields(IntrospectedBean introspector, Class<?> clazz) {
+    private static void introspectAllFields(BeanScanner introspector, Class<?> clazz) {
         // We never process classes in the "java.base" module.
-        if (clazz.getModule() != IntrospectedBean.JAVA_BASE_MODULE) {
-
+        if (clazz.getModule() != BeanScanner.JAVA_BASE_MODULE) {
             // Recursively call into superclass, before processing own fields
             introspectAllFields(introspector, clazz.getSuperclass());
 
@@ -325,7 +334,7 @@ public final class IntrospectedBean {
 
             // Iterate over all declared fields
             for (Field field : clazz.getDeclaredFields()) {
-                IntrospectedOperationalField.introspectFieldForAnnotations(introspector, field);
+                BeanScannerField.introspectFieldForAnnotations(introspector, field);
             }
         }
     }
@@ -334,7 +343,7 @@ public final class IntrospectedBean {
      * An instance of this class is created per extension that participates in the introspection. The main purpose of the
      * class is to make sure that the extension points to the same bean introspector for the whole of the introspection.
      */
-    public record Contributor(ExtensionSetup extension, BeanIntrospector introspector, boolean hasFullAccess) {}
+    record ContributingExtension(ExtensionSetup extension, BeanIntrospector introspector, boolean hasFullAccess) {}
 
     /**
      * An open class is a thin wrapper for a single class and a {@link Lookup} object.
@@ -408,26 +417,6 @@ public final class IntrospectedBean {
                 return privateLookup = MethodHandles.privateLookupIn(type, MethodHandles.lookup() /* lookup */);
             } catch (IllegalAccessException e) {
                 throw new InaccessibleBeanMemberException("Could not create private lookup [type=" + type + ", Member = " + member + "]", e);
-            }
-        }
-
-        MethodHandle unreflectConstructor(Constructor<?> constructor) {
-            Lookup lookup = lookup(constructor);
-
-            try {
-                return lookup.unreflectConstructor(constructor);
-            } catch (IllegalAccessException e) {
-                throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
-            }
-        }
-
-        MethodHandle unreflectGetter(Field field) {
-            Lookup lookup = lookup(field);
-
-            try {
-                return lookup.unreflectGetter(field);
-            } catch (IllegalAccessException e) {
-                throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
             }
         }
 

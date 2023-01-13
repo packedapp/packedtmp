@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanIntrospector.AnnotationReader;
+import app.packed.bean.BeanIntrospector.AnnotationCollection;
 import app.packed.bean.BeanIntrospector.BindableVariable;
 import app.packed.binding.Variable;
 import app.packed.binding.mirror.BindingMirror;
@@ -29,6 +29,8 @@ import app.packed.container.Realm;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import app.packed.operation.Op;
+import app.packed.operation.OperationTemplate;
+import internal.app.packed.binding.BindingProvider.FromArgument;
 import internal.app.packed.binding.BindingProvider.FromConstant;
 import internal.app.packed.binding.BindingProvider.FromOperation;
 import internal.app.packed.binding.BindingSetup;
@@ -38,10 +40,12 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
 
 /** Implementation of {@link BeanIntrospector.BindableVariable}. */
-public class IntrospectedBeanVariable implements BindableVariable {
+public class BeanScannerBeanVariable implements BindableVariable {
 
     /** The extension that manages the binding. */
     private final ExtensionSetup bindingExtension;
+
+    final BeanScanner iBean;
 
     /** The index of the binding into the operation. */
     private final int index;
@@ -55,9 +59,7 @@ public class IntrospectedBeanVariable implements BindableVariable {
 
     Variable variable;
 
-    final IntrospectedBean iBean;
-
-    public IntrospectedBeanVariable(IntrospectedBean iBean, OperationSetup operation, int index, ExtensionSetup bindingExtension, Variable var) {
+    public BeanScannerBeanVariable(BeanScanner iBean, OperationSetup operation, int index, ExtensionSetup bindingExtension, Variable var) {
         this.operation = requireNonNull(operation);
         this.iBean = iBean;
         this.index = index;
@@ -67,8 +69,14 @@ public class IntrospectedBeanVariable implements BindableVariable {
 
     /** {@inheritDoc} */
     @Override
-    public AnnotationReader annotations() {
-        return new BeanAnnotationReader(variable().getAnnotations());
+    public AnnotationCollection annotations() {
+        return new PackedAnnotationCollection(variable().getAnnotations());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<Class<?>> availableInvocationArguments() {
+        return operation.template.invocationType().parameterList();
     }
 
     /** {@inheritDoc} */
@@ -97,6 +105,46 @@ public class IntrospectedBeanVariable implements BindableVariable {
         operation.bindings[index] = bs;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void bindTo(Op<?> op) {
+        checkIsBindable();
+        PackedOp<?> pop = PackedOp.crack(op);
+
+        OperationTemplate ot =operation.template.withReturnType(pop.type().returnType());
+        OperationSetup os = pop.newOperationSetup(operation.bean, bindingExtension, ot);
+
+        os.parent = operation;
+
+        BindingSetup bs = new HookBindingSetup(operation, index, Realm.application());
+        bs.provider = new FromOperation(os);
+
+        // OperationBindingSetup obs = new OperationBindingSetup(os, index, User.application(), os);
+
+        if (variable.getRawType() != os.methodHandle.type().returnType()) {
+//            System.out.println("FixIt");
+        }
+        
+        // We resolve the operation immediately
+        iBean.resolveOperation(os);
+//        if (iBean != null) {
+//            iBean.unBoundOperations.add(os);
+//        } else {
+//            // os.re
+//        }
+
+        operation.bindings[index] = bs;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void bindToInvocationArgument(int argumentIndex) {
+        checkIsBindable();
+        BindingSetup bs = new HookBindingSetup(operation, index, Realm.application());
+        bs.provider = new FromArgument(argumentIndex);
+        operation.bindings[index] = bs;
+    }
+
     private void checkIsBindable() {
         if (isBound()) {
             throw new IllegalStateException("A binding has already been created");
@@ -116,33 +164,6 @@ public class IntrospectedBeanVariable implements BindableVariable {
 
     /** {@inheritDoc} */
     @Override
-    public void bindTo(Op<?> op) {
-        checkIsBindable();
-        PackedOp<?> pop = PackedOp.crack(op);
-
-        OperationSetup os = pop.newOperationSetup(operation.bean, bindingExtension, operation.template);
-
-        os.parent = operation;
-
-        BindingSetup bs = new HookBindingSetup(os, index, Realm.application());
-        bs.provider = new FromOperation(os);
-
-        // OperationBindingSetup obs = new OperationBindingSetup(os, index, User.application(), os);
-
-        if (variable.getRawType() != os.methodHandle.type().returnType()) {
-//            System.out.println("FixIt");
-        }
-        if (iBean != null) {
-            iBean.unBoundOperations.add(os);
-        } else {
-            // os.re
-        }
-
-        operation.bindings[index] = bs;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public BindableVariable specializeMirror(Supplier<? extends BindingMirror> supplier) {
         checkIsBindable();
         this.mirrorSupplier = requireNonNull(supplier);
@@ -153,11 +174,5 @@ public class IntrospectedBeanVariable implements BindableVariable {
     @Override
     public Variable variable() {
         return variable;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<Class<?>> availableInvocationArguments() {
-        return operation.template.invocationType().parameterList();
     }
 }

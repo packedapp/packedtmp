@@ -34,8 +34,8 @@ import app.packed.container.Realm;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
+import internal.app.packed.application.ApplicationDriver;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.application.PackedApplicationDriver;
 import internal.app.packed.jfr.BuildApplicationEvent;
 import internal.app.packed.service.CircularServiceDependencyChecker;
 import internal.app.packed.util.LookupUtil;
@@ -104,7 +104,7 @@ public final class AssemblySetup extends RealmSetup {
      * @param wirelets
      *            optional wirelets
      */
-    public AssemblySetup(@Nullable PackedApplicationDriver<?> applicationDriver, @Nullable BuildGoal goal, @Nullable ContainerSetup linkTo, Assembly assembly,
+    public AssemblySetup(@Nullable ApplicationDriver<?> applicationDriver, @Nullable BuildGoal goal, @Nullable ContainerSetup linkTo, Assembly assembly,
             Wirelet[] wirelets) {
         // We need to unpack any delegating assemblies
         Assembly a = requireNonNull(assembly, "assembly is null");
@@ -237,7 +237,7 @@ public final class AssemblySetup extends RealmSetup {
         }
     }
 
-    public boolean isClosed() {
+    public boolean isDone() {
         return isClosed;
     }
 

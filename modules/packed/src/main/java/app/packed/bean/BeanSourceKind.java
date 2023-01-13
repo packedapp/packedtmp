@@ -17,7 +17,7 @@ package app.packed.bean;
 
 import app.packed.operation.Op;
 
-/** This enum represents the type of source used when installing a bean. */
+/** This enum represents the various type of sources used when installing a bean. */
 public enum BeanSourceKind {
 
     /**

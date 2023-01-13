@@ -102,7 +102,7 @@ public final class ApplicationInitializationContext {
      *            optional wirelets is always null if not launched from an image
      * @return the application instance
      */
-    public static <A> A launch(PackedApplicationDriver<A> driver, ApplicationSetup application, @Nullable WireletWrapper wirelets) {
+    public static <A> A launch(ApplicationDriver<A> driver, ApplicationSetup application, @Nullable WireletWrapper wirelets) {
 
         // Create a launch context
         ApplicationInitializationContext context = new ApplicationInitializationContext(application, wirelets);

@@ -88,7 +88,7 @@ public final class BeanHookModel {
             AnnotatedFieldHook fieldHook = type.getAnnotation(AnnotatedFieldHook.class);
             if (fieldHook != null) {
                 checkExtensionClass(type, fieldHook.extension());
-                result = new AnnotatedField(fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet(), true);
+                result = new AnnotatedField(AnnotatedFieldKind.FIELD, fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet());
             }
 
             AnnotatedVariableHook bindingHook = type.getAnnotation(AnnotatedVariableHook.class);
@@ -98,7 +98,7 @@ public final class BeanHookModel {
                             annotationType + " cannot both be annotated with " + AnnotatedFieldHook.class + " and " + AnnotatedVariableHook.class);
                 }
                 checkExtensionClass(type, bindingHook.extension());
-                result = new AnnotatedField(bindingHook.extension(), false, true, false);
+                result = new AnnotatedField(AnnotatedFieldKind.VARIABLE, bindingHook.extension(), false, true);
             }
 
             // See if we have a custom hook
@@ -108,7 +108,7 @@ public final class BeanHookModel {
                 if (result != null) {
                     throw new InternalExtensionException("POOPS");
                 }
-                result = new AnnotatedField(extract(annotationType), customHook.allowGet, customHook.allowSet, customHook.isFieldHook);
+                result = new AnnotatedField(customHook.kind, extract(annotationType), customHook.allowGet, customHook.allowSet);
             }
 
             return result;
@@ -122,11 +122,9 @@ public final class BeanHookModel {
 
         @Override
         protected AnnotatedParameterType computeValue(Class<?> type) {
-            
-            AnnotatedVariableHook h = type.getAnnotation(AnnotatedVariableHook.class);
-            
 
-            
+            AnnotatedVariableHook h = type.getAnnotation(AnnotatedVariableHook.class);
+
             Class<? extends Annotation> cl = bindings.get(type.getName());
             if (cl != null) {
                 Class<?> declaringClass = cl.getDeclaringClass();
@@ -240,7 +238,7 @@ public final class BeanHookModel {
         return MODELS.get(clazz);
     }
 
-    private record CustomAnnotatedField(Class<? extends Annotation> annotationType, boolean isFieldHook, boolean allowGet, boolean allowSet) {}
+    private record CustomAnnotatedField(AnnotatedFieldKind kind, Class<? extends Annotation> annotationType, boolean allowGet, boolean allowSet) {}
 
     record AnnotatedMethod(Class<? extends Extension<?>> extensionType, boolean isInvokable) {}
 
@@ -251,5 +249,21 @@ public final class BeanHookModel {
     /**
      * A hook annotation on a field, is either a plain {@link BindableVariable} hook or a {@link OperationalField} hook.
      */
-    record AnnotatedField(Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable, boolean isFieldHook) {}
+    record AnnotatedField(AnnotatedFieldKind kind, Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable)
+            implements Comparable<AnnotatedField> {
+
+        /** {@inheritDoc} */
+        @Override
+        public int compareTo(AnnotatedField o) {
+            if (o == this) {
+                return 0;
+            }
+            return 0;
+        }
+
+    }
+
+    enum AnnotatedFieldKind {
+        FIELD, VARIABLE;
+    }
 }

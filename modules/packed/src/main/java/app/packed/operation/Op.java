@@ -139,7 +139,6 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
         } catch (IllegalAccessException e) {
             throw new InaccessibleBeanMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
-        System.out.println(handle);
         throw new UnsupportedOperationException();
     }
 

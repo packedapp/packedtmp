@@ -27,6 +27,7 @@ import app.packed.container.Realm;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.Osi;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
@@ -59,7 +60,7 @@ public abstract class BindingSetup {
         this.boundBy = requireNonNull(user);
     }
 
-    public abstract MethodHandle bindIntoOperation(MethodHandle methodHandle);
+    public abstract MethodHandle bindIntoOperation(Osi osi, MethodHandle methodHandle);
 
     public abstract BindingClassifierKind kind();
 
@@ -89,7 +90,7 @@ public abstract class BindingSetup {
 
         /** {@inheritDoc} */
         @Override
-        public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
+        public MethodHandle bindIntoOperation(Osi osi, MethodHandle methodHandle) {
             return null;
         }
 
@@ -113,7 +114,7 @@ public abstract class BindingSetup {
 
         /** {@inheritDoc} */
         @Override
-        public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
+        public MethodHandle bindIntoOperation(Osi osi, MethodHandle methodHandle) {
             return null;
         }
 

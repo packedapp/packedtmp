@@ -37,7 +37,7 @@ public final class ServiceExtensionMirror extends ExtensionMirror<ServiceExtensi
      *             if dependencies have not been resolved
      */
     public ServiceContract contract() {
-        if (!container.assembly.isClosed()) {
+        if (!container.assembly.isDone()) {
             // Den fungere ikke hvis vi ikke har resolvet alle services.
             // Fordi vi ved jo ikke om en required service fx bliver provided af et link af en container
             // senere hen, alternativet er kun at have

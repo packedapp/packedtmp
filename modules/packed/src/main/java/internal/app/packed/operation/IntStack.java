@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.deprecated.invoke;
+package internal.app.packed.operation;
 
 import java.util.Stack;
 
 /**
  *
  */
-final class IntStack {
+public final class IntStack {
 
     private final Stack<Integer> s = new Stack<>();
 
-    IntStack push(int i) {
+    public IntStack push(int i) {
         s.add(i);
         return this;
     }

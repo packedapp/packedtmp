@@ -23,6 +23,21 @@ import java.util.function.Consumer;
  */
 
 // Bare brug BeanInstrospector.AnnotationReader?
+// Altsaa begge 2 er vel en collection af annotations.
+// Hvor vi gerne vil extract og teste
+
+// Problemet er lidt vi maaske gerne vil checke at der ikke er nogen der misbruger hooks
+
+// @Inject + @FakeInject(Andet module, peger paa BaseExtension)
+
+// Det maaske fint nok? at vi ignorer FakeInject hvis Inject er der
+// Alternativt er vi skal til at consume alle annotations
+// Og lave den immutablex
+
+
+
+// Det er vel ikke et set fordi vi kan have det samme element 2 gange
+// AnnotationCollection
 public interface AnnotationHookSet {
 
     <A extends Annotation> void ifPresent(Class<A> annotationType, Consumer<? super A> action);

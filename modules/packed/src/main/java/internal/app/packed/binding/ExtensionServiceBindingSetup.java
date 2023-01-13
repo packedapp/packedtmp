@@ -22,6 +22,7 @@ import app.packed.container.Realm;
 import app.packed.extension.BaseExtension;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.Osi;
 
 /**
  *
@@ -43,7 +44,7 @@ public final class ExtensionServiceBindingSetup extends BindingSetup {
 
     /** {@inheritDoc} */
     @Override
-    public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
+    public MethodHandle bindIntoOperation(Osi osi, MethodHandle methodHandle) {
         throw new UnsupportedOperationException();
 //        MethodHandle mh = extensionBean.instanceAccessOperation().generateMethodHandle();
 //        return MethodHandles.collectArguments(methodHandle, index, mh);

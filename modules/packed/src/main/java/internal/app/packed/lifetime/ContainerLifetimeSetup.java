@@ -67,7 +67,7 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
      * @param parent
      */
     public ContainerLifetimeSetup(ContainerSetup container, @Nullable ContainerLifetimeSetup parent) {
-        super(parent, List.of(OperationTemplate.raw()));
+        super(parent, List.of(OperationTemplate.defaults()));
         this.container = container;
     }
 

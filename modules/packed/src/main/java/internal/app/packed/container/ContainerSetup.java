@@ -139,7 +139,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         // and may contain any number of CombinedWirelet instances.
         Wirelet prefix = null;
         if (application.container == null) {
-            prefix = application.driver.wirelet;
+            prefix = application.driver.wirelet();
         }
 
         if (wirelets.length == 0 && prefix == null) {
@@ -329,7 +329,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             if (requestedByExtension == null) {
                 // Ny extensions skal installeres indefor Assembly::build
 
-                if (assembly.isClosed()) {
+                if (assembly.isDone()) {
                     throw new IllegalStateException("Extensions cannot be installed outside of Assembly::build");
                 }
                 // Checks that container is still configurable
@@ -345,7 +345,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
                 // TODO check that the extensionClass is not banned for users
 
                 // TODO Check that the extension user model has not been closed
-                if (requestedByExtension.extensionTree.isClosed()) {
+                if (requestedByExtension.extensionTree.isDone()) {
                     throw new IllegalStateException();
                 }
             }

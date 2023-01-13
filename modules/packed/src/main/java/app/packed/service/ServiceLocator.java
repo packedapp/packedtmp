@@ -36,6 +36,7 @@ import app.packed.container.AbstractComposer.ComposerAssembly;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
+import app.packed.extension.bridge.FromContainerGuest;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import internal.app.packed.application.ApplicationInitializationContext;
@@ -112,7 +113,6 @@ import internal.app.packed.service.PackedServiceLocator;
 @VariableTypeHook(extension = ServiceExtension.class)
 public interface ServiceLocator {
 
-
     /**
      * Returns {@code true} if this service locator provides a service with the specified key.
      *
@@ -137,7 +137,7 @@ public interface ServiceLocator {
         requireNonNull(key, "key is null");
         return keys().contains(key);
     }
-    
+
     /**
      * Returns a service instance with the given key if available, otherwise an empty optional.
      * <p>
@@ -316,8 +316,7 @@ public interface ServiceLocator {
      * @see #of(Assembly, Wirelet...)
      */
     private static BootstrapApp<ServiceLocator> driver() {
-        return BootstrapApp
-        .of(new Op1<ApplicationInitializationContext, ServiceLocator>(c -> c.serviceLocator()) {}, c -> {});
+        return BootstrapApp.of(new Op1<ApplicationInitializationContext, ServiceLocator>(c -> c.serviceLocator()) {}, c -> {});
     }
 
 //    // maaske har vi launcher og Image...
@@ -366,27 +365,26 @@ public interface ServiceLocator {
     static ServiceLocator of(Assembly assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }
-    
-
 
     static ServiceLocator of(ComposerAction<? super Composer> action, Wirelet... wirelets) {
         class ServiceLocatorAssembly extends ComposerAssembly<Composer> {
 
-            private static final BootstrapApp<ServiceLocator> DRIVER = BootstrapApp
-                    .of(new Op1<ApplicationInitializationContext, ServiceLocator>(c -> c.serviceLocator()) {}, c -> {});
+            record FakeGuest(@FromContainerGuest ServiceLocator services) {}
+
+            private static final BootstrapApp<FakeGuest> DRIVER = BootstrapApp.of(FakeGuest.class, c -> {});
 
             ServiceLocatorAssembly(ComposerAction<? super Composer> action) {
                 super(new Composer(), action);
             }
         }
 
-        return ServiceLocatorAssembly.DRIVER.launch(new ServiceLocatorAssembly(action), wirelets);
+        return ServiceLocatorAssembly.DRIVER.launch(new ServiceLocatorAssembly(action), wirelets).services;
     }
 
     /**
-     * A lightweight configuration object that can be used to create injectors via. This is thought of alternative to
-     * using a {@link BaseAssembly}. Unlike assemblies all services are automatically exported once defined. For example
-     * useful in tests.
+     * A lightweight configuration object that can be used to create injectors via. This is thought of alternative to using
+     * a {@link BaseAssembly}. Unlike assemblies all services are automatically exported once defined. For example useful in
+     * tests.
      * 
      * <p>
      * The main difference compared assemblies is that there is no concept of encapsulation. All services are exported by

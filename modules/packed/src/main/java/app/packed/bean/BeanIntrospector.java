@@ -54,11 +54,11 @@ import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.InvocationArgument;
 import app.packed.operation.OperationType;
-import internal.app.packed.bean.BeanAnnotationReader;
+import internal.app.packed.bean.BeanScanner;
+import internal.app.packed.bean.BeanScannerField;
+import internal.app.packed.bean.BeanScannerMethod;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.IntrospectedBean;
-import internal.app.packed.bean.IntrospectedOperationalField;
-import internal.app.packed.bean.IntrospectedOperationalMethod;
+import internal.app.packed.bean.PackedAnnotationCollection;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.service.KeyHelper;
 
@@ -102,8 +102,8 @@ public abstract class BeanIntrospector {
     }
 
     /** {@return an annotation reader for the bean class.} */
-    public final AnnotationReader beanAnnotations() {
-        return new BeanAnnotationReader(beanClass().getAnnotations());
+    public final AnnotationCollection beanAnnotations() {
+        return new PackedAnnotationCollection(beanClass().getAnnotations());
     }
 
     /** {@return the bean class that is being introspected.} */
@@ -126,7 +126,7 @@ public abstract class BeanIntrospector {
         return setup().bean.bean.realm.realm();
     }
 
-    /** {@return an annotation reader for the bean class.} */
+    /** {@return the bean source kind.} */
     public final BeanSourceKind beanSourceKind() {
         return setup().bean.bean.sourceKind;
     }
@@ -171,6 +171,8 @@ public abstract class BeanIntrospector {
      * This method is never invoked more than once for a given field and extension. Even if there are multiple matching hook
      * annotations on the same field.
      * 
+     * @param hooks
+     *            a non-empty collection of hooks
      * @param of
      *            an operational field
      * @see AnnotatedFieldHook
@@ -223,7 +225,7 @@ public abstract class BeanIntrospector {
      * @throws IllegalStateException
      *             if called more than once
      */
-    final void initialize(ExtensionSetup operator, IntrospectedBean bean) {
+    final void initialize(ExtensionSetup operator, BeanScanner bean) {
         if (this.setup != null) {
             throw new IllegalStateException("This scanner has already been initialized.");
         }
@@ -256,10 +258,7 @@ public abstract class BeanIntrospector {
      */
     // Maybe BeanAnnotationReader? Don't think we will use it elsewhere?
     // AnnotatedBeanElement?
-    public sealed interface AnnotationReader permits BeanAnnotationReader {
-
-        /** {@return whether or not there are any annotations to read.} */
-        boolean hasAnnotations();
+    public sealed interface AnnotationCollection extends Iterable<Annotation> permits PackedAnnotationCollection {
 
         default <T extends Annotation> void ifPresent(Class<T> annotationClass, Consumer<T> consumer) {
             T t = readRequired(annotationClass);
@@ -267,6 +266,9 @@ public abstract class BeanIntrospector {
         }
 
         boolean isAnnotationPresent(Class<? extends Annotation> annotationClass);
+
+        /** {@return whether or not there are any annotations to read.} */
+        boolean isEmpty();
 
         // Det er taenk
         Annotation[] readAnyOf(Class<?>... annotationTypes);
@@ -289,6 +291,9 @@ public abstract class BeanIntrospector {
          */
         //// foo bean was expected method to dddoooo to be annotated with
         <T extends Annotation> T readRequired(Class<T> annotationClass);
+
+        /** {@return the number of annotations.} */
+        int size();
 
         // Q) Skal vi bruge den udefra beans???
         // A) Nej vil ikke mene vi beskaeftiger os med andre ting hvor vi laeser det.
@@ -367,7 +372,7 @@ public abstract class BeanIntrospector {
     // Hvordan det praecis skal foregaa er lidt ukendt
     public interface BindableVariable {
 
-        AnnotationReader annotations();
+        AnnotationCollection annotations();
 
         default Map<Class<? extends Context<?>>, List<Class<?>>> availableContexts() {
             return Map.of();
@@ -424,10 +429,8 @@ public abstract class BeanIntrospector {
          * @see OperationTemplate
          * @see InvocationArgument
          */
-        default void bindToInvocationArgument(int argumentIndex) {
-            throw new UnsupportedOperationException();
-        }
-        
+        void bindToInvocationArgument(int argumentIndex);
+
         /**
          * @param argumentIndex
          * @param context
@@ -564,10 +567,10 @@ public abstract class BeanIntrospector {
      * 
      * @apiNote There are currently no support for obtaining a {@link VarHandle} for a field.
      */
-    public sealed interface OperationalField permits IntrospectedOperationalField {
+    public sealed interface OperationalField permits BeanScannerField {
 
         /** {@return an annotation reader for the field.} */
-        AnnotationReader annotations();
+        AnnotationCollection annotations();
 
         // newBindableOperation?
         default BindableVariable bindable() {
@@ -671,10 +674,10 @@ public abstract class BeanIntrospector {
     /**
      * This class represents a {@link Method} from which an {@link OperationHandle operation} can be created.
      */
-    public sealed interface OperationalMethod permits IntrospectedOperationalMethod {
+    public sealed interface OperationalMethod permits BeanScannerMethod {
 
         /** {@return an annotation reader for the method.} */
-        AnnotationReader annotations();
+        AnnotationCollection annotations();
 
         /**
          * @param postFix
@@ -742,7 +745,7 @@ public abstract class BeanIntrospector {
 
     /** A small utility record to hold the both the extension model and the bean in one field. */
     // Replace with Introspector???
-    private record Setup(ExtensionDescriptor extension, IntrospectedBean bean) {}
+    private record Setup(ExtensionDescriptor extension, BeanScanner bean) {}
 }
 
 interface ZandboxBI {
