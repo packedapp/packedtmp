@@ -27,14 +27,15 @@ import internal.app.packed.operation.OperationSetup;
 /**
  * An extension that can be used to provide mirror instances at runtime.
  * <p>
- * This extension is used to inject mirrors of type {@link ApplicationMirror}, {@link ContainerMirror},
- * {@link AssemblyMirror}, {@link BeanMirror} or {@link OperationMirror} at runtime.
+ * This mirrors that can be injected at runtime are {@link ApplicationMirror}, {@link ContainerMirror},
+ * {@link AssemblyMirror}, {@link BeanMirror} and {@link OperationMirror}.
  * <p>
+ * Something about we include everything.
  * This extension is mainly here as a kind of "marker extension". Indicating that somewhere in the application someone
  * has decided to reference a mirror. In which case mirrors for the whole application is available at runtime.
  * <p>
- * At some point we might support a compact mirror mode where each extension can keep a minimal set of information that
- * is needed at runtime.
+ * At some point in the future we might support a compact mirror mode where each extension only keep a minimal set of
+ * information at runtime.
  * 
  * @see ApplicationMirror
  * @see ContainerMirror
@@ -48,7 +49,7 @@ public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
     MirrorExtension() {}
 
     /**
-     * Creates bindings for {@link ApplicationMirror}, {@link AssemblyMirror}, {@link ContainerMirror}, {@link BeanMirror},
+     * Creates bindings for {@link ApplicationMirror}, {@link ContainerMirror}, {@link AssemblyMirror},{@link BeanMirror},
      * and {@link OperationMirror}.
      * 
      * {@inheritDoc}
@@ -59,19 +60,19 @@ public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
             @Override
             public void hookOnVariableType(Class<?> hook, BindableBaseVariable binding) {
                 OperationSetup os = ((PackedBindableBaseVariable) binding).v.operation;
-                
+
                 if (hook == ApplicationMirror.class) {
                     binding.bindConstant(os.bean.container.application.mirror());
-                } else if (hook == AssemblyMirror.class) {
-                    binding.bindConstant(os.bean.container.assembly.mirror());
                 } else if (hook == ContainerMirror.class) {
                     binding.bindConstant(os.bean.container.mirror());
+                } else if (hook == AssemblyMirror.class) {
+                    binding.bindConstant(os.bean.container.assembly.mirror());
                 } else if (hook == BeanMirror.class) {
                     binding.bindConstant(os.bean.mirror());
                 } else if (hook == OperationMirror.class) {
                     binding.bindConstant(os.mirror());
                 } else {
-                    super.hookOnVariableType(hook, binding);
+                    binding.checkAssignableTo(ApplicationMirror.class, ContainerMirror.class, AssemblyMirror.class, BeanMirror.class, OperationMirror.class);
                 }
             }
         };

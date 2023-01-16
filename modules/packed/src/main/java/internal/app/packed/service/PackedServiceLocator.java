@@ -34,6 +34,42 @@ import internal.app.packed.util.ThrowableUtil;
  */
 public record PackedServiceLocator(PackedExtensionContext pec, Map<Key<?>, MethodHandle> map) implements ServiceLocator {
 
+    @Override
+    public <T> T use(Key<T> key) {
+        return ServiceLocator.super.use(key);
+    }
+
+    @Override
+    public boolean contains(Key<?> key) {
+        return map.containsKey(key);
+    }
+
+    @Override
+    public <T> Optional<T> findInstance(Key<T> key) {
+        requireNonNull(key, "key is null");
+        MethodHandle provider = map.get(key);
+        if (provider == null) {
+            return Optional.empty();
+        }
+        T t;
+        try {
+            t = (T) provider.invokeExact(pec);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        return Optional.of(t);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
+
+    @Override
+    public int size() {
+        return map.size();
+    }
+
     /** {@inheritDoc} */
     @Override
     public <T> Optional<Provider<T>> findProvider(Key<T> key) {
@@ -47,7 +83,7 @@ public record PackedServiceLocator(PackedExtensionContext pec, Map<Key<?>, Metho
             @Override
             public T provide() {
                 try {
-                    return (T) provider.invoke(pec);
+                    return (T) provider.invokeExact(pec);
                 } catch (Throwable e) {
                     throw ThrowableUtil.orUndeclared(e);
                 }
@@ -71,6 +107,6 @@ public record PackedServiceLocator(PackedExtensionContext pec, Map<Key<?>, Metho
     /** {@inheritDoc} */
     @Override
     public <T> ServiceSelection<T> selectAssignableTo(Class<T> type) {
-       throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 }

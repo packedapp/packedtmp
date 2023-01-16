@@ -161,14 +161,17 @@ public sealed abstract class OperationSetup {
             requiresBeanInstance = !Modifier.isStatic(s.getModifiers());
         }
 
+        int osInit = 0;
         if (requiresBeanInstance) {
             mh = MethodHandles.collectArguments(mh, 0, bean.accessBeanX().provideSpecial());
+            osInit = 1;
         } else if (bindings.length == 0) {
             return MethodHandles.dropArguments(mh, 0, template.invocationType().parameterArray());
         }
 
         if (bindings.length > 0) {
             Osi osi = new Osi();
+            osi.nextIndex = osInit;
             osi.mh = mh;
             osi.process(this);
             mh = osi.mh;
@@ -370,7 +373,7 @@ public sealed abstract class OperationSetup {
             public Field field() {
                 return member;
             }
-            
+
             public String toString() {
                 return "Field " + StringFormatter.format(member) + " (AccessMode + " + accessMode + ")";
             }

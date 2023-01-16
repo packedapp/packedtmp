@@ -32,7 +32,7 @@ public final /* primitive */ class PackedExtensionContext implements ExtensionCo
 
     public static final PackedExtensionContext EMPTY = new PackedExtensionContext(0);
     
-    private final Object[] objects;
+    final Object[] objects;
 
     private PackedExtensionContext(int size) {
         objects = new Object[size];

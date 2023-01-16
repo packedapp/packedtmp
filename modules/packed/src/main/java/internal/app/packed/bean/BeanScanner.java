@@ -193,6 +193,7 @@ public final class BeanScanner {
                     bean.ownedBy.injectionManager.addBean(bean);
                 }
             }
+            
             if (bean.sourceKind == BeanSourceKind.INSTANCE) {
                 bean.lifetimePoolAccessor = new LifetimeAccessor.ConstantAccessor(bean.source);
             } else if (bean.beanKind == BeanKind.CONTAINER) {

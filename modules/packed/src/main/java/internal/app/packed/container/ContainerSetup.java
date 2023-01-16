@@ -54,7 +54,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     /** The application this container is a part of. */
     public final ApplicationSetup application;
 
-    /** The assembly from where this container was defined. */
+    /** The assembly that defines the container. */
     public final AssemblySetup assembly;
 
     /** A map of all non-void bean classes. Used for controlling non-multi-install beans. */

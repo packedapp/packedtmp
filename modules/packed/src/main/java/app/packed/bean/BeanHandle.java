@@ -60,11 +60,6 @@ public final /* primitive */ class BeanHandle<T> {
         this.bean = requireNonNull(bean);
     }
 
-    /** {@return a set of the contexts available for this bean.} */
-    public Set<Class<? extends Context<?>>> contexts() {
-        throw new UnsupportedOperationException();
-    }
-
     // We need a extension bean
     // Dem der resolver bindings, skal goeres mens man introspector...
     public OperationHandle addFunctionalOperation(InstanceBeanConfiguration<?> operator, Class<?> functionalInterface, OperationType type,
@@ -103,6 +98,11 @@ public final /* primitive */ class BeanHandle<T> {
         }
     }
 
+    /** {@return a set of the contexts available for this bean.} */
+    public Set<Class<? extends Context<?>>> contexts() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns the key that the bean will be made available under as default if provided as service.
      * 
@@ -111,12 +111,12 @@ public final /* primitive */ class BeanHandle<T> {
      * @see ProvideableBeanConfiguration#provide()
      * @see ProvideableBeanConfiguration#export()
      * @throws UnsupportedOperationException
-     *             if called on a functional bean {@code (beanClass == void.class)}
+     *             if called on bean with a void bean class
      */
     @SuppressWarnings("unchecked")
     public Key<T> defaultKey() {
-        if (beanKind() == BeanKind.FUNCTIONAL) {
-            throw new UnsupportedOperationException("This method is not supported for functional beans");
+        if (beanClass() == void.class) {
+            throw new UnsupportedOperationException("This method is not supported for beans with a void bean class");
         }
         return (Key<T>) Key.of(beanClass());
     }
@@ -131,27 +131,6 @@ public final /* primitive */ class BeanHandle<T> {
     @Override
     public int hashCode() {
         return bean.hashCode();
-    }
-
-    /**
-     * @param <K>
-     *            the type of key
-     * @param key
-     *            the key
-     * @param instance
-     *            the instance to inject
-     *
-     * @throws UnsupportedOperationException
-     *             if the bean handle does not have instances
-     * 
-     * @see InstanceBeanConfiguration#initializeWithInstance(Class, Object)
-     * @see InstanceBeanConfiguration#initializeWithInstance(Key, Object)
-     */
-    public <K> void initializeWithInstance(Key<K> key, K instance) {
-        if (!beanKind().hasInstances()) {
-            throw new UnsupportedOperationException();
-        }
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -194,12 +173,6 @@ public final /* primitive */ class BeanHandle<T> {
         bean.named(name);
     }
 
-    public <K> OperationHandle overrideService(Key<K> key, K instance) {
-        checkIsConfigurable();
-
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * @return
      */
@@ -207,10 +180,7 @@ public final /* primitive */ class BeanHandle<T> {
         return bean.ownedBy == null ? Realm.application() : Realm.extension(bean.ownedBy.extensionType);
     }
 
-    public void setErrorHandler(ErrorHandler errorHandler) {
-
-    }
-
+    /** {@return the path of the bean.} */
     public NamespacePath path() {
         return bean.path();
     }
@@ -252,6 +222,10 @@ public final /* primitive */ class BeanHandle<T> {
         bean.container.sm.serviceProvide(k, beanKind() != BeanKind.MANYTON, bean, bean.instanceAccessOperation(), bean.accessBeanX());
     }
 
+    public void setErrorHandler(ErrorHandler errorHandler) {
+
+    }
+
     /**
      * Sets a supplier that creates a special bean mirror instead of the generic {@code BeanMirror} when requested.
      * 
@@ -275,7 +249,34 @@ public final /* primitive */ class BeanHandle<T> {
 
 class BeanHandleSandbox<T> {
 
+    /**
+     * @param <K>
+     *            the type of key
+     * @param key
+     *            the key
+     * @param instance
+     *            the instance to inject
+     *
+     * @throws UnsupportedOperationException
+     *             if the bean handle does not have instances
+     * 
+     * @see InstanceBeanConfiguration#initializeWithInstance(Class, Object)
+     * @see InstanceBeanConfiguration#initializeWithInstance(Key, Object)
+     */
+    public <K> void initializeWithInstance(Key<K> key, K instance) {
+//        if (!beanKind().hasInstances()) {
+//            throw new UnsupportedOperationException();
+//        }
+        throw new UnsupportedOperationException();
+    }
+
     public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation) {
+        throw new UnsupportedOperationException();
+    }
+
+    public <K> OperationHandle overrideService(Key<K> key, K instance) {
+       // checkIsConfigurable();
+
         throw new UnsupportedOperationException();
     }
 

@@ -26,7 +26,6 @@ import app.packed.container.Wirelet;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
@@ -49,13 +48,11 @@ public final class ApplicationSetup {
     public final ApplicationDriver<?> driver;
 
     /** Entry points in the application, is null if there are none. */
-    @Nullable // Maybe this a lifetime thingy?
+    @Nullable // Maybe this a lifetime thing?
     public EntryPointSetup entryPoints;
 
     /** The build goal. */
     public final BuildGoal goal;
-
-    public final OldLifetimeKind lifetimeKind;
 
     /** The current phase of the build process. */
     private ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
@@ -64,7 +61,7 @@ public final class ApplicationSetup {
      * Create a new application.
      * 
      * @param driver
-     *            the driver of the application
+     *            the application driver
      * @param goal
      *            the build goal
      * @param assembly
@@ -74,15 +71,14 @@ public final class ApplicationSetup {
      */
     public ApplicationSetup(ApplicationDriver<?> driver, BuildGoal goal, AssemblySetup assembly, Wirelet[] wirelets) {
         this.driver = requireNonNull(driver);
-        this.lifetimeKind = driver.lifetimeKind();
         this.goal = requireNonNull(goal);
-        this.container = new ContainerSetup(this, assembly, null, wirelets); // the root container of the application
+        this.container = new ContainerSetup(this, assembly, null, wirelets);
         this.codeGenerator = goal.isLaunchable() ? new ApplicationCodeGenerator(this) : null;
     }
 
     public void addCodegenAction(Runnable action) {
         requireNonNull(action, "action is null");
-        if (phase.ordinal() >= ApplicationBuildPhase.CODEGEN.ordinal()) {
+        if (phase != ApplicationBuildPhase.ASSEMBLE) {
             throw new IllegalStateException("This method must be called before the code generating phase is started");
         }
         // Only add the action if code generation is enabled
@@ -98,8 +94,6 @@ public final class ApplicationSetup {
      *             if not in the code generating phase
      */
     public void checkInCodegenPhase() {
-        // Should we check that launcher is null? (codegen phase done)
-        // Yes I think it is a failed, but for now OldServiceResolver is a bitch
         if (phase != ApplicationBuildPhase.CODEGEN) {
             // Uncommented after having fixed service resolver
             // throw new IllegalStateException();
@@ -127,6 +121,7 @@ public final class ApplicationSetup {
         return mirror;
     }
 
+    /** The build phase of the application. */
     private enum ApplicationBuildPhase {
         ASSEMBLE, CODEGEN, COMPLETED;
     }

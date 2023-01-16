@@ -20,8 +20,6 @@ package internal.app.packed.lifetime;
  */
 public sealed interface LifetimeAccessor {
 
-    Class<?> type();
-
     Object read(PackedExtensionContext ignore);
 
     void store(PackedExtensionContext pool, Object o);
@@ -30,12 +28,6 @@ public sealed interface LifetimeAccessor {
 
         public ConstantAccessor(Object constant) {
             this(constant, constant.getClass());
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Class<?> type() {
-            return type;
         }
 
         public Object read(PackedExtensionContext ignore) {

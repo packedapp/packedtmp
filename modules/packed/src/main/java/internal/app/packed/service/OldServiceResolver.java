@@ -16,6 +16,7 @@
 package internal.app.packed.service;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -24,7 +25,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import app.packed.application.BuildException;
 import app.packed.bean.BeanSourceKind;
 import app.packed.binding.Key;
-import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.lifetime.LifetimeAccessor;
 import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
@@ -34,6 +34,7 @@ import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOp
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
 import internal.app.packed.util.ThrowableUtil;
 
+@Deprecated
 public final class OldServiceResolver {
 
     private final LinkedHashMap<Key<?>, DependencyNode> nodes = new LinkedHashMap<>();
@@ -63,17 +64,23 @@ public final class OldServiceResolver {
     }
 
     ServiceLocator newServiceLocator(PackedExtensionContext region) {
-        Map<Key<?>, MethodHandle> runtimeEntries = new LinkedHashMap<>();
+        Map<Key<?>, MethodHandle> runtimeEntries = new LinkedHashMap<>(nodes.size());
         for (var e : nodes.entrySet()) {
             Key<?> key = e.getKey();
             DependencyNode export = e.getValue();
+            
             MethodHandle mh;
+            if (export.pis.isConstant) {
+                System.out.println("CONST");
+            }
             if (export.accessor == null) {
                 mh = export.operation.generateMethodHandle();
             } else {
-//                PackedExtensionContext.MH_CONSTANT_POOL_READER
                 mh = PackedExtensionContext.constant(key.rawType(), export.accessor.read(region));
             }
+            mh = mh.asType(mh.type().changeReturnType(Object.class));
+
+            assert(mh.type().equals(MethodType.methodType(Object.class, PackedExtensionContext.class)));
             runtimeEntries.put(key, mh);
         }
         return new PackedServiceLocator(region, Map.copyOf(runtimeEntries));
@@ -93,7 +100,7 @@ public final class OldServiceResolver {
             } else {
                 accessor = o.bean.lifetimePoolAccessor;
             }
-            bis = new DependencyNode(os, accessor);
+            bis = new DependencyNode(os, provider, accessor);
         } else {
             boolean isStatic;
             if (o instanceof MethodOperationSetup ss) {
@@ -108,12 +115,11 @@ public final class OldServiceResolver {
                 throw new BuildException("Not okay)");
             }
             DynamicAccessor accessor = provider.isConstant ? o.bean.container.lifetime.pool.reserve(Object.class) : null;
-            bis = new DependencyNode(o, accessor);
+            bis = new DependencyNode(o, provider, accessor);
             addConsumer(o, accessor);
         }
-        o.bean.container.useExtension(ServiceExtension.class, null);
         nodes.put(provider.entry.key, bis);
     }
 
-    private record DependencyNode(OperationSetup operation, LifetimeAccessor accessor) {}
+    private record DependencyNode(OperationSetup operation, ProvidedService pis, LifetimeAccessor accessor) {}
 }

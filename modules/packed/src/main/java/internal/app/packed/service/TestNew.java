@@ -64,7 +64,7 @@ public class TestNew extends BaseAssembly {
 
     public static class Gop {
         public Gop(Integer i) {
-
+            System.out.println("New Gop " + i);
         }
 
 //        
@@ -78,7 +78,7 @@ public class TestNew extends BaseAssembly {
     public static class Fop {
 
         @ProvideService
-        public Integer foo(@XX("Nice") String s) {
+        public static Integer foo(@XX("Nice") String s) {
             System.out.println("Got " + s);
             return 34;
         }

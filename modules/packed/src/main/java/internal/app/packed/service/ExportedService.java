@@ -34,8 +34,8 @@ public final class ExportedService {
     @Nullable
     public final ServicePath path;
 
-    ExportedService(OperationSetup bos, Key<?> key) {
-        this.os = bos;
+    ExportedService(OperationSetup os, Key<?> key) {
+        this.os = os;
         this.key = key;
         this.path = null;
     }

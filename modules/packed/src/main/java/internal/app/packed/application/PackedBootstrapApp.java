@@ -25,6 +25,7 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
+import app.packed.application.BootstrapApp;
 import app.packed.application.BuildGoal;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
@@ -59,6 +60,7 @@ public final class PackedBootstrapApp<A> extends ApplicationDriver<A> {
         this.lifetimeKind = requireNonNull(lifetimeKind);
         this.extensionDenyList = Set.of();
     }
+
     /**
      * Update an application driver with a new wirelet.
      * 
@@ -189,32 +191,31 @@ public final class PackedBootstrapApp<A> extends ApplicationDriver<A> {
         return new PackedBootstrapApp<>(this, w);
     }
 
-
     /**
      * A builder for an application driver. An instance of this interface is acquired by calling
      * {@link OldBootstrapApp#builder()}.
      */
- //   /* sealed */ interface IBuilder /* permits PackedApplicationDriver.Builder */ {
-        // Environment + Application Interface + Result
+    // /* sealed */ interface IBuilder /* permits PackedApplicationDriver.Builder */ {
+    // Environment + Application Interface + Result
 
-        // Refactoring
-        //// En build(Wirelet... wirelets) metode
-        //// Companion objects must be added in order of the recieving MethodHandle
+    // Refactoring
+    //// En build(Wirelet... wirelets) metode
+    //// Companion objects must be added in order of the recieving MethodHandle
 
-        // Maaske konfigure man dem direkte paa extension support klassen
-        //// Det jeg taener er at man maaske har mulighed for at konfigure dem. F.eks.
-        // ServiceApplicationController.alwaysWrap();
+    // Maaske konfigure man dem direkte paa extension support klassen
+    //// Det jeg taener er at man maaske har mulighed for at konfigure dem. F.eks.
+    // ServiceApplicationController.alwaysWrap();
 
-        // Problemet her er at vi gerne maaske fx vil angive LaunchState for Lifetime.
-        // Hvilket ikke er muligt
+    // Problemet her er at vi gerne maaske fx vil angive LaunchState for Lifetime.
+    // Hvilket ikke er muligt
 
-        // noget optional??? ellers
-        /**
-         * @param companions
-         * @return this builder
-         * @throws UnsupportedOperationException
-         *             if this builder does not have a wrapper
-         */
+    // noget optional??? ellers
+    /**
+     * @param companions
+     * @return this builder
+     * @throws UnsupportedOperationException
+     *             if this builder does not have a wrapper
+     */
 //        default Builder addCompanion(ExtensionBridge... companions) {
 //            return this;
 //        }
@@ -249,39 +250,39 @@ public final class PackedBootstrapApp<A> extends ApplicationDriver<A> {
 //            throw new UnsupportedOperationException();
 //        }
 
-        // Maaske kan man have et form for accept filter...
+    // Maaske kan man have et form for accept filter...
 
-        // Vi skal soerge for vi ikke klasse initialisere... Det er det
+    // Vi skal soerge for vi ikke klasse initialisere... Det er det
 
-        // Bliver de arvet??? Vil mene ja...
-        // Naa men vi laver bare en host/app der saa kan goere det...
+    // Bliver de arvet??? Vil mene ja...
+    // Naa men vi laver bare en host/app der saa kan goere det...
 
-        // Kan ogsaa lave noget BiPredicate der tager
-        // <Requesting extension, extension that was requested>
+    // Kan ogsaa lave noget BiPredicate der tager
+    // <Requesting extension, extension that was requested>
 
-        // Spies
+    // Spies
 
-        // Kan jo altsaa ogsaa vaere en Wirelet...
-        // WireletScope...
+    // Kan jo altsaa ogsaa vaere en Wirelet...
+    // WireletScope...
 
-        /**
-         * Indicates that the any application create by this driver is not runnable.
-         * 
-         * @return this builder
-         */
-        // https://en.wikipedia.org/wiki/Runtime_system
-        // noRuntimeEnvironment appénwerwer wer
+    /**
+     * Indicates that the any application create by this driver is not runnable.
+     * 
+     * @return this builder
+     */
+    // https://en.wikipedia.org/wiki/Runtime_system
+    // noRuntimeEnvironment appénwerwer wer
 
-        // Add ApplicationRuntimeExtension to list of unsupported extensions
-        // noApplicationRuntime
+    // Add ApplicationRuntimeExtension to list of unsupported extensions
+    // noApplicationRuntime
 //        Builder disableApplicationRuntime(); // or notRunnable() (it was this originally)
 
-        // Application can only take an assembly of this type...
+    // Application can only take an assembly of this type...
 
-        // fx disallow(BytecodeGenExtension.class);
-        // fx disallow(ThreadExtension.class);
-        // fx disallow(FileExtension.class);
-        // fx disallow(NetExtension.class); -> you want to use network.. to bad for you...
+    // fx disallow(BytecodeGenExtension.class);
+    // fx disallow(ThreadExtension.class);
+    // fx disallow(FileExtension.class);
+    // fx disallow(NetExtension.class); -> you want to use network.. to bad for you...
 
 //        default Builder linkExtensionBean(Class<? extends Extension> extensionType, Class<?> extensionBean) {
 //            
@@ -291,17 +292,26 @@ public final class PackedBootstrapApp<A> extends ApplicationDriver<A> {
 //            // An extensionBean of the specified type must be installed by the extension in the root container
 //            return this;
 //        }
-  //  }
+    // }
 
     /**
-     * Implementation of {@link ApplicationLauncher} used by {@link OldBootstrapApp#newImage(Assembly, Wirelet...)}.
+     * Implementation of {@link ApplicationLauncher} used by {@link BootstrapApp#newImage(Assembly, Wirelet...)}.
      */
     public static final class SingleShotApplicationImage<A> implements ApplicationLauncher<A> {
 
         private final AtomicReference<ReusableApplicationImage<A>> ref;
 
         SingleShotApplicationImage(PackedBootstrapApp<A> driver, ApplicationSetup application) {
-            ref = new AtomicReference<>(new ReusableApplicationImage<>(driver, application));
+            this.ref = new AtomicReference<>(new ReusableApplicationImage<>(driver, application));
+        }
+
+        @SuppressWarnings("unused")
+        private RuntimeApplicationLauncher launcher() {
+            ReusableApplicationImage<A> img = ref.getAndSet(null);
+            if (img == null) {
+                throw new IllegalStateException("This image has already been used");
+            }
+            return img.application.codeGenerator.launcher;
         }
 
         /** {@inheritDoc} */

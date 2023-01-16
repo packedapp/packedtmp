@@ -42,8 +42,6 @@ public final class LifetimeObjectArenaSetup {
     /** All constants that should be stored in the constant pool. */
     private final ArrayList<Consumer<? super PackedExtensionContext>> entries = new ArrayList<>();
 
-    public final ArrayList<Runnable> postProcessing = new ArrayList<>();
-
     /** The size of the pool. */
     private int size;
 
@@ -59,9 +57,9 @@ public final class LifetimeObjectArenaSetup {
         PackedExtensionContext pool = PackedExtensionContext.create(size);
 
         if (launchContext.runtime != null) {
-            launchContext.application.codeGenerator.runtimeAccessor.store(pool, launchContext.runtime);
+            pool.objects[0] = launchContext.runtime;
         }
-        
+
         for (Consumer<? super PackedExtensionContext> e : entries) {
             e.accept(pool);
         }

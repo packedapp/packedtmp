@@ -140,7 +140,8 @@ public final class ServiceManager {
 
         // maintain old
         operation.bean.container.sm.injectionManager.provideService(provider);
-
+        operation.bean.container.useExtension(ServiceExtension.class, null);
+        
         return provider;
     }
 

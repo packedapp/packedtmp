@@ -374,7 +374,7 @@ public abstract class Extension<E extends Extension<E>> {
 
         // Check that the extension of requested extension point's is a direct dependency of this extension
         if (!extension.model.dependsOn(otherExtensionClass)) {
-            // Cannot use your own extension point
+            // An extension cannot use its own extension point
             if (otherExtensionClass == getClass()) {
                 throw new InternalExtensionException(otherExtensionClass.getSimpleName() + " cannot use its own extension point " + extensionPointClass);
             }
