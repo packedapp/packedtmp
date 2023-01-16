@@ -34,21 +34,22 @@ final class BeanScannerBindingResolver {
     static void resolveBinding(BeanScanner iBean, OperationSetup operation, int index) {
 
         // Extracts the variable we want to resolve
-        Variable var = operation.type.parameter(index);
+        Variable v = operation.type.parameter(index);
         
         // First, see if there are AnnotatedVariableHooks on the variable
-        if (tryResolveWithBindingAnnotation(iBean, var, operation, index)) {
+        if (tryResolveWithBindingAnnotation(iBean, v, operation, index)) {
             return;
         }
 
         // Peel it
         
         // Next, see if there are any VariableTypeHooks on the variable
-        ParameterType hook = iBean.hookModel.testParameterType(var.getRawType());
+        ParameterType hook = iBean.hookModel.testParameterType(v.getRawType());
         if (hook != null) {
             ContributingExtension contributor = iBean.computeContributor(hook.extensionType(), false);
-            BeanScannerBeanVariable h = new BeanScannerBeanVariable(iBean, operation, index, contributor.extension(), var);
-            contributor.introspector().hookOnAnnotatedVariable(null, h);
+            BeanScannerBeanVariable h = new BeanScannerBeanVariable(iBean, operation, index, contributor.extension(), v);
+            
+            contributor.introspector().hookOnVariableType(v.getRawType(), new PackedBindableBaseVariable(h));
             if (operation.bindings[index] != null) {
                 return;
             }
@@ -56,12 +57,12 @@ final class BeanScannerBindingResolver {
         
         // Finally, we resolve it as a service
         boolean resolveAsService = operation.operator.extensionType == BaseExtension.class;
-        InternalDependency ia = InternalDependency.fromVariable(var);
+        InternalDependency ia = InternalDependency.fromVariable(v);
         
         if (resolveAsService) {
             operation.bindings[index] = iBean.bean.container.sm.serviceBind(ia.key(), !ia.isOptional(), operation, index);
         } else {
-            ExtensionServiceBindingSetup b = new ExtensionServiceBindingSetup(operation, index, var.getRawType());
+            ExtensionServiceBindingSetup b = new ExtensionServiceBindingSetup(operation, index, v.getRawType());
             operation.bindings[index] = b;
             operation.operator.bindings.add(b);
         }

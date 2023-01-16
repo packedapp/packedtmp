@@ -48,7 +48,7 @@ import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 //// * X by combining multiple operation handles. (Kan man selv lave via regCodRes)
 //// * Classifier
 
-public final class ApplicationLauncherSetup {
+public final class ApplicationCodeGenerator {
 
     /** A list of actions that will be executed doing the code generating phase. */
     final ArrayList<Runnable> actions = new ArrayList<>();
@@ -64,7 +64,7 @@ public final class ApplicationLauncherSetup {
     @Nullable
     public final DynamicAccessor runtimeAccessor;
 
-    ApplicationLauncherSetup(ApplicationSetup application) {
+    ApplicationCodeGenerator(ApplicationSetup application) {
         this.application = application;
         this.runtimeAccessor = application.lifetimeKind == OldLifetimeKind.MANAGED
                 ? application.container.lifetime.pool.reserve(PackedManagedLifetime.class)

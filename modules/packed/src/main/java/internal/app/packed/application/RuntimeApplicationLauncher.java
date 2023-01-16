@@ -24,7 +24,7 @@ import internal.app.packed.container.WireletWrapper;
 /**
  *
  */
-public class RuntimeApplicationLauncher {
+public final class RuntimeApplicationLauncher {
 
     private final ApplicationSetup application;
 

@@ -38,6 +38,10 @@ public final class ApplicationSetup {
     private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationMirror.class,
             "initialize", void.class, ApplicationSetup.class);
 
+    /** Responsible for code generation, is null for {@link BuildGoal#NEW_MIRROR} and {@link BuildGoal#VERIFY}. */
+    @Nullable
+    public final ApplicationCodeGenerator codeGenerator;
+
     /** The root container of the application. */
     public final ContainerSetup container;
 
@@ -51,14 +55,10 @@ public final class ApplicationSetup {
     /** The build goal. */
     public final BuildGoal goal;
 
-    /** Responsible for everything to do with code generation, is null if the application cannot be launched. */
-    @Nullable
-    public final ApplicationLauncherSetup launcher;
+    public final OldLifetimeKind lifetimeKind;
 
     /** The current phase of the build process. */
     private ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
-
-    public final OldLifetimeKind lifetimeKind;
 
     /**
      * Create a new application.
@@ -77,17 +77,17 @@ public final class ApplicationSetup {
         this.lifetimeKind = driver.lifetimeKind();
         this.goal = requireNonNull(goal);
         this.container = new ContainerSetup(this, assembly, null, wirelets); // the root container of the application
-        this.launcher = goal.isLaunchable() ? new ApplicationLauncherSetup(this) : null;
+        this.codeGenerator = goal.isLaunchable() ? new ApplicationCodeGenerator(this) : null;
     }
 
     public void addCodegenAction(Runnable action) {
         requireNonNull(action, "action is null");
         if (phase.ordinal() >= ApplicationBuildPhase.CODEGEN.ordinal()) {
-            throw new IllegalStateException("This method must be called before any code generating phase is started");
+            throw new IllegalStateException("This method must be called before the code generating phase is started");
         }
-        // Ignore the action if we are not going to do any code generation.
-        if (launcher != null) {
-            launcher.actions.add(action);
+        // Only add the action if code generation is enabled
+        if (codeGenerator != null) {
+            codeGenerator.actions.add(action);
         }
     }
 
@@ -99,16 +99,17 @@ public final class ApplicationSetup {
      */
     public void checkInCodegenPhase() {
         // Should we check that launcher is null? (codegen phase done)
+        // Yes I think it is a failed, but for now OldServiceResolver is a bitch
         if (phase != ApplicationBuildPhase.CODEGEN) {
-            // Uncommented while transitioning to new Codegen
+            // Uncommented after having fixed service resolver
             // throw new IllegalStateException();
         }
     }
 
     public void finish() {
-        if (launcher != null) {
+        if (codeGenerator != null) {
             phase = ApplicationBuildPhase.CODEGEN;
-            launcher.finish();
+            codeGenerator.finish();
         }
         phase = ApplicationBuildPhase.COMPLETED;
     }
@@ -126,7 +127,7 @@ public final class ApplicationSetup {
         return mirror;
     }
 
-    enum ApplicationBuildPhase {
-        ASSEMBLE, CLOSE, CODEGEN, COMPLETED;
+    private enum ApplicationBuildPhase {
+        ASSEMBLE, CODEGEN, COMPLETED;
     }
 }

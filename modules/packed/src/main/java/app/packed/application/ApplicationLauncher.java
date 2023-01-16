@@ -23,9 +23,9 @@ import java.util.function.Function;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.RunState;
-import internal.app.packed.application.OldPackedBootstrapApp.MappedApplicationImage;
-import internal.app.packed.application.OldPackedBootstrapApp.ReusableApplicationImage;
-import internal.app.packed.application.OldPackedBootstrapApp.SingleShotApplicationImage;
+import internal.app.packed.application.PackedBootstrapApp.MappedApplicationImage;
+import internal.app.packed.application.PackedBootstrapApp.ReusableApplicationImage;
+import internal.app.packed.application.PackedBootstrapApp.SingleShotApplicationImage;
 
 /**
  * An application image is a pre-built application that can be launched at a later time.

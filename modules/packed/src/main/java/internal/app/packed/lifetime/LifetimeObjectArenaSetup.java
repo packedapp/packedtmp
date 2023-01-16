@@ -59,7 +59,7 @@ public final class LifetimeObjectArenaSetup {
         PackedExtensionContext pool = PackedExtensionContext.create(size);
 
         if (launchContext.runtime != null) {
-            launchContext.application.launcher.runtimeAccessor.store(pool, launchContext.runtime);
+            launchContext.application.codeGenerator.runtimeAccessor.store(pool, launchContext.runtime);
         }
         
         for (Consumer<? super PackedExtensionContext> e : entries) {

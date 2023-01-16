@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import app.packed.application.BuildException;
 import app.packed.bean.BeanSourceKind;
@@ -38,9 +39,15 @@ public final class OldServiceResolver {
     private final LinkedHashMap<Key<?>, DependencyNode> nodes = new LinkedHashMap<>();
 
     public void addConsumer(OperationSetup operation, LifetimeAccessor la) {
+        final AtomicReference<MethodHandle> ar = new AtomicReference<>();
         if (la != null) {
-            operation.bean.container.lifetime.pool.addOrdered(p -> {
+            operation.bean.container.application.addCodegenAction(() -> {
                 MethodHandle mh = operation.generateMethodHandle();
+                ar.set(mh);
+            });
+            
+            operation.bean.container.lifetime.pool.addOrdered(p -> {
+                MethodHandle mh = ar.get(); // operation.generateMethodHandle();
                 Object instance;
                 try {
                     instance = mh.invoke(p);
@@ -64,6 +71,7 @@ public final class OldServiceResolver {
             if (export.accessor == null) {
                 mh = export.operation.generateMethodHandle();
             } else {
+//                PackedExtensionContext.MH_CONSTANT_POOL_READER
                 mh = PackedExtensionContext.constant(key.rawType(), export.accessor.read(region));
             }
             runtimeEntries.put(key, mh);
@@ -79,7 +87,7 @@ public final class OldServiceResolver {
             LifetimeAccessor accessor = null;
             if (o.bean.lifetimePoolAccessor == null) {
                 if (o.bean.sourceKind == BeanSourceKind.INSTANCE) {
-                    
+
                 }
                 os = o.bean.operations.get(0);
             } else {
@@ -95,7 +103,7 @@ public final class OldServiceResolver {
             } else {
                 throw new Error();
             }
-        
+
             if (!isStatic && o.bean.lifetimePoolAccessor == null) {
                 throw new BuildException("Not okay)");
             }

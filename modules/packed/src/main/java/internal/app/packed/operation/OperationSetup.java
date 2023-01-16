@@ -370,6 +370,10 @@ public sealed abstract class OperationSetup {
             public Field field() {
                 return member;
             }
+            
+            public String toString() {
+                return "Field " + StringFormatter.format(member) + " (AccessMode + " + accessMode + ")";
+            }
         }
 
         /** An operation that invokes an underlying {@link Method}. */
@@ -392,6 +396,10 @@ public sealed abstract class OperationSetup {
             @Override
             public Method method() {
                 return member;
+            }
+
+            public String toString() {
+                return "Method " + StringFormatter.format(member);
             }
         }
     }

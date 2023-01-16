@@ -20,7 +20,6 @@ import java.lang.invoke.MethodHandle;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
-import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.extension.FrameworkExtension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
@@ -32,48 +31,44 @@ import internal.app.packed.application.ApplicationInitializationContext;
  */
 public class ApplicationHostExtension extends FrameworkExtension<ApplicationHostExtension> {
 
-    ApplicationHostExtension() {}
+    static final OperationTemplate ot = OperationTemplate.raw().withArg(ApplicationInitializationContext.class).withReturnTypeObject();
     
     MethodHandle mh;
+    ApplicationHostExtension() {}
     
-    @SuppressWarnings("unused")
     public <T> ApplicationHostConfiguration<T> newApplication(Class<T> guestBean) {
-        OperationTemplate ot = OperationTemplate.raw().withArg(ApplicationInitializationContext.class).withReturnTypeObject();
         // We need the attachment, because ContainerGuest is on
         BeanInstaller bi = base().newBean(BeanKind.MANYTON).attach(InstallingAppHost.class, new InstallingAppHost()).lifetimes(ot);
-        BeanHandle<T> h = bi.install(guestBean);
-
-        OperationHandle oh = h.lifetimeOperations().get(0);
-        // h.lifetimeOperations().get(0).
-
-        ExtensionBeanConfiguration<BootstrapBean> ibc = base().install(BootstrapBean.class);
-        this.registerCodeGenerator(() -> {
-            mh = oh.generateMethodHandle();
-        });
-        return new ApplicationHostConfiguration<>(h);
+        return newApplication(bi.install(guestBean));
     }
     
-    @SuppressWarnings("unused")
     public <T> ApplicationHostConfiguration<T> newApplication(Op<T> guestBean) {
-        OperationTemplate ot = OperationTemplate.raw().withArg(ApplicationInitializationContext.class).withReturnTypeObject();
         // We need the attachment, because ContainerGuest is on
         BeanInstaller bi = base().newBean(BeanKind.MANYTON).attach(InstallingAppHost.class, new InstallingAppHost()).lifetimes(ot);
-        BeanHandle<T> h = bi.install(guestBean);
-
-        OperationHandle oh = h.lifetimeOperations().get(0);
-        // h.lifetimeOperations().get(0).
-
-        ExtensionBeanConfiguration<BootstrapBean> ibc = base().install(BootstrapBean.class);
+        return newApplication(bi.install(guestBean));
+    }
+    
+    private <T> ApplicationHostConfiguration<T> newApplication(BeanHandle<T> handle) {
+        OperationHandle oh = handle.lifetimeOperations().get(0);
         this.registerCodeGenerator(() -> {
             mh = oh.generateMethodHandle();
         });
-        return new ApplicationHostConfiguration<>(h);
+        return new ApplicationHostConfiguration<>(handle);
+        
     }
 
 
     static class BootstrapBean {
 
     }
+    
+    static class InstallingAppHost {
+
+
+        public InstallingAppHost() {
+        }
+    }
+
 }
 // installPermanent
 // installLazy (with activator)

@@ -39,7 +39,6 @@ import app.packed.container.Wirelet;
 import app.packed.extension.bridge.FromContainerGuest;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
-import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.service.PackedServiceLocator;
 
@@ -316,7 +315,11 @@ public interface ServiceLocator {
      * @see #of(Assembly, Wirelet...)
      */
     private static BootstrapApp<ServiceLocator> driver() {
-        return BootstrapApp.of(new Op1<ApplicationInitializationContext, ServiceLocator>(c -> c.serviceLocator()) {}, c -> {});
+        class ServiceLocatorAssembly {
+            private static final BootstrapApp<ServiceLocator> DRIVER = BootstrapApp.of(new Op1<@FromContainerGuest ServiceLocator, ServiceLocator>(e -> e) {},
+                    c -> {});
+        }
+        return ServiceLocatorAssembly.DRIVER;
     }
 
 //    // maaske har vi launcher og Image...
@@ -369,16 +372,12 @@ public interface ServiceLocator {
     static ServiceLocator of(ComposerAction<? super Composer> action, Wirelet... wirelets) {
         class ServiceLocatorAssembly extends ComposerAssembly<Composer> {
 
-            record FakeGuest(@FromContainerGuest ServiceLocator services) {}
-
-            private static final BootstrapApp<FakeGuest> DRIVER = BootstrapApp.of(FakeGuest.class, c -> {});
-
             ServiceLocatorAssembly(ComposerAction<? super Composer> action) {
                 super(new Composer(), action);
             }
         }
 
-        return ServiceLocatorAssembly.DRIVER.launch(new ServiceLocatorAssembly(action), wirelets).services;
+        return driver().launch(new ServiceLocatorAssembly(action), wirelets);
     }
 
     /**

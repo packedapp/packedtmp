@@ -36,11 +36,16 @@ public class Osi {
 
     void process(OperationSetup os) {
         BindingSetup[] bindings = os.bindings;
-        //System.out.println("----------------------");
-        //System.out.println("Start " + mh.type());
+        // System.out.println("----------------------");
+        // System.out.println("Start " + mh.type());
         for (int i = 0; i < bindings.length; i++) {
             index = i;
             // System.out.println("BT " + bindings[i].getClass());
+
+            if (bindings[i] == null) {
+                System.out.println(os.type);
+                System.out.println(i);
+            }
             if (bindings[i].provider != null) {
                 mh = bindings[i].provider.bindIntoOperation(this);
             } else {
@@ -49,15 +54,15 @@ public class Osi {
             }
         }
 
-        //System.out.println("Before touchup " + mh.type());
-        //System.out.println("Number of bindings " + bindings.length);
+        // System.out.println("Before touchup " + mh.type());
+        // System.out.println("Number of bindings " + bindings.length);
         MethodType mt = os.template.invocationType();
         // Den her virker fordi vi kun har en parameter type
-        //System.out.println("PERM");
-        //System.out.println(Arrays.toString(is.toArray()));
+        // System.out.println("PERM");
+        // System.out.println(Arrays.toString(is.toArray()));
         mh = MethodHandles.permuteArguments(mh, mt, is.toArray());
 
-        //System.out.println("Finished " + mh.type());
+        // System.out.println("Finished " + mh.type());
 
     }
 
@@ -67,8 +72,8 @@ public class Osi {
      * @param argumentIndex
      */
     public MethodHandle bindArgument(int argumentIndex) {
-        //System.out.println("!@# " + mh.type());
-      //  throw new UnsupportedOperationException();
+        // System.out.println("!@# " + mh.type());
+        // throw new UnsupportedOperationException();
         is.push(argumentIndex);
         return mh;
     }
@@ -80,10 +85,10 @@ public class Osi {
 
     public MethodHandle bindOperation(OperationSetup operation) {
         MethodHandle methodHandle = operation.generateMethodHandle();
-        //System.out.println("Current: " + mh.type());
-        //System.out.println("X Generated " + methodHandle.type());
+        // System.out.println("Current: " + mh.type());
+        // System.out.println("X Generated " + methodHandle.type());
         MethodHandle m = MethodHandles.collectArguments(mh, nextIndex, methodHandle);
-        //System.out.println("Rest" + m.type());
+        // System.out.println("Rest" + m.type());
         nextIndex += methodHandle.type().parameterCount();
         is.push(IntStream.range(0, methodHandle.type().parameterCount()).toArray());
         return m;

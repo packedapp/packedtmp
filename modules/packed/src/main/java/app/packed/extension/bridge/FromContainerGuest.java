@@ -26,7 +26,7 @@ import app.packed.extension.BaseExtension;
 /**
  *
  */
-@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
+@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
 @AnnotatedVariableHook(extension = BaseExtension.class)
 public @interface FromContainerGuest {}

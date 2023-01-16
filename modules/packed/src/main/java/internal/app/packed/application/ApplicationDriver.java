@@ -24,8 +24,7 @@ import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 /**
  *
  */
-@SuppressWarnings("rawtypes")
-public sealed abstract class ApplicationDriver<A> permits OldPackedBootstrapApp, PremordialApplicationDriver {
+public abstract class ApplicationDriver<A> {
 
     public abstract A newInstance(ApplicationInitializationContext context);
 

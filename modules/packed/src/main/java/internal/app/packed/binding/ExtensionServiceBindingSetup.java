@@ -20,6 +20,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.binding.BindingClassifierKind;
 import app.packed.container.Realm;
 import app.packed.extension.BaseExtension;
+import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.Osi;
@@ -39,6 +40,9 @@ public final class ExtensionServiceBindingSetup extends BindingSetup {
      */
     public ExtensionServiceBindingSetup(OperationSetup operation, int index, Class<?> extensionBeanClass) {
         super(operation, index, Realm.extension(BaseExtension.class));
+        if (extensionBeanClass == ApplicationInitializationContext.class) {
+            throw new Error();
+        }
         this.extensionBeanClass = extensionBeanClass;
     }
 

@@ -211,7 +211,7 @@ public final /* primitive */ class OperationHandle {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return operation.toString();
+        return "OperationHandle: " + operation.toString();
     }
 
     /** {@return the type of this operation.} */

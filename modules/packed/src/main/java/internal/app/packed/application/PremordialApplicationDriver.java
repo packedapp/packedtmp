@@ -42,7 +42,6 @@ public final class PremordialApplicationDriver<A> extends ApplicationDriver<Boot
     /** {@inheritDoc} */
     @Override
     public BootstrapApp<A> newInstance(ApplicationInitializationContext context) {
-        
         return null;
     }
 
@@ -51,5 +50,4 @@ public final class PremordialApplicationDriver<A> extends ApplicationDriver<Boot
     public Wirelet wirelet() {
         return null;
     }
-
 }

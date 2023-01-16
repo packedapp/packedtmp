@@ -18,7 +18,6 @@ package internal.app.packed.application;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -32,13 +31,12 @@ import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
-import app.packed.operation.Op;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Implementation of {@link OldBootstrapApp}. */
-public final class OldPackedBootstrapApp<A> extends ApplicationDriver<A> {
+public final class PackedBootstrapApp<A> extends ApplicationDriver<A> {
 
     final Set<Class<? extends Extension<?>>> extensionDenyList;
 
@@ -55,7 +53,7 @@ public final class OldPackedBootstrapApp<A> extends ApplicationDriver<A> {
     @Nullable
     public final Wirelet wirelet;
 
-    public OldPackedBootstrapApp(OldLifetimeKind lifetimeKind, MethodHandle mh, Wirelet wirelet) {
+    public PackedBootstrapApp(OldLifetimeKind lifetimeKind, MethodHandle mh, Wirelet wirelet) {
         this.wirelet = wirelet;
         this.mhConstructor = requireNonNull(mh);
         this.lifetimeKind = requireNonNull(lifetimeKind);
@@ -69,7 +67,7 @@ public final class OldPackedBootstrapApp<A> extends ApplicationDriver<A> {
      * @param wirelet
      *            the new wirelet
      */
-    private OldPackedBootstrapApp(OldPackedBootstrapApp<A> existing, Wirelet wirelet) {
+    private PackedBootstrapApp(PackedBootstrapApp<A> existing, Wirelet wirelet) {
         this.wirelet = existing.wirelet;
         this.lifetimeKind = existing.lifetimeKind;
         this.mhConstructor = existing.mhConstructor;
@@ -95,7 +93,7 @@ public final class OldPackedBootstrapApp<A> extends ApplicationDriver<A> {
         as.build();
 
         // Launch the application
-        RuntimeApplicationLauncher launcher = as.application.launcher.launcher;
+        RuntimeApplicationLauncher launcher = as.application.codeGenerator.launcher;
         // as= null? For GC?
         return launcher.launchImmediately(this);
     }
@@ -185,118 +183,18 @@ public final class OldPackedBootstrapApp<A> extends ApplicationDriver<A> {
     }
 
     /** {@inheritDoc} */
-    public OldPackedBootstrapApp<A> with(Wirelet... wirelets) {
+    public PackedBootstrapApp<A> with(Wirelet... wirelets) {
         // Skal vi checke noget med components
         Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
-        return new OldPackedBootstrapApp<>(this, w);
+        return new PackedBootstrapApp<>(this, w);
     }
-//
-//    /** Single implementation of {@link OldBootstrapApp.Builder}. */
-//    public static final class Builder {
-//
-//        /** A MethodHandle for invoking {@link ApplicationInitializationContext#name()}. */
-//        private static final MethodHandle MH_NAME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class, "name",
-//                String.class);
-//
-//        /** A MethodHandle for invoking {@link ApplicationInitializationContext#runtime()}. */
-//        private static final MethodHandle MH_RUNTIME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
-//                "runtime", ManagedLifetimeController.class);
-//
-//        /** A MethodHandle for invoking {@link ApplicationInitializationContext#serviceLocator()}. */
-//        private static final MethodHandle MH_SERVICE_LOCATOR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
-//                "serviceLocator", ServiceLocator.class);
-//
-//        private final HashSet<Class<? extends Extension<?>>> disabledExtensions = new HashSet<>();
-//
-//        /** Factory, if A is non-void. */
-//        @Nullable
-//        public final PackedOp<?> factory;
-//
-//        /**
-//         * All application drivers except {@link OldPackedBootstrapApp#PRIMORDIAL} has either an unmanaged or managed lifetime.
-//         */
-//        private OldLifetimeKind lifetimeKind = OldLifetimeKind.UNMANAGED;
-//
-//        MethodHandle mhConstructor;
-//
-//        private Wirelet wirelet;
-//
-//        public Builder(PackedOp<?> factory) {
-//            this.factory = factory;
-//
-//            // Problemet med at komme laengere er lidt InternalInfuser som er bygget op omkring den faar en klasse
-//            // og ikke et internal factory
-//
-//            // Maybe we will make an actual application????
-//            // Paa den maade kan vi ogsaa lettere expose mirroret
-//
-//        }
-//
-//        /** {@inheritDoc} */
-//        public <S> OldPackedBootstrapApp<S> build(Class<S> wrapperType, Op<S> op, Wirelet... wirelets) {
-//            this.mhConstructor = PackedOp.crack(op).mhOperation;
-//
-//            return new OldPackedBootstrapApp<S>(this);
-//        }
-//
-////        /** {@inheritDoc} */
-////        public <S> OldPackedBootstrapApp<S> build(Lookup caller, Class<? extends S> implementation, Wirelet... wirelets) {
-////            // Find a method handle for the application shell's constructor
-////            InternalInfuser.Builder builder = InternalInfuser.builder(caller, implementation, ApplicationInitializationContext.class);
-////            // builder.provide(Component.class).invokeExact(MH_COMPONENT, 0);
-////            builder.provide(ServiceLocator.class).invokeExact(MH_SERVICE_LOCATOR, 0);
-////            builder.provide(String.class).invokeExact(MH_NAME, 0);
-////            if (lifetimeKind == OldLifetimeKind.MANAGED) { // Conditional add ApplicationRuntime
-////                builder.provide(ManagedLifetimeController.class).invokeExact(MH_RUNTIME, 0);
-////            }
-////
-////            // builder(caller).addParameter(implementation).addParameter(AIC);
-////            // builder.provideService(ServiceLocator.class, builder.addComputed(MH_SERVICES, 0));
-////
-////            mhConstructor = builder.findConstructor(Object.class, s -> new IllegalArgumentException(s));
-////
-////            return new OldPackedBootstrapApp<>(this);
-////        }
-//
-////      /** {@inheritDoc} */
-////      @Override
-////      public Builder disable(@SuppressWarnings("unchecked") Class<? extends Extension<?>>... extensionTypes) {
-////          requireNonNull(extensionTypes, "extensionTypes is null");
-////          for (Class<? extends Extension<?>> c : extensionTypes) {
-////              disabledExtensions.add(ClassUtil.checkProperSubclass(Extension.class, c));
-////          }
-////          return this;
-////      }
-//
-//        private <S> OldPackedBootstrapApp<S> buildOld(MethodHandle mhNewShell, Wirelet... wirelets) {
-//            mhConstructor = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationInitializationContext.class));
-//            return new OldPackedBootstrapApp<>(this);
-//        }
-//
-//        /** {@inheritDoc} */
-//        public OldPackedBootstrapApp<Void> buildVoid(Wirelet... wirelets) {
-//            return buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationInitializationContext.class)));
-//        }
-//
-//        /** {@inheritDoc} */
-//        public Builder disableExtension(Class<? extends Extension<?>> extensionType) {
-//            ClassUtil.checkProperSubclass(Extension.class, extensionType, "extensionType");
-//            disabledExtensions.add(extensionType);
-//            return this;
-//        }
-//
-//        /** {@inheritDoc} */
-//        public Builder managedLifetime() {
-//            this.lifetimeKind = OldLifetimeKind.MANAGED;
-//            return this;
-//        }
-//    }
+
 
     /**
      * A builder for an application driver. An instance of this interface is acquired by calling
      * {@link OldBootstrapApp#builder()}.
      */
-    /* sealed */ interface IBuilder /* permits PackedApplicationDriver.Builder */ {
+ //   /* sealed */ interface IBuilder /* permits PackedApplicationDriver.Builder */ {
         // Environment + Application Interface + Result
 
         // Refactoring
@@ -321,34 +219,6 @@ public final class OldPackedBootstrapApp<A> extends ApplicationDriver<A> {
 //            return this;
 //        }
 
-        <S> OldPackedBootstrapApp<S> build(Class<S> wrapperType, Op<S> op, Wirelet... wirelets);
-
-        /**
-         * Creates a new artifact driver.
-         * <p>
-         * The specified implementation can have the following types injected.
-         * 
-         * If the specified implementation implements {@link AutoCloseable} a {@link ManagedLifetimeController} can also be
-         * injected.
-         * <p>
-         * Fields and methods are not processed.
-         * 
-         * @param <A>
-         *            the type of artifacts the driver creates
-         * @param caller
-         *            a lookup object that must have full access to the specified implementation
-         * @param wrapperType
-         *            the implementation of the artifact
-         * @return a new driver
-         */
-        <S> OldPackedBootstrapApp<S> build(MethodHandles.Lookup caller, Class<? extends S> wrapperType, Wirelet... wirelets);
-
-//        default ApplicationDriver<A> build(Wirelet... wirelets) {
-//            throw new UnsupportedOperationException();
-//        }
-
-        OldPackedBootstrapApp<Void> buildVoid(Wirelet... wirelets);
-
 //        /**
 //         * Disables 1 or more extensions. Attempting to use a disabled extension will result in an RestrictedExtensionException
 //         * being thrown
@@ -358,15 +228,6 @@ public final class OldPackedBootstrapApp<A> extends ApplicationDriver<A> {
 //         * @return
 //         */
 //        Builder<A> disableExtension(Class<? extends Extension<?>> extensionType);
-
-        /**
-         * Application produced by the driver are executable. And will be launched by the specified launch mode by default.
-         * <p>
-         * The default launchState can be overridden at later point by using XYZ
-         * 
-         * @return this builder
-         */
-        IBuilder managedLifetime();
 
 //        @SuppressWarnings("unchecked")
 //        default Builder<A> requireExtension(Class<? extends Extension>... extensionTypes) {
@@ -430,7 +291,7 @@ public final class OldPackedBootstrapApp<A> extends ApplicationDriver<A> {
 //            // An extensionBean of the specified type must be installed by the extension in the root container
 //            return this;
 //        }
-    }
+  //  }
 
     /**
      * Implementation of {@link ApplicationLauncher} used by {@link OldBootstrapApp#newImage(Assembly, Wirelet...)}.
@@ -439,7 +300,7 @@ public final class OldPackedBootstrapApp<A> extends ApplicationDriver<A> {
 
         private final AtomicReference<ReusableApplicationImage<A>> ref;
 
-        SingleShotApplicationImage(OldPackedBootstrapApp<A> driver, ApplicationSetup application) {
+        SingleShotApplicationImage(PackedBootstrapApp<A> driver, ApplicationSetup application) {
             ref = new AtomicReference<>(new ReusableApplicationImage<>(driver, application));
         }
 
@@ -459,12 +320,12 @@ public final class OldPackedBootstrapApp<A> extends ApplicationDriver<A> {
     /**
      * Implementation of {@link ApplicationLauncher} used by {@link OldBootstrapApp#newImage(Assembly, Wirelet...)}.
      */
-    public /* primitive */ record ReusableApplicationImage<A>(OldPackedBootstrapApp<A> driver, ApplicationSetup application) implements ApplicationLauncher<A> {
+    public /* primitive */ record ReusableApplicationImage<A>(PackedBootstrapApp<A> driver, ApplicationSetup application) implements ApplicationLauncher<A> {
 
         /** {@inheritDoc} */
         @Override
         public A launch(Wirelet... wirelets) {
-            return application.launcher.launcher.launchFromImage(driver, wirelets);
+            return application.codeGenerator.launcher.launchFromImage(driver, wirelets);
         }
     }
 

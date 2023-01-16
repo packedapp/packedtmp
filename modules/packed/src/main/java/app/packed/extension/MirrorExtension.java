@@ -21,7 +21,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.bean.BeanScannerBeanVariable;
+import internal.app.packed.bean.PackedBindableBaseVariable;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -58,7 +58,7 @@ public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
         return new BeanIntrospector() {
             @Override
             public void hookOnVariableType(Class<?> hook, BindableBaseVariable binding) {
-                OperationSetup os = ((BeanScannerBeanVariable) binding).operation;
+                OperationSetup os = ((PackedBindableBaseVariable) binding).v.operation;
                 
                 if (hook == ApplicationMirror.class) {
                     binding.bindConstant(os.bean.container.application.mirror());

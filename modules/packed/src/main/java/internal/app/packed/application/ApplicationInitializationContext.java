@@ -60,7 +60,7 @@ public final class ApplicationInitializationContext {
         this.wirelets = wirelets;
         this.name = requireNonNull(application.container.name);
         this.lifetimeKind = requireNonNull(application.lifetimeKind);
-        this.runtime = application.launcher == null || application.launcher.runtimeAccessor == null ? null : new PackedManagedLifetime(this);
+        this.runtime = application.codeGenerator == null || application.codeGenerator.runtimeAccessor == null ? null : new PackedManagedLifetime(this);
     }
 
     /** {@return the name of the application} */

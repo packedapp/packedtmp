@@ -29,7 +29,7 @@ import app.packed.container.Wirelet;
 import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.ApplicationInitializationContext;
-import internal.app.packed.application.OldPackedBootstrapApp;
+import internal.app.packed.application.PackedBootstrapApp;
 import internal.app.packed.application.PremordialApplicationDriver;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
@@ -56,9 +56,9 @@ import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
  */
 public final class BootstrapApp<A> {
 
-    private final OldPackedBootstrapApp<A> app;
+    private final PackedBootstrapApp<A> app;
 
-    BootstrapApp(OldPackedBootstrapApp<A> app) {
+    BootstrapApp(PackedBootstrapApp<A> app) {
         this.app = requireNonNull(app);
     }
 
@@ -183,11 +183,12 @@ public final class BootstrapApp<A> {
         BootstrapAppAssembly<Object> baa = new Composer.BootstrapAppAssembly<>(comp, action);
         AssemblySetup as = new AssemblySetup(pad, BuildGoal.LAUNCH, null, baa, new Wirelet[0]);
         as.build();
+        
         MethodHandle mh = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationInitializationContext.class));
         if (o != null) {
             mh = comp.ahe.mh;
-        }
-        OldPackedBootstrapApp<A> a = new OldPackedBootstrapApp<>(comp.lifetimeKind, mh, null);
+        }        
+        PackedBootstrapApp<A> a = new PackedBootstrapApp<>(comp.lifetimeKind, mh, null);
         return new BootstrapApp<>(a);
     }
 
@@ -203,15 +204,16 @@ public final class BootstrapApp<A> {
     // Compiler -> Deployable<ApplicationWrapper>
     public static final class Composer extends AbstractComposer {
         ApplicationHostExtension ahe;
-        OldLifetimeKind lifetimeKind = OldLifetimeKind.UNMANAGED;
+        private OldLifetimeKind lifetimeKind = OldLifetimeKind.UNMANAGED;
         final Object o;
 
         private Composer(Object o) {
             this.o = o;
         }
 
+        /** {@inheritDoc} */
         @Override
-        protected void preAction() {
+        protected void preCompose() {
             ahe = use(ApplicationHostExtension.class);
             if (o instanceof Class<?> cl) {
                 ahe.newApplication(cl);
