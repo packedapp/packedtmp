@@ -31,8 +31,6 @@ public final class ProvidedService {
     /** The key under which this service is provided. */
     public final ServiceManagerEntry entry;
 
-    public final boolean isConstant;
-
     /** The operation that provides the service. */
     public final OperationSetup operation;
 
@@ -40,11 +38,10 @@ public final class ProvidedService {
 
     public final BindingProvider resolution;
 
-    ProvidedService(OperationSetup operation, boolean isConstant, ServiceManagerEntry entry, BindingProvider resolution) {
+    ProvidedService(OperationSetup operation, ServiceManagerEntry entry, BindingProvider resolution) {
         this.operation = operation;
         this.bean = operation.bean;
         this.entry = entry;
-        this.isConstant = isConstant;
         this.resolution = resolution;
     }
 }

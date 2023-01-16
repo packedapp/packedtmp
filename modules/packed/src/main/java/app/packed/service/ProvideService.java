@@ -72,5 +72,5 @@ public @interface ProvideService {
      * 
      * @return whether or not the provided value is a constant
      */
-    boolean constant() default false;
+    //boolean constant() default false;
 }

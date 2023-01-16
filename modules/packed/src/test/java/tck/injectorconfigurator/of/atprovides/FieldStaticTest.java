@@ -56,7 +56,7 @@ public class FieldStaticTest {
         @ProvideService
         private static Integer P;
 
-        @ProvideService(constant = true)
+        @ProvideService
         private static Short S;
 
         public MixedFieldsInstantiable() {
@@ -78,13 +78,13 @@ public class FieldStaticTest {
             S = 2;
             P = 2;
 
-            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Short.class)).isEqualTo((short) 2);
             // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(2);
             // L = 3L;
             S = 3;
             P = 3;
-            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Short.class)).isEqualTo((short) 3);
             // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(3);
         }
@@ -102,7 +102,7 @@ public class FieldStaticTest {
         @ProvideService
         private static Integer P;
 
-        @ProvideService(constant = true)
+        @ProvideService
         private static Short S;
 
         public MixedFieldsNoInstantiation() {
@@ -122,13 +122,13 @@ public class FieldStaticTest {
             S = 2;
             P = 2;
 
-            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Short.class)).isEqualTo((short) 2);
             // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(2);
             // L = 3L;
             S = 3;
             P = 3;
-            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Short.class)).isEqualTo((short) 3);
             // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(3);
         }

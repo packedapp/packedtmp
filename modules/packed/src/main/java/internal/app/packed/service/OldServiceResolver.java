@@ -69,9 +69,7 @@ public final class OldServiceResolver {
             DependencyNode export = e.getValue();
             
             MethodHandle mh;
-            if (export.pis.isConstant) {
-                System.out.println("CONST");
-            }
+
             if (export.accessor == null) {
                 mh = export.operation.generateMethodHandle();
             } else {
@@ -113,7 +111,7 @@ public final class OldServiceResolver {
             if (!isStatic && o.bean.lifetimePoolAccessor == null) {
                 throw new BuildException("Not okay)");
             }
-            DynamicAccessor accessor = provider.isConstant ? o.bean.container.lifetime.pool.reserve(Object.class) : null;
+            DynamicAccessor accessor = null;
             bis = new DependencyNode(o, provider, accessor);
             addConsumer(o, accessor);
         }

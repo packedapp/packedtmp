@@ -145,7 +145,7 @@ public class FieldInstanceTest {
         @ProvideService
         Integer p = 1;
 
-        @ProvideService(constant = true)
+        @ProvideService
         Short s = 1;
 
         static void test(Consumer<? super Composer> configurator) {
@@ -158,13 +158,13 @@ public class FieldInstanceTest {
             f.s = 2;
             f.p = 2;
 
-            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Short.class)).isEqualTo((short) 2);
             // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(2);
             // f.l = 3L;
             f.s = 3;
             f.p = 3;
-            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Short.class)).isEqualTo((short) 3);
             // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(3);
         }
@@ -182,7 +182,7 @@ public class FieldInstanceTest {
 
     public static class SingletonField {
 
-        @ProvideService(constant = true)
+        @ProvideService
         Short s = 1;
 
         public SingletonField(AtomicBoolean b) {

@@ -116,7 +116,7 @@ public final class ServiceManager {
      * @return a provided service
      */
     // 3 Muligheder -> Field, Method, BeanInstance
-    public ProvidedService serviceProvide(Key<?> key, boolean isConstant, BeanSetup bean, OperationSetup operation, BindingProvider r) {
+    public ProvidedService serviceProvide(Key<?> key, BeanSetup bean, OperationSetup operation, BindingProvider r) {
         ServiceManagerEntry entry = entries.computeIfAbsent(key, ServiceManagerEntry::new);
 
         // Check lifetimes
@@ -127,7 +127,7 @@ public final class ServiceManager {
         }
 
         // Create a new provider
-        ProvidedService provider = entry.provider = new ProvidedService(operation, isConstant, entry, r);
+        ProvidedService provider = entry.provider = new ProvidedService(operation, entry, r);
 
         operation.mirrorSupplier = () -> new ProvidedServiceMirror(entry.provider);
 

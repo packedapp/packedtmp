@@ -79,8 +79,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
     private final ExtensionSetup setup = ExtensionSetup.crack(this);
 
     /** Create a new service extension. */
-    ServiceExtension() {
-    }
+    ServiceExtension() {}
 
     // Validates the outward facing contract
     public void checkContract(Consumer<? super ServiceContract> validator) {
@@ -142,10 +141,8 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
             @Override
             public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks, OperationalField field) {
                 Key<?> key = field.fieldToKey();
-                boolean constant = field.annotations().readRequired(ProvideService.class).constant();
-
                 OperationSetup operation = OperationSetup.crack(field.newGetOperation(OperationTemplate.defaults()));
-                setup.container.sm.serviceProvide(key, constant, operation.bean, operation, new FromOperation(operation));
+                setup.container.sm.serviceProvide(key, operation.bean, operation, new FromOperation(operation));
             }
 
             /** {@inheritDoc} */
@@ -158,10 +155,8 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
                 OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
 
                 if (isProviding) {
-                    boolean constant = method.annotations().readRequired(ProvideService.class).constant();
-
                     OperationSetup operation = OperationSetup.crack(method.newOperation(temp));
-                    setup.container.sm.serviceProvide(key, constant, operation.bean, operation, new FromOperation(operation));
+                    setup.container.sm.serviceProvide(key, operation.bean, operation, new FromOperation(operation));
                 }
 
                 if (isExporting) {

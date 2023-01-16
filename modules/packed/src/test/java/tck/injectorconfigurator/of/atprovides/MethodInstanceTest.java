@@ -112,7 +112,7 @@ public class MethodInstanceTest {
             return p;
         }
 
-        @ProvideService(constant = true)
+        @ProvideService
         Short s() {
             return s;
         }
@@ -127,13 +127,13 @@ public class MethodInstanceTest {
             f.s = 2;
             f.p = 2;
 
-            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Short.class)).isEqualTo((short) 2);
             // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(2);
             // f.l = 3L;
             f.s = 3;
             f.p = 3;
-            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Short.class)).isEqualTo((short) 3);
             // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(3);
         }
@@ -161,7 +161,7 @@ public class MethodInstanceTest {
             b.set(true);
         }
 
-        @ProvideService(constant = true)
+        @ProvideService
         public Short s() {
             return s;
         }

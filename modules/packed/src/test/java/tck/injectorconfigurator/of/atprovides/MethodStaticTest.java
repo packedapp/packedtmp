@@ -78,7 +78,7 @@ public class MethodStaticTest {
             return P;
         }
 
-        @ProvideService(constant = true)
+        @ProvideService
         static Short s() {
             return S;
         }
@@ -96,13 +96,13 @@ public class MethodStaticTest {
             S = 2;
             P = 2;
 
-            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Short.class)).isEqualTo((short) 2);
             // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(2);
             // L = 3L;
             S = 3;
             P = 3;
-            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Short.class)).isEqualTo((short) 3);
             // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(3);
         }
@@ -134,7 +134,7 @@ public class MethodStaticTest {
             return P;
         }
 
-        @ProvideService(constant = true)
+        @ProvideService
         static Short s() {
             return S;
         }
@@ -152,13 +152,13 @@ public class MethodStaticTest {
             S = 2;
             P = 2;
 
-            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Short.class)).isEqualTo((short) 2);
             // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(2);
             // L = 3L;
             S = 3;
             P = 3;
-            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Short.class)).isEqualTo((short) 3);
             // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(3);
         }

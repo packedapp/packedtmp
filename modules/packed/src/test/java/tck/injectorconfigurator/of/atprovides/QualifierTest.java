@@ -70,8 +70,8 @@ public class QualifierTest {
 
         // assertThat(i.use(new Key<@StringQualifier("A") Long>() {})).isEqualTo(2L);
         assertThat(i.use(new Key<@StringQualifier("B") Long>() {})).isEqualTo(2L);
-        assertThat(i.use(new Key<@StringQualifier("C") Long>() {})).isEqualTo(1L);
-        assertThat(i.use(new Key<Long>() {})).isEqualTo(1L);
+        assertThat(i.use(new Key<@StringQualifier("C") Long>() {})).isEqualTo(2L);
+        assertThat(i.use(new Key<Long>() {})).isEqualTo(2L);
 
         // Stub.A = 3L;
         Stub.B = 3L;
@@ -80,8 +80,8 @@ public class QualifierTest {
 
         // assertThat(i.use(new Key<@StringQualifier("A") Long>() {})).isEqualTo(2L);
         assertThat(i.use(new Key<@StringQualifier("B") Long>() {})).isEqualTo(3L);
-        assertThat(i.use(new Key<@StringQualifier("C") Long>() {})).isEqualTo(1L);
-        assertThat(i.use(new Key<Long>() {})).isEqualTo(1L);
+        assertThat(i.use(new Key<@StringQualifier("C") Long>() {})).isEqualTo(3L);
+        assertThat(i.use(new Key<Long>() {})).isEqualTo(3L);
     }
 
     private static ServiceLocator create(Consumer<? super Composer> consumer) {
@@ -93,22 +93,22 @@ public class QualifierTest {
 
     public static class MultipleIdenticalQualifiedFieldKeys {
 
-        @ProvideService(constant = true)
+        @ProvideService
         @StringQualifier("A")
         private Long A = 0L;
 
-        @ProvideService(constant = true)
+        @ProvideService
         @StringQualifier("A")
         private Long B = 0L;
     }
 
     public static class MultipleIdenticalQualifiedMemberKeys {
 
-        @ProvideService(constant = true)
+        @ProvideService
         @StringQualifier("A")
         private Long A = 0L;
 
-        @ProvideService(constant = true)
+        @ProvideService
         @StringQualifier("A")
         static Long b() {
             return 0L;
@@ -117,13 +117,13 @@ public class QualifierTest {
 
     public static class MultipleIdenticalQualifiedMethodKeys {
 
-        @ProvideService(constant = true)
+        @ProvideService
         @StringQualifier("A")
         static Long a() {
             return 0L;
         }
 
-        @ProvideService(constant = true)
+        @ProvideService
         @StringQualifier("A")
         static Long b() {
             return 0L;
@@ -140,11 +140,11 @@ public class QualifierTest {
         @StringQualifier("B")
         private static Long B;
 
-        @ProvideService(constant = true)
+        @ProvideService
         @StringQualifier("C")
         private static Long C;
 
-        @ProvideService(constant = true)
+        @ProvideService
         private static Long L;
     }
 }
