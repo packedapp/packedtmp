@@ -34,7 +34,6 @@ import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOp
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
 import internal.app.packed.util.ThrowableUtil;
 
-@Deprecated
 public final class OldServiceResolver {
 
     private final LinkedHashMap<Key<?>, DependencyNode> nodes = new LinkedHashMap<>();

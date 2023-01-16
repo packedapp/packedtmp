@@ -72,7 +72,5 @@ public @interface ProvideService {
      * 
      * @return whether or not the provided value is a constant
      */
-    /// Maaske har vi slet ikke constant....
-    //// Maaske har vi en @ConstantProvide istedet for??? Eller Scope(Constant);
     boolean constant() default false;
 }

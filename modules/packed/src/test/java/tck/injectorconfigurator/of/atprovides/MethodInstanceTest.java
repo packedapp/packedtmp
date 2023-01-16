@@ -94,7 +94,7 @@ public class MethodInstanceTest {
     // }
     // }
 
-    public   static class MixedMethods {
+    public static class MixedMethods {
 
         // Long l = 1L;
 
@@ -107,7 +107,7 @@ public class MethodInstanceTest {
         // return l;
         // }
 
-        @ProvideService(constant = false)
+        @ProvideService
         Integer p() {
             return p;
         }
@@ -139,25 +139,25 @@ public class MethodInstanceTest {
         }
     }
 
-public static class PrototypeMethod {
+    public static class PrototypeMethod {
 
         Short s = 1;
 
-        public    PrototypeMethod(AtomicBoolean b) {
+        public PrototypeMethod(AtomicBoolean b) {
             b.set(true);
         }
 
-        @ProvideService(constant = false)
+        @ProvideService
         public Short s() {
             return s;
         }
     }
 
-public  static class SingletonMethod {
+    public static class SingletonMethod {
 
         Short s = 1;
 
-        public    SingletonMethod(AtomicBoolean b) {
+        public SingletonMethod(AtomicBoolean b) {
             b.set(true);
         }
 

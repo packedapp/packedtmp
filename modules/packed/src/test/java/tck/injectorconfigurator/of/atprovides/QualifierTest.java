@@ -136,7 +136,7 @@ public class QualifierTest {
         // @StringQualifier("A")
         // private static Long A;
 
-        @ProvideService(constant = false)
+        @ProvideService
         @StringQualifier("B")
         private static Long B;
 

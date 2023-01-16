@@ -73,7 +73,7 @@ public class MethodStaticTest {
         // return L;
         // }
 
-        @ProvideService(constant = false)
+        @ProvideService
         static Integer p() {
             return P;
         }
@@ -129,7 +129,7 @@ public class MethodStaticTest {
         // return L;
         // }
 
-        @ProvideService(constant = false)
+        @ProvideService
         static Integer p() {
             return P;
         }

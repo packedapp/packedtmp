@@ -142,7 +142,7 @@ public class FieldInstanceTest {
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // Long l = 1L;
 
-        @ProvideService(constant = false)
+        @ProvideService
         Integer p = 1;
 
         @ProvideService(constant = true)
@@ -172,7 +172,7 @@ public class FieldInstanceTest {
 
     public static class PrototypeField {
 
-        @ProvideService(constant = false)
+        @ProvideService
         Short s = 1;
 
         public PrototypeField(AtomicBoolean b) {

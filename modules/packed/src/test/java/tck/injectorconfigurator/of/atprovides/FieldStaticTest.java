@@ -53,7 +53,7 @@ public class FieldStaticTest {
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // private static Long L;
 
-        @ProvideService(constant = false)
+        @ProvideService
         private static Integer P;
 
         @ProvideService(constant = true)
@@ -99,7 +99,7 @@ public class FieldStaticTest {
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // private static Long L;
 
-        @ProvideService(constant = false)
+        @ProvideService
         private static Integer P;
 
         @ProvideService(constant = true)
