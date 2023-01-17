@@ -27,8 +27,8 @@ import internal.app.packed.application.ApplicationDriver;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;
+import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
 import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
-import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 import internal.app.packed.util.ThrowableUtil;
 
 /**

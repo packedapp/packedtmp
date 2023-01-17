@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime.sandbox2;
+package internal.app.packed.lifetime.sandbox;
 
 /**
  *

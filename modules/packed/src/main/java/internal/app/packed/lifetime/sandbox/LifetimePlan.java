@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application.sandbox;
-
-import app.packed.application.BootstrapApp;
+package internal.app.packed.lifetime.sandbox;
 
 /**
  *
  */
-public interface RestartableApplicationHost {
+public sealed interface LifetimePlan {
     
-    static void restartImmediately(BootstrapApp<?> driver) {
-        
-    }
+    non-sealed interface InitializeOnly extends LifetimePlan{}
+    
+    // Ogsaa noget med Await
+    non-sealed interface MultiThreadMultiState extends LifetimePlan{}
 }
+// Maaske er de ikke tilknyttet selve operationer.
+// Men RunState->Plan

@@ -25,19 +25,19 @@ import internal.app.packed.lifetime.ApplicationInitializationContext;
 /**
  *
  */
-public final class RuntimeApplicationLauncher {
+final class RuntimeApplicationLauncher {
 
     private final ApplicationSetup application;
 
-    public RuntimeApplicationLauncher(ApplicationSetup application) {
+    RuntimeApplicationLauncher(ApplicationSetup application) {
         this.application = application;
     }
 
-    public <A> A launchImmediately(ApplicationDriver<A> driver) {
+    <A> A launchImmediately(ApplicationDriver<A> driver) {
         return ApplicationInitializationContext.launch(driver, application, null);
     }
 
-    public <A> A launchFromImage(ApplicationDriver<A> driver, Wirelet[] wirelets) {
+    <A> A launchFromImage(ApplicationDriver<A> driver, Wirelet[] wirelets) {
         requireNonNull(wirelets, "wirelets is null");
 
         // If launching an image, the user might have specified additional runtime wirelets

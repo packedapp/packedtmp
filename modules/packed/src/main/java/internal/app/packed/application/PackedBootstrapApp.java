@@ -34,7 +34,7 @@ import app.packed.framework.Nullable;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.lifetime.ApplicationInitializationContext;
-import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
+import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Implementation of {@link OldBootstrapApp}. */

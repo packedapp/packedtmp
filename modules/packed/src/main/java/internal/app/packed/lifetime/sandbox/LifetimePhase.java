@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application.sandbox;
+package internal.app.packed.lifetime.sandbox;
 
 /**
  *
  */
-// Taenkt paa man kan faa injected internt
-// Hvem er ejeren? BeanExtension vel??
-
-// Man har aldrig behov for at starte en application internt.
-// Kun lukke den
-public class ApplicationInternalShutdowner {
-
+// LifecyclePhase was LifetimeTransition
+public enum LifetimePhase {
+    INITIALIZATION, STARTUP, SHUTDOWN;
 }
+// Initialization - Single threaded - On Any failure
+// Startup - Potential Multi threaded - On Any failure
+// Shutdown - Potential Multi threaded - always continues (reverse order)
+
+
+// initialize(Lifesegment pre, Lifesegment segment, Lifesegment post)
+// startup(Lifesegment pre, Lifesegment segment, Lifesegment post);
+// stop(Lifesegment pre, Lifesegment segment, Lifesegment post);

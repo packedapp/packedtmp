@@ -13,28 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application.sandbox;
+package internal.app.packed.lifetime.sandbox;
 
 /**
  *
  */
-public enum ApplicationExecutionModel {
-    
-    // Application has a single entry point that will be executed
-    // Whereafter it will fail
-    ENTRY_POINT,
-    
-    // Does not have an entry point. But will run as a daemon until
-    // shutdown either internally or externally
-    DAEMON,
-        
-    STATELESS;
+
+// Restarter man en Session? Eller kun en application???
+// Det er maaske
+
+public interface LifetimeStopInfo {
+    boolean completedNormally();
+    boolean compledWithResult();
 }
-
-// Hvad med en CLI application, der enten starter en daemon eller printer "fooooo"
-
-// Maa vaere entry point
-// Er det mere lifetime???
-
-// EntryPoint single (Main) vs Many (CLI)
-// Daemon, fx Session

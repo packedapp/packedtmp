@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import app.packed.application.ApplicationLauncher;
+import app.packed.application.Program;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import internal.app.packed.application.sandbox.Program;
 
 /**
  *

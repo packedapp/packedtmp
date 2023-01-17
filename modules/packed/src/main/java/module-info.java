@@ -18,6 +18,7 @@ module app.packed {
 
     // temporary sandbox thingies
     exports app.packed.binding.mirror;
+    exports app.packed.lifetime.sandbox;
     exports app.packed.extension.bridge;
 
     /* Special support for packed-devtoolks */

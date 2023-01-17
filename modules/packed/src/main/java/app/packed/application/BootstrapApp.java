@@ -33,7 +33,7 @@ import internal.app.packed.application.ApplicationDriver;
 import internal.app.packed.application.PackedBootstrapApp;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.lifetime.ApplicationInitializationContext;
-import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
+import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
 
 /**
  * A bootstrap app is a special type of applications that can be used to create other (non-bootstrap) application.

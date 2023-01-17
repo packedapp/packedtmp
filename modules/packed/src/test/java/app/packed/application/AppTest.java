@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.application.sandbox.Program;
 
 /** Tests {@link Program} (PackedApp). */
 public class AppTest {

@@ -1,4 +1,4 @@
-package internal.app.packed.lifetime.sandbox2;
+package internal.app.packed.lifetime.sandbox;
 
 public interface LifecycleTransitionContext {
 

@@ -31,8 +31,8 @@ import app.packed.lifetime.RunState;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
 import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
-import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.ThrowableUtil;
 
