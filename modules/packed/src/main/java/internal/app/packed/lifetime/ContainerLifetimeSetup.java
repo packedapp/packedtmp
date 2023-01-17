@@ -67,6 +67,10 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
 
     ArrayList<MethodHandle> stopMh = new ArrayList<>();
 
+    /** Entry points in the application, is null if there are none. */
+    @Nullable // Maybe this a lifetime thing?
+    public EntryPointSetup entryPoints;
+
     /**
      * @param origin
      * @param parent
@@ -102,7 +106,7 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
             
             final AtomicReference<MethodHandle> ar = new AtomicReference<>();
             
-            container.application.addCodegenAction(() -> {
+            container.application.addCodeGenerator(() -> {
                 MethodHandle mh = bean.operations.get(0).generateMethodHandle();
                 ar.set(mh);
             });

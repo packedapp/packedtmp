@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandles;
 import app.packed.binding.BindingClassifierKind;
 import app.packed.container.Realm;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.lifetime.ApplicationInitializationContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.Osi;
 

@@ -47,7 +47,7 @@ public class Foo extends BaseAssembly {
     public static void main(String[] args) {
         App.run(new Foo(10));
         long start = System.currentTimeMillis();
-        ApplicationMirror am = App.newMirror(new Foo(10));
+        ApplicationMirror am = App.mirrorOf(new Foo(10));
         System.out.println(System.currentTimeMillis() - start);
         // AssemblyMirror a = am.assembly();
         // print(0, a);

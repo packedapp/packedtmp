@@ -2,7 +2,6 @@ package app.packed.entrypoint;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -16,13 +15,12 @@ import app.packed.extension.ExtensionPoint;
 import app.packed.extension.FrameworkExtension;
 import app.packed.framework.Nullable;
 import app.packed.operation.Op;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.application.EntryPointSetup;
-import internal.app.packed.application.EntryPointSetup.MainThreadOfControl;
-import internal.app.packed.bean.BeanScannerMethod;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.lifetime.EntryPointSetup;
+import internal.app.packed.lifetime.EntryPointSetup.MainThreadOfControl;
 
 /**
  * An extension that controls entry points into an application.
@@ -78,23 +76,17 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
              */
             @Override
             public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod method) {
-                registerEntryPoint(null, true);
+                int index = registerEntryPoint(null, true);
+                application.container.lifetime.entryPoints = new EntryPointSetup();
 
-                application.entryPoints = new EntryPointSetup();
-
-                MainThreadOfControl mc = application.entryPoints.mainThread();
-
-                mc.isStatic = Modifier.isStatic(method.modifiers());
-                mc.cs = ((BeanScannerMethod) method).scanner.bean;
-
-                // We should be able to just take the method handle when needed
+                MainThreadOfControl mc = application.container.lifetime.entryPoints.mainThread();
 
                 OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
+                OperationHandle os = method.newOperation(temp);
+                os.specializeMirror(() -> new EntryPointMirror(index));
 
-                OperationSetup os = OperationSetup.crack(method.newOperation(temp));
-                mc.methodHandle = os.methodHandle;
+                addCodeGenerator(() -> mc.generatedMethodHandle = os.generateMethodHandle());
             }
-
         };
     }
 
@@ -169,16 +161,3 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
         EntryPointDispatcher() {}
     }
 }
-//@Override
-//protected void onApplicationClose() {
-//  if (isRootOfApplication()) {
-//      // Her installere vi MethodHandles der bliver shared, taenker det er bedre end at faa injected
-//      // extensions'ene
-//
-//      // install
-//      // provide (visible i mxxz;ias:"?aZ.a:n aZz¸ m nl jj m ,m ;n .n ≥ en container)
-//      // provideShared (container + subcontainers)
-//      // shareInstance(new MethodHandle[0]);
-//  }
-//  super.onApplicationClose();
-//}

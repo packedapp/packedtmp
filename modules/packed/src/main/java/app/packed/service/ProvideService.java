@@ -52,25 +52,6 @@ import app.packed.bean.BeanHook.AnnotatedMethodHook;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedMethodHook(allowInvoke = true, extension = ServiceExtension.class)
-@AnnotatedFieldHook(allowGet = true, extension = ServiceExtension.class)
-public @interface ProvideService {
-
-    /**
-     * Indicates whether or not the provided value is a constant.
-     * <p>
-     * Constant values are always eagerly constructed. For example, as part of the initialization of a container.
-     * 
-     * Constants may be cached by the runtime... I think we need to make some strong guarantees.
-     * 
-     * The provided does not have to be an constant in the way t. But from the perspectiv of the runtime. The instance
-     * 
-     * Constants may be cached
-     * 
-     * <p>
-     * The default value is <code>false</code>
-     * 
-     * @return whether or not the provided value is a constant
-     */
-    //boolean constant() default false;
-}
+@AnnotatedMethodHook(extension = ServiceExtension.class, allowInvoke = true)
+@AnnotatedFieldHook(extension = ServiceExtension.class, allowGet = true)
+public @interface ProvideService {}

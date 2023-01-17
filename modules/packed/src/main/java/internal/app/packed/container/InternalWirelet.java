@@ -16,8 +16,8 @@
 package internal.app.packed.container;
 
 import app.packed.container.Wirelet;
-import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.lifetime.ApplicationInitializationContext;
 
 /**
  * A special wirelet for internal usage where the logic of the wirelet is embedded directly into the wirelet.

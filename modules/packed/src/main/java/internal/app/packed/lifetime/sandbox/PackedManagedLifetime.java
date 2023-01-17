@@ -25,9 +25,9 @@ import app.packed.lifetime.RunState;
 import app.packed.lifetime.sandbox.LifetimeState;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.lifetime.sandbox.StopOption;
-import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.application.EntryPointSetup;
+import internal.app.packed.lifetime.ApplicationInitializationContext;
+import internal.app.packed.lifetime.EntryPointSetup;
 
 /**
  *
@@ -106,8 +106,10 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
 
     public void launch(ApplicationSetup application, ApplicationInitializationContext launchContext) {
         boolean isMain = false;
-        if (application.entryPoints != null) {
-            isMain = application.entryPoints.hasMain();
+        EntryPointSetup ep = application.container.lifetime.entryPoints;
+
+        if (ep != null) {
+            isMain = ep.hasMain();
         }
         boolean start = isMain;
         final ReentrantLock lock = this.lock;
@@ -137,7 +139,6 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
             lock.unlock();
         }
 
-        EntryPointSetup ep = application.entryPoints;
         if (ep != null) {
             ep.enter(launchContext);
         }

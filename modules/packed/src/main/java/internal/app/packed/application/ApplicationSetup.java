@@ -34,22 +34,18 @@ import internal.app.packed.util.types.ClassUtil;
 public final class ApplicationSetup {
 
     /** A MethodHandle for invoking {@link ApplicationMirror#initialize(ApplicationSetup)}. */
-    private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ApplicationMirror.class,
-            "initialize", void.class, ApplicationSetup.class);
+    private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ApplicationMirror.class, "initialize",
+            void.class, ApplicationSetup.class);
 
-    /** Responsible for code generation, is null for {@link BuildGoal#NEW_MIRROR} and {@link BuildGoal#VERIFY}. */
+    /** Responsible for code generation, is null for {@link BuildGoal#MIRROR} and {@link BuildGoal#VERIFY}. */
     @Nullable
-    public final ApplicationCodeGenerator codeGenerator;
+    final ApplicationCodeGenerator codeGenerator;
 
     /** The root container of the application. */
     public final ContainerSetup container;
 
     /** The driver used to create the application. */
     public final ApplicationDriver<?> driver;
-
-    /** Entry points in the application, is null if there are none. */
-    @Nullable // Maybe this a lifetime thing?
-    public EntryPointSetup entryPoints;
 
     /** The build goal. */
     public final BuildGoal goal;
@@ -78,14 +74,14 @@ public final class ApplicationSetup {
 
     /**
      * Registers an action that will be called in the code generation phase. The action is executed for goals
-     * {@link BuildGoal#NEW_MIRROR} or {@link BuildGoal#VERIFY}.
+     * {@link BuildGoal#MIRROR} or {@link BuildGoal#VERIFY}.
      * 
      * @param action
      *            the action to run
      * @throws IllegalStateException
      *             if already in the code generating phase or if the build has finished
      */
-    public void addCodegenAction(Runnable action) {
+    public void addCodeGenerator(Runnable action) {
         requireNonNull(action, "action is null");
         if (phase != ApplicationBuildPhase.ASSEMBLE) {
             throw new IllegalStateException("This method must be called before the code generating phase is started");

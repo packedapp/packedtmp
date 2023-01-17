@@ -46,6 +46,21 @@ public final class App {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Builds an application from the specified assembly and returns a mirror representing the application.
+     * 
+     * @param assembly
+     *            the application's assembly
+     * @param wirelets
+     *            optional wirelets
+     * @return a mirror representing the application
+     * @throws RuntimeException
+     *             if the application could not be build
+     */
+    public static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
+        return BOOTSTRAP.newMirror(assembly, wirelets);
+    }
+
     public static App.Launcher newImage(Assembly assembly, Wirelet... wirelets) {
         return new Launcher(BOOTSTRAP.newImage(assembly, wirelets));
     }
@@ -66,24 +81,9 @@ public final class App {
         return new Launcher(BOOTSTRAP.newLauncher(assembly, wirelets));
     }
 
-    /**
-     * Builds an application from the specified assembly and returns a mirror representing the application.
-     * 
-     * @param assembly
-     *            the application's assembly
-     * @param wirelets
-     *            optional wirelets
-     * @return a mirror representing the application
-     * @throws RuntimeException
-     *             if the application could not be build
-     */
-    public static ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets) {
-        return BOOTSTRAP.newMirror(assembly, wirelets);
-    }
-
     public static void print(Assembly assembly, Object printDetails, Wirelet... wirelets) {
         // printDetails=Container, Assemblies,////
-        newMirror(assembly, wirelets).print();
+        mirrorOf(assembly, wirelets).print();
     }
 
     public static void print(Assembly assembly, Wirelet... wirelets) {
@@ -91,7 +91,7 @@ public final class App {
         // I think it is super usefull
         //// Maybe have something like enum PrintDetail (Minimal, Normal, Full)
         // ApplicationPrinter.Full, ApplicationPrinter.Normal
-        newMirror(assembly, wirelets).print();
+        mirrorOf(assembly, wirelets).print();
     }
 
     /**

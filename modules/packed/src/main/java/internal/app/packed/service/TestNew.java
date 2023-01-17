@@ -48,7 +48,7 @@ public class TestNew extends BaseAssembly {
     public static void main(String[] args) {
         App.run(new TestNew());
 
-        for (BeanMirror b : App.newMirror(new TestNew()).container().beans().toList()) {
+        for (BeanMirror b : App.mirrorOf(new TestNew()).container().beans().toList()) {
             b.operations(ProvidedServiceMirror.class).forEach(e -> {
                 List<ServiceBindingMirror> sbm = e.useSites().toList();
                 System.out.println(sbm);

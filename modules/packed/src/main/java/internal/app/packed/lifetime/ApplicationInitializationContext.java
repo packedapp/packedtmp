@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package internal.app.packed.lifetime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,9 +23,10 @@ import app.packed.container.Wirelet;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
+import internal.app.packed.application.ApplicationDriver;
+import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;
-import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
 import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 import internal.app.packed.util.ThrowableUtil;
@@ -60,7 +61,7 @@ public final class ApplicationInitializationContext {
         this.wirelets = wirelets;
         this.name = requireNonNull(application.container.name);
         this.lifetimeKind = requireNonNull(application.driver.lifetimeKind());
-        this.runtime = application.codeGenerator == null || application.codeGenerator.isManaged ? new PackedManagedLifetime(this) : null;
+        this.runtime = application.goal.isLaunchable() && application.driver.lifetimeKind() == OldLifetimeKind.MANAGED ? new PackedManagedLifetime(this) : null;
     }
 
     /** {@return the name of the application} */

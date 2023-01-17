@@ -19,6 +19,7 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.container.Wirelet;
+import internal.app.packed.lifetime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 
 /**

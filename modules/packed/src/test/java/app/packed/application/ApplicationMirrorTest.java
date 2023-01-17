@@ -44,7 +44,7 @@ public class ApplicationMirrorTest {
             }
         }
 
-        ApplicationMirror m = App.newMirror(new MyAss());
+        ApplicationMirror m = App.mirrorOf(new MyAss());
 
         /// AssemblyMirror
         AssemblyMirror asm = m.assembly();
@@ -57,7 +57,7 @@ public class ApplicationMirrorTest {
         assertThat(asm.parent()).isEmpty();
 
         /// BuildGoal
-        assertEquals(BuildGoal.NEW_MIRROR, m.buildGoal());
+        assertEquals(BuildGoal.MIRROR, m.buildGoal());
 
         // ContainerMirror
         ContainerMirror cm = m.container();

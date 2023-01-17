@@ -17,12 +17,13 @@ import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.Mirror;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  * A mirror of an application.
  * <p>
  * An instance of this class is typically obtained by calling a application mirror factory method such as
- * {@link App#newMirror(Assembly, Wirelet...)}.
+ * {@link App#mirrorOf(Assembly, Wirelet...)}.
  * <p>
  * Instances of ApplicationMirror can be injected at runtime simply by declaring a dependency on it. This will
  * automatically install the {@link MirrorExtension} which will provide an instance at runtime.
@@ -30,7 +31,7 @@ import internal.app.packed.container.Mirror;
  * Like many other mirrors this class is overridable via
  */
 @VariableTypeHook(extension = MirrorExtension.class)
-public non-sealed class ApplicationMirror implements Mirror, ContextualizedElementMirror {
+public non-sealed class ApplicationMirror implements Mirror , ContextualizedElementMirror {
 
     /**
      * The internal configuration of the application we are mirrored. Is initially null but populated via
@@ -136,7 +137,13 @@ public non-sealed class ApplicationMirror implements Mirror, ContextualizedEleme
             StringBuilder sb = new StringBuilder();
             sb.append(b.path()).append("");
             sb.append(" [").append(b.beanClass.getName()).append("], owner = " + b.realm.realm());
-            System.out.println(sb.toString());
+            sb.append("\n");
+            for (OperationSetup os : b.operations) {
+                sb.append("  ".repeat(b.path().depth()));
+                sb.append(os.mirror());
+                sb.append("\n");
+            }
+            System.out.print(sb.toString());
         }
     }
 

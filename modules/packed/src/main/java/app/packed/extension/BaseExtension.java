@@ -28,9 +28,9 @@ import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.InvocationArgument;
 import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.ServiceLocator;
-import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.PackedContainerInstaller;
+import internal.app.packed.lifetime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.LifetimeOperation;
 import internal.app.packed.operation.OperationSetup;
 
@@ -187,13 +187,13 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                 if (hook instanceof FromContainerGuest) {
                     Variable va = v.variable();
                     if (va.getRawType().equals(String.class)) {
-                        v.bindTo(new Op1<@InvocationArgument ApplicationInitializationContext, String>(a -> a.name()) {});
+                        v.bindTo(new Op1<@InvocationArgument  ApplicationInitializationContext, String>(a -> a.name()) {});
                     } else if (va.getRawType().equals(ManagedLifetimeController.class)) {
-                        v.bindTo(new Op1<@InvocationArgument ApplicationInitializationContext, ManagedLifetimeController>(a -> a.runtime) {});
+                        v.bindTo(new Op1<@InvocationArgument  ApplicationInitializationContext, ManagedLifetimeController>(a -> a.runtime) {});
                     } else if (va.getRawType().equals(ServiceLocator.class)) {
-                        v.bindTo(new Op1<@InvocationArgument ApplicationInitializationContext, ServiceLocator>(a -> a.serviceLocator()) {});
+                        v.bindTo(new Op1<@InvocationArgument  ApplicationInitializationContext, ServiceLocator>(a -> a.serviceLocator()) {});
                     } else {
-                        throw new UnsupportedOperationException();
+                        throw new UnsupportedOperationException("va " + va.getRawType());
                     }
                 } else if (hook instanceof InvocationArgument ia) {
                     int index = ia.index();
@@ -202,14 +202,16 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     if (cl != l.get(index)) {
                         throw new UnsupportedOperationException();
                     }
-                    
-                    //v.b
-                    //v.bindToInvocationArgument(index);
+
+                    // v.b
+                    // v.bindToInvocationArgument(index);
                     v.bindToInvocationArgument(index);
-                    
+                } else if (hook instanceof CodeGenerated cg) {
+                    throw new UnsupportedOperationException();
                 } else {
                     super.hookOnAnnotatedVariable(hook, v);
                 }
+
             }
 
             @Override
@@ -251,6 +253,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     OperationSetup.crack(method.newOperation(temp));
                 }
             }
+
         };
     }
 

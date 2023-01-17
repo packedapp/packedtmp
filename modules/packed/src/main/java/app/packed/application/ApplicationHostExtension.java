@@ -24,7 +24,7 @@ import app.packed.extension.FrameworkExtension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
-import internal.app.packed.application.ApplicationInitializationContext;
+import internal.app.packed.lifetime.ApplicationInitializationContext;
 
 /**
  *
@@ -50,7 +50,7 @@ public class ApplicationHostExtension extends FrameworkExtension<ApplicationHost
     
     private <T> ApplicationHostConfiguration<T> newApplication(BeanHandle<T> handle) {
         OperationHandle oh = handle.lifetimeOperations().get(0);
-        this.registerCodeGenerator(() -> {
+        this.addCodeGenerator(() -> {
             mh = oh.generateMethodHandle();
         });
         return new ApplicationHostConfiguration<>(handle);

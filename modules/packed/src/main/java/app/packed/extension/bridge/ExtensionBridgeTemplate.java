@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
-import internal.app.packed.application.PackedBridge;
+import internal.app.packed.lifetime.PackedBridge;
 
 /**
  *

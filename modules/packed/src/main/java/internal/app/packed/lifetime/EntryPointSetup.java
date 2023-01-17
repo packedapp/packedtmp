@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package internal.app.packed.lifetime;
 
 import java.lang.invoke.MethodHandle;
 
 import app.packed.framework.Nullable;
-import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.lifetime.BeanInstanceAccessor;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -30,7 +28,7 @@ public class EntryPointSetup {
     // sync entrypoint
     @Nullable
     private MainThreadOfControl mainThread;
-    
+
     public boolean hasMain() {
         return mainThread != null;
     }
@@ -44,7 +42,6 @@ public class EntryPointSetup {
     }
 
     public void enter(ApplicationInitializationContext launchContext) {
-
         // EntryPoint
         if (hasMain()) {
             MainThreadOfControl l = mainThread();
@@ -53,14 +50,7 @@ public class EntryPointSetup {
             }
 
             try {
-                BeanInstanceAccessor sa = l.cs.lifetimePoolAccessor;
-                if (sa != null && !l.isStatic) {
-                    Object o = sa.read(launchContext.pool());
-                    l.methodHandle.invoke(o);
-                } else {
-                    l.methodHandle.invoke();
-                }
-
+                mainThread.generatedMethodHandle.invoke(launchContext.pool());
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
@@ -72,14 +62,10 @@ public class EntryPointSetup {
     }
 
     public static class MainThreadOfControl {
-        public BeanSetup cs;
-
-        public boolean isStatic;
-
-        public MethodHandle methodHandle;
+        public MethodHandle generatedMethodHandle;
 
         public boolean hasExecutionBlock() {
-            return methodHandle != null;
+            return generatedMethodHandle != null;
         }
     }
 }

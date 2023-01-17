@@ -33,6 +33,7 @@ import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.lifetime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -158,7 +159,7 @@ public final class PackedBootstrapApp<A> extends ApplicationDriver<A> {
     /** {@inheritDoc} */
     public ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets) {
         // Build the application
-        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_MIRROR, null, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.MIRROR, null, assembly, wirelets);
         as.build();
 
         // Create a mirror for the application

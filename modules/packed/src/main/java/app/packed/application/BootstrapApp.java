@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.function.Supplier;
 
 import app.packed.application.BootstrapApp.Composer.BootstrapAppAssembly;
 import app.packed.container.AbstractComposer;
@@ -28,10 +29,10 @@ import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
-import internal.app.packed.application.ApplicationInitializationContext;
+import internal.app.packed.application.ApplicationDriver;
 import internal.app.packed.application.PackedBootstrapApp;
-import internal.app.packed.application.PremordialApplicationDriver;
 import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.lifetime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 
 /**
@@ -192,6 +193,32 @@ public final class BootstrapApp<A> {
         return new BootstrapApp<>(a);
     }
 
+    private static final class PremordialApplicationDriver<A> extends ApplicationDriver<BootstrapApp<A>> {
+        
+        /** {@inheritDoc} */
+        @Override
+        public OldLifetimeKind lifetimeKind() {
+            return OldLifetimeKind.UNMANAGED;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Supplier<? extends ApplicationMirror> mirrorSupplier() {
+            return ApplicationMirror::new;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public BootstrapApp<A> newInstance(ApplicationInitializationContext context) {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Wirelet wirelet() {
+            return null;
+        }
+    }
     /**
      * A composer for creating bootstrap app instances.
      * 

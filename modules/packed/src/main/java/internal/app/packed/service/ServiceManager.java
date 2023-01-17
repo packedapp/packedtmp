@@ -68,7 +68,7 @@ public final class ServiceManager {
 
     public ServiceManager(ContainerSetup container) {
         if (container.treeParent == null) {
-            container.application.addCodegenAction(() -> {
+            container.application.addCodeGenerator(() -> {
 
                 this.exportedServices = CollectionUtil.copyOf(exports, n -> {
                     MethodHandle mh;

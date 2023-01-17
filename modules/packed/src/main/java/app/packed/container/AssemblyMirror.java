@@ -19,7 +19,7 @@ import internal.app.packed.container.Mirror;
  * A mirror of an application.
  * <p>
  * An instance of this class is typically obtained by calling a application mirror factory method such as
- * {@link App#newMirror(Assembly, Wirelet...)}.
+ * {@link App#mirrorOf(Assembly, Wirelet...)}.
  * <p>
  * Instances of ApplicationMirror can be injected at runtime simply by declaring a dependency on it. This will
  * automatically install the {@link MirrorExtension} which will provide an instance at runtime.

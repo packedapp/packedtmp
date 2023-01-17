@@ -25,7 +25,6 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.jfr.CodegenEvent;
-import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 
 /**
  * This class is responsible for creating an application launcher that can be used to create application instances.
@@ -46,7 +45,7 @@ import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 //// * X by combining multiple operation handles. (Kan man selv lave via regCodRes)
 //// * Classifier
 
-public final class ApplicationCodeGenerator {
+final class ApplicationCodeGenerator {
 
     /** A list of actions that will be executed doing the code generating phase. */
     final ArrayList<Runnable> actions = new ArrayList<>();
@@ -58,11 +57,8 @@ public final class ApplicationCodeGenerator {
     @Nullable
     public RuntimeApplicationLauncher launcher;
 
-    public final boolean isManaged;
-
     ApplicationCodeGenerator(ApplicationSetup application) {
         this.application = application;
-        this.isManaged = application.driver.lifetimeKind() == OldLifetimeKind.MANAGED;
     }
 
     public int addArray(InstanceBeanConfiguration<?> beanConfiguration, OperationHandle operation) {

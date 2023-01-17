@@ -79,7 +79,7 @@ public abstract class VerifyingTestCase {
             VerifyingTestCase lse = (VerifyingTestCase) invocationContext.getTarget().get();
 
             TestA ta = new TestA(lse, invocation);
-            ApplicationMirror am = App.newMirror(ta);
+            ApplicationMirror am = App.mirrorOf(ta);
             lse.mirrorChecks.forEach(c -> c.accept(am));
             lse.testA = null;
         }

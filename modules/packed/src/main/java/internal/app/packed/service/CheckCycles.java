@@ -46,7 +46,7 @@ public class CheckCycles extends BaseAssembly {
 
     public static void main(String[] args) {
 
-        ApplicationMirror am = App.newMirror(new CheckCycles());
+        ApplicationMirror am = App.mirrorOf(new CheckCycles());
         for (var b : am.container().beans().toList()) {
             System.out.println(b.beanClass().getSimpleName() + " " + b.factoryOperation().get().target());
         }

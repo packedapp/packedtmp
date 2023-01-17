@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.container.Wirelet;
 import internal.app.packed.container.CompositeWirelet;
 import internal.app.packed.container.WireletWrapper;
+import internal.app.packed.lifetime.ApplicationInitializationContext;
 
 /**
  *

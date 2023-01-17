@@ -45,13 +45,13 @@ import internal.app.packed.util.types.ClassUtil;
 /** The internal configuration of an assembly. */
 public final class AssemblySetup extends RealmSetup {
 
+    /** A MethodHandle for invoking {@link AssemblyMirror#initialize(AssemblySetup)}. */
+    private static final MethodHandle MH_ASSEMBLY_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), AssemblyMirror.class, "initialize",
+            void.class, AssemblySetup.class);
+
     /** A handle that can invoke {@link BuildableAssembly#doBuild(AssemblyModel, ContainerSetup)}. */
     private static final MethodHandle MH_BUILDABLE_ASSEMBLY_DO_BUILD = LookupUtil.findVirtual(MethodHandles.lookup(), BuildableAssembly.class, "doBuild",
             void.class, AssemblyModel.class, ContainerSetup.class);
-
-    /** A MethodHandle for invoking {@link AssemblyMirror#initialize(AssemblySetup)}. */
-    private static final MethodHandle MH_ASSEMBLY_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), AssemblyMirror.class,
-            "initialize", void.class, AssemblySetup.class);
 
     /** A handle that can invoke {@link ComposerAssembly#doBuild(AssemblyModel, ContainerSetup)}. */
     private static final MethodHandle MH_COMPOSER_ASSEMBLY_DO_BUILD = LookupUtil.findVirtual(MethodHandles.lookup(), ComposerAssembly.class, "doBuild",
@@ -62,12 +62,12 @@ public final class AssemblySetup extends RealmSetup {
             "delegateTo", Assembly.class);
 
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
-    private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class,
-            "onApplicationClose", void.class);
+    private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "onApplicationClose",
+            void.class);
 
     /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
-    private static final MethodHandle MH_EXTENSION_ON_ASSEMBLY_CLOSE = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class,
-            "onAssemblyClose", void.class);
+    private static final MethodHandle MH_EXTENSION_ON_ASSEMBLY_CLOSE = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "onAssemblyClose",
+            void.class);
 
     /** The application that is being the assembly is used to built. */
     public final ApplicationSetup application;
@@ -78,7 +78,7 @@ public final class AssemblySetup extends RealmSetup {
     /** A model of the assembly. */
     public final AssemblyModel assemblyModel;
 
-    /** The container that the assembly defines. */
+    /** The container the assembly defines. */
     public final ContainerSetup container;
 
     /** Any delegating assemblies this assembly was wrapped in. */
@@ -156,16 +156,15 @@ public final class AssemblySetup extends RealmSetup {
     }
 
     public void build() {
-        boolean isRootContainerOfApplication = container.treeParent == null;
-
+        // Create a JFR build event if application root
         BuildApplicationEvent abe = null;
-
-        if (isRootContainerOfApplication) {
+        if (container.treeParent == null) {
             abe = new BuildApplicationEvent();
             abe.assemblyClass = assembly.getClass();
             abe.begin();
         }
 
+        // Call into the user provided build code
         // We need to call two different handles, depending on the type of the assembly
         if (assembly instanceof BuildableAssembly ca) {
             // Invoke Assembly::doBuild, which in turn will invoke Assembly::build
@@ -204,7 +203,7 @@ public final class AssemblySetup extends RealmSetup {
         // the assembly defines the root container of application. In which case we need to call Extension#onApplicationClose
         // in addition to calling Extension#onAssemblyClose
 
-        if (isRootContainerOfApplication) {
+        if (container.treeParent == null) {
             // Root container
             // We must also close all extension trees.
             ArrayList<ExtensionSetup> list = new ArrayList<>(extensions.size());

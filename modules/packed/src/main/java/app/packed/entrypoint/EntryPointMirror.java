@@ -19,5 +19,10 @@ public class EntryPointMirror extends OperationMirror {
     public int entryPointId() {
         return entryPointId;
     }
+
+    public String toString() {
+        return "Entrypoint Main - " + super.target();
+    }
+
 }
 // CliCommandMirror extends EntryPointMirro <---  

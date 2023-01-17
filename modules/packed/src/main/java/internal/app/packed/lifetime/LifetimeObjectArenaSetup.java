@@ -18,8 +18,6 @@ package internal.app.packed.lifetime;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-import internal.app.packed.application.ApplicationInitializationContext;
-
 /**
  *
  */

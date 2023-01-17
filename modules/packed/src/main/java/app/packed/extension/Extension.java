@@ -272,7 +272,7 @@ public abstract class Extension<E extends Extension<E>> {
     /**
      * Registers a action to run doing the code generation phase.
      * <p>
-     * If the application has no code generation phase. For example, if building a {@link BuildGoal#NEW_MIRROR}. The
+     * If the application has no code generation phase. For example, if building a {@link BuildGoal#MIRROR}. The
      * specified action will not be executed.
      * 
      * @param action
@@ -281,12 +281,12 @@ public abstract class Extension<E extends Extension<E>> {
      *             if the extension is no longer configurable
      */
     // runOnCodegen
-    protected final void registerCodeGenerator(Runnable action) {
+    protected final void addCodeGenerator(Runnable action) {
         // was ISE
         // if the application is already in the code generation phase or has finished building the application
         // Syntes bare ikke rigtig at der er nogen grund til at introducere flere ISEs tidspunkter
         checkIsConfigurable(); // I
-        extension.container.application.addCodegenAction(action);
+        extension.container.application.addCodeGenerator(action);
     }
 
     /** {@return instance of this extension that is used in the application's root container.} */

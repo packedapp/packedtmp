@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 import app.packed.binding.Key;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
-import internal.app.packed.application.PackedBridge;
 import internal.app.packed.container.ExtensionSetup;
 
 /**

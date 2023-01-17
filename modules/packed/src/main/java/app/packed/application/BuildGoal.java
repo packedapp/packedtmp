@@ -49,7 +49,7 @@ public enum BuildGoal {
      *
      * @see ApplicationDriver#mirrorOf(Assembly, Wirelet...)
      */
-    NEW_MIRROR,
+    MIRROR,
 
     /**
      * The goal is to verify that the application is structural correct.
