@@ -81,7 +81,7 @@ public sealed interface OperationTarget {
 }
 
 ///** Represents an operation that accesses a bean instance. */
-//public non-sealed interface OfBeanAccess extends OperationTarget {
+//public non-sealed interface OfThisAccess extends OperationTarget {
 //
 //  /** {@return the bean that is being accessed.} */
 //  BeanMirror bean();

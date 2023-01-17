@@ -142,8 +142,8 @@ public sealed abstract class OperationSetup {
 //        System.out.println("InvocationType : " + template.invocationType());
 //        System.out.println(getClass());
 //        System.out.println();
-        if (this instanceof LifetimePoolOperationSetup) {
-            return mh;
+        if (this instanceof BeanAccessOperationSetup) {
+            throw new Error();
         }
 
         // System.out.println(mh.type() + " " + site);
@@ -194,15 +194,16 @@ public sealed abstract class OperationSetup {
     }
 
     public final MethodHandle generateMethodHandle() {
+        bean.container.application.checkInCodegenPhase();
         // Burde kun skulle laves en gang, men nogle forskellige steder der kalder
         // den metode, skal lige finde ud af hvorfra
         if (generatedMethodHandle != null) {
             return generatedMethodHandle;
         }
-        bean.container.application.checkInCodegenPhase();
 
         MethodHandle mh = doBuild();
 
+        requireNonNull(mh);
         if (!mh.type().equals(template.methodType)) {
             System.err.println("OperationType " + this.toString());
             System.err.println("Expected " + template.methodType);
@@ -288,25 +289,23 @@ public sealed abstract class OperationSetup {
         }
     }
 
-    /** An operation that accesses an object in the lifetime pool. */
-    public static final class LifetimePoolOperationSetup extends OperationSetup {
+    /** An operation that returns the bean instance the operation is defined on. */
+    public static final class BeanAccessOperationSetup extends OperationSetup {
 
         /**
          * @param operator
          * @param site
          */
-        public LifetimePoolOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
-                MethodHandle methodHandle) {
+        public BeanAccessOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template) {
             super(operator, bean, operationType, template);
-            this.methodHandle = methodHandle;
             name = "InstantAccess";
         }
     }
 
     /** An operation that invokes or accesses a {@link Member}. */
     public sealed static abstract class MemberOperationSetup<T extends Member> extends OperationSetup {
-
         /** The {@link Member member}. */
+        
         final T member;
 
         private MemberOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template, T member) {

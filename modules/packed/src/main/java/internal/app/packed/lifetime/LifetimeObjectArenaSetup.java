@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 import internal.app.packed.application.ApplicationInitializationContext;
-import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
 
 /**
  *
@@ -72,7 +71,7 @@ public final class LifetimeObjectArenaSetup {
      * 
      * @return the index to store the object in at runtime
      */
-    public DynamicAccessor reserve(Class<?> type) {
-        return new DynamicAccessor(type, size++);
+    public BeanInstanceAccessor reserve(Class<?> type) {
+        return new BeanInstanceAccessor(type, size++);
     }
 }

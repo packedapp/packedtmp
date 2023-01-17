@@ -25,8 +25,6 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.jfr.CodegenEvent;
-import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
-import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
 import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 
 /**
@@ -60,15 +58,11 @@ public final class ApplicationCodeGenerator {
     @Nullable
     public RuntimeApplicationLauncher launcher;
 
-    /** The index of the application's runtime in the constant pool, or -1 if the application has no runtime, */
-    @Nullable
-    public final DynamicAccessor runtimeAccessor;
+    public final boolean isManaged;
 
     ApplicationCodeGenerator(ApplicationSetup application) {
         this.application = application;
-        this.runtimeAccessor = application.driver.lifetimeKind() == OldLifetimeKind.MANAGED
-                ? application.container.lifetime.pool.reserve(PackedManagedLifetime.class)
-                : null;
+        this.isManaged = application.driver.lifetimeKind() == OldLifetimeKind.MANAGED;
     }
 
     public int addArray(InstanceBeanConfiguration<?> beanConfiguration, OperationHandle operation) {

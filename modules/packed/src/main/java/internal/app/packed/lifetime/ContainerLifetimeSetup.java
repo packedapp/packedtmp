@@ -55,6 +55,7 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
 
     /** The lifetime constant pool. */
     public final LifetimeObjectArenaSetup pool = new LifetimeObjectArenaSetup();
+    
     ArrayList<LifetimeOperation> start = new ArrayList<>();
     ArrayList<MethodHandle> startMh = new ArrayList<>();
 

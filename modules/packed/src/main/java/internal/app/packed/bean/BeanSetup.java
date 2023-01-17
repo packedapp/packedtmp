@@ -35,13 +35,13 @@ import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.NameCheck;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.context.ContextSetup;
+import internal.app.packed.lifetime.BeanInstanceAccessor;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.lifetime.LifetimeAccessor;
 import internal.app.packed.lifetime.LifetimeOperation;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSetup.LifetimePoolOperationSetup;
+import internal.app.packed.operation.OperationSetup.BeanAccessOperationSetup;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.service.ProvidedService;
 import internal.app.packed.util.LookupUtil;
@@ -72,15 +72,23 @@ public final class BeanSetup {
     /** The container this bean is installed in. */
     public final ContainerSetup container;
 
+    public ContextSetup contexts;
+
     /** The extension that installed the bean. */
     public final ExtensionSetup installedBy;
+
+    /** Non-null while a bean is being introspected. */
+    @Nullable
+    public BeanScanner introspecting;
 
     /** The lifetime the component is a part of. */
     public final LifetimeSetup lifetime;
 
+    public int lifetimePoolAccessIndex = -1;
+
     /** A pool accessor if a single instance of this bean is created. null otherwise */
     @Nullable
-    public LifetimeAccessor lifetimePoolAccessor;
+    public BeanInstanceAccessor lifetimePoolAccessor;
 
     /** Supplies a mirror for the operation */
     public Supplier<? extends BeanMirror> mirrorSupplier;
@@ -98,7 +106,8 @@ public final class BeanSetup {
     /** The beans lifetime operations. */
     public final List<LifetimeOperation> operationsLifetime = new ArrayList<>();
 
-    public final List<ProvidedService> operationsProviders = new ArrayList<>();
+    /** A list of services provided by the bean, used for circular dependency checks. */
+    public final List<ProvidedService> serviceProviders = new ArrayList<>();
 
     /** Non-null if the bean is owned by an extension. */
     @Nullable
@@ -115,12 +124,6 @@ public final class BeanSetup {
 
     /** The type of source the installer is created from. */
     public final BeanSourceKind sourceKind;
-
-    /** Non-null while a bean is being introspected. */
-    @Nullable
-    public BeanScanner introspecting;
-
-    public ContextSetup contexts;
 
     /**
      * Create a new bean.
@@ -156,8 +159,6 @@ public final class BeanSetup {
         }
     }
 
-    public int lifetimePoolAccessIndex = -1;
-
     public BindingProvider accessBeanX() {
         if (sourceKind == BeanSourceKind.INSTANCE) {
             return new FromConstant(source.getClass(), source);
@@ -180,7 +181,7 @@ public final class BeanSetup {
     // Relative to x
     public OperationSetup instanceAccessOperation() {
         OperationTemplate def = OperationTemplate.defaults().withReturnType(beanClass);
-        LifetimePoolOperationSetup os = new LifetimePoolOperationSetup(installedBy, this, OperationType.of(beanClass), def, accessBeanX().provideSpecial());
+        BeanAccessOperationSetup os = new BeanAccessOperationSetup(installedBy, this, OperationType.of(beanClass), def);
         return os;
     }
 

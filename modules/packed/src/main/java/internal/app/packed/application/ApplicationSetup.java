@@ -26,6 +26,8 @@ import app.packed.container.Wirelet;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
+import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
@@ -72,8 +74,12 @@ public final class ApplicationSetup {
     public ApplicationSetup(ApplicationDriver<?> driver, BuildGoal goal, AssemblySetup assembly, Wirelet[] wirelets) {
         this.driver = requireNonNull(driver);
         this.goal = requireNonNull(goal);
-        this.container = new ContainerSetup(this, assembly, null, wirelets);
         this.codeGenerator = goal.isLaunchable() ? new ApplicationCodeGenerator(this) : null;
+        this.container = new ContainerSetup(this, assembly, null, wirelets);
+
+        if (driver.lifetimeKind() == OldLifetimeKind.MANAGED) {
+            container.lifetime.pool.reserve(PackedManagedLifetime.class);
+        }
     }
 
     public void addCodegenAction(Runnable action) {
@@ -95,8 +101,7 @@ public final class ApplicationSetup {
      */
     public void checkInCodegenPhase() {
         if (phase != ApplicationBuildPhase.CODEGEN) {
-            // Uncommented after having fixed service resolver
-            // throw new IllegalStateException();
+             throw new IllegalStateException("In state " + phase);
         }
     }
 

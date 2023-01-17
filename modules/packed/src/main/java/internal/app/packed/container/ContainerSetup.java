@@ -119,7 +119,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         requireNonNull(wirelets, "wirelets is null");
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
-        this.sm = new ServiceManager();
+        this.sm = new ServiceManager(this);
 
         if (parent == null) {
             this.depth = 0;

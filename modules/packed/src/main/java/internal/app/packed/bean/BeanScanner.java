@@ -44,8 +44,7 @@ import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.framework.devtools.PackedDevToolsIntegration;
-import internal.app.packed.lifetime.LifetimeAccessor;
-import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
+import internal.app.packed.lifetime.BeanInstanceAccessor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.ConstructorOperationSetup;
 import internal.app.packed.util.LookupUtil;
@@ -193,19 +192,13 @@ public final class BeanScanner {
                     bean.ownedBy.injectionManager.addBean(bean);
                 }
             }
-            
-            if (bean.sourceKind == BeanSourceKind.INSTANCE) {
-                bean.lifetimePoolAccessor = new LifetimeAccessor.ConstantAccessor(bean.source);
-            } else if (bean.beanKind == BeanKind.CONTAINER) {
-                DynamicAccessor da = bean.container.lifetime.pool.reserve(bean.beanClass);
-                bean.lifetimePoolAccessor = da;
-                bean.lifetimePoolAccessIndex = da.index();
-            } else if (bean.beanKind == BeanKind.LAZY) {
-                throw new UnsupportedOperationException();
-            }
+
 
             // Only create an instance node if we have instances
-            if (bean.sourceKind != BeanSourceKind.INSTANCE && bean.beanKind.hasInstances()) {
+            if (bean.beanKind == BeanKind.CONTAINER && bean.sourceKind != BeanSourceKind.INSTANCE) {
+                BeanInstanceAccessor da = bean.container.lifetime.pool.reserve(bean.beanClass);
+                bean.lifetimePoolAccessor = da;
+                bean.lifetimePoolAccessIndex = da.index();
                 bean.container.sm.injectionManager.addConsumer(bean.operations.get(0), bean.lifetimePoolAccessor);
             }
 

@@ -74,10 +74,4 @@ public final /* primitive */ class PackedExtensionContext implements ExtensionCo
     public String toString() {
         return "ConstantPool [size = " + objects.length + "]";
     }
-    
-    public static MethodHandle constant(Class<?> type, Object constant) {
-        MethodHandle mh = MethodHandles.constant(type, constant);
-        mh = MethodHandles.dropArguments(mh, 0, PackedExtensionContext.class);
-        return mh;
-    }
 }

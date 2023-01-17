@@ -15,17 +15,19 @@
  */
 package internal.app.packed.service;
 
-import java.lang.invoke.MethodHandle;
+import static java.util.Objects.requireNonNull;
 
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 
 /**
  *
  */
 public final class ProvidedService {
 
+    /** The bean that provides the service */
     public final BeanSetup bean;
 
     /** The key under which this service is provided. */
@@ -34,14 +36,16 @@ public final class ProvidedService {
     /** The operation that provides the service. */
     public final OperationSetup operation;
 
-    public MethodHandle provider;
-
     public final BindingProvider resolution;
 
     ProvidedService(OperationSetup operation, ServiceManagerEntry entry, BindingProvider resolution) {
-        this.operation = operation;
-        this.bean = operation.bean;
-        this.entry = entry;
-        this.resolution = resolution;
+        this.operation = requireNonNull(operation);
+        this.bean = requireNonNull(operation.bean);
+        this.entry = requireNonNull(entry);
+        this.resolution = requireNonNull(resolution);
+    }
+    
+    public boolean isBeanInstance() {
+        return !(operation instanceof MemberOperationSetup);
     }
 }

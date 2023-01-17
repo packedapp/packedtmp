@@ -36,6 +36,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
 import internal.app.packed.binding.BindingProvider.FromOperation;
+import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
@@ -54,6 +55,14 @@ public final class ServiceManager {
 
     /** The container's injection manager. */
     public final OldServiceResolver injectionManager = new OldServiceResolver();
+
+    public ServiceManager(ContainerSetup container) {
+        if (container.treeParent == null) {
+            container.application.addCodegenAction(() -> {
+                injectionManager.generateExportedServiceLocator();
+            });
+        }
+    }
 
     public ServiceLocator newServiceLocator(PackedExtensionContext region) {
         return injectionManager.newServiceLocator(region);
@@ -131,8 +140,8 @@ public final class ServiceManager {
 
         operation.mirrorSupplier = () -> new ProvidedServiceMirror(entry.provider);
 
-        // add the service provider to the bean
-        operation.bean.operationsProviders.add(provider);
+        // add the service provider to the bean, this is used for cyclic dependency check later on
+        operation.bean.serviceProviders.add(provider);
 
         if (exportAll) {
             serviceExport(key, operation);
@@ -141,7 +150,7 @@ public final class ServiceManager {
         // maintain old
         operation.bean.container.sm.injectionManager.provideService(provider);
         operation.bean.container.useExtension(ServiceExtension.class, null);
-        
+
         return provider;
     }
 

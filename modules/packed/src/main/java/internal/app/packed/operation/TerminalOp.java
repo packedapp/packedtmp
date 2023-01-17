@@ -36,7 +36,7 @@ abstract sealed class TerminalOp<R> extends PackedOp<R> {
         super(type, operation);
     }
 
-    /** An op that captures 1 or more type variables. */
+    /** An op that invokes a method on a functional interface. */
     static final class FunctionInvocationOp<R> extends TerminalOp<R> {
 
         /** The method extending the single abstract method. */

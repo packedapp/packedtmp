@@ -15,108 +15,89 @@
  */
 package internal.app.packed.service;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import app.packed.application.BuildException;
 import app.packed.bean.BeanSourceKind;
 import app.packed.binding.Key;
 import app.packed.service.ServiceLocator;
-import internal.app.packed.lifetime.LifetimeAccessor;
-import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
+import internal.app.packed.lifetime.BeanInstanceAccessor;
 import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
+import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 public final class OldServiceResolver {
 
-    private final LinkedHashMap<Key<?>, DependencyNode> nodes = new LinkedHashMap<>();
+    private final LinkedHashMap<Key<?>, ProvidedService> nodes = new LinkedHashMap<>();
 
-    public void addConsumer(OperationSetup operation, LifetimeAccessor la) {
+    private Map<Key<?>, MethodHandle> runtimeEntries;
+
+    // These are all non-constant Container beans also those not provided
+    public void addConsumer(OperationSetup factoryOperation, BeanInstanceAccessor la) {
+        requireNonNull(la);
         final AtomicReference<MethodHandle> ar = new AtomicReference<>();
-        if (la != null) {
-            operation.bean.container.application.addCodegenAction(() -> {
-                MethodHandle mh = operation.generateMethodHandle();
-                ar.set(mh);
-            });
-            
-            operation.bean.container.lifetime.pool.addOrdered(p -> {
-                MethodHandle mh = ar.get(); // operation.generateMethodHandle();
-                Object instance;
-                try {
-                    instance = mh.invoke(p);
-                } catch (Throwable e) {
-                    throw ThrowableUtil.orUndeclared(e);
-                }
-                if (instance == null) {
-                    throw new NullPointerException(this + " returned null");
-                }
-                la.store(p, instance);
-            });
-        }
+        factoryOperation.bean.container.application.addCodegenAction(() -> {
+            MethodHandle mh = factoryOperation.generateMethodHandle();
+            ar.set(mh);
+        });
+
+        factoryOperation.bean.container.lifetime.pool.addOrdered(p -> {
+            MethodHandle mh = ar.get();
+            Object instance;
+            try {
+                instance = mh.invoke(p);
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
+            if (instance == null) {
+                throw new NullPointerException(this + " returned null");
+            }
+            la.store(p, instance);
+        });
+    }
+
+    void generateExportedServiceLocator() {
+        this.runtimeEntries = CollectionUtil.copyOf(nodes, n -> generateForExport2(n));
     }
 
     ServiceLocator newServiceLocator(PackedExtensionContext region) {
-        Map<Key<?>, MethodHandle> runtimeEntries = new LinkedHashMap<>(nodes.size());
-        for (var e : nodes.entrySet()) {
-            Key<?> key = e.getKey();
-            DependencyNode export = e.getValue();
-            
-            MethodHandle mh;
-
-            if (export.accessor == null) {
-                mh = export.operation.generateMethodHandle();
-            } else {
-                mh = PackedExtensionContext.constant(key.rawType(), export.accessor.read(region));
-            }
-            mh = mh.asType(mh.type().changeReturnType(Object.class));
-
-            assert(mh.type().equals(MethodType.methodType(Object.class, PackedExtensionContext.class)));
-            runtimeEntries.put(key, mh);
-        }
         return new PackedServiceLocator(region, Map.copyOf(runtimeEntries));
     }
 
     void provideService(ProvidedService provider) {
-        OperationSetup o = provider.operation;
-        DependencyNode bis;
-        if (o instanceof OperationSetup.LifetimePoolOperationSetup) {
-            OperationSetup os = null;
-            LifetimeAccessor accessor = null;
-            if (o.bean.lifetimePoolAccessor == null) {
-                if (o.bean.sourceKind == BeanSourceKind.INSTANCE) {
-
-                }
-                os = o.bean.operations.get(0);
-            } else {
-                accessor = o.bean.lifetimePoolAccessor;
-            }
-            bis = new DependencyNode(os, provider, accessor);
-        } else {
-            boolean isStatic;
-            if (o instanceof MethodOperationSetup ss) {
-                isStatic = Modifier.isStatic(ss.method().getModifiers());
-            } else if (o instanceof FieldOperationSetup ss) {
-                isStatic = Modifier.isStatic(ss.field().getModifiers());
-            } else {
-                throw new Error();
-            }
-
-            if (!isStatic && o.bean.lifetimePoolAccessor == null) {
-                throw new BuildException("Not okay)");
-            }
-            DynamicAccessor accessor = null;
-            bis = new DependencyNode(o, provider, accessor);
-            addConsumer(o, accessor);
-        }
-        nodes.put(provider.entry.key, bis);
+        nodes.put(provider.entry.key, provider);
     }
 
-    private record DependencyNode(OperationSetup operation, ProvidedService pis, LifetimeAccessor accessor) {}
+    private static MethodHandle generateForExport2(ProvidedService pis) {
+        MethodHandle mh;
+        OperationSetup o = pis.operation;
+
+        BeanInstanceAccessor accessor = null;
+        if (o instanceof OperationSetup.BeanAccessOperationSetup) {
+            accessor = o.bean.lifetimePoolAccessor;
+            // test if prototype bean
+            if (accessor == null && o.bean.sourceKind != BeanSourceKind.INSTANCE) {
+                o = o.bean.operations.get(0);
+            }
+        }
+        if (pis.isBeanInstance() && pis.bean.sourceKind == BeanSourceKind.INSTANCE) {
+            // It is a a constant
+            mh = MethodHandles.constant(Object.class, pis.bean.source);
+            mh = MethodHandles.dropArguments(mh, 0, PackedExtensionContext.class);
+        } else if (accessor != null) {
+            mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, accessor.index());
+        } else {
+            mh = o.generateMethodHandle();
+        }
+        mh = mh.asType(mh.type().changeReturnType(Object.class));
+        assert (mh.type().equals(MethodType.methodType(Object.class, PackedExtensionContext.class)));
+        return mh;
+    }
 }

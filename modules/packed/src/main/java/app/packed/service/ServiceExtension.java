@@ -18,9 +18,11 @@ package app.packed.service;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import app.packed.application.BuildException;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
@@ -141,6 +143,13 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
             @Override
             public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks, OperationalField field) {
                 Key<?> key = field.fieldToKey();
+                
+                if (!Modifier.isStatic(field.modifiers())) {
+                    if (beanKind()!= BeanKind.CONTAINER) {
+                        throw new BuildException("Not okay)");
+                    }
+                }
+                
                 OperationSetup operation = OperationSetup.crack(field.newGetOperation(OperationTemplate.defaults()));
                 setup.container.sm.serviceProvide(key, operation.bean, operation, new FromOperation(operation));
             }
@@ -154,6 +163,12 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
 
                 OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
 
+                if (!Modifier.isStatic(method.modifiers())) {
+                    if (beanKind()!= BeanKind.CONTAINER) {
+                        throw new BuildException("Not okay)");
+                    }
+                }
+                
                 if (isProviding) {
                     OperationSetup operation = OperationSetup.crack(method.newOperation(temp));
                     setup.container.sm.serviceProvide(key, operation.bean, operation, new FromOperation(operation));

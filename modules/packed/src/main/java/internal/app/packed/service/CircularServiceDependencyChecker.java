@@ -81,7 +81,7 @@ public final class CircularServiceDependencyChecker {
         stack.push(entry);
         while (binding != null) {
             BeanSetup bean = binding.operation.bean;
-            for (ProvidedService psDep : bean.operationsProviders) {
+            for (ProvidedService psDep : bean.serviceProviders) {
                 ServiceManagerEntry next = psDep.entry;
                 if (!next.needsPostProcessing) {
                     continue;
