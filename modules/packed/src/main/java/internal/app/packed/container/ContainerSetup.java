@@ -25,7 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import app.packed.application.NamespacePath;
+import app.packed.application.ApplicationPath;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
@@ -283,9 +283,9 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     }
 
     /** {@return the path of this component} */
-    public NamespacePath path() {
+    public ApplicationPath path() {
         return switch (depth) {
-        case 0 -> NamespacePath.ROOT;
+        case 0 -> ApplicationPath.ROOT;
         case 1 -> new PackedNamespacePath(name);
         default -> {
             String[] paths = new String[depth];

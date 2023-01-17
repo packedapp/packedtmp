@@ -50,12 +50,21 @@ import internal.app.packed.util.PackedNamespacePath;
 // ApplicationPath? App:Container:Bean
 // ApplicationElementPath
 // Foo:dfsdfdsf/sdfsdf:BeanName
-public interface NamespacePath extends Comparable<NamespacePath>, /* , Iterable<ComponentPath>, */ CharSequence {
+
+// foo <- represents an application
+// foo:/ <- resents a a container
+// foo:/: <- resents a a bean
+
+// Maybe application path. Den er unik for en application...
+// Problemet er man ikke kan addressere app/app/app
+// Fordi det er en path til en application...
+
+public interface ApplicationPath extends Comparable<ApplicationPath>, /* , Iterable<ComponentPath>, */ CharSequence {
 
     /** A path representing the root resource of a namespace. */
-    static final NamespacePath ROOT = PackedNamespacePath.ROOT;
+    static final ApplicationPath ROOT = PackedNamespacePath.ROOT;
 
-    NamespacePath add(NamespacePath other);
+    ApplicationPath add(ApplicationPath other);
 
     /**
      * Returns the number of elements in this path.
@@ -81,7 +90,7 @@ public interface NamespacePath extends Comparable<NamespacePath>, /* , Iterable<
      * @return a path representing the path's parent
      */
     @Nullable
-    NamespacePath parent();// Should probably be optional??? Or for performance reasons nullable... hmm
+    ApplicationPath parent();// Should probably be optional??? Or for performance reasons nullable... hmm
 
     /**
      * Returns the string representation of this component path.
@@ -105,7 +114,7 @@ public interface NamespacePath extends Comparable<NamespacePath>, /* , Iterable<
      * @throws IllegalArgumentException
      *             if the specified path string cannot be converted to a {@code ComponentPath}
      */
-    public static NamespacePath of(String first, String... more) {
+    public static ApplicationPath of(String first, String... more) {
         throw new UnsupportedOperationException();
     }
 

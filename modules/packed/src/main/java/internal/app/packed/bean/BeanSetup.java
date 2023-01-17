@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import app.packed.application.NamespacePath;
+import app.packed.application.ApplicationPath;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
@@ -217,7 +217,7 @@ public final class BeanSetup {
     }
 
     /** {@return the path of this component} */
-    public NamespacePath path() {
+    public ApplicationPath path() {
         int size = container.depth;
         String[] paths = new String[size + 1];
         paths[size] = name;

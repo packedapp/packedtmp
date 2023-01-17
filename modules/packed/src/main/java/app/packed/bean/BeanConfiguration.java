@@ -2,7 +2,7 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.application.NamespacePath;
+import app.packed.application.ApplicationPath;
 import app.packed.container.Realm;
 
 /** The base configuration class for a bean. */
@@ -90,7 +90,7 @@ public class BeanConfiguration {
      */
     // I'm not sure we want to expose midt build? IDK
     // If only for user... Maybe is nice for debugging
-    public final NamespacePath path() {
+    public final ApplicationPath path() {
         return handle.path();
     }
 

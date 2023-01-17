@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.application.NamespacePath;
+import app.packed.application.ApplicationPath;
 import app.packed.binding.Key;
 import app.packed.container.Realm;
 import app.packed.context.Context;
@@ -181,7 +181,7 @@ public final /* primitive */ class BeanHandle<T> {
     }
 
     /** {@return the path of the bean.} */
-    public NamespacePath path() {
+    public ApplicationPath path() {
         return bean.path();
     }
 

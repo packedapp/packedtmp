@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.application.NamespacePath;
+import app.packed.application.ApplicationPath;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
@@ -75,7 +75,7 @@ public class ContainerConfigurationTester {
         return this;
     }
 
-    public NamespacePath path() {
+    public ApplicationPath path() {
         return cc.path();
     }
 

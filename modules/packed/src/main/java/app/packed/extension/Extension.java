@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 import java.util.Optional;
 
 import app.packed.application.BuildGoal;
-import app.packed.application.NamespacePath;
+import app.packed.application.ApplicationPath;
 import app.packed.bean.BeanIntrospector;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
@@ -110,7 +110,7 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /** {@return the path of the container that this extension belongs to.} */
-    protected final NamespacePath containerPath() {
+    protected final ApplicationPath containerPath() {
         return extension.container.path();
     }
 

@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.application.NamespacePath;
+import app.packed.application.ApplicationPath;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.ExtensionSetup;
@@ -169,7 +169,7 @@ public final class ContainerConfiguration {
      * 
      * @return the path of this configuration.
      */
-    public final NamespacePath path() {
+    public final ApplicationPath path() {
         return handle.container.path();
     }
 

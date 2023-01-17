@@ -21,14 +21,14 @@ import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.stream.Stream;
 
-import app.packed.application.NamespacePath;
+import app.packed.application.ApplicationPath;
 import app.packed.framework.Nullable;
 
-/** The default implementation of {@link NamespacePath}. */
-public final class PackedNamespacePath implements NamespacePath {
+/** The default implementation of {@link ApplicationPath}. */
+public final class PackedNamespacePath implements ApplicationPath {
 
     /** A component path representing the root of a hierarchy. */
-    public static final NamespacePath ROOT = new PackedNamespacePath();
+    public static final ApplicationPath ROOT = new PackedNamespacePath();
 
     private final String[] elements;
 
@@ -50,7 +50,7 @@ public final class PackedNamespacePath implements NamespacePath {
 
     /** {@inheritDoc} */
     @Override
-    public int compareTo(NamespacePath o) {
+    public int compareTo(ApplicationPath o) {
         return toString().compareTo(o.toString());
     }
 
@@ -73,7 +73,7 @@ public final class PackedNamespacePath implements NamespacePath {
                 }
             }
             return true;
-        } else if (obj instanceof NamespacePath pcp) {
+        } else if (obj instanceof ApplicationPath pcp) {
             if (pcp.depth() != elements.length) {
                 return false;
             }
@@ -114,7 +114,7 @@ public final class PackedNamespacePath implements NamespacePath {
 
     /** {@inheritDoc} */
     @Override
-    public @Nullable NamespacePath parent() {
+    public @Nullable ApplicationPath parent() {
         if (isRoot()) {
             return null;
         }
@@ -144,7 +144,7 @@ public final class PackedNamespacePath implements NamespacePath {
 
     /** {@inheritDoc} */
     @Override
-    public NamespacePath add(NamespacePath other) {
+    public ApplicationPath add(ApplicationPath other) {
         PackedNamespacePath pcp = (PackedNamespacePath) other;
         return new PackedNamespacePath(Stream.concat(Arrays.stream(elements), Arrays.stream(pcp.elements)).toArray(String[]::new));
     }

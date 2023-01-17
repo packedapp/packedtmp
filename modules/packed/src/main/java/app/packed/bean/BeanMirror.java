@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.NamespacePath;
+import app.packed.application.ApplicationPath;
 import app.packed.bean.BeanHook.VariableTypeHook;
 import app.packed.binding.mirror.DependenciesMirror;
 import app.packed.container.AssemblyMirror;
@@ -202,7 +202,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
         return bean().realm.realm();
     }
 
-    public NamespacePath path() {
+    public ApplicationPath path() {
         return bean().path();
     }
 
