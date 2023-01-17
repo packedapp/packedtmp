@@ -17,13 +17,19 @@ package internal.app.packed.service;
 
 import static internal.app.packed.util.StringFormatter.format;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanSourceKind;
 import app.packed.binding.Key;
+import app.packed.framework.Nullable;
 import app.packed.service.ExportedServiceCollisionException;
 import app.packed.service.ExportedServiceMirror;
 import app.packed.service.ProvideService;
@@ -37,9 +43,12 @@ import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
 import internal.app.packed.binding.BindingProvider.FromOperation;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.lifetime.BeanInstanceAccessor;
 import internal.app.packed.lifetime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
+import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.StringFormatter;
 
 /** Manages services in a single container. */
@@ -50,22 +59,52 @@ public final class ServiceManager {
     // All provided services are automatically exported
     public boolean exportAll;
 
+    /** A map of exported service method method handles, must be computed */
+    @Nullable
+    private Map<Key<?>, MethodHandle> exportedServices;
+
     /** Exported services from the container. */
     public final LinkedHashMap<Key<?>, ExportedService> exports = new LinkedHashMap<>();
-
-    /** The container's injection manager. */
-    public final OldServiceResolver injectionManager = new OldServiceResolver();
 
     public ServiceManager(ContainerSetup container) {
         if (container.treeParent == null) {
             container.application.addCodegenAction(() -> {
-                injectionManager.generateExportedServiceLocator();
+
+                this.exportedServices = CollectionUtil.copyOf(exports, n -> {
+                    MethodHandle mh;
+                    OperationSetup o = n.os;
+
+                    BeanInstanceAccessor accessor = null;
+                    if (o instanceof OperationSetup.BeanAccessOperationSetup) {
+                        accessor = o.bean.lifetimePoolAccessor;
+                        // test if prototype bean
+                        if (accessor == null && o.bean.sourceKind != BeanSourceKind.INSTANCE) {
+                            o = o.bean.operations.get(0);
+                        }
+                    }
+                    if (!(o instanceof MemberOperationSetup) && o.bean.sourceKind == BeanSourceKind.INSTANCE) {
+                        // It is a a constant
+                        mh = MethodHandles.constant(Object.class, o.bean.source);
+                        mh = MethodHandles.dropArguments(mh, 0, PackedExtensionContext.class);
+                    } else if (accessor != null) {
+                        mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, accessor.index());
+                    } else {
+                        mh = o.generateMethodHandle();
+                    }
+                    mh = mh.asType(mh.type().changeReturnType(Object.class));
+                    assert (mh.type().equals(MethodType.methodType(Object.class, PackedExtensionContext.class)));
+                    return mh;
+                });
             });
         }
     }
 
-    public ServiceLocator newServiceLocator(PackedExtensionContext region) {
-        return injectionManager.newServiceLocator(region);
+    public ServiceLocator exportedServices(PackedExtensionContext context) {
+        Map<Key<?>, MethodHandle> m = exportedServices;
+        if (m == null) {
+            throw new UnsupportedOperationException("Exported services not available");
+        }
+        return new PackedServiceLocator(context, m);
     }
 
     public Set<Key<?>> keysAvailableInternally() {
@@ -102,14 +141,15 @@ public final class ServiceManager {
 
     // 3 Muligheder -> Field, Method, BeanInstance
     public ExportedService serviceExport(Key<?> key, OperationSetup operation) {
-        ExportedService e = new ExportedService(operation, key);
-        ExportedService existing = exports.putIfAbsent(e.key, e);
+        ExportedService es = new ExportedService(operation, key);
+        ExportedService existing = exports.putIfAbsent(es.key, es);
         if (existing != null) {
             // A service with the key has already been exported
             throw new ExportedServiceCollisionException("Jmm");
         }
-        e.os.mirrorSupplier = () -> new ExportedServiceMirror(e);
-        return e;
+        es.os.mirrorSupplier = () -> new ExportedServiceMirror(es);
+        operation.bean.container.useExtension(ServiceExtension.class, null);
+        return es;
     }
 
     /**
@@ -125,7 +165,8 @@ public final class ServiceManager {
      * @return a provided service
      */
     // 3 Muligheder -> Field, Method, BeanInstance
-    public ProvidedService serviceProvide(Key<?> key, BeanSetup bean, OperationSetup operation, BindingProvider r) {
+    public ProvidedService serviceProvide(Key<?> key, OperationSetup operation, BindingProvider r) {
+        BeanSetup bean = operation.bean;
         ServiceManagerEntry entry = entries.computeIfAbsent(key, ServiceManagerEntry::new);
 
         // Check lifetimes
@@ -141,15 +182,11 @@ public final class ServiceManager {
         operation.mirrorSupplier = () -> new ProvidedServiceMirror(entry.provider);
 
         // add the service provider to the bean, this is used for cyclic dependency check later on
-        operation.bean.serviceProviders.add(provider);
+        bean.serviceProviders.add(provider);
 
         if (exportAll) {
             serviceExport(key, operation);
         }
-
-        // maintain old
-        operation.bean.container.sm.injectionManager.provideService(provider);
-        operation.bean.container.useExtension(ServiceExtension.class, null);
 
         return provider;
     }

@@ -27,16 +27,16 @@ import internal.app.packed.util.LookupUtil;
  *
  */
 public class MethodHandleUtil {
-    public static final MethodHandle WRAP_OPTIONAL = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), InternalDependency.class, "wrapIfOptional", Object.class,
+    public static final MethodHandle WRAP_OPTIONAL = LookupUtil.findVirtual(MethodHandles.lookup(), InternalDependency.class, "wrapIfOptional", Object.class,
             Object.class);
 
-    public static final MethodHandle OPTIONAL_EMPTY = LookupUtil.lookupStaticPublic(Optional.class, "empty", Optional.class);
+    public static final MethodHandle OPTIONAL_EMPTY = LookupUtil.findStaticPublic(Optional.class, "empty", Optional.class);
 
 //    public static final MethodHandle SUPPLIER_GET = LookupUtil.lookupStaticPublic(Supplier.class, "get", Supplier.class, Object.class);
 
-    public static final MethodHandle OPTIONAL_OF = LookupUtil.lookupStaticPublic(Optional.class, "of", Optional.class, Object.class);
+    public static final MethodHandle OPTIONAL_OF = LookupUtil.findStaticPublic(Optional.class, "of", Optional.class, Object.class);
 
-    public static final MethodHandle OPTIONAL_OF_NULLABLE = LookupUtil.lookupStaticPublic(Optional.class, "ofNullable", Optional.class, Object.class);
+    public static final MethodHandle OPTIONAL_OF_NULLABLE = LookupUtil.findStaticPublic(Optional.class, "ofNullable", Optional.class, Object.class);
 
     public static final MethodHandle optionalOfTo(Class<?> type) {
         return MethodHandles.explicitCastArguments(OPTIONAL_OF, MethodType.methodType(Optional.class, type));

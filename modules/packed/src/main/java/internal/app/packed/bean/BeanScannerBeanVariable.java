@@ -45,8 +45,6 @@ public class BeanScannerBeanVariable implements BindableVariable {
     /** The extension that manages the binding. */
     private final ExtensionSetup bindingExtension;
 
-    final BeanScanner iBean;
-
     /** The index of the binding into the operation. */
     private final int index;
 
@@ -57,11 +55,13 @@ public class BeanScannerBeanVariable implements BindableVariable {
     /** The operation that will have a parameter bound. */
     public final OperationSetup operation;
 
+    final BeanScanner scanner;
+
     Variable variable;
 
-    public BeanScannerBeanVariable(BeanScanner iBean, OperationSetup operation, int index, ExtensionSetup bindingExtension, Variable var) {
+    public BeanScannerBeanVariable(BeanScanner scanner, OperationSetup operation, int index, ExtensionSetup bindingExtension, Variable var) {
         this.operation = requireNonNull(operation);
-        this.iBean = iBean;
+        this.scanner = scanner;
         this.index = index;
         this.bindingExtension = requireNonNull(bindingExtension);
         this.variable = var;
@@ -88,6 +88,9 @@ public class BeanScannerBeanVariable implements BindableVariable {
                 throw new IllegalArgumentException(variable + " is a primitive type and cannot be bound to null");
             }
         } else {
+            // I think we want to have the hook type
+            // And throw a better error msg
+
             if (!variable.getRawType().isAssignableFrom(obj.getClass())) {
                 // Maybe throw an InternalExtensionException?
                 // As it is the responsibility of the extension
@@ -111,7 +114,7 @@ public class BeanScannerBeanVariable implements BindableVariable {
         checkIsBindable();
         PackedOp<?> pop = PackedOp.crack(op);
 
-        OperationTemplate ot =operation.template.withReturnType(pop.type().returnType());
+        OperationTemplate ot = operation.template.withReturnType(pop.type().returnType());
         OperationSetup os = pop.newOperationSetup(operation.bean, bindingExtension, ot);
 
         os.parent = operation;
@@ -119,19 +122,8 @@ public class BeanScannerBeanVariable implements BindableVariable {
         BindingSetup bs = new HookBindingSetup(operation, index, Realm.application());
         bs.provider = new FromOperation(os);
 
-        // OperationBindingSetup obs = new OperationBindingSetup(os, index, User.application(), os);
-
-        if (variable.getRawType() != os.methodHandle.type().returnType()) {
-//            System.out.println("FixIt");
-        }
-        
         // We resolve the operation immediately
-        iBean.resolveOperation(os);
-//        if (iBean != null) {
-//            iBean.unBoundOperations.add(os);
-//        } else {
-//            // os.re
-//        }
+        scanner.resolveNow(os);
 
         operation.bindings[index] = bs;
     }

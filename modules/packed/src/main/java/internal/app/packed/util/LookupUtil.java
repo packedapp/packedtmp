@@ -29,18 +29,7 @@ public final class LookupUtil {
     /** Never instantiate. */
     private LookupUtil() {}
 
-    /**
-     * Tests whether or not the specified lookup is
-     * 
-     * @param lookup
-     *            the lookup to the
-     * @return whether it is default
-     */
-    public static boolean isLookupDefault(Lookup lookup) {
-        return lookup.lookupModes() == DEFAULT_LOOKUP_MODES && lookup.previousLookupClass() == null;
-    }
-
-    public static MethodHandle lookupConstructorPrivate(MethodHandles.Lookup caller, Class<?> inClass, Class<?>... parameterTypes) {
+    public static MethodHandle findConstructor(MethodHandles.Lookup caller, Class<?> inClass, Class<?>... parameterTypes) {
         MethodType mt = MethodType.methodType(void.class, parameterTypes);
         try {
             MethodHandles.Lookup l = MethodHandles.privateLookupIn(inClass, caller);
@@ -49,17 +38,8 @@ public final class LookupUtil {
             throw new ExceptionInInitializerError(e);
         }
     }
-    
-    public static MethodHandle lookupConstructor(MethodHandles.Lookup caller, Class<?>... parameterTypes) {
-        MethodType mt = MethodType.methodType(void.class, parameterTypes);
-        try {
-            return caller.findConstructor(caller.lookupClass(), mt);
-        } catch (ReflectiveOperationException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
 
-    public static MethodHandle lookupStatic(MethodHandles.Lookup caller, String name, Class<?> returnType, Class<?>... parameterTypes) {
+    public static MethodHandle findStatic(MethodHandles.Lookup caller, String name, Class<?> returnType, Class<?>... parameterTypes) {
         MethodType mt = MethodType.methodType(returnType, parameterTypes);
         try {
             return caller.findStatic(caller.lookupClass(), name, mt);
@@ -68,7 +48,7 @@ public final class LookupUtil {
         }
     }
 
-    public static MethodHandle lookupStaticPublic(Class<?> refc, String name, Class<?> returnType, Class<?>... parameterTypes) {
+    public static MethodHandle findStaticPublic(Class<?> refc, String name, Class<?> returnType, Class<?>... parameterTypes) {
         MethodType mt = MethodType.methodType(returnType, parameterTypes);
         try {
             return MethodHandles.publicLookup().findStatic(refc, name, mt);
@@ -77,15 +57,7 @@ public final class LookupUtil {
         }
     }
 
-    public static VarHandle lookupVarHandle(MethodHandles.Lookup lookup, String name, Class<?> type) {
-        try {
-            return lookup.findVarHandle(lookup.lookupClass(), name, type);
-        } catch (ReflectiveOperationException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
-
-    public static VarHandle lookupVarHandlePrivate(MethodHandles.Lookup lookup, Class<?> recv, String name, Class<?> type) {
+    public static VarHandle findVarHandle(MethodHandles.Lookup lookup, Class<?> recv, String name, Class<?> type) {
         try {
             MethodHandles.Lookup l = MethodHandles.privateLookupIn(recv, lookup);
             return l.findVarHandle(recv, name, type);
@@ -94,22 +66,29 @@ public final class LookupUtil {
         }
     }
 
-    // Finds a method in caller.lookupClass
-    public static MethodHandle lookupVirtual(MethodHandles.Lookup caller, String name, Class<?> returnType, Class<?>... parameterTypes) {
-        MethodType mt = MethodType.methodType(returnType, parameterTypes);
+    public static VarHandle findVarHandleOwn(MethodHandles.Lookup lookup, String name, Class<?> type) {
         try {
-            return caller.findVirtual(caller.lookupClass(), name, mt);
+            return lookup.findVarHandle(lookup.lookupClass(), name, type);
         } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError(e);
         }
     }
 
     // finds a method in a class that is different form lookup.lookupClass
-    public static MethodHandle lookupVirtualPrivate(MethodHandles.Lookup lookup, Class<?> refc, String name, Class<?> returnType, Class<?>... parameterTypes) {
+    public static MethodHandle findVirtual(MethodHandles.Lookup lookup, Class<?> refc, String name, Class<?> returnType, Class<?>... parameterTypes) {
         MethodType mt = MethodType.methodType(returnType, parameterTypes);
         try {
             MethodHandles.Lookup l = MethodHandles.privateLookupIn(refc, lookup);
             return l.findVirtual(refc, name, mt);
+        } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    public static MethodHandle findVirtualOwn(MethodHandles.Lookup caller, String name, Class<?> returnType, Class<?>... parameterTypes) {
+        MethodType mt = MethodType.methodType(returnType, parameterTypes);
+        try {
+            return caller.findVirtual(caller.lookupClass(), name, mt);
         } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -129,12 +108,23 @@ public final class LookupUtil {
      *             if the {@link Lookup#findVirtual(Class, String, MethodType)} fails with an reflection operation exception
      */
     // Finds a method that is public (typically any method in java.base)
-    public static MethodHandle lookupVirtualPublic(Class<?> refc, String name, Class<?> returnType, Class<?>... parameterTypes) {
+    public static MethodHandle findVirtualPublic(Class<?> refc, String name, Class<?> returnType, Class<?>... parameterTypes) {
         MethodType mt = MethodType.methodType(returnType, parameterTypes);
         try {
             return MethodHandles.publicLookup().findVirtual(refc, name, mt);
         } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError(e);
         }
+    }
+
+    /**
+     * Tests whether or not the specified lookup is
+     * 
+     * @param lookup
+     *            the lookup to the
+     * @return whether it is default
+     */
+    public static boolean isLookupDefault(Lookup lookup) {
+        return lookup.lookupModes() == DEFAULT_LOOKUP_MODES && lookup.previousLookupClass() == null;
     }
 }

@@ -26,8 +26,6 @@ import app.packed.container.Wirelet;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
-import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
@@ -36,7 +34,7 @@ import internal.app.packed.util.types.ClassUtil;
 public final class ApplicationSetup {
 
     /** A MethodHandle for invoking {@link ApplicationMirror#initialize(ApplicationSetup)}. */
-    private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationMirror.class,
+    private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ApplicationMirror.class,
             "initialize", void.class, ApplicationSetup.class);
 
     /** Responsible for code generation, is null for {@link BuildGoal#NEW_MIRROR} and {@link BuildGoal#VERIFY}. */
@@ -76,12 +74,17 @@ public final class ApplicationSetup {
         this.goal = requireNonNull(goal);
         this.codeGenerator = goal.isLaunchable() ? new ApplicationCodeGenerator(this) : null;
         this.container = new ContainerSetup(this, assembly, null, wirelets);
-
-        if (driver.lifetimeKind() == OldLifetimeKind.MANAGED) {
-            container.lifetime.pool.reserve(PackedManagedLifetime.class);
-        }
     }
 
+    /**
+     * Registers an action that will be called in the code generation phase. The action is executed for goals
+     * {@link BuildGoal#NEW_MIRROR} or {@link BuildGoal#VERIFY}.
+     * 
+     * @param action
+     *            the action to run
+     * @throws IllegalStateException
+     *             if already in the code generating phase or if the build has finished
+     */
     public void addCodegenAction(Runnable action) {
         requireNonNull(action, "action is null");
         if (phase != ApplicationBuildPhase.ASSEMBLE) {
@@ -101,7 +104,7 @@ public final class ApplicationSetup {
      */
     public void checkInCodegenPhase() {
         if (phase != ApplicationBuildPhase.CODEGEN) {
-             throw new IllegalStateException("In state " + phase);
+            throw new IllegalStateException("In state " + phase);
         }
     }
 

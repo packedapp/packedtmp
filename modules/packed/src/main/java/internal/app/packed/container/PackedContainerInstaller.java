@@ -34,7 +34,7 @@ import internal.app.packed.util.ThrowableUtil;
 public class PackedContainerInstaller implements ContainerInstaller {
 
     /** A handle that can invoke {@link ComposerAssembly#doBuild(AssemblyModel, ContainerSetup)}. */
-    private static final MethodHandle MH_NEW_CONTAINER_HANDLE = LookupUtil.lookupConstructorPrivate(MethodHandles.lookup(), ContainerHandle.class,
+    private static final MethodHandle MH_NEW_CONTAINER_HANDLE = LookupUtil.findConstructor(MethodHandles.lookup(), ContainerHandle.class,
             ContainerSetup.class);
 
     final ContainerSetup parent;

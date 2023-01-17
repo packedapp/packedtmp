@@ -46,27 +46,27 @@ import internal.app.packed.util.types.ClassUtil;
 public final class AssemblySetup extends RealmSetup {
 
     /** A handle that can invoke {@link BuildableAssembly#doBuild(AssemblyModel, ContainerSetup)}. */
-    private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BuildableAssembly.class, "doBuild",
+    private static final MethodHandle MH_BUILDABLE_ASSEMBLY_DO_BUILD = LookupUtil.findVirtual(MethodHandles.lookup(), BuildableAssembly.class, "doBuild",
             void.class, AssemblyModel.class, ContainerSetup.class);
 
     /** A MethodHandle for invoking {@link AssemblyMirror#initialize(AssemblySetup)}. */
-    private static final MethodHandle MH_ASSEMBLY_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), AssemblyMirror.class,
+    private static final MethodHandle MH_ASSEMBLY_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), AssemblyMirror.class,
             "initialize", void.class, AssemblySetup.class);
 
     /** A handle that can invoke {@link ComposerAssembly#doBuild(AssemblyModel, ContainerSetup)}. */
-    private static final MethodHandle MH_COMPOSER_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComposerAssembly.class, "doBuild",
+    private static final MethodHandle MH_COMPOSER_ASSEMBLY_DO_BUILD = LookupUtil.findVirtual(MethodHandles.lookup(), ComposerAssembly.class, "doBuild",
             void.class, AssemblyModel.class, ContainerSetup.class);
 
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
-    private static final MethodHandle MH_DELEGATING_ASSEMBLY_DELEGATE_TO = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), DelegatingAssembly.class,
+    private static final MethodHandle MH_DELEGATING_ASSEMBLY_DELEGATE_TO = LookupUtil.findVirtual(MethodHandles.lookup(), DelegatingAssembly.class,
             "delegateTo", Assembly.class);
 
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
-    private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+    private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class,
             "onApplicationClose", void.class);
 
     /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
-    private static final MethodHandle MH_EXTENSION_ON_ASSEMBLY_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+    private static final MethodHandle MH_EXTENSION_ON_ASSEMBLY_CLOSE = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class,
             "onAssemblyClose", void.class);
 
     /** The application that is being the assembly is used to built. */
@@ -84,11 +84,14 @@ public final class AssemblySetup extends RealmSetup {
     /** Any delegating assemblies this assembly was wrapped in. */
     public final List<Class<? extends DelegatingAssembly>> delegatingAssemblies;
 
-    /** All extensions that are used in the assembly ordered accordingly to their natural order. */
+    /**
+     * All extensions that are used in the assembly ordered accordingly to their natural order. We cannot use
+     * {@link ContainerSetup#extensions} as we remove every node from {@link #build()}.
+     */
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>();
 
     /** Whether or not assembly is open for configuration. */
-    private boolean isClosed;
+    private boolean isDone;
 
     /**
      * This constructor is used for an assembly that defines an application.
@@ -114,7 +117,8 @@ public final class AssemblySetup extends RealmSetup {
             AssemblyModel model = null;
             while (a instanceof DelegatingAssembly da) {
                 if (attempts-- == 0) {
-                    throw new BuildException("Inifite loop suspected, cannot have more than 100 delegating assemblies, assemblyClass = " + da.getClass().getCanonicalName());
+                    throw new BuildException(
+                            "Inifite loop suspected, cannot have more than 100 delegating assemblies, assemblyClass = " + da.getClass().getCanonicalName());
                 }
                 try {
                     a = (Assembly) MH_DELEGATING_ASSEMBLY_DELEGATE_TO.invokeExact(da);
@@ -152,21 +156,21 @@ public final class AssemblySetup extends RealmSetup {
     }
 
     public void build() {
-        boolean isRootContainer = container.treeParent == null;
+        boolean isRootContainerOfApplication = container.treeParent == null;
 
         BuildApplicationEvent abe = null;
 
-        if (isRootContainer) {
+        if (isRootContainerOfApplication) {
             abe = new BuildApplicationEvent();
             abe.assemblyClass = assembly.getClass();
             abe.begin();
         }
 
-        // We need to call two different, depending on on the type of the assembly
+        // We need to call two different handles, depending on the type of the assembly
         if (assembly instanceof BuildableAssembly ca) {
             // Invoke Assembly::doBuild, which in turn will invoke Assembly::build
             try {
-                MH_ASSEMBLY_DO_BUILD.invokeExact(ca, assemblyModel, container);
+                MH_BUILDABLE_ASSEMBLY_DO_BUILD.invokeExact(ca, assemblyModel, container);
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
@@ -180,7 +184,7 @@ public final class AssemblySetup extends RealmSetup {
             }
         }
 
-        isClosed = true;
+        isDone = true;
 
         // call Extension.onUserClose on the root container in the assembly.
         // This is turn calls recursively down Extension.onUserClose on all
@@ -196,16 +200,18 @@ public final class AssemblySetup extends RealmSetup {
         // ExtensionSetup[] exts = container.extensions.values().toArray(new ExtensionSetup[container.extensions.size()]);
         // Arrays.sort(exts);
 
-        if (isRootContainer) {
+        // We now need to close everthe assembly. This is done in two different ways depending on weather or not
+        // the assembly defines the root container of application. In which case we need to call Extension#onApplicationClose
+        // in addition to calling Extension#onAssemblyClose
+
+        if (isRootContainerOfApplication) {
             // Root container
             // We must also close all extension trees.
             ArrayList<ExtensionSetup> list = new ArrayList<>(extensions.size());
 
-            ExtensionSetup e = extensions.pollFirst();
-            while (e != null) {
+            for (ExtensionSetup e = extensions.pollFirst(); e != null; e = extensions.pollFirst()) {
                 list.add(e);
                 onAssemblyClose(e.instance());
-                e = extensions.pollFirst();
             }
 
             // Hmm what about circular dependencies for extensions?
@@ -218,27 +224,25 @@ public final class AssemblySetup extends RealmSetup {
                 } catch (Throwable t) {
                     throw ThrowableUtil.orUndeclared(t);
                 }
-
                 extension.extensionTree.close();
             }
 
             // The application has been built successfully.
-            // If we need to launch it, generate code for it
+            // Now generate code for it if needed
             application.finish();
+
             abe.applicationName = container.name;
             abe.commit();
         } else {
-            // Similar to above, except we do not close extension trees
-            ExtensionSetup e = extensions.pollFirst();
-            while (e != null) {
+            // Similar to above, except we do not call Extension#onApplicationClose
+            for (ExtensionSetup e = extensions.pollFirst(); e != null; e = extensions.pollFirst()) {
                 onAssemblyClose(e.instance());
-                e = extensions.pollFirst();
             }
         }
     }
 
     public boolean isDone() {
-        return isClosed;
+        return isDone;
     }
 
     /** {@return a mirror for this assembly.} */

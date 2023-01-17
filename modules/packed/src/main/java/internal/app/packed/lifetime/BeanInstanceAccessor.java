@@ -23,12 +23,4 @@ public record BeanInstanceAccessor(Class<?> type, int index) {
     public Object read(PackedExtensionContext pool) {
         return pool.read(index);
     }
-
-    public void store(PackedExtensionContext pool, Object o) {
-        if (!type.isInstance(o)) {
-            throw new Error("Expected " + type + ", was " + o.getClass());
-        }
-        pool.storeObject(index, o);
-    }
-
 }

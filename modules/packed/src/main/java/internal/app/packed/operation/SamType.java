@@ -25,9 +25,9 @@ import app.packed.operation.OperationType;
 /**
  *
  */
-public record SamType(Class<?> functionInterface, Method saMethod, MethodHandle methodHandle, OperationType type) {
-    
-    public static SamType of(Class<?> functionInterface) {
+record SamType(Class<?> functionInterface, Method saMethod, MethodHandle methodHandle, OperationType type) {
+
+    static SamType of(Class<?> functionInterface) {
         if (!functionInterface.isInterface()) {
             throw new IllegalArgumentException(functionInterface + " is not an interface");
         }
@@ -35,8 +35,9 @@ public record SamType(Class<?> functionInterface, Method saMethod, MethodHandle 
         for (Method m : functionInterface.getMethods()) {
             if (!m.isDefault() && !Modifier.isStatic(m.getModifiers())) {
                 if (samMethod != null) {
-                    throw new IllegalArgumentException(functionInterface + " is not a proper functional interface, as there are multiple non-default and non-static methods, ["
-                            + samMethod + ", " + m + "]");
+                    throw new IllegalArgumentException(
+                            functionInterface + " is not a proper functional interface, as there are multiple non-default and non-static methods, [" + samMethod
+                                    + ", " + m + "]");
                 }
                 samMethod = m;
             }

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
@@ -30,7 +31,10 @@ import app.packed.lifetime.RunState;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
+import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.util.ThrowableUtil;
 
 /** The lifetime of an independent container. */
 public final class ContainerLifetimeSetup extends LifetimeSetup {
@@ -55,7 +59,7 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
 
     /** The lifetime constant pool. */
     public final LifetimeObjectArenaSetup pool = new LifetimeObjectArenaSetup();
-    
+
     ArrayList<LifetimeOperation> start = new ArrayList<>();
     ArrayList<MethodHandle> startMh = new ArrayList<>();
 
@@ -70,6 +74,12 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
     public ContainerLifetimeSetup(ContainerSetup container, @Nullable ContainerLifetimeSetup parent) {
         super(parent, List.of(OperationTemplate.defaults()));
         this.container = container;
+
+        if (container.treeParent == null) {
+            if (container.application.driver.lifetimeKind() == OldLifetimeKind.MANAGED) {
+                pool.reserve(PackedManagedLifetime.class);
+            }
+        }
     }
 
     public LifetimeSetup addChild(ContainerSetup component) {
@@ -83,6 +93,39 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
         }
         children.add(lifetime);
         return lifetime;
+    }
+
+    public BeanInstanceAccessor addContainerBean(BeanSetup bean) {
+        BeanInstanceAccessor la = null;
+        if (bean.sourceKind != BeanSourceKind.INSTANCE) {
+            la = bean.lifetimePoolAccessor = pool.reserve(bean.beanClass);
+            
+            final AtomicReference<MethodHandle> ar = new AtomicReference<>();
+            
+            container.application.addCodegenAction(() -> {
+                MethodHandle mh = bean.operations.get(0).generateMethodHandle();
+                ar.set(mh);
+            });
+            
+            final BeanInstanceAccessor laa = la;
+            pool.entries.add(p -> {
+                MethodHandle mh = ar.get();
+                Object instance;
+                try {
+                    instance = mh.invoke(p);
+                } catch (Throwable e) {
+                    throw ThrowableUtil.orUndeclared(e);
+                }
+                if (instance == null) {
+                    throw new NullPointerException(this + " returned null");
+                }
+                if (!laa.type().isInstance(instance)) {
+                    throw new Error("Expected " + laa.type() + ", was " + instance.getClass());
+                }
+                p.storeObject(laa.index(), instance);
+            });
+        }
+        return la;
     }
 
     public void codegen() {
@@ -114,7 +157,6 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
             // then all initiali
 
         }
-
     }
 
     // Should be fully resolved now

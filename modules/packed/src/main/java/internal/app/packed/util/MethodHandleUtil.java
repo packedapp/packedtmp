@@ -29,17 +29,17 @@ import java.util.OptionalLong;
 class MethodHandleUtil {
     
     /** A method handle that calls {@link OptionalDouble#of(double)} (double)OptionalDouble. */
-    public static final MethodHandle OPTIONAL_DOUBLE_OF = LookupUtil.lookupStaticPublic(OptionalDouble.class, "of", OptionalDouble.class, double.class);
+    public static final MethodHandle OPTIONAL_DOUBLE_OF = LookupUtil.findStaticPublic(OptionalDouble.class, "of", OptionalDouble.class, double.class);
 
     /** A method handle that calls {@link OptionalInt#of(int)} (int)OptionalInt. */
-    public static final MethodHandle OPTIONAL_INT_OF = LookupUtil.lookupStaticPublic(OptionalInt.class, "of", OptionalInt.class, int.class);
+    public static final MethodHandle OPTIONAL_INT_OF = LookupUtil.findStaticPublic(OptionalInt.class, "of", OptionalInt.class, int.class);
 
     /** A method handle that calls {@link OptionalLong#of(long)} (long)OptionalLong. */
-    public static final MethodHandle OPTIONAL_LONG_OF = LookupUtil.lookupStaticPublic(OptionalLong.class, "of", OptionalLong.class, long.class);
+    public static final MethodHandle OPTIONAL_LONG_OF = LookupUtil.findStaticPublic(OptionalLong.class, "of", OptionalLong.class, long.class);
 
-    public static final MethodHandle OPTIONAL_OF = LookupUtil.lookupStaticPublic(Optional.class, "of", Optional.class, Object.class);
+    public static final MethodHandle OPTIONAL_OF = LookupUtil.findStaticPublic(Optional.class, "of", Optional.class, Object.class);
 
-    public static final MethodHandle OPTIONAL_OF_NULLABLE = LookupUtil.lookupStaticPublic(Optional.class, "ofNullable", Optional.class, Object.class);
+    public static final MethodHandle OPTIONAL_OF_NULLABLE = LookupUtil.findStaticPublic(Optional.class, "ofNullable", Optional.class, Object.class);
 
     public static final MethodHandle optionalOfNullableTo(Class<?> type) {
         return MethodHandles.explicitCastArguments(OPTIONAL_OF_NULLABLE, MethodType.methodType(Optional.class, type));

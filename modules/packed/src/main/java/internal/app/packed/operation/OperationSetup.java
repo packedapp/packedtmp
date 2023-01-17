@@ -56,18 +56,18 @@ import internal.app.packed.util.types.ClassUtil;
 public sealed abstract class OperationSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
-    private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class, "initialize",
+    private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), OperationMirror.class, "initialize",
             void.class, OperationSetup.class);
 
     /** A MethodHandle for creating a new handle {@link OperationMirror#initialize(OperationSetup)}. */
-    private static final MethodHandle MH_NEW_OPERATION_HANDLE = LookupUtil.lookupConstructorPrivate(MethodHandles.lookup(), OperationHandle.class,
+    private static final MethodHandle MH_NEW_OPERATION_HANDLE = LookupUtil.findConstructor(MethodHandles.lookup(), OperationHandle.class,
             OperationSetup.class);
 
     /** An empty array of {@code BindingSetup}. */
     private static final BindingSetup[] NO_BINDINGS = new BindingSetup[0];
 
     /** A handle that can access OperationHandle#operation. */
-    private static final VarHandle VH_OPERATION_HANDLE_CRACK = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OperationHandle.class, "operation",
+    private static final VarHandle VH_OPERATION_HANDLE_CRACK = LookupUtil.findVarHandle(MethodHandles.lookup(), OperationHandle.class, "operation",
             OperationSetup.class);
 
     /** The bean this operation belongs to. */
@@ -142,8 +142,8 @@ public sealed abstract class OperationSetup {
 //        System.out.println("InvocationType : " + template.invocationType());
 //        System.out.println(getClass());
 //        System.out.println();
-        if (this instanceof BeanAccessOperationSetup) {
-            throw new Error();
+        if (this instanceof BeanAccessOperationSetup baos) {
+            return baos.bean.accessBeanX().provideSpecial();
         }
 
         // System.out.println(mh.type() + " " + site);
@@ -305,7 +305,7 @@ public sealed abstract class OperationSetup {
     /** An operation that invokes or accesses a {@link Member}. */
     public sealed static abstract class MemberOperationSetup<T extends Member> extends OperationSetup {
         /** The {@link Member member}. */
-        
+
         final T member;
 
         private MemberOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template, T member) {

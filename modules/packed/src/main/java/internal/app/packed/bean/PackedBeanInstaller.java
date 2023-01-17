@@ -53,7 +53,7 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
     static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
 
     /** A handle that can invoke {@link ComposerAssembly#doBuild(AssemblyModel, ContainerSetup)}. */
-    private static final MethodHandle MH_NEW_BEAN_HANDLE = LookupUtil.lookupConstructorPrivate(MethodHandles.lookup(), BeanHandle.class, BeanSetup.class);
+    private static final MethodHandle MH_NEW_BEAN_HANDLE = LookupUtil.findConstructor(MethodHandles.lookup(), BeanHandle.class, BeanSetup.class);
 
     @Nullable
     private Map<Class<?>, Object> attachments;

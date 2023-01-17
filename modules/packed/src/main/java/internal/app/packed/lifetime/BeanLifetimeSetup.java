@@ -25,7 +25,7 @@ import app.packed.lifetime.LifetimeMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 
-/** The lifetime of a bean that is instantiated independently of the container in which it lives. */
+/** The lifetime of a bean whose lifetime is independent of its container. */
 public final class BeanLifetimeSetup extends LifetimeSetup {
 
     /** The single bean this lifetime contains. */

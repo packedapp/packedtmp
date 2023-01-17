@@ -16,6 +16,7 @@
 package internal.app.packed.binding;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 
 import app.packed.binding.BindingClassifierKind;
 import app.packed.container.Realm;
@@ -49,9 +50,12 @@ public final class ExtensionServiceBindingSetup extends BindingSetup {
     /** {@inheritDoc} */
     @Override
     public MethodHandle bindIntoOperation(Osi osi, MethodHandle methodHandle) {
-        throw new UnsupportedOperationException();
-//        MethodHandle mh = extensionBean.instanceAccessOperation().generateMethodHandle();
-//        return MethodHandles.collectArguments(methodHandle, index, mh);
+        System.out.println(methodHandle);
+        osi.is.push(0);
+        System.out.println("!");
+        MethodHandle mh = extensionBean.instanceAccessOperation().generateMethodHandle();
+        System.out.println("!2");
+        return MethodHandles.collectArguments(methodHandle, index, mh);
     }
 
     public BindingClassifierKind kind() {

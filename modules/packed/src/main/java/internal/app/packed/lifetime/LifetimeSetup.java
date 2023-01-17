@@ -29,7 +29,7 @@ import internal.app.packed.util.ThrowableUtil;
 public abstract sealed class LifetimeSetup permits ContainerLifetimeSetup, BeanLifetimeSetup {
 
     /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
-    private static final MethodHandle MH_LIFETIME_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), LifetimeMirror.class,
+    private static final MethodHandle MH_LIFETIME_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), LifetimeMirror.class,
             "initialize", void.class, LifetimeSetup.class);
 
     public final List<OperationTemplate> lifetimes;

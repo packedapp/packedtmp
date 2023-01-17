@@ -42,9 +42,7 @@ import app.packed.framework.Nullable;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.framework.devtools.PackedDevToolsIntegration;
-import internal.app.packed.lifetime.BeanInstanceAccessor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.ConstructorOperationSetup;
 import internal.app.packed.util.LookupUtil;
@@ -60,11 +58,11 @@ public final class BeanScanner {
     static final Module JAVA_BASE_MODULE = Object.class.getModule();
 
     /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
-    private static final MethodHandle MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(),
+    private static final MethodHandle MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(),
             BeanIntrospector.class, "initialize", void.class, ExtensionSetup.class, BeanScanner.class);
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+    private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class,
             "newBeanIntrospector", BeanIntrospector.class);
 
     /** An internal lookup object. */
@@ -147,7 +145,6 @@ public final class BeanScanner {
         Constructor<?> con = constructor.constructor();
 
         Lookup lookup = oc.lookup(con);
-
         MethodHandle mh;
         try {
             mh = lookup.unreflectConstructor(constructor.constructor());
@@ -162,46 +159,39 @@ public final class BeanScanner {
             ot = bean.lifetime.lifetimes.get(0);
         }
         ot = ot.withReturnType(bean.beanClass);
-        OperationSetup os = new ConstructorOperationSetup(bean.installedBy, bean, ot, constructor.constructor(), mh);
-        // os.template = os.template = (PackedOperationTemplate)
-        // OperationTemplate.defaults().withReturnType(constructor.constructor().getDeclaringClass());
 
+        OperationSetup os = new ConstructorOperationSetup(bean.installedBy, bean, ot, constructor.constructor(), mh);
         bean.operations.add(os);
-        unBoundOperations.add(os);
-        resolveOperations();
+        resolveNow(os);
     }
 
     /** Introspect the bean. */
     void introspect() {
         bean.introspecting = this;
         // First, we process all annotations on the class
+
+        // Can we add operations here???
+        // In which case findConstructor while probably place its constructor on index!=0
         introspectClass();
 
+        // We always have instances if we have an op.
+        // Make sure the op is resolved
         if (bean.sourceKind == BeanSourceKind.OP) {
-            resolveOperation(bean.operations.get(0));
+            resolveNow(bean.operations.get(0));
         }
 
         if (!bean.beanClass.isInterface()) {
+            // Only create an instance node if we have instances
+
             // If a we have a (instantiating) class source, we need to find a constructor we can use
             if (bean.sourceKind == BeanSourceKind.CLASS && bean.beanKind.hasInstances()) {
                 findConstructor();
             }
 
-            if (bean.realm instanceof ExtensionTreeSetup e) {
-                if (bean.beanKind == BeanKind.CONTAINER) {
-                    bean.ownedBy.injectionManager.addBean(bean);
-                }
+            // These fail if moved up. And I don't understand why
+            if (bean.beanKind == BeanKind.CONTAINER) {
+                bean.container.lifetime.addContainerBean(bean);
             }
-
-
-            // Only create an instance node if we have instances
-            if (bean.beanKind == BeanKind.CONTAINER && bean.sourceKind != BeanSourceKind.INSTANCE) {
-                BeanInstanceAccessor da = bean.container.lifetime.pool.reserve(bean.beanClass);
-                bean.lifetimePoolAccessor = da;
-                bean.lifetimePoolAccessIndex = da.index();
-                bean.container.sm.injectionManager.addConsumer(bean.operations.get(0), bean.lifetimePoolAccessor);
-            }
-
             // See also java.lang.PublicMethods
 
             // Introspect all fields on the bean and its super classes
@@ -300,9 +290,7 @@ public final class BeanScanner {
 
     private void introspectClass() {}
 
-    void resolveOperation(OperationSetup operation) {
-        // System.out.println(operation.target + " " + operation.bindings.length);
-        // System.out.println(operation.type);
+    void resolveNow(OperationSetup operation) {
         for (int i = 0; i < operation.bindings.length; i++) {
             BindingSetup binding = operation.bindings[i];
             if (binding == null) {
@@ -316,7 +304,7 @@ public final class BeanScanner {
      */
     void resolveOperations() {
         for (OperationSetup operation = unBoundOperations.pollFirst(); operation != null; operation = unBoundOperations.pollFirst()) {
-            resolveOperation(operation);
+            resolveNow(operation);
         }
     }
 

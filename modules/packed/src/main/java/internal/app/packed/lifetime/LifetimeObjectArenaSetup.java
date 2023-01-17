@@ -39,18 +39,12 @@ import internal.app.packed.application.ApplicationInitializationContext;
 public final class LifetimeObjectArenaSetup {
 
     /** All constants that should be stored in the constant pool. */
-    private final ArrayList<Consumer<? super PackedExtensionContext>> entries = new ArrayList<>();
+    final ArrayList<Consumer<? super PackedExtensionContext>> entries = new ArrayList<>();
 
     /** The size of the pool. */
     private int size;
 
     LifetimeObjectArenaSetup() {}
-
-    public void addOrdered(Consumer<? super PackedExtensionContext> c) {
-        // new Exception().printStackTrace();
-        // We just keep both these 2 method that does the same for now
-        entries.add(c);
-    }
 
     public PackedExtensionContext newRuntimePool(ApplicationInitializationContext launchContext) {
         PackedExtensionContext pool = PackedExtensionContext.create(size);

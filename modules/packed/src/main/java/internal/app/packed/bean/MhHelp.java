@@ -25,11 +25,11 @@ import internal.app.packed.util.LookupUtil;
  */
 public class MhHelp {
 
-    static final MethodHandle INC = LookupUtil.lookupStatic(MethodHandles.lookup(), "increment", int.class, int.class);
+    static final MethodHandle INC = LookupUtil.findStatic(MethodHandles.lookup(), "increment", int.class, int.class);
 
-    static final MethodHandle INCL = LookupUtil.lookupStatic(MethodHandles.lookup(), "incrementL", int.class, long.class);
+    static final MethodHandle INCL = LookupUtil.findStatic(MethodHandles.lookup(), "incrementL", int.class, long.class);
 
-    static final MethodHandle ADD = LookupUtil.lookupStatic(MethodHandles.lookup(), "add", int.class, int.class, int.class);
+    static final MethodHandle ADD = LookupUtil.findStatic(MethodHandles.lookup(), "add", int.class, int.class, int.class);
 
     static int incrementL(long a) {
         return (int) a + 1;

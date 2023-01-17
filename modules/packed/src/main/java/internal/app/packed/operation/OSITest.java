@@ -45,7 +45,12 @@ public class OSITest extends BaseAssembly {
 
     public static class BB {
 
-        public BB(@Constant LocalDateTime bt) {
+        //, @InitializationTime LocalDateTime i1,
+        //@InitializationTime LocalDateTime i2
+        public BB(@InitializationTime LocalDateTime i2) {
+            //System.out.println(c1 + " " + c2);
+            //System.out.println(n1 + " " + n2);
+            //System.out.println(i1 + " " + i2);
         }
     }
 
@@ -63,11 +68,14 @@ public class OSITest extends BaseAssembly {
                 public void hookOnAnnotatedVariable(Annotation hook, BindableVariable d) {
                     Class<? extends Annotation> type = hook.annotationType();
                     if (type == Constant.class) {
+                        d.checkAssignableTo(LocalDateTime.class);
                         d.bindConstant(LocalDateTime.now());
-                    } else if (type == OtjerInitializationTime.class) {
+                    } else if (type == InitializationTime.class) {
                         root().base().installIfAbsent(AppInitializeRecord.class);
+                        d.checkAssignableTo(LocalDateTime.class);
                         d.bindTo(new Op1<AppInitializeRecord, LocalDateTime>(b -> b.initialized) {});
-                    } else if (type == Operation.class) { // now
+                    } else if (type == Now.class) { // now
+                        d.checkAssignableTo(LocalDateTime.class);
                         d.bindTo(new Op0<>(LocalDateTime::now) {});
                     } else {
                         super.hookOnAnnotatedVariable(hook, d);
@@ -96,9 +104,9 @@ public class OSITest extends BaseAssembly {
 
     @Retention(RetentionPolicy.RUNTIME)
     @AnnotatedVariableHook(extension = MyExt.class)
-    @interface Operation {}
+    @interface Now {}
 
     @Retention(RetentionPolicy.RUNTIME)
     @AnnotatedVariableHook(extension = MyExt.class)
-    @interface OtjerInitializationTime {}
+    @interface InitializationTime {}
 }

@@ -34,7 +34,7 @@ import internal.app.packed.util.LookupUtil;
 public abstract class AbstractComposer {
 
     /** A var handle that can update the {@link #configuration} field in this class. */
-    private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);
+    private static final VarHandle VH_CONFIGURATION = LookupUtil.findVarHandleOwn(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);
 
     /**
      * The configuration of the container that this composer defines.

@@ -72,8 +72,8 @@ public class PackedBindableBaseVariable implements BindableBaseVariable {
         v.bindToInvocationContextArgument(context, argumentIndex);
     }
 
-    public void checkAssignableTo(Class<?> clazz, Class<?>... additionalClazzes) {
-        v.checkAssignableTo(clazz, additionalClazzes);
+    public void checkAssignableTo(Class<?>... additionalClazzes) {
+        v.checkAssignableTo(additionalClazzes);
     }
 
     public boolean equals(Object obj) {

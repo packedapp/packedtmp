@@ -28,7 +28,7 @@ import internal.app.packed.util.LookupUtil;
 public final /* primitive */ class PackedExtensionContext implements ExtensionContext {
 
     /** A method handle for calling {@link #read(int)} at runtime. */
-    public static final MethodHandle MH_CONSTANT_POOL_READER = LookupUtil.lookupVirtual(MethodHandles.lookup(), "read", Object.class, int.class);
+    public static final MethodHandle MH_CONSTANT_POOL_READER = LookupUtil.findVirtualOwn(MethodHandles.lookup(), "read", Object.class, int.class);
 
     public static final PackedExtensionContext EMPTY = new PackedExtensionContext(0);
     

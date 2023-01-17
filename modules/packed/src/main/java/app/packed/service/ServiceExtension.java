@@ -31,6 +31,7 @@ import app.packed.extension.FrameworkExtension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.binding.BindingProvider.FromOperation;
+import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 
@@ -78,7 +79,8 @@ import internal.app.packed.operation.OperationSetup;
 
 public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
 
-    private final ExtensionSetup setup = ExtensionSetup.crack(this);
+    /** The container where this extension is used. */
+    private final ContainerSetup container = ExtensionSetup.crack(this).container;
 
     /** Create a new service extension. */
     ServiceExtension() {}
@@ -132,7 +134,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkIsConfigurable();
 
-        setup.container.sm.exportAll = true;
+        container.sm.exportAll = true;
     }
 
     @Override
@@ -151,7 +153,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
                 }
                 
                 OperationSetup operation = OperationSetup.crack(field.newGetOperation(OperationTemplate.defaults()));
-                setup.container.sm.serviceProvide(key, operation.bean, operation, new FromOperation(operation));
+                container.sm.serviceProvide(key, operation, new FromOperation(operation));
             }
 
             /** {@inheritDoc} */
@@ -171,12 +173,12 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
                 
                 if (isProviding) {
                     OperationSetup operation = OperationSetup.crack(method.newOperation(temp));
-                    setup.container.sm.serviceProvide(key, operation.bean, operation, new FromOperation(operation));
+                    container.sm.serviceProvide(key, operation, new FromOperation(operation));
                 }
 
                 if (isExporting) {
                     OperationSetup operation = OperationSetup.crack(method.newOperation(temp));
-                    setup.container.sm.serviceExport(key, operation);
+                    container.sm.serviceExport(key, operation);
                 }
             }
         };
@@ -185,7 +187,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
     /** {@return a mirror for this extension.} */
     @Override
     protected ServiceExtensionMirror newExtensionMirror() {
-        return new ServiceExtensionMirror(setup.container);
+        return new ServiceExtensionMirror(container);
     }
 
     /**

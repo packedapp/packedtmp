@@ -55,11 +55,11 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     };
 
     /** A MethodHandle for invoking {@link ExtensionMirror#initialize(ExtensionSetup)}. */
-    private static final MethodHandle MH_EXTENSION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionMirror.class,
+    private static final MethodHandle MH_EXTENSION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ExtensionMirror.class,
             "initialize", void.class, ExtensionSetup.class);
 
     /** A MethodHandle for invoking {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_NEW_EXTENSION_MIRROR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "newExtensionMirror",
+    private static final MethodHandle MH_NEW_EXTENSION_MIRROR = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "newExtensionMirror",
             ExtensionMirror.class);
 
     /**

@@ -53,15 +53,15 @@ import internal.app.packed.util.types.ClassUtil;
 public final class BeanSetup {
 
     /** A MethodHandle for invoking {@link BeanMirror#initialize(BeanSetup)}. */
-    private static final MethodHandle MH_BEAN_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMirror.class, "initialize",
+    private static final MethodHandle MH_BEAN_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanMirror.class, "initialize",
             void.class, BeanSetup.class);
 
     /** A handle that can access BeanConfiguration#handle. */
-    private static final VarHandle VH_BEAN_CONFIGURATION_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "handle",
+    private static final VarHandle VH_BEAN_CONFIGURATION_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanConfiguration.class, "handle",
             BeanHandle.class);
 
     /** A handle that can access BeanHandle#bean. */
-    private static final VarHandle VH_BEAN_HANDLE_BEAN = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanHandle.class, "bean", BeanSetup.class);
+    private static final VarHandle VH_BEAN_HANDLE_BEAN = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanHandle.class, "bean", BeanSetup.class);
 
     /** The bean class, is typical void.class for functional beans. */
     public final Class<?> beanClass;
@@ -83,8 +83,6 @@ public final class BeanSetup {
 
     /** The lifetime the component is a part of. */
     public final LifetimeSetup lifetime;
-
-    public int lifetimePoolAccessIndex = -1;
 
     /** A pool accessor if a single instance of this bean is created. null otherwise */
     @Nullable
@@ -163,7 +161,7 @@ public final class BeanSetup {
         if (sourceKind == BeanSourceKind.INSTANCE) {
             return new FromConstant(source.getClass(), source);
         } else if (beanKind == BeanKind.CONTAINER) {
-            return new FromLifetimeArena(container.lifetime, lifetimePoolAccessIndex, beanClass);
+            return new FromLifetimeArena(container.lifetime, lifetimePoolAccessor.index(), beanClass);
         } else if (beanKind == BeanKind.MANYTON) {
             return new FromOperation(operations.get(0));
         }
@@ -334,6 +332,10 @@ public final class BeanSetup {
 
             OperationSetup os = op.newOperationSetup(bean, bean.installedBy, ot);
             bean.operations.add(os);
+        }
+
+        if (bean.realm instanceof ExtensionTreeSetup e && bean.beanKind == BeanKind.CONTAINER) {
+            bean.ownedBy.injectionManager.addBean(bean);
         }
 
         // Scan the bean class for annotations unless the bean class is void

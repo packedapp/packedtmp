@@ -23,7 +23,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 
 /**
- * A service multi-composer is responsible for managing 1 or more {@link OldServiceResolver service composers}
+ * A service multi-composer is responsible for managing 1 or more {@link ServiceManager0 service composers}
  * that are directly connected and part of the same build.
  * <p>
  * This class server two main purposes:

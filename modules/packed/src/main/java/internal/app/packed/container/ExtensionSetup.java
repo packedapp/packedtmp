@@ -21,10 +21,10 @@ import internal.app.packed.util.ThrowableUtil;
 public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> implements Comparable<ExtensionSetup> {
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
-    private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
+    private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "onNew", void.class);
 
     /** A handle for setting the private field Extension#setup. */
-    private static final VarHandle VH_EXTENSION_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "extension",
+    private static final VarHandle VH_EXTENSION_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), Extension.class, "extension",
             ExtensionSetup.class);
 
     /** A map of all non-void bean classes. Used for controlling non-multi-install beans. */

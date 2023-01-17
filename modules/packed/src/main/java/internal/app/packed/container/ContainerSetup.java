@@ -48,7 +48,7 @@ import internal.app.packed.util.types.ClassUtil;
 public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
 
     /** A MethodHandle for invoking {@link ContainerMirror#initialize(ContainerSetup)}. */
-    private static final MethodHandle MH_CONTAINER_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ContainerMirror.class,
+    private static final MethodHandle MH_CONTAINER_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ContainerMirror.class,
             "initialize", void.class, ContainerSetup.class);
 
     /** The application this container is a part of. */

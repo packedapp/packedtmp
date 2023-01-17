@@ -32,18 +32,21 @@ import internal.app.packed.util.ThrowableUtil;
 /**
  *
  */
-public record PackedServiceLocator(PackedExtensionContext pec, Map<Key<?>, MethodHandle> map) implements ServiceLocator {
+public record PackedServiceLocator(PackedExtensionContext context, Map<Key<?>, MethodHandle> map) implements ServiceLocator {
 
+    /** {@inheritDoc} */
     @Override
     public <T> T use(Key<T> key) {
         return ServiceLocator.super.use(key);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean contains(Key<?> key) {
         return map.containsKey(key);
     }
 
+    /** {@inheritDoc} */
     @Override
     public <T> Optional<T> findInstance(Key<T> key) {
         requireNonNull(key, "key is null");
@@ -53,18 +56,20 @@ public record PackedServiceLocator(PackedExtensionContext pec, Map<Key<?>, Metho
         }
         T t;
         try {
-            t = (T) provider.invokeExact(pec);
+            t = (T) provider.invokeExact(context);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
         return Optional.of(t);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isEmpty() {
         return map.isEmpty();
     }
 
+    /** {@inheritDoc} */
     @Override
     public int size() {
         return map.size();
@@ -83,7 +88,7 @@ public record PackedServiceLocator(PackedExtensionContext pec, Map<Key<?>, Metho
             @Override
             public T provide() {
                 try {
-                    return (T) provider.invokeExact(pec);
+                    return (T) provider.invokeExact(context);
                 } catch (Throwable e) {
                     throw ThrowableUtil.orUndeclared(e);
                 }

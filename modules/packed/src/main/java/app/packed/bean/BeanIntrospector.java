@@ -24,6 +24,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -410,9 +411,6 @@ public abstract class BeanIntrospector {
          * 
          * @param op
          */
-        // provideConverted(new Op2<@InvocationArgument(index = 0, context = HttpRequestContext.class) RequestImpl, String)
-
-        // provide(new Op2<@InvocationArgument(index = 0, context = HttpRequestContext.class) RequestImpl, String)
         void bindTo(Op<?> op);
 
         /**
@@ -446,8 +444,18 @@ public abstract class BeanIntrospector {
 
         // Kan only do this if is invoking extension!!
 
-        default void checkAssignableTo(Class<?> clazz, Class<?>... additionalClazzes) {
-
+        default void checkAssignableTo(Class<?>... additionalClazzes) {
+            boolean isAssignable = false;
+            Class<?> rt = variable().getRawType();
+            for (Class<?> class1 : additionalClazzes) {
+                if (class1.isAssignableFrom(rt)) {
+                    isAssignable = true;
+                    break;
+                }
+            }
+            if (!isAssignable) {
+                throw new BeanInstallationException(variable() + ", Must be assignable to one of " + Arrays.toString(additionalClazzes));
+            }
         }
 
         /**
