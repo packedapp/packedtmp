@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime;
+package internal.app.packed.entrypoint;
 
 import java.lang.invoke.MethodHandle;
 
 import app.packed.framework.Nullable;
+import internal.app.packed.lifetime.ContainerRunner;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -41,7 +42,7 @@ public class EntryPointSetup {
         return m;
     }
 
-    public void enter(ApplicationInitializationContext launchContext) {
+    public void enter(ContainerRunner runner) {
         // EntryPoint
         if (hasMain()) {
             MainThreadOfControl l = mainThread();
@@ -50,7 +51,7 @@ public class EntryPointSetup {
             }
 
             try {
-                mainThread.generatedMethodHandle.invoke(launchContext.pool());
+                mainThread.generatedMethodHandle.invoke(runner.pool());
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }

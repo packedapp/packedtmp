@@ -91,7 +91,7 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
     static final class PeekingOp<R> extends IntermediateOp<R> {
 
         /** A method handle for {@link #accept(Consumer, Object)}. */
-        static final MethodHandle ACCEPT = LookupUtil.findStatic(MethodHandles.lookup(), "accept", Object.class, Consumer.class, Object.class);
+        static final MethodHandle ACCEPT = LookupUtil.findStaticOwn(MethodHandles.lookup(), "accept", Object.class, Consumer.class, Object.class);
 
         PeekingOp(PackedOp<R> delegate, MethodHandle methodHandle) {
             super(delegate, delegate.type, methodHandle);

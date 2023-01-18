@@ -199,7 +199,7 @@ public final class AssemblySetup extends RealmSetup {
         // ExtensionSetup[] exts = container.extensions.values().toArray(new ExtensionSetup[container.extensions.size()]);
         // Arrays.sort(exts);
 
-        // We now need to close everthe assembly. This is done in two different ways depending on weather or not
+        // We now need to close the assembly. This is done in two different ways depending on weather or not
         // the assembly defines the root container of application. In which case we need to call Extension#onApplicationClose
         // in addition to calling Extension#onAssemblyClose
 

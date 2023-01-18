@@ -39,7 +39,7 @@ public final class LookupUtil {
         }
     }
 
-    public static MethodHandle findStatic(MethodHandles.Lookup caller, String name, Class<?> returnType, Class<?>... parameterTypes) {
+    public static MethodHandle findStaticOwn(MethodHandles.Lookup caller, String name, Class<?> returnType, Class<?>... parameterTypes) {
         MethodType mt = MethodType.methodType(returnType, parameterTypes);
         try {
             return caller.findStatic(caller.lookupClass(), name, mt);

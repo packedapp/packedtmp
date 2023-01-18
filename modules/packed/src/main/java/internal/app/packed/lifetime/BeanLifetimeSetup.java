@@ -17,6 +17,8 @@ package internal.app.packed.lifetime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import app.packed.bean.BeanKind;
@@ -24,16 +26,29 @@ import app.packed.lifetime.BeanLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
+import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.ThrowableUtil;
 
 /** The lifetime of a bean whose lifetime is independent of its container. */
-public final class BeanLifetimeSetup extends LifetimeSetup {
-
+public final class BeanLifetimeSetup implements LifetimeSetup {
+    
+    /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
+    static final MethodHandle MH_BEAN_LIFETIME_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanLifetimeMirror.class, "initialize", void.class,
+            BeanLifetimeSetup.class);
+    
     /** The single bean this lifetime contains. */
     public final BeanSetup bean;
 
-    public BeanLifetimeSetup(ContainerLifetimeSetup container, BeanSetup bean, PackedBeanInstaller installer) {
-        super(container, installer.lifetimes == null ? List.of() : List.copyOf(installer.lifetimes));
+    /** */
+    public final List<FuseableOperation> lifetimes;
+
+    /** The lifetime of the bean's container. */
+    public final ContainerLifetimeSetup parent;
+
+    public BeanLifetimeSetup(ContainerLifetimeSetup parent, BeanSetup bean, PackedBeanInstaller installer) {
+        this.lifetimes = FuseableOperation.of(installer.lifetimes);
         this.bean = requireNonNull(bean);
+        this.parent = requireNonNull(parent);
     }
 
     public boolean isLazy() {
@@ -42,7 +57,26 @@ public final class BeanLifetimeSetup extends LifetimeSetup {
 
     /** {@inheritDoc} */
     @Override
-    LifetimeMirror mirror0() {
-        return new BeanLifetimeMirror();
+    public List<FuseableOperation> lifetimes() {
+        return lifetimes;
+    }
+
+    /** {@return a mirror that can be exposed to end-users.} */
+    public BeanLifetimeMirror mirror() {
+        BeanLifetimeMirror mirror = new BeanLifetimeMirror();
+
+        // Initialize LifetimeMirror by calling LifetimeMirror#initialize(LifetimeSetup)
+        try {
+            MH_BEAN_LIFETIME_MIRROR_INITIALIZE.invokeExact(mirror, this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        return mirror;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ContainerLifetimeSetup parent() {
+        return parent;
     }
 }

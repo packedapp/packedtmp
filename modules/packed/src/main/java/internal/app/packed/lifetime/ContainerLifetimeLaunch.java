@@ -24,6 +24,7 @@ import app.packed.binding.Key;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.lifetime.bridge.PackedBridge;
 
 /**
  *

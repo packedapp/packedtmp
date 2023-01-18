@@ -18,9 +18,4 @@ package internal.app.packed.lifetime;
 /**
  *
  */
-public record BeanInstanceAccessor(Class<?> type, int index) {
-
-    public Object read(PackedExtensionContext pool) {
-        return pool.read(index);
-    }
-}
+public record BeanInstanceAccessor(Class<?> type, int index) {}

@@ -145,13 +145,13 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
             @Override
             public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks, OperationalField field) {
                 Key<?> key = field.fieldToKey();
-                
+
                 if (!Modifier.isStatic(field.modifiers())) {
-                    if (beanKind()!= BeanKind.CONTAINER) {
+                    if (beanKind() != BeanKind.CONTAINER) {
                         throw new BuildException("Not okay)");
                     }
                 }
-                
+
                 OperationSetup operation = OperationSetup.crack(field.newGetOperation(OperationTemplate.defaults()));
                 container.sm.serviceProvide(key, operation, new FromOperation(operation));
             }
@@ -166,11 +166,11 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
                 OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
 
                 if (!Modifier.isStatic(method.modifiers())) {
-                    if (beanKind()!= BeanKind.CONTAINER) {
+                    if (beanKind() != BeanKind.CONTAINER) {
                         throw new BuildException("Not okay)");
                     }
                 }
-                
+
                 if (isProviding) {
                     OperationSetup operation = OperationSetup.crack(method.newOperation(temp));
                     container.sm.serviceProvide(key, operation, new FromOperation(operation));
@@ -218,12 +218,12 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
     // providePerRequest <-- every time the service is requested
     // Also these beans, can typically just be composites??? Nah
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        BeanHandle<T> handle = base().newBean(BeanKind.MANYTON).lifetimes().install(implementation);
+        BeanHandle<T> handle = base().newBean(BeanKind.MANYTON).lifetimes(OperationTemplate.defaults()).install(implementation);
         return new ProvideableBeanConfiguration<T>(handle).provide();
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> op) {
-        BeanHandle<T> handle = base().newBean(BeanKind.MANYTON).lifetimes().install(op);
+        BeanHandle<T> handle = base().newBean(BeanKind.MANYTON).lifetimes(OperationTemplate.defaults()).install(op);
         return new ProvideableBeanConfiguration<T>(handle).provide();
     }
 

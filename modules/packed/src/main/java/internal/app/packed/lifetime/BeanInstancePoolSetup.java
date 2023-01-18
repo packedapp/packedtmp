@@ -34,7 +34,7 @@ import java.util.function.Consumer;
 //Saa maaske er pool og Lifetime to forskellige ting???
 //
 // Long term.. Could we rewrite all the indexes for images. In this way we could store all constants in another array that we would just reference
-public final class LifetimeObjectArenaSetup {
+final class BeanInstancePoolSetup {
 
     /** All constants that should be stored in the constant pool. */
     final ArrayList<Consumer<? super PackedExtensionContext>> entries = new ArrayList<>();
@@ -42,14 +42,14 @@ public final class LifetimeObjectArenaSetup {
     /** The size of the pool. */
     private int size;
 
-    LifetimeObjectArenaSetup() {}
+    BeanInstancePoolSetup() {}
 
-    public PackedExtensionContext newRuntimePool(ApplicationInitializationContext launchContext) {
+    PackedExtensionContext newRuntimePool(PackedManagedLifetime runtime) {
         PackedExtensionContext pool = PackedExtensionContext.create(size);
 
-        if (launchContext.runtime != null) {
-            pool.objects[0] = launchContext.runtime;
-        }
+       // if (runtime != null) {
+            pool.objects[0] = runtime;
+        //}
 
         for (Consumer<? super PackedExtensionContext> e : entries) {
             e.accept(pool);
@@ -63,7 +63,7 @@ public final class LifetimeObjectArenaSetup {
      * 
      * @return the index to store the object in at runtime
      */
-    public BeanInstanceAccessor reserve(Class<?> type) {
+    BeanInstanceAccessor reserve(Class<?> type) {
         return new BeanInstanceAccessor(type, size++);
     }
 }

@@ -129,12 +129,12 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             this.lifetime = parent.lifetime;
         }
 
-        // Initialize BaseExtension which is mandated in every container
+        // BaseExtension is used by default in every container
         ExtensionSetup baseExtension = new ExtensionSetup(treeParent == null ? null : treeParent.extensions.get(BaseExtension.class), this,
                 BaseExtension.class);
         baseExtension.initialize();
 
-        // The rest of the constructor is just processing any wirelets that have been specified by
+        // The rest of the constructor is just processing wirelets that have been specified by
         // the user or extension when wiring the component. The wirelets have not been null checked.
         // and may contain any number of CombinedWirelet instances.
         Wirelet prefix = null;

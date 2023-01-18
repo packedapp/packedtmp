@@ -17,8 +17,6 @@ package internal.app.packed.lifetime;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-
 import app.packed.container.Wirelet;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
@@ -28,8 +26,6 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
-import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
-import internal.app.packed.util.ThrowableUtil;
 
 /**
  * A temporary context object that is created whenever we launch an application.
@@ -39,18 +35,13 @@ public final class ApplicationInitializationContext {
     /** The configuration of the application we are launching. */
     public final ApplicationSetup application;
 
+    public final ContainerRunner cr;
+
     /** The launch mode of the application. */
     final OldLifetimeKind lifetimeKind;
 
     /** The name of the application. May be overridden via {@link Wirelet#named(String)} if image. */
     public String name;
-
-    /** The runtime component node we are building. */
-    private PackedExtensionContext pool;
-
-    /** If the application is stateful, the applications runtime. */
-    @Nullable
-    public final PackedManagedLifetime runtime;
 
     /** Wirelets specified if instantiating an image. */
     @Nullable
@@ -61,7 +52,7 @@ public final class ApplicationInitializationContext {
         this.wirelets = wirelets;
         this.name = requireNonNull(application.container.name);
         this.lifetimeKind = requireNonNull(application.driver.lifetimeKind());
-        this.runtime = application.goal.isLaunchable() && application.driver.lifetimeKind() == OldLifetimeKind.MANAGED ? new PackedManagedLifetime(this) : null;
+        this.cr = new ContainerRunner(application);
     }
 
     /** {@return the name of the application} */
@@ -70,12 +61,12 @@ public final class ApplicationInitializationContext {
     }
 
     public PackedExtensionContext pool() {
-        return pool;
+        return cr.pool();
     }
 
     ManagedLifetimeController runtime() {
-        if (runtime != null) {
-            return runtime;
+        if (cr.runtime != null) {
+            return cr.runtime;
         }
         throw new UnsupportedOperationException("This component does not have a runtime");
     }
@@ -87,7 +78,7 @@ public final class ApplicationInitializationContext {
      * @return a service locator for the application
      */
     public ServiceLocator serviceLocator() {
-        return application.container.sm.exportedServices(pool);
+        return application.container.sm.exportedServices(cr.pool());
     }
 
     /**
@@ -117,23 +108,9 @@ public final class ApplicationInitializationContext {
             }
         }
 
-        PackedExtensionContext pool = context.pool = application.container.lifetime.pool.newRuntimePool(context);
-
-        // Run all initializers
-        for (MethodHandle mh : application.container.lifetime.initializers) {
-            try {
-                mh.invoke(pool);
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
-        }
-
-        // INITIALIZATION IS DONE
-
-        if (context.runtime != null) {
-            context.runtime.launch(application, context);
-        }
+        context.cr.run(application.container);
 
         return driver.newInstance(context);
     }
+
 }

@@ -24,14 +24,32 @@ import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMirror;
+import app.packed.framework.Nullable;
 import app.packed.operation.OperationMirror;
+import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
+import internal.app.packed.lifetime.LifetimeSetup;
 
 /**
  * This mirror represents a container lifetime.
  */
 public final class ContainerLifetimeMirror extends LifetimeMirror {
 
+    /**
+     * The internal configuration of the operation we are mirrored. Is initially null but populated via
+     * {@link #initialize(LifetimeSetup)}.
+     */
+    @Nullable
+    private ContainerLifetimeSetup lifetime;
+    /**
+     * Create a new operation mirror.
+     * <p>
+     * Subclasses should have a single package-protected constructor.
+     */
+    public ContainerLifetimeMirror() {}
+    
     /** {@return the container that is the root of the lifetime.} */
     public ContainerMirror container() {
         return setup().container.mirror();
@@ -41,6 +59,18 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
         // beanKind.isInContainerLifetime()
         // alternative BiStream
         throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean equals(Object other) {
+        return this == other || other instanceof LifetimeMirror m && lifetime() == m.lifetime();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final int hashCode() {
+        return lifetime().hashCode();
     }
 
     /**
@@ -54,9 +84,37 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
     public Optional<BeanMirror> holderBean() { // Do we need a ContainerWrapperBeanMirror?
         return Optional.empty();
     }
+    
+    /**
+     * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the extension.
+     * 
+     * @param owner
+     *            the internal configuration of the extension to mirror
+     */
+    final void initialize(ContainerLifetimeSetup lifetime) {
+        if (this.lifetime != null) {
+            throw new IllegalStateException("This mirror has already been initialized.");
+        }
+        this.lifetime = lifetime;
+    }
 
     public boolean isRoot() {
-        return lifetime().parent == null;
+        return lifetime().parent() == null;
+    }
+
+    /**
+     * {@return the internal configuration of operation.}
+     * 
+     * @throws IllegalStateException
+     *             if {@link #initialize(ApplicationSetup)} has not been called.
+     */
+    ContainerLifetimeSetup lifetime() {
+        ContainerLifetimeSetup a = lifetime;
+        if (a == null) {
+            throw new IllegalStateException(
+                    "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
+        }
+        return a;
     }
 
     /**
@@ -71,6 +129,11 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
 //            }
 //        }
         return Collections.unmodifiableList(operations);
+    }
+
+    /** {@return any parent lifetime this lifetime is contained within.} */
+    public Optional<ContainerLifetimeMirror> parent() {
+        return Optional.ofNullable(lifetime().treeParent).map(e -> e.mirror());
     }
 
     private ContainerLifetimeSetup setup() {

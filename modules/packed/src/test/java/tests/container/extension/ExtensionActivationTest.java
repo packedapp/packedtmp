@@ -25,10 +25,10 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import internal.app.packed.container.Packlet;
+import internal.app.packed.lifetime.sandbox.Program;
 import testutil.util.AbstractApplicationTest;
 
 /** Tests that we can automatically activate an extension using a annotated field or method. */

@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package internal.app.packed.lifetime.sandbox;
 
 import java.util.NoSuchElementException;
 
+import app.packed.application.ApplicationLauncher;
+import app.packed.application.BootstrapApp;
 import app.packed.binding.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;

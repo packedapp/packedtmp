@@ -34,7 +34,6 @@ import java.util.Map;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.extension.Extension;
@@ -58,8 +57,8 @@ public final class BeanScanner {
     static final Module JAVA_BASE_MODULE = Object.class.getModule();
 
     /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
-    private static final MethodHandle MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(),
-            BeanIntrospector.class, "initialize", void.class, ExtensionSetup.class, BeanScanner.class);
+    private static final MethodHandle MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class,
+            "initialize", void.class, ExtensionSetup.class, BeanScanner.class);
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class,
@@ -153,10 +152,10 @@ public final class BeanScanner {
         }
 
         OperationTemplate ot;
-        if (bean.lifetime.lifetimes.isEmpty()) {
+        if (bean.lifetime.lifetimes().isEmpty()) {
             ot = OperationTemplate.defaults();
         } else {
-            ot = bean.lifetime.lifetimes.get(0);
+            ot = bean.lifetime.lifetimes().get(0).template;
         }
         ot = ot.withReturnType(bean.beanClass);
 
@@ -172,6 +171,7 @@ public final class BeanScanner {
 
         // Can we add operations here???
         // In which case findConstructor while probably place its constructor on index!=0
+        // We could use an ArrayDeque and use addFirst
         introspectClass();
 
         // We always have instances if we have an op.
@@ -181,17 +181,12 @@ public final class BeanScanner {
         }
 
         if (!bean.beanClass.isInterface()) {
-            // Only create an instance node if we have instances
 
             // If a we have a (instantiating) class source, we need to find a constructor we can use
             if (bean.sourceKind == BeanSourceKind.CLASS && bean.beanKind.hasInstances()) {
                 findConstructor();
             }
 
-            // These fail if moved up. And I don't understand why
-            if (bean.beanKind == BeanKind.CONTAINER) {
-                bean.container.lifetime.addContainerBean(bean);
-            }
             // See also java.lang.PublicMethods
 
             // Introspect all fields on the bean and its super classes

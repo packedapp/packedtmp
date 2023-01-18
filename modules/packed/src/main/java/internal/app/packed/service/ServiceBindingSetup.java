@@ -63,6 +63,11 @@ public final class ServiceBindingSetup extends BindingSetup {
         // 0 Skal nok erstattest hvis vi ikke kun tager PackedExtensionContext
         osi.is.push(0);
         MethodHandle mh = entry.provider.resolution.provideSpecial();
+        
+//        System.out.println();
+//        System.out.println(index);
+//        System.out.println(methodHandle.type());
+//        System.out.println(mh.type());
         return MethodHandles.collectArguments(methodHandle, index, mh);
     }
 

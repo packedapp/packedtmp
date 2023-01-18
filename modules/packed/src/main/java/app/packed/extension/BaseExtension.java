@@ -189,7 +189,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     if (va.getRawType().equals(String.class)) {
                         v.bindTo(new Op1<@InvocationArgument  ApplicationInitializationContext, String>(a -> a.name()) {});
                     } else if (va.getRawType().equals(ManagedLifetimeController.class)) {
-                        v.bindTo(new Op1<@InvocationArgument  ApplicationInitializationContext, ManagedLifetimeController>(a -> a.runtime) {});
+                        v.bindTo(new Op1<@InvocationArgument  ApplicationInitializationContext, ManagedLifetimeController>(a -> a.cr.runtime) {});
                     } else if (va.getRawType().equals(ServiceLocator.class)) {
                         v.bindTo(new Op1<@InvocationArgument  ApplicationInitializationContext, ServiceLocator>(a -> a.serviceLocator()) {});
                     } else {

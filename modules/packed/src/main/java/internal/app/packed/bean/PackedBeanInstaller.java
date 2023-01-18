@@ -66,8 +66,7 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
     private final BeanKind kind;
 
     @Nullable
-    public
-    List<OperationTemplate> lifetimes;
+    public List<OperationTemplate> lifetimes;
 
     private boolean multiInstall;
 
@@ -119,6 +118,8 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
         if (sourceKind != BeanSourceKind.NONE && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
         }
+//        assert (!lifetimes.isEmpty() || bean.beanClass == void.class); // should be replaced by a check in the bean installer
+
         BeanSetup bs = BeanSetup.install(this, kind, beanClass, sourceKind, source, introspector, attachments, namePrefix, multiInstall, synthetic);
         return from(bs);
     }

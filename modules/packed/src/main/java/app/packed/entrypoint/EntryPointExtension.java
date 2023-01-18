@@ -19,8 +19,8 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.lifetime.EntryPointSetup;
-import internal.app.packed.lifetime.EntryPointSetup.MainThreadOfControl;
+import internal.app.packed.entrypoint.EntryPointSetup;
+import internal.app.packed.entrypoint.EntryPointSetup.MainThreadOfControl;
 
 /**
  * An extension that controls entry points into an application.

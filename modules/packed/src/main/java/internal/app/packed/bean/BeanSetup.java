@@ -53,8 +53,8 @@ import internal.app.packed.util.types.ClassUtil;
 public final class BeanSetup {
 
     /** A MethodHandle for invoking {@link BeanMirror#initialize(BeanSetup)}. */
-    private static final MethodHandle MH_BEAN_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanMirror.class, "initialize",
-            void.class, BeanSetup.class);
+    private static final MethodHandle MH_BEAN_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanMirror.class, "initialize", void.class,
+            BeanSetup.class);
 
     /** A handle that can access BeanConfiguration#handle. */
     private static final VarHandle VH_BEAN_CONFIGURATION_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanConfiguration.class, "handle",
@@ -86,7 +86,7 @@ public final class BeanSetup {
 
     /** A pool accessor if a single instance of this bean is created. null otherwise */
     @Nullable
-    public BeanInstanceAccessor lifetimePoolAccessor;
+    public final BeanInstanceAccessor lifetimePoolAccessor;
 
     /** Supplies a mirror for the operation */
     public Supplier<? extends BeanMirror> mirrorSupplier;
@@ -147,21 +147,25 @@ public final class BeanSetup {
         } else {
             this.ownedBy = null;
         }
-
+        
+        // Set the lifetime of the bean
         ContainerLifetimeSetup cls = container.lifetime;
         if (beanKind == BeanKind.CONTAINER || beanKind == BeanKind.FUNCTIONAL || beanKind == BeanKind.STATIC) {
             this.lifetime = cls;
-            cls.beans.add(this);
+            this.lifetimePoolAccessor = container.lifetime.addBean(this);
         } else {
-            this.lifetime = new BeanLifetimeSetup(cls, this, installer);
+            BeanLifetimeSetup bls = new BeanLifetimeSetup(cls, this, installer);
+            this.lifetime = bls;
+            this.lifetimePoolAccessor = null;
+            cls.addChildBean(bls);
         }
     }
 
     public BindingProvider accessBeanX() {
         if (sourceKind == BeanSourceKind.INSTANCE) {
             return new FromConstant(source.getClass(), source);
-        } else if (beanKind == BeanKind.CONTAINER) {
-            return new FromLifetimeArena(container.lifetime, lifetimePoolAccessor.index(), beanClass);
+        } else if (beanKind == BeanKind.CONTAINER) { // we've already checked if instance
+            return new FromLifetimeArena(container.lifetime, lifetimePoolAccessor, beanClass);
         } else if (beanKind == BeanKind.MANYTON) {
             return new FromOperation(operations.get(0));
         }
@@ -324,10 +328,10 @@ public final class BeanSetup {
         if (sourceKind == BeanSourceKind.OP) {
             PackedOp<?> op = (PackedOp<?>) bean.source;
             OperationTemplate ot;
-            if (bean.lifetime.lifetimes.isEmpty()) {
+            if (bean.lifetime.lifetimes().isEmpty()) {
                 ot = OperationTemplate.defaults();
             } else {
-                ot = bean.lifetime.lifetimes.get(0);
+                ot = bean.lifetime.lifetimes().get(0).template;
             }
 
             OperationSetup os = op.newOperationSetup(bean, bean.installedBy, ot);

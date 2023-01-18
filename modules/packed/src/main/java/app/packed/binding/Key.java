@@ -95,6 +95,12 @@ import internal.app.packed.util.types.TypeVariableExtractor;
 ////Reduce wildcards
 ////wrap primitives
 
+//Created by user a.la
+//Key.of 
+//Created while parsing a bean a.la.
+//public void foo(@SomeInvalidQualifier Void k)
+
+
 public abstract class Key<T> {
 
     /** A cache of keys created by {@link #Key()}. */

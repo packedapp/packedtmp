@@ -16,11 +16,11 @@
 package internal.app.packed.lifetime;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
@@ -31,105 +31,86 @@ import app.packed.lifetime.RunState;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
-import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
+import internal.app.packed.entrypoint.EntryPointSetup;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.util.AbstractTreeNode;
+import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
-/** The lifetime of an independent container. */
-public final class ContainerLifetimeSetup extends LifetimeSetup {
+/**
+ * The lifetime of the root container in an application. Or a container whose lifetime is independent of its parent
+ * container.
+ */
+public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLifetimeSetup> implements LifetimeSetup {
 
-    // All eagerly instantiated beans in order
+    /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
+    private static final MethodHandle MH_INVOKE_INITIALIZER = LookupUtil.findStaticOwn(MethodHandles.lookup(), "invokeInitializer", void.class, BeanSetup.class,
+            MethodHandle.class, PackedExtensionContext.class);
+
+    /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
+    private static final MethodHandle MH_LIFETIME_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ContainerLifetimeMirror.class,
+            "initialize", void.class, ContainerLifetimeSetup.class);
+
+    /** Beans that have independent lifetime of the container. */
+    private List<BeanLifetimeSetup> beanLifetimes;
+
+    /** All beans that have container lifetime in order of installation. Includes both application and extension beans. */
     public final ArrayList<BeanSetup> beans = new ArrayList<>();
-
-    /** Any child lifetimes. */
-    private List<LifetimeSetup> children;
 
     /** The root container of the lifetime. */
     public final ContainerSetup container;
 
-    ArrayList<OperationSetup> initialize = new ArrayList<>();
+    /** Entry points in the application, is null if there are none. */
+    @Nullable
+    public EntryPointSetup entryPoints;
 
-    ArrayList<MethodHandle> initializeMh = new ArrayList<>();
+    public final FuseableOperation initialization;
 
-    // Skal kopieres ind i internal lifetime launcher
-    public final ArrayList<MethodHandle> initializers = new ArrayList<>();
+    public final FuseableOperation startup;
+
+    public final FuseableOperation shutdown;
+
+    public final List<FuseableOperation> lifetimes;
 
     LinkedHashSet<BeanSetup> orderedBeans = new LinkedHashSet<>();
 
     /** The lifetime constant pool. */
-    public final LifetimeObjectArenaSetup pool = new LifetimeObjectArenaSetup();
+    public final BeanInstancePoolSetup pool = new BeanInstancePoolSetup();
 
-    ArrayList<LifetimeOperation> start = new ArrayList<>();
-    ArrayList<MethodHandle> startMh = new ArrayList<>();
-
-    ArrayList<LifetimeOperation> stop = new ArrayList<>();
-
-    ArrayList<MethodHandle> stopMh = new ArrayList<>();
-
-    /** Entry points in the application, is null if there are none. */
-    @Nullable // Maybe this a lifetime thing?
-    public EntryPointSetup entryPoints;
 
     /**
      * @param origin
      * @param parent
      */
     public ContainerLifetimeSetup(ContainerSetup container, @Nullable ContainerLifetimeSetup parent) {
-        super(parent, List.of(OperationTemplate.defaults()));
+        super(parent);
+        this.lifetimes = FuseableOperation.of(List.of(OperationTemplate.defaults())); // obviously wrong
+        this.initialization = new FuseableOperation(OperationTemplate.defaults());
+        this.startup = new FuseableOperation(OperationTemplate.defaults());
+        this.shutdown = new FuseableOperation(OperationTemplate.defaults());
+
         this.container = container;
-
         if (container.treeParent == null) {
-            if (container.application.driver.lifetimeKind() == OldLifetimeKind.MANAGED) {
-                pool.reserve(PackedManagedLifetime.class);
-            }
+            pool.reserve(PackedManagedLifetime.class);
         }
     }
 
-    public LifetimeSetup addChild(ContainerSetup component) {
-        LifetimeSetup l = new ContainerLifetimeSetup(component, this);
-        return addChild(l);
-    }
+    public BeanInstanceAccessor addBean(BeanSetup bean) {
+        beans.add(bean);
 
-    public LifetimeSetup addChild(LifetimeSetup lifetime) {
-        if (children == null) {
-            children = new ArrayList<>(1);
-        }
-        children.add(lifetime);
-        return lifetime;
-    }
-
-    public BeanInstanceAccessor addContainerBean(BeanSetup bean) {
         BeanInstanceAccessor la = null;
-        if (bean.sourceKind != BeanSourceKind.INSTANCE) {
-            la = bean.lifetimePoolAccessor = pool.reserve(bean.beanClass);
-            
-            final AtomicReference<MethodHandle> ar = new AtomicReference<>();
-            
-            container.application.addCodeGenerator(() -> {
-                MethodHandle mh = bean.operations.get(0).generateMethodHandle();
-                ar.set(mh);
-            });
-            
-            final BeanInstanceAccessor laa = la;
-            pool.entries.add(p -> {
-                MethodHandle mh = ar.get();
-                Object instance;
-                try {
-                    instance = mh.invoke(p);
-                } catch (Throwable e) {
-                    throw ThrowableUtil.orUndeclared(e);
-                }
-                if (instance == null) {
-                    throw new NullPointerException(this + " returned null");
-                }
-                if (!laa.type().isInstance(instance)) {
-                    throw new Error("Expected " + laa.type() + ", was " + instance.getClass());
-                }
-                p.storeObject(laa.index(), instance);
-            });
+        if (bean.beanKind == BeanKind.CONTAINER && bean.sourceKind != BeanSourceKind.INSTANCE) {
+            la = pool.reserve(bean.beanClass);
         }
         return la;
+    }
+
+    public BeanLifetimeSetup addChildBean(BeanLifetimeSetup lifetime) {
+        if (beanLifetimes == null) {
+            beanLifetimes = new ArrayList<>(1);
+        }
+        beanLifetimes.add(lifetime);
+        return lifetime;
     }
 
     public void codegen() {
@@ -139,14 +120,23 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
         // generate MH
     }
 
-    public ContainerLifetimeMirror mirror() {
-        return (ContainerLifetimeMirror) super.mirror();
-    }
-
     /** {@inheritDoc} */
     @Override
-    LifetimeMirror mirror0() {
-        return new ContainerLifetimeMirror();
+    public List<FuseableOperation> lifetimes() {
+        return lifetimes;
+    }
+
+    /** {@return a mirror that can be exposed to end-users.} */
+    public ContainerLifetimeMirror mirror() {
+        ContainerLifetimeMirror mirror = new ContainerLifetimeMirror();
+
+        // Initialize LifetimeMirror by calling LifetimeMirror#initialize(LifetimeSetup)
+        try {
+            MH_LIFETIME_MIRROR_INITIALIZE.invokeExact(mirror, this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        return mirror;
     }
 
     private void orderBeans(BeanSetup bean) {
@@ -159,32 +149,67 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
             processBean(bean);
             // addFactory, that installs the bean into Object[]
             // then all initiali
-
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public @Nullable ContainerLifetimeSetup parent() {
+        return treeParent;
+    }
+
     // Should be fully resolved now
-    public void processBean(BeanSetup bs) {
-        if (bs.beanKind == BeanKind.CONTAINER || bs.beanKind == BeanKind.LAZY) {
-            if (bs.sourceKind != BeanSourceKind.INSTANCE) {
-                initialize.add(bs.operations.get(0));
-                initializeMh.add(bs.operations.get(0).generateMethodHandle());
+    public void processBean(BeanSetup bean) {
+        if (bean.beanKind == BeanKind.CONTAINER || bean.beanKind == BeanKind.LAZY) {
+            if (bean.sourceKind != BeanSourceKind.INSTANCE) {
+                OperationSetup os = bean.operations.get(0);
+
+                bean.container.application.addCodeGenerator(() -> {
+                    MethodHandle mha = os.generateMethodHandle();
+                    mha = MH_INVOKE_INITIALIZER.bindTo(bean).bindTo(mha);
+                    initialization.methodHandles.add(mha);
+                });
             }
         }
 
-        for (LifetimeOperation lop : bs.operationsLifetime) {
+        for (LifetimeOperation lop : bean.operationsLifetime) {
             if (lop.state() == RunState.INITIALIZING) {
-                initialize.add(lop.os());
-                initializeMh.add(lop.os().generateMethodHandle());
+                initialization.operations.add(lop.os());
+                bean.container.application.addCodeGenerator(() -> {
+                    MethodHandle mh = lop.os().generateMethodHandle();
+                    initialization.methodHandles.add(mh);
+                });
             } else if (lop.state() == RunState.STARTING) {
-                start.add(lop);
-                startMh.add(lop.os().generateMethodHandle());
+                startup.operations.add(lop.os());
+                bean.container.application.addCodeGenerator(() -> {
+                    MethodHandle mh = lop.os().generateMethodHandle();
+                    startup.methodHandles.add(mh);
+                });
             } else if (lop.state() == RunState.STOPPING) {
-                stop.add(lop);
-                stopMh.add(lop.os().generateMethodHandle());
+                shutdown.operations.addFirst(lop.os());
+                bean.container.application.addCodeGenerator(() -> {
+                    MethodHandle mh = lop.os().generateMethodHandle();
+                    shutdown.methodHandles.addFirst(mh);
+                });
             } else {
                 throw new Error();
             }
         }
+    }
+
+    public static void invokeInitializer(BeanSetup bean, MethodHandle mh, PackedExtensionContext pec) {
+        Object instance;
+        try {
+            instance = mh.invoke(pec);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        if (instance == null) {
+            throw new NullPointerException(" returned null");
+        }
+        if (!bean.beanClass.isInstance(instance)) {
+            throw new Error("Expected " + bean.beanClass + ", was " + instance.getClass());
+        }
+        pec.storeObject(bean.lifetimePoolAccessor.index(), instance);
     }
 }

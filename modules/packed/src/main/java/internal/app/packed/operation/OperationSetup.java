@@ -56,12 +56,11 @@ import internal.app.packed.util.types.ClassUtil;
 public sealed abstract class OperationSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
-    private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), OperationMirror.class, "initialize",
-            void.class, OperationSetup.class);
+    private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), OperationMirror.class, "initialize", void.class,
+            OperationSetup.class);
 
     /** A MethodHandle for creating a new handle {@link OperationMirror#initialize(OperationSetup)}. */
-    private static final MethodHandle MH_NEW_OPERATION_HANDLE = LookupUtil.findConstructor(MethodHandles.lookup(), OperationHandle.class,
-            OperationSetup.class);
+    private static final MethodHandle MH_NEW_OPERATION_HANDLE = LookupUtil.findConstructor(MethodHandles.lookup(), OperationHandle.class, OperationSetup.class);
 
     /** An empty array of {@code BindingSetup}. */
     private static final BindingSetup[] NO_BINDINGS = new BindingSetup[0];
@@ -126,7 +125,9 @@ public sealed abstract class OperationSetup {
                 requireNonNull(s.extensionBean);
                 result.add(s.extensionBean);
             } else if (b instanceof ServiceBindingSetup s) {
-                result.add(s.entry.provider.bean);
+                if (s.entry.provider != null) {
+                    result.add(s.entry.provider.bean);
+                }
             }
         });
         return result;
@@ -340,7 +341,7 @@ public sealed abstract class OperationSetup {
             }
 
             public String toString() {
-                return "Constructor: " + StringFormatter.format(constructor());
+                return "Constructor: " + StringFormatter.formatSimple(constructor());
             }
         }
 

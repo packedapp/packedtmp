@@ -105,6 +105,8 @@ public final class ApplicationSetup {
     }
 
     public void finish() {
+        container.lifetime.codegen();
+
         if (codeGenerator != null) {
             phase = ApplicationBuildPhase.CODEGEN;
             codeGenerator.finish();

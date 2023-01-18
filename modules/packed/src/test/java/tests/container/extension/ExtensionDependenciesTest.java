@@ -17,18 +17,17 @@ package tests.container.extension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionPoint;
 import app.packed.extension.Extension.DependsOn;
+import app.packed.extension.ExtensionPoint;
 import testutil.util.AbstractApplicationTest;
 
 /**
  *
  */
-@Disabled
 public class ExtensionDependenciesTest extends AbstractApplicationTest {
 
     /** Test that we can depend on an uninstalled extension via. */
@@ -36,7 +35,7 @@ public class ExtensionDependenciesTest extends AbstractApplicationTest {
     public void testCanCallUseFromOnExtensionAdded() {
         appOf(c -> {
             c.use(Ex1.class);
-            assertThat(c.extensions()).containsExactlyInAnyOrder(Ex3.class, Ex2.class, Ex1.class);
+            assertThat(c.extensions()).containsExactlyInAnyOrder(BaseExtension.class, Ex3.class, Ex2.class, Ex1.class);
         });
     }
 
@@ -51,6 +50,11 @@ public class ExtensionDependenciesTest extends AbstractApplicationTest {
 
     @DependsOn(extensions = Ex3.class)
     static final class Ex2 extends Extension<Ex2> {
+        
+        @Override
+        protected Sub newExtensionPoint() {
+            return new Sub();
+        }
         @Override
         protected void onNew() {
             use(Ex3.Ex3ExtensionPoint.class);
@@ -62,6 +66,11 @@ public class ExtensionDependenciesTest extends AbstractApplicationTest {
     }
 
     static final class Ex3 extends Extension<Ex3> {
+
+        @Override
+        protected Ex3ExtensionPoint newExtensionPoint() {
+            return new Ex3ExtensionPoint();
+        }
 
         class Ex3ExtensionPoint extends ExtensionPoint<Ex3> {
 

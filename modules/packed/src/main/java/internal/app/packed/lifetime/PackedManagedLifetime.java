@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime.sandbox;
+package internal.app.packed.lifetime;
+
+import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -25,9 +27,8 @@ import app.packed.lifetime.RunState;
 import app.packed.lifetime.sandbox.LifetimeState;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.lifetime.sandbox.StopOption;
-import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.lifetime.ApplicationInitializationContext;
-import internal.app.packed.lifetime.EntryPointSetup;
+import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.entrypoint.EntryPointSetup;
 
 /**
  *
@@ -56,7 +57,11 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
     // midlertidigt state,paa den anden side kan vi maaske have lidt mindre state?
     volatile RunState state = RunState.UNINITIALIZED;
 
-    public PackedManagedLifetime(ApplicationInitializationContext launchContext) {}
+    final ContainerRunner runner;
+
+    public PackedManagedLifetime(ContainerRunner runner) {
+        this.runner = requireNonNull(runner);
+    }
 
     // Hmm, maybe not
 //    @Nullable
@@ -104,9 +109,9 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
         return null;
     }
 
-    public void launch(ApplicationSetup application, ApplicationInitializationContext launchContext) {
+    public void launch(ContainerSetup container, ContainerRunner cr) {
         boolean isMain = false;
-        EntryPointSetup ep = application.container.lifetime.entryPoints;
+        EntryPointSetup ep = container.lifetime.entryPoints;
 
         if (ep != null) {
             isMain = ep.hasMain();
@@ -114,12 +119,15 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
         boolean start = isMain;
         final ReentrantLock lock = this.lock;
 
+        cr.initialize(container);
+        cr.start(container);
+
         lock.lock();
         try {
             if (!start) {
                 this.state = RunState.INITIALIZED;
                 this.desiredState = RunState.INITIALIZED;
-                return;
+                // return;
             } else {
                 this.state = RunState.STARTING;
                 this.desiredState = RunState.RUNNING;
@@ -133,15 +141,20 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
             this.state = RunState.RUNNING;
             this.desiredState = RunState.RUNNING;
             if (!isMain) {
-                return;
+                // return;
             }
         } finally {
             lock.unlock();
         }
 
         if (ep != null) {
-            ep.enter(launchContext);
+            ep.enter(cr);
         }
+
+        this.state = RunState.STOPPING;
+        this.desiredState = RunState.TERMINATED;
+        cr.shutdown(container);
+        this.state = RunState.TERMINATED;
 
         // todo run execution block
 

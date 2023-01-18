@@ -5,11 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.bean.BeanMirror;
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMirror;
-import app.packed.framework.Nullable;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.lifetime.LifetimeSetup;
 
@@ -31,59 +27,7 @@ import internal.app.packed.lifetime.LifetimeSetup;
 //https://thesaurus.plus/related/life_cycle/lifetime
 public abstract sealed class LifetimeMirror implements Mirror permits BeanLifetimeMirror, ContainerLifetimeMirror {
 
-    /**
-     * The internal configuration of the operation we are mirrored. Is initially null but populated via
-     * {@link #initialize(LifetimeSetup)}.
-     */
-    @Nullable
-    private LifetimeSetup lifetime;
-
-    /**
-     * Create a new operation mirror.
-     * <p>
-     * Subclasses should have a single package-protected constructor.
-     */
-    LifetimeMirror() {}
-
-    /** {@inheritDoc} */
-    @Override
-    public final boolean equals(Object other) {
-        return this == other || other instanceof LifetimeMirror m && lifetime() == m.lifetime();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final int hashCode() {
-        return lifetime().hashCode();
-    }
-
-    /**
-     * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the extension.
-     * 
-     * @param owner
-     *            the internal configuration of the extension to mirror
-     */
-    final void initialize(LifetimeSetup operation) {
-        if (this.lifetime != null) {
-            throw new IllegalStateException("This mirror has already been initialized.");
-        }
-        this.lifetime = operation;
-    }
-
-    /**
-     * {@return the internal configuration of operation.}
-     * 
-     * @throws IllegalStateException
-     *             if {@link #initialize(ApplicationSetup)} has not been called.
-     */
-    LifetimeSetup lifetime() {
-        LifetimeSetup a = lifetime;
-        if (a == null) {
-            throw new IllegalStateException(
-                    "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
-        }
-        return a;
-    }
+    abstract LifetimeSetup lifetime();
 
     /**
      * If this lifetime is not stateless returns the bean that controls creation and destruction of the lifetime.
@@ -94,7 +38,7 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
         List<OperationMirror> operations = operations();
         return operations.isEmpty() ? Optional.empty() : Optional.of(operations.get(0).bean());
     }
-
+    
     /**
      * empty for statelss (or BootstrapApps)
      * 
@@ -110,7 +54,7 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
      */
     public List<OperationMirror> operations() {
         throw new UnsupportedOperationException();
-    }
+    } 
 
     // If has a holder
     // -- If is a bean -> Holder is in same container as the root of the lifetime
@@ -136,9 +80,7 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
     // List<LifetimeManagementOperationMirror> managementOperations();
 
     /** {@return any parent lifetime this lifetime is contained within.} */
-    public Optional<ContainerLifetimeMirror> parent() {
-        return Optional.ofNullable(lifetime().parent).map(e -> e.mirror());
-    }
+    public abstract Optional<ContainerLifetimeMirror> parent();
 
     public enum LifetimeOriginKind {
 

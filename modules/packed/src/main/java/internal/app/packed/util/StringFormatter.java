@@ -159,11 +159,10 @@ public final class StringFormatter {
         return format(method.getDeclaringClass()) + "#" + method.getName() + "(" + format(method.getParameterTypes()) + ")";
     }
 
-    
     public static String formatShortParameters(Executable e) {
         return "(" + formatSimple(e.getParameterTypes()) + ")";
     }
-    
+
     public static String formatShortWithParameters(Method m) {
         return m.getDeclaringClass().getSimpleName() + "#" + m.getName() + "(" + formatSimple(m.getParameterTypes()) + ")";
     }
@@ -184,6 +183,10 @@ public final class StringFormatter {
      */
     public static String formatSimple(Method m) {
         return m.getDeclaringClass().getSimpleName() + "#" + m.getName() + "()";
+    }
+
+    public static String formatSimple(Constructor<?> c) {
+        return format(c.getDeclaringClass()) + formatShortParameters(c);
     }
 }
 

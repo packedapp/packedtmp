@@ -95,7 +95,6 @@ final class ApplicationCodeGenerator {
         CodegenEvent ce = new CodegenEvent();
         ce.begin();
 
-        application.container.lifetime.codegen();
         for (Runnable r : actions) {
             r.run();
         }
