@@ -23,9 +23,9 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     /** Creates a new base extension point. */
     BaseExtensionPoint() {}
 
-    public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
+    public <T> InstanceBeanConfiguration<T> install(Class<T> implementation) {
         BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, usageContext()).install(implementation);
-        return new ExtensionBeanConfiguration<>(handle);
+        return new InstanceBeanConfiguration<>(handle);
     }
 
     /**
@@ -35,12 +35,12 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            an operation responsible for creating an instance of the bean when the container is initialized
      * @return a configuration object representing the installed bean
      */
-    public <T> ExtensionBeanConfiguration<T> install(Op<T> op) {
+    public <T> InstanceBeanConfiguration<T> install(Op<T> op) {
         BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, usageContext()).install(op);
-        return new ExtensionBeanConfiguration<>(handle);
+        return new InstanceBeanConfiguration<>(handle);
     }
 
-    public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
+    public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
         return installIfAbsent(clazz, c -> {});
     }
 
@@ -56,11 +56,11 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @implNote the implementation may use to return different bean configuration instances for subsequent invocations.
      *           Even for action and the returned bean
      */
-    public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
+    public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
         BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, usageContext()).installIfAbsent(clazz,
                 h -> action.accept(new InstanceBeanConfiguration<>(h)));
-        return new ExtensionBeanConfiguration<>(handle);
+        return new InstanceBeanConfiguration<>(handle);
     }
 
     public <T> InstanceBeanConfiguration<T> installInstance(T instance) {

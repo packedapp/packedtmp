@@ -23,9 +23,16 @@ import java.lang.annotation.Target;
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
 
 /**
- *
+ * This annotation is used to indicate that the variable is constructed doing the code generation phase of the
+ * application.
+ * <p>
+ * Man kan selvfoelgelig kun bruge den paa
+ * 
+ * <p>
+ * 
+ * <> Can only be used by extensions.
  */
-@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.TYPE_USE })
+@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
 @AnnotatedVariableHook(extension = BaseExtension.class)
 public @interface CodeGenerated {}

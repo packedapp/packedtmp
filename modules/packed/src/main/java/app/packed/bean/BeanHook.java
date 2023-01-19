@@ -25,7 +25,6 @@ import app.packed.bean.BeanIntrospector.OperationalField;
 import app.packed.context.Context;
 import app.packed.context.OutOfContextException;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionBeanConfiguration;
 
 /**
  *
@@ -89,12 +88,11 @@ public @interface BeanHook {
         /**
          * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
          * <p>
-         * Methods such as {@link BeanIntrospector.OperationalMethod#operationBuilder(ExtensionBeanConfiguration)} and... will
+         * Methods such as idk and... will
          * fail with {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
          * 
          * @return whether or not the implementation is allowed to invoke the target method
          * 
-         * @see BeanIntrospector.OperationalMethod#operationBuilder(ExtensionBeanConfiguration)
          */
         // maybe just invokable = true, idk og saa Field.gettable and settable
         // invocationAccess

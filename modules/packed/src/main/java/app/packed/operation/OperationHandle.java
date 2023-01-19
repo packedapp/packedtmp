@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanIntrospector.BindableVariable;
 import app.packed.bean.BeanIntrospector.OperationalField;
 import app.packed.bean.BeanIntrospector.OperationalMethod;
@@ -165,6 +166,13 @@ public final /* primitive */ class OperationHandle {
      */
     public MethodHandle generateMethodHandle() {
         return operation.generateMethodHandle();
+    }
+
+    static class MyE extends Extension<MyE> {
+
+        void foo(BeanConfiguration bc, OperationHandle oh) {
+            addCodeGenerated(bc, MethodHandle.class, () -> oh.generateMethodHandle());
+        }
     }
 
     /** {@inheritDoc} */

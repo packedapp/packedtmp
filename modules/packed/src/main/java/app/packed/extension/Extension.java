@@ -23,10 +23,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Optional;
+import java.util.function.Supplier;
 
-import app.packed.application.BuildGoal;
 import app.packed.application.ApplicationPath;
+import app.packed.application.BuildGoal;
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanIntrospector;
+import app.packed.binding.Key;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
@@ -86,6 +89,36 @@ public abstract class Extension<E extends Extension<E>> {
      */
     protected Extension() {}
 
+    // I think we should check if a @CodeGenerated service with the key exists here
+    // Also check that is has not already been bound
+    // Also check that bean is owned by the extension
+    // Check that extension is still configurable
+    protected final <K> void addCodeGenerated(BeanConfiguration bean, Class<K> key, Supplier<? extends K> supplier) {
+        addCodeGenerated(bean, Key.of(key), supplier);
+    }
+
+    protected final <K> void addCodeGenerated(BeanConfiguration bean, Key<K> key, Supplier<? extends K> supplier) {}
+
+    /**
+     * Registers a action to run doing the code generation phase.
+     * <p>
+     * If the application has no code generation phase. For example, if building a {@link BuildGoal#MIRROR}. The specified
+     * action will not be executed.
+     * 
+     * @param action
+     *            the action to run
+     * @throws IllegalStateException
+     *             if the extension is no longer configurable
+     */
+    // runOnCodegen
+    protected final void addCodeGenerator(Runnable action) {
+        // was ISE
+        // if the application is already in the code generation phase or has finished building the application
+        // Syntes bare ikke rigtig at der er nogen grund til at introducere flere ISEs tidspunkter
+        checkIsConfigurable(); // I
+        extension.container.application.addCodeGenerator(action);
+    }
+
     /** {@return the base extension point.} */
     protected final BaseExtensionPoint base() {
         return use(BaseExtensionPoint.class);
@@ -133,6 +166,18 @@ public abstract class Extension<E extends Extension<E>> {
     /** {@return whether or not the container is the root container in the application.} */
     protected final boolean isRoot() {
         return extension.treeParent == null;
+    }
+
+    /** {@return instance of this extension that is used in the lifetimes root container.} */
+    @SuppressWarnings("unchecked")
+    protected final E lifetimeRoot() {
+        ExtensionSetup s = extension;
+        while (s.treeParent != null) {
+            if (s.container.lifetime != s.treeParent.container.lifetime) {
+                s = s.treeParent;
+            }
+        }
+        return (E) s.instance();
     }
 
     /**
@@ -269,44 +314,12 @@ public abstract class Extension<E extends Extension<E>> {
         return parent == null ? Optional.empty() : Optional.of((E) parent.instance());
     }
 
-    /**
-     * Registers a action to run doing the code generation phase.
-     * <p>
-     * If the application has no code generation phase. For example, if building a {@link BuildGoal#MIRROR}. The
-     * specified action will not be executed.
-     * 
-     * @param action
-     *            the action to run
-     * @throws IllegalStateException
-     *             if the extension is no longer configurable
-     */
-    // runOnCodegen
-    protected final void addCodeGenerator(Runnable action) {
-        // was ISE
-        // if the application is already in the code generation phase or has finished building the application
-        // Syntes bare ikke rigtig at der er nogen grund til at introducere flere ISEs tidspunkter
-        checkIsConfigurable(); // I
-        extension.container.application.addCodeGenerator(action);
-    }
-
     /** {@return instance of this extension that is used in the application's root container.} */
     @SuppressWarnings("unchecked")
     protected final E root() {
         ExtensionSetup s = extension;
         while (s.treeParent != null) {
             s = s.treeParent;
-        }
-        return (E) s.instance();
-    }
-
-    /** {@return instance of this extension that is used in the lifetimes root container.} */
-    @SuppressWarnings("unchecked")
-    protected final E lifetimeRoot() {
-        ExtensionSetup s = extension;
-        while (s.treeParent != null) {
-            if (s.container.lifetime != s.treeParent.container.lifetime) {
-                s = s.treeParent;
-            }
         }
         return (E) s.instance();
     }
@@ -378,8 +391,8 @@ public abstract class Extension<E extends Extension<E>> {
             if (otherExtensionClass == getClass()) {
                 throw new InternalExtensionException(otherExtensionClass.getSimpleName() + " cannot use its own extension point " + extensionPointClass);
             }
-            throw new InternalExtensionException(
-                    getClass().getSimpleName() + " must declare " + StringFormatter.format(otherExtensionClass) + " as a dependency in order to use " + extensionPointClass);
+            throw new InternalExtensionException(getClass().getSimpleName() + " must declare " + StringFormatter.format(otherExtensionClass)
+                    + " as a dependency in order to use " + extensionPointClass);
         }
 
         ExtensionSetup otherExtension = extension.container.useExtension(otherExtensionClass, extension);

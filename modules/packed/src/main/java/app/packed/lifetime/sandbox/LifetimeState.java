@@ -42,14 +42,6 @@ public interface LifetimeState {
 
     boolean isFailed();
 
-    // Det er ikke umiddelbart muligt at returnere den nye container...
-    // Eftersom den maaske er ved at vaere constructed
-    boolean isRestarting();
-
-    // is or has restarted. Need to query the host???
-    // or maybe return String, which is the name of the new container
-    // idk
-
     /**
      * Returns whether or not the container is transitioning from one state to another.
      * 
@@ -66,13 +58,22 @@ public interface LifetimeState {
      * 
      * @return the state failure (optional)
      */
+    // Can we fail without an exception? Why not
     // Maybe Exception??? Not sure an error
     Optional<Throwable> throwable();
-
-    // long generation(); Everytime the current state changes... gen++.
-    // Generation har kun noget at goere med current???
-    // Generation 1, efter restart Generation 2...
 }
+
+interface zaLS {
+    
+    // Det er ikke umiddelbart muligt at returnere den nye container...
+    // Eftersom den maaske er ved at vaere constructed
+    boolean isRestarting();
+}
+// long generation(); Everytime the current state changes... gen++.
+// Generation har kun noget at goere med current???
+// Generation 1, efter restart Generation 2...
+
+
 //Desired State is the state that you want the system to be in
 //Actual State is the state that the system is actually in
 
