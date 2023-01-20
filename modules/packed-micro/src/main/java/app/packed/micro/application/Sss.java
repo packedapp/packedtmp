@@ -16,7 +16,7 @@
 package app.packed.micro.application;
 
 import app.packed.application.App;
-import app.packed.bean.Inject;
+import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
 
 /**
@@ -28,7 +28,7 @@ public class Sss {
     public static class MyClass {
         public void foo1() {}
 
-        @Inject
+        @OnInitialize
         public void boo2() {}
 
         public void Goo() {}

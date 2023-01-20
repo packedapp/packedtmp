@@ -25,7 +25,7 @@ import app.packed.extension.BaseExtension;
 import app.packed.lifetime.RunState;
 
 /**
- * An annotation used to indicate that a method on a bean should be invoked as part of the bean's initialization.
+ * This annotation indicates that the annotated method should be invoked as part of the bean's initialization.
  * <p>
  * This annotation can, for example, be used like this:
  *
@@ -44,17 +44,7 @@ import app.packed.lifetime.RunState;
  * }}
  * </pre>
  * <p>
- * To find out exactly what kind of services that can be injected into an annotated method, an instance of an
- * ServiceRegistry can be used:
- *
- * <pre>{@code  @OnInitialize
- * public void onInit(ServiceRegistry registry) {
- *   System.out.println("The following services can be injected into this method");
- *   registry.forEach(e -> System.out.println(e.getKey()));
- * }}
- * </pre>
- * <p>
- * If a method annotated with {@code @OnInitialize} throws an exception. The initialization of the entity will normally
+ * If a method annotated with {@code @OnInitialize} throws an exception. The initialization of the bean will normally
  * fail, and the state of the entity change from {@link RunState#INITIALIZING} to {@link RunState#TERMINATED}.
  * <p>
  * The {@link Inject} annotation should never be used together with the {@link OnInitialize}, as this would mean the
@@ -91,4 +81,8 @@ public @interface OnInitialize {
     //// @ReverseOrderLifecycle
     // or just lifetimeOrderReversed default false();
     boolean preOrder() default true;
+
+    // We supportere lokal order for bean.. Priority?
+    // Bliver ikke super let at implementere
+    int priorityOnBean() default 0;
 }

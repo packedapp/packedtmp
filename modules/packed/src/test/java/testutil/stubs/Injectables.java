@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Optional;
 
 import app.packed.bean.Inject;
+import app.packed.bean.OnInitialize;
 import testutil.stubs.Letters.A;
 
 /**
@@ -74,25 +75,25 @@ public class Injectables {
             this.expected = requireNonNull(expected);
         }
 
-        @Inject
+        @OnInitialize
         void accessPackagePrivate(A value) {
             assertSame(expected, value);
             this.methodAccessPackagePrivate = true;
         }
 
-        @Inject
+        @OnInitialize
         private void accessPrivate(A value) {
             assertSame(expected, value);
             methodAccessPrivate = true;
         }
 
-        @Inject
+        @OnInitialize
         protected void accessProtected(A value) {
             assertSame(expected, value);
             this.methodAccessProtected = true;
         }
 
-        @Inject
+        @OnInitialize
         public void accessPublic(A value) {
             assertSame(expected, value);
             this.methodAccessPublic = true;
@@ -102,14 +103,14 @@ public class Injectables {
             fail("This method should not be injected");
         }
 
-        @Inject
+        @OnInitialize
         public final void twoParameters(A value1, A value2) {
             assertSame(expected, value1);
             assertSame(expected, value2);
             this.methodTwoParameters = true;
         }
 
-        @Inject
+        @OnInitialize
         public void injectNothing() {
             methodInjectNothing = true;
         }
@@ -150,7 +151,7 @@ public class Injectables {
 
         }
 
-        @Inject
+        @OnInitialize
         public String withReturnType(A value) {
             assertSame(expected, value);
             this.methodWithReturnType = true;
@@ -186,27 +187,27 @@ public class Injectables {
         }
 
         @Override
-        @Inject
+        @OnInitialize
         void accessPackagePrivate(A value) {
             assertSame(expected, value);
             this.methodAccessPackagePrivate = true;
         }
 
-        @Inject
+        @OnInitialize
         private void accessPrivate(A value) {
             assertSame(expected, value);
             methodAccessPrivate = true;
         }
 
         @Override
-        @Inject
+        @OnInitialize
         protected void accessProtected(A value) {
             assertSame(expected, value);
             this.methodAccessProtected = true;
         }
 
         @Override
-        @Inject
+        @OnInitialize
         public void accessPublic(A value) {
             assertSame(expected, value);
             this.methodAccessPublic = true;
@@ -239,7 +240,7 @@ public class Injectables {
 
         public Optional<A> method;
 
-        @Inject
+        @OnInitialize
         public void injectPublic(Optional<A> value) {
             this.method = value;
         }

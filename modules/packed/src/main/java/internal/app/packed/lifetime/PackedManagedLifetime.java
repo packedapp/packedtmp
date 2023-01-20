@@ -143,35 +143,40 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
             lock.unlock();
         }
     }
-
+    void shutdown(ContainerSetup container, ContainerRunner cr) {
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            this.state = RunState.STOPPING;
+        } finally {
+            lock.unlock();
+        }
+        try {
+            cr.shutdown(container);
+        } catch (Throwable t) {
+            this.state = RunState.TERMINATED;
+            this.throwable = t;
+            throw t;
+        }
+        lock.lock();
+        try {
+            this.state = RunState.TERMINATED;
+        } finally {
+            lock.unlock();
+        }
+    }
     public void launch(ContainerSetup container, ContainerRunner cr) {
         initialize(container, cr); // may throw
 
-        boolean isMain = false;
-        EntryPointSetup ep = container.lifetime.entryPoints;
-
-        if (ep != null) {
-            isMain = ep.hasMain();
-        }
-        boolean start = isMain;
-
         start(container, cr);
         
-        cr.start(container);
-
-       
+        EntryPointSetup ep = container.lifetime.entryPoints;
 
         if (ep != null) {
             ep.enter(cr);
         }
-
-        this.state = RunState.STOPPING;
-        cr.shutdown(container);
-        this.state = RunState.TERMINATED;
-
-        // todo run execution block
-
-        // shutdown
+        
+        shutdown(container, cr);
 
     }
 

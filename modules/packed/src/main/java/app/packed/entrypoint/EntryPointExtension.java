@@ -18,6 +18,8 @@ import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.bean.BeanScannerMethod;
+import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.entrypoint.EntryPointSetup;
 import internal.app.packed.entrypoint.EntryPointSetup.MainThreadOfControl;
@@ -29,7 +31,6 @@ import internal.app.packed.entrypoint.EntryPointSetup.MainThreadOfControl;
 // har entry points
 
 // ExecutionModel
-
 public class EntryPointExtension extends FrameworkExtension<EntryPointExtension> {
 
     /** The configuration of the application. */
@@ -52,18 +53,6 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
         this.shared = parent().map(e -> e.shared).orElseGet(ApplicationShare::new);
     }
 
-    // installMain
-    // lazyMain()?
-    <T extends Runnable> InstanceBeanConfiguration<?> installMain(Class<T> beanClass) {
-        // IDK, skal vi vente med at tilfoeje dem
-        throw new UnsupportedOperationException();
-    }
-
-    <T extends Runnable> InstanceBeanConfiguration<?> installMainInstance(T beanInstance) {
-        throw new UnsupportedOperationException();
-    }
-
-    void main(Op<?> operation) {}
 
     @Override
     protected BeanIntrospector newBeanIntrospector() {
@@ -77,9 +66,12 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
             @Override
             public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod method) {
                 int index = registerEntryPoint(null, true);
-                application.container.lifetime.entryPoints = new EntryPointSetup();
+                
+                ContainerSetup container = ((BeanScannerMethod) method).scanner.bean.container;
+                
+                container.lifetime.entryPoints = new EntryPointSetup();
 
-                MainThreadOfControl mc = application.container.lifetime.entryPoints.mainThread();
+                MainThreadOfControl mc = container.lifetime.entryPoints.mainThread();
 
                 OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
                 OperationHandle os = method.newOperation(temp);
@@ -160,4 +152,20 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
     static class EntryPointDispatcher {
         EntryPointDispatcher() {}
     }
+}
+
+class Zandbox {
+
+    // installMain
+    // lazyMain()?
+    <T extends Runnable> InstanceBeanConfiguration<?> installMain(Class<T> beanClass) {
+        // IDK, skal vi vente med at tilfoeje dem
+        throw new UnsupportedOperationException();
+    }
+
+    <T extends Runnable> InstanceBeanConfiguration<?> installMainInstance(T beanInstance) {
+        throw new UnsupportedOperationException();
+    }
+
+    void main(Op<?> operation) {}
 }

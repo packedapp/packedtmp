@@ -22,7 +22,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.BeanHook.AnnotatedFieldHook;
-import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.extension.BaseExtension;
 
 /**
@@ -41,15 +40,12 @@ import app.packed.extension.BaseExtension;
  * 
  * <p>
  * Injection of services into static fields or method are not supported. There is no general support for injecting into
- * static fields or methods. If you absolutely need it, it is fairly easy to support using sidecars... TODO example
+ * static fields or methods. If you absolutely need it, it is fairly easy to support yourself
  */
-@Target({ ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD })
+@Target({ ElementType.CONSTRUCTOR, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 
-// Instead of FieldHook is is a provision hook long term.
-// IDK vi injecter vel kun services?
-
+// Hvad er forskellen mellem OnInitialie og OnInject
 @AnnotatedFieldHook(extension = BaseExtension.class, allowSet = true)
-@AnnotatedMethodHook(extension = BaseExtension.class, allowInvoke = true)
 public @interface Inject {}
