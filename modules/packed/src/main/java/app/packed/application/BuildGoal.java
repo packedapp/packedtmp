@@ -17,6 +17,7 @@ package app.packed.application;
 
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import internal.app.packed.application.ApplicationDriver;
 
 /**
  * The goal of a build task.
@@ -58,7 +59,8 @@ public enum BuildGoal {
      */
     VERIFY;
 
-    public boolean isLaunchable() {
+    /** {@return whether or not code should be generated doing the build phase.} */
+    public boolean isCodeGenerating() {
         return this == LAUNCH || this == NEW_LAUNCHER || this == NEW_IMAGE;
     }
 }

@@ -429,6 +429,13 @@ public abstract class BeanIntrospector {
          */
         void bindToInvocationArgument(int argumentIndex);
 
+        default void bindToGenerated(Supplier<?> consumer) {
+            // Taenker vi smider en InternalExtensionException paa runtime?
+            // Eller maaske har vi en specific CodeGenerationException
+            // Er fx brugt fra @CodeGenerated
+            // Will be invoked doing code generation.
+        }
+        
         /**
          * @param argumentIndex
          * @param context

@@ -1,5 +1,7 @@
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.NoSuchElementException;
 
 import app.packed.extension.Extension;
@@ -51,6 +53,11 @@ public /* primitive */ final class Realm {
 
     public boolean isExtension() {
         return extensionClass != Extension.class;
+    }
+
+    public boolean isExtension(Class<? extends Extension<?>> extensionType) {
+        requireNonNull(extensionType, "extensionType is null");
+        return extensionClass == extensionType;
     }
 
     /** {@inheritDoc} */

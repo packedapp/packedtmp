@@ -2,6 +2,7 @@ package app.packed.extension;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import app.packed.bean.BeanConfiguration;
@@ -46,6 +47,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /** Create a new base extension. */
     BaseExtension() {}
+
+    Map<BeanConfiguration, CodeGeneratingConsumer> codeConsumers;
+
+    class CodeGeneratingConsumer {
+
+    }
 
     final void embed(Assembly assembly) {
         /// MHT til hooks. Saa tror jeg faktisk at man tager de bean hooks
@@ -214,48 +221,47 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             }
 
-            @Override
-            public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks, OperationalField field) {
-                if (field.annotations().isAnnotationPresent(Inject.class)) {
+    @Override
+    public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks, OperationalField field) {
+        if (field.annotations().isAnnotationPresent(Inject.class)) {
 
-                }
-            }
-
-            @Override
-            public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod method) {
-                AnnotationCollection ar = method.annotations();
-
-                OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
-                // (PackedInvocationType) operation.invocationType.withReturnType(type.returnType());
-
-                if (ar.isAnnotationPresent(OnInitialize.class)) {
-                    @SuppressWarnings("unused")
-                    OnInitialize oi = ar.readRequired(OnInitialize.class);
-                    OperationSetup os = OperationSetup.crack(method.newOperation(temp));
-                    os.bean.operationsLifetime.add(new LifetimeOperation(RunState.INITIALIZING, os));
-                }
-
-                if (ar.isAnnotationPresent(OnStart.class)) {
-                    @SuppressWarnings("unused")
-                    OnStart oi = ar.readRequired(OnStart.class);
-                    OperationSetup os = OperationSetup.crack(method.newOperation(temp));
-                    os.bean.operationsLifetime.add(new LifetimeOperation(RunState.STARTING, os));
-                }
-
-                if (ar.isAnnotationPresent(OnStop.class)) {
-                    @SuppressWarnings("unused")
-                    OnStop oi = ar.readRequired(OnStop.class);
-                    OperationSetup os = OperationSetup.crack(method.newOperation(temp));
-                    os.bean.operationsLifetime.add(new LifetimeOperation(RunState.STOPPING, os));
-                }
-
-                if (ar.isAnnotationPresent(Inject.class)) {
-                    OperationSetup.crack(method.newOperation(temp));
-                }
-            }
-
-        };
+        }
     }
+
+    @Override
+    public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod method) {
+        AnnotationCollection ar = method.annotations();
+
+        OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
+        // (PackedInvocationType) operation.invocationType.withReturnType(type.returnType());
+
+        if (ar.isAnnotationPresent(OnInitialize.class)) {
+            @SuppressWarnings("unused")
+            OnInitialize oi = ar.readRequired(OnInitialize.class);
+            OperationSetup os = OperationSetup.crack(method.newOperation(temp));
+            os.bean.operationsLifetime.add(new LifetimeOperation(RunState.INITIALIZING, os));
+        }
+
+        if (ar.isAnnotationPresent(OnStart.class)) {
+            @SuppressWarnings("unused")
+            OnStart oi = ar.readRequired(OnStart.class);
+            OperationSetup os = OperationSetup.crack(method.newOperation(temp));
+            os.bean.operationsLifetime.add(new LifetimeOperation(RunState.STARTING, os));
+        }
+
+        if (ar.isAnnotationPresent(OnStop.class)) {
+            @SuppressWarnings("unused")
+            OnStop oi = ar.readRequired(OnStop.class);
+            OperationSetup os = OperationSetup.crack(method.newOperation(temp));
+            os.bean.operationsLifetime.add(new LifetimeOperation(RunState.STOPPING, os));
+        }
+
+        if (ar.isAnnotationPresent(Inject.class)) {
+            OperationSetup.crack(method.newOperation(temp));
+        }
+    }
+
+    };}
 
     ContainerInstaller newContainerInstaller() {
         return new PackedContainerInstaller(extension.container);

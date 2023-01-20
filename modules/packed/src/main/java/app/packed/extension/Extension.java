@@ -35,8 +35,10 @@ import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
+import app.packed.extension.BaseExtension.CodeGeneratingConsumer;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.PackedWireletSelection;
@@ -89,15 +91,34 @@ public abstract class Extension<E extends Extension<E>> {
      */
     protected Extension() {}
 
-    // I think we should check if a @CodeGenerated service with the key exists here
-    // Also check that is has not already been bound
-    // Also check that bean is owned by the extension
-    // Check that extension is still configurable
+
     protected final <K> void addCodeGenerated(BeanConfiguration bean, Class<K> key, Supplier<? extends K> supplier) {
         addCodeGenerated(bean, Key.of(key), supplier);
     }
 
-    protected final <K> void addCodeGenerated(BeanConfiguration bean, Key<K> key, Supplier<? extends K> supplier) {}
+    protected final <K> void addCodeGenerated(BeanConfiguration bean, Key<K> key, Supplier<? extends K> supplier) {
+        requireNonNull(bean, "bean is null");
+        requireNonNull(key, "key is null");
+        requireNonNull(supplier, "supplier is null");
+        if (!bean.owner().isExtension(extension.extensionType)) {
+            throw new IllegalArgumentException();
+        } else if (BeanSetup.crack(bean).container != extension.container) {
+            throw new IllegalArgumentException();
+        }
+        checkIsConfigurable();
+
+        BaseExtension b = (BaseExtension) extension.container.extensions.get(BaseExtension.class).instance();
+
+        CodeGeneratingConsumer cgc = null;
+        if (b.codeConsumers != null) {
+            cgc = b.codeConsumers.get(bean);
+        }
+        if (cgc == null) {
+            throw new RuntimeException();
+        }
+        // check that is has not already been bound
+        // check if a @CodeGenerated service with the key exists here
+    }
 
     /**
      * Registers a action to run doing the code generation phase.
@@ -109,6 +130,7 @@ public abstract class Extension<E extends Extension<E>> {
      *            the action to run
      * @throws IllegalStateException
      *             if the extension is no longer configurable
+     * @see BuildGoal#isCodeGenerating()
      */
     // runOnCodegen
     protected final void addCodeGenerator(Runnable action) {

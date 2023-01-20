@@ -68,7 +68,7 @@ public final class ApplicationSetup {
     public ApplicationSetup(ApplicationDriver<?> driver, BuildGoal goal, AssemblySetup assembly, Wirelet[] wirelets) {
         this.driver = requireNonNull(driver);
         this.goal = requireNonNull(goal);
-        this.codeGenerator = goal.isLaunchable() ? new ApplicationCodeGenerator(this) : null;
+        this.codeGenerator = goal.isCodeGenerating() ? new ApplicationCodeGenerator(this) : null;
         this.container = new ContainerSetup(this, assembly, null, wirelets);
     }
 

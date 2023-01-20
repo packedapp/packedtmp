@@ -94,13 +94,6 @@ public interface ManagedLifetimeController {
     boolean await(RunState state, long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
-     * Returns an immutable snapshot of the component's current status.
-     * 
-     * @return an immutable snapshot of the component's current status
-     */
-    LifetimeState info();
-
-    /**
      * Starts and awaits the component if it has not already been started.
      * <p>
      * Normally, there is no need to call this methods since most methods on the component will lazily start the component

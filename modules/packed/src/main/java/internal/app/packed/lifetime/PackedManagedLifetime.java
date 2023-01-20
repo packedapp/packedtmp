@@ -24,7 +24,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import app.packed.lifetime.RunState;
-import app.packed.lifetime.sandbox.LifetimeState;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.lifetime.sandbox.StopOption;
 import internal.app.packed.container.ContainerSetup;
@@ -40,9 +39,6 @@ import internal.app.packed.entrypoint.EntryPointSetup;
 // Extra data... Startup/Initialization exception
 public final class PackedManagedLifetime implements ManagedLifetimeController {
 
-    // Sagtens encode det i sync ogsaa
-    RunState desiredState = RunState.UNINITIALIZED;
-
     /**
      * A lock used for lifecycle control of the component. If components are arranged in a hierarchy and multiple components
      * need to be locked. A child component must lock itself before locking the parent.
@@ -57,15 +53,14 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
     // midlertidigt state,paa den anden side kan vi maaske have lidt mindre state?
     volatile RunState state = RunState.UNINITIALIZED;
 
+    volatile Throwable throwable;
+
     final ContainerRunner runner;
 
     public PackedManagedLifetime(ContainerRunner runner) {
         this.runner = requireNonNull(runner);
     }
 
-    // Hmm, maybe not
-//    @Nullable
-//    final PackedContainer parent;
     /** {@inheritDoc} */
     @Override
     public void await(RunState state) throws InterruptedException {
@@ -103,13 +98,55 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public LifetimeState info() {
-        return null;
+    void initialize(ContainerSetup container, ContainerRunner cr) {
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            this.state = RunState.INITIALIZING;
+        } finally {
+            lock.unlock();
+        }
+        try {
+            cr.initialize(container);
+        } catch (Throwable t) {
+            this.state = RunState.TERMINATED;
+            this.throwable = t;
+            throw t;
+        }
+        lock.lock();
+        try {
+            this.state = RunState.INITIALIZED;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    void start(ContainerSetup container, ContainerRunner cr) {
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            this.state = RunState.STARTING;
+        } finally {
+            lock.unlock();
+        }
+        try {
+            cr.start(container);
+        } catch (Throwable t) {
+            this.state = RunState.TERMINATED;
+            this.throwable = t;
+            throw t;
+        }
+        lock.lock();
+        try {
+            this.state = RunState.RUNNING;
+        } finally {
+            lock.unlock();
+        }
     }
 
     public void launch(ContainerSetup container, ContainerRunner cr) {
+        initialize(container, cr); // may throw
+
         boolean isMain = false;
         EntryPointSetup ep = container.lifetime.entryPoints;
 
@@ -117,42 +154,18 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
             isMain = ep.hasMain();
         }
         boolean start = isMain;
-        final ReentrantLock lock = this.lock;
 
-        cr.initialize(container);
+        start(container, cr);
+        
         cr.start(container);
 
-        lock.lock();
-        try {
-            if (!start) {
-                this.state = RunState.INITIALIZED;
-                this.desiredState = RunState.INITIALIZED;
-                // return;
-            } else {
-                this.state = RunState.STARTING;
-                this.desiredState = RunState.RUNNING;
-            }
-        } finally {
-            lock.unlock();
-        }
-
-        lock.lock();
-        try {
-            this.state = RunState.RUNNING;
-            this.desiredState = RunState.RUNNING;
-            if (!isMain) {
-                // return;
-            }
-        } finally {
-            lock.unlock();
-        }
+       
 
         if (ep != null) {
             ep.enter(cr);
         }
 
         this.state = RunState.STOPPING;
-        this.desiredState = RunState.TERMINATED;
         cr.shutdown(container);
         this.state = RunState.TERMINATED;
 
