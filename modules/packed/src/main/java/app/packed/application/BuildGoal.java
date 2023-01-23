@@ -17,7 +17,6 @@ package app.packed.application;
 
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import internal.app.packed.application.ApplicationDriver;
 
 /**
  * The goal of a build task.
@@ -25,42 +24,42 @@ import internal.app.packed.application.ApplicationDriver;
 public enum BuildGoal {
 
     /**
-     * The goal is to build an {@link ApplicationImage} that can be launched a single time.
-     * 
-     * @see ApplicationDriver#reusableImageOf(Assembly, Wirelet...)
-     */
-    NEW_LAUNCHER,
-
-    /**
      * The goal is to build an {@link ApplicationImage} that can be launched multiple times.
      * 
-     * @see ApplicationDriver#imageOf(Assembly, Wirelet...)
+     * @see App#imageOf(Assembly, Wirelet...)
      */
-    NEW_IMAGE,
+    IMAGE,
 
     /**
      * The goal is to build an application and then immediately launch it.
      * 
-     * @see ApplicationDriver#launch(Assembly, Wirelet...)
+     * @see App#launch(Assembly, Wirelet...)
      */
     LAUNCH,
 
     /**
+     * The goal is to build an {@link ApplicationImage} that can be launched a single time.
+     * 
+     * @see App#reusableImageOf(Assembly, Wirelet...)
+     */
+    LAUNCHER,
+
+    /**
      * The goal is to build an {@link ApplicationMirror}.
      *
-     * @see ApplicationDriver#mirrorOf(Assembly, Wirelet...)
+     * @see App#mirrorOf(Assembly, Wirelet...)
      */
     MIRROR,
 
     /**
      * The goal is to verify that the application is structural correct.
      * 
-     * @see ApplicationDriver#verify(Assembly, Wirelet...)
+     * @see App#verify(Assembly, Wirelet...)
      */
     VERIFY;
 
     /** {@return whether or not code should be generated doing the build phase.} */
     public boolean isCodeGenerating() {
-        return this == LAUNCH || this == NEW_LAUNCHER || this == NEW_IMAGE;
+        return this == LAUNCH || this == LAUNCHER || this == IMAGE;
     }
 }

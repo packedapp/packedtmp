@@ -27,10 +27,11 @@ import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.framework.Nullable;
 import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.ApplicationDriver;
-import internal.app.packed.application.PackedBootstrapApp;
+import internal.app.packed.application.BootstrapAppSetup;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.lifetime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
@@ -57,10 +58,11 @@ import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
  */
 public final class BootstrapApp<A> {
 
-    private final PackedBootstrapApp<A> app;
+    /** The internal bootstrap app. */
+    private final BootstrapAppSetup<A> setup;
 
-    BootstrapApp(PackedBootstrapApp<A> app) {
-        this.app = requireNonNull(app);
+    BootstrapApp(BootstrapAppSetup<A> setup) {
+        this.setup = requireNonNull(setup);
     }
 
     /**
@@ -83,11 +85,26 @@ public final class BootstrapApp<A> {
      * @see App#run(Assembly, Wirelet...)
      */
     public A launch(Assembly assembly, Wirelet... wirelets) {
-        return app.launch(assembly, wirelets);
+        return setup.launch(assembly, wirelets);
+    }
+
+    /**
+     * Creates a new application mirror from the specified assembly and optional wirelets.
+     * 
+     * @param assembly
+     *            the assembly to create an application mirror from
+     * @param wirelets
+     *            optional wirelets
+     * @return an application mirror
+     * @throws RuntimeException
+     *             if the mirror could not be created
+     */
+    public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
+        return setup.newMirror(assembly, wirelets);
     }
 
     public ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets) {
-        return app.newImage(assembly, wirelets);
+        return setup.newImage(assembly, wirelets);
     }
 
     /**
@@ -101,29 +118,12 @@ public final class BootstrapApp<A> {
      * @throws RuntimeException
      *             if the image could not be build
      */
-    public // Andre image optimizations
+    // Andre image optimizations
     //// Don't cache beans info
     /// Nu bliver jeg i tvivl igen... Fx med Tester
-
     // launchLazily?
-    ApplicationLauncher<A> newLauncher(Assembly assembly, Wirelet... wirelets) {
-        return app.newLauncher(assembly, wirelets);
-    }
-
-    /**
-     * Creates a new application mirror from the specified assembly and optional wirelets.
-     * 
-     * @param assembly
-     *            the assembly to create an application mirror from
-     * @param wirelets
-     *            optional wirelets
-     * @return an application mirror
-     * 
-     * @throws RuntimeException
-     *             if the mirror could not be build
-     */
-    public ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets) {
-        return app.newMirror(assembly, wirelets);
+    public ApplicationLauncher<A> newLauncher(Assembly assembly, Wirelet... wirelets) {
+        return setup.newLauncher(assembly, wirelets);
     }
 
     /**
@@ -137,7 +137,7 @@ public final class BootstrapApp<A> {
      *             if a valid application cannot be created
      */
     public void verify(Assembly assembly, Wirelet... wirelets) {
-        app.verify(assembly, wirelets);
+        setup.verify(assembly, wirelets);
     }
 
     /**
@@ -161,9 +161,8 @@ public final class BootstrapApp<A> {
      *            the wirelets to add
      * @return the augmented application driver
      */
-    // Hvis vi ikke expo
     public BootstrapApp<A> with(Wirelet... wirelets) {
-        return new BootstrapApp<>(app.with(wirelets));
+        return new BootstrapApp<>(setup.with(wirelets));
     }
 
     public static <A> BootstrapApp<A> of(Class<A> applicationClass, ComposerAction<Composer> action) {
@@ -184,17 +183,77 @@ public final class BootstrapApp<A> {
         BootstrapAppAssembly<Object> baa = new Composer.BootstrapAppAssembly<>(comp, action);
         AssemblySetup as = new AssemblySetup(pad, BuildGoal.LAUNCH, null, baa, new Wirelet[0]);
         as.build();
-        
+
         MethodHandle mh = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationInitializationContext.class));
         if (o != null) {
             mh = comp.ahe.mh;
-        }        
-        PackedBootstrapApp<A> a = new PackedBootstrapApp<>(comp.lifetimeKind, mh, null);
+        }
+        BootstrapAppSetup<A> a = new BootstrapAppSetup<>(comp.lifetimeKind, comp.mirrorSupplier, mh, null);
         return new BootstrapApp<>(a);
     }
 
+    /**
+     * A composer for creating bootstrap app instances.
+     * 
+     * @see BootstrapApp#of(Class, ComposerAction)
+     * @see BootstrapApp#of(Op, ComposerAction)
+     * @see BootstrapApp#of(ComposerAction)
+     */
+    // ? ApplicationWrapper
+    // Bridge types
+    // Compiler -> Deployable<ApplicationWrapper>
+    public static final class Composer extends AbstractComposer {
+        ApplicationHostExtension ahe;
+
+        private OldLifetimeKind lifetimeKind = OldLifetimeKind.UNMANAGED;
+
+        /** Supplies a mirror for the application. */
+        private Supplier<? extends ApplicationMirror> mirrorSupplier = ApplicationMirror::new;
+
+        final Object o;
+
+        private Composer(Object o) {
+            this.o = o;
+        }
+
+        /**
+         * Application produced by the driver are executable. And will be launched by the specified launch mode by default.
+         * <p>
+         * The default launchState can be overridden at later point by using XYZ
+         * 
+         * @return this builder
+         */
+        public Composer managedLifetime() {
+            this.lifetimeKind = OldLifetimeKind.MANAGED;
+            return this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        protected void preCompose() {
+            ahe = use(ApplicationHostExtension.class);
+            if (o instanceof Class<?> cl) {
+                ahe.newApplication(cl);
+            } else if (o instanceof Op<?> op) {
+                ahe.newApplication(op);
+            }
+        }
+
+        public Composer specializeMirror(Supplier<? extends ApplicationMirror> mirrorSupplier) {
+            this.mirrorSupplier = requireNonNull(mirrorSupplier, "mirrorSupplier is null");
+            return this;
+        }
+
+        static class BootstrapAppAssembly<A> extends ComposerAssembly<Composer> {
+
+            BootstrapAppAssembly(Composer c, ComposerAction<? super Composer> action) {
+                super(c, action);
+            }
+        }
+    }
+
     private static final class PremordialApplicationDriver<A> extends ApplicationDriver<BootstrapApp<A>> {
-        
+
         /** {@inheritDoc} */
         @Override
         public OldLifetimeKind lifetimeKind() {
@@ -210,62 +269,14 @@ public final class BootstrapApp<A> {
         /** {@inheritDoc} */
         @Override
         public BootstrapApp<A> newInstance(ApplicationInitializationContext context) {
-            return null;
+            throw new Error(); // We create the instance ourself
         }
 
         /** {@inheritDoc} */
         @Override
+        @Nullable
         public Wirelet wirelet() {
             return null;
-        }
-    }
-    /**
-     * A composer for creating bootstrap app instances.
-     * 
-     * @see BootstrapApp#of(Class, ComposerAction)
-     * @see BootstrapApp#of(Op, ComposerAction)
-     * @see BootstrapApp#of(ComposerAction)
-     */
-    // ? ApplicationWrapper
-    // Bridge types
-    // Compiler -> Deployable<ApplicationWrapper>
-    public static final class Composer extends AbstractComposer {
-        ApplicationHostExtension ahe;
-        private OldLifetimeKind lifetimeKind = OldLifetimeKind.UNMANAGED;
-        final Object o;
-
-        private Composer(Object o) {
-            this.o = o;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        protected void preCompose() {
-            ahe = use(ApplicationHostExtension.class);
-            if (o instanceof Class<?> cl) {
-                ahe.newApplication(cl);
-            } else if (o instanceof Op<?> op) {
-                ahe.newApplication(op);
-            } 
-        }
-
-        /**
-         * Application produced by the driver are executable. And will be launched by the specified launch mode by default.
-         * <p>
-         * The default launchState can be overridden at later point by using XYZ
-         * 
-         * @return this builder
-         */
-        public Composer managedLifetime() {
-            this.lifetimeKind = OldLifetimeKind.MANAGED;
-            return this;
-        }
-
-        static class BootstrapAppAssembly<A> extends ComposerAssembly<Composer> {
-
-            BootstrapAppAssembly(Composer c, ComposerAction<? super Composer> action) {
-                super(c, action);
-            }
         }
     }
 }

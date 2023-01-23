@@ -29,6 +29,10 @@ import internal.app.packed.lifetime.ApplicationInitializationContext;
 /**
  *
  */
+
+// Skal man ogsaa bruge den til lazy???
+// Eller kun til dynamic.
+
 public class ApplicationHostExtension extends FrameworkExtension<ApplicationHostExtension> {
 
     static final OperationTemplate ot = OperationTemplate.raw().withArg(ApplicationInitializationContext.class).withReturnTypeObject();

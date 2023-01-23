@@ -37,8 +37,8 @@ import internal.app.packed.lifetime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
 import internal.app.packed.util.ThrowableUtil;
 
-/** Implementation of {@link OldBootstrapApp}. */
-public final class PackedBootstrapApp<A> extends ApplicationDriver<A> {
+/** The internal representation of a bootstrap app. */
+public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
 
     final Set<Class<? extends Extension<?>>> extensionDenyList;
 
@@ -49,15 +49,16 @@ public final class PackedBootstrapApp<A> extends ApplicationDriver<A> {
     private final MethodHandle mhConstructor; // (ApplicationLaunchContext)Object
 
     /** Supplies a mirror for the application. */
-    public final Supplier<? extends ApplicationMirror> mirrorSupplier = ApplicationMirror::new;
+    public final Supplier<? extends ApplicationMirror> mirrorSupplier;
 
     /** Optional (flattened) wirelets that will be applied to any applications created by this driver. */
     @Nullable
     public final Wirelet wirelet;
 
-    public PackedBootstrapApp(OldLifetimeKind lifetimeKind, MethodHandle mh, Wirelet wirelet) {
+    public BootstrapAppSetup(OldLifetimeKind lifetimeKind, Supplier<? extends ApplicationMirror> mirrorSupplier, MethodHandle mh, Wirelet wirelet) {
         this.wirelet = wirelet;
         this.mhConstructor = requireNonNull(mh);
+        this.mirrorSupplier = requireNonNull(mirrorSupplier);
         this.lifetimeKind = requireNonNull(lifetimeKind);
         this.extensionDenyList = Set.of();
     }
@@ -70,8 +71,9 @@ public final class PackedBootstrapApp<A> extends ApplicationDriver<A> {
      * @param wirelet
      *            the new wirelet
      */
-    private PackedBootstrapApp(PackedBootstrapApp<A> existing, Wirelet wirelet) {
+    private BootstrapAppSetup(BootstrapAppSetup<A> existing, Wirelet wirelet) {
         this.wirelet = existing.wirelet;
+        this.mirrorSupplier = existing.mirrorSupplier;
         this.lifetimeKind = existing.lifetimeKind;
         this.mhConstructor = existing.mhConstructor;
         this.extensionDenyList = existing.extensionDenyList;
@@ -121,7 +123,7 @@ public final class PackedBootstrapApp<A> extends ApplicationDriver<A> {
     /** {@inheritDoc} */
     public ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets) {
         // Build the application
-        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_IMAGE, null, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.IMAGE, null, assembly, wirelets);
         as.build();
 
         // Create a reusable launcher
@@ -149,7 +151,7 @@ public final class PackedBootstrapApp<A> extends ApplicationDriver<A> {
     /** {@inheritDoc} */
     public ApplicationLauncher<A> newLauncher(Assembly assembly, Wirelet... wirelets) {
         // Build the application
-        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_LAUNCHER, null, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.LAUNCHER, null, assembly, wirelets);
         as.build();
 
         // Create single shop image
@@ -186,10 +188,10 @@ public final class PackedBootstrapApp<A> extends ApplicationDriver<A> {
     }
 
     /** {@inheritDoc} */
-    public PackedBootstrapApp<A> with(Wirelet... wirelets) {
+    public BootstrapAppSetup<A> with(Wirelet... wirelets) {
         // Skal vi checke noget med components
         Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
-        return new PackedBootstrapApp<>(this, w);
+        return new BootstrapAppSetup<>(this, w);
     }
 
     /**
@@ -302,7 +304,7 @@ public final class PackedBootstrapApp<A> extends ApplicationDriver<A> {
 
         private final AtomicReference<ReusableApplicationImage<A>> ref;
 
-        SingleShotApplicationImage(PackedBootstrapApp<A> driver, ApplicationSetup application) {
+        SingleShotApplicationImage(BootstrapAppSetup<A> driver, ApplicationSetup application) {
             this.ref = new AtomicReference<>(new ReusableApplicationImage<>(driver, application));
         }
 
@@ -331,7 +333,7 @@ public final class PackedBootstrapApp<A> extends ApplicationDriver<A> {
     /**
      * Implementation of {@link ApplicationLauncher} used by {@link OldBootstrapApp#newImage(Assembly, Wirelet...)}.
      */
-    public /* primitive */ record ReusableApplicationImage<A>(PackedBootstrapApp<A> driver, ApplicationSetup application) implements ApplicationLauncher<A> {
+    public /* primitive */ record ReusableApplicationImage<A>(BootstrapAppSetup<A> driver, ApplicationSetup application) implements ApplicationLauncher<A> {
 
         /** {@inheritDoc} */
         @Override

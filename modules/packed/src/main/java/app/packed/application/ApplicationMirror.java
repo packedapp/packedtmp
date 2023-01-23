@@ -22,13 +22,12 @@ import internal.app.packed.operation.OperationSetup;
 /**
  * A mirror of an application.
  * <p>
- * An instance of this class is typically obtained by calling a application mirror factory method such as
+ * An application mirror instance is typically obtained by calling a application mirror factory methods such as
  * {@link App#mirrorOf(Assembly, Wirelet...)}.
  * <p>
- * Instances of ApplicationMirror can be injected at runtime simply by declaring a dependency on it. This will
- * automatically install the {@link MirrorExtension} which will provide an instance at runtime.
+ * Instances of ApplicationMirror can be injected at runtime simply by declaring a dependency on it.
  * <p>
- * Like many other mirrors this class is overridable via
+ * Like many other mirrors this class is exte extendable via {@link BootstrapApp.Composer#}
  */
 @VariableTypeHook(extension = MirrorExtension.class)
 public non-sealed class ApplicationMirror implements Mirror , ContextualizedElementMirror {

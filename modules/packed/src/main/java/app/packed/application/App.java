@@ -58,7 +58,7 @@ public final class App {
      *             if the application could not be build
      */
     public static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        return BOOTSTRAP.newMirror(assembly, wirelets);
+        return BOOTSTRAP.mirrorOf(assembly, wirelets);
     }
 
     public static App.Launcher newImage(Assembly assembly, Wirelet... wirelets) {

@@ -271,7 +271,7 @@ public final class ServiceContract {
 
     // Syntes maaske vi kalde dem reflect alligevel... Saa man er klar over hvad det er man laver...
     public static ServiceContract of(Assembly assembly, Wirelet... wirelets) {
-        ApplicationMirror m = MIRROR_DRIVER.newMirror(assembly, wirelets);
+        ApplicationMirror m = MIRROR_DRIVER.mirrorOf(assembly, wirelets);
         return m.container().findExtension(ServiceExtensionMirror.class).map(e -> e.contract()).orElse(ServiceContract.EMPTY);
     }
 
