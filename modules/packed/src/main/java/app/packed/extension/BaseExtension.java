@@ -2,7 +2,6 @@ package app.packed.extension;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import app.packed.bean.BeanConfiguration;
@@ -47,12 +46,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /** Create a new base extension. */
     BaseExtension() {}
-
-    Map<BeanConfiguration, CodeGeneratingConsumer> codeConsumers;
-
-    class CodeGeneratingConsumer {
-
-    }
 
     final void embed(Assembly assembly) {
         /// MHT til hooks. Saa tror jeg faktisk at man tager de bean hooks
@@ -190,43 +183,11 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return new BeanIntrospector() {
 
             @Override
-            public void hookOnAnnotatedVariable(Annotation hook, BindableVariable v) {
-                if (hook instanceof FromContainerGuest) {
-                    Variable va = v.variable();
-                    if (va.getRawType().equals(String.class)) {
-                        v.bindTo(new Op1<@InvocationArgument  ApplicationInitializationContext, String>(a -> a.name()) {});
-                    } else if (va.getRawType().equals(ManagedLifetimeController.class)) {
-                        v.bindTo(new Op1<@InvocationArgument  ApplicationInitializationContext, ManagedLifetimeController>(a -> a.cr.runtime) {});
-                    } else if (va.getRawType().equals(ServiceLocator.class)) {
-                        v.bindTo(new Op1<@InvocationArgument  ApplicationInitializationContext, ServiceLocator>(a -> a.serviceLocator()) {});
-                    } else {
-                        throw new UnsupportedOperationException("va " + va.getRawType());
-                    }
-                } else if (hook instanceof InvocationArgument ia) {
-                    int index = ia.index();
-                    Class<?> cl = v.variable().getRawType();
-                    List<Class<?>> l = v.availableInvocationArguments();
-                    if (cl != l.get(index)) {
-                        throw new UnsupportedOperationException();
-                    }
+            public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks, OperationalField field) {
+                if (field.annotations().isAnnotationPresent(Inject.class)) {
 
-                    // v.b
-                    // v.bindToInvocationArgument(index);
-                    v.bindToInvocationArgument(index);
-                } else if (hook instanceof CodeGenerated cg) {
-                    throw new UnsupportedOperationException();
-                } else {
-                    super.hookOnAnnotatedVariable(hook, v);
                 }
-
             }
-
-    @Override
-    public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks, OperationalField field) {
-        if (field.annotations().isAnnotationPresent(Inject.class)) {
-
-        }
-    }
 
     @Override
     public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod method) {
@@ -261,6 +222,38 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         }
     }
 
+    @Override
+    public void hookOnAnnotatedVariable(Annotation hook, BindableVariable v) {
+        if (hook instanceof FromContainerGuest) {
+            Variable va = v.variable();
+            if (va.getRawType().equals(String.class)) {
+                v.bindTo(new Op1<@InvocationArgument  ApplicationInitializationContext, String>(a -> a.name()) {});
+            } else if (va.getRawType().equals(ManagedLifetimeController.class)) {
+                v.bindTo(new Op1<@InvocationArgument  ApplicationInitializationContext, ManagedLifetimeController>(a -> a.cr.runtime) {});
+            } else if (va.getRawType().equals(ServiceLocator.class)) {
+                v.bindTo(new Op1<@InvocationArgument  ApplicationInitializationContext, ServiceLocator>(a -> a.serviceLocator()) {});
+            } else {
+                throw new UnsupportedOperationException("va " + va.getRawType());
+            }
+        } else if (hook instanceof InvocationArgument ia) {
+            int index = ia.index();
+            Class<?> cl = v.variable().getRawType();
+            List<Class<?>> l = v.availableInvocationArguments();
+            if (cl != l.get(index)) {
+                throw new UnsupportedOperationException();
+            }
+
+            // v.b
+            // v.bindToInvocationArgument(index);
+            v.bindToInvocationArgument(index);
+        } else if (hook instanceof CodeGenerated cg) {
+            throw new UnsupportedOperationException();
+        } else {
+            super.hookOnAnnotatedVariable(hook, v);
+        }
+
+    }
+
     };}
 
     ContainerInstaller newContainerInstaller() {
@@ -284,4 +277,5 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         }
         super.onAssemblyClose();
     }
+
 }

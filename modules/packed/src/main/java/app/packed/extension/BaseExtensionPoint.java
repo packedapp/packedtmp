@@ -13,6 +13,7 @@ import app.packed.container.Assembly;
 import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.PackedExtensionPointContext;
@@ -107,6 +108,10 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         throw new UnsupportedOperationException();
     }
 
+    public void runOnBeanInitialization(OperationHandle operation, boolean naturalOrder) { 
+        // should we set a mirror?
+    }
+    
     // Vi har brug ContainerInstaller fordi, man ikke konfigure noget efter man har linket
     // Saa alt skal goeres inde
 

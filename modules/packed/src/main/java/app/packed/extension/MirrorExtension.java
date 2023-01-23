@@ -59,19 +59,20 @@ public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
         return new BeanIntrospector() {
             @Override
             public void hookOnVariableType(Class<?> hook, BindableBaseVariable binding) {
-                OperationSetup os = ((PackedBindableBaseVariable) binding).v.operation;
+                OperationSetup operation = ((PackedBindableBaseVariable) binding).v.operation;
 
                 if (hook == ApplicationMirror.class) {
-                    binding.bindConstant(os.bean.container.application.mirror());
+                    binding.bindConstant(operation.bean.container.application.mirror());
                 } else if (hook == ContainerMirror.class) {
-                    binding.bindConstant(os.bean.container.mirror());
+                    binding.bindConstant(operation.bean.container.mirror());
                 } else if (hook == AssemblyMirror.class) {
-                    binding.bindConstant(os.bean.container.assembly.mirror());
+                    binding.bindConstant(operation.bean.container.assembly.mirror());
                 } else if (hook == BeanMirror.class) {
-                    binding.bindConstant(os.bean.mirror());
+                    binding.bindConstant(operation.bean.mirror());
                 } else if (hook == OperationMirror.class) {
-                    binding.bindConstant(os.mirror());
+                    binding.bindConstant(operation.mirror());
                 } else {
+                    // Not a supported mirror type, let checkAssignableTo throw an exception 
                     binding.checkAssignableTo(ApplicationMirror.class, ContainerMirror.class, AssemblyMirror.class, BeanMirror.class, OperationMirror.class);
                 }
             }

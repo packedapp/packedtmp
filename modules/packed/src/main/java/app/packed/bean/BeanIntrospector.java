@@ -515,6 +515,11 @@ public abstract class BeanIntrospector {
             // Ville vaere fedt hvis alle metoderne havde samme prefix
             throw new UnsupportedOperationException();
         }
+
+        /**
+         * @return
+         */
+        boolean isBound();
     }
 
     // CheckRealmIsApplication

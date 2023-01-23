@@ -29,16 +29,17 @@ import app.packed.application.ApplicationPath;
 import app.packed.application.BuildGoal;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanIntrospector.BindableVariable;
 import app.packed.binding.Key;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
-import app.packed.extension.BaseExtension.CodeGeneratingConsumer;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.container.ContainerSetup.CodeGeneratingConsumer;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.PackedWireletSelection;
@@ -91,11 +92,25 @@ public abstract class Extension<E extends Extension<E>> {
      */
     protected Extension() {}
 
-
     protected final <K> void addCodeGenerated(BeanConfiguration bean, Class<K> key, Supplier<? extends K> supplier) {
         addCodeGenerated(bean, Key.of(key), supplier);
     }
 
+    /**
+     * @param <K>
+     *            the type of key
+     * @param bean
+     *            the bean to bind to
+     * @param key
+     * @param supplier
+     * 
+     * @see CodeGenerated
+     * @throws IllegalArgumentException
+     *             if the specified bean is not owned by this extension. Or if the specified bean has not been installed in
+     *             the container of this extension.
+     * @throws IllegalStateException
+     *             if the extension is no longer configurable
+     */
     protected final <K> void addCodeGenerated(BeanConfiguration bean, Key<K> key, Supplier<? extends K> supplier) {
         requireNonNull(bean, "bean is null");
         requireNonNull(key, "key is null");
@@ -103,21 +118,19 @@ public abstract class Extension<E extends Extension<E>> {
         if (!bean.owner().isExtension(extension.extensionType)) {
             throw new IllegalArgumentException();
         } else if (BeanSetup.crack(bean).container != extension.container) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(); // Hmm? maybe allow it
         }
         checkIsConfigurable();
 
-        BaseExtension b = (BaseExtension) extension.container.extensions.get(BaseExtension.class).instance();
+        CodeGeneratingConsumer cgc = extension.container.codeConsumers.computeIfAbsent(bean, k -> new CodeGeneratingConsumer());
 
-        CodeGeneratingConsumer cgc = null;
-        if (b.codeConsumers != null) {
-            cgc = b.codeConsumers.get(bean);
+        BindableVariable prev = cgc.vars.get(key);
+        if (prev == null) {
+            throw new IllegalArgumentException("The bean does not consume " + key);
+        } else if (prev.isBound()) {
+            throw new IllegalStateException("A supplier has previously been provided for key " + key);
         }
-        if (cgc == null) {
-            throw new RuntimeException();
-        }
-        // check that is has not already been bound
-        // check if a @CodeGenerated service with the key exists here
+        prev.bindToGenerated(supplier);
     }
 
     /**
