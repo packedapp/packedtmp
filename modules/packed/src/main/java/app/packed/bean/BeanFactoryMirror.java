@@ -17,9 +17,7 @@ package app.packed.bean;
 
 import app.packed.operation.OperationMirror;
 
-/** An operation that create {@link #bean() bean} instances. */
-// Is is just normal lifecycleoperatino mirror?
-// Instantiation?
+/** A mirror for operations that create {@link #bean() bean} instances. */
 public class BeanFactoryMirror extends OperationMirror {
 
     public String toString() {

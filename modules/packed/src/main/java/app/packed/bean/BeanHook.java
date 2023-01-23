@@ -111,7 +111,7 @@ public @interface BeanHook {
     /**
      * <p>
      * Attempting to place multiple annotated variable hook annotations on a single field or parameter will result in a
-     * {@link InvalidBeanDefinitionException} being thrown at build-time.
+     * {@link InvalidBeanClassException} being thrown at build-time.
      * 
      * @see BeanIntrospector#hookOnAnnotatedVariable(java.lang.annotation.Annotation, app.packed.bean.BeanIntrospector.BindableVariable)
      */

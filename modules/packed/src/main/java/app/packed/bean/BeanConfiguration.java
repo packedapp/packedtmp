@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.application.ApplicationPath;
 import app.packed.container.Realm;
 
-/** The base configuration class for a bean. */
+/** The configuration of a bean, typically returned from the installation site of a bean. */
 public class BeanConfiguration {
 
     /** The bean handle. */

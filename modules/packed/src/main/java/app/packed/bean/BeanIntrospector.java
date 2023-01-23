@@ -147,11 +147,11 @@ public abstract class BeanIntrospector {
      * @param postFix
      *            the message to include in the final message
      * 
-     * @throws InvalidBeanDefinitionException
+     * @throws BeanInstallationException
      *             always thrown
      */
     public final void failWith(String postFix) {
-        throw new InvalidBeanDefinitionException("OOPS " + postFix);
+        throw new BeanInstallationException("OOPS " + postFix);
     }
 
     public boolean hasAttachment(Class<?> attachmentType) {
@@ -275,7 +275,7 @@ public abstract class BeanIntrospector {
         Annotation[] readAnyOf(Class<?>... annotationTypes);
 
         /**
-         * Returns a annotation of the specified type or throws {@link InvalidBeanDefinitionException} if the annotation is not
+         * Returns a annotation of the specified type or throws {@link BeanInstallationException} if the annotation is not
          * present
          * 
          * @param <T>
@@ -284,7 +284,7 @@ public abstract class BeanIntrospector {
          *            the Class object corresponding to the annotation type
          * @return the annotation for the specified annotation type if present
          * 
-         * @throws InvalidBeanDefinitionException
+         * @throws BeanInstallationException
          *             if the specified annotation is not present or the annotation is a repeatable annotation and there are not
          *             exactly 1 occurrences of it
          * 
@@ -469,11 +469,11 @@ public abstract class BeanIntrospector {
          * @param postFix
          *            the message to include in the final message
          * 
-         * @throws InvalidBeanDefinitionException
+         * @throws BeanInstallationException
          *             always thrown
          */
         default void failWith(String postFix) {
-            throw new InvalidBeanDefinitionException("OOPS " + postFix);
+            throw new BeanInstallationException("OOPS " + postFix);
         }
 
         /** {@return the extension that is responsible for invoking the underlying operation.} */
@@ -597,18 +597,18 @@ public abstract class BeanIntrospector {
          * @param postFix
          *            the message to include in the final message
          * 
-         * @throws InvalidBeanDefinitionException
+         * @throws BeanInstallationException
          *             always thrown
          */
         default void failWith(String postFix) {
-            throw new InvalidBeanDefinitionException("Field " + field() + ": " + postFix);
+            throw new BeanInstallationException("Field " + field() + ": " + postFix);
         }
 
         /** {@return the underlying field.} */
         Field field();
 
         /**
-         * Attempts to convert field to a {@link Key} or fails by throwing {@link InvalidBeanDefinitionException} if the field
+         * Attempts to convert field to a {@link Key} or fails by throwing {@link BeanInstallationException} if the field
          * does not represent a proper key.
          * <p>
          * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
@@ -616,9 +616,10 @@ public abstract class BeanIntrospector {
          * 
          * @return a key representing the field
          * 
-         * @throws InvalidBeanDefinitionException
+         * @throws BeanInstallationException
          *             if the field does not represent a proper key
          */
+        // I honestly think KeyException is better here? IDK
         default Key<?> fieldToKey() {
             return KeyHelper.convertField(field());
         }
@@ -698,11 +699,11 @@ public abstract class BeanIntrospector {
          * @param postFix
          *            the message to include in the final message
          * 
-         * @throws InvalidBeanDefinitionException
+         * @throws BeanInstallationException
          *             always thrown
          */
         default void failWith(String postFix) {
-            throw new InvalidBeanDefinitionException("OOPS " + postFix);
+            throw new BeanInstallationException("OOPS " + postFix);
         }
 
         /**
@@ -716,7 +717,7 @@ public abstract class BeanIntrospector {
 
         /**
          * Attempts to convert the annotated return type of the method to a {@link Key}, or fails by throwing
-         * {@link InvalidBeanDefinitionException} if the annotated return type does not represent a valid key.
+         * {@link BeanInstallationException} if the annotated return type does not represent a valid key.
          * <p>
          * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
          * key.

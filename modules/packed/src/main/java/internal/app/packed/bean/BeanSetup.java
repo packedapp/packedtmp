@@ -16,11 +16,11 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationPath;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.DublicateBeanClassException;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
@@ -290,7 +290,7 @@ public final class BeanSetup {
                     if (o == null) {
                         return new MuInst();
                     } else if (o instanceof BeanSetup) {
-                        throw new DublicateBeanClassException("Oops");
+                        throw new BeanInstallationException("Oops");
                     } else {
                         ((MuInst) o).counter += 1;
                         return o;
@@ -310,10 +310,10 @@ public final class BeanSetup {
                         return bean;
                     } else if (o instanceof BeanSetup) {
                         // singular???
-                        throw new DublicateBeanClassException("A non-multi bean has already been defined for " + bean.beanClass);
+                        throw new BeanInstallationException("A non-multi bean has already been defined for " + bean.beanClass);
                     } else {
                         // We already have some multiple beans installed
-                        throw new DublicateBeanClassException("Oops");
+                        throw new BeanInstallationException("Oops");
                     }
                 });
                 // Not multi install, so should be able to add it first time

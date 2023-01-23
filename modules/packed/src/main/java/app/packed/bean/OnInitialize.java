@@ -76,13 +76,9 @@ public @interface OnInitialize {
     // Or PRE_DEPENDENCIES, ANY_TIME, POST_DEPENDENCIES;
     // Og saa scheduler vi automatisk til Pre_Dependencies
     // Ved ikke hvordan Async fungere fx med PRE_DEPENDENCIS
-
-    // Vi skal have en Lifetime annotering istedet
-    //// @ReverseOrderLifecycle
-    // or just lifetimeOrderReversed default false();
-    boolean preOrder() default true;
+    boolean naturalOrder() default true;
 
     // We supportere lokal order for bean.. Priority?
     // Bliver ikke super let at implementere
-    int priorityOnBean() default 0;
+    int priorityOnBean() default 0; // localPriority
 }

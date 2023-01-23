@@ -30,11 +30,11 @@ import java.util.TreeMap;
 
 import app.packed.bean.BeanHook.AnnotatedFieldHook;
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.AnnotationCollection;
 import app.packed.bean.BeanIntrospector.OperationalField;
 import app.packed.bean.InaccessibleBeanMemberException;
-import app.packed.bean.InvalidBeanDefinitionException;
 import app.packed.binding.Variable;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
@@ -273,7 +273,7 @@ public final class BeanScannerField2 {
      * @param field
      *            the field to introspect
      * 
-     * @throws InvalidBeanDefinitionException
+     * @throws BeanInstallationException
      *             if there are multiple {@link AnnotatedVariableHook} on the field. Or if there are both
      *             {@link AnnotatedFieldHook} and {@link AnnotatedVariableHook} annotations
      * 
@@ -321,7 +321,7 @@ public final class BeanScannerField2 {
 
                 // Cannot have multiple AnnotatedVariableHook annotations
                 if (e.kind() == AnnotatedFieldKind.VARIABLE && e2.kind() == AnnotatedFieldKind.VARIABLE) {
-                    throw new InvalidBeanDefinitionException("Cannot use both " + annotation + " and " + annotation2);
+                    throw new BeanInstallationException("Cannot use both " + annotation + " and " + annotation2);
                 }
 
                 // Okay we have more than 1 valid annotation
@@ -406,7 +406,7 @@ public final class BeanScannerField2 {
 
     static void match2(BeanScanner scanner, Field f, Annotation[] annotations, AnnotatedField af0, Annotation a0, AnnotatedField af1, Annotation a1) {
         if (af0.kind() == AnnotatedFieldKind.VARIABLE && af1.kind() == AnnotatedFieldKind.VARIABLE) {
-            throw new InvalidBeanDefinitionException("Cannot use both " + a0 + " and " + a1 + " on field " + f);
+            throw new BeanInstallationException("Cannot use both " + a0 + " and " + a1 + " on field " + f);
         }
         if (af0.extensionType() == af1.extensionType()) {
             match(scanner, f, annotations, af0.kind(), null, false, false, annotations);

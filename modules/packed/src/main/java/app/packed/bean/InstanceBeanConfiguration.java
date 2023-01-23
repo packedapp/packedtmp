@@ -23,10 +23,10 @@ import app.packed.operation.Op;
 import internal.app.packed.util.SpecFix;
 
 /**
- * A base configuration class for beans that are instantiable.
+ * The configuration of a bean that has 1 or more bean instances.
  * 
  * @param <T>
- *            the type of bean instances that will be created at runtime
+ *            the type of bean instances
  */
 public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 

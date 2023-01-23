@@ -17,7 +17,7 @@ package app.packed.bean;
 
 import app.packed.application.BuildException;
 
-/** Exception used to indicate that a bean failed to be installed. */
+/** A generic build-time exception used to indicate that the installation of a bean failed. */
 public class BeanInstallationException extends BuildException {
 
     private static final long serialVersionUID = 1L;
@@ -48,3 +48,9 @@ public class BeanInstallationException extends BuildException {
         super(message, cause);
     }
 }
+// Previously we had a InvalidBeanClassEXception which was used to indicate that something was wrong with the actual class.
+// But it was a bit difficult to distinguish between the two, and difficult to decide which to throw.
+// BeanInstallationException is also a very clear name.
+
+// We also had a DublicateBeanClassException which I could just never come up with a good name for.
+// So that was ditched as well
