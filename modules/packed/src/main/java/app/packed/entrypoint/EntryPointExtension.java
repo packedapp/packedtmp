@@ -77,7 +77,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
                 OperationHandle os = method.newOperation(temp);
                 os.specializeMirror(() -> new EntryPointMirror(index));
 
-                addCodeGenerator(() -> mc.generatedMethodHandle = os.generateMethodHandle());
+                runOnCodegen(() -> mc.generatedMethodHandle = os.generateMethodHandle());
             }
         };
     }

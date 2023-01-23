@@ -45,6 +45,7 @@ import app.packed.container.Realm;
 import app.packed.context.Context;
 import app.packed.context.ContextTemplate.InvocationContextArgument;
 import app.packed.extension.BaseExtensionPoint;
+import app.packed.extension.CodeGenerated;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
@@ -434,6 +435,11 @@ public abstract class BeanIntrospector {
         // Eller maaske har vi en specific CodeGenerationException
         // Er fx brugt fra @CodeGenerated
         // Will be invoked doing code generation.
+        /**
+         * @param consumer
+         * 
+         * @see CodeGenerated
+         */
         void bindToGenerated(Supplier<?> consumer);
 
         /**

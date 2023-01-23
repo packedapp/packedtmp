@@ -3,19 +3,25 @@ package app.packed.extension;
 import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanIntrospector.BindableVariable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.binding.Key;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
+import app.packed.extension.BaseExtension.CodeGeneratingConsumer;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
+import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
 
 /** An {@link ExtensionPoint extension point} class for {@link BaseExtension}. */
@@ -23,6 +29,51 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     /** Creates a new base extension point. */
     BaseExtensionPoint() {}
+
+    public <K> void addCodeGenerated(BeanConfiguration bean, Class<K> key, Supplier<? extends K> supplier) {
+        addCodeGenerated(bean, Key.of(key), supplier);
+    }
+
+    /**
+     * @param <K>
+     *            the type of key
+     * @param bean
+     *            the bean to bind to
+     * @param key
+     * @param supplier
+     * 
+     * @see CodeGenerated
+     * @throws IllegalArgumentException
+     *             if the specified bean is not owned by this extension. Or if the specified bean has not been installed in
+     *             the container of this extension.
+     * @throws IllegalStateException
+     *             if the extension is no longer configurable
+     */
+    public <K> void addCodeGenerated(BeanConfiguration bean, Key<K> key, Supplier<? extends K> supplier) {
+        requireNonNull(bean, "bean is null");
+        requireNonNull(key, "key is null");
+        requireNonNull(supplier, "supplier is null");
+        BeanSetup b = BeanSetup.crack(bean);
+
+        ExtensionSetup extension = extension().extension;
+        if (!bean.owner().isExtension(usedBy())) {
+            throw new IllegalArgumentException("Bean Owner " + bean.owner() + " " );
+        } else if (b.container != extension.container) {
+            throw new IllegalArgumentException(); // Hmm? maybe allow it
+        }
+        checkIsConfigurable();
+
+        CodeGeneratingConsumer cgc = extension().codeConsumers.computeIfAbsent(b, k -> new CodeGeneratingConsumer());
+
+        BindableVariable prev = cgc.vars.get(key);
+
+        if (prev == null) {
+            throw new IllegalArgumentException("The bean does not consume " + key);
+        } else if (prev.isBound()) {
+            throw new IllegalStateException("A supplier has previously been provided for key " + key);
+        }
+        prev.bindToGenerated(supplier);
+    }
 
     public <T> InstanceBeanConfiguration<T> install(Class<T> implementation) {
         BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, usageContext()).install(implementation);
@@ -108,10 +159,10 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         throw new UnsupportedOperationException();
     }
 
-    public void runOnBeanInitialization(OperationHandle operation, boolean naturalOrder) { 
+    public void runOnBeanInitialization(OperationHandle operation, boolean naturalOrder) {
         // should we set a mirror?
     }
-    
+
     // Vi har brug ContainerInstaller fordi, man ikke konfigure noget efter man har linket
     // Saa alt skal goeres inde
 
@@ -145,7 +196,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         // can be used for inter
         // Maybe use ScopedValues instead???
         <A> BeanInstaller attach(Class<A> attachmentType, A attachment);
-        
+
         /**
          * Installs the bean using the specified class as the bean source.
          * 

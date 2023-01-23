@@ -21,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.bean.BeanIntrospector.BindableVariable;
 
 /**
  * This annotation is used to indicate that the variable is constructed doing the code generation phase of the
@@ -31,6 +32,7 @@ import app.packed.bean.BeanHook.AnnotatedVariableHook;
  * <p>
  * This annotation can only used on beans owned by an extension.
  * 
+ * @see BindableVariable#bindToGenerated(java.util.function.Supplier)
  * @see Extension#addCodeGenerated(app.packed.bean.BeanConfiguration, Class, java.util.function.Supplier)
  * @see Extension#addCodeGenerated(app.packed.bean.BeanConfiguration, app.packed.binding.Key,
  *      java.util.function.Supplier)

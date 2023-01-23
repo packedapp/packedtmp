@@ -23,14 +23,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import app.packed.application.ApplicationPath;
 import app.packed.application.BuildGoal;
-import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanIntrospector.BindableVariable;
-import app.packed.binding.Key;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
@@ -38,8 +34,6 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
-import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.container.ContainerSetup.CodeGeneratingConsumer;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.PackedWireletSelection;
@@ -91,70 +85,6 @@ public abstract class Extension<E extends Extension<E>> {
      *             if attempting to construct the extension manually
      */
     protected Extension() {}
-
-    protected final <K> void addCodeGenerated(BeanConfiguration bean, Class<K> key, Supplier<? extends K> supplier) {
-        addCodeGenerated(bean, Key.of(key), supplier);
-    }
-
-    /**
-     * @param <K>
-     *            the type of key
-     * @param bean
-     *            the bean to bind to
-     * @param key
-     * @param supplier
-     * 
-     * @see CodeGenerated
-     * @throws IllegalArgumentException
-     *             if the specified bean is not owned by this extension. Or if the specified bean has not been installed in
-     *             the container of this extension.
-     * @throws IllegalStateException
-     *             if the extension is no longer configurable
-     */
-    protected final <K> void addCodeGenerated(BeanConfiguration bean, Key<K> key, Supplier<? extends K> supplier) {
-        requireNonNull(bean, "bean is null");
-        requireNonNull(key, "key is null");
-        requireNonNull(supplier, "supplier is null");
-        BeanSetup b = BeanSetup.crack(bean);
-        if (!bean.owner().isExtension(extension.extensionType)) {
-            throw new IllegalArgumentException();
-        } else if (b.container != extension.container) {
-            throw new IllegalArgumentException(); // Hmm? maybe allow it
-        }
-        checkIsConfigurable();
-
-        CodeGeneratingConsumer cgc = extension.container.codeConsumers.computeIfAbsent(b, k -> new CodeGeneratingConsumer());
-
-        BindableVariable prev = cgc.vars.get(key);
-
-        if (prev == null) {
-            throw new IllegalArgumentException("The bean does not consume " + key);
-        } else if (prev.isBound()) {
-            throw new IllegalStateException("A supplier has previously been provided for key " + key);
-        }
-        prev.bindToGenerated(supplier);
-    }
-
-    /**
-     * Registers a action to run doing the code generation phase.
-     * <p>
-     * If the application has no code generation phase. For example, if building a {@link BuildGoal#MIRROR}. The specified
-     * action will not be executed.
-     * 
-     * @param action
-     *            the action to run
-     * @throws IllegalStateException
-     *             if the extension is no longer configurable
-     * @see BuildGoal#isCodeGenerating()
-     */
-    // runOnCodegen
-    protected final void addCodeGenerator(Runnable action) {
-        // was ISE
-        // if the application is already in the code generation phase or has finished building the application
-        // Syntes bare ikke rigtig at der er nogen grund til at introducere flere ISEs tidspunkter
-        checkIsConfigurable(); // I
-        extension.container.application.addCodeGenerator(action);
-    }
 
     /** {@return the base extension point.} */
     protected final BaseExtensionPoint base() {
@@ -359,6 +289,23 @@ public abstract class Extension<E extends Extension<E>> {
             s = s.treeParent;
         }
         return (E) s.instance();
+    }
+
+    /**
+     * Registers a action to run doing the code generation phase of the application.
+     * <p>
+     * If the application has no code generation phase. For example, if building a {@link BuildGoal#MIRROR}. The specified
+     * action will not be executed.
+     * 
+     * @param action
+     *            the action to run
+     * @throws IllegalStateException
+     *             if the extension is no longer configurable
+     * @see BuildGoal#isCodeGenerating()
+     */
+    protected final void runOnCodegen(Runnable action) {
+        checkIsConfigurable();
+        extension.container.application.addCodeGenerator(action);
     }
 
     /**

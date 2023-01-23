@@ -54,7 +54,7 @@ public class ApplicationHostExtension extends FrameworkExtension<ApplicationHost
     
     private <T> ApplicationHostConfiguration<T> newApplication(BeanHandle<T> handle) {
         OperationHandle oh = handle.lifetimeOperations().get(0);
-        this.addCodeGenerator(() -> {
+        this.runOnCodegen(() -> {
             mh = oh.generateMethodHandle();
         });
         return new ApplicationHostConfiguration<>(handle);

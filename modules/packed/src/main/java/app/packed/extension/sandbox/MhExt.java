@@ -76,7 +76,7 @@ public class MhExt extends BaseAssembly {
         public void onAssemblyClose() {
 
             InstanceBeanConfiguration<EBean> b = base().install(EBean.class);
-            addCodeGenerated(b, MethodHandle.class, () -> {
+            base().addCodeGenerated(b, MethodHandle.class, () -> {
                 // new Exception().printStackTrace();
                 if (h != null) {
                     OperationHandle oh = h.lifetimeOperations().get(0);

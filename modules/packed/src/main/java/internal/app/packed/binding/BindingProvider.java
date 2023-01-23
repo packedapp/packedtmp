@@ -31,9 +31,9 @@ import internal.app.packed.operation.Osi;
 /** Provider of a value for a binding. */
 public sealed abstract class BindingProvider {
 
-    public abstract MethodHandle bindIntoOperation(Osi osi);
-
     public abstract MethodHandle bindIntoOperation(BindingSetup binding, MethodHandle methodHandle);
+
+    public abstract MethodHandle bindIntoOperation(Osi osi);
 
     /** {@return the kind of provider.} */
     public abstract BindingProviderKind kind();
@@ -56,11 +56,6 @@ public sealed abstract class BindingProvider {
             this.argumentIndex = argumentIndex;
         }
 
-        @Override
-        public MethodHandle bindIntoOperation(Osi osi) {
-            return osi.bindArgument(argumentIndex);
-        }
-
         /** {@inheritDoc} */
         @Override
         public MethodHandle bindIntoOperation(BindingSetup binding, MethodHandle methodHandle) {
@@ -68,6 +63,11 @@ public sealed abstract class BindingProvider {
             System.out.println(binding.operation.template.invocationType());
             // new UnsupportedOperationException();
             return methodHandle;
+        }
+
+        @Override
+        public MethodHandle bindIntoOperation(Osi osi) {
+            return osi.bindArgument(argumentIndex);
         }
 
         /** {@inheritDoc} */
@@ -83,24 +83,25 @@ public sealed abstract class BindingProvider {
         }
     }
 
-    public static final class FromSupplier extends BindingProvider {
+    /** This provider will create a constant at code generation time. */
+    public static final class FromCodeGenerated extends BindingProvider {
 
-        public final Supplier<?> consumer;
+        public final Supplier<?> supplier;
 
-        public FromSupplier(Supplier<?> consumer) {
-            this.consumer = requireNonNull(consumer);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodHandle bindIntoOperation(Osi osi) {
-            return osi.bindConstant(consumer.get());
+        public FromCodeGenerated(Supplier<?> supplier) {
+            this.supplier = requireNonNull(supplier);
         }
 
         /** {@inheritDoc} */
         @Override
         public MethodHandle bindIntoOperation(BindingSetup binding, MethodHandle methodHandle) {
             throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle bindIntoOperation(Osi osi) {
+            return osi.bindConstant(supplier.get());
         }
 
         /** {@inheritDoc} */
@@ -136,14 +137,14 @@ public sealed abstract class BindingProvider {
             this.constantType = constantType;
         }
 
-        @Override
-        public MethodHandle bindIntoOperation(Osi osi) {
-            return osi.bindConstant(constant);
-        }
-
         /** {@inheritDoc} */
         public MethodHandle bindIntoOperation(BindingSetup binding, MethodHandle methodHandle) {
             return MethodHandles.insertArguments(methodHandle, 0, constant);
+        }
+
+        @Override
+        public MethodHandle bindIntoOperation(Osi osi) {
+            return osi.bindConstant(constant);
         }
 
         /** {@inheritDoc} */
@@ -183,6 +184,12 @@ public sealed abstract class BindingProvider {
 
         /** {@inheritDoc} */
         @Override
+        public MethodHandle bindIntoOperation(Osi osi) {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
         public BindingProviderKind kind() {
             return BindingProviderKind.OPERATION;
         }
@@ -197,12 +204,6 @@ public sealed abstract class BindingProvider {
             // (LifetimePool)Object -> (LifetimePool)type
             return mh.asType(mh.type().changeReturnType(type));
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodHandle bindIntoOperation(Osi osi) {
-            throw new UnsupportedOperationException();
-        }
     }
 
     /** Provides values from the result of an operation. */
@@ -215,11 +216,6 @@ public sealed abstract class BindingProvider {
             this.operation = requireNonNull(operation);
         }
 
-        @Override
-        public MethodHandle bindIntoOperation(Osi osi) {
-            return osi.bindOperation(operation);
-        }
-
         /** {@inheritDoc} */
         @Override
         public MethodHandle bindIntoOperation(BindingSetup binding, MethodHandle methodHandle) {
@@ -228,6 +224,11 @@ public sealed abstract class BindingProvider {
             MethodHandle m = MethodHandles.collectArguments(methodHandle, 0, mh);
             System.out.println(m.type());
             return m;
+        }
+
+        @Override
+        public MethodHandle bindIntoOperation(Osi osi) {
+            return osi.bindOperation(operation);
         }
 
         /** {@inheritDoc} */

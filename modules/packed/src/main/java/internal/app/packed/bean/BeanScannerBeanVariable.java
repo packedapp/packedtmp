@@ -33,7 +33,7 @@ import app.packed.operation.OperationTemplate;
 import internal.app.packed.binding.BindingProvider.FromArgument;
 import internal.app.packed.binding.BindingProvider.FromConstant;
 import internal.app.packed.binding.BindingProvider.FromOperation;
-import internal.app.packed.binding.BindingProvider.FromSupplier;
+import internal.app.packed.binding.BindingProvider.FromCodeGenerated;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.BindingSetup.HookBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -134,7 +134,7 @@ public class BeanScannerBeanVariable implements BindableVariable {
     public void bindToGenerated(Supplier<?> consumer) {
         checkIsBindable();
         BindingSetup bs = new HookBindingSetup(operation, index, Realm.application());
-        bs.provider = new FromSupplier(consumer);
+        bs.provider = new FromCodeGenerated(consumer);
         operation.bindings[index] = bs;
     }
 

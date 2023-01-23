@@ -22,13 +22,10 @@ import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationPath;
-import app.packed.bean.BeanIntrospector.BindableVariable;
-import app.packed.binding.Key;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
@@ -49,12 +46,6 @@ import internal.app.packed.util.types.ClassUtil;
 
 /** The internal configuration of a container. */
 public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
-
-    public static class CodeGeneratingConsumer {
-        public final Map<Key<?>, BindableVariable> vars = new HashMap<>();
-    }
-
-    public Map<BeanSetup, CodeGeneratingConsumer> codeConsumers = new HashMap<>();
 
     /** A MethodHandle for invoking {@link ContainerMirror#initialize(ContainerSetup)}. */
     private static final MethodHandle MH_CONTAINER_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ContainerMirror.class, "initialize",

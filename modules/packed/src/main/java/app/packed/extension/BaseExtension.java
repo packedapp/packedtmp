@@ -1,19 +1,23 @@
 package app.packed.extension;
 
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanIntrospector.BindableVariable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.Inject;
 import app.packed.bean.OnInitialize;
 import app.packed.bean.OnStart;
 import app.packed.bean.OnStop;
+import app.packed.binding.Key;
 import app.packed.binding.Variable;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
@@ -32,7 +36,6 @@ import app.packed.service.ServiceLocator;
 import internal.app.packed.bean.BeanScannerBeanVariable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
-import internal.app.packed.container.ContainerSetup.CodeGeneratingConsumer;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifetime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.LifetimeOperation;
@@ -51,6 +54,14 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     /** Create a new base extension. */
     BaseExtension() {}
 
+    static class CodeGeneratingConsumer {
+        public final Map<Key<?>, BindableVariable> vars = new HashMap<>();
+    }
+
+    final Map<BeanSetup, CodeGeneratingConsumer> codeConsumers = new HashMap<>();
+
+
+    
     final void embed(Assembly assembly) {
         /// MHT til hooks. Saa tror jeg faktisk at man tager de bean hooks
         // der er paa den assembly der definere dem
@@ -255,7 +266,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     if (beanOwner().isApplication()) {
                         throw new BeanInstallationException("@" + CodeGenerated.class.getSimpleName() + " can only be used by extensions");
                     }
-                    CodeGeneratingConsumer c = bean.container.codeConsumers.computeIfAbsent(bean, k -> new CodeGeneratingConsumer());
+                    CodeGeneratingConsumer c = codeConsumers.computeIfAbsent(bean, k -> new CodeGeneratingConsumer());
                     BindableVariable bv = c.vars.putIfAbsent(v.variableToKey(), v);
                     if (bv != null) {
                         throw new BeanInstallationException(v.variableToKey() + " Can only be injected once");
