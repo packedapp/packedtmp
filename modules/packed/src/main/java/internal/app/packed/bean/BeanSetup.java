@@ -143,7 +143,8 @@ public final class BeanSetup {
         // have containers managed by extensions
         this.realm = requireNonNull(realm);
         if (realm instanceof ExtensionTreeSetup s) {
-            this.ownedBy = installer.useSite.extension();
+            //System.out.println(installer.useSite.usedBy().extensionType);
+            this.ownedBy = installer.useSite.usedBy();
         } else {
             this.ownedBy = null;
         }

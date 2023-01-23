@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.function.Supplier;
 
 import app.packed.binding.mirror.BindingProviderKind;
 import internal.app.packed.lifetime.BeanInstanceAccessor;
@@ -80,6 +81,40 @@ public sealed abstract class BindingProvider {
         public MethodHandle provideSpecial() {
             throw new UnsupportedOperationException();
         }
+    }
+
+    public static final class FromSupplier extends BindingProvider {
+
+        public final Supplier<?> consumer;
+
+        public FromSupplier(Supplier<?> consumer) {
+            this.consumer = requireNonNull(consumer);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle bindIntoOperation(Osi osi) {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle bindIntoOperation(BindingSetup binding, MethodHandle methodHandle) {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public BindingProviderKind kind() {
+            return BindingProviderKind.OPERATION;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle provideSpecial() {
+            throw new UnsupportedOperationException();
+        }
+
     }
 
     /** Provides values from a constant. */

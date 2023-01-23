@@ -100,7 +100,6 @@ import internal.app.packed.util.types.TypeVariableExtractor;
 //Created while parsing a bean a.la.
 //public void foo(@SomeInvalidQualifier Void k)
 
-
 public abstract class Key<T> {
 
     /** A cache of keys created by {@link #Key()}. */
@@ -123,7 +122,7 @@ public abstract class Key<T> {
         @Override
         protected Key<?> computeValue(Class<?> key) {
             Class<?> cl = ClassUtil.wrap(key);
-            return Key.convertTypeNullableAnnotation(cl, cl, (Annotation[]) null);
+            return Key.convertTypeNullableAnnotation(cl, cl, QualifierUtil.NO_QUALIFIERS);
         }
     };
 
@@ -145,7 +144,6 @@ public abstract class Key<T> {
      * 
      * Annotation[] -> multiple annotations...
      */
-    @Nullable
     private final Annotation[] qualifiers;
 
     /** The raw type of the key. */
@@ -172,13 +170,11 @@ public abstract class Key<T> {
      *            the (optional) qualifier
      */
     private Key(Type type, Annotation[] qualifiers) {
-        this.qualifiers = qualifiers;
+        this.qualifiers = requireNonNull(qualifiers);
         this.type = type;
         this.rawType = TypeUtil.rawTypeOf(type);
         int h = type.hashCode();
-        if (qualifiers != null) {
-            h ^= Arrays.hashCode(qualifiers);
-        }
+        h ^= Arrays.hashCode(qualifiers);
         this.hash = h;
     }
 
@@ -208,13 +204,11 @@ public abstract class Key<T> {
         }
         if (obj instanceof Key<?> key && type.equals(key.type)) {
             Annotation[] a = key.qualifiers;
-            if (qualifiers == null) {
-                return a == null;
-            }
-            // Virker ikke med arrays
-            if (a != null && qualifiers.length == a.length) {
-                if (qualifiers.length == 1) {
-                    return qualifiers[0].equals(a[0]);
+            if (qualifiers.length == a.length) {
+                if (qualifiers.length == 0) {
+                    return true;
+                } else if (qualifiers.length == 1) {
+                    return a[0].equals(qualifiers[0]);
                 } else {
                     throw new UnsupportedOperationException();
                 }
@@ -239,9 +233,6 @@ public abstract class Key<T> {
      */
     public final boolean hasQualifier(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
-        if (qualifiers == null) {
-            return false;
-        }
         for (int i = 0; i < qualifiers.length; i++) {
             if (qualifiers[i].equals(qualifier)) {
                 return true;
@@ -260,9 +251,6 @@ public abstract class Key<T> {
      */
     public final boolean hasQualifier(Class<? extends Annotation> qualifierType) {
         requireNonNull(qualifierType, "qualifierType is null");
-        if (qualifiers == null) {
-            return false;
-        }
         for (int i = 0; i < qualifiers.length; i++) {
             if (qualifiers[i].annotationType() == qualifierType) {
                 return true;
@@ -274,7 +262,7 @@ public abstract class Key<T> {
     /** {@return whether or not this key has any qualifiers.} */
     // isQualified + isQualifiedWith
     public final boolean hasQualifiers() {
-        return qualifiers != null;
+        return qualifiers.length > 0;
     }
 
     /**
@@ -306,7 +294,7 @@ public abstract class Key<T> {
     /** {@inheritDoc} */
     @Override
     public final String toString() {
-        if (qualifiers == null) {
+        if (qualifiers.length == 0) {
             return StringFormatter.format(type);
         }
         // TODO fix formatting
@@ -322,7 +310,7 @@ public abstract class Key<T> {
     // Omvendt tror jeg vil have en lille key, men mulighed for at lave en lang
     // toStringLong or toStringFull
     public final String toStringSimple() {
-        if (qualifiers == null) {
+        if (qualifiers.length == 0) {
             return StringFormatter.formatSimple(type);
         }
         // TODO fix
@@ -386,7 +374,7 @@ public abstract class Key<T> {
      * @return this key with no qualifier
      */
     public final Key<T> withoutQualifiers() {
-        return qualifiers == null ? this : new CanonicalizedKey<>(type, (Annotation[]) null);
+        return qualifiers.length == 0 ? this : new CanonicalizedKey<>(type, QualifierUtil.NO_QUALIFIERS);
     }
 
     /**

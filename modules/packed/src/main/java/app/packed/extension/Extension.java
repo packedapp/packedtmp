@@ -115,16 +115,20 @@ public abstract class Extension<E extends Extension<E>> {
         requireNonNull(bean, "bean is null");
         requireNonNull(key, "key is null");
         requireNonNull(supplier, "supplier is null");
+        BeanSetup b = BeanSetup.crack(bean);
         if (!bean.owner().isExtension(extension.extensionType)) {
+            System.out.println(bean.owner());
             throw new IllegalArgumentException();
-        } else if (BeanSetup.crack(bean).container != extension.container) {
+        } else if (b.container != extension.container) {
             throw new IllegalArgumentException(); // Hmm? maybe allow it
         }
         checkIsConfigurable();
 
-        CodeGeneratingConsumer cgc = extension.container.codeConsumers.computeIfAbsent(bean, k -> new CodeGeneratingConsumer());
+        CodeGeneratingConsumer cgc = extension.container.codeConsumers.computeIfAbsent(b, k -> new CodeGeneratingConsumer());
 
         BindableVariable prev = cgc.vars.get(key);
+        
+        System.out.println(cgc.vars.keySet());
         if (prev == null) {
             throw new IllegalArgumentException("The bean does not consume " + key);
         } else if (prev.isBound()) {

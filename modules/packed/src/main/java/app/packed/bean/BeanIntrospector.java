@@ -38,6 +38,7 @@ import app.packed.bean.BeanHook.AnnotatedVariableHook;
 import app.packed.bean.BeanHook.VariableTypeHook;
 import app.packed.binding.InvalidKeyException;
 import app.packed.binding.Key;
+import app.packed.binding.Qualifier;
 import app.packed.binding.Variable;
 import app.packed.binding.mirror.BindingMirror;
 import app.packed.container.Realm;
@@ -429,13 +430,12 @@ public abstract class BeanIntrospector {
          */
         void bindToInvocationArgument(int argumentIndex);
 
-        default void bindToGenerated(Supplier<?> consumer) {
-            // Taenker vi smider en InternalExtensionException paa runtime?
-            // Eller maaske har vi en specific CodeGenerationException
-            // Er fx brugt fra @CodeGenerated
-            // Will be invoked doing code generation.
-        }
-        
+        // Taenker vi smider en InternalExtensionException paa runtime?
+        // Eller maaske har vi en specific CodeGenerationException
+        // Er fx brugt fra @CodeGenerated
+        // Will be invoked doing code generation.
+        void bindToGenerated(Supplier<?> consumer);
+
         /**
          * @param argumentIndex
          * @param context
@@ -503,9 +503,11 @@ public abstract class BeanIntrospector {
         // readAsKey, parseKey?
         default Key<?> variableToKey() {
             if (variable().getAnnotations().length != 0) {
-                throw new UnsupportedOperationException("Does not support anno conversion");
+                // throw new UnsupportedOperationException("Does not support anno conversion");
             }
-            return Key.convertTypeNullableAnnotation(this, variable().getType());
+            Annotation[] anno = List.of(variable().getAnnotations()).stream().filter(e -> e.annotationType().isAnnotationPresent(Qualifier.class))
+                    .toArray(i -> new Annotation[i]);
+            return Key.convertTypeNullableAnnotation(this, variable().getType(), anno);
         }
 
         default BindableBaseVariable wrapAsBaseBindable() {
@@ -613,8 +615,8 @@ public abstract class BeanIntrospector {
         Field field();
 
         /**
-         * Attempts to convert field to a {@link Key} or fails by throwing {@link BeanInstallationException} if the field
-         * does not represent a proper key.
+         * Attempts to convert field to a {@link Key} or fails by throwing {@link BeanInstallationException} if the field does
+         * not represent a proper key.
          * <p>
          * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
          * key. As a binding hook is typically used in cases where this would be needed.

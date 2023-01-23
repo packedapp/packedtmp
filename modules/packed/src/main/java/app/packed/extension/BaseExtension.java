@@ -6,6 +6,7 @@ import java.util.Set;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
@@ -28,7 +29,10 @@ import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.InvocationArgument;
 import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.ServiceLocator;
+import internal.app.packed.bean.BeanScannerBeanVariable;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
+import internal.app.packed.container.ContainerSetup.CodeGeneratingConsumer;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifetime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.LifetimeOperation;
@@ -189,72 +193,78 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                 }
             }
 
-    @Override
-    public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod method) {
-        AnnotationCollection ar = method.annotations();
+            @Override
+            public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod method) {
+                AnnotationCollection ar = method.annotations();
 
-        OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
-        // (PackedInvocationType) operation.invocationType.withReturnType(type.returnType());
+                OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
+                // (PackedInvocationType) operation.invocationType.withReturnType(type.returnType());
 
-        if (ar.isAnnotationPresent(OnInitialize.class)) {
-            @SuppressWarnings("unused")
-            OnInitialize oi = ar.readRequired(OnInitialize.class);
-            OperationSetup os = OperationSetup.crack(method.newOperation(temp));
-            os.bean.operationsLifetime.add(new LifetimeOperation(RunState.INITIALIZING, os));
-        }
+                if (ar.isAnnotationPresent(OnInitialize.class)) {
+                    @SuppressWarnings("unused")
+                    OnInitialize oi = ar.readRequired(OnInitialize.class);
+                    OperationSetup os = OperationSetup.crack(method.newOperation(temp));
+                    os.bean.operationsLifetime.add(new LifetimeOperation(RunState.INITIALIZING, os));
+                }
 
-        if (ar.isAnnotationPresent(OnStart.class)) {
-            @SuppressWarnings("unused")
-            OnStart oi = ar.readRequired(OnStart.class);
-            OperationSetup os = OperationSetup.crack(method.newOperation(temp));
-            os.bean.operationsLifetime.add(new LifetimeOperation(RunState.STARTING, os));
-        }
+                if (ar.isAnnotationPresent(OnStart.class)) {
+                    @SuppressWarnings("unused")
+                    OnStart oi = ar.readRequired(OnStart.class);
+                    OperationSetup os = OperationSetup.crack(method.newOperation(temp));
+                    os.bean.operationsLifetime.add(new LifetimeOperation(RunState.STARTING, os));
+                }
 
-        if (ar.isAnnotationPresent(OnStop.class)) {
-            @SuppressWarnings("unused")
-            OnStop oi = ar.readRequired(OnStop.class);
-            OperationSetup os = OperationSetup.crack(method.newOperation(temp));
-            os.bean.operationsLifetime.add(new LifetimeOperation(RunState.STOPPING, os));
-        }
+                if (ar.isAnnotationPresent(OnStop.class)) {
+                    @SuppressWarnings("unused")
+                    OnStop oi = ar.readRequired(OnStop.class);
+                    OperationSetup os = OperationSetup.crack(method.newOperation(temp));
+                    os.bean.operationsLifetime.add(new LifetimeOperation(RunState.STOPPING, os));
+                }
 
-        if (ar.isAnnotationPresent(Inject.class)) {
-            OperationSetup.crack(method.newOperation(temp));
-        }
-    }
-
-    @Override
-    public void hookOnAnnotatedVariable(Annotation hook, BindableVariable v) {
-        if (hook instanceof FromContainerGuest) {
-            Variable va = v.variable();
-            if (va.getRawType().equals(String.class)) {
-                v.bindTo(new Op1<@InvocationArgument  ApplicationInitializationContext, String>(a -> a.name()) {});
-            } else if (va.getRawType().equals(ManagedLifetimeController.class)) {
-                v.bindTo(new Op1<@InvocationArgument  ApplicationInitializationContext, ManagedLifetimeController>(a -> a.cr.runtime) {});
-            } else if (va.getRawType().equals(ServiceLocator.class)) {
-                v.bindTo(new Op1<@InvocationArgument  ApplicationInitializationContext, ServiceLocator>(a -> a.serviceLocator()) {});
-            } else {
-                throw new UnsupportedOperationException("va " + va.getRawType());
-            }
-        } else if (hook instanceof InvocationArgument ia) {
-            int index = ia.index();
-            Class<?> cl = v.variable().getRawType();
-            List<Class<?>> l = v.availableInvocationArguments();
-            if (cl != l.get(index)) {
-                throw new UnsupportedOperationException();
+                if (ar.isAnnotationPresent(Inject.class)) {
+                    OperationSetup.crack(method.newOperation(temp));
+                }
             }
 
-            // v.b
-            // v.bindToInvocationArgument(index);
-            v.bindToInvocationArgument(index);
-        } else if (hook instanceof CodeGenerated cg) {
-            throw new UnsupportedOperationException();
-        } else {
-            super.hookOnAnnotatedVariable(hook, v);
-        }
+            @Override
+            public void hookOnAnnotatedVariable(Annotation hook, BindableVariable v) {
+                if (hook instanceof FromContainerGuest) {
+                    Variable va = v.variable();
+                    if (va.getRawType().equals(String.class)) {
+                        v.bindTo(new Op1<@InvocationArgument ApplicationInitializationContext, String>(a -> a.name()) {});
+                    } else if (va.getRawType().equals(ManagedLifetimeController.class)) {
+                        v.bindTo(new Op1<@InvocationArgument ApplicationInitializationContext, ManagedLifetimeController>(a -> a.cr.runtime) {});
+                    } else if (va.getRawType().equals(ServiceLocator.class)) {
+                        v.bindTo(new Op1<@InvocationArgument ApplicationInitializationContext, ServiceLocator>(a -> a.serviceLocator()) {});
+                    } else {
+                        throw new UnsupportedOperationException("va " + va.getRawType());
+                    }
+                } else if (hook instanceof InvocationArgument ia) {
+                    int index = ia.index();
+                    Class<?> cl = v.variable().getRawType();
+                    List<Class<?>> l = v.availableInvocationArguments();
+                    if (cl != l.get(index)) {
+                        throw new UnsupportedOperationException();
+                    }
 
+                    // v.b
+                    // v.bindToInvocationArgument(index);
+                    v.bindToInvocationArgument(index);
+                } else if (hook instanceof CodeGenerated cg) {
+                    BeanSetup bean = ((BeanScannerBeanVariable) v).operation.bean;
+                    CodeGeneratingConsumer c = bean.container.codeConsumers.computeIfAbsent(bean, k -> new CodeGeneratingConsumer());
+                    BindableVariable bv = c.vars.putIfAbsent(v.variableToKey(), v);
+                    if (bv != null) {
+                        throw new BeanInstallationException(v.variableToKey() + " Can only be injected once");
+                    }
+                } else {
+                    super.hookOnAnnotatedVariable(hook, v);
+                }
+
+            }
+
+        };
     }
-
-    };}
 
     ContainerInstaller newContainerInstaller() {
         return new PackedContainerInstaller(extension.container);

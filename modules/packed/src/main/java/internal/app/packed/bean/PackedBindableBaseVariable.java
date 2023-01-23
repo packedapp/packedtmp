@@ -183,4 +183,10 @@ public class PackedBindableBaseVariable implements BindableBaseVariable {
     public Variable originalVariable() {
         throw new UnsupportedOperationException();
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public void bindToGenerated(Supplier<?> consumer) {
+        v.bindToGenerated(consumer);
+    }
 }

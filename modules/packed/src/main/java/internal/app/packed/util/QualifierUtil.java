@@ -25,6 +25,8 @@ import app.packed.framework.Nullable;
 /** Limited support for javax.inject classes. */
 public final class QualifierUtil {
 
+    public static final Annotation[] NO_QUALIFIERS = new Annotation[0];
+
     public static void checkQualifierAnnotationPresent(Annotation e) {
         Class<?> annotationType = e.annotationType();
         // TODO check also withQualifier
@@ -38,11 +40,11 @@ public final class QualifierUtil {
 
     @Nullable
     public static Annotation[] findQualifier(Annotation[] annotations) {
-        Annotation[] qualifiers = null;
+        Annotation[] qualifiers = NO_QUALIFIERS;
         for (Annotation a : annotations) {
             Class<? extends Annotation> annotationType = a.annotationType();
             if (annotationType.isAnnotationPresent(Qualifier.class)) {
-                if (qualifiers == null) {
+                if (qualifiers.length == 0) {
                     qualifiers = new Annotation[1];
                     qualifiers[0] = a;
                 } else {

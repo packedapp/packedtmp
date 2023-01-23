@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationPath;
-import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanIntrospector.BindableVariable;
 import app.packed.binding.Key;
 import app.packed.container.Assembly;
@@ -55,7 +54,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         public final Map<Key<?>, BindableVariable> vars = new HashMap<>();
     }
 
-    public Map<BeanConfiguration, CodeGeneratingConsumer> codeConsumers = new HashMap<>();
+    public Map<BeanSetup, CodeGeneratingConsumer> codeConsumers = new HashMap<>();
 
     /** A MethodHandle for invoking {@link ContainerMirror#initialize(ContainerSetup)}. */
     private static final MethodHandle MH_CONTAINER_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ContainerMirror.class, "initialize",
