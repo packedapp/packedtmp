@@ -94,7 +94,7 @@ public sealed abstract class BindingProvider {
         /** {@inheritDoc} */
         @Override
         public MethodHandle bindIntoOperation(Osi osi) {
-            throw new UnsupportedOperationException();
+            return osi.bindConstant(consumer.get());
         }
 
         /** {@inheritDoc} */

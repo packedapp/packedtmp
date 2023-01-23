@@ -113,7 +113,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         return lifetime;
     }
 
-    public void codegen() {
+    public void orderDependencies() {
         for (BeanSetup bs : beans) {
             orderBeans(bs);
         }

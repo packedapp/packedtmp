@@ -105,12 +105,16 @@ public final class ApplicationSetup {
     }
 
     public void finish() {
-        container.lifetime.codegen();
+        // Order all dependencies between beans
+        container.lifetime.orderDependencies();
 
+        // Generate code if needed
         if (codeGenerator != null) {
             phase = ApplicationBuildPhase.CODEGEN;
-            codeGenerator.finish();
+            codeGenerator.generateCode();
         }
+        
+        // The application was build successfully
         phase = ApplicationBuildPhase.COMPLETED;
     }
 

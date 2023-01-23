@@ -29,8 +29,11 @@ import app.packed.bean.BeanHook.AnnotatedVariableHook;
  * Man kan selvfoelgelig kun bruge den paa
  * 
  * <p>
+ * This annotation can only used on beans owned by an extension.
  * 
- * <> Can only be used by extensions.
+ * @see Extension#addCodeGenerated(app.packed.bean.BeanConfiguration, Class, java.util.function.Supplier)
+ * @see Extension#addCodeGenerated(app.packed.bean.BeanConfiguration, app.packed.binding.Key,
+ *      java.util.function.Supplier)
  */
 @Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)

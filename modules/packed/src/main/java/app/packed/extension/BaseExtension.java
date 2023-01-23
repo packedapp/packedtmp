@@ -252,6 +252,9 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     v.bindToInvocationArgument(index);
                 } else if (hook instanceof CodeGenerated cg) {
                     BeanSetup bean = ((BeanScannerBeanVariable) v).operation.bean;
+                    if (beanOwner().isApplication()) {
+                        throw new BeanInstallationException("@" + CodeGenerated.class.getSimpleName() + " can only be used by extensions");
+                    }
                     CodeGeneratingConsumer c = bean.container.codeConsumers.computeIfAbsent(bean, k -> new CodeGeneratingConsumer());
                     BindableVariable bv = c.vars.putIfAbsent(v.variableToKey(), v);
                     if (bv != null) {

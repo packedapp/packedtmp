@@ -91,7 +91,7 @@ final class ApplicationCodeGenerator {
     /**
      * 
      */
-    void finish() {
+    void generateCode() {
         CodegenEvent ce = new CodegenEvent();
         ce.begin();
 
