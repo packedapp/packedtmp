@@ -7,7 +7,6 @@ import java.util.Set;
 import app.packed.bean.BeanMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.container.Mirror;
-import internal.app.packed.lifetime.LifetimeSetup;
 
 /**
  * A mirror of a lifetime.
@@ -26,8 +25,6 @@ import internal.app.packed.lifetime.LifetimeSetup;
 // Life cycle - A series of stages through which an organism passes between recurrences of a primary stage.
 //https://thesaurus.plus/related/life_cycle/lifetime
 public abstract sealed class LifetimeMirror implements Mirror permits BeanLifetimeMirror, ContainerLifetimeMirror {
-
-    abstract LifetimeSetup lifetime();
 
     /**
      * If this lifetime is not stateless returns the bean that controls creation and destruction of the lifetime.
@@ -82,40 +79,6 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
     /** {@return any parent lifetime this lifetime is contained within.} */
     public abstract Optional<ContainerLifetimeMirror> parent();
 
-    public enum LifetimeOriginKind {
-
-        /** An application is created together with lifetime. */
-        APPLICATION,
-
-        /** A single bean is created with the lifetime. */
-        BEAN,
-
-        /** A (non-root) container is created together with lifetime. */
-        CONTAINER;
-
-        // Hvad med Operation??
-        // I sidste ende bliver alle lifetimes jo lavet med en operation
-    }
-
-    // function/static beans har samme lifetime som deres container
-
-    /// Hmm maaske har vi flere LifetimeKind???
-    // BeanLifetimeKind [Container, OPERATION
-    // OPERATION, DEPENDANT, ...
-
-    // Omvendt saa kan vi vel godt lave en container pga en operation????
-
-    //// Honorable mentions
-
-    //// Haaber vi kan undgaa at tilfoeje den her
-    // DEPENDANT,
-
-    //// Lazy er ikke paa lifetimen, men paa componenten...
-    //// Fordi du er jo lazy i forhold til applikationen eller containeren.
-    // LAZY;
-
-    //// Vi dropper den her fordi vi simpelthen bare siger de ikke har nogen lifecycle
-    // UNMANAGED (or Epheral)
 
 }
 ///** {@return the type of lifetime.} */
@@ -142,16 +105,50 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
 //Er lidt i tvivl om det her er 2 ting vi dealer med
 interface LifetimeSandbox {
 
+    //// Vi dropper den her fordi vi simpelthen bare siger de ikke har nogen lifecycle
+    // UNMANAGED (or Epheral)
     // Noget om hvordan den bliver aktiveret???
     //// Altsaa fx fra hvilken operation
     ////
     Set<Object> activators();
+
+    // function/static beans har samme lifetime som deres container
+
+    /// Hmm maaske har vi flere LifetimeKind???
+    // BeanLifetimeKind [Container, OPERATION
+    // OPERATION, DEPENDANT, ...
+
+    // Omvendt saa kan vi vel godt lave en container pga en operation????
+
+    //// Honorable mentions
+
+    //// Haaber vi kan undgaa at tilfoeje den her
+    // DEPENDANT,
+
+    //// Lazy er ikke paa lifetimen, men paa componenten...
+    //// Fordi du er jo lazy i forhold til applikationen eller containeren.
+    // LAZY;
 
     // Altsaa det er taenkt paa at man kan have fx application dependencies.
     // Altsaa en egentlig graph af ting der skal vaere oppe og koere.
     Set<LifetimeMirror> dependants();
 
     boolean isSingleton(); // I relation til foraeldren
+
+    public enum LifetimeOriginKind {
+
+        /** An application is created together with lifetime. */
+        APPLICATION,
+
+        /** A single bean is created with the lifetime. */
+        BEAN,
+
+        /** A (non-root) container is created together with lifetime. */
+        CONTAINER;
+
+        // Hvad med Operation??
+        // I sidste ende bliver alle lifetimes jo lavet med en operation
+    }
 
     // BeanLifecycleMirrorPlan plan();
 }

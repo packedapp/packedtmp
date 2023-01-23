@@ -23,7 +23,7 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
-import app.packed.extension.CodeGenerated;
+import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;

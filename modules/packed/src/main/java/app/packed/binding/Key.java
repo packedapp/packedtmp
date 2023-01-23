@@ -169,13 +169,12 @@ public abstract class Key<T> {
      * @param qualifiers
      *            the (optional) qualifier
      */
-    private Key(Type type, Annotation[] qualifiers) {
-        this.qualifiers = requireNonNull(qualifiers);
+    private Key(Type type, Class<?> rawType, Annotation[] qualifiers, int hash) {
         this.type = type;
-        this.rawType = TypeUtil.rawTypeOf(type);
-        int h = type.hashCode();
-        h ^= Arrays.hashCode(qualifiers);
-        this.hash = h;
+        this.rawType = requireNonNull(rawType);
+        this.qualifiers = requireNonNull(qualifiers);
+        assert (qualifiers.length > 0 || QualifierUtil.NO_QUALIFIERS == qualifiers);
+        this.hash = hash;
     }
 
     /**
@@ -193,7 +192,7 @@ public abstract class Key<T> {
         if (getClass() == CanonicalizedKey.class) {
             return this;
         }
-        return new CanonicalizedKey<>(type, qualifiers);
+        return new CanonicalizedKey<>(type, rawType, qualifiers, hash);
     }
 
     /** {@inheritDoc} */
@@ -204,10 +203,10 @@ public abstract class Key<T> {
         }
         if (obj instanceof Key<?> key && type.equals(key.type)) {
             Annotation[] a = key.qualifiers;
-            if (qualifiers.length == a.length) {
-                if (qualifiers.length == 0) {
-                    return true;
-                } else if (qualifiers.length == 1) {
+            if (qualifiers == a) {
+                return true;
+            } else if (qualifiers.length == a.length) {
+                if (qualifiers.length == 1) {
                     return a[0].equals(qualifiers[0]);
                 } else {
                     throw new UnsupportedOperationException();
@@ -278,12 +277,12 @@ public abstract class Key<T> {
     // A class key is a key where the type part is a Class
     // a simple class key is a key of
     final boolean isSimpleClassKey(Class<?> c) {
-        return qualifiers == null && type == c;
+        return type == c && !hasQualifiers();
     }
 
     /** {@return an immutable set of any qualifiers that are part of this key.} */
     public final Set<Annotation> qualifiers() {
-        return qualifiers == null ? Set.of() : Set.of(qualifiers);
+        return hasQualifiers() ? Set.of(qualifiers) : Set.of();
     }
 
     /** {@return the raw type of the type part of this key} */
@@ -294,11 +293,11 @@ public abstract class Key<T> {
     /** {@inheritDoc} */
     @Override
     public final String toString() {
-        if (qualifiers.length == 0) {
-            return StringFormatter.format(type);
+        if (hasQualifiers()) {
+            // TODO fix formatting
+            return format(qualifiers[0]) + " " + StringFormatter.format(type);
         }
-        // TODO fix formatting
-        return format(qualifiers[0]) + " " + StringFormatter.format(type);
+        return StringFormatter.format(type);
     }
 
     /**
@@ -310,11 +309,11 @@ public abstract class Key<T> {
     // Omvendt tror jeg vil have en lille key, men mulighed for at lave en lang
     // toStringLong or toStringFull
     public final String toStringSimple() {
-        if (qualifiers.length == 0) {
-            return StringFormatter.formatSimple(type);
+        if (hasQualifiers()) {
+            // TODO fix
+            return formatSimple(qualifiers[0]) + " " + StringFormatter.formatSimple(type);
         }
-        // TODO fix
-        return formatSimple(qualifiers[0]) + " " + StringFormatter.formatSimple(type);
+        return StringFormatter.formatSimple(type);
     }
 
     /** {@return the type part of this key} */
@@ -374,7 +373,7 @@ public abstract class Key<T> {
      * @return this key with no qualifier
      */
     public final Key<T> withoutQualifiers() {
-        return qualifiers.length == 0 ? this : new CanonicalizedKey<>(type, QualifierUtil.NO_QUALIFIERS);
+        return hasQualifiers() ? new CanonicalizedKey<>(type, QualifierUtil.NO_QUALIFIERS) : this;
     }
 
     /**
@@ -539,6 +538,10 @@ public abstract class Key<T> {
     /** See {@link CanonicalizedGenericType}. */
     private static final class CanonicalizedKey<T> extends Key<T> {
 
+        private CanonicalizedKey(Type type, Class<?> rawType, Annotation[] qualifiers, int hashCode) {
+            super(type, rawType, qualifiers, hashCode);
+        }
+
         /**
          * Creates a new canonicalized key.
          * 
@@ -548,7 +551,7 @@ public abstract class Key<T> {
          *            a nullable qualifier annotation
          */
         private CanonicalizedKey(Type type, Annotation... qualifiers) {
-            super(type, qualifiers);
+            super(type, TypeUtil.rawTypeOf(type), qualifiers, type.hashCode() ^ Arrays.hashCode(qualifiers));
         }
     }
 }

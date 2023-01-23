@@ -24,7 +24,7 @@ import app.packed.extension.FrameworkExtension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
-import internal.app.packed.lifetime.ApplicationInitializationContext;
+import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 
 /**
  *

@@ -17,7 +17,6 @@ SE.childLifetime
 
 ContainerHandle.createsNewLifetime()-
 
-
 ---------
 Syntes maaske extension bridge er bundet til bean'en.
 Vi kan ikke have en bean med flere forskellige bridges...

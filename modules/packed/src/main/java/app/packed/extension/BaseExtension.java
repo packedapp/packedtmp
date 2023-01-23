@@ -12,6 +12,7 @@ import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.BindableVariable;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLifecycleOperationMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.Inject;
 import app.packed.bean.OnInitialize;
@@ -23,12 +24,13 @@ import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
+import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.BaseExtensionPoint.ContainerInstaller;
-import app.packed.extension.bridge.FromContainerGuest;
 import app.packed.lifetime.RunState;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.InvocationArgument;
 import app.packed.service.ProvideableBeanConfiguration;
@@ -37,8 +39,8 @@ import internal.app.packed.bean.BeanScannerBeanVariable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.PackedContainerInstaller;
-import internal.app.packed.lifetime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.LifetimeOperation;
+import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -49,19 +51,14 @@ import internal.app.packed.operation.OperationSetup;
  */
 public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
+    /** Variables that used together with {@link CodeGenerated}. */
+    final Map<CodeGeneratorKey, BindableVariable> codegenVariables = new HashMap<>();
+
     boolean isLinking;
 
     /** Create a new base extension. */
     BaseExtension() {}
 
-    static class CodeGeneratingConsumer {
-        public final Map<Key<?>, BindableVariable> vars = new HashMap<>();
-    }
-
-    final Map<BeanSetup, CodeGeneratingConsumer> codeConsumers = new HashMap<>();
-
-
-    
     final void embed(Assembly assembly) {
         /// MHT til hooks. Saa tror jeg faktisk at man tager de bean hooks
         // der er paa den assembly der definere dem
@@ -201,6 +198,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks, OperationalField field) {
                 if (field.annotations().isAnnotationPresent(Inject.class)) {
 
+                    // handle.specializeMirror(() -> new BeanLifecycleOperationMirror());
                 }
             }
 
@@ -209,13 +207,14 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                 AnnotationCollection ar = method.annotations();
 
                 OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
-                // (PackedInvocationType) operation.invocationType.withReturnType(type.returnType());
 
                 if (ar.isAnnotationPresent(OnInitialize.class)) {
                     @SuppressWarnings("unused")
                     OnInitialize oi = ar.readRequired(OnInitialize.class);
-                    OperationSetup os = OperationSetup.crack(method.newOperation(temp));
+                    OperationHandle handle = method.newOperation(temp);
+                    OperationSetup os = OperationSetup.crack(handle);
                     os.bean.operationsLifetime.add(new LifetimeOperation(RunState.INITIALIZING, os));
+                    handle.specializeMirror(() -> new BeanLifecycleOperationMirror());
                 }
 
                 if (ar.isAnnotationPresent(OnStart.class)) {
@@ -239,7 +238,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             @Override
             public void hookOnAnnotatedVariable(Annotation hook, BindableVariable v) {
-                if (hook instanceof FromContainerGuest) {
+                if (hook instanceof FromGuest) {
                     Variable va = v.variable();
                     if (va.getRawType().equals(String.class)) {
                         v.bindTo(new Op1<@InvocationArgument ApplicationInitializationContext, String>(a -> a.name()) {});
@@ -266,17 +265,18 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     if (beanOwner().isApplication()) {
                         throw new BeanInstallationException("@" + CodeGenerated.class.getSimpleName() + " can only be used by extensions");
                     }
-                    CodeGeneratingConsumer c = codeConsumers.computeIfAbsent(bean, k -> new CodeGeneratingConsumer());
-                    BindableVariable bv = c.vars.putIfAbsent(v.variableToKey(), v);
+
+                    // Create the key
+                    Key<?> key = v.variableToKey();
+
+                    BindableVariable bv = codegenVariables.putIfAbsent(new CodeGeneratorKey(bean, key), v);
                     if (bv != null) {
-                        throw new BeanInstallationException(v.variableToKey() + " Can only be injected once");
+                        throw new BeanInstallationException(key + " Can only be injected once for bean " + bean);
                     }
                 } else {
                     super.hookOnAnnotatedVariable(hook, v);
                 }
-
             }
-
         };
     }
 
@@ -302,4 +302,5 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         super.onAssemblyClose();
     }
 
+    record CodeGeneratorKey(BeanSetup bean, Key<?> key) {}
 }

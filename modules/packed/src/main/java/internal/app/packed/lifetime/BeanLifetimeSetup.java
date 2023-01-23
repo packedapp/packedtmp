@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
-import app.packed.bean.BeanKind;
 import app.packed.lifetime.BeanLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
 import internal.app.packed.bean.BeanSetup;
@@ -31,28 +30,20 @@ import internal.app.packed.util.ThrowableUtil;
 
 /** The lifetime of a bean whose lifetime is independent of its container. */
 public final class BeanLifetimeSetup implements LifetimeSetup {
-    
+
     /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
-    static final MethodHandle MH_BEAN_LIFETIME_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanLifetimeMirror.class, "initialize", void.class,
-            BeanLifetimeSetup.class);
-    
+    private static final MethodHandle MH_BEAN_LIFETIME_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanLifetimeMirror.class,
+            "initialize", void.class, BeanLifetimeSetup.class);
+
     /** The single bean this lifetime contains. */
     public final BeanSetup bean;
 
     /** */
     public final List<FuseableOperation> lifetimes;
 
-    /** The lifetime of the bean's container. */
-    public final ContainerLifetimeSetup parent;
-
-    public BeanLifetimeSetup(ContainerLifetimeSetup parent, BeanSetup bean, PackedBeanInstaller installer) {
+    public BeanLifetimeSetup(BeanSetup bean, PackedBeanInstaller installer) {
         this.lifetimes = FuseableOperation.of(installer.lifetimes);
         this.bean = requireNonNull(bean);
-        this.parent = requireNonNull(parent);
-    }
-
-    public boolean isLazy() {
-        return bean.beanKind == BeanKind.LAZY;
     }
 
     /** {@inheritDoc} */
@@ -65,7 +56,7 @@ public final class BeanLifetimeSetup implements LifetimeSetup {
     public BeanLifetimeMirror mirror() {
         BeanLifetimeMirror mirror = new BeanLifetimeMirror();
 
-        // Initialize LifetimeMirror by calling LifetimeMirror#initialize(LifetimeSetup)
+        // Initialize BeanLifetimeMirror by calling BeanLifetimeMirror#initialize(BeanLifetimeSetup)
         try {
             MH_BEAN_LIFETIME_MIRROR_INITIALIZE.invokeExact(mirror, this);
         } catch (Throwable e) {
@@ -77,6 +68,6 @@ public final class BeanLifetimeSetup implements LifetimeSetup {
     /** {@inheritDoc} */
     @Override
     public ContainerLifetimeSetup parent() {
-        return parent;
+        return bean.container.lifetime;
     }
 }

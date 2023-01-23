@@ -33,13 +33,13 @@ import app.packed.binding.Qualifier;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.AbstractComposer.ComposerAssembly;
+import app.packed.extension.FromGuest;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
-import app.packed.extension.bridge.FromContainerGuest;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
-import internal.app.packed.lifetime.PackedExtensionContext;
+import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.service.PackedServiceLocator;
 
 /**
@@ -316,7 +316,7 @@ public interface ServiceLocator {
      */
     private static BootstrapApp<ServiceLocator> driver() {
         class ServiceLocatorAssembly {
-            private static final BootstrapApp<ServiceLocator> DRIVER = BootstrapApp.of(new Op1<@FromContainerGuest ServiceLocator, ServiceLocator>(e -> e) {},
+            private static final BootstrapApp<ServiceLocator> DRIVER = BootstrapApp.of(new Op1<@FromGuest ServiceLocator, ServiceLocator>(e -> e) {},
                     c -> {});
         }
         return ServiceLocatorAssembly.DRIVER;

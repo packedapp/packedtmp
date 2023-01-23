@@ -33,7 +33,7 @@ import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.lifetime.ApplicationInitializationContext;
+import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -94,13 +94,12 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
     /** {@inheritDoc} */
     public A launch(Assembly assembly, Wirelet... wirelets) {
         // Build the application
-        AssemblySetup as = new AssemblySetup(this, BuildGoal.LAUNCH, null, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.LAUNCH_NOW, null, assembly, wirelets);
         as.build();
 
         // Launch the application
-        RuntimeApplicationLauncher launcher = as.application.codeGenerator.launcher;
-        // as= null? For GC?
-        return launcher.launchImmediately(this);
+        RuntimeApplicationLauncher launcher = as.application.generatedLauncher;
+        return launcher.launchNow(this);
     }
 
     /**
@@ -123,7 +122,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
     /** {@inheritDoc} */
     public ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets) {
         // Build the application
-        AssemblySetup as = new AssemblySetup(this, BuildGoal.IMAGE, null, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.LAUNCH_REPEATABLE, null, assembly, wirelets);
         as.build();
 
         // Create a reusable launcher
@@ -151,7 +150,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
     /** {@inheritDoc} */
     public ApplicationLauncher<A> newLauncher(Assembly assembly, Wirelet... wirelets) {
         // Build the application
-        AssemblySetup as = new AssemblySetup(this, BuildGoal.LAUNCHER, null, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.LAUNCH_LATER, null, assembly, wirelets);
         as.build();
 
         // Create single shop image
@@ -314,7 +313,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
             if (img == null) {
                 throw new IllegalStateException("This image has already been used");
             }
-            return img.application.codeGenerator.launcher;
+            return img.application.generatedLauncher;
         }
 
         /** {@inheritDoc} */
@@ -338,7 +337,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
         /** {@inheritDoc} */
         @Override
         public A launch(Wirelet... wirelets) {
-            return application.codeGenerator.launcher.launchFromImage(driver, wirelets);
+            return application.generatedLauncher.launchFromImage(driver, wirelets);
         }
     }
 

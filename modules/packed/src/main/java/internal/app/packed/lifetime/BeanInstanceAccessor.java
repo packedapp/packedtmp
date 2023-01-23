@@ -18,4 +18,4 @@ package internal.app.packed.lifetime;
 /**
  *
  */
-public record BeanInstanceAccessor(Class<?> type, int index) {}
+public record BeanInstanceAccessor(int index) {}

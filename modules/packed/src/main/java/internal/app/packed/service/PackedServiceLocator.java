@@ -26,7 +26,7 @@ import app.packed.binding.Key;
 import app.packed.binding.Provider;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceSelection;
-import internal.app.packed.lifetime.PackedExtensionContext;
+import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.util.ThrowableUtil;
 
 /**

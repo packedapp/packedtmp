@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 import app.packed.binding.mirror.BindingProviderKind;
 import internal.app.packed.lifetime.BeanInstanceAccessor;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.lifetime.PackedExtensionContext;
+import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.Osi;
 

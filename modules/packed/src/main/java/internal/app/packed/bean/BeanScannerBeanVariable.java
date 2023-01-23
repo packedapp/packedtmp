@@ -131,7 +131,7 @@ public class BeanScannerBeanVariable implements BindableVariable {
 
     /** {@inheritDoc} */
     @Override
-    public void bindToGenerated(Supplier<?> consumer) {
+    public void bindToGeneratedConstant(Supplier<?> consumer) {
         checkIsBindable();
         BindingSetup bs = new HookBindingSetup(operation, index, Realm.application());
         bs.provider = new FromCodeGenerated(consumer);

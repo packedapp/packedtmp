@@ -28,19 +28,19 @@ import app.packed.framework.Nullable;
  */
 public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
 
-    /** The (nullable) first child of the extension. */
+    /** The (nullable) first child of the node. */
     @Nullable
     public T treeFirstChild;
 
-    /** The (nullable) last child of the extension. */
+    /** The (nullable) last child of the node. */
     @Nullable
-    T treeLastChild; // not exposed currently, as there are no use cases
+    T treeLastChild; // not exposed currently, as there are currently no use cases
 
-    /** Any parent extension this extension may have. Only the root extension in an application does not have a parent. */
+    /** Any parent this node may have. Only the root node does not have a parent. */
     @Nullable
     public final T treeParent;
 
-    /** The (nullable) siebling of the extension. */
+    /** The (nullable) sibling of the node. */
     @Nullable
     public T treeNextSiebling;
 

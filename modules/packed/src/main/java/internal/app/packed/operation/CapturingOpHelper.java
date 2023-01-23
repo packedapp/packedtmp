@@ -15,6 +15,8 @@
  */
 package internal.app.packed.operation;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
@@ -25,12 +27,13 @@ import app.packed.binding.Variable;
 import app.packed.operation.CapturingOp;
 import app.packed.operation.OperationType;
 import internal.app.packed.binding.InternalDependency;
+import internal.app.packed.operation.TerminalOp.FunctionInvocationOp;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
 /**
  *
  */
-class CapturedOpExtractor {
+public class CapturingOpHelper {
 
     private static final ClassValue<Base> BASE = new ClassValue<Base>() {
 
@@ -56,7 +59,7 @@ class CapturedOpExtractor {
         }
     };
 
-    static final ClassValue<Top> TOP = new ClassValue<>() {
+    private static final ClassValue<Top> TOP = new ClassValue<>() {
 
         @Override
         protected Top computeValue(Class<?> type) {
@@ -76,7 +79,14 @@ class CapturedOpExtractor {
         }
     };
 
-    static class Base {
+    public static <R> PackedOp<R> capture(Class<?> clazz, Object function) {
+        requireNonNull(function, "function is null"); // should have already been checked by subclasses
+        Top top = CapturingOpHelper.TOP.get(clazz);
+
+        return new FunctionInvocationOp<>(top.ot, top.create(function), top.base.samType, function.getClass().getMethods()[0]);
+    }
+
+    private static class Base {
         final SamType samType;
 
         final TypeVariableExtractor tve;
@@ -89,11 +99,12 @@ class CapturedOpExtractor {
         }
     }
 
-    static class Top {
+    private static class Top {
         final Base base;
-        final OperationType ot;
-
+        @SuppressWarnings("unused")
         final List<InternalDependency> deps;
+
+        final OperationType ot;
 
         Top(Base base, OperationType ot) {
             this.base = base;
@@ -102,7 +113,7 @@ class CapturedOpExtractor {
 
         }
 
-        MethodHandle mh = null;
+       // MethodHandle mh = null;
 
         MethodHandle create(Object function) {
             MethodHandle mh = base.samType.methodHandle().bindTo(function);

@@ -21,23 +21,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
-import app.packed.bean.BeanIntrospector.BindableVariable;
 
 /**
- * This annotation is used to indicate that the variable is constructed doing the code generation phase of the
- * application.
- * <p>
- * Man kan selvfoelgelig kun bruge den paa
- * 
- * <p>
- * This annotation can only used on beans owned by an extension.
- * 
- * @see BindableVariable#bindToGenerated(java.util.function.Supplier)
- * @see Extension#addCodeGenerated(app.packed.bean.BeanConfiguration, Class, java.util.function.Supplier)
- * @see Extension#addCodeGenerated(app.packed.bean.BeanConfiguration, app.packed.binding.Key,
- *      java.util.function.Supplier)
+ *
  */
-@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.TYPE_USE })
+@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
 @AnnotatedVariableHook(extension = BaseExtension.class)
-public @interface CodeGenerated {}
+public @interface FromGuest {}
+
+// Alternativt en Qualifier og saa local services...
+// Og evt ingen context...

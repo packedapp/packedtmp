@@ -27,12 +27,14 @@ import app.packed.operation.OperationMirror;
  * 
  */
 // Ved ikke om den kommer med som en egentlig operation
-// Giver god mening med
+// Giver god mening med, vi bliver ihvertfald noedt til at gentaenke
+// OperationTarget, Skal vi have en nested type?
 
 // Altsaa hvis en @Get laver en ny bean saa er det jo ikke en LifetimeOperation
 // WebGetOperationMirror ved jo ikke om den laver en ny lifetime...
 
 // Og saa alligevel.. @Get -> Kalder jo ogsaa Bean.factory operationen 
+// Har vi nogle prefix operationer?
 
 // Virker den kun hvis man har create and destroy a.la. Session.
 // Men App.run() med kun en operations

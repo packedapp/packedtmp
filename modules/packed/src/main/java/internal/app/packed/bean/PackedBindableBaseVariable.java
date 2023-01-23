@@ -186,7 +186,7 @@ public class PackedBindableBaseVariable implements BindableBaseVariable {
 
     /** {@inheritDoc} */
     @Override
-    public void bindToGenerated(Supplier<?> consumer) {
-        v.bindToGenerated(consumer);
+    public void bindToGeneratedConstant(Supplier<?> consumer) {
+        v.bindToGeneratedConstant(consumer);
     }
 }

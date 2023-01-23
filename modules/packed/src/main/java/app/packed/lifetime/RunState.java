@@ -15,10 +15,8 @@
  */
 package app.packed.lifetime;
 
-import app.packed.lifetime.sandbox.ManagedLifetimeController;
-
 /**
- * An enum containing all valid states of a {@link ManagedLifetimeController}.
+ * An enum containing all valid states of a typically an application, container or bean.
  *
  * There are 4 <b>steady</b> states: {@link #UNINITIALIZED}, {@link #INITIALIZED}, {@link #RUNNING} and {@link #TERMINATED}.
  *
@@ -60,6 +58,7 @@ public enum RunState {
      * If the guest is successfully finishes the initialization phase, it will move to the {@link #INITIALIZED} state. If it
      * fails, it will move to the {@link #TERMINATED} state.
      */
+    // Ideen er vist lidt at lazy can rapportere denne state
     UNINITIALIZED,
 
     /**

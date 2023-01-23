@@ -45,7 +45,6 @@ import app.packed.container.Realm;
 import app.packed.context.Context;
 import app.packed.context.ContextTemplate.InvocationContextArgument;
 import app.packed.extension.BaseExtensionPoint;
-import app.packed.extension.CodeGenerated;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
@@ -398,6 +397,8 @@ public abstract class BeanIntrospector {
          * Vi tager Nullable med saa vi bruge raw.
          * <p>
          * Tror vi smider et eller andet hvis vi er normal og man angiver null. Kan kun bruges for raw
+         * <p>
+         * See {@link #bindToGeneratedConstant(Supplier)}
          * 
          * @param value
          *            the value to bind
@@ -435,12 +436,20 @@ public abstract class BeanIntrospector {
         // Eller maaske har vi en specific CodeGenerationException
         // Er fx brugt fra @CodeGenerated
         // Will be invoked doing code generation.
+
         /**
-         * @param consumer
+         * Binds the variable to a constant that is generated as part of the codegen.
+         * <p>
+         * The specified is never called more than once.
+         * <p>
+         * The specified supplier is only called if a code gen phase of the application is active. Otherwise the supplier will
+         * never be called.
          * 
-         * @see CodeGenerated
+         * @param supplier
+         *            the supplier of the constant
+         * @see #bindConstant(Object)
          */
-        void bindToGenerated(Supplier<?> consumer);
+        void bindToGeneratedConstant(Supplier<@Nullable ?> supplier);
 
         /**
          * @param argumentIndex

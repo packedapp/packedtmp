@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime;
+package internal.app.packed.lifetime.zbridge;
 
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +24,6 @@ import app.packed.binding.Key;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.lifetime.bridge.PackedBridge;
 
 /**
  *

@@ -15,8 +15,6 @@
  */
 package app.packed.bean;
 
-import java.util.Optional;
-
 import app.packed.extension.BaseExtension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.RunState;
@@ -29,6 +27,7 @@ import app.packed.operation.OperationMirror;
 // Mit eneste problem er om vi fx har operationer der baade kan kalde paa flere tidspunkter??
 // OnInitialize, OnStart (Hvor tit sker det... Laver vi ikke bare flere operationer saa)
 
+// Is a factory a lifecycle operation? I don't think so
 public class BeanLifecycleOperationMirror extends OperationMirror {
 
     /**
@@ -37,7 +36,11 @@ public class BeanLifecycleOperationMirror extends OperationMirror {
      * @return
      */
     public LifetimeMirror lifetime() {
-        throw new UnsupportedOperationException();
+        return bean().lifetime();
+    }
+    
+    public boolean isNaturalOrder() {
+       throw new UnsupportedOperationException();
     }
 
     /** {@return the lifetime operation this operation is a part of.} */
@@ -46,13 +49,6 @@ public class BeanLifecycleOperationMirror extends OperationMirror {
     // Saa er det ikke en lifetime. Fx restart
     public OperationMirror lifetimeOperation() {
         throw new UnsupportedOperationException();
-    }
-
-    // Previous on bean?
-    // Previous on Lifetime
-    // Maybe better to leave out
-    Optional<BeanLifecycleOperationMirror> previous() {
-        return Optional.empty();
     }
 
     public RunState runState() {
@@ -82,3 +78,10 @@ public class BeanLifecycleOperationMirror extends OperationMirror {
     // det betyder at operatoren maa vaere BeanExtension hvilket vel er aligned
     // med @OnInitialize
 }
+
+//// Previous on bean?
+//// Previous on Lifetime
+//// Maybe better to leave out
+//Optional<BeanLifecycleOperationMirror> previous() {
+//    return Optional.empty();
+//}

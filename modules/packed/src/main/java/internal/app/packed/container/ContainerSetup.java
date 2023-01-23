@@ -129,7 +129,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             this.lifetime = parent.lifetime;
         }
 
-        // BaseExtension is used by default in every container
+        // BaseExtension is used by every container
         ExtensionSetup baseExtension = new ExtensionSetup(treeParent == null ? null : treeParent.extensions.get(BaseExtension.class), this,
                 BaseExtension.class);
         baseExtension.initialize();

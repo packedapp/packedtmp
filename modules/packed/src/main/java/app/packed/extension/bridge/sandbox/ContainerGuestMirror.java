@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime;
+package app.packed.extension.bridge.sandbox;
+
+import app.packed.bean.BeanMirror;
 
 /**
  *
  */
-public interface LifetimeTemplate {
-    LifetimeTemplate ALL = null;
-    LifetimeTemplate START_ONLY = null;
-    LifetimeTemplate STOP = null;
+public class ContainerGuestMirror extends BeanMirror {
+
 }

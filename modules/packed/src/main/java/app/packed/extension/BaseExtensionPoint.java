@@ -2,11 +2,16 @@ package app.packed.extension;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanHook.AnnotatedVariableHook;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.BindableVariable;
 import app.packed.bean.BeanKind;
@@ -15,7 +20,7 @@ import app.packed.binding.Key;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
-import app.packed.extension.BaseExtension.CodeGeneratingConsumer;
+import app.packed.extension.BaseExtension.CodeGeneratorKey;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
@@ -57,22 +62,20 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
         ExtensionSetup extension = extension().extension;
         if (!bean.owner().isExtension(usedBy())) {
-            throw new IllegalArgumentException("Bean Owner " + bean.owner() + " " );
+            throw new IllegalArgumentException("Bean Owner " + bean.owner() + " ");
         } else if (b.container != extension.container) {
             throw new IllegalArgumentException(); // Hmm? maybe allow it
         }
         checkIsConfigurable();
 
-        CodeGeneratingConsumer cgc = extension().codeConsumers.computeIfAbsent(b, k -> new CodeGeneratingConsumer());
-
-        BindableVariable prev = cgc.vars.get(key);
+        BindableVariable prev = extension().codegenVariables.get(new CodeGeneratorKey(b, key));
 
         if (prev == null) {
-            throw new IllegalArgumentException("The bean does not consume " + key);
+            throw new IllegalArgumentException("The specified bean must have an injection site that uses @" + CodeGenerated.class.getSimpleName() + " " + key);
         } else if (prev.isBound()) {
             throw new IllegalStateException("A supplier has previously been provided for key " + key);
         }
-        prev.bindToGenerated(supplier);
+        prev.bindToGeneratedConstant(supplier);
     }
 
     public <T> InstanceBeanConfiguration<T> install(Class<T> implementation) {
@@ -179,6 +182,26 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     // Lifetime -> In Operation, Start/Stop, stateless?
 
+    /**
+     * This annotation is used to indicate that the variable is constructed doing the code generation phase of the
+     * application.
+     * <p>
+     * Man kan selvfoelgelig kun bruge den paa
+     * 
+     * <p>
+     * This annotation can only used on beans owned by an extension.
+     * 
+     * @see BindableVariable#bindToGeneratedConstant(java.util.function.Supplier)
+     * @see BaseExtensionPoint#addCodeGenerated(app.packed.bean.BeanConfiguration, Class, java.util.function.Supplier)
+     * @see BaseExtensionPoint#addCodeGenerated(app.packed.bean.BeanConfiguration, app.packed.binding.Key,
+     *      java.util.function.Supplier)
+     */
+    @Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.TYPE_USE })
+    @Retention(RetentionPolicy.RUNTIME)
+    @AnnotatedVariableHook(extension = BaseExtension.class)
+    public @interface CodeGenerated {}
+
+    
     /**
      * An installer for installing beans into a container.
      * <p>

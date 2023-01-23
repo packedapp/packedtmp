@@ -43,16 +43,17 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
      */
     @Nullable
     private ContainerLifetimeSetup lifetime;
+
     /**
      * Create a new operation mirror.
      * <p>
      * Subclasses should have a single package-protected constructor.
      */
     public ContainerLifetimeMirror() {}
-    
+
     /** {@return the container that is the root of the lifetime.} */
     public ContainerMirror container() {
-        return setup().container.mirror();
+        return lifetime().container.mirror();
     }
 
     public Map<ContainerMirror, Collection<BeanMirror>> elements() {
@@ -64,7 +65,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
-        return this == other || other instanceof LifetimeMirror m && lifetime() == m.lifetime();
+        return this == other || other instanceof ContainerLifetimeMirror m && lifetime() == m.lifetime();
     }
 
     /** {@inheritDoc} */
@@ -84,7 +85,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
     public Optional<BeanMirror> holderBean() { // Do we need a ContainerWrapperBeanMirror?
         return Optional.empty();
     }
-    
+
     /**
      * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the extension.
      * 
@@ -108,7 +109,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
      * @throws IllegalStateException
      *             if {@link #initialize(ApplicationSetup)} has not been called.
      */
-    ContainerLifetimeSetup lifetime() {
+    private ContainerLifetimeSetup lifetime() {
         ContainerLifetimeSetup a = lifetime;
         if (a == null) {
             throw new IllegalStateException(
@@ -134,10 +135,6 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
     /** {@return any parent lifetime this lifetime is contained within.} */
     public Optional<ContainerLifetimeMirror> parent() {
         return Optional.ofNullable(lifetime().treeParent).map(e -> e.mirror());
-    }
-
-    private ContainerLifetimeSetup setup() {
-        return (ContainerLifetimeSetup) lifetime();
     }
 
     /** {@return the root of the tree.} */

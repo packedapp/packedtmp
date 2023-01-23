@@ -44,7 +44,7 @@ import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
 import internal.app.packed.binding.BindingProvider.FromOperation;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.lifetime.BeanInstanceAccessor;
-import internal.app.packed.lifetime.PackedExtensionContext;
+import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;

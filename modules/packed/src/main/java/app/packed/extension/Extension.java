@@ -114,9 +114,6 @@ public abstract class Extension<E extends Extension<E>> {
         return extension.container.path();
     }
 
-    // Ved ikke om vi draeber den, eller bare saetter en stor warning
-    // Problemet er at den ikke fungere skide godt paa fx JFR extension.
-    // Her er det jo root container vi skal teste
     /**
      * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
      * 
@@ -126,6 +123,9 @@ public abstract class Extension<E extends Extension<E>> {
      * @implNote Packed does not perform detailed tracking on what extensions use other extensions. So it cannot answer
      *           questions about what exact extension is using another extension
      */
+    // Ved ikke om vi draeber den, eller bare saetter en stor warning
+    // Problemet er at den ikke fungere skide godt paa fx JFR extension.
+    // Her er det jo root container vi skal teste
     protected final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return extension.container.isExtensionUsed(extensionType);
     }
@@ -281,7 +281,10 @@ public abstract class Extension<E extends Extension<E>> {
         return parent == null ? Optional.empty() : Optional.of((E) parent.instance());
     }
 
-    /** {@return instance of this extension that is used in the application's root container.} */
+    /**
+     * {@return an instance of this extension that is used in the application's root container. Will return this if this
+     * extension is the root extension}
+     */
     @SuppressWarnings("unchecked")
     protected final E root() {
         ExtensionSetup s = extension;
@@ -303,6 +306,7 @@ public abstract class Extension<E extends Extension<E>> {
      *             if the extension is no longer configurable
      * @see BuildGoal#isCodeGenerating()
      */
+    // add void runOnBuildCompleted, void runOnBuildFailed(Throwable cause); lad os lige faa nogle use cases foerst
     protected final void runOnCodegen(Runnable action) {
         checkIsConfigurable();
         extension.container.application.addCodeGenerator(action);

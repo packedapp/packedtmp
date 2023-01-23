@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 import app.packed.binding.Key;
 import app.packed.extension.Extension;
-import internal.app.packed.lifetime.bridge.PackedBridge;
+import internal.app.packed.lifetime.zbridge.PackedBridge;
 
 /**
  *

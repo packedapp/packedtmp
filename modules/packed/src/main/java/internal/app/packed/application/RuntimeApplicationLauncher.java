@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.container.Wirelet;
 import internal.app.packed.container.CompositeWirelet;
 import internal.app.packed.container.WireletWrapper;
-import internal.app.packed.lifetime.ApplicationInitializationContext;
+import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 
 /**
  *
@@ -33,7 +33,7 @@ final class RuntimeApplicationLauncher {
         this.application = application;
     }
 
-    <A> A launchImmediately(ApplicationDriver<A> driver) {
+    <A> A launchNow(ApplicationDriver<A> driver) {
         return ApplicationInitializationContext.launch(driver, application, null);
     }
 

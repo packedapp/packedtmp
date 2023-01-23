@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
@@ -26,6 +27,7 @@ import app.packed.container.Wirelet;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.jfr.CodegenEvent;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
@@ -37,15 +39,19 @@ public final class ApplicationSetup {
     private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ApplicationMirror.class, "initialize",
             void.class, ApplicationSetup.class);
 
-    /** Responsible for code generation, is null for {@link BuildGoal#MIRROR} and {@link BuildGoal#VERIFY}. */
+    /** A list of actions that will be executed doing the code generating phase. */
     @Nullable
-    final ApplicationCodeGenerator codeGenerator;
+    private final ArrayList<Runnable> codegenActions;
 
     /** The root container of the application. */
     public final ContainerSetup container;
 
     /** The driver used to create the application. */
     public final ApplicationDriver<?> driver;
+
+    /** The application launcher that is being built. */
+    @Nullable
+    public RuntimeApplicationLauncher generatedLauncher;
 
     /** The build goal. */
     public final BuildGoal goal;
@@ -68,7 +74,7 @@ public final class ApplicationSetup {
     public ApplicationSetup(ApplicationDriver<?> driver, BuildGoal goal, AssemblySetup assembly, Wirelet[] wirelets) {
         this.driver = requireNonNull(driver);
         this.goal = requireNonNull(goal);
-        this.codeGenerator = goal.isCodeGenerating() ? new ApplicationCodeGenerator(this) : null;
+        this.codegenActions = goal.isCodeGenerating() ? new ArrayList<>() : null;
         this.container = new ContainerSetup(this, assembly, null, wirelets);
     }
 
@@ -87,8 +93,8 @@ public final class ApplicationSetup {
             throw new IllegalStateException("This method must be called before the code generating phase is started");
         }
         // Only add the action if code generation is enabled
-        if (codeGenerator != null) {
-            codeGenerator.actions.add(action);
+        if (codegenActions != null) {
+            codegenActions.add(action);
         }
     }
 
@@ -109,11 +115,22 @@ public final class ApplicationSetup {
         container.lifetime.orderDependencies();
 
         // Generate code if needed
-        if (codeGenerator != null) {
+        if (codegenActions != null) {
             phase = ApplicationBuildPhase.CODEGEN;
-            codeGenerator.generateCode();
+
+            CodegenEvent ce = new CodegenEvent();
+            ce.begin();
+
+            // Run through all code generating actions
+            for (Runnable r : codegenActions) {
+                r.run();
+            }
+
+            ce.commit();
+
+            generatedLauncher = new RuntimeApplicationLauncher(this);
         }
-        
+
         // The application was build successfully
         phase = ApplicationBuildPhase.COMPLETED;
     }

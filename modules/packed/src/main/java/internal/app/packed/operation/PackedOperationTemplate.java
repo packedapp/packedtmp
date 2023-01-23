@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodType;
 
 import app.packed.operation.OperationTemplate;
-import internal.app.packed.lifetime.PackedExtensionContext;
+import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 
 public final class PackedOperationTemplate implements OperationTemplate {
 

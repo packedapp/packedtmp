@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime;
+package internal.app.packed.lifetime.runtime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -170,7 +170,7 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
 
         start(container, cr);
         
-        EntryPointSetup ep = container.lifetime.entryPoints;
+        EntryPointSetup ep = container.lifetime.entryPoint;
 
         if (ep != null) {
             ep.enter(cr);

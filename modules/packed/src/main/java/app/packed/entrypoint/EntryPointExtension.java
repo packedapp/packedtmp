@@ -69,9 +69,9 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
                 
                 ContainerSetup container = ((BeanScannerMethod) method).scanner.bean.container;
                 
-                container.lifetime.entryPoints = new EntryPointSetup();
+                container.lifetime.entryPoint = new EntryPointSetup();
 
-                MainThreadOfControl mc = container.lifetime.entryPoints.mainThread();
+                MainThreadOfControl mc = container.lifetime.entryPoint.mainThread();
 
                 OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
                 OperationHandle os = method.newOperation(temp);

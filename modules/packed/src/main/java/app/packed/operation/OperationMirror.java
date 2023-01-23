@@ -27,10 +27,10 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanHook.VariableTypeHook;
+import app.packed.bean.BeanMirror;
 import app.packed.binding.Key;
 import app.packed.binding.mirror.BindingMirror;
 import app.packed.binding.mirror.DependenciesMirror;
-import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.context.ContextMirror;
 import app.packed.context.ContextualizedElementMirror;
@@ -66,7 +66,7 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror, 
     @Nullable
     private OperationSetup operation;
 
-    /** Create a new operation mirror. */
+    /** Create a new mirror. */
     public OperationMirror() {}
 
     /** {@return the bean that this operation is a part of.} */

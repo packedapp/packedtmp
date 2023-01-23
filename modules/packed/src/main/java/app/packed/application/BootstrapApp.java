@@ -33,7 +33,7 @@ import app.packed.service.ServiceLocator;
 import internal.app.packed.application.ApplicationDriver;
 import internal.app.packed.application.BootstrapAppSetup;
 import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.lifetime.ApplicationInitializationContext;
+import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
 
 /**
@@ -181,7 +181,7 @@ public final class BootstrapApp<A> {
         Composer comp = new Composer(o);
         PremordialApplicationDriver<A> pad = new PremordialApplicationDriver<>();
         BootstrapAppAssembly<Object> baa = new Composer.BootstrapAppAssembly<>(comp, action);
-        AssemblySetup as = new AssemblySetup(pad, BuildGoal.LAUNCH, null, baa, new Wirelet[0]);
+        AssemblySetup as = new AssemblySetup(pad, BuildGoal.LAUNCH_NOW, null, baa, new Wirelet[0]);
         as.build();
 
         MethodHandle mh = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationInitializationContext.class));

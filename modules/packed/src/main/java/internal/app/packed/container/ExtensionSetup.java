@@ -96,7 +96,6 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
                 e = e.treeParent;
             }
             if (binding.extensionBean == null) {
-                System.out.println(binding.extensionBeanClass);
                 throw new InternalExtensionException("Could not resolve " + ebc + " for " + binding);
             }
         }

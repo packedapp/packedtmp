@@ -32,6 +32,8 @@ import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.entrypoint.EntryPointSetup;
+import internal.app.packed.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.lifetime.runtime.PackedManagedLifetime;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
@@ -52,17 +54,17 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
             "initialize", void.class, ContainerLifetimeSetup.class);
 
     /** Beans that have independent lifetime of the container. */
-    private List<BeanLifetimeSetup> beanLifetimes;
+    private List<BeanLifetimeSetup> beanLifetimes; // what are using this for??
 
-    /** All beans that have container lifetime in order of installation. Includes both application and extension beans. */
+    /** All beans that are of this lifetime in order of installation. */
     public final ArrayList<BeanSetup> beans = new ArrayList<>();
 
     /** The root container of the lifetime. */
     public final ContainerSetup container;
 
-    /** Entry points in the application, is null if there are none. */
+    /** Any entry point of the lifetime, null if there are none. */
     @Nullable
-    public EntryPointSetup entryPoints;
+    public EntryPointSetup entryPoint;
 
     public final FuseableOperation initialization;
 
@@ -74,9 +76,8 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     LinkedHashSet<BeanSetup> orderedBeans = new LinkedHashSet<>();
 
-    /** The lifetime constant pool. */
+    /** Pool of bean instances. */
     public final BeanInstancePoolSetup pool = new BeanInstancePoolSetup();
-
 
     /**
      * @param origin
@@ -162,6 +163,9 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     public void processBean(BeanSetup bean) {
         if (bean.beanKind == BeanKind.CONTAINER || bean.beanKind == BeanKind.LAZY) {
             if (bean.sourceKind != BeanSourceKind.INSTANCE) {
+
+                // We need a factory method
+
                 OperationSetup os = bean.operations.get(0);
 
                 bean.container.application.addCodeGenerator(() -> {

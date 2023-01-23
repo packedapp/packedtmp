@@ -24,25 +24,25 @@ import app.packed.container.Wirelet;
 public enum BuildGoal {
 
     /**
-     * The goal is to build an {@link ApplicationImage} that can be launched multiple times.
+     * The goal is to build an {@link ApplicationImage} that can be launched a single time.
      * 
-     * @see App#imageOf(Assembly, Wirelet...)
+     * @see App#reusableImageOf(Assembly, Wirelet...)
      */
-    IMAGE,
+    LAUNCH_LATER,
 
     /**
      * The goal is to build an application and then immediately launch it.
      * 
      * @see App#launch(Assembly, Wirelet...)
      */
-    LAUNCH,
+    LAUNCH_NOW,
 
     /**
-     * The goal is to build an {@link ApplicationImage} that can be launched a single time.
+     * The goal is to build an {@link ApplicationImage} that can be launched multiple times.
      * 
-     * @see App#reusableImageOf(Assembly, Wirelet...)
+     * @see App#imageOf(Assembly, Wirelet...)
      */
-    LAUNCHER,
+    LAUNCH_REPEATABLE,
 
     /**
      * The goal is to build an {@link ApplicationMirror}.
@@ -60,6 +60,6 @@ public enum BuildGoal {
 
     /** {@return whether or not code should be generated doing the build phase.} */
     public boolean isCodeGenerating() {
-        return this == LAUNCH || this == LAUNCHER || this == IMAGE;
+        return this == LAUNCH_NOW || this == LAUNCH_LATER || this == LAUNCH_REPEATABLE;
     }
 }

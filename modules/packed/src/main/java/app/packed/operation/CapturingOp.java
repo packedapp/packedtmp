@@ -18,6 +18,7 @@ package app.packed.operation;
 import java.util.function.Consumer;
 
 import app.packed.framework.Nullable;
+import internal.app.packed.operation.CapturingOpHelper;
 import internal.app.packed.operation.PackedOp;
 
 /**
@@ -41,7 +42,7 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
      *            the function instance
      */
     protected CapturingOp(Object function) {
-        this.op = PackedOp.capture(getClass(), function);
+        this.op = CapturingOpHelper.capture(getClass(), function);
     }
 
     /** {@inheritDoc} */

@@ -155,7 +155,7 @@ public final class BeanSetup {
             this.lifetime = cls;
             this.lifetimePoolAccessor = container.lifetime.addBean(this);
         } else {
-            BeanLifetimeSetup bls = new BeanLifetimeSetup(cls, this, installer);
+            BeanLifetimeSetup bls = new BeanLifetimeSetup(this, installer);
             this.lifetime = bls;
             this.lifetimePoolAccessor = null;
             cls.addChildBean(bls);

@@ -78,7 +78,7 @@ public sealed abstract class OperationSetup {
     /** By who this operation is invoked */
     public InvocationSite invocationSite;
 
-    /** How the operation is invoked. */
+    /** The operation's template. */
     public final PackedOperationTemplate template;
 
     /** Whether or not this operation can still be configured. */
@@ -306,7 +306,6 @@ public sealed abstract class OperationSetup {
     /** An operation that invokes or accesses a {@link Member}. */
     public sealed static abstract class MemberOperationSetup<T extends Member> extends OperationSetup {
         /** The {@link Member member}. */
-
         final T member;
 
         private MemberOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template, T member) {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime;
+package internal.app.packed.lifetime.runtime;
 
 import java.lang.invoke.MethodHandle;
 
@@ -54,7 +54,7 @@ public class ContainerRunner {
 
     void run(ContainerSetup container) {
         this.container = container;
-        this.pool = container.lifetime.pool.newRuntimePool(runtime);
+        this.pool = container.lifetime.pool.newRuntimePool();
 
         runtime.launch(container, this);
     }

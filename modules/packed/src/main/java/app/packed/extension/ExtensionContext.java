@@ -16,7 +16,7 @@
 package app.packed.extension;
 
 import app.packed.context.Context;
-import internal.app.packed.lifetime.PackedExtensionContext;
+import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 
 /**
  * All beans that are owned by an extension operates within an ExtensionContext.

@@ -31,8 +31,8 @@ import internal.app.packed.lifetime.LifetimeSetup;
  * A bean lifetime always has a container lifetime as a parent
  * 
  * <p>
- * Static and functional beans never have their own lifetime but will always their containers lifetime.
- * As they are valid as long as the container exists.
+ * Static and functional beans never have their own lifetime but will always their containers lifetime. As they are
+ * valid as long as the container exists.
  */
 public final class BeanLifetimeMirror extends LifetimeMirror {
 
@@ -43,11 +43,7 @@ public final class BeanLifetimeMirror extends LifetimeMirror {
     @Nullable
     private BeanLifetimeSetup lifetime;
 
-    /**
-     * Create a new operation mirror.
-     * <p>
-     * Subclasses should have a single package-protected constructor.
-     */
+    /** Create a new mirror. */
     public BeanLifetimeMirror() {}
 
     /** {@return the bean.} */
@@ -55,10 +51,14 @@ public final class BeanLifetimeMirror extends LifetimeMirror {
         return lifetime().bean.mirror();
     }
 
+    public ContainerLifetimeMirror container() {
+        return lifetime().parent().mirror();
+    }
+
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
-        return this == other || other instanceof LifetimeMirror m && lifetime() == m.lifetime();
+        return this == other || other instanceof BeanLifetimeMirror m && lifetime() == m.lifetime();
     }
 
     /** {@inheritDoc} */
@@ -79,24 +79,25 @@ public final class BeanLifetimeMirror extends LifetimeMirror {
         }
         this.lifetime = operation;
     }
+
     /**
      * {@return the internal configuration of operation.}
      * 
      * @throws IllegalStateException
      *             if {@link #initialize(ApplicationSetup)} has not been called.
      */
-    BeanLifetimeSetup lifetime() {
-        BeanLifetimeSetup a = lifetime;
-        if (a == null) {
+    private BeanLifetimeSetup lifetime() {
+        BeanLifetimeSetup l = lifetime;
+        if (l == null) {
             throw new IllegalStateException(
                     "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
         }
-        return a;
+        return l;
     }
 
     /** {@inheritDoc} */
     @Override
     public Optional<ContainerLifetimeMirror> parent() {
-        return Optional.of(lifetime().parent.mirror());
+        return Optional.of(container());
     }
 }
