@@ -54,11 +54,11 @@ import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.InvocationArgument;
 import app.packed.operation.OperationType;
-import internal.app.packed.bean.PackedOperationalField;
-import internal.app.packed.bean.PackedOperationalMethod;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.ContributingExtension;
 import internal.app.packed.bean.PackedAnnotationCollection;
+import internal.app.packed.bean.PackedOperationalField;
+import internal.app.packed.bean.PackedOperationalMethod;
 import internal.app.packed.service.KeyHelper;
 import internal.app.packed.util.QualifierUtil;
 import internal.app.packed.util.StringFormatter;
@@ -381,6 +381,8 @@ public abstract class BeanIntrospector {
     // Hvordan det praecis skal foregaa er lidt ukendt
     public interface BindableVariable {
 
+        // boolean isNested()???
+        
         AnnotationCollection annotations();
 
         default Map<Class<? extends Context<?>>, List<Class<?>>> availableContexts() {

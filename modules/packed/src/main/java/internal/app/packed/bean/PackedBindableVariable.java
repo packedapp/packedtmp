@@ -41,7 +41,7 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
 
 /** Implementation of {@link BeanIntrospector.BindableVariable}. */
-public class BeanScannerBeanVariable implements BindableVariable {
+public class PackedBindableVariable implements BindableVariable {
 
     /** The extension that manages the binding. */
     private final ExtensionSetup bindingExtension;
@@ -60,7 +60,7 @@ public class BeanScannerBeanVariable implements BindableVariable {
 
     Variable variable;
 
-    public BeanScannerBeanVariable(BeanScanner scanner, OperationSetup operation, int index, ExtensionSetup bindingExtension, Variable var) {
+    public PackedBindableVariable(BeanScanner scanner, OperationSetup operation, int index, ExtensionSetup bindingExtension, Variable var) {
         this.operation = requireNonNull(operation);
         this.scanner = scanner;
         this.index = index;

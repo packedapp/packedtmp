@@ -33,7 +33,7 @@ import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.InvocationArgument;
 import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.ServiceLocator;
-import internal.app.packed.bean.BeanScannerBeanVariable;
+import internal.app.packed.bean.PackedBindableVariable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.PackedContainerInstaller;
@@ -252,7 +252,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
                     v.bindToInvocationArgument(index);
                 } else if (hook instanceof CodeGenerated cg) {
-                    BeanSetup bean = ((BeanScannerBeanVariable) v).operation.bean;
+                    BeanSetup bean = ((PackedBindableVariable) v).operation.bean;
                     if (beanOwner().isApplication()) {
                         throw new BeanInstallationException("@" + CodeGenerated.class.getSimpleName() + " can only be used by extensions");
                     }

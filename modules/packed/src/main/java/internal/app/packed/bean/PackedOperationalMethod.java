@@ -68,10 +68,10 @@ public final class PackedOperationalMethod extends PackedOperationalMember<Metho
     @Override
     public OperationHandle newOperation(OperationTemplate template) {
         requireNonNull(template);
-        // TODO check that we are still introspecting? Or maybe on bean.addOperation
+        checkConfigurable();
 
         // We should be able to create this lazily
-        // Probably need to store the lookup mechanism on the bean...
+        // Probably need to store the lookup mechanism on the bean...        
         BeanScanner scanner = ce.scanner;
         MethodHandle methodHandle;
         Lookup lookup = scanner.oc.lookup(member);

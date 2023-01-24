@@ -33,7 +33,7 @@ import app.packed.bean.BeanIntrospector.OperationalMethod;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
-import internal.app.packed.bean.BeanScannerBeanVariable;
+import internal.app.packed.bean.PackedBindableVariable;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -130,7 +130,7 @@ public final /* primitive */ class OperationHandle {
         // custom invocationContext must have been set before calling this method
         checkIndex(index, operation.type.parameterCount());
 
-        return new BeanScannerBeanVariable(operation.bean.introspecting, operation, index, operation.operator, operation.type.parameter(index));
+        return new PackedBindableVariable(operation.bean.introspecting, operation, index, operation.operator, operation.type.parameter(index));
     }
 
     /** Checks that the operation is still configurable. */

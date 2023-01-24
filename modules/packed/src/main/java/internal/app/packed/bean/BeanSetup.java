@@ -250,7 +250,8 @@ public final class BeanSetup {
         BeanHandle<?> handle = (BeanHandle<?>) VH_BEAN_CONFIGURATION_TO_HANDLE.get(configuration);
         return crack(handle);
     }
-
+    
+    
     /**
      * Extracts a bean setup from a bean handle.
      * 

@@ -34,9 +34,9 @@ import app.packed.operation.Op;
  *
  */
 public class PackedBindableBaseVariable implements BindableBaseVariable {
-    public final BeanScannerBeanVariable v;
+    public final PackedBindableVariable v;
 
-    PackedBindableBaseVariable(BeanScannerBeanVariable v) {
+    PackedBindableBaseVariable(PackedBindableVariable v) {
         this.v = v;
     }
 
