@@ -12,7 +12,6 @@ import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.BindableVariable;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanLifecycleOperationMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.Inject;
 import app.packed.bean.OnInitialize;
@@ -26,7 +25,6 @@ import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.BaseExtensionPoint.ContainerInstaller;
-import app.packed.lifetime.RunState;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
@@ -39,9 +37,7 @@ import internal.app.packed.bean.BeanScannerBeanVariable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.PackedContainerInstaller;
-import internal.app.packed.lifetime.LifetimeOperation;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
-import internal.app.packed.operation.OperationSetup;
 
 /**
  * An extension that defines the foundational APIs for managing beans, containers and applications.
@@ -206,33 +202,30 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod method) {
                 AnnotationCollection ar = method.annotations();
 
+                BeanSetup bean = BeanSetup.crack(method);
                 OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
 
                 if (ar.isAnnotationPresent(OnInitialize.class)) {
-                    @SuppressWarnings("unused")
                     OnInitialize oi = ar.readRequired(OnInitialize.class);
                     OperationHandle handle = method.newOperation(temp);
-                    OperationSetup os = OperationSetup.crack(handle);
-                    os.bean.operationsLifetime.add(new LifetimeOperation(RunState.INITIALIZING, os));
-                    handle.specializeMirror(() -> new BeanLifecycleOperationMirror());
+                    bean.lifecycle.addInitialize(handle, oi.naturalOrder());
                 }
 
                 if (ar.isAnnotationPresent(OnStart.class)) {
-                    @SuppressWarnings("unused")
                     OnStart oi = ar.readRequired(OnStart.class);
-                    OperationSetup os = OperationSetup.crack(method.newOperation(temp));
-                    os.bean.operationsLifetime.add(new LifetimeOperation(RunState.STARTING, os));
+                    OperationHandle handle = method.newOperation(temp);
+                    bean.lifecycle.addStart(handle, oi.naturalOrder());
                 }
 
                 if (ar.isAnnotationPresent(OnStop.class)) {
-                    @SuppressWarnings("unused")
                     OnStop oi = ar.readRequired(OnStop.class);
-                    OperationSetup os = OperationSetup.crack(method.newOperation(temp));
-                    os.bean.operationsLifetime.add(new LifetimeOperation(RunState.STOPPING, os));
+                    OperationHandle handle = method.newOperation(temp);
+                    bean.lifecycle.addStop(handle, oi.naturalOrder());
                 }
 
                 if (ar.isAnnotationPresent(Inject.class)) {
-                    OperationSetup.crack(method.newOperation(temp));
+                    OperationHandle handle = method.newOperation(temp);
+                    bean.lifecycle.addInitialize(handle, true);
                 }
             }
 
@@ -257,8 +250,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                         throw new UnsupportedOperationException();
                     }
 
-                    // v.b
-                    // v.bindToInvocationArgument(index);
                     v.bindToInvocationArgument(index);
                 } else if (hook instanceof CodeGenerated cg) {
                     BeanSetup bean = ((BeanScannerBeanVariable) v).operation.bean;
@@ -275,6 +266,18 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     }
                 } else {
                     super.hookOnAnnotatedVariable(hook, v);
+                }
+            }
+
+            @Override
+            public void hookOnVariableType(Class<?> hook, BindableBaseVariable v) {
+                if (hook == ExtensionContext.class) {
+                    if (v.availableInvocationArguments().isEmpty() || v.availableInvocationArguments().get(0) != ExtensionContext.class) {
+                        // throw new Error(v.availableInvocationArguments().toString());
+                    }
+                    v.bindToInvocationArgument(0);
+                } else {
+                    super.hookOnVariableType(hook, v);
                 }
             }
         };
@@ -299,7 +302,14 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         if (isLinking) {
             // navigator().forEachInAssembly()->
         }
+
+        // process child extensions first
         super.onAssemblyClose();
+
+        // A lifetime root lets order some dependencies
+        if (isLifetimeRoot()) {
+            extension.container.lifetime.orderDependencies();
+        }
     }
 
     record CodeGeneratorKey(BeanSetup bean, Key<?> key) {}

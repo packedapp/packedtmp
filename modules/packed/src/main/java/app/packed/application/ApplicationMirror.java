@@ -3,7 +3,7 @@ package app.packed.application;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.bean.BeanHook.VariableTypeHook;
+import app.packed.bean.BeanHook.TypedProvisionHook;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
@@ -29,7 +29,7 @@ import internal.app.packed.operation.OperationSetup;
  * <p>
  * Like many other mirrors this class is exte extendable via {@link BootstrapApp.Composer#}
  */
-@VariableTypeHook(extension = MirrorExtension.class)
+@TypedProvisionHook(extension = MirrorExtension.class)
 public non-sealed class ApplicationMirror implements Mirror , ContextualizedElementMirror {
 
     /**
@@ -132,7 +132,7 @@ public non-sealed class ApplicationMirror implements Mirror , ContextualizedElem
         for (var e = cs.treeFirstChild; e != null; e = e.treeNextSiebling) {
             print0(e);
         }
-        for (var b = cs.beanFirst; b != null; b = b.nextBean) {
+        for (var b = cs.beanFirst; b != null; b = b.siblingNext) {
             StringBuilder sb = new StringBuilder();
             sb.append(b.path()).append("");
             sb.append(" [").append(b.beanClass.getName()).append("], owner = " + b.realm.realm());

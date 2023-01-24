@@ -43,7 +43,6 @@ import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
 import internal.app.packed.binding.BindingProvider.FromOperation;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.lifetime.BeanInstanceAccessor;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
@@ -74,20 +73,20 @@ public final class ServiceManager {
                     MethodHandle mh;
                     OperationSetup o = n.os;
 
-                    BeanInstanceAccessor accessor = null;
+                    int accessor = -1;
                     if (o instanceof OperationSetup.BeanAccessOperationSetup) {
-                        accessor = o.bean.lifetimePoolAccessor;
+                        accessor = o.bean.lifetimeStoreIndex;
                         // test if prototype bean
-                        if (accessor == null && o.bean.sourceKind != BeanSourceKind.INSTANCE) {
+                        if (accessor == -1 && o.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
                             o = o.bean.operations.get(0);
                         }
                     }
-                    if (!(o instanceof MemberOperationSetup) && o.bean.sourceKind == BeanSourceKind.INSTANCE) {
+                    if (!(o instanceof MemberOperationSetup) && o.bean.beanSourceKind == BeanSourceKind.INSTANCE) {
                         // It is a a constant
-                        mh = MethodHandles.constant(Object.class, o.bean.source);
+                        mh = MethodHandles.constant(Object.class, o.bean.beanSource);
                         mh = MethodHandles.dropArguments(mh, 0, PackedExtensionContext.class);
-                    } else if (accessor != null) {
-                        mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, accessor.index());
+                    } else if (accessor >= 0) {
+                        mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, accessor);
                     } else {
                         mh = o.generateMethodHandle();
                     }

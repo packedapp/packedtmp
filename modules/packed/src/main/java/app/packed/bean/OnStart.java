@@ -79,22 +79,28 @@ import app.packed.lifetime.RunState;
 public @interface OnStart {
 
     /**
-     * The default value is false.
+     *      Starts a new thread to run the given task.
      * 
      * @return {@code true} if
      */
     // Taenker at man joiner op foerend, vi begynder at koere tilbage?
     // joinPoint
-    boolean async() default false;
+    
+    // async = 
+    //// Before Container/Bean started
+    //// Before On the way back (must have natural order)
+    //// Before some string based "Event"
+    boolean fork() default false;
 
     /**
      * Whether or not any thread will be interrupted if shutdown while starting
      * 
      * @return
      */
+    // Only if Async???
     boolean interruptOnStop() default false; // Maybe have an InterruptionPolicy {NEVER, DEFAULT, ALWAYS}
 
-    boolean preOrder() default true; // reverseOrder
+    boolean naturalOrder() default true; // reverseOrder
 }
 
 // order = "SomE:1"; (I forhold til andre der er bruger SomE

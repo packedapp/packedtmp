@@ -54,7 +54,7 @@ public class ContainerRunner {
 
     void run(ContainerSetup container) {
         this.container = container;
-        this.pool = container.lifetime.pool.newRuntimePool();
+        this.pool = container.lifetime.newRuntimePool();
 
         runtime.launch(container, this);
     }

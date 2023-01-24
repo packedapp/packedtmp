@@ -29,6 +29,7 @@ package app.packed.application;
 // PackedException, PackedBuildException, PackedRuntimeException
 // Haha, hvad med ConfigException, den kan baade smides paa runtime og paa build time
 // IDK. Maaske drop den
+// ApplicationBuildException
 public class BuildException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

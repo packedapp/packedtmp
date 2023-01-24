@@ -133,17 +133,7 @@ public abstract class Key<T> {
     /** We eagerly compute the hash code, as we assume most keys are going to be used in some kind of hash table. */
     private final int hash;
 
-    /**
-     * Qualifiers for this key.
-     * 
-     * Object,
-     * 
-     * null = no annotation,
-     * 
-     * Annotation = 1,
-     * 
-     * Annotation[] -> multiple annotations...
-     */
+    /** Qualifiers for this key. */
     private final Annotation[] qualifiers;
 
     /** The raw type of the key. */
@@ -152,7 +142,10 @@ public abstract class Key<T> {
     /** The type part of the key. */
     private final Type type;
 
-    /** Constructs a new key. Derives the type from the type parameter {@code <T>} of the extending class. */
+    /**
+     * Constructs a new key. Derives the type and optional {@link Qualifier qualifiers} from the type parameter {@code <T>}
+     * of the extending class.
+     */
     protected Key() {
         Key<?> cached = CAPTURED_KEY_CACHE.get(getClass());
         this.type = cached.type;
@@ -162,18 +155,21 @@ public abstract class Key<T> {
     }
 
     /**
-     * Creates a new key.
+     * Create a new key.
      * 
-     * @param typeToken
-     *            the checked type literal
+     * @param type
+     *            the type of the key
+     * @param rawType
+     *            the raw type of the key
      * @param qualifiers
-     *            the (optional) qualifier
+     *            optional qualifiers
+     * @param hash
+     *            the hash of the key
      */
     private Key(Type type, Class<?> rawType, Annotation[] qualifiers, int hash) {
-        this.type = type;
+        this.type = requireNonNull(type);
         this.rawType = requireNonNull(rawType);
-        this.qualifiers = requireNonNull(qualifiers);
-        assert (qualifiers.length > 0 || QualifierUtil.NO_QUALIFIERS == qualifiers);
+        this.qualifiers = qualifiers.length == 0 ? QualifierUtil.NO_QUALIFIERS : requireNonNull(qualifiers);
         this.hash = hash;
     }
 
@@ -339,8 +335,15 @@ public abstract class Key<T> {
     public final Key<T> with(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
         QualifierUtil.checkQualifierAnnotationPresent(qualifier);
-        if (qualifiers == null) {
-            return new CanonicalizedKey<>(type, qualifier);
+
+//        Annotation[] qualifiers;
+//        if (hasQualifiers()) {
+//
+//        } else {
+//            qualifiers=new Annotation[] { qualifier };
+//        }
+        if (!hasQualifiers()) {
+            return new CanonicalizedKey<>(type, rawType, new Annotation[] { qualifier });
         }
         for (int i = 0; i < qualifiers.length; i++) {
             if (qualifiers[i].annotationType() == qualifier.annotationType()) {
@@ -349,13 +352,13 @@ public abstract class Key<T> {
                 } else {
                     Annotation[] an = Arrays.copyOf(qualifiers, qualifiers.length);
                     an[i] = qualifier;
-                    return new CanonicalizedKey<>(type, an);
+                    return new CanonicalizedKey<>(type, rawType, an);
                 }
             }
         }
         Annotation[] an = Arrays.copyOf(qualifiers, qualifiers.length + 1);
         an[an.length - 1] = qualifier;
-        return new CanonicalizedKey<>(type, an);
+        return new CanonicalizedKey<>(type, rawType, an);
     }
 
     public final Key<T> without(Class<? extends Annotation> qualifierType) {
@@ -373,7 +376,7 @@ public abstract class Key<T> {
      * @return this key with no qualifier
      */
     public final Key<T> withoutQualifiers() {
-        return hasQualifiers() ? new CanonicalizedKey<>(type, QualifierUtil.NO_QUALIFIERS) : this;
+        return hasQualifiers() ? new CanonicalizedKey<>(type, rawType, QualifierUtil.NO_QUALIFIERS) : this;
     }
 
     /**
@@ -428,15 +431,18 @@ public abstract class Key<T> {
     }
 
     static <T> Key<?> convertCaptured(Variable v) {
-
-        Annotation[] qa = QualifierUtil.findQualifier(v.getAnnotations());
-        //// TODO check no non-qualifting annotation...
-        //// This is allowed elsewheres (ops, beans), just not when creating the Key directly.
-        //// Or via TypeCapture
+        // Make sure we only have qualifier annotations when constructing the key
+        // via type capture
+        Annotation[] qualifiers = v.getAnnotations();
+        for (Annotation a : qualifiers) {
+            if (!a.annotationType().isAnnotationPresent(Qualifier.class)) {
+                throw new InvalidKeyException("Opps for " + a);
+            }
+        }
 
         Type t = convertType(v.getType());
 
-        return new CanonicalizedKey<T>(t, qa);
+        return new CanonicalizedKey<T>(t, qualifiers);
     }
 
     private static Type convertType(Type t) {
@@ -463,13 +469,13 @@ public abstract class Key<T> {
         return t;
     }
 
-    public static <T> Key<T> convertTypeNullableAnnotation(Object source, Type type, Annotation... qualifier) {
+    public static <T> Key<T> convertTypeNullableAnnotation(Object source, Type type, Annotation[] qualifiers) {
         requireNonNull(type, "typeLiteral is null");
         // From field, fromTypeLiteral, from Variable, from class, arghhh....
 
         Type t = convertType(type);
 
-        return new CanonicalizedKey<T>(t, qualifier);
+        return new CanonicalizedKey<T>(t, qualifiers);
     }
 
     public static Type convertx(Object source, Type originalType, Type type) {
@@ -508,6 +514,10 @@ public abstract class Key<T> {
         }
     }
 
+    private static int hash(Type type, Annotation[] qualifiers) {
+        return type.hashCode() ^ Arrays.hashCode(qualifiers);
+    }
+
     /**
      * Returns a class key with no qualifiers from the specified class.
      *
@@ -538,10 +548,6 @@ public abstract class Key<T> {
     /** See {@link CanonicalizedGenericType}. */
     private static final class CanonicalizedKey<T> extends Key<T> {
 
-        private CanonicalizedKey(Type type, Class<?> rawType, Annotation[] qualifiers, int hashCode) {
-            super(type, rawType, qualifiers, hashCode);
-        }
-
         /**
          * Creates a new canonicalized key.
          * 
@@ -550,8 +556,16 @@ public abstract class Key<T> {
          * @param qualifiers
          *            a nullable qualifier annotation
          */
-        private CanonicalizedKey(Type type, Annotation... qualifiers) {
-            super(type, TypeUtil.rawTypeOf(type), qualifiers, type.hashCode() ^ Arrays.hashCode(qualifiers));
+        private CanonicalizedKey(Type type, Annotation[] qualifiers) {
+            this(type, TypeUtil.rawTypeOf(type), qualifiers);
+        }
+
+        private CanonicalizedKey(Type type, Class<?> rawType, Annotation[] qualifiers) {
+            super(type, rawType, qualifiers, hash(type, qualifiers));
+        }
+
+        private CanonicalizedKey(Type type, Class<?> rawType, Annotation[] qualifiers, int hashCode) {
+            super(type, rawType, qualifiers, hashCode);
         }
     }
 }

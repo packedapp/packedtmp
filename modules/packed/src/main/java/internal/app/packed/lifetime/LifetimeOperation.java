@@ -16,11 +16,11 @@
 package internal.app.packed.lifetime;
 
 import app.packed.lifetime.RunState;
-import internal.app.packed.operation.OperationSetup;
+import app.packed.operation.OperationHandle;
 
 /**
  *
  */
-public record LifetimeOperation(RunState state, OperationSetup os) {
+public record LifetimeOperation(RunState state, OperationHandle os) {
 
 }

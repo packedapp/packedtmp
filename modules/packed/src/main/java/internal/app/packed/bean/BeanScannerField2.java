@@ -42,7 +42,6 @@ import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanHookModel.AnnotatedField;
 import internal.app.packed.bean.BeanHookModel.AnnotatedFieldKind;
-import internal.app.packed.bean.BeanScanner.ContributingExtension;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
 
@@ -73,7 +72,7 @@ public final class BeanScannerField2 {
     private BeanScannerField2(BeanScanner scanner, Class<? extends Extension<?>> extensionType, Field field, boolean allowGet, boolean allowSet,
             Annotation[] annotations, AnnotatedField... annotatedFields) {
         this.scanner = scanner;
-        this.ce = scanner.computeContributor(extensionType, false);
+        this.ce = scanner.computeContributor(extensionType);
         this.field = field;
         this.allowGet = allowGet || ce.hasFullAccess();
         this.allowSet = allowSet || ce.hasFullAccess();
@@ -82,7 +81,7 @@ public final class BeanScannerField2 {
 
     private BeanScannerField2(BeanScanner scanner, Field field, Annotation[] annotations, AnnotatedField... annotatedFields) {
         this.scanner = scanner;
-        this.ce = scanner.computeContributor(annotatedFields[0].extensionType(), false);
+        this.ce = scanner.computeContributor(annotatedFields[0].extensionType());
         this.field = field;
         boolean allowGet = ce.hasFullAccess();
         for (AnnotatedField annotatedField : annotatedFields) {
@@ -358,7 +357,7 @@ public final class BeanScannerField2 {
             } else {
                 // TODO we should sort by extension order when we have more than 1 match
                 for (MultiMatch mf : multiMatches.values()) {
-                    BeanScanner.ContributingExtension contributor = scanner.computeContributor(mf.extensionClass, false);
+                    ContributingExtension contributor = scanner.computeContributor(mf.extensionClass);
 
                     // Create the wrapped field that is exposed to the extension
                     BeanScannerField2 f = new BeanScannerField2(scanner, e.extensionType(), field, mf.allowGet, mf.allowSet, annotations);

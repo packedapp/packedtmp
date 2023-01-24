@@ -33,7 +33,6 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.entrypoint.EntryPointSetup;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
-import internal.app.packed.lifetime.runtime.PackedManagedLifetime;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
@@ -74,10 +73,9 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     public final List<FuseableOperation> lifetimes;
 
+    public final LifetimeLifecycleSetup lls = new LifetimeLifecycleSetup();
+    
     LinkedHashSet<BeanSetup> orderedBeans = new LinkedHashSet<>();
-
-    /** Pool of bean instances. */
-    public final BeanInstancePoolSetup pool = new BeanInstancePoolSetup();
 
     /**
      * @param origin
@@ -92,18 +90,32 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
         this.container = container;
         if (container.treeParent == null) {
-            pool.reserve(PackedManagedLifetime.class);
+            reserve();
         }
     }
 
-    public BeanInstanceAccessor addBean(BeanSetup bean) {
-        beans.add(bean);
+    public PackedExtensionContext newRuntimePool() {
+        return PackedExtensionContext.create(size);
+    }
 
-        BeanInstanceAccessor la = null;
-        if (bean.beanKind == BeanKind.CONTAINER && bean.sourceKind != BeanSourceKind.INSTANCE) {
-            la = pool.reserve(bean.beanClass);
+    public int addBean(BeanSetup bean) {
+        beans.add(bean);
+        if (bean.beanKind == BeanKind.CONTAINER && bean.beanSourceKind != BeanSourceKind.INSTANCE) {
+            return reserve();
         }
-        return la;
+        return -1;
+    }
+
+    /** The size of the pool. */
+    int size;
+
+    /**
+     * Reserves room for a single object.
+     * 
+     * @return the index to store the object in at runtime
+     */
+    private int reserve() {
+        return size++;
     }
 
     public BeanLifetimeSetup addChildBean(BeanLifetimeSetup lifetime) {
@@ -162,7 +174,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     // Should be fully resolved now
     public void processBean(BeanSetup bean) {
         if (bean.beanKind == BeanKind.CONTAINER || bean.beanKind == BeanKind.LAZY) {
-            if (bean.sourceKind != BeanSourceKind.INSTANCE) {
+            if (bean.beanSourceKind != BeanSourceKind.INSTANCE) {
 
                 // We need a factory method
 
@@ -176,7 +188,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
             }
         }
 
-        for (LifetimeOperation lop : bean.operationsLifetime) {
+        for (LifetimeOperation lop : bean.lifecycle.operationsLifetime) {
             if (lop.state() == RunState.INITIALIZING) {
                 initialization.operations.add(lop.os());
                 bean.container.application.addCodeGenerator(() -> {
@@ -214,6 +226,17 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         if (!bean.beanClass.isInstance(instance)) {
             throw new Error("Expected " + bean.beanClass + ", was " + instance.getClass());
         }
-        pec.storeObject(bean.lifetimePoolAccessor.index(), instance);
+        pec.storeObject(bean.lifetimeStoreIndex, instance);
     }
 }
+
+//Vi kan sagtens folde bedste foraeldre ind ogsaa...
+//Altsaa bruger man kun et enkelt object kan vi jo bare folde det ind...
+//[ [GrandParent][Parent], O1, O2, O3]
+
+//Der er faktisk 2 strategier her...
+//RepeatableImage -> Har vi 2 pools taenker jeg... En shared, og en per instans
+//Ikke repeatable.. Kav vi lave vi noget af array'et paa forhaand... F.eks. smide
+//bean instancerne ind i det
+
+//Saa maaske er pool og Lifetime to forskellige ting???

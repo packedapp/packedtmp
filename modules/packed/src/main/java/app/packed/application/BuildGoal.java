@@ -21,6 +21,7 @@ import app.packed.container.Wirelet;
 /**
  * The goal of a build task.
  */
+// ApplicationBuildGoal?
 public enum BuildGoal {
 
     /**

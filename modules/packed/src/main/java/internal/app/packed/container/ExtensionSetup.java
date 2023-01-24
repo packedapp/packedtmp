@@ -107,7 +107,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         return model.compareTo(o.model);
     }
 
-    void initialize() {
+    void initialize(boolean isAssemblyRoot) {
         instance = model.newInstance(this);
 
         // Add the extension to the container's map of extensions
@@ -115,7 +115,8 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
         // Hvad hvis en extension linker en af deres egne assemblies.
         // If the extension is added in the root container of an assembly. We need to add it there
-        if (container.assembly.container == container) {
+        
+        if (isAssemblyRoot) {
             container.assembly.extensions.add(this);
         }
 

@@ -41,7 +41,6 @@ import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanHookModel.AnnotatedField;
 import internal.app.packed.bean.BeanHookModel.AnnotatedFieldKind;
-import internal.app.packed.bean.BeanScanner.ContributingExtension;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
 
@@ -58,30 +57,42 @@ public final class BeanScannerField implements OperationalField {
     private final Annotation[] annotations;
 
     /** The extension that can create operations from the field. */
-    private final ContributingExtension ce;
+    final ContributingExtension ce;
 
     /** The field. */
     private final Field field;
 
     /** Whether or not new operations can be created from the field. */
-    private boolean isDone;
-
-    /** The bean scanner. */
-    private final BeanScanner scanner;
+    boolean isDone;
 
     private BeanScannerField(BeanScanner scanner, Class<? extends Extension<?>> extensionType, Field field, boolean allowGet, boolean allowSet,
             Annotation[] annotations, AnnotatedField... annotatedFields) {
-        this.scanner = scanner;
-        this.ce = scanner.computeContributor(extensionType, false);
+        this.ce = scanner.computeContributor(extensionType);
         this.field = field;
         this.allowGet = allowGet || ce.hasFullAccess();
         this.allowSet = allowSet || ce.hasFullAccess();
         this.annotations = annotations;
     }
 
-    private BeanScannerField(BeanScanner scanner, Field field, Annotation[] annotations, AnnotatedField... annotatedFields) {
-        this.scanner = scanner;
-        this.ce = scanner.computeContributor(annotatedFields[0].extensionType(), false);
+    BeanScannerField(BeanScanner scanner, Field field, Annotation[] annotations, AnnotatedField... annotatedFields) {
+        this.ce = scanner.computeContributor(annotatedFields[0].extensionType());
+        this.field = field;
+        boolean allowGet = ce.hasFullAccess();
+        for (AnnotatedField annotatedField : annotatedFields) {
+            allowGet |= annotatedField.isGettable();
+        }
+        this.allowGet = allowGet;
+
+        boolean allowSet = ce.hasFullAccess();
+        for (AnnotatedField annotatedField : annotatedFields) {
+            allowSet |= annotatedField.isSettable();
+        }
+        this.allowSet = allowSet;
+        this.annotations = annotations;
+    }
+
+    BeanScannerField(ContributingExtension scanner, Field field, Annotation[] annotations, AnnotatedField... annotatedFields) {
+        this.ce = scanner;
         this.field = field;
         boolean allowGet = ce.hasFullAccess();
         for (AnnotatedField annotatedField : annotatedFields) {
@@ -120,7 +131,7 @@ public final class BeanScannerField implements OperationalField {
     private void matchy() {
         ce.introspector().hookOnAnnotatedField(Set.of(), this);
         isDone = true;
-        scanner.resolveOperations(); // resolve bindings for any operation(s) that have been created
+        ce.scanner.resolveOperations(); // resolve bindings for any operation(s) that have been created
     }
 
     /** {@inheritDoc} */
@@ -134,7 +145,7 @@ public final class BeanScannerField implements OperationalField {
     public OperationHandle newGetOperation(OperationTemplate template) {
         checkConfigurable();
 
-        Lookup lookup = scanner.oc.lookup(field);
+        Lookup lookup = ce.scanner.oc.lookup(field);
 
         MethodHandle methodHandle;
         try {
@@ -151,7 +162,7 @@ public final class BeanScannerField implements OperationalField {
     @Override
     public OperationHandle newOperation(OperationTemplate template, AccessMode accessMode) {
         checkConfigurable();
-        Lookup lookup = scanner.oc.lookup(field);
+        Lookup lookup = ce.scanner.oc.lookup(field);
 
         VarHandle varHandle;
         try {
@@ -166,11 +177,11 @@ public final class BeanScannerField implements OperationalField {
 
     private OperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
         template = template.withReturnType(field.getType());
-        OperationSetup operation = new FieldOperationSetup(ce.extension(), scanner.bean, OperationType.ofFieldAccess(field, accessMode), template, mh, field,
+        OperationSetup operation = new FieldOperationSetup(ce.extension(), ce.scanner.bean, OperationType.ofFieldAccess(field, accessMode), template, mh, field,
                 accessMode);
 
-        scanner.unBoundOperations.add(operation);
-        scanner.bean.operations.add(operation);
+        ce.scanner.unBoundOperations.add(operation);
+        ce.scanner.bean.operations.add(operation);
         return operation.toHandle();
     }
 
@@ -178,7 +189,7 @@ public final class BeanScannerField implements OperationalField {
     @Override
     public OperationHandle newSetOperation(OperationTemplate template) {
         checkConfigurable();
-        Lookup lookup = scanner.oc.lookup(field);
+        Lookup lookup = ce.scanner.oc.lookup(field);
 
         // Create a method handle by unreflecting the field.
         // Will fail if the framework does not have access to the member
@@ -351,7 +362,7 @@ public final class BeanScannerField implements OperationalField {
             } else {
                 // TODO we should sort by extension order when we have more than 1 match
                 for (MultiMatch mf : multiMatches.values()) {
-                    BeanScanner.ContributingExtension contributor = scanner.computeContributor(mf.extensionClass, false);
+                    ContributingExtension contributor = scanner.computeContributor(mf.extensionClass);
 
                     // Create the wrapped field that is exposed to the extension
                     BeanScannerField f = new BeanScannerField(scanner, e.extensionType(), field, mf.allowGet, mf.allowSet, annotations);
@@ -392,10 +403,9 @@ public final class BeanScannerField implements OperationalField {
         if (af.kind() == AnnotatedFieldKind.FIELD) {
             matchAnnotatedField(scanner, f, annotations, hooks, af);
         } else {
-            
+
             // Annotations on record components may be propagated both to fields and parameters.
-            
-            
+
             // Records have annotations both on parameters and field
             //
         }
@@ -427,6 +437,6 @@ public final class BeanScannerField implements OperationalField {
             match1(scanner, f, annotations, af1, new Annotation[] { a1 });
         }
     }
-    
+
     record P(AnnotatedField af, Annotation a) {}
 }

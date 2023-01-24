@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime;
+package app.packed.application;
 
 /**
  *
  */
-public record BeanInstanceAccessor(int index) {}
+enum BuildState {
+    ASSEMBLING, CODE_GENERATING, COMPLETED;
+}

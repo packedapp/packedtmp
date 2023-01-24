@@ -18,6 +18,8 @@ package app.packed.application;
 import app.packed.bean.BeanMirror;
 
 /** A mirror of an application host. */
+// Ved ikke om den er speciel iforhold til almindelig container
+// Fordi man eksplicit skal sige alting
 public class ApplicationHostMirror extends BeanMirror {
 
 }

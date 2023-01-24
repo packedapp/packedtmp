@@ -80,7 +80,7 @@ public final /* primitive */ class BeanHandle<T> {
 
     /** {@return the bean kind.} */
     public BeanSourceKind beanSourceKind() {
-        return bean.sourceKind;
+        return bean.beanSourceKind;
     }
 
     /**

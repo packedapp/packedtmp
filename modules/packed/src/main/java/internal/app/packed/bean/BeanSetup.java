@@ -18,6 +18,7 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanIntrospector.OperationalMethod;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
@@ -35,10 +36,9 @@ import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.NameCheck;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.context.ContextSetup;
-import internal.app.packed.lifetime.BeanInstanceAccessor;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.lifetime.LifetimeOperation;
+import internal.app.packed.lifetime.LifetimeLifecycleSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.BeanAccessOperationSetup;
@@ -57,17 +57,24 @@ public final class BeanSetup {
             BeanSetup.class);
 
     /** A handle that can access BeanConfiguration#handle. */
-    private static final VarHandle VH_BEAN_CONFIGURATION_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanConfiguration.class, "handle",
+    private static final VarHandle VH_BEAN_CONFIGURATION_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanConfiguration.class, "handle",
             BeanHandle.class);
 
     /** A handle that can access BeanHandle#bean. */
-    private static final VarHandle VH_BEAN_HANDLE_BEAN = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanHandle.class, "bean", BeanSetup.class);
+    private static final VarHandle VH_BEAN_HANDLE_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanHandle.class, "bean", BeanSetup.class);
 
     /** The bean class, is typical void.class for functional beans. */
     public final Class<?> beanClass;
 
     /** The kind of bean. */
     public final BeanKind beanKind;
+
+    /** The source ({@code null}, {@link Class}, {@link PackedOp}, or an instance) */
+    @Nullable
+    public final Object beanSource;
+
+    /** The type of source the installer is created from. */
+    public final BeanSourceKind beanSourceKind;
 
     /** The container this bean is installed in. */
     public final ContainerSetup container;
@@ -81,12 +88,14 @@ public final class BeanSetup {
     @Nullable
     public BeanScanner introspecting;
 
+    /** The lifecycle of the bean. */
+    public final LifetimeLifecycleSetup lifecycle = new LifetimeLifecycleSetup();
+
     /** The lifetime the component is a part of. */
     public final LifetimeSetup lifetime;
 
-    /** A pool accessor if a single instance of this bean is created. null otherwise */
-    @Nullable
-    public final BeanInstanceAccessor lifetimePoolAccessor;
+    /** An index into a container lifetime store, or -1. */
+    public final int lifetimeStoreIndex;
 
     /** Supplies a mirror for the operation */
     public Supplier<? extends BeanMirror> mirrorSupplier;
@@ -94,18 +103,8 @@ public final class BeanSetup {
     /** The name of this bean. Should only be updated through {@link #named(String)} */
     public String name;
 
-    /** All beans in a container are maintained in a linked list. */
-    @Nullable
-    public BeanSetup nextBean;
-
     /** Operations declared by the bean. */
     public final ArrayList<OperationSetup> operations = new ArrayList<>();
-
-    /** The beans lifetime operations. */
-    public final List<LifetimeOperation> operationsLifetime = new ArrayList<>();
-
-    /** A list of services provided by the bean, used for circular dependency checks. */
-    public final List<ProvidedService> serviceProviders = new ArrayList<>();
 
     /** Non-null if the bean is owned by an extension. */
     @Nullable
@@ -116,21 +115,22 @@ public final class BeanSetup {
     /** The assembly or extension used to install this component. */
     public final RealmSetup realm;
 
-    /** The source ({@code null}, {@link Class}, {@link PackedOp}, or an instance) */
-    @Nullable
-    public final Object source;
+    /** A list of services provided by the bean, used for circular dependency checks. */
+    public final List<ProvidedService> serviceProviders = new ArrayList<>();
 
-    /** The type of source the installer is created from. */
-    public final BeanSourceKind sourceKind;
+    /** All beans in a container are maintained in a linked list. */
+    @Nullable
+    public BeanSetup siblingNext;
 
     /**
      * Create a new bean.
      */
-    private BeanSetup(PackedBeanInstaller installer, BeanKind beanKind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
-        this.beanKind = requireNonNull(beanKind);
+    private BeanSetup(PackedBeanInstaller installer, BeanKind beanKind, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
         this.beanClass = requireNonNull(beanClass);
-        this.sourceKind = requireNonNull(sourceKind);
-        this.source = source;
+        this.beanKind = requireNonNull(beanKind);
+        this.beanSource = beanSource;
+        this.beanSourceKind = requireNonNull(beanSourceKind);
+
         ExtensionSetup installedBy = installer.useSite == null ? installer.baseExtension : installer.useSite.usedBy();
 
         RealmSetup realm = installer.useSite == null ? installer.baseExtension.container.assembly : installedBy.extensionTree;
@@ -143,30 +143,30 @@ public final class BeanSetup {
         // have containers managed by extensions
         this.realm = requireNonNull(realm);
         if (realm instanceof ExtensionTreeSetup s) {
-            //System.out.println(installer.useSite.usedBy().extensionType);
+            // System.out.println(installer.useSite.usedBy().extensionType);
             this.ownedBy = installer.useSite.usedBy();
         } else {
             this.ownedBy = null;
         }
-        
+
         // Set the lifetime of the bean
         ContainerLifetimeSetup cls = container.lifetime;
         if (beanKind == BeanKind.CONTAINER || beanKind == BeanKind.FUNCTIONAL || beanKind == BeanKind.STATIC) {
             this.lifetime = cls;
-            this.lifetimePoolAccessor = container.lifetime.addBean(this);
+            this.lifetimeStoreIndex = container.lifetime.addBean(this);
         } else {
             BeanLifetimeSetup bls = new BeanLifetimeSetup(this, installer);
             this.lifetime = bls;
-            this.lifetimePoolAccessor = null;
+            this.lifetimeStoreIndex = -1;
             cls.addChildBean(bls);
         }
     }
 
     public BindingProvider accessBeanX() {
-        if (sourceKind == BeanSourceKind.INSTANCE) {
-            return new FromConstant(source.getClass(), source);
+        if (beanSourceKind == BeanSourceKind.INSTANCE) {
+            return new FromConstant(beanSource.getClass(), beanSource);
         } else if (beanKind == BeanKind.CONTAINER) { // we've already checked if instance
-            return new FromLifetimeArena(container.lifetime, lifetimePoolAccessor, beanClass);
+            return new FromLifetimeArena(container.lifetime, lifetimeStoreIndex, beanClass);
         } else if (beanKind == BeanKind.MANYTON) {
             return new FromOperation(operations.get(0));
         }
@@ -235,6 +235,9 @@ public final class BeanSetup {
         return new PackedNamespacePath(paths);
     }
 
+    public static BeanSetup crack(OperationalMethod m) {
+        return ((BeanScannerMethod) m).scanner.bean;
+    }
     /**
      * Extracts a bean setup from a bean configuration.
      * 
@@ -243,7 +246,8 @@ public final class BeanSetup {
      * @return the bean setup
      */
     public static BeanSetup crack(BeanConfiguration configuration) {
-        BeanHandle<?> handle = (BeanHandle<?>) VH_BEAN_CONFIGURATION_HANDLE.get(configuration);
+        requireNonNull(configuration, "configuration is null");
+        BeanHandle<?> handle = (BeanHandle<?>) VH_BEAN_CONFIGURATION_TO_HANDLE.get(configuration);
         return crack(handle);
     }
 
@@ -254,8 +258,9 @@ public final class BeanSetup {
      *            the handle to extract from
      * @return the bean setup
      */
-    private static BeanSetup crack(BeanHandle<?> handle) {
-        return (BeanSetup) VH_BEAN_HANDLE_BEAN.get(handle);
+    public static BeanSetup crack(BeanHandle<?> handle) {
+        requireNonNull(handle, "handle is null");
+        return (BeanSetup) VH_BEAN_HANDLE_TO_SETUP.get(handle);
     }
 
     static BeanSetup install(PackedBeanInstaller installer, BeanKind beanKind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
@@ -327,7 +332,7 @@ public final class BeanSetup {
         bean.name = n;
 
         if (sourceKind == BeanSourceKind.OP) {
-            PackedOp<?> op = (PackedOp<?>) bean.source;
+            PackedOp<?> op = (PackedOp<?>) bean.beanSource;
             OperationTemplate ot;
             if (bean.lifetime.lifetimes().isEmpty()) {
                 ot = OperationTemplate.defaults();
@@ -353,7 +358,7 @@ public final class BeanSetup {
         if (siebling == null) {
             container.beanFirst = bean;
         } else {
-            siebling.nextBean = bean;
+            siebling.siblingNext = bean;
         }
         container.beanLast = bean;
 

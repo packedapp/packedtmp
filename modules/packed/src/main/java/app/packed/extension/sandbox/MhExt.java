@@ -25,6 +25,7 @@ import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionContext;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 
@@ -53,7 +54,7 @@ public class MhExt extends BaseAssembly {
     public static class EBean {
         final MethodHandle mh;
 
-        public EBean(@CodeGenerated MethodHandle f) throws Throwable {
+        public EBean(ExtensionContext context, @CodeGenerated MethodHandle f) throws Throwable {
             this.mh = f;
         }
 

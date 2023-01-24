@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
-import app.packed.bean.BeanHook.VariableTypeHook;
+import app.packed.bean.BeanHook.TypedProvisionHook;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
 import app.packed.binding.Qualifier;
@@ -109,7 +109,7 @@ import internal.app.packed.service.PackedServiceLocator;
  * <p>
  * Unless otherwise specified the set of services provided by a service locator is always unchangeable.
  */
-@VariableTypeHook(extension = ServiceExtension.class)
+@TypedProvisionHook(extension = ServiceExtension.class)
 public interface ServiceLocator {
 
     /**

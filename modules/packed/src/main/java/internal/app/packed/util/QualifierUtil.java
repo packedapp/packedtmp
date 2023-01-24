@@ -30,6 +30,7 @@ public final class QualifierUtil {
     public static void checkQualifierAnnotationPresent(Annotation e) {
         Class<?> annotationType = e.annotationType();
         // TODO check also withQualifier
+        // TODO is class value faster?
         if (annotationType.isAnnotationPresent(Qualifier.class)) {
             return;
         }

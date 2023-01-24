@@ -34,6 +34,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
+import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.PackedWireletSelection;
@@ -131,10 +132,15 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /** {@return whether or not the container is the root container in the application.} */
-    protected final boolean isRoot() {
+    protected final boolean isApplicationRoot() {
         return extension.treeParent == null;
     }
 
+    protected final boolean isLifetimeRoot() {
+        ContainerSetup container = extension.container;
+        return container == container.lifetime.container;
+    }
+    
     /** {@return instance of this extension that is used in the lifetimes root container.} */
     @SuppressWarnings("unchecked")
     protected final E lifetimeRoot() {
@@ -286,7 +292,7 @@ public abstract class Extension<E extends Extension<E>> {
      * extension is the root extension}
      */
     @SuppressWarnings("unchecked")
-    protected final E root() {
+    protected final E applicationRoot() {
         ExtensionSetup s = extension;
         while (s.treeParent != null) {
             s = s.treeParent;

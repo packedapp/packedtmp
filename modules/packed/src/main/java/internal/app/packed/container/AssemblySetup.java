@@ -228,7 +228,7 @@ public final class AssemblySetup extends RealmSetup {
 
             // The application has been built successfully.
             // Now generate code for it if needed
-            application.finish();
+            application.close();
 
             abe.applicationName = container.name;
             abe.commit();

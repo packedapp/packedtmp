@@ -22,8 +22,8 @@ import java.util.ArrayDeque;
 import java.util.List;
 
 import app.packed.framework.Nullable;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
-import internal.app.packed.operation.OperationSetup;
 
 /**
  *
@@ -32,7 +32,7 @@ public final class FuseableOperation {
 
     public final OperationTemplate template;
 
-    public final ArrayDeque<OperationSetup> operations = new ArrayDeque<>();
+    public final ArrayDeque<OperationHandle> operations = new ArrayDeque<>();
 
     public final ArrayDeque<MethodHandle> methodHandles = new ArrayDeque<>();
     

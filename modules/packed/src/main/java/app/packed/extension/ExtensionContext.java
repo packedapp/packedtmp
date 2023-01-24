@@ -15,6 +15,7 @@
  */
 package app.packed.extension;
 
+import app.packed.bean.BeanHook.TypedProvisionHook;
 import app.packed.context.Context;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 
@@ -23,4 +24,5 @@ import internal.app.packed.lifetime.runtime.PackedExtensionContext;
  * <p>
  * An instance of this class is typically required when invoking operations.
  */
+@TypedProvisionHook(extension = BaseExtension.class)
 public sealed interface ExtensionContext extends Context<BaseExtension> permits PackedExtensionContext {}

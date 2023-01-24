@@ -26,7 +26,7 @@ import java.util.Map;
 import app.packed.bean.BeanHook.AnnotatedFieldHook;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
-import app.packed.bean.BeanHook.VariableTypeHook;
+import app.packed.bean.BeanHook.TypedProvisionHook;
 import app.packed.bean.BeanIntrospector.BindableVariable;
 import app.packed.bean.BeanIntrospector.OperationalField;
 import app.packed.extension.CustomBeanHook;
@@ -150,7 +150,7 @@ public final class BeanHookModel {
 
         @Override
         protected ParameterType computeValue(Class<?> type) {
-            VariableTypeHook h = type.getAnnotation(VariableTypeHook.class);
+            TypedProvisionHook h = type.getAnnotation(TypedProvisionHook.class);
             Class<? extends Annotation> cl = bindings.get(type.getName());
             if (cl != null) {
                 Class<?> declaringClass = cl.getDeclaringClass();

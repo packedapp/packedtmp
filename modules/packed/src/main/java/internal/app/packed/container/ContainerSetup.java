@@ -132,7 +132,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         // BaseExtension is used by every container
         ExtensionSetup baseExtension = new ExtensionSetup(treeParent == null ? null : treeParent.extensions.get(BaseExtension.class), this,
                 BaseExtension.class);
-        baseExtension.initialize();
+        baseExtension.initialize(assembly.container == null); //ugly
 
         // The rest of the constructor is just processing wirelets that have been specified by
         // the user or extension when wiring the component. The wirelets have not been null checked.
@@ -354,7 +354,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             ExtensionSetup extensionParent = treeParent == null ? null : treeParent.useExtension(extensionClass, requestedByExtension);
 
             extension = new ExtensionSetup(extensionParent, this, extensionClass);
-            extension.initialize();
+            extension.initialize(assembly.container == this);
         }
         return extension;
     }

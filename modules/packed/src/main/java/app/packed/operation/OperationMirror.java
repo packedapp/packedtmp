@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.BeanHook.VariableTypeHook;
+import app.packed.bean.BeanHook.TypedProvisionHook;
 import app.packed.bean.BeanMirror;
 import app.packed.binding.Key;
 import app.packed.binding.mirror.BindingMirror;
@@ -56,7 +56,7 @@ import internal.app.packed.operation.OperationSetup;
  * <li>Must be located in the same module as the extension it is a member of.</li>
  * </ul>
  */
-@VariableTypeHook(extension = MirrorExtension.class)
+@TypedProvisionHook(extension = MirrorExtension.class)
 public non-sealed class OperationMirror implements ContextualizedElementMirror, Mirror {
 
     /**

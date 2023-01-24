@@ -32,7 +32,6 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
-import internal.app.packed.bean.BeanScanner.ContributingExtension;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
 import internal.app.packed.service.KeyHelper;
@@ -139,7 +138,7 @@ public final class BeanScannerMethod implements OperationalMethod {
             Class<? extends Annotation> a1Type = a1.annotationType();
             AnnotatedMethod fh = iBean.hookModel.testMethodAnnotation(a1Type);
             if (fh != null) {
-                ContributingExtension contributor = iBean.computeContributor(fh.extensionType(), false);
+                ContributingExtension contributor = iBean.computeContributor(fh.extensionType());
 
                 BeanScannerMethod pbm = new BeanScannerMethod(iBean, contributor, method, annotations, fh.isInvokable());
 

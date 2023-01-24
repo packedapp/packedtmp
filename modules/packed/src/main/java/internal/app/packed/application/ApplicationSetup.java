@@ -39,7 +39,7 @@ public final class ApplicationSetup {
     private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ApplicationMirror.class, "initialize",
             void.class, ApplicationSetup.class);
 
-    /** A list of actions that will be executed doing the code generating phase. */
+    /** A list of actions that will be executed doing the code generating phase. Or null if code generation is disabled. */
     @Nullable
     private final ArrayList<Runnable> codegenActions;
 
@@ -56,7 +56,7 @@ public final class ApplicationSetup {
     /** The build goal. */
     public final BuildGoal goal;
 
-    /** The current phase of the build process. */
+    /** The current phase of the application's build process. */
     private ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
 
     /**
@@ -90,7 +90,7 @@ public final class ApplicationSetup {
     public void addCodeGenerator(Runnable action) {
         requireNonNull(action, "action is null");
         if (phase != ApplicationBuildPhase.ASSEMBLE) {
-            throw new IllegalStateException("This method must be called before the code generating phase is started");
+            throw new IllegalStateException("This method must be called in the assemble phase of the application");
         }
         // Only add the action if code generation is enabled
         if (codegenActions != null) {
@@ -110,10 +110,7 @@ public final class ApplicationSetup {
         }
     }
 
-    public void finish() {
-        // Order all dependencies between beans
-        container.lifetime.orderDependencies();
-
+    public void close() {
         // Generate code if needed
         if (codegenActions != null) {
             phase = ApplicationBuildPhase.CODEGEN;

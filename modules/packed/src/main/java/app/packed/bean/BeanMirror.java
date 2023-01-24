@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationPath;
-import app.packed.bean.BeanHook.VariableTypeHook;
+import app.packed.bean.BeanHook.TypedProvisionHook;
 import app.packed.binding.mirror.DependenciesMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
@@ -34,7 +34,7 @@ import internal.app.packed.util.StreamUtil;
  * <p>
  * Instances of this class is typically obtained from calls to {@link ApplicationMirror} or {@link ContainerMirror}.
  */
-@VariableTypeHook(extension = MirrorExtension.class)
+@TypedProvisionHook(extension = MirrorExtension.class)
 public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirror {
 
     /**
@@ -111,7 +111,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
     // Saa supportere vi ogsaa flere factory metodes hvis vi har brug for det en gang
     public Optional<OperationMirror> factoryOperation() {
         BeanSetup bean = bean();
-        if (bean.beanKind.hasInstances() && bean.sourceKind != BeanSourceKind.INSTANCE) {
+        if (bean.beanKind.hasInstances() && bean.beanSourceKind != BeanSourceKind.INSTANCE) {
             return Optional.of(bean.operations.get(0).mirror());
         }
         return Optional.empty();

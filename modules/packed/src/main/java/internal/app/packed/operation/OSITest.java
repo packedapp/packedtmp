@@ -70,7 +70,7 @@ public class OSITest extends BaseAssembly {
                         d.checkAssignableTo(LocalDateTime.class);
                         d.bindConstant(LocalDateTime.now());
                     } else if (hook instanceof InitializationTime) {
-                        root().base().installIfAbsent(AppInitializeTime.class);
+                        applicationRoot().base().installIfAbsent(AppInitializeTime.class);
                         d.checkAssignableTo(LocalDateTime.class);
                         d.bindTo(new Op1<AppInitializeTime, LocalDateTime>(b -> b.initialized) {});
                     } else if (hook instanceof Now) { // now

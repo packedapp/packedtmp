@@ -15,8 +15,6 @@
  */
 package app.packed.bean;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
@@ -35,7 +33,7 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanHook.AnnotatedFieldHook;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
-import app.packed.bean.BeanHook.VariableTypeHook;
+import app.packed.bean.BeanHook.TypedProvisionHook;
 import app.packed.binding.InvalidKeyException;
 import app.packed.binding.Key;
 import app.packed.binding.Qualifier;
@@ -56,13 +54,14 @@ import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.InvocationArgument;
 import app.packed.operation.OperationType;
-import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.BeanScannerField;
 import internal.app.packed.bean.BeanScannerMethod;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.ContributingExtension;
 import internal.app.packed.bean.PackedAnnotationCollection;
-import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.service.KeyHelper;
+import internal.app.packed.util.QualifierUtil;
+import internal.app.packed.util.StringFormatter;
 
 /**
  * 
@@ -85,7 +84,7 @@ public abstract class BeanIntrospector {
      * {@link #initialize(ExtensionDescriptor, BeanSetup)}.
      */
     @Nullable
-    private Setup setup;
+    private ContributingExtension setup;
 
     /**
      * A callback method that is invoked before any calls to any of the {@code hookOn} methods on this class.
@@ -96,12 +95,12 @@ public abstract class BeanIntrospector {
      */
     public void afterHooks() {}
 
-    @SuppressWarnings("unchecked")
-    public <A> Optional<A> attachment(Class<A> attachmentType) {
-        requireNonNull(attachmentType);
-        Map<Class<?>, Object> a = setup().bean.attachments;
-        return a == null ? Optional.empty() : Optional.ofNullable((A) a.get(attachmentType));
-    }
+//    @SuppressWarnings("unchecked")
+//    public <A> Optional<A> attachment(Class<A> attachmentType) {
+//        requireNonNull(attachmentType);
+//        Map<Class<?>, Object> a = setup().bean.attachments;
+//        return a == null ? Optional.empty() : Optional.ofNullable((A) a.get(attachmentType));
+//    }
 
     /** {@return an annotation reader for the bean class.} */
     public final AnnotationCollection beanAnnotations() {
@@ -110,27 +109,27 @@ public abstract class BeanIntrospector {
 
     /** {@return the bean class that is being introspected.} */
     public final Class<?> beanClass() {
-        return setup().bean.bean.beanClass;
+        return bean().beanClass;
     }
 
     /** {@return the extension the bean was installed via.} */
     public final Class<? extends Extension<?>> beanInstalledVia() {
-        return setup().bean.bean.installedBy.extensionType;
+        return bean().installedBy.extensionType;
     }
 
     /** {@return an annotation reader for the bean class.} */
     public final BeanKind beanKind() {
-        return setup().bean.bean.beanKind;
+        return bean().beanKind;
     }
 
     /** {@return the owner of the bean.} */
     public final Realm beanOwner() {
-        return setup().bean.bean.realm.realm();
+        return bean().realm.realm();
     }
 
     /** {@return the bean source kind.} */
     public final BeanSourceKind beanSourceKind() {
-        return setup().bean.bean.sourceKind;
+        return bean().beanSourceKind;
     }
 
     /**
@@ -155,11 +154,11 @@ public abstract class BeanIntrospector {
         throw new BeanInstallationException("OOPS " + postFix);
     }
 
-    public boolean hasAttachment(Class<?> attachmentType) {
-        requireNonNull(attachmentType);
-        Map<Class<?>, Object> a = setup().bean.attachments;
-        return a != null && a.containsKey(attachmentType);
-    }
+//    public boolean hasAttachment(Class<?> attachmentType) {
+//        requireNonNull(attachmentType);
+//        Map<Class<?>, Object> a = setup().bean.attachments;
+//        return a != null && a.containsKey(attachmentType);
+//    }
 
     // Replace set with something like AnnotatedHookSet
     public void hookOnAnnotatedClass(Set<Class<? extends Annotation>> hooks, OperationalClass on) {}
@@ -181,7 +180,7 @@ public abstract class BeanIntrospector {
      */
     // onFieldHook(Set<Class<? extends Annotation<>> hooks, BeanField));
     public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks, OperationalField of) {
-        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle field annotation(s) " + hooks);
+        throw new InternalExtensionException(extension().fullName() + " failed to handle field annotation(s) " + hooks);
     }
 
     /**
@@ -192,7 +191,7 @@ public abstract class BeanIntrospector {
     public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod on) {
         // Test if getClass()==BeanScanner forgot to implement
         // Not we want to return generic bean scanner from newBeanScanner
-        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle method annotation(s) " + hooks);
+        throw new InternalExtensionException(extension().fullName() + " failed to handle method annotation(s) " + hooks);
     }
 
     /**
@@ -205,16 +204,16 @@ public abstract class BeanIntrospector {
     public void hookOnAnnotatedVariable(Annotation hook, BindableVariable v) {
         // could test if getClass is beanIntrospector, in which case they probably forgot to override extension.newIntrospector
         // Otherwise they forgot to implement binding hook
-        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle parameter hook annotation(s) " + hook);
+        throw new InternalExtensionException(extension().fullName() + " failed to handle parameter hook annotation(s) " + hook);
     }
 
     /**
      * @param v
      * 
-     * @see VariableTypeHook
+     * @see TypedProvisionHook
      */
     public void hookOnVariableType(Class<?> hook, BindableBaseVariable v) {
-        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle parameter hook annotation(s) " + hook);
+        throw new InternalExtensionException(extension().fullName() + " failed to handle type hook " + StringFormatter.format(hook));
     }
 
     /**
@@ -227,11 +226,19 @@ public abstract class BeanIntrospector {
      * @throws IllegalStateException
      *             if called more than once
      */
-    final void initialize(ExtensionSetup operator, BeanScanner bean) {
+    final void initialize(ContributingExtension ce) {
         if (this.setup != null) {
             throw new IllegalStateException("This scanner has already been initialized.");
         }
-        this.setup = new Setup(operator.model, bean);
+        this.setup = ce;
+    }
+
+    private ExtensionDescriptor extension() {
+        return setup().extension().model;
+    }
+    
+    private BeanSetup bean() {
+        return setup().bean();
     }
 
     /** {@return whether or not this introspector is the installing introspector.} */
@@ -245,8 +252,8 @@ public abstract class BeanIntrospector {
      * @throws IllegalStateException
      *             if called from the constructor of the class
      */
-    private Setup setup() {
-        Setup s = setup;
+    private ContributingExtension setup() {
+        ContributingExtension s = setup;
         if (s == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of " + getClass());
         }
@@ -522,6 +529,9 @@ public abstract class BeanIntrospector {
             }
             Annotation[] anno = List.of(variable().getAnnotations()).stream().filter(e -> e.annotationType().isAnnotationPresent(Qualifier.class))
                     .toArray(i -> new Annotation[i]);
+            if (anno.length == 0) {
+                anno = QualifierUtil.NO_QUALIFIERS;
+            }
             return Key.convertTypeNullableAnnotation(this, variable().getType(), anno);
         }
 
@@ -780,10 +790,6 @@ public abstract class BeanIntrospector {
         /** {@return the default type of operation that will be created.} */
         OperationType operationType();
     }
-
-    /** A small utility record to hold the both the extension model and the bean in one field. */
-    // Replace with Introspector???
-    private record Setup(ExtensionDescriptor extension, BeanScanner bean) {}
 }
 
 interface ZandboxBI {

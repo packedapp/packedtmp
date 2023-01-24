@@ -43,7 +43,7 @@ public @interface OnStop {
 
     boolean async() default false;
 
-    boolean preOrder() default false;
+    boolean naturalOrder() default true;
 }
 
 // String[] before() default {};

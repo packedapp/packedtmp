@@ -151,6 +151,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
 
         // Then we compare the full name (class.getCanonicalName());
+        
+        // Should we have compare on String.lenght first instead???
+        // A lot faster
         int c = nameFull.compareTo(m.nameFull);
         if (c != 0) {
             return c;

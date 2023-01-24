@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationPath;
-import app.packed.bean.BeanHook.VariableTypeHook;
+import app.packed.bean.BeanHook.TypedProvisionHook;
 import app.packed.bean.BeanMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
@@ -38,7 +38,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * <p>
  * At runtime you can have a ContainerMirror injected 
  */
-@VariableTypeHook(extension = MirrorExtension.class)
+@TypedProvisionHook(extension = MirrorExtension.class)
 public non-sealed class ContainerMirror implements ContextualizedElementMirror , Mirror {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
@@ -90,7 +90,7 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     public Stream<BeanMirror> beans() {
         // not technically a view but will do for now
         ArrayList<BeanMirror> beans = new ArrayList<>();
-        for (var b = container().beanFirst; b != null; b = b.nextBean) {
+        for (var b = container().beanFirst; b != null; b = b.siblingNext) {
             beans.add(b.mirror());
         }
         return List.copyOf(beans).stream();

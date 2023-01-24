@@ -29,7 +29,7 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 import app.packed.bean.BeanHandle;
@@ -58,7 +58,7 @@ public final class BeanScanner {
 
     /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
     private static final MethodHandle MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class,
-            "initialize", void.class, ExtensionSetup.class, BeanScanner.class);
+            "initialize", void.class, ContributingExtension.class);
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class,
@@ -77,11 +77,9 @@ public final class BeanScanner {
     @Nullable
     private final BeanIntrospector beanIntrospector;
 
-    // I think we need stable iteration order... AppendOnly identity map, stable iteration order
-    // I think we sort in BeanFields...
-    // But then should we sort annotations as well?
     /** Every extension that is activated by a hook. */
-    private final LinkedHashMap<Class<? extends Extension<?>>, ContributingExtension> extensions = new LinkedHashMap<>();
+    // We sort it in the end
+    private final IdentityHashMap<Class<? extends Extension<?>>, ContributingExtension> extensions = new IdentityHashMap<>();
 
     final BeanHookModel hookModel;
 
@@ -105,7 +103,7 @@ public final class BeanScanner {
      * @param fullAccess
      * @return the contributor
      */
-    ContributingExtension computeContributor(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
+    ContributingExtension computeContributor(Class<? extends Extension<?>> extensionType) {
         return extensions.computeIfAbsent(extensionType, c -> {
             // Get the extension (installing it if necessary)
             ExtensionSetup extension = bean.container.useExtension(extensionType, null);
@@ -123,17 +121,18 @@ public final class BeanScanner {
                     throw ThrowableUtil.orUndeclared(t);
                 }
             }
+            ContributingExtension ce = new ContributingExtension(this, extension, introspector);
 
             // Call BeanIntrospector#initialize
             try {
-                MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, extension, this);
+                MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, ce);
             } catch (Throwable t) {
                 throw ThrowableUtil.orUndeclared(t);
             }
 
             // Notify the bean introspector that it is being used
             introspector.beforeHooks();
-            return new ContributingExtension(extension, introspector, fullAccess);
+            return ce;
         });
     }
 
@@ -176,21 +175,21 @@ public final class BeanScanner {
 
         // We always have instances if we have an op.
         // Make sure the op is resolved
-        if (bean.sourceKind == BeanSourceKind.OP) {
+        if (bean.beanSourceKind == BeanSourceKind.OP) {
             resolveNow(bean.operations.get(0));
         }
 
         if (!bean.beanClass.isInterface()) {
 
             // If a we have a (instantiating) class source, we need to find a constructor we can use
-            if (bean.sourceKind == BeanSourceKind.CLASS && bean.beanKind.hasInstances()) {
+            if (bean.beanSourceKind == BeanSourceKind.CLASS && bean.beanKind.hasInstances()) {
                 findConstructor();
             }
 
             // See also java.lang.PublicMethods
 
             // Introspect all fields on the bean and its super classes
-            introspectAllFields(this, bean.beanClass);
+            introspectFields(this, bean.beanClass);
 
             // Process all methods on the bean
             record MethodHelper(int hash, String name, Class<?>[] parameterTypes) {
@@ -279,7 +278,7 @@ public final class BeanScanner {
 
         // Call into every BeanIntrospector and tell them it is all over
         for (ContributingExtension e : extensions.values()) {
-            e.introspector.afterHooks();
+            e.introspector().afterHooks();
         }
     }
 
@@ -303,11 +302,11 @@ public final class BeanScanner {
         }
     }
 
-    private static void introspectAllFields(BeanScanner introspector, Class<?> clazz) {
+    private static void introspectFields(BeanScanner introspector, Class<?> clazz) {
         // We never process classes in the "java.base" module.
         if (clazz.getModule() != BeanScanner.JAVA_BASE_MODULE) {
             // Recursively call into superclass, before processing own fields
-            introspectAllFields(introspector, clazz.getSuperclass());
+            introspectFields(introspector, clazz.getSuperclass());
 
             // PackedDevToolsIntegration.INSTANCE.reflectMembers(c, fields);
 
@@ -317,12 +316,6 @@ public final class BeanScanner {
             }
         }
     }
-
-    /**
-     * An instance of this class is created per extension that participates in the introspection. The main purpose of the
-     * class is to make sure that the extension points to the same bean introspector for the whole of the introspection.
-     */
-    record ContributingExtension(ExtensionSetup extension, BeanIntrospector introspector, boolean hasFullAccess) {}
 
     /**
      * An open class is a thin wrapper for a single class and a {@link Lookup} object.

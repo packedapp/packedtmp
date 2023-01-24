@@ -16,7 +16,6 @@
 package app.packed.binding;
 
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
-import app.packed.bean.BeanHook.VariableTypeHook;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 

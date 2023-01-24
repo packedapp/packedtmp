@@ -22,11 +22,12 @@ import app.packed.lifetime.LifetimeMirror;
 //Application.Many -> image
 
 public abstract sealed interface LifetimeSetup permits ContainerLifetimeSetup, BeanLifetimeSetup {
-    
+
     List<FuseableOperation> lifetimes();
-    
+
+    /** {@return any parent lifetime of this lifetime.} */
     @Nullable
-    ContainerLifetimeSetup parent();
+    ContainerLifetimeSetup parent(); // how do we handle cross application?
 
     /** {@return a mirror that can be exposed to end-users.} */
     LifetimeMirror mirror();

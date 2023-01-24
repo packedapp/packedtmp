@@ -158,7 +158,7 @@ public @interface BeanHook {
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @BeanHook
-    public @interface VariableTypeHook {
+    public @interface TypedProvisionHook {
 
         /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
         Class<? extends Extension<?>> extension();

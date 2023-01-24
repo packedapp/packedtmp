@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
 import app.packed.binding.mirror.BindingProviderKind;
-import internal.app.packed.lifetime.BeanInstanceAccessor;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
@@ -170,10 +169,10 @@ public sealed abstract class BindingProvider {
 
         public final Class<?> type;
 
-        public FromLifetimeArena(ContainerLifetimeSetup containerLifetime, BeanInstanceAccessor accessor, Class<?> type) {
+        public FromLifetimeArena(ContainerLifetimeSetup containerLifetime, int accessor, Class<?> type) {
             this.containerLifetime = requireNonNull(containerLifetime);
             this.type = type;
-            this.index = accessor.index();
+            this.index = accessor;
         }
 
         /** {@inheritDoc} */

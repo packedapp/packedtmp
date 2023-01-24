@@ -22,7 +22,6 @@ import app.packed.extension.BaseExtension;
 import app.packed.service.ServiceExtension;
 import internal.app.packed.bean.BeanHookModel.AnnotatedParameterType;
 import internal.app.packed.bean.BeanHookModel.ParameterType;
-import internal.app.packed.bean.BeanScanner.ContributingExtension;
 import internal.app.packed.binding.ExtensionServiceBindingSetup;
 import internal.app.packed.binding.InternalDependency;
 import internal.app.packed.operation.OperationSetup;
@@ -47,7 +46,7 @@ final class BeanScannerBindingResolver {
         // Next, see if there are any VariableTypeHooks on the variable
         ParameterType hook = iBean.hookModel.testParameterType(v.getRawType());
         if (hook != null) {
-            ContributingExtension contributor = iBean.computeContributor(hook.extensionType(), false);
+            ContributingExtension contributor = iBean.computeContributor(hook.extensionType());
             BeanScannerBeanVariable h = new BeanScannerBeanVariable(iBean, operation, index, contributor.extension(), v);
             
             contributor.introspector().hookOnVariableType(v.getRawType(), new PackedBindableBaseVariable(h));
@@ -85,7 +84,7 @@ final class BeanScannerBindingResolver {
             Class<? extends Annotation> a1Type = a1.annotationType();
             AnnotatedParameterType hook = introspector.hookModel.testParameterAnnotation(a1Type);
             if (hook != null) {
-                ContributingExtension ei = introspector.computeContributor(hook.extensionType(), false);
+                ContributingExtension ei = introspector.computeContributor(hook.extensionType());
 
                 BeanScannerBeanVariable h = new BeanScannerBeanVariable(introspector, os, index, ei.extension(), var);
                 ei.introspector().hookOnAnnotatedVariable(a1, h);
