@@ -16,12 +16,7 @@
 package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.VarHandle;
-import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -30,185 +25,14 @@ import java.util.Set;
 import app.packed.bean.BeanHook.AnnotatedFieldHook;
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
 import app.packed.bean.BeanInstallationException;
-import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanIntrospector.AnnotationCollection;
-import app.packed.bean.BeanIntrospector.OperationalField;
-import app.packed.bean.InaccessibleBeanMemberException;
-import app.packed.binding.Variable;
 import app.packed.extension.Extension;
-import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
-import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanHookModel.AnnotatedField;
 import internal.app.packed.bean.BeanHookModel.AnnotatedFieldKind;
-import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
 
-/** Responsible for scanning fields on a bean. */
-public final class BeanScannerField implements OperationalField {
-
-    /** Whether or not operations that read from the field can be created. */
-    final boolean allowGet;
-
-    /** Whether or not operations that write to the field can be created. */
-    final boolean allowSet;
-
-    /** Annotations ({@link Field#getAnnotations()}) on the field. */
-    private final Annotation[] annotations;
-
-    /** The extension that can create operations from the field. */
-    final ContributingExtension ce;
-
-    /** The field. */
-    private final Field field;
-
-    /** Whether or not new operations can be created from the field. */
-    boolean isDone;
-
-    private BeanScannerField(BeanScanner scanner, Class<? extends Extension<?>> extensionType, Field field, boolean allowGet, boolean allowSet,
-            Annotation[] annotations, AnnotatedField... annotatedFields) {
-        this.ce = scanner.computeContributor(extensionType);
-        this.field = field;
-        this.allowGet = allowGet || ce.hasFullAccess();
-        this.allowSet = allowSet || ce.hasFullAccess();
-        this.annotations = annotations;
-    }
-
-    BeanScannerField(BeanScanner scanner, Field field, Annotation[] annotations, AnnotatedField... annotatedFields) {
-        this.ce = scanner.computeContributor(annotatedFields[0].extensionType());
-        this.field = field;
-        boolean allowGet = ce.hasFullAccess();
-        for (AnnotatedField annotatedField : annotatedFields) {
-            allowGet |= annotatedField.isGettable();
-        }
-        this.allowGet = allowGet;
-
-        boolean allowSet = ce.hasFullAccess();
-        for (AnnotatedField annotatedField : annotatedFields) {
-            allowSet |= annotatedField.isSettable();
-        }
-        this.allowSet = allowSet;
-        this.annotations = annotations;
-    }
-
-    BeanScannerField(ContributingExtension scanner, Field field, Annotation[] annotations, AnnotatedField... annotatedFields) {
-        this.ce = scanner;
-        this.field = field;
-        boolean allowGet = ce.hasFullAccess();
-        for (AnnotatedField annotatedField : annotatedFields) {
-            allowGet |= annotatedField.isGettable();
-        }
-        this.allowGet = allowGet;
-
-        boolean allowSet = ce.hasFullAccess();
-        for (AnnotatedField annotatedField : annotatedFields) {
-            allowSet |= annotatedField.isSettable();
-        }
-        this.allowSet = allowSet;
-        this.annotations = annotations;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public AnnotationCollection annotations() {
-        return new PackedAnnotationCollection(annotations);
-    }
-
-    /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */
-    private void checkConfigurable() {
-        if (isDone) {
-            throw new IllegalStateException("This method must be called from within " + BeanIntrospector.class + ":onField");
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Field field() {
-        return field;
-    }
-
-    /** Callback into an extension's {@link BeanIntrospector#hookOnAnnotatedField(OperationalField)} method. */
-    private void matchy() {
-        ce.introspector().hookOnAnnotatedField(Set.of(), this);
-        isDone = true;
-        ce.scanner.resolveOperations(); // resolve bindings for any operation(s) that have been created
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int modifiers() {
-        return field.getModifiers();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public OperationHandle newGetOperation(OperationTemplate template) {
-        checkConfigurable();
-
-        Lookup lookup = ce.scanner.oc.lookup(field);
-
-        MethodHandle methodHandle;
-        try {
-            methodHandle = lookup.unreflectGetter(field);
-        } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
-        }
-
-        AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
-        return newOperation(template, methodHandle, accessMode);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public OperationHandle newOperation(OperationTemplate template, AccessMode accessMode) {
-        checkConfigurable();
-        Lookup lookup = ce.scanner.oc.lookup(field);
-
-        VarHandle varHandle;
-        try {
-            varHandle = lookup.unreflectVarHandle(field);
-        } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("Could not create a VarHandle", e);
-        }
-
-        MethodHandle mh = varHandle.toMethodHandle(accessMode);
-        return newOperation(template, mh, accessMode);
-    }
-
-    private OperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
-        template = template.withReturnType(field.getType());
-        OperationSetup operation = new FieldOperationSetup(ce.extension(), ce.scanner.bean, OperationType.ofFieldAccess(field, accessMode), template, mh, field,
-                accessMode);
-
-        ce.scanner.unBoundOperations.add(operation);
-        ce.scanner.bean.operations.add(operation);
-        return operation.toHandle();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public OperationHandle newSetOperation(OperationTemplate template) {
-        checkConfigurable();
-        Lookup lookup = ce.scanner.oc.lookup(field);
-
-        // Create a method handle by unreflecting the field.
-        // Will fail if the framework does not have access to the member
-        MethodHandle methodHandle;
-        try {
-            methodHandle = lookup.unreflectSetter(field);
-        } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
-        }
-
-        AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
-        return newOperation(template, methodHandle, accessMode);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Variable variable() {
-        return Variable.ofField(field);
-    }
+/**
+ *
+ */
+class FieldScan {
 
     // Maaske vi kan en generisk en for members.. <T extends Member, R>
     static void introspectFieldForAnnotations(BeanScanner scanner, Field field) {
@@ -357,7 +181,7 @@ public final class BeanScannerField implements OperationalField {
                 // Get the matching extension, installing it if needed.
 
                 // Create the wrapped field that is exposed to the extension
-                BeanScannerField f = new BeanScannerField(scanner, e.extensionType(), field, e.isGettable(), e.isSettable(), annotations);
+                PackedOperationalField f = new PackedOperationalField(scanner, e.extensionType(), field, e.isGettable(), e.isSettable(), annotations);
                 f.matchy();
             } else {
                 // TODO we should sort by extension order when we have more than 1 match
@@ -365,27 +189,18 @@ public final class BeanScannerField implements OperationalField {
                     ContributingExtension contributor = scanner.computeContributor(mf.extensionClass);
 
                     // Create the wrapped field that is exposed to the extension
-                    BeanScannerField f = new BeanScannerField(scanner, e.extensionType(), field, mf.allowGet, mf.allowSet, annotations);
+                    PackedOperationalField f = new PackedOperationalField(scanner, e.extensionType(), field, mf.allowGet, mf.allowSet, annotations);
                     f.matchy();
                 }
             }
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private static void matchAnnotatedField(BeanScanner scanner, Field field, Annotation[] annotations, Annotation[] hooks, AnnotatedField... annotatedFields) {
-        BeanScannerField of = new BeanScannerField(scanner, field, annotations, annotatedFields);
-        Set<?> set = Set.copyOf(List.of(hooks).stream().map(Object::getClass).toList());
-        of.ce.introspector().hookOnAnnotatedField((Set<Class<? extends Annotation>>) set, of);
-        of.isDone = true;
-    }
-
     static void match(AnnotatedFieldKind kind, BeanScanner scanner, Field f, Annotation[] annotations, Class<? extends Extension<?>> extensionType,
             boolean isGettable, boolean isSettable, Annotation[] hooks) {
         if (kind == AnnotatedFieldKind.FIELD) {
-            BeanScannerField of = new BeanScannerField(scanner, extensionType, f, isGettable, isSettable, annotations);
+            PackedOperationalField of = new PackedOperationalField(scanner, extensionType, f, isGettable, isSettable, annotations);
             of.ce.introspector().hookOnAnnotatedField(Set.of(hooks[0].annotationType()), of);
-            of.isDone = true;
         } else {
 
             // Okay we need to make a new operation
@@ -411,14 +226,6 @@ public final class BeanScannerField implements OperationalField {
         }
     }
 
-    static void matchManySameExtension(BeanScanner scanner, Field f, Annotation[] annotations, P... ps) {
-//        if (af.kind() == AnnotatedFieldKind.FIELD) {
-//            matchAnnotatedField(scanner, f, annotations, hooks, af);
-//        } else {
-//            throw new UnsupportedOperationException();
-//        }
-    }
-
     static void match2(BeanScanner scanner, Field f, Annotation[] annotations, AnnotatedField af0, Annotation a0, AnnotatedField af1, Annotation a1) {
         if (af0.kind() == AnnotatedFieldKind.VARIABLE && af1.kind() == AnnotatedFieldKind.VARIABLE) {
             throw new BeanInstallationException("Cannot use both " + a0 + " and " + a1 + " on field " + f);
@@ -426,16 +233,30 @@ public final class BeanScannerField implements OperationalField {
         if (af0.extensionType() == af1.extensionType()) {
             match(null, scanner, f, annotations, null, false, false, annotations);
             // Create the wrapped field that is exposed to the extension
-            BeanScannerField of = new BeanScannerField(scanner, af0.extensionType(), f, af0.isGettable() || af1.isGettable(),
+            PackedOperationalField of = new PackedOperationalField(scanner, af0.extensionType(), f, af0.isGettable() || af1.isGettable(),
                     af0.isSettable() || af1.isSettable(), annotations);
 
             of.ce.introspector().hookOnAnnotatedField(Set.of(a0.annotationType(), a1.annotationType()), of);
-            of.isDone = true;
         } else {
 
             match1(scanner, f, annotations, af0, new Annotation[] { a0 });
             match1(scanner, f, annotations, af1, new Annotation[] { a1 });
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void matchAnnotatedField(BeanScanner scanner, Field field, Annotation[] annotations, Annotation[] hooks, AnnotatedField... annotatedFields) {
+        PackedOperationalField of = new PackedOperationalField(scanner, field, annotations, annotatedFields);
+        Set<?> set = Set.copyOf(List.of(hooks).stream().map(Object::getClass).toList());
+        of.ce.introspector().hookOnAnnotatedField((Set<Class<? extends Annotation>>) set, of);
+    }
+
+    static void matchManySameExtension(BeanScanner scanner, Field f, Annotation[] annotations, P... ps) {
+//        if (af.kind() == AnnotatedFieldKind.FIELD) {
+//            matchAnnotatedField(scanner, f, annotations, hooks, af);
+//        } else {
+//            throw new UnsupportedOperationException();
+//        }
     }
 
     record P(AnnotatedField af, Annotation a) {}

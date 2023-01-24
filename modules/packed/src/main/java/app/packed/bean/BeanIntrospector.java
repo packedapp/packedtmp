@@ -54,8 +54,8 @@ import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.InvocationArgument;
 import app.packed.operation.OperationType;
-import internal.app.packed.bean.BeanScannerField;
-import internal.app.packed.bean.BeanScannerMethod;
+import internal.app.packed.bean.PackedOperationalField;
+import internal.app.packed.bean.PackedOperationalMethod;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.ContributingExtension;
 import internal.app.packed.bean.PackedAnnotationCollection;
@@ -614,7 +614,7 @@ public abstract class BeanIntrospector {
      * 
      * @apiNote There are currently no support for obtaining a {@link VarHandle} for a field.
      */
-    public sealed interface OperationalField permits BeanScannerField {
+    public sealed interface OperationalField permits PackedOperationalField {
 
         /** {@return an annotation reader for the field.} */
         AnnotationCollection annotations();
@@ -722,7 +722,7 @@ public abstract class BeanIntrospector {
     /**
      * This class represents a {@link Method} from which an {@link OperationHandle operation} can be created.
      */
-    public sealed interface OperationalMethod permits BeanScannerMethod {
+    public sealed interface OperationalMethod permits PackedOperationalMethod {
 
         /** {@return an annotation reader for the method.} */
         AnnotationCollection annotations();

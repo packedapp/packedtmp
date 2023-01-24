@@ -63,10 +63,9 @@ public final class ContributingExtension {
 
     @SuppressWarnings("unchecked")
     void matchAnnotatedField(Field field, Annotation[] annotations, Annotation[] hooks, AnnotatedField... annotatedFields) {
-        BeanScannerField of = new BeanScannerField(this, field, annotations, annotatedFields);
+        PackedOperationalField of = new PackedOperationalField(this, field, annotations, annotatedFields);
         Set<?> set = Set.copyOf(List.of(hooks).stream().map(Object::getClass).toList());
         introspector.hookOnAnnotatedField((Set<Class<? extends Annotation>>) set, of);
-        of.isDone = true;
     }
 
     // I think we need to already have checked that we only have 1 providing annotation

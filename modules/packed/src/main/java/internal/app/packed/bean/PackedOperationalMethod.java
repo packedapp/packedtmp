@@ -23,7 +23,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 import java.util.Set;
 
-import app.packed.bean.BeanIntrospector.AnnotationCollection;
 import app.packed.bean.BeanIntrospector.OperationalMethod;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.binding.Key;
@@ -37,35 +36,14 @@ import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodO
 import internal.app.packed.service.KeyHelper;
 
 /** Internal implementation of BeanMethod. Discard after use. */
-public final class BeanScannerMethod implements OperationalMethod {
-
-    /** Annotations ({@link Method#getAnnotations()}) on the method. */
-    private final Annotation[] annotations;
-
-    /** The extension that will operate any operations. */
-    final ContributingExtension contributor;
-
-    /** The bean scanner. */
-    public final BeanScanner scanner;
-
-    /** The underlying method. */
-    private final Method method;
+public final class PackedOperationalMethod extends PackedOperationalMember<Method> implements OperationalMethod {
 
     /** The operation type (lazily created). */
     @Nullable
     private OperationType type;
 
-    BeanScannerMethod(BeanScanner scanner, ContributingExtension contributor, Method method, Annotation[] annotations, boolean allowInvoke) {
-        this.scanner = scanner;
-        this.contributor = contributor;
-        this.method = method;
-        this.annotations = annotations;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public AnnotationCollection annotations() {
-        return new PackedAnnotationCollection(annotations);
+    PackedOperationalMethod(ContributingExtension contributor, Method method, Annotation[] annotations, boolean allowInvoke) {
+        super(contributor, method, annotations);
     }
 
     /** {@inheritDoc} */
@@ -77,19 +55,13 @@ public final class BeanScannerMethod implements OperationalMethod {
     /** {@inheritDoc} */
     @Override
     public Method method() {
-        return method;
+        return member;
     }
 
     /** {@inheritDoc} */
     @Override
     public Key<?> methodToKey() {
-        return KeyHelper.convertMethodReturnType(method);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int modifiers() {
-        return method.getModifiers();
+        return KeyHelper.convertMethodReturnType(member);
     }
 
     /** {@inheritDoc} */
@@ -100,15 +72,16 @@ public final class BeanScannerMethod implements OperationalMethod {
 
         // We should be able to create this lazily
         // Probably need to store the lookup mechanism on the bean...
+        BeanScanner scanner = ce.scanner;
         MethodHandle methodHandle;
-        Lookup lookup = scanner.oc.lookup(method);
+        Lookup lookup = scanner.oc.lookup(member);
         try {
-            methodHandle = lookup.unreflect(method);
+            methodHandle = lookup.unreflect(member);
         } catch (IllegalAccessException e) {
             throw new InaccessibleBeanMemberException("stuff", e);
         }
 
-        OperationSetup operation = new MethodOperationSetup(contributor.extension(), scanner.bean, operationType(), template, method, methodHandle);
+        OperationSetup operation = new MethodOperationSetup(ce.extension(), scanner.bean, operationType(), template, member, methodHandle);
 
         scanner.bean.operations.add(operation);
         scanner.unBoundOperations.add(operation);
@@ -120,7 +93,7 @@ public final class BeanScannerMethod implements OperationalMethod {
     public OperationType operationType() {
         OperationType t = type;
         if (t == null) {
-            t = type = OperationType.ofExecutable(method);
+            t = type = OperationType.ofExecutable(member);
         }
         return t;
     }
@@ -140,7 +113,7 @@ public final class BeanScannerMethod implements OperationalMethod {
             if (fh != null) {
                 ContributingExtension contributor = iBean.computeContributor(fh.extensionType());
 
-                BeanScannerMethod pbm = new BeanScannerMethod(iBean, contributor, method, annotations, fh.isInvokable());
+                PackedOperationalMethod pbm = new PackedOperationalMethod(contributor, method, annotations, fh.isInvokable());
 
                 contributor.introspector().hookOnAnnotatedMethod(Set.of(), pbm);
             }

@@ -226,7 +226,7 @@ public final class BeanScanner {
                 // TODO add check for
                 if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
                     types.put(new MethodHelper(m), packages);
-                    BeanScannerMethod.introspectMethodForAnnotations(this, m);
+                    PackedOperationalMethod.introspectMethodForAnnotations(this, m);
                 }
             }
 
@@ -245,7 +245,7 @@ public final class BeanScanner {
                             // static methods on any interfaces this class implements.
                             // But it would also be strange to include static methods on sub classes
                             // but not include static methods on interfaces.
-                            BeanScannerMethod.introspectMethodForAnnotations(this, m);
+                            PackedOperationalMethod.introspectMethodForAnnotations(this, m);
                         }
                     } else if (!m.isBridge() && !m.isSynthetic()) { // TODO should we include synthetic methods??
                         switch (mod & (Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE)) {
@@ -266,7 +266,7 @@ public final class BeanScanner {
                         case Modifier.PRIVATE:
                             // Private methods are never overridden
                         }
-                        BeanScannerMethod.introspectMethodForAnnotations(this, m);
+                        PackedOperationalMethod.introspectMethodForAnnotations(this, m);
                     }
                 }
             }
@@ -312,7 +312,7 @@ public final class BeanScanner {
 
             // Iterate over all declared fields
             for (Field field : clazz.getDeclaredFields()) {
-                BeanScannerField.introspectFieldForAnnotations(introspector, field);
+                FieldScan.introspectFieldForAnnotations(introspector, field);
             }
         }
     }

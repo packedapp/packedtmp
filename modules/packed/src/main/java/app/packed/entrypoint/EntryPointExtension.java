@@ -18,7 +18,7 @@ import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.bean.BeanScannerMethod;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.entrypoint.EntryPointSetup;
@@ -67,7 +67,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
             public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod method) {
                 int index = registerEntryPoint(null, true);
                 
-                ContainerSetup container = ((BeanScannerMethod) method).scanner.bean.container;
+                ContainerSetup container = BeanSetup.crack(method).container;
                 
                 container.lifetime.entryPoint = new EntryPointSetup();
 
