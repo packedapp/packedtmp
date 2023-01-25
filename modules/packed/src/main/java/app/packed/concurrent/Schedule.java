@@ -18,6 +18,6 @@ package app.packed.concurrent;
 /**
  *
  */
-public record Schedule(int ms) {
+record Schedule(int ms) {
 
 }

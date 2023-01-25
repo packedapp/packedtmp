@@ -18,8 +18,8 @@ package app.packed.concurrent;
 import app.packed.operation.OperationMirror;
 
 /**
- *
+ * An operation that
  */
-public class ScheduledOperationMirror extends OperationMirror{
+public class ScheduledOperationMirror extends OperationMirror {
 
 }

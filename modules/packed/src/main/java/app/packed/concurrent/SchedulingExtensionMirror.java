@@ -15,29 +15,11 @@
  */
 package app.packed.concurrent;
 
-import app.packed.application.App;
-import app.packed.container.BaseAssembly;
+import app.packed.extension.ExtensionMirror;
 
 /**
  *
  */
-public class ScTest extends BaseAssembly {
+public class SchedulingExtensionMirror extends ExtensionMirror<SchedulingExtension> {
 
-    public static void main(String[] args) {
-        App.run(new ScTest());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void build() {
-        install(MuB.class);
-    }
-
-    public static class MuB {
-
-        @ScheduleRecurrent(millies = 1000)
-        public void sch() {
-            System.out.println("SCHED");
-        }
-    }
 }

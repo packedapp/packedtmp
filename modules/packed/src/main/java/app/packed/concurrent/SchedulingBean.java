@@ -15,7 +15,7 @@
  */
 package app.packed.concurrent;
 
-import java.lang.invoke.MethodHandle;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,17 +30,19 @@ class SchedulingBean {
 
     final ScheduledExecutorService ses;
 
-    private SchedulingBean() {
-        System.out.println("SD");
-        ses = null;
-    }
-
-    SchedulingBean(PackedExtensionContext pec, @CodeGenerated ScheduledPair[] mhs) {
+    SchedulingBean(@CodeGenerated FinalSchedule[] mhs, PackedExtensionContext pec) {
         this.ses = Executors.newScheduledThreadPool(4);
-        for (ScheduledPair p : mhs) {
-            ses.scheduleWithFixedDelay(() -> {}, p.s().ms(), 100, TimeUnit.MILLISECONDS);
+        for (FinalSchedule p : mhs) {
+            ses.scheduleWithFixedDelay(() -> {
+                try {
+                    p.callMe.invokeExact(pec);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            }, p.s.ms(), p.s.ms(), TimeUnit.MILLISECONDS);
         }
-    }
 
-    record ScheduledPair(Schedule s, MethodHandle callMe) {}
+        System.out.println("Got +" + List.of(mhs));
+    }
+    
 }

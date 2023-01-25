@@ -15,29 +15,18 @@
  */
 package app.packed.concurrent;
 
-import app.packed.application.App;
-import app.packed.container.BaseAssembly;
+import java.lang.invoke.MethodHandle;
 
 /**
  *
  */
-public class ScTest extends BaseAssembly {
+public final class FinalSchedule {
 
-    public static void main(String[] args) {
-        App.run(new ScTest());
-    }
+    final Schedule s;
+    final MethodHandle callMe;
 
-    /** {@inheritDoc} */
-    @Override
-    protected void build() {
-        install(MuB.class);
-    }
-
-    public static class MuB {
-
-        @ScheduleRecurrent(millies = 1000)
-        public void sch() {
-            System.out.println("SCHED");
-        }
+    public FinalSchedule(Schedule s, MethodHandle callMe) {
+        this.s = s;
+        this.callMe = callMe;
     }
 }

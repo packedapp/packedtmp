@@ -14,6 +14,7 @@ import app.packed.extension.ExtensionPoint;
 import app.packed.extension.FrameworkExtension;
 import app.packed.framework.Nullable;
 import app.packed.operation.Op;
+import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.application.ApplicationSetup;
@@ -52,7 +53,6 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
         this.shared = parent().map(e -> e.shared).orElseGet(ApplicationShare::new);
     }
 
-
     @Override
     protected BeanIntrospector newBeanIntrospector() {
         return new BeanIntrospector() {
@@ -65,9 +65,9 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
             @Override
             public void hookOnAnnotatedMethod(Annotation hook, OperationalMethod method) {
                 int index = registerEntryPoint(null, true);
-                
+
                 ContainerSetup container = BeanSetup.crack(method).container;
-                
+
                 container.lifetime.entryPoint = new EntryPointSetup();
 
                 MainThreadOfControl mc = container.lifetime.entryPoint.mainThread();
@@ -166,5 +166,7 @@ class Zandbox {
         throw new UnsupportedOperationException();
     }
 
-    void main(Op<?> operation) {}
+    public OperationConfiguration main(Op<?> operation) {
+        throw new UnsupportedOperationException();
+    }
 }

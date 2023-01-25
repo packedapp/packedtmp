@@ -39,6 +39,7 @@ public class BeanConfiguration {
 
     /** {@return the bean handle that was used to create this configuration.} */
     protected BeanHandle<?> handle() {
+        // Maybe have an instanceHandle... instead of overridding this method
         return handle;
     }
 

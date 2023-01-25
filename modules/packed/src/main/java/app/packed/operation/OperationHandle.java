@@ -100,6 +100,9 @@ public final /* primitive */ class OperationHandle {
         this.operation = requireNonNull(operation);
     }
 
+    public OperationTarget target() {
+        return (OperationTarget) operation;
+    }
     /**
      * Creates a binding for the parameter with the specified index.
      * <p>

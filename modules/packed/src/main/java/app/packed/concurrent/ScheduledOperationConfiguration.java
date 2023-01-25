@@ -15,29 +15,31 @@
  */
 package app.packed.concurrent;
 
-import app.packed.application.App;
-import app.packed.container.BaseAssembly;
+import app.packed.concurrent.SchedulingExtension.ConfigurableSchedule;
+import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationHandle;
 
 /**
  *
  */
-public class ScTest extends BaseAssembly {
+public final class ScheduledOperationConfiguration extends OperationConfiguration {
 
-    public static void main(String[] args) {
-        App.run(new ScTest());
+    final ConfigurableSchedule is;
+
+    /**
+     * @param handle
+     */
+    ScheduledOperationConfiguration(ConfigurableSchedule is, OperationHandle handle) {
+        super(handle);
+        this.is = is;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected void build() {
-        install(MuB.class);
+    public boolean isScheduled() {
+        return true;
     }
 
-    public static class MuB {
-
-        @ScheduleRecurrent(millies = 1000)
-        public void sch() {
-            System.out.println("SCHED");
-        }
+    public void setMillies(int millies) {
+        checkConfigurable();
+        is.updateS(new Schedule(millies));
     }
 }

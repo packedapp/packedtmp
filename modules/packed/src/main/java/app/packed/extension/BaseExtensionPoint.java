@@ -23,6 +23,7 @@ import app.packed.container.Assembly;
 import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op;
+import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanSetup;
@@ -167,11 +168,11 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         throw new UnsupportedOperationException();
     }
 
-    public void runOnBeanInitialization(OperationHandle handle, LifecycleOrdering ordering) {
+    public OperationConfiguration runOnBeanInitialization(OperationHandle handle, LifecycleOrdering ordering) {
         requireNonNull(ordering, "ordering is null");
         OperationSetup o = OperationSetup.crack(handle);
         o.bean.lifecycle.addInitialize(handle, ordering);
-
+        return new OperationConfiguration(handle);
     }
 
     /**
@@ -179,11 +180,13 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * 
      * @param handle
      *            the operation that should be executed as part of its bean's injection phase
+     * @return 
      * @see Inject
      */
-    public void runOnBeanInject(OperationHandle handle) {
+    public OperationConfiguration runOnBeanInject(OperationHandle handle) {
         OperationSetup o = OperationSetup.crack(handle);
         o.bean.lifecycle.addInitialize(handle, null);
+        return new OperationConfiguration(handle);
     }
 
     /**
