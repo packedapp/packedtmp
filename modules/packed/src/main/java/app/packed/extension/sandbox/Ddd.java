@@ -20,7 +20,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Set;
 
 import app.packed.application.App;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
@@ -68,7 +67,7 @@ public class Ddd extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod on) {
+                public void hookOnAnnotatedMethod(Annotation hooks, OperationalMethod on) {
                     base().runOnBeanInject(on.newOperation(OperationTemplate.defaults()));
                 }
             };

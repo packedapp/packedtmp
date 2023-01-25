@@ -15,18 +15,17 @@
  */
 package ts.hooks.method;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanIntrospector.AnnotationCollection;
 import app.packed.bean.BeanIntrospector.OperationalMethod;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
@@ -53,7 +52,7 @@ public class MyComp {
             onM2((a, b) -> c.accept(b));
         }
 
-        public void onM2(BiConsumer<Set<Class<? extends Annotation>>, OperationalMethod> c) {
+        public void onM2(BiConsumer<AnnotationCollection, OperationalMethod> c) {
             use(MyExt.class).addOM(c);
         }
     }
@@ -63,14 +62,14 @@ public class MyComp {
     }
 
     static class MyExt extends Extension<MyExt> {
-        BiConsumer<Set<Class<? extends Annotation>>, OperationalMethod> onm;
+        BiConsumer<AnnotationCollection, OperationalMethod> onm;
 
         MyExt() {}
 
         /**
          * @param c
          */
-        void addOM(BiConsumer<Set<Class<? extends Annotation>>, OperationalMethod> c) {
+        void addOM(BiConsumer<AnnotationCollection, OperationalMethod> c) {
             onm = c == null ? c : onm.andThen(c);
         }
 
@@ -79,7 +78,7 @@ public class MyComp {
             return new BeanIntrospector() {
 
                 @Override
-                public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod on) {
+                public void hookOnAnnotatedMethod(AnnotationCollection hooks, OperationalMethod on) {
                     onm.accept(hooks, on);
                 }
             };

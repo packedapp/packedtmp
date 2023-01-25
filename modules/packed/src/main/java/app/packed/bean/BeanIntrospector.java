@@ -102,6 +102,10 @@ public abstract class BeanIntrospector {
 //        return a == null ? Optional.empty() : Optional.ofNullable((A) a.get(attachmentType));
 //    }
 
+    private BeanSetup bean() {
+        return setup().bean();
+    }
+
     /** {@return an annotation reader for the bean class.} */
     public final AnnotationCollection beanAnnotations() {
         return new PackedAnnotationCollection(beanClass().getAnnotations());
@@ -143,6 +147,16 @@ public abstract class BeanIntrospector {
      */
     public void beforeHooks() {}
 
+//    public boolean hasAttachment(Class<?> attachmentType) {
+//        requireNonNull(attachmentType);
+//        Map<Class<?>, Object> a = setup().bean.attachments;
+//        return a != null && a.containsKey(attachmentType);
+//    }
+
+    private ExtensionDescriptor extension() {
+        return setup().extension().model;
+    }
+
     /**
      * @param postFix
      *            the message to include in the final message
@@ -153,12 +167,6 @@ public abstract class BeanIntrospector {
     public final void failWith(String postFix) {
         throw new BeanInstallationException("OOPS " + postFix);
     }
-
-//    public boolean hasAttachment(Class<?> attachmentType) {
-//        requireNonNull(attachmentType);
-//        Map<Class<?>, Object> a = setup().bean.attachments;
-//        return a != null && a.containsKey(attachmentType);
-//    }
 
     // Replace set with something like AnnotatedHookSet
     public void hookOnAnnotatedClass(Set<Class<? extends Annotation>> hooks, OperationalClass on) {}
@@ -183,21 +191,21 @@ public abstract class BeanIntrospector {
         throw new InternalExtensionException(extension().fullName() + " failed to handle field annotation(s) " + hooks);
     }
 
+    public void hookOnAnnotatedMethod(Annotation hook, OperationalMethod on) {
+        // Test if getClass()==BeanScanner forgot to implement
+        // Not we want to return generic bean scanner from newBeanScanner
+        throw new InternalExtensionException(extension().fullName() + " failed to handle method annotation(s) " + hook);
+    }
+
     /**
      * @param on
      * 
      * @see AnnotatedMethodHook
      */
-    public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod on) {
-        // Test if getClass()==BeanScanner forgot to implement
-        // Not we want to return generic bean scanner from newBeanScanner
-        throw new InternalExtensionException(extension().fullName() + " failed to handle method annotation(s) " + hooks);
-    }
-
-    public void hookOnAnnotatedMethod(Annotation hook, OperationalMethod on) {
-        // Test if getClass()==BeanScanner forgot to implement
-        // Not we want to return generic bean scanner from newBeanScanner
-        throw new InternalExtensionException(extension().fullName() + " failed to handle method annotation(s) " + hook);
+    public void hookOnAnnotatedMethod(AnnotationCollection hooks, OperationalMethod on) {
+        for (Annotation a: hooks) {
+            hookOnAnnotatedMethod(a, on);
+        }
     }
 
     /**
@@ -221,7 +229,7 @@ public abstract class BeanIntrospector {
     public void hookOnVariableType(Class<?> hook, BindableBaseVariable v) {
         throw new InternalExtensionException(extension().fullName() + " failed to handle type hook " + StringFormatter.format(hook));
     }
-
+    
     /**
      * Invoked by a MethodHandle from ExtensionSetup.
      * 
@@ -237,14 +245,6 @@ public abstract class BeanIntrospector {
             throw new IllegalStateException("This scanner has already been initialized.");
         }
         this.setup = ce;
-    }
-
-    private ExtensionDescriptor extension() {
-        return setup().extension().model;
-    }
-    
-    private BeanSetup bean() {
-        return setup().bean();
     }
 
     /** {@return whether or not this introspector is the installing introspector.} */
@@ -432,6 +432,25 @@ public abstract class BeanIntrospector {
         void bindTo(Op<?> op);
 
         /**
+         * Binds the variable to a constant that is generated as part of the codegen.
+         * <p>
+         * The specified is never called more than once.
+         * <p>
+         * The specified supplier is only called if a code gen phase of the application is active. Otherwise the supplier will
+         * never be called.
+         * 
+         * @param supplier
+         *            the supplier of the constant
+         * @see #bindConstant(Object)
+         */
+        void bindToGeneratedConstant(Supplier<@Nullable ?> supplier);
+
+        // Taenker vi smider en InternalExtensionException paa runtime?
+        // Eller maaske har vi en specific CodeGenerationException
+        // Er fx brugt fra @CodeGenerated
+        // Will be invoked doing code generation.
+
+        /**
          * @param argumentIndex
          *            the index of the argument
          * 
@@ -446,25 +465,6 @@ public abstract class BeanIntrospector {
          * @see InvocationArgument
          */
         void bindToInvocationArgument(int argumentIndex);
-
-        // Taenker vi smider en InternalExtensionException paa runtime?
-        // Eller maaske har vi en specific CodeGenerationException
-        // Er fx brugt fra @CodeGenerated
-        // Will be invoked doing code generation.
-
-        /**
-         * Binds the variable to a constant that is generated as part of the codegen.
-         * <p>
-         * The specified is never called more than once.
-         * <p>
-         * The specified supplier is only called if a code gen phase of the application is active. Otherwise the supplier will
-         * never be called.
-         * 
-         * @param supplier
-         *            the supplier of the constant
-         * @see #bindConstant(Object)
-         */
-        void bindToGeneratedConstant(Supplier<@Nullable ?> supplier);
 
         /**
          * @param argumentIndex
@@ -513,6 +513,11 @@ public abstract class BeanIntrospector {
             return false;
         }
 
+        /**
+         * @return
+         */
+        boolean isBound();
+
         /** {@return the raw type of the variable.} */
         default Class<?> rawType() {
             return variable().getRawType();
@@ -550,11 +555,6 @@ public abstract class BeanIntrospector {
             // Ville vaere fedt hvis alle metoderne havde samme prefix
             throw new UnsupportedOperationException();
         }
-
-        /**
-         * @return
-         */
-        boolean isBound();
     }
 
     // CheckRealmIsApplication

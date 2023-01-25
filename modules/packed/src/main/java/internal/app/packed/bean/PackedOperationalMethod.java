@@ -21,7 +21,6 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
-import java.util.Set;
 
 import app.packed.bean.BeanIntrospector.OperationalMethod;
 import app.packed.bean.InaccessibleBeanMemberException;
@@ -71,7 +70,7 @@ public final class PackedOperationalMethod extends PackedOperationalMember<Metho
         checkConfigurable();
 
         // We should be able to create this lazily
-        // Probably need to store the lookup mechanism on the bean...        
+        // Probably need to store the lookup mechanism on the bean...
         BeanScanner scanner = ce.scanner;
         MethodHandle methodHandle;
         Lookup lookup = scanner.oc.lookup(member);
@@ -114,8 +113,8 @@ public final class PackedOperationalMethod extends PackedOperationalMember<Metho
                 ContributingExtension contributor = iBean.computeContributor(fh.extensionType());
 
                 PackedOperationalMethod pbm = new PackedOperationalMethod(contributor, method, annotations, fh.isInvokable());
-
-                contributor.introspector().hookOnAnnotatedMethod(Set.of(), pbm);
+                PackedAnnotationCollection pac = new PackedAnnotationCollection(new Annotation[] { a1 });
+                contributor.introspector().hookOnAnnotatedMethod(pac, pbm);
             }
         }
     }

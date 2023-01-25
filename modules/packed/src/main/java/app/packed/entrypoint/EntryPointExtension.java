@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
@@ -64,7 +63,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
              * {@inheritDoc}
              */
             @Override
-            public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod method) {
+            public void hookOnAnnotatedMethod(Annotation hook, OperationalMethod method) {
                 int index = registerEntryPoint(null, true);
                 
                 ContainerSetup container = BeanSetup.crack(method).container;

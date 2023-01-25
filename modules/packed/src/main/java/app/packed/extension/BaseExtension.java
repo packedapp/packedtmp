@@ -219,45 +219,25 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             /** Handles {@link Inject}, {@link OnInitialize}, {@link OnStart} and {@link OnStop}. */
             @Override
-            public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod method) {
-                AnnotationCollection ar = method.annotations();
-
+            public void hookOnAnnotatedMethod(Annotation annotation, OperationalMethod method) {
                 BeanSetup bean = BeanSetup.crack(method);
                 OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
 
-                boolean matched = false;
-                if (ar.isAnnotationPresent(Inject.class)) {
+                if (annotation instanceof Inject) {
                     OperationHandle handle = method.newOperation(temp);
                     bean.lifecycle.addInitialize(handle, null);
-                    matched = true;
-                }
-
-                if (ar.isAnnotationPresent(OnInitialize.class)) {
-                    OnInitialize oi = ar.readRequired(OnInitialize.class);
+                } else if (annotation instanceof OnInitialize oi) {
                     OperationHandle handle = method.newOperation(temp);
                     bean.lifecycle.addInitialize(handle, oi.ordering());
-                    matched = true;
-                }
-
-                if (ar.isAnnotationPresent(OnStart.class)) {
-                    OnStart oi = ar.readRequired(OnStart.class);
+                } else if (annotation instanceof OnStart oi) {
                     OperationHandle handle = method.newOperation(temp);
                     bean.lifecycle.addStart(handle, oi.ordering());
-                    matched = true;
-                }
-
-                if (ar.isAnnotationPresent(OnStop.class)) {
-                    OnStop oi = ar.readRequired(OnStop.class);
+                } else if (annotation instanceof OnStop oi) {
                     OperationHandle handle = method.newOperation(temp);
                     bean.lifecycle.addStop(handle, oi.ordering());
-                    matched = true;
+                } else {
+                    super.hookOnAnnotatedMethod(annotation, method);
                 }
-                
-                if (!matched) {
-                    super.hookOnAnnotatedMethod(hooks, method);
-                }
-                
-                
             }
 
             /** Handles {@link FromGuest}, {@link InvocationArgument} and {@link CodeGenerated}. */

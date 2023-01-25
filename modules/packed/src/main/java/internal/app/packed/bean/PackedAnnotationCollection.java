@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import app.packed.bean.BeanIntrospector.AnnotationCollection;
 
 /** Implementation of {@link AnnotationCollection}. */
-public record PackedAnnotationCollection(Annotation[] annotations) implements AnnotationCollection {
+public record PackedAnnotationCollection(Annotation... annotations) implements AnnotationCollection {
 
     /** {@inheritDoc} */
     @Override

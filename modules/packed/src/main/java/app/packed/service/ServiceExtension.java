@@ -158,7 +158,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
 
             /** {@inheritDoc} */
             @Override
-            public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod method) {
+            public void hookOnAnnotatedMethod(AnnotationCollection hooks, OperationalMethod method) {
                 Key<?> key = method.methodToKey();
                 boolean isProviding = method.annotations().isAnnotationPresent(ProvideService.class);
                 boolean isExporting = method.annotations().isAnnotationPresent(ExportService.class);
