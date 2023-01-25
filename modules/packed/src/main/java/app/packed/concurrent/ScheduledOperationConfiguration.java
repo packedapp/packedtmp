@@ -15,20 +15,20 @@
  */
 package app.packed.concurrent;
 
+import java.time.Duration;
+
 import app.packed.concurrent.SchedulingExtension.FinalSchedule;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 
 /**
- *
+ * 
  */
+// Maybe we only have 1 schedule per operation...
+// I actually think so
 public final class ScheduledOperationConfiguration extends OperationConfiguration {
 
-   record Schedule(int ms) {
-   }
-
-    
     @Nullable
     private Schedule s;
 
@@ -53,6 +53,10 @@ public final class ScheduledOperationConfiguration extends OperationConfiguratio
 
     public void setMillies(int millies) {
         checkConfigurable();
-        s = new Schedule(millies);
+        s = new Schedule(Duration.ofMillis(millies));
+    }
+
+    record Schedule(Duration d) {
+
     }
 }

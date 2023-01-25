@@ -17,11 +17,9 @@ package app.packed.concurrent;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanIntrospector;
@@ -51,11 +49,20 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
         return new BeanIntrospector() {
 
             @Override
+            public void hookOnVariableType(Class<?> hook, BindableBaseVariable v) {
+                if (hook == SchedulingContext.class) {
+                    v.bindToInvocationArgument(1);
+                } else {
+                    super.hookOnVariableType(hook, v);
+                }
+            }
+
+            @Override
             public void hookOnAnnotatedMethod(Annotation hook, OperationalMethod on) {
                 if (hook instanceof ScheduleRecurrent sr) {
-                    OperationHandle oh = on.newOperation(OperationTemplate.defaults());
+                    OperationHandle oh = on.newOperation(OperationTemplate.defaults().withArg(SchedulingContext.class));
                     oh.specializeMirror(() -> new ScheduledOperationMirror());
-                    ops.add(new ScheduledOperationConfiguration(new Schedule(sr.millies()), oh));
+                    ops.add(new ScheduledOperationConfiguration(new Schedule(Duration.ofMillis(sr.millies())), oh));
                 } else {
                     super.hookOnAnnotatedMethod(hook, on);
                 }
@@ -76,8 +83,13 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
     @Override
     protected void onAssemblyClose() {
         super.onAssemblyClose();
-        if (isLifetimeRoot()) {
+        if (isLifetimeRoot() && !ops.isEmpty()) {
+            // TODO run through all ops and make sure they are scheduled
+
+            // Install a scheduling bean that will handle the actual scheduling
             BeanConfiguration b = base().install(SchedulingBean.class);
+
+            // Gene
             base().addCodeGenerated(b, FinalSchedule[].class, () -> {
                 return ops.stream().map(ScheduledOperationConfiguration::schedule).toArray(e -> new FinalSchedule[e]);
             });
@@ -100,21 +112,14 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
 
     static class SchedulingBean {
 
-        final ScheduledExecutorService ses;
+        final PackedVirtualThreadScheduler vts;
 
         SchedulingBean(@CodeGenerated FinalSchedule[] mhs, PackedExtensionContext pec) {
-            this.ses = Executors.newScheduledThreadPool(4);
+            this.vts = new PackedVirtualThreadScheduler(pec);
+            
             for (FinalSchedule p : mhs) {
-                ses.scheduleWithFixedDelay(() -> {
-                    try {
-                        p.callMe.invokeExact(pec);
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
-                }, p.s.ms(), p.s.ms(), TimeUnit.MILLISECONDS);
+                vts.schedule(p.callMe, p.s.d());
             }
-
-            System.out.println("Got +" + List.of(mhs));
         }
     }
 

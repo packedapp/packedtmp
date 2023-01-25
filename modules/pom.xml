@@ -86,6 +86,7 @@
           <target>19</target>
           <compilerArgument>-Xlint:deprecation</compilerArgument>
           <compilerArgument>-Xlint:unchecked</compilerArgument>
+          <compilerArgument>--enable-preview</compilerArgument>
         </configuration>
       </plugin>
       <plugin>

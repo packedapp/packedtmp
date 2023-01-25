@@ -26,6 +26,7 @@ import app.packed.application.App;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.bean.BeanIntrospector;
 import app.packed.concurrent.ScheduledOperationConfiguration;
+import app.packed.concurrent.SchedulingContext;
 import app.packed.concurrent.SchedulingExtension;
 import app.packed.concurrent.SchedulingExtensionPoint;
 import app.packed.container.BaseAssembly;
@@ -38,8 +39,9 @@ import app.packed.operation.OperationTemplate;
  */
 public class ScTestOtherE extends BaseAssembly {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         App.run(new ScTestOtherE());
+        Thread.sleep(1000);
     }
 
     /** {@inheritDoc} */
@@ -66,20 +68,20 @@ public class ScTestOtherE extends BaseAssembly {
                 @Override
                 public void hookOnAnnotatedMethod(Annotation hook, OperationalMethod on) {
                     ScheduleOther so = (ScheduleOther) hook;
-                    ScheduledOperationConfiguration soc = use(SchedulingExtensionPoint.class).schedule(on.newOperation(OperationTemplate.defaults()));
+                    ScheduledOperationConfiguration soc = use(SchedulingExtensionPoint.class)
+                            .schedule(on.newOperation(OperationTemplate.defaults().withArg(SchedulingContext.class)));
                     Duration p = Duration.parse(so.value());
                     soc.setMillies((int) p.toMillis());
                 }
             };
         }
-
     }
 
     public static class MuB {
 
         @ScheduleOther("PT0.01S")
-        public void sch() {
-            System.out.println("SCHED");
+        public static void sch(SchedulingContext sc) {
+            System.out.println("SCHED " + sc.invocationCount());
         }
     }
 }

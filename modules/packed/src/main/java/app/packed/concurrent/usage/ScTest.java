@@ -15,8 +15,11 @@
  */
 package app.packed.concurrent.usage;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import app.packed.application.App;
 import app.packed.concurrent.ScheduleRecurrent;
+import app.packed.concurrent.SchedulingContext;
 import app.packed.container.BaseAssembly;
 
 /**
@@ -24,21 +27,27 @@ import app.packed.container.BaseAssembly;
  */
 public class ScTest extends BaseAssembly {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         App.run(new ScTest());
+        Thread.sleep(10000);
     }
 
     /** {@inheritDoc} */
     @Override
     protected void build() {
+        provideInstance("asdasd");
         install(MuB.class);
     }
 
     public static class MuB {
+        static AtomicLong l = new AtomicLong();
 
-        @ScheduleRecurrent(millies = 1000)
-        public void sch() {
-            System.out.println("SCHED");
+        @ScheduleRecurrent(millies = 100)
+        public static void sch(SchedulingContext sc) {
+            System.out.println("SCHED " + sc.invocationCount());
+            if (l.incrementAndGet() == 10) {
+                sc.cancel();
+            }
         }
     }
 }
