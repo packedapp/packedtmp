@@ -29,6 +29,7 @@ import app.packed.bean.BeanIntrospector;
 // Min eneste anke er an man maaske gerne vil kunne bruge navnet for noget
 // Der fungere paa runtime
 
+// Maybe have a BeanLocalMap as well
 public final class BeanLocal<T> {
 
     static final AtomicLong KEYS = new AtomicLong();

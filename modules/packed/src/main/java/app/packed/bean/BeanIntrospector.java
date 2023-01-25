@@ -194,6 +194,12 @@ public abstract class BeanIntrospector {
         throw new InternalExtensionException(extension().fullName() + " failed to handle method annotation(s) " + hooks);
     }
 
+    public void hookOnAnnotatedMethod(Annotation hook, OperationalMethod on) {
+        // Test if getClass()==BeanScanner forgot to implement
+        // Not we want to return generic bean scanner from newBeanScanner
+        throw new InternalExtensionException(extension().fullName() + " failed to handle method annotation(s) " + hook);
+    }
+
     /**
      * @param variable
      *            a binding

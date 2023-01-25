@@ -183,8 +183,6 @@ public final class AssemblySetup extends RealmSetup {
             }
         }
 
-        isDone = true;
-
         // call Extension.onUserClose on the root container in the assembly.
         // This is turn calls recursively down Extension.onUserClose on all
         // ancestor extensions in the same realm.
@@ -213,6 +211,8 @@ public final class AssemblySetup extends RealmSetup {
                 onAssemblyClose(e.instance());
             }
 
+            isDone = true;
+
             // Hmm what about circular dependencies for extensions?
             CircularServiceDependencyChecker.dependencyCyclesFind(container);
 
@@ -237,6 +237,8 @@ public final class AssemblySetup extends RealmSetup {
             for (ExtensionSetup e = extensions.pollFirst(); e != null; e = extensions.pollFirst()) {
                 onAssemblyClose(e.instance());
             }
+
+            isDone = true;
         }
     }
 

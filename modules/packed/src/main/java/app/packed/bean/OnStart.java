@@ -78,35 +78,50 @@ import app.packed.lifetime.RunState;
 @AnnotatedMethodHook(allowInvoke = true, extension = BaseExtension.class)
 public @interface OnStart {
 
-    /**
-     * Starts a new thread to run the given task.
-     * 
-     * @return {@code true} if
-     */
-    // Synchronous before dependencies
-    // Synchronous after dependencies
-    // Asynchronous before dependencies, stop after dependencies
-    // Asynchronous before dependencies, stop lifetime.complete
-    // Asynchronous before dependencies, keep running
-    // Asynchronous after dependencies, stop lifetime.complete
-    // Asynchronous After dependencies, keep running
+    String JOIN_ON_AFTER_DEPENDENCIES = "AFTER_DEPENDENCIES";
 
-    // async =
-    //// Before Container/Bean started
-    //// Before On the way back (must have natural order)
-    //// Before some string based "Event"
+    String JOIN_ON_LIFETIME_COMPLETE = "LIFETIME_COMPLETE";
+
+    /** Can be used, for example, */
+    String JOIN_ON_KEEP_RUNNING = "LIFETIME_KEEP_RUNNING";
+
+    
+    // Fork with default settings, otherwise use Fork
     boolean fork() default false;
-
-    /**
-     * Whether or not any thread will be interrupted if shutdown while starting
-     * 
-     * @return
-     */
-    // Only if Async???
-    boolean interruptOnStop() default false; // Maybe have an InterruptionPolicy {NEVER, DEFAULT, ALWAYS}
-
+    
     LifecycleOrdering ordering() default LifecycleOrdering.BEFORE_DEPENDENCIES;
 }
+//
+///**
+// * Starts a new thread to run the given task.
+// * 
+// * @return {@code true} if
+// */
+//// Synchronous before dependencies
+//// Synchronous after dependencies
+//// Asynchronous before dependencies, stop after dependencies
+//// Asynchronous before dependencies, stop lifetime.complete
+//// Asynchronous before dependencies, keep running
+//// Asynchronous after dependencies, stop lifetime.complete
+//// Asynchronous After dependencies, keep running
+////// Before some string based "Event"
+//
+//// async =
+//boolean fork() default false;
+//
+//// MethodReferences would just be fucking awesome
+//// joinPolicy default JoinPolicy::immediately();
+//
+///**
+// * Whether or not any thread will be interrupted if shutdown while starting
+// * 
+// * @return
+// */
+//// Only if Async??? I think this only works on forked...
+//// Because if on main thread this annotation is completely ignored
+//// Unless we interrupt the main thread from another thread...
+//// Interrupt on stop is part of fork
+//boolean interruptOnStop() default false; // Maybe have an InterruptionPolicy {NEVER, DEFAULT, ALWAYS}
 
 // order = "SomE:1"; (I forhold til andre der er bruger SomE
 // eller maaske = "->Foo"; (Jeg released Foo)

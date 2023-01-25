@@ -41,7 +41,7 @@ import app.packed.lifetime.RunState;
 @AnnotatedMethodHook(allowInvoke = true, extension = BaseExtension.class)
 public @interface OnStop {
 
-    boolean async() default false;
+    boolean fork() default false;
 
     /**
      * <p>
@@ -50,5 +50,9 @@ public @interface OnStop {
      * @return
      */
     LifecycleOrdering ordering() default LifecycleOrdering.AFTER_DEPENDENCIES;
+
+    // Timeout?
+    public enum ForkPolicy {
+        NO_FORK, FORK, FORK_AWAIT_AFTER_DEPENDENCIES;
+    }
 }
-// I modsaetning

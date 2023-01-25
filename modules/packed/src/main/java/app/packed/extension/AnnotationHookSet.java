@@ -34,11 +34,17 @@ import java.util.function.Consumer;
 // Alternativt er vi skal til at consume alle annotations
 // Og lave den immutablex
 
-
-
 // Det er vel ikke et set fordi vi kan have det samme element 2 gange
 // AnnotationCollection
-public interface AnnotationHookSet {
-
+public interface AnnotationHookSet extends Iterable<Annotation> {
     <A extends Annotation> void ifPresent(Class<A> annotationType, Consumer<? super A> action);
+
+    int size();
+    boolean isPresent(Class<? extends Annotation> annotationType);
+
+    Annotation[] toArray();
+    
+    static AnnotationHookSet of(Annotation... annotations) {
+        throw new UnsupportedOperationException();
+    }
 }

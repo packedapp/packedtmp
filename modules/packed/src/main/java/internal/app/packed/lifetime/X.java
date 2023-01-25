@@ -22,6 +22,7 @@ import app.packed.bean.OnStart;
 import app.packed.bean.OnStop;
 import app.packed.container.BaseAssembly;
 import app.packed.entrypoint.Main;
+import app.packed.extension.Fork;
 import internal.app.packed.lifetime.sandbox.Program;
 
 /**
@@ -38,22 +39,28 @@ public class X extends BaseAssembly {
 
     public static void main(String[] args) {
         Program p = Program.start(new X());
-        
+
         System.out.println(p.runtime().state());
     }
 
     public static class F {
         public F() {
-          //  System.out.println("New f");
+            // System.out.println("New f");
         }
-        
+
         @OnInitialize
         public static void init() {
             System.out.println("Init F");
         }
-        
+
         @OnStart
+        @Fork
         public static void start() {
+            System.out.println("start F");
+        }
+
+        @OnStart(fork = true)
+        public static void stardt() {
             System.out.println("start F");
         }
 
@@ -61,12 +68,12 @@ public class X extends BaseAssembly {
         public static void stop() {
             System.out.println("stop F");
         }
-        
+
         @Main
         public void ff() {
             System.out.println("MAIN");
         }
-            
+
     }
 
     public static class NeedsF {
@@ -78,7 +85,7 @@ public class X extends BaseAssembly {
         public static void init() {
             System.out.println("Init NeedsF");
         }
-        
+
         @OnStart
         public static void start() {
             System.out.println("start NeedsF");

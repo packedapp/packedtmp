@@ -60,15 +60,16 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     BaseExtension() {}
 
     <K> void addCodeGenerated(BeanSetup bean, Key<K> key, Supplier<? extends K> supplier) {
-      //  BindableVariable bv = CODEGEN.get(bean).get(key);
-        
+        // BindableVariable bv = CODEGEN.get(bean).get(key);
+
         BindableVariable prev = codegenVariables.get(new CodeGeneratorKey(bean, key));
 
         if (prev == null) {
             throw new IllegalArgumentException("The specified bean must have an injection site that uses @" + CodeGenerated.class.getSimpleName() + " " + key);
         } else if (prev.isBound()) {
-            throw new IllegalStateException("A supplier has previously been provided for key " + key);
+            throw new IllegalStateException("A supplier has previously been provided for key [key = " + key + ", bean = " + bean + "]");
         }
+
         prev.bindToGeneratedConstant(supplier);
     }
 
@@ -224,28 +225,39 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                 BeanSetup bean = BeanSetup.crack(method);
                 OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
 
+                boolean matched = false;
                 if (ar.isAnnotationPresent(Inject.class)) {
                     OperationHandle handle = method.newOperation(temp);
                     bean.lifecycle.addInitialize(handle, null);
+                    matched = true;
                 }
 
                 if (ar.isAnnotationPresent(OnInitialize.class)) {
                     OnInitialize oi = ar.readRequired(OnInitialize.class);
                     OperationHandle handle = method.newOperation(temp);
                     bean.lifecycle.addInitialize(handle, oi.ordering());
+                    matched = true;
                 }
 
                 if (ar.isAnnotationPresent(OnStart.class)) {
                     OnStart oi = ar.readRequired(OnStart.class);
                     OperationHandle handle = method.newOperation(temp);
                     bean.lifecycle.addStart(handle, oi.ordering());
+                    matched = true;
                 }
 
                 if (ar.isAnnotationPresent(OnStop.class)) {
                     OnStop oi = ar.readRequired(OnStop.class);
                     OperationHandle handle = method.newOperation(temp);
                     bean.lifecycle.addStop(handle, oi.ordering());
+                    matched = true;
                 }
+                
+                if (!matched) {
+                    super.hookOnAnnotatedMethod(hooks, method);
+                }
+                
+                
             }
 
             /** Handles {@link FromGuest}, {@link InvocationArgument} and {@link CodeGenerated}. */
@@ -280,7 +292,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     // Create the key
                     Key<?> key = v.variableToKey();
 
-                 //   CODEGEN.get(this).putIfAbsent(key, v);
+                    // CODEGEN.get(this).putIfAbsent(key, v);
                     BindableVariable bv = codegenVariables.putIfAbsent(new CodeGeneratorKey(bean, key), v);
                     if (bv != null) {
                         failWith(key + " Can only be injected once for bean ");

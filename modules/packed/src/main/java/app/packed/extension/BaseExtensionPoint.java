@@ -44,7 +44,8 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * Registers a code generating supplier that can be used together with {@link CodeGenerated} annotation.
      * 
      * <p>
-     * Internally this mechanisms uses 
+     * Internally this mechanisms uses
+     * 
      * @param <K>
      *            the type of value the supplier produces
      * @param bean
@@ -55,10 +56,12 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            the supplier generating the value
      * 
      * @throws IllegalArgumentException
-     *             if the specified bean is not owned by this extension. Or if the specified bean has not been installed in
-     *             the container of this extension.
+     *             if the specified bean is not owned by this extension. Or if the specified bean is not part of the same
+     *             container as this extension. Or if the specified bean does not have an injection site matching the
+     *             specified key.
      * @throws IllegalStateException
-     *             if the extension is no longer configurable
+     *             if a supplier has already been registered for the specified key in the same container, or if the
+     *             extension is no longer configurable.
      * @see CodeGenerated
      * @see BindableVariable#bindToGeneratedConstant(Supplier)
      */
@@ -164,8 +167,11 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         throw new UnsupportedOperationException();
     }
 
-    public void runOnBeanInitialization(OperationHandle operation, boolean naturalOrder) {
-        // should we set a mirror?
+    public void runOnBeanInitialization(OperationHandle handle, LifecycleOrdering ordering) {
+        requireNonNull(ordering, "ordering is null");
+        OperationSetup o = OperationSetup.crack(handle);
+        o.bean.lifecycle.addInitialize(handle, ordering);
+
     }
 
     /**
@@ -175,52 +181,10 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            the operation that should be executed as part of its bean's injection phase
      * @see Inject
      */
-    public void lifecycleInject(OperationHandle handle) {
+    public void runOnBeanInject(OperationHandle handle) {
         OperationSetup o = OperationSetup.crack(handle);
         o.bean.lifecycle.addInitialize(handle, null);
     }
-
-    public void lifecycleInitialization(OperationHandle handle, LifecycleOrdering ordering) {
-        requireNonNull(ordering, "ordering is null");
-        OperationSetup o = OperationSetup.crack(handle);
-        o.bean.lifecycle.addInitialize(handle, ordering);
-
-    }
-
-    // Vi har brug ContainerInstaller fordi, man ikke konfigure noget efter man har linket
-    // Saa alt skal goeres inde
-
-    // Bliver noedt til at lave et Handle. Da kalderen som minim har brug for
-    // OperationHandles for lifetimen...
-
-    // Ejer
-
-    // Support enten linkage(Assembly) or lav en ny XContetainerConfiguration
-    // Eager, Lazy, ManyTone
-    // ContainerCompanions (extension configuration)
-    // Bean <- er taet knyttet til ContainerCompanions
-    // Hosting (Long term)
-
-    // Lifetime -> In Operation, Start/Stop, stateless?
-
-    /**
-     * This annotation is used to indicate that the variable is constructed doing the code generation phase of the
-     * application.
-     * <p>
-     * Man kan selvfoelgelig kun bruge den paa
-     * 
-     * <p>
-     * This annotation can only used on beans owned by an extension.
-     * 
-     * @see BindableVariable#bindToGeneratedConstant(java.util.function.Supplier)
-     * @see BaseExtensionPoint#addCodeGenerated(app.packed.bean.BeanConfiguration, Class, java.util.function.Supplier)
-     * @see BaseExtensionPoint#addCodeGenerated(app.packed.bean.BeanConfiguration, app.packed.binding.Key,
-     *      java.util.function.Supplier)
-     */
-    @Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.TYPE_USE })
-    @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedVariableHook(extension = BaseExtension.class)
-    public @interface CodeGenerated {}
 
     /**
      * An installer for installing beans into a container.
@@ -233,7 +197,6 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
 // Maybe put it back on handle. If we get OperationInstaller
 // Maybe Builder after all... Alle ved hvad en builder er
-
     public sealed interface BeanInstaller permits PackedBeanInstaller {
 
         // can be used for inter
@@ -331,6 +294,41 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
          */
         BeanInstaller synthetic();
     }
+
+    /**
+     * This annotation is used to indicate that the variable is constructed doing the code generation phase of the
+     * application.
+     * <p>
+     * Man kan selvfoelgelig kun bruge den paa
+     * 
+     * <p>
+     * This annotation can only used on beans owned by an extension.
+     * 
+     * @see BindableVariable#bindToGeneratedConstant(java.util.function.Supplier)
+     * @see BaseExtensionPoint#addCodeGenerated(app.packed.bean.BeanConfiguration, Class, java.util.function.Supplier)
+     * @see BaseExtensionPoint#addCodeGenerated(app.packed.bean.BeanConfiguration, app.packed.binding.Key,
+     *      java.util.function.Supplier)
+     */
+    @Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.TYPE_USE })
+    @Retention(RetentionPolicy.RUNTIME)
+    @AnnotatedVariableHook(extension = BaseExtension.class)
+    public @interface CodeGenerated {}
+
+    // Vi har brug ContainerInstaller fordi, man ikke konfigure noget efter man har linket
+    // Saa alt skal goeres inde
+
+    // Bliver noedt til at lave et Handle. Da kalderen som minim har brug for
+    // OperationHandles for lifetimen...
+
+    // Ejer
+
+    // Support enten linkage(Assembly) or lav en ny XContetainerConfiguration
+    // Eager, Lazy, ManyTone
+    // ContainerCompanions (extension configuration)
+    // Bean <- er taet knyttet til ContainerCompanions
+    // Hosting (Long term)
+
+    // Lifetime -> In Operation, Start/Stop, stateless?
 
     public interface ContainerInstaller {
 
