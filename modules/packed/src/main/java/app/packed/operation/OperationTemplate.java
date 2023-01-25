@@ -122,6 +122,8 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         throw new UnsupportedOperationException();
     }
 
+    OperationTemplate withIgnoreReturnType();
+    
     OperationTemplate withReturnType(Class<?> type);
 
     // 3 choices?
@@ -139,7 +141,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     }
 
     static OperationTemplate raw() {
-        return new PackedOperationTemplate(-1, -1, MethodType.methodType(void.class));
+        return new PackedOperationTemplate(-1, -1, MethodType.methodType(void.class), false);
     }
 
     enum ArgumentKind {

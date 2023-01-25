@@ -19,8 +19,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Set;
 
 import app.packed.bean.BeanHook.AnnotatedFieldHook;
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
@@ -200,7 +198,7 @@ class FieldScan {
             boolean isGettable, boolean isSettable, Annotation[] hooks) {
         if (kind == AnnotatedFieldKind.FIELD) {
             PackedOperationalField of = new PackedOperationalField(scanner, extensionType, f, isGettable, isSettable, annotations);
-            of.ce.introspector().hookOnAnnotatedField(Set.of(hooks[0].annotationType()), of);
+            of.ce.introspector().hookOnAnnotatedField(PackedAnnotationCollection.of(hooks[0]), of);
         } else {
 
             // Okay we need to make a new operation
@@ -236,7 +234,7 @@ class FieldScan {
             PackedOperationalField of = new PackedOperationalField(scanner, af0.extensionType(), f, af0.isGettable() || af1.isGettable(),
                     af0.isSettable() || af1.isSettable(), annotations);
 
-            of.ce.introspector().hookOnAnnotatedField(Set.of(a0.annotationType(), a1.annotationType()), of);
+            of.ce.introspector().hookOnAnnotatedField(PackedAnnotationCollection.of(a0, a1), of);
         } else {
 
             match1(scanner, f, annotations, af0, new Annotation[] { a0 });
@@ -244,11 +242,9 @@ class FieldScan {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private static void matchAnnotatedField(BeanScanner scanner, Field field, Annotation[] annotations, Annotation[] hooks, AnnotatedField... annotatedFields) {
         PackedOperationalField of = new PackedOperationalField(scanner, field, annotations, annotatedFields);
-        Set<?> set = Set.copyOf(List.of(hooks).stream().map(Object::getClass).toList());
-        of.ce.introspector().hookOnAnnotatedField((Set<Class<? extends Annotation>>) set, of);
+        of.ce.introspector().hookOnAnnotatedField(PackedAnnotationCollection.of(hooks), of);
     }
 
     static void matchManySameExtension(BeanScanner scanner, Field f, Annotation[] annotations, P... ps) {

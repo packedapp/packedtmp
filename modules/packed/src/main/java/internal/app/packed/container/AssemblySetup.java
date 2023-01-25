@@ -206,7 +206,7 @@ public final class AssemblySetup extends RealmSetup {
             // We must also close all extension trees.
             ArrayList<ExtensionSetup> list = new ArrayList<>(extensions.size());
 
-            for (ExtensionSetup e = extensions.pollFirst(); e != null; e = extensions.pollFirst()) {
+            for (ExtensionSetup e = extensions.pollLast(); e != null; e = extensions.pollLast()) {
                 list.add(e);
                 onAssemblyClose(e.instance());
             }
@@ -234,7 +234,7 @@ public final class AssemblySetup extends RealmSetup {
             abe.commit();
         } else {
             // Similar to above, except we do not call Extension#onApplicationClose
-            for (ExtensionSetup e = extensions.pollFirst(); e != null; e = extensions.pollFirst()) {
+            for (ExtensionSetup e = extensions.pollLast(); e != null; e = extensions.pollLast()) {
                 onAssemblyClose(e.instance());
             }
 

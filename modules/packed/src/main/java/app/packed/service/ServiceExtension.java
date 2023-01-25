@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.application.BuildException;
@@ -143,7 +142,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
 
             /** {@inheritDoc} */
             @Override
-            public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks, OperationalField field) {
+            public void hookOnAnnotatedField(Annotation hook, OperationalField field) {
                 Key<?> key = field.fieldToKey();
 
                 if (!Modifier.isStatic(field.modifiers())) {
@@ -160,8 +159,8 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
             @Override
             public void hookOnAnnotatedMethod(AnnotationCollection hooks, OperationalMethod method) {
                 Key<?> key = method.methodToKey();
-                boolean isProviding = method.annotations().isAnnotationPresent(ProvideService.class);
-                boolean isExporting = method.annotations().isAnnotationPresent(ExportService.class);
+                boolean isProviding = method.annotations().isPresent(ProvideService.class);
+                boolean isExporting = method.annotations().isPresent(ExportService.class);
 
                 OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
 

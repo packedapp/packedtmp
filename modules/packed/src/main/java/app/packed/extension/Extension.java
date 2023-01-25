@@ -140,7 +140,7 @@ public abstract class Extension<E extends Extension<E>> {
         ContainerSetup container = extension.container;
         return container == container.lifetime.container;
     }
-    
+
     /** {@return instance of this extension that is used in the lifetimes root container.} */
     @SuppressWarnings("unchecked")
     protected final E lifetimeRoot() {
@@ -408,6 +408,14 @@ public abstract class Extension<E extends Extension<E>> {
         newExtensionPoint.initialize(otherExtension, extension);
 
         return (P) newExtensionPoint;
+    }
+
+    protected final <D extends Extension<D>> D useDependent(Class<D> extensionClass) {
+        // Ideen er at vi kan slaa nogen der er dependant paa os op.
+        // Same module
+        // Tror alligevel det er extension point vi skal returnere... IDK
+        // fx BaseExtension.useDependant(ThreadExtension.class);
+        throw new UnsupportedOperationException();
     }
 
     /**

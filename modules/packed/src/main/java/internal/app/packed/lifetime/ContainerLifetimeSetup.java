@@ -28,6 +28,7 @@ import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.RunState;
+import app.packed.lifetime.sandbox.ManagedLifetime;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
@@ -74,7 +75,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     public final List<FuseableOperation> lifetimes;
 
     public final LifetimeLifecycleSetup lls = new LifetimeLifecycleSetup();
-    
+
     LinkedHashSet<BeanSetup> orderedBeans = new LinkedHashSet<>();
 
     /**
@@ -90,7 +91,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
         this.container = container;
         if (container.treeParent == null) {
-            reserve();
+            reserve(ManagedLifetime.class);
         }
     }
 
@@ -101,7 +102,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     public int addBean(BeanSetup bean) {
         beans.add(bean);
         if (bean.beanKind == BeanKind.CONTAINER && bean.beanSourceKind != BeanSourceKind.INSTANCE) {
-            return reserve();
+            return reserve(bean.beanClass);
         }
         return -1;
     }
@@ -114,7 +115,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
      * 
      * @return the index to store the object in at runtime
      */
-    private int reserve() {
+    private int reserve(Class<?> cls) {
         return size++;
     }
 

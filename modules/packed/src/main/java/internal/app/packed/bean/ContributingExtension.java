@@ -17,8 +17,6 @@ package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Set;
 
 import app.packed.bean.BeanIntrospector;
 import internal.app.packed.bean.BeanHookModel.AnnotatedField;
@@ -61,11 +59,10 @@ public final class ContributingExtension {
         return hasFullAccess;
     }
 
-    @SuppressWarnings("unchecked")
     void matchAnnotatedField(Field field, Annotation[] annotations, Annotation[] hooks, AnnotatedField... annotatedFields) {
         PackedOperationalField of = new PackedOperationalField(this, field, annotations, annotatedFields);
-        Set<?> set = Set.copyOf(List.of(hooks).stream().map(Object::getClass).toList());
-        introspector.hookOnAnnotatedField((Set<Class<? extends Annotation>>) set, of);
+        PackedAnnotationCollection pac = new PackedAnnotationCollection(hooks);
+        introspector.hookOnAnnotatedField(pac, of);
     }
 
     // I think we need to already have checked that we only have 1 providing annotation

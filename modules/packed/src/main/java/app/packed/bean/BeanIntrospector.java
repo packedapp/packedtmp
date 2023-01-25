@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -169,8 +168,14 @@ public abstract class BeanIntrospector {
     }
 
     // Replace set with something like AnnotatedHookSet
-    public void hookOnAnnotatedClass(Set<Class<? extends Annotation>> hooks, OperationalClass on) {}
-
+    public void hookOnAnnotatedClass(AnnotationCollection hooks, OperationalClass on) {
+        for (Annotation a: hooks) {
+            hookOnAnnotatedClass(a, on);
+        }
+    }
+    
+    public void hookOnAnnotatedClass(Annotation hook, OperationalClass on) {}
+    
     /**
      * A callback method that is called for fields that are annotated with a field hook annotation defined by the extension:
      * 
@@ -187,8 +192,14 @@ public abstract class BeanIntrospector {
      * @see AnnotatedFieldHook
      */
     // onFieldHook(Set<Class<? extends Annotation<>> hooks, BeanField));
-    public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks, OperationalField of) {
-        throw new InternalExtensionException(extension().fullName() + " failed to handle field annotation(s) " + hooks);
+    public void hookOnAnnotatedField(AnnotationCollection hooks, OperationalField of) {
+        for (Annotation a: hooks) {
+            hookOnAnnotatedField(a, of);
+        }
+    }
+
+    public void hookOnAnnotatedField(Annotation hook, OperationalField of) {
+        throw new InternalExtensionException(extension().fullName() + " failed to handle field annotation(s) " + hook);
     }
 
     public void hookOnAnnotatedMethod(Annotation hook, OperationalMethod on) {
@@ -275,12 +286,14 @@ public abstract class BeanIntrospector {
     // AnnotatedBeanElement?
     public sealed interface AnnotationCollection extends Iterable<Annotation> permits PackedAnnotationCollection {
 
+        Annotation[] toArray();
+        
         default <T extends Annotation> void ifPresent(Class<T> annotationClass, Consumer<T> consumer) {
             T t = readRequired(annotationClass);
             consumer.accept(t);
         }
 
-        boolean isAnnotationPresent(Class<? extends Annotation> annotationClass);
+        boolean isPresent(Class<? extends Annotation> annotationClass);
 
         /** {@return whether or not there are any annotations to read.} */
         boolean isEmpty();

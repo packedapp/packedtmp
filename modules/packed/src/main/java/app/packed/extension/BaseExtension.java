@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
@@ -40,6 +40,7 @@ import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBindableVariable;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
+import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 
 /**
  * An extension that defines the foundational APIs for managing beans, containers and applications.
@@ -210,10 +211,13 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             /** Handles {@link Inject}. */
             @Override
-            public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks, OperationalField field) {
-                if (field.annotations().isAnnotationPresent(Inject.class)) {
-
-                    // handle.specializeMirror(() -> new BeanLifecycleOperationMirror());
+            public void hookOnAnnotatedField(Annotation hook, OperationalField field) {
+                if (hook instanceof Inject) {
+                    // OperationHandle handle = field.newSetOperation(null) .newOperation(temp);
+                    // bean.lifecycle.addInitialize(handle, null);
+                    throw new UnsupportedOperationException();
+                } else {
+                    super.hookOnAnnotatedField(hook, field);
                 }
             }
 
@@ -268,7 +272,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     if (beanOwner().isApplication()) {
                         throw new BeanInstallationException("@" + CodeGenerated.class.getSimpleName() + " can only be used by extensions");
                     }
-
                     // Create the key
                     Key<?> key = v.variableToKey();
 
@@ -277,6 +280,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     if (bv != null) {
                         failWith(key + " Can only be injected once for bean ");
                     }
+
                 } else {
                     super.hookOnAnnotatedVariable(hook, v);
                 }
@@ -284,7 +288,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             @Override
             public void hookOnVariableType(Class<?> hook, BindableBaseVariable v) {
-                if (hook == ExtensionContext.class) {
+                if (hook == PackedExtensionContext.class) {
+                    if (v.availableInvocationArguments().isEmpty() || v.availableInvocationArguments().get(0) != ExtensionContext.class) {
+                        // throw new Error(v.availableInvocationArguments().toString());
+                    }
+                    v.bindToInvocationArgument(0);
+                } else if (hook == ExtensionContext.class) {
                     if (v.availableInvocationArguments().isEmpty() || v.availableInvocationArguments().get(0) != ExtensionContext.class) {
                         // throw new Error(v.availableInvocationArguments().toString());
                     }
@@ -318,7 +327,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
         // process child extensions first
         super.onAssemblyClose();
-
+        
+        for (Entry<CodeGeneratorKey, BindableVariable> e : codegenVariables.entrySet()) {
+            if (!e.getValue().isBound()) {
+                throw new InternalExtensionException(e.getKey().key() + " not bound for bean " + e.getKey().bean());
+            }
+        }
         // A lifetime root lets order some dependencies
         if (isLifetimeRoot()) {
             extension.container.lifetime.orderDependencies();

@@ -25,11 +25,15 @@ import java.util.function.Consumer;
 import app.packed.bean.BeanIntrospector.AnnotationCollection;
 
 /** Implementation of {@link AnnotationCollection}. */
-public record PackedAnnotationCollection(Annotation... annotations) implements AnnotationCollection {
+public record PackedAnnotationCollection(Annotation[] annotations) implements AnnotationCollection {
+
+    public static PackedAnnotationCollection of(Annotation... annotations) {
+        return new PackedAnnotationCollection(annotations);
+    }
 
     /** {@inheritDoc} */
     @Override
-    public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+    public boolean isPresent(Class<? extends Annotation> annotationClass) {
         for (int i = 0; i < annotations.length; i++) {
             if (annotations[i].annotationType() == annotationClass) {
                 return true;
@@ -80,5 +84,11 @@ public record PackedAnnotationCollection(Annotation... annotations) implements A
         for (int i = 0; i < annotations.length; i++) {
             action.accept(annotations[i]);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Annotation[] toArray() {
+        return annotations.clone();
     }
 }

@@ -22,7 +22,6 @@ import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Set;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.OperationalField;
@@ -86,7 +85,7 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
 
     /** Callback into an extension's {@link BeanIntrospector#hookOnAnnotatedField(OperationalField)} method. */
     void matchy() {
-        ce.introspector().hookOnAnnotatedField(Set.of(), this);
+        ce.introspector().hookOnAnnotatedField(PackedAnnotationCollection.of(), this);
         ce.scanner.resolveOperations(); // resolve bindings for any operation(s) that have been created
     }
 
