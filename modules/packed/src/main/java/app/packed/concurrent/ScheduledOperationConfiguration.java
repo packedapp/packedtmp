@@ -15,6 +15,8 @@
  */
 package app.packed.concurrent;
 
+import app.packed.concurrent.SchedulingExtension.FinalSchedule;
+import app.packed.framework.Nullable;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 
@@ -23,21 +25,29 @@ import app.packed.operation.OperationHandle;
  */
 public final class ScheduledOperationConfiguration extends OperationConfiguration {
 
+   record Schedule(int ms) {
+   }
+
+    
+    @Nullable
     private Schedule s;
 
     /**
      * @param handle
      */
-    ScheduledOperationConfiguration(Schedule is, OperationHandle handle) {
+    ScheduledOperationConfiguration(@Nullable Schedule is, OperationHandle handle) {
         super(handle);
         this.s = is;
     }
 
     public boolean isScheduled() {
-        return true;
+        return s != null;
     }
-    
+
     FinalSchedule schedule() {
+        if (s == null) {
+            throw new IllegalStateException("Operation " + handle() + " was never scheduled");
+        }
         return new FinalSchedule(s, handle().generateMethodHandle());
     }
 

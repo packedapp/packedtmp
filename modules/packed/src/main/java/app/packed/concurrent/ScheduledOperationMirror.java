@@ -18,7 +18,7 @@ package app.packed.concurrent;
 import app.packed.operation.OperationMirror;
 
 /**
- * An operation that
+ * An mirror for a scheduled operation.
  */
 public class ScheduledOperationMirror extends OperationMirror {
 

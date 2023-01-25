@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent;
+package app.packed.concurrent.usage;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
@@ -25,6 +25,9 @@ import java.time.Duration;
 import app.packed.application.App;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.bean.BeanIntrospector;
+import app.packed.concurrent.ScheduledOperationConfiguration;
+import app.packed.concurrent.SchedulingExtension;
+import app.packed.concurrent.SchedulingExtensionPoint;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;

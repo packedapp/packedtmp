@@ -33,7 +33,7 @@ public class SchedulingExtensionPoint extends ExtensionPoint<SchedulingExtension
      */
     // Maybe it is initially empty schedule
     public ScheduledOperationConfiguration schedule(OperationHandle operation) {
-        ScheduledOperationConfiguration p = new ScheduledOperationConfiguration(new Schedule(100), operation);
+        ScheduledOperationConfiguration p = new ScheduledOperationConfiguration(null, operation);
         extension().ops.add(p);
         return p;
     }

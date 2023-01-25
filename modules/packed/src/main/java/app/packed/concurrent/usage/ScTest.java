@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent;
+package app.packed.concurrent.usage;
 
 import app.packed.application.App;
+import app.packed.concurrent.ScheduleRecurrent;
 import app.packed.container.BaseAssembly;
 
 /**

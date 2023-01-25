@@ -16,17 +16,24 @@
 package app.packed.concurrent;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanIntrospector;
+import app.packed.concurrent.ScheduledOperationConfiguration.Schedule;
+import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionPoint;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
+import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 
 /**
  *
@@ -76,4 +83,39 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
             });
         }
     }
+
+    /**
+    *
+    */
+    static final class FinalSchedule {
+
+        final Schedule s;
+        final MethodHandle callMe;
+
+        FinalSchedule(Schedule s, MethodHandle callMe) {
+            this.s = s;
+            this.callMe = callMe;
+        }
+    }
+
+    static class SchedulingBean {
+
+        final ScheduledExecutorService ses;
+
+        SchedulingBean(@CodeGenerated FinalSchedule[] mhs, PackedExtensionContext pec) {
+            this.ses = Executors.newScheduledThreadPool(4);
+            for (FinalSchedule p : mhs) {
+                ses.scheduleWithFixedDelay(() -> {
+                    try {
+                        p.callMe.invokeExact(pec);
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+                }, p.s.ms(), p.s.ms(), TimeUnit.MILLISECONDS);
+            }
+
+            System.out.println("Got +" + List.of(mhs));
+        }
+    }
+
 }
