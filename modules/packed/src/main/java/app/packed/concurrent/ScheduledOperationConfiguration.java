@@ -15,7 +15,6 @@
  */
 package app.packed.concurrent;
 
-import app.packed.concurrent.SchedulingExtension.ConfigurableSchedule;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 
@@ -24,22 +23,26 @@ import app.packed.operation.OperationHandle;
  */
 public final class ScheduledOperationConfiguration extends OperationConfiguration {
 
-    final ConfigurableSchedule is;
+    private Schedule s;
 
     /**
      * @param handle
      */
-    ScheduledOperationConfiguration(ConfigurableSchedule is, OperationHandle handle) {
+    ScheduledOperationConfiguration(Schedule is, OperationHandle handle) {
         super(handle);
-        this.is = is;
+        this.s = is;
     }
 
     public boolean isScheduled() {
         return true;
     }
+    
+    FinalSchedule schedule() {
+        return new FinalSchedule(s, handle().generateMethodHandle());
+    }
 
     public void setMillies(int millies) {
         checkConfigurable();
-        is.updateS(new Schedule(millies));
+        s = new Schedule(millies);
     }
 }

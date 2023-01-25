@@ -74,7 +74,7 @@ public class ScTestOtherE extends BaseAssembly {
 
     public static class MuB {
 
-        @ScheduleOther("PT2S")
+        @ScheduleOther("PT0.01S")
         public void sch() {
             System.out.println("SCHED");
         }

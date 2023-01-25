@@ -15,7 +15,6 @@
  */
 package app.packed.concurrent;
 
-import app.packed.concurrent.SchedulingExtension.ConfigurableSchedule;
 import app.packed.extension.ExtensionPoint;
 import app.packed.operation.OperationHandle;
 
@@ -34,8 +33,8 @@ public class SchedulingExtensionPoint extends ExtensionPoint<SchedulingExtension
      */
     // Maybe it is initially empty schedule
     public ScheduledOperationConfiguration schedule(OperationHandle operation) {
-        ConfigurableSchedule p = new ConfigurableSchedule(new Schedule(100), operation);
+        ScheduledOperationConfiguration p = new ScheduledOperationConfiguration(new Schedule(100), operation);
         extension().ops.add(p);
-        return new ScheduledOperationConfiguration(p, operation);
+        return p;
     }
 }

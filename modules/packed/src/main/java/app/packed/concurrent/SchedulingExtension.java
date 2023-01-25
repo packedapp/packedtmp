@@ -34,7 +34,7 @@ import app.packed.operation.OperationTemplate;
 @DependsOn(extensions = ThreadExtension.class)
 public class SchedulingExtension extends Extension<SchedulingExtension> {
 
-    List<ConfigurableSchedule> ops = new ArrayList<>();
+    List<ScheduledOperationConfiguration> ops = new ArrayList<>();
 
     /** Create a new scheduling extension. */
     SchedulingExtension() {}
@@ -48,7 +48,7 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
                 if (hook instanceof ScheduleRecurrent sr) {
                     OperationHandle oh = on.newOperation(OperationTemplate.defaults());
                     oh.specializeMirror(() -> new ScheduledOperationMirror());
-                    ops.add(new ConfigurableSchedule(new Schedule(sr.millies()), oh));
+                    ops.add(new ScheduledOperationConfiguration(new Schedule(sr.millies()), oh));
                 } else {
                     super.hookOnAnnotatedMethod(hook, on);
                 }
@@ -72,30 +72,8 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
         if (isLifetimeRoot()) {
             BeanConfiguration b = base().install(SchedulingBean.class);
             base().addCodeGenerated(b, FinalSchedule[].class, () -> {
-                return ops.stream().map(ConfigurableSchedule::schedule).toArray(e -> new FinalSchedule[e]);
+                return ops.stream().map(ScheduledOperationConfiguration::schedule).toArray(e -> new FinalSchedule[e]);
             });
         }
     }
-
-    static final class ConfigurableSchedule {
-
-        final OperationHandle callMe;
-
-        private Schedule s;
-
-        ConfigurableSchedule(Schedule s, OperationHandle callMe) {
-            this.s = s;
-            this.callMe = callMe;
-        }
-
-        FinalSchedule schedule() {
-            return new FinalSchedule(s, callMe.generateMethodHandle());
-        }
-
-        void updateS(Schedule s) {
-            System.out.println("Updating " + s);
-            this.s = s;
-        }
-    }
-
 }
