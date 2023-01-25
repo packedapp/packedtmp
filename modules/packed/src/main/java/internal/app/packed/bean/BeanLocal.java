@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanIntrospector;
 
 /**
  *
@@ -31,32 +32,37 @@ import app.packed.bean.BeanHandle;
 public final class BeanLocal<T> {
 
     static final AtomicLong KEYS = new AtomicLong();
-    
+
+    private BeanLocal() {
+        
+    }
     // IDK maybe a new Object is just easier?
     // Also it does not need to have super performance
     private final long key = KEYS.get();
 
-    
     public int hashCode() {
         return Long.hashCode(key);
     }
+
+    public T get(BeanIntrospector bi) {
+        throw new UnsupportedOperationException();
+    }
     
-    
-    T get(BeanConfiguration configuration) {
+    public T get(BeanConfiguration configuration) {
         return get(BeanSetup.crack(configuration));
     }
 
-    T get(BeanHandle<?> handle) {
+    public T get(BeanHandle<?> handle) {
         return get(BeanSetup.crack(handle));
     }
 
-    private T get(BeanSetup bean) {
+    public T get(BeanSetup bean) {
 //        bean.map.get(key);
         throw new UnsupportedOperationException();
     }
 
     // Er istedet for attachments
-    static <T> BeanLocal<T> of(Class<T> type) {
-        throw new UnsupportedOperationException();
+    public static <T> BeanLocal<T> of() {
+        return new BeanLocal<>();
     }
 }

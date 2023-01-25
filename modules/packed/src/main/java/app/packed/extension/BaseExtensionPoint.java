@@ -15,19 +15,20 @@ import app.packed.bean.BeanHook.AnnotatedVariableHook;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.BindableVariable;
 import app.packed.bean.BeanKind;
+import app.packed.bean.Inject;
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.bean.LifecycleOrdering;
 import app.packed.binding.Key;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
-import app.packed.extension.BaseExtension.CodeGeneratorKey;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
-import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
+import internal.app.packed.operation.OperationSetup;
 
 /** An {@link ExtensionPoint extension point} class for {@link BaseExtension}. */
 public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
@@ -40,42 +41,43 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     /**
+     * Registers a code generating supplier that can be used together with {@link CodeGenerated} annotation.
+     * 
+     * <p>
+     * Internally this mechanisms uses 
      * @param <K>
-     *            the type of key
+     *            the type of value the supplier produces
      * @param bean
      *            the bean to bind to
      * @param key
+     *            the type of key used together with {@link CodeGenerated}
      * @param supplier
+     *            the supplier generating the value
      * 
-     * @see CodeGenerated
      * @throws IllegalArgumentException
      *             if the specified bean is not owned by this extension. Or if the specified bean has not been installed in
      *             the container of this extension.
      * @throws IllegalStateException
      *             if the extension is no longer configurable
+     * @see CodeGenerated
+     * @see BindableVariable#bindToGeneratedConstant(Supplier)
      */
     public <K> void addCodeGenerated(BeanConfiguration bean, Key<K> key, Supplier<? extends K> supplier) {
         requireNonNull(bean, "bean is null");
         requireNonNull(key, "key is null");
         requireNonNull(supplier, "supplier is null");
-        BeanSetup b = BeanSetup.crack(bean);
-
-        ExtensionSetup extension = extension().extension;
-        if (!bean.owner().isExtension(usedBy())) {
-            throw new IllegalArgumentException("Bean Owner " + bean.owner() + " ");
-        } else if (b.container != extension.container) {
-            throw new IllegalArgumentException(); // Hmm? maybe allow it
-        }
         checkIsConfigurable();
 
-        BindableVariable prev = extension().codegenVariables.get(new CodeGeneratorKey(b, key));
+        BeanSetup b = BeanSetup.crack(bean);
+        BaseExtension be = extension();
 
-        if (prev == null) {
-            throw new IllegalArgumentException("The specified bean must have an injection site that uses @" + CodeGenerated.class.getSimpleName() + " " + key);
-        } else if (prev.isBound()) {
-            throw new IllegalStateException("A supplier has previously been provided for key " + key);
+        if (!bean.owner().isExtension(usedBy())) {
+            throw new IllegalArgumentException("Bean Owner " + bean.owner() + " ");
+        } else if (b.container != be.extension.container) {
+            throw new IllegalArgumentException(); // Hmm? maybe allow it
         }
-        prev.bindToGeneratedConstant(supplier);
+
+        be.addCodeGenerated(b, key, supplier);
     }
 
     public <T> InstanceBeanConfiguration<T> install(Class<T> implementation) {
@@ -166,6 +168,25 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         // should we set a mirror?
     }
 
+    /**
+     * Emulates the {@link Inject} annotation.
+     * 
+     * @param handle
+     *            the operation that should be executed as part of its bean's injection phase
+     * @see Inject
+     */
+    public void lifecycleInject(OperationHandle handle) {
+        OperationSetup o = OperationSetup.crack(handle);
+        o.bean.lifecycle.addInitialize(handle, null);
+    }
+
+    public void lifecycleInitialization(OperationHandle handle, LifecycleOrdering ordering) {
+        requireNonNull(ordering, "ordering is null");
+        OperationSetup o = OperationSetup.crack(handle);
+        o.bean.lifecycle.addInitialize(handle, ordering);
+
+    }
+
     // Vi har brug ContainerInstaller fordi, man ikke konfigure noget efter man har linket
     // Saa alt skal goeres inde
 
@@ -201,7 +222,6 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     @AnnotatedVariableHook(extension = BaseExtension.class)
     public @interface CodeGenerated {}
 
-    
     /**
      * An installer for installing beans into a container.
      * <p>

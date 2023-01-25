@@ -43,10 +43,12 @@ public @interface OnStop {
 
     boolean async() default false;
 
-    boolean naturalOrder() default true;
+    /**
+     * <p>
+     * Notice that the default ordering is the opposite of the ordering from {@link OnInitialize} and {@link OnStart}.
+     * 
+     * @return
+     */
+    LifecycleOrdering ordering() default LifecycleOrdering.AFTER_DEPENDENCIES;
 }
-
-// String[] before() default {};
-
-// The only guarantee we make is that if an entity has transitioned to the starting state.
-// OnStop will run...
+// I modsaetning

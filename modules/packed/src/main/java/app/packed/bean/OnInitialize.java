@@ -22,18 +22,11 @@ import java.lang.annotation.Target;
 
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.extension.BaseExtension;
-import app.packed.lifetime.RunState;
 
 /**
- * This annotation indicates that the annotated method should be invoked as part of the bean's initialization.
+ * Indicates that the annotated method should be executed as part of the target bean's initialization.
  * <p>
- * This annotation can, for example, be used like this:
- *
- * <pre>{@code  @OnInitialize
- * public void onInit() {
- *   System.out.println("This bean is being initialized");
- * }}
- * </pre>
+ * The method can any kind of dependencies available for the bean.
  * <p>
  * If the entity support dependency injection, the arguments of the method can automatically be dependency injected. For
  * example, a method on a component instance can have the container in which it is registered injected:
@@ -44,13 +37,14 @@ import app.packed.lifetime.RunState;
  * }}
  * </pre>
  * <p>
- * If a method annotated with {@code @OnInitialize} throws an exception. The initialization of the bean will normally
- * fail, and the state of the entity change from {@link RunState#INITIALIZING} to {@link RunState#TERMINATED}.
+ * If a method annotated with {@code @OnInitialize} throws an exception. The initialization of the bean will fail.
+ * Depending on the type of bean this might result in the bean's container being shutdown.
  * <p>
- * The {@link Inject} annotation should never be used together with the {@link OnInitialize}, as this would mean the
- * method would be invoked twice, once in the entity's <b>injection</b> phase and once in the entity's
- * <b>initialization</b> phase.
+ * Methods (or fields) annotated with {@link Inject} are always executed before methods annotated with
+ * {@code OnInitialize}. And the two annotation should be placed on the same method. As this would mean the method would
+ * be invoked twice, once in the bean's <b>injection</b> phase and once in the bean's <b>initialization</b> phase.
  * 
+ * @see Inject
  * @see OnStart
  * @see OnStop
  * 
@@ -62,23 +56,10 @@ import app.packed.lifetime.RunState;
 public @interface OnInitialize {
 
     /**
-     * If the lifecycle enabled entities are ordered in some kind of hierarchy this attribute can be used to indicate
-     * whether or not a particular method should be executed before any of its children and initialized or after all of its
-     * children has been successfully initialized.
-     * <p>
-     * If the lifecycle enabled entities on which this annotation is placed does not make use of a hierarchy, the value of
-     * this attribute is ignored
-     * 
-     * @return whether or not to run before children
+     * @return whether or not the annotated method should be run before or after dependencies in the same lifetime are
+     *         initialized.
      */
-    // Meaning it will be visited before all dependencies...
-    // Maaske har vi 3 -> PreOrder AnyOrder PostOrder...
-    // Or PRE_DEPENDENCIES, ANY_TIME, POST_DEPENDENCIES;
-    // Og saa scheduler vi automatisk til Pre_Dependencies
-    // Ved ikke hvordan Async fungere fx med PRE_DEPENDENCIS
-    boolean naturalOrder() default true;
-
-    // We supportere lokal order for bean.. Priority?
-    // Bliver ikke super let at implementere
-    int priorityOnBean() default 0; // localPriority
+    LifecycleOrdering ordering() default LifecycleOrdering.BEFORE_DEPENDENCIES;
 }
+
+// int priorityOnBean() default 0;  

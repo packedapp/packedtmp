@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
@@ -33,9 +34,10 @@ import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.InvocationArgument;
 import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.ServiceLocator;
-import internal.app.packed.bean.PackedBindableVariable;
+import internal.app.packed.bean.BeanLocal;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
+import internal.app.packed.bean.PackedBindableVariable;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 
@@ -47,13 +49,28 @@ import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
  */
 public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
+    static final BeanLocal<Map<Key<?>, BindableVariable>> CODEGEN = BeanLocal.of();
+
     /** Variables that used together with {@link CodeGenerated}. */
-    final Map<CodeGeneratorKey, BindableVariable> codegenVariables = new HashMap<>();
+    private final Map<CodeGeneratorKey, BindableVariable> codegenVariables = new HashMap<>();
 
     boolean isLinking;
 
     /** Create a new base extension. */
     BaseExtension() {}
+
+    <K> void addCodeGenerated(BeanSetup bean, Key<K> key, Supplier<? extends K> supplier) {
+      //  BindableVariable bv = CODEGEN.get(bean).get(key);
+        
+        BindableVariable prev = codegenVariables.get(new CodeGeneratorKey(bean, key));
+
+        if (prev == null) {
+            throw new IllegalArgumentException("The specified bean must have an injection site that uses @" + CodeGenerated.class.getSimpleName() + " " + key);
+        } else if (prev.isBound()) {
+            throw new IllegalStateException("A supplier has previously been provided for key " + key);
+        }
+        prev.bindToGeneratedConstant(supplier);
+    }
 
     final void embed(Assembly assembly) {
         /// MHT til hooks. Saa tror jeg faktisk at man tager de bean hooks
@@ -190,6 +207,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     protected BeanIntrospector newBeanIntrospector() {
         return new BeanIntrospector() {
 
+            /** Handles {@link Inject}. */
             @Override
             public void hookOnAnnotatedField(Set<Class<? extends Annotation>> hooks, OperationalField field) {
                 if (field.annotations().isAnnotationPresent(Inject.class)) {
@@ -198,6 +216,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                 }
             }
 
+            /** Handles {@link Inject}, {@link OnInitialize}, {@link OnStart} and {@link OnStop}. */
             @Override
             public void hookOnAnnotatedMethod(Set<Class<? extends Annotation>> hooks, OperationalMethod method) {
                 AnnotationCollection ar = method.annotations();
@@ -205,30 +224,31 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                 BeanSetup bean = BeanSetup.crack(method);
                 OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
 
+                if (ar.isAnnotationPresent(Inject.class)) {
+                    OperationHandle handle = method.newOperation(temp);
+                    bean.lifecycle.addInitialize(handle, null);
+                }
+
                 if (ar.isAnnotationPresent(OnInitialize.class)) {
                     OnInitialize oi = ar.readRequired(OnInitialize.class);
                     OperationHandle handle = method.newOperation(temp);
-                    bean.lifecycle.addInitialize(handle, oi.naturalOrder());
+                    bean.lifecycle.addInitialize(handle, oi.ordering());
                 }
 
                 if (ar.isAnnotationPresent(OnStart.class)) {
                     OnStart oi = ar.readRequired(OnStart.class);
                     OperationHandle handle = method.newOperation(temp);
-                    bean.lifecycle.addStart(handle, oi.naturalOrder());
+                    bean.lifecycle.addStart(handle, oi.ordering());
                 }
 
                 if (ar.isAnnotationPresent(OnStop.class)) {
                     OnStop oi = ar.readRequired(OnStop.class);
                     OperationHandle handle = method.newOperation(temp);
-                    bean.lifecycle.addStop(handle, oi.naturalOrder());
-                }
-
-                if (ar.isAnnotationPresent(Inject.class)) {
-                    OperationHandle handle = method.newOperation(temp);
-                    bean.lifecycle.addInitialize(handle, true);
+                    bean.lifecycle.addStop(handle, oi.ordering());
                 }
             }
 
+            /** Handles {@link FromGuest}, {@link InvocationArgument} and {@link CodeGenerated}. */
             @Override
             public void hookOnAnnotatedVariable(Annotation hook, BindableVariable v) {
                 if (hook instanceof FromGuest) {
@@ -260,9 +280,10 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     // Create the key
                     Key<?> key = v.variableToKey();
 
+                 //   CODEGEN.get(this).putIfAbsent(key, v);
                     BindableVariable bv = codegenVariables.putIfAbsent(new CodeGeneratorKey(bean, key), v);
                     if (bv != null) {
-                        throw new BeanInstallationException(key + " Can only be injected once for bean " + bean);
+                        failWith(key + " Can only be injected once for bean ");
                     }
                 } else {
                     super.hookOnAnnotatedVariable(hook, v);

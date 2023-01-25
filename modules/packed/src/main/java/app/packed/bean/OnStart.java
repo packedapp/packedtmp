@@ -79,14 +79,19 @@ import app.packed.lifetime.RunState;
 public @interface OnStart {
 
     /**
-     *      Starts a new thread to run the given task.
+     * Starts a new thread to run the given task.
      * 
      * @return {@code true} if
      */
-    // Taenker at man joiner op foerend, vi begynder at koere tilbage?
-    // joinPoint
-    
-    // async = 
+    // Synchronous before dependencies
+    // Synchronous after dependencies
+    // Asynchronous before dependencies, stop after dependencies
+    // Asynchronous before dependencies, stop lifetime.complete
+    // Asynchronous before dependencies, keep running
+    // Asynchronous after dependencies, stop lifetime.complete
+    // Asynchronous After dependencies, keep running
+
+    // async =
     //// Before Container/Bean started
     //// Before On the way back (must have natural order)
     //// Before some string based "Event"
@@ -100,7 +105,7 @@ public @interface OnStart {
     // Only if Async???
     boolean interruptOnStop() default false; // Maybe have an InterruptionPolicy {NEVER, DEFAULT, ALWAYS}
 
-    boolean naturalOrder() default true; // reverseOrder
+    LifecycleOrdering ordering() default LifecycleOrdering.BEFORE_DEPENDENCIES;
 }
 
 // order = "SomE:1"; (I forhold til andre der er bruger SomE

@@ -21,6 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
 import app.packed.extension.BaseExtension;
 
@@ -45,15 +46,6 @@ import app.packed.extension.BaseExtension;
 @Target({ ElementType.CONSTRUCTOR, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-
-// Vi supportere ikke metoder mere. Giver ikke mening baade at have denne og saa OnInitialize
-
-
-// Maaske lave den om til - Factory og FieldInject
-
-// Og saa kan factory ogsaa tilfoejes som en metode. Men altsaa der har vi jo lidt op.
-// Problemet er at beanClass har vi ikke foerene vi har scannet alle metoder
-
-// Hvad er forskellen mellem OnInitialie og OnInject
 @AnnotatedVariableHook(extension = BaseExtension.class)
-public @interface Inject {} // InjectField or FieldInject?
+@AnnotatedMethodHook(allowInvoke = true, extension = BaseExtension.class)
+public @interface Inject {}

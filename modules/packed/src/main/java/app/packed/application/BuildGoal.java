@@ -27,7 +27,7 @@ public enum BuildGoal {
     /**
      * The goal is to build an {@link ApplicationImage} that can be launched a single time.
      * 
-     * @see App#reusableImageOf(Assembly, Wirelet...)
+     * @see App#newLauncher(Assembly, Wirelet...)
      */
     LAUNCH_LATER,
 
@@ -39,9 +39,9 @@ public enum BuildGoal {
     LAUNCH_NOW,
 
     /**
-     * The goal is to build an {@link ApplicationImage} that can be launched multiple times.
+     * The goal is to build an application image that can be launched multiple times.
      * 
-     * @see App#imageOf(Assembly, Wirelet...)
+     * @see App#newImage(Assembly, Wirelet...)
      */
     LAUNCH_REPEATABLE,
 
