@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationPath;
 import app.packed.bean.BeanHook.TypedProvisionHook;
-import app.packed.binding.mirror.DependenciesMirror;
+import app.packed.bindings.mirror.DependenciesMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Realm;
@@ -27,7 +27,6 @@ import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.util.StreamUtil;
 
 /**
  * A mirror of a bean.
@@ -82,6 +81,14 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
      */
     public Class<?> beanClass() {
         return bean().beanClass;
+    }
+
+    public BeanKind beanKind() {
+        return bean().beanKind;
+    }
+
+    public BeanSourceKind beanSourceKind() {
+        return bean().beanSourceKind;
     }
 
     /** {@return the container the bean belongs to.} */
@@ -179,9 +186,10 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
      *            the type of operations to include
      * @return a collection of all of the operations declared by the bean of the specified type.
      */
+    @SuppressWarnings("unchecked")
     public <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
         requireNonNull(operationType, "operationType is null");
-        return StreamUtil.filterAssignable(operationType, operations());
+        return (Stream<T>) operations().filter(f -> operationType.isAssignableFrom(f.getClass()));
     }
 
     /**

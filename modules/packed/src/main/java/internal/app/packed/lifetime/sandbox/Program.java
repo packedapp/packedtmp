@@ -19,7 +19,7 @@ import java.util.NoSuchElementException;
 
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.BootstrapApp;
-import app.packed.binding.Key;
+import app.packed.bindings.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.FromGuest;

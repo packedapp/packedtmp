@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import app.packed.binding.Key;
+import app.packed.bindings.Key;
 import app.packed.container.Wirelet;
 
 /**

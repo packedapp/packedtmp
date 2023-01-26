@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.binding.Key;
+import app.packed.bindings.Key;
 import app.packed.service.ProvideService;
 import app.packed.service.ProvidedServiceCollisionException;
 import app.packed.service.ServiceLocator;

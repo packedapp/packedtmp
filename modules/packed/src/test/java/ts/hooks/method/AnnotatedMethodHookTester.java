@@ -25,10 +25,10 @@ import java.util.function.Consumer;
 
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanIntrospector.AnnotationCollection;
 import app.packed.bean.BeanIntrospector.OperationalMethod;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
+import app.packed.framework.AnnotationList;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 
@@ -54,14 +54,14 @@ public class AnnotatedMethodHookTester {
     }
 
     static class MyExt extends Extension<MyExt> {
-        BiConsumer<AnnotationCollection, OperationalMethod> onm;
+        BiConsumer<AnnotationList, OperationalMethod> onm;
 
         MyExt() {}
 
         /**
          * @param c
          */
-        void addOM(BiConsumer<AnnotationCollection, OperationalMethod> c) {
+        void addOM(BiConsumer<AnnotationList, OperationalMethod> c) {
             onm = onm == null ? c : onm.andThen(c);
         }
 
@@ -70,7 +70,7 @@ public class AnnotatedMethodHookTester {
             return new BeanIntrospector() {
 
                 @Override
-                public void hookOnAnnotatedMethod(AnnotationCollection hooks, OperationalMethod on) {
+                public void hookOnAnnotatedMethod(AnnotationList hooks, OperationalMethod on) {
                     onm.accept(hooks, on);
                 }
             };

@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import app.packed.binding.Key;
+import app.packed.bindings.Key;
 import app.packed.extension.ExtensionMirror;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.service.ExportedService;

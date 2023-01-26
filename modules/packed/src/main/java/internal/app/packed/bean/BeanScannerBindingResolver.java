@@ -17,7 +17,7 @@ package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.binding.Variable;
+import app.packed.bindings.Variable;
 import app.packed.extension.BaseExtension;
 import app.packed.service.ServiceExtension;
 import internal.app.packed.bean.BeanHookModel.AnnotatedParameterType;
@@ -49,7 +49,7 @@ final class BeanScannerBindingResolver {
             ContributingExtension contributor = iBean.computeContributor(hook.extensionType());
             PackedBindableVariable h = new PackedBindableVariable(iBean, operation, index, contributor.extension(), v);
             
-            contributor.introspector().hookOnVariableType(v.getRawType(), new PackedBindableBaseVariable(h));
+            contributor.introspector().hookOnProvidedVariableType(v.getRawType(), new PackedBindableBaseVariable(h));
             if (operation.bindings[index] != null) {
                 return;
             }
@@ -87,7 +87,7 @@ final class BeanScannerBindingResolver {
                 ContributingExtension ei = introspector.computeContributor(hook.extensionType());
 
                 PackedBindableVariable h = new PackedBindableVariable(introspector, os, index, ei.extension(), var);
-                ei.introspector().hookOnAnnotatedVariable(a1, h);
+                ei.introspector().hookOnProvidedAnnotatedVariable(a1, h);
                 return true;
             }
         }

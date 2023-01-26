@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
-import app.packed.binding.Key;
+import app.packed.bindings.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 

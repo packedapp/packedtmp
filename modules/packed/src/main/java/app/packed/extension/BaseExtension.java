@@ -11,15 +11,16 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanIntrospector.BindableVariable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.Inject;
 import app.packed.bean.OnInitialize;
 import app.packed.bean.OnStart;
 import app.packed.bean.OnStop;
-import app.packed.binding.Key;
-import app.packed.binding.Variable;
+import app.packed.bindings.BindableVariable;
+import app.packed.bindings.BindableWrappedVariable;
+import app.packed.bindings.Key;
+import app.packed.bindings.Variable;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
@@ -34,9 +35,9 @@ import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.InvocationArgument;
 import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.ServiceLocator;
-import internal.app.packed.bean.BeanLocal;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
+import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.bean.PackedBindableVariable;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
@@ -50,7 +51,7 @@ import internal.app.packed.lifetime.runtime.PackedExtensionContext;
  */
 public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
-    static final BeanLocal<Map<Key<?>, BindableVariable>> CODEGEN = BeanLocal.of();
+    static final PackedBeanLocal<Map<Key<?>, BindableVariable>> CODEGEN = PackedBeanLocal.of();
 
     /** Variables that used together with {@link CodeGenerated}. */
     private final Map<CodeGeneratorKey, BindableVariable> codegenVariables = new HashMap<>();
@@ -63,15 +64,15 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     <K> void addCodeGenerated(BeanSetup bean, Key<K> key, Supplier<? extends K> supplier) {
         // BindableVariable bv = CODEGEN.get(bean).get(key);
 
-        BindableVariable prev = codegenVariables.get(new CodeGeneratorKey(bean, key));
+        BindableVariable var = codegenVariables.get(new CodeGeneratorKey(bean, key));
 
-        if (prev == null) {
+        if (var == null) {
             throw new IllegalArgumentException("The specified bean must have an injection site that uses @" + CodeGenerated.class.getSimpleName() + " " + key);
-        } else if (prev.isBound()) {
+        } else if (var.isBound()) {
             throw new IllegalStateException("A supplier has previously been provided for key [key = " + key + ", bean = " + bean + "]");
         }
 
-        prev.bindToGeneratedConstant(supplier);
+        var.bindGeneratedConstant(supplier);
     }
 
     final void embed(Assembly assembly) {
@@ -213,6 +214,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             @Override
             public void hookOnAnnotatedField(Annotation hook, OperationalField field) {
                 if (hook instanceof Inject) {
+                    // Det er jo inject service!???
+                    field.newInjectOperation().unwrap();
                     // OperationHandle handle = field.newSetOperation(null) .newOperation(temp);
                     // bean.lifecycle.addInitialize(handle, null);
                     throw new UnsupportedOperationException();
@@ -246,15 +249,15 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             /** Handles {@link FromGuest}, {@link InvocationArgument} and {@link CodeGenerated}. */
             @Override
-            public void hookOnAnnotatedVariable(Annotation hook, BindableVariable v) {
+            public void hookOnProvidedAnnotatedVariable(Annotation hook, BindableVariable v) {
                 if (hook instanceof FromGuest) {
                     Variable va = v.variable();
                     if (va.getRawType().equals(String.class)) {
-                        v.bindTo(new Op1<@InvocationArgument ApplicationInitializationContext, String>(a -> a.name()) {});
+                        v.bindOp(new Op1<@InvocationArgument ApplicationInitializationContext, String>(a -> a.name()) {});
                     } else if (va.getRawType().equals(ManagedLifetimeController.class)) {
-                        v.bindTo(new Op1<@InvocationArgument ApplicationInitializationContext, ManagedLifetimeController>(a -> a.cr.runtime) {});
+                        v.bindOp(new Op1<@InvocationArgument ApplicationInitializationContext, ManagedLifetimeController>(a -> a.cr.runtime) {});
                     } else if (va.getRawType().equals(ServiceLocator.class)) {
-                        v.bindTo(new Op1<@InvocationArgument ApplicationInitializationContext, ServiceLocator>(a -> a.serviceLocator()) {});
+                        v.bindOp(new Op1<@InvocationArgument ApplicationInitializationContext, ServiceLocator>(a -> a.serviceLocator()) {});
                     } else {
                         throw new UnsupportedOperationException("va " + va.getRawType());
                     }
@@ -266,14 +269,14 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                         throw new UnsupportedOperationException();
                     }
 
-                    v.bindToInvocationArgument(index);
+                    v.bindInvocationArgument(index);
                 } else if (hook instanceof CodeGenerated cg) {
                     BeanSetup bean = ((PackedBindableVariable) v).operation.bean;
                     if (beanOwner().isApplication()) {
                         throw new BeanInstallationException("@" + CodeGenerated.class.getSimpleName() + " can only be used by extensions");
                     }
                     // Create the key
-                    Key<?> key = v.variableToKey();
+                    Key<?> key = v.toKey();
 
                     // CODEGEN.get(this).putIfAbsent(key, v);
                     BindableVariable bv = codegenVariables.putIfAbsent(new CodeGeneratorKey(bean, key), v);
@@ -282,24 +285,24 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     }
 
                 } else {
-                    super.hookOnAnnotatedVariable(hook, v);
+                    super.hookOnProvidedAnnotatedVariable(hook, v);
                 }
             }
 
             @Override
-            public void hookOnVariableType(Class<?> hook, BindableBaseVariable v) {
+            public void hookOnProvidedVariableType(Class<?> hook, BindableWrappedVariable v) {
                 if (hook == PackedExtensionContext.class) {
                     if (v.availableInvocationArguments().isEmpty() || v.availableInvocationArguments().get(0) != ExtensionContext.class) {
                         // throw new Error(v.availableInvocationArguments().toString());
                     }
-                    v.bindToInvocationArgument(0);
+                    v.bindInvocationArgument(0);
                 } else if (hook == ExtensionContext.class) {
                     if (v.availableInvocationArguments().isEmpty() || v.availableInvocationArguments().get(0) != ExtensionContext.class) {
                         // throw new Error(v.availableInvocationArguments().toString());
                     }
-                    v.bindToInvocationArgument(0);
+                    v.bindInvocationArgument(0);
                 } else {
-                    super.hookOnVariableType(hook, v);
+                    v.checkAssignableTo(PackedExtensionContext.class, ExtensionContext.class);
                 }
             }
         };

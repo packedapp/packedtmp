@@ -31,6 +31,8 @@ import java.util.Optional;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
+import app.packed.bindings.InvalidKeyException;
+import app.packed.bindings.Key;
 import internal.app.packed.service.KeyHelper;
 import internal.app.packed.util.types.GenericType;
 import testutil.stubs.annotation.AnnotationInstances;
@@ -41,16 +43,16 @@ import testutil.stubs.annotation.IntQualifier;
 public class KeyTest {
 
     static final Type TL_INTEGER = new GenericType<Integer>() {}.type();
-    static final Type TL_LIST_WILDCARD = new GenericType<List<?>>() {}.type();
+    static final Type TL_LIST_WILDCARD = new GenericType<List<Object>>() {}.type(); // wildcards are filtered
 
     static final Key<Integer> KEY_INT_OF = Key.of(int.class);
     static final Key<Integer> KEY_INTEGER = new Key<Integer>() {};
     static final Key<Integer> KEY_INTEGER_OF = Key.of(Integer.class);
 
     static final Key<Integer> KEY_INTEGER_X = new Key<@CharQualifier('X') Integer>() {};
-    static final Key<Integer> KEY_INTEGER_X_OF = Key.of(Integer.class).with(AnnotationInstances.CHAR_QUALIFIER_X);
+    static final Key<Integer> KEY_INTEGER_X_OF = Key.of(Integer.class).withQualifier(AnnotationInstances.CHAR_QUALIFIER_X);
     static final Key<Integer> KEY_INTEGER_Y = new Key<@CharQualifier('Y') Integer>() {};
-    static final Key<Integer> KEY_INTEGER_Y_OF = Key.of(Integer.class).with(AnnotationInstances.CHAR_QUALIFIER_Y);
+    static final Key<Integer> KEY_INTEGER_Y_OF = Key.of(Integer.class).withQualifier(AnnotationInstances.CHAR_QUALIFIER_Y);
 
     static final Key<List<String>> KEY_LIST_STRING = new Key<List<String>>() {};
     static final Key<List<?>> KEY_LIST_WILDCARD = new Key<List<?>>() {};
@@ -62,7 +64,7 @@ public class KeyTest {
 
     @Test
     public void canonicalize() {
-        Key<Integer> key = Key.of(Integer.class).with(AnnotationInstances.CHAR_QUALIFIER_X);
+        Key<Integer> key = Key.of(Integer.class).withQualifier(AnnotationInstances.CHAR_QUALIFIER_X);
 
         assertThat(key).isEqualTo(KEY_INTEGER_X);
 
@@ -119,30 +121,30 @@ public class KeyTest {
 
         Field f = findField(Tmpx.class, "ok");
         assertThat(KeyHelper.convertField(f).type()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(KeyHelper.convertField(f).hasQualifiers()).isFalse();
+        assertThat(KeyHelper.convertField(f).isQualified()).isFalse();
         assertThat(KeyHelper.convertField(f).qualifiers()).isEmpty();
 
         f = findField(Tmpx.class, "okQualified");
         assertThat(KeyHelper.convertField(f).type()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(KeyHelper.convertField(f).hasQualifiers()).isTrue();
+        assertThat(KeyHelper.convertField(f).isQualified()).isTrue();
         assertThat(KeyHelper.convertField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         f = findField(Tmpx.class, "primitive");
         assertThat(KeyHelper.convertField(f).type()).isEqualTo(TL_INTEGER);
-        assertThat(KeyHelper.convertField(f).hasQualifiers()).isFalse();
+        assertThat(KeyHelper.convertField(f).isQualified()).isFalse();
         assertThat(KeyHelper.convertField(f).qualifiers()).isEmpty();
 
         f = findField(Tmpx.class, "primitiveQualified");
         assertThat(KeyHelper.convertField(f).type()).isEqualTo(TL_INTEGER);
-        assertThat(KeyHelper.convertField(f).hasQualifiers()).isTrue();
+        assertThat(KeyHelper.convertField(f).isQualified()).isTrue();
         assertThat(KeyHelper.convertField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> KeyHelper.convertField(findField(Tmpx.class, "notTypeParameterFree")));
-        a.isExactlyInstanceOf(RuntimeException.class).hasNoCause();
+        a.isExactlyInstanceOf(InvalidKeyException.class).hasNoCause();
         // TODO test msg
 
         a = assertThatThrownBy(() -> KeyHelper.convertField(findField(Tmpx.class, "optional")));
-        a.isExactlyInstanceOf(RuntimeException.class).hasNoCause();
+        a.isExactlyInstanceOf(InvalidKeyException.class).hasNoCause();
         // TODO test msg
 
 //        a = assertThatThrownBy(() -> KeyHelper.convertField(findField(Tmpx.class, "multipleQualifier")));
@@ -199,34 +201,34 @@ public class KeyTest {
 
         Method m = Tmpx.class.getDeclaredMethod("ok");
         assertThat(KeyHelper.convertMethodReturnType(m).type()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(KeyHelper.convertMethodReturnType(m).hasQualifiers()).isFalse();
+        assertThat(KeyHelper.convertMethodReturnType(m).isQualified()).isFalse();
         assertThat(KeyHelper.convertMethodReturnType(m).qualifiers()).isEmpty();
 
         m = Tmpx.class.getDeclaredMethod("okQualified");
         assertThat(KeyHelper.convertMethodReturnType(m).type()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(KeyHelper.convertMethodReturnType(m).hasQualifiers()).isTrue();
+        assertThat(KeyHelper.convertMethodReturnType(m).isQualified()).isTrue();
         assertThat(KeyHelper.convertMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         m = Tmpx.class.getDeclaredMethod("primitive");
         assertThat(KeyHelper.convertMethodReturnType(m).type()).isEqualTo(TL_INTEGER);
-        assertThat(KeyHelper.convertMethodReturnType(m).hasQualifiers()).isFalse();
+        assertThat(KeyHelper.convertMethodReturnType(m).isQualified()).isFalse();
         assertThat(KeyHelper.convertMethodReturnType(m).qualifiers()).isEmpty();
 
         m = Tmpx.class.getDeclaredMethod("primitiveQualified");
         assertThat(KeyHelper.convertMethodReturnType(m).type()).isEqualTo(TL_INTEGER);
-        assertThat(KeyHelper.convertMethodReturnType(m).hasQualifiers()).isTrue();
+        assertThat(KeyHelper.convertMethodReturnType(m).isQualified()).isTrue();
         assertThat(KeyHelper.convertMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(
                 () -> KeyHelper.convertMethodReturnType(Tmpx.class.getDeclaredMethod("voidReturnType")));
-        a.isExactlyInstanceOf(RuntimeException.class).hasNoCause();
+        a.isExactlyInstanceOf(InvalidKeyException.class).hasNoCause();
 
         a = assertThatThrownBy(() -> KeyHelper.convertMethodReturnType(Tmpx.class.getDeclaredMethod("notTypeParameterFree")));
-        a.isExactlyInstanceOf(RuntimeException.class).hasNoCause();
+        a.isExactlyInstanceOf(InvalidKeyException.class).hasNoCause();
         // TODO test msg
 
         a = assertThatThrownBy(() -> KeyHelper.convertMethodReturnType(Tmpx.class.getDeclaredMethod("optional")));
-        a.isExactlyInstanceOf(RuntimeException.class).hasNoCause();
+        a.isExactlyInstanceOf(InvalidKeyException.class).hasNoCause();
         // TODO test msg
 
 //        a = assertThatThrownBy(() -> KeyHelper.convertMethodReturnType(Tmpx.class.getDeclaredMethod("multipleQualifier")));
@@ -257,12 +259,12 @@ public class KeyTest {
     }
 
     @Test
-    public void hasQualifiers() {
-        assertThat(KEY_INTEGER.hasQualifiers()).isFalse();
-        assertThat(KEY_INTEGER_X.hasQualifiers()).isTrue();
+    public void isQualified() {
+        assertThat(KEY_INTEGER.isQualified()).isFalse();
+        assertThat(KEY_INTEGER_X.isQualified()).isTrue();
 
-        assert !KEY_INTEGER.hasQualifiers();
-        assert KEY_INTEGER_X.hasQualifiers();
+        assert !KEY_INTEGER.isQualified();
+        assert KEY_INTEGER_X.isQualified();
     }
 
     @Test
@@ -276,8 +278,8 @@ public class KeyTest {
 //        assertThat(k2.typeToken()).isEqualTo(TL_INTEGER);
 //        assertThat(k2.typeToken()).isNotSameAs(TL_INTEGER);
 //
-//        assertThat(k1.hasQualifiers()).isFalse();
-//        assertThat(k2.hasQualifiers()).isFalse();
+//        assertThat(k1.isQualified()).isFalse();
+//        assertThat(k2.isQualified()).isFalse();
 //
 //        // Optional
 //        assertThatThrownBy(() -> Key.convertTypeLiteral(new GenericType<Optional<Integer>>() {})).isExactlyInstanceOf(RuntimeException.class)
@@ -301,35 +303,35 @@ public class KeyTest {
     /** Tests {@link Key#hasQualifier(Class)}. */
     @Test
     public void hasQualifierWith() {
-        npe(() -> KEY_INTEGER.hasQualifier((Class<? extends Annotation>) null), "qualifierType");
+        npe(() -> KEY_INTEGER.isQualifiedWithType((Class<? extends Annotation>) null), "qualifierType");
 
-        assertThat(KEY_INTEGER.hasQualifier(CharQualifier.class)).isFalse();
-        assertThat(KEY_INTEGER_X.hasQualifier(CharQualifier.class)).isTrue();
-        assertThat(KEY_INTEGER_X.hasQualifier(IntQualifier.class)).isFalse();
+        assertThat(KEY_INTEGER.isQualifiedWithType(CharQualifier.class)).isFalse();
+        assertThat(KEY_INTEGER_X.isQualifiedWithType(CharQualifier.class)).isTrue();
+        assertThat(KEY_INTEGER_X.isQualifiedWithType(IntQualifier.class)).isFalse();
     }
 
     @Test
-    public void toString$() {
-        assertThat(KEY_INT_OF.toString()).isEqualTo("java.lang.Integer");
-        assertThat(KEY_INTEGER.toString()).isEqualTo("java.lang.Integer");
+    public void toStringLong() {
+        assertThat(KEY_INT_OF.toStringLong()).isEqualTo("Key<java.lang.Integer>");
+        assertThat(KEY_INTEGER.toStringLong()).isEqualTo("Key<java.lang.Integer>");
 
     }
 
     @Test
     public void toStringSimple() {
-        assertThat(KEY_INT_OF.toStringSimple()).isEqualTo("Integer");
-        assertThat(KEY_INTEGER.toStringSimple()).isEqualTo("Integer");
+        assertThat(KEY_INT_OF.toString()).isEqualTo("Key<Integer>");
+        assertThat(KEY_INTEGER.toString()).isEqualTo("Key<Integer>");
     }
 
     @Test
     public void withQualifier() throws Exception {
-        npe(() -> KEY_INTEGER.with((Annotation) null), "qualifier");
-        assertThat(KEY_INTEGER.with(AnnotationInstances.CHAR_QUALIFIER_X)).isEqualTo(KEY_INTEGER_X);
-        assertThat(KEY_INTEGER_X.with(AnnotationInstances.CHAR_QUALIFIER_Y)).isEqualTo(KEY_INTEGER_Y);
+        npe(() -> KEY_INTEGER.withQualifier((Annotation) null), "qualifier");
+        assertThat(KEY_INTEGER.withQualifier(AnnotationInstances.CHAR_QUALIFIER_X)).isEqualTo(KEY_INTEGER_X);
+        assertThat(KEY_INTEGER_X.withQualifier(AnnotationInstances.CHAR_QUALIFIER_Y)).isEqualTo(KEY_INTEGER_Y);
 
         // Tests that the annotation has a qualifier annotation.
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(
-                () -> KEY_INTEGER.with(KeyTest.class.getDeclaredMethod("withQualifier").getAnnotations()[0]));
+                () -> KEY_INTEGER.withQualifier(KeyTest.class.getDeclaredMethod("withQualifier").getAnnotations()[0]));
         a.isExactlyInstanceOf(IllegalArgumentException.class).hasNoCause();
         // TODO check message
     }
@@ -337,7 +339,7 @@ public class KeyTest {
     /** Tests {@link Key#withoutQualifiers()}. */
     @Test
     public void withNoQualifier() {
-        npe(() -> KEY_INTEGER.with((Annotation) null), "qualifier");
+        npe(() -> KEY_INTEGER.withQualifier((Annotation) null), "qualifier");
         assertThat(KEY_INTEGER.withoutQualifiers()).isSameAs(KEY_INTEGER);
         assertThat(KEY_INTEGER_X.withoutQualifiers()).isEqualTo(KEY_INTEGER);
     }

@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 
 import app.packed.application.App;
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.bindings.BindableVariable;
 import app.packed.bean.BeanIntrospector;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
@@ -65,19 +66,19 @@ public class OSITest extends BaseAssembly {
         protected BeanIntrospector newBeanIntrospector() {
             return new BeanIntrospector() {
                 @Override
-                public void hookOnAnnotatedVariable(Annotation hook, BindableVariable d) {
+                public void hookOnProvidedAnnotatedVariable(Annotation hook, BindableVariable d) {
                     if (hook instanceof BuildTime) {
                         d.checkAssignableTo(LocalDateTime.class);
                         d.bindConstant(LocalDateTime.now());
                     } else if (hook instanceof InitializationTime) {
                         applicationRoot().base().installIfAbsent(AppInitializeTime.class);
                         d.checkAssignableTo(LocalDateTime.class);
-                        d.bindTo(new Op1<AppInitializeTime, LocalDateTime>(b -> b.initialized) {});
+                        d.bindOp(new Op1<AppInitializeTime, LocalDateTime>(b -> b.initialized) {});
                     } else if (hook instanceof Now) { // now
                         d.checkAssignableTo(LocalDateTime.class);
-                        d.bindTo(new Op0<>(LocalDateTime::now) {});
+                        d.bindOp(new Op0<>(LocalDateTime::now) {});
                     } else {
-                        super.hookOnAnnotatedVariable(hook, d);
+                        super.hookOnProvidedAnnotatedVariable(hook, d);
                     }
                 }
 //

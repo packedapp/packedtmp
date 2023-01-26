@@ -17,7 +17,6 @@ package internal.app.packed.binding;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -29,12 +28,12 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.application.BuildException;
-import app.packed.binding.Key;
-import app.packed.binding.Variable;
+import app.packed.bindings.Key;
+import app.packed.bindings.Variable;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationType;
 import internal.app.packed.errorhandling.ErrorMessageBuilder;
-import internal.app.packed.util.QualifierUtil;
+import internal.app.packed.service.KeyHelper;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.Types;
 
@@ -236,8 +235,6 @@ public final class InternalDependency {
 
         Type t = v.getType();
 
-        Annotation[] qualifiers = QualifierUtil.findQualifier(v.getAnnotations());
-
         Optionality optionallaity = null;
         Class<?> rawType = v.getRawType();
 
@@ -274,8 +271,11 @@ public final class InternalDependency {
             optionallaity = Optionality.REQUIRED;
         }
         // TL is free from Optional
-        Key<?> key = Key.convertTypeNullableAnnotation(v, t, qualifiers);
-
+        
+        Key<?> key = KeyHelper.convert(t, v.getAnnotations(), v);
+                
+        
+        
         return new InternalDependency(v.getRawType(), key, optionallaity);
     }
 

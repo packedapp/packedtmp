@@ -32,11 +32,11 @@ import app.packed.bean.BeanHook.AnnotatedFieldHook;
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanIntrospector.AnnotationCollection;
 import app.packed.bean.BeanIntrospector.OperationalField;
+import app.packed.bindings.Variable;
 import app.packed.bean.InaccessibleBeanMemberException;
-import app.packed.binding.Variable;
 import app.packed.extension.Extension;
+import app.packed.framework.AnnotationList;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
@@ -99,8 +99,8 @@ public final class BeanScannerField2 {
 
     /** {@inheritDoc} */
     
-    public AnnotationCollection annotations() {
-        return new PackedAnnotationCollection(annotations);
+    public AnnotationList annotations() {
+        return new PackedAnnotationList(annotations);
     }
 
     /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */

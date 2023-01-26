@@ -25,11 +25,11 @@ import java.util.function.Consumer;
 
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanIntrospector.AnnotationCollection;
 import app.packed.bean.BeanIntrospector.OperationalMethod;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.extension.Extension;
+import app.packed.framework.AnnotationList;
 
 /**
  *
@@ -52,7 +52,7 @@ public class MyComp {
             onM2((a, b) -> c.accept(b));
         }
 
-        public void onM2(BiConsumer<AnnotationCollection, OperationalMethod> c) {
+        public void onM2(BiConsumer<AnnotationList, OperationalMethod> c) {
             use(MyExt.class).addOM(c);
         }
     }
@@ -62,14 +62,14 @@ public class MyComp {
     }
 
     static class MyExt extends Extension<MyExt> {
-        BiConsumer<AnnotationCollection, OperationalMethod> onm;
+        BiConsumer<AnnotationList, OperationalMethod> onm;
 
         MyExt() {}
 
         /**
          * @param c
          */
-        void addOM(BiConsumer<AnnotationCollection, OperationalMethod> c) {
+        void addOM(BiConsumer<AnnotationList, OperationalMethod> c) {
             onm = c == null ? c : onm.andThen(c);
         }
 
@@ -78,7 +78,7 @@ public class MyComp {
             return new BeanIntrospector() {
 
                 @Override
-                public void hookOnAnnotatedMethod(AnnotationCollection hooks, OperationalMethod on) {
+                public void hookOnAnnotatedMethod(AnnotationList hooks, OperationalMethod on) {
                     onm.accept(hooks, on);
                 }
             };

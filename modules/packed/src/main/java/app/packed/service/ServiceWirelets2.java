@@ -15,8 +15,8 @@
  */
 package app.packed.service;
 
-import app.packed.binding.Key;
-import app.packed.binding.Qualifier;
+import app.packed.bindings.Key;
+import app.packed.bindings.Qualifier;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 

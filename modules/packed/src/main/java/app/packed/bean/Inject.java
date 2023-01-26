@@ -49,3 +49,6 @@ import app.packed.extension.BaseExtension;
 @AnnotatedVariableHook(extension = BaseExtension.class)
 @AnnotatedMethodHook(allowInvoke = true, extension = BaseExtension.class)
 public @interface Inject {}
+// For en metode er det inject metoden
+
+// For et field er det inject service

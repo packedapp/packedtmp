@@ -27,9 +27,9 @@ import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.bean.BeanHook.TypedProvisionHook;
-import app.packed.binding.Key;
-import app.packed.binding.Provider;
-import app.packed.binding.Qualifier;
+import app.packed.bindings.Key;
+import app.packed.bindings.Provider;
+import app.packed.bindings.Qualifier;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.AbstractComposer.ComposerAssembly;
@@ -475,7 +475,7 @@ public interface ServiceLocator {
          * Binds the specified factory to a new service. When the injector is created the factory will be invoked <b>once</b> to
          * instantiate the service instance.
          * <p>
-         * The default key for the service is determined by {@link Op#key()}.
+         * The default key for the service is determined by {@link Op#toKey()}.
          * 
          * @param <T>
          *            the type of service to bind

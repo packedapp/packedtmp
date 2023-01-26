@@ -15,7 +15,7 @@
  */
 package app.packed.service;
 
-import app.packed.binding.Key;
+import app.packed.bindings.Key;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.service.ExportedService;
 

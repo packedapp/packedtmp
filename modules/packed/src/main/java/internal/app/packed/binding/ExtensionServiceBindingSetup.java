@@ -18,7 +18,7 @@ package internal.app.packed.binding;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.binding.BindingClassifierKind;
+import app.packed.bindings.BindingClassifierKind;
 import app.packed.container.Realm;
 import app.packed.extension.BaseExtension;
 import internal.app.packed.bean.BeanSetup;

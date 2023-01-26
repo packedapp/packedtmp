@@ -17,7 +17,7 @@ package internal.app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.binding.Key;
+import app.packed.bindings.Key;
 import app.packed.framework.Nullable;
 
 /**

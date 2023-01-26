@@ -17,16 +17,19 @@ package internal.app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodType;
+import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanIntrospector.AnnotationCollection;
-import app.packed.bean.BeanIntrospector.BindableVariable;
-import app.packed.binding.Variable;
-import app.packed.binding.mirror.BindingMirror;
+import app.packed.bean.BeanInstallationException;
+import app.packed.bindings.BindableVariable;
+import app.packed.bindings.Variable;
+import app.packed.bindings.mirror.BindingMirror;
 import app.packed.container.Realm;
 import app.packed.extension.Extension;
+import app.packed.extension.InternalExtensionException;
+import app.packed.framework.AnnotationList;
 import app.packed.framework.Nullable;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
@@ -38,10 +41,14 @@ import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.BindingSetup.HookBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
 import internal.app.packed.operation.PackedOp;
 
-/** Implementation of {@link BeanIntrospector.BindableVariable}. */
+/** Implementation of {@link BindableVariable}. */
 public class PackedBindableVariable implements BindableVariable {
+
+    /** Whether or not allow binding of static fields. */
+    private boolean allowStaticFieldBinding;
 
     /** The extension that manages the binding. */
     private final ExtensionSetup bindingExtension;
@@ -70,8 +77,15 @@ public class PackedBindableVariable implements BindableVariable {
 
     /** {@inheritDoc} */
     @Override
-    public AnnotationCollection annotations() {
-        return new PackedAnnotationCollection(variable().getAnnotations());
+    public BindableVariable allowStaticFieldBinding() {
+        allowStaticFieldBinding = true;
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public AnnotationList annotations() {
+        return new PackedAnnotationList(variable().getAnnotations());
     }
 
     /** {@inheritDoc} */
@@ -83,7 +97,7 @@ public class PackedBindableVariable implements BindableVariable {
     /** {@inheritDoc} */
     @Override
     public void bindConstant(@Nullable Object obj) {
-        checkIsBindable();
+        checkBeforeBinding();
         if (obj == null) {
             if (variable.getRawType().isPrimitive()) {
                 throw new IllegalArgumentException(variable + " is a primitive type and cannot be bound to null");
@@ -111,8 +125,39 @@ public class PackedBindableVariable implements BindableVariable {
 
     /** {@inheritDoc} */
     @Override
-    public void bindTo(Op<?> op) {
-        checkIsBindable();
+    public void bindGeneratedConstant(Supplier<?> consumer) {
+        checkBeforeBinding();
+        BindingSetup bs = new HookBindingSetup(operation, index, Realm.application());
+        bs.provider = new FromCodeGenerated(consumer);
+        operation.bindings[index] = bs;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void bindInvocationArgument(Class<?> argumentType) {
+        requireNonNull(argumentType, "argumentType is null");
+        MethodType mt = operation.template.invocationType();
+        for (int i = 0; i < mt.parameterCount(); i++) {
+            if (argumentType == mt.parameterType(i)) {
+                bindInvocationArgument(i);
+            }
+        }
+        throw new InternalExtensionException("oops");
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void bindInvocationArgument(int argumentIndex) {
+        checkBeforeBinding();
+        BindingSetup bs = new HookBindingSetup(operation, index, Realm.application());
+        bs.provider = new FromArgument(argumentIndex);
+        operation.bindings[index] = bs;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void bindOp(Op<?> op) {
+        checkBeforeBinding();
         PackedOp<?> pop = PackedOp.crack(op);
 
         OperationTemplate ot = operation.template.withReturnType(pop.type().returnType());
@@ -129,28 +174,18 @@ public class PackedBindableVariable implements BindableVariable {
         operation.bindings[index] = bs;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void bindToGeneratedConstant(Supplier<?> consumer) {
-        checkIsBindable();
-        BindingSetup bs = new HookBindingSetup(operation, index, Realm.application());
-        bs.provider = new FromCodeGenerated(consumer);
-        operation.bindings[index] = bs;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void bindToInvocationArgument(int argumentIndex) {
-        checkIsBindable();
-        BindingSetup bs = new HookBindingSetup(operation, index, Realm.application());
-        bs.provider = new FromArgument(argumentIndex);
-        operation.bindings[index] = bs;
-    }
-
-    private void checkIsBindable() {
+    private void checkNotBound() {
         if (isBound()) {
             throw new IllegalStateException("A binding has already been created");
         }
+    }
+
+    private void checkBeforeBinding() {
+        checkNotBound();
+        if (operation instanceof FieldOperationSetup fos && Modifier.isStatic(fos.modifiers()) && !allowStaticFieldBinding) {
+            throw new BeanInstallationException("Static field binding is not supported for");
+        }
+        // TODO check if field static
     }
 
     /** {@inheritDoc} */
@@ -167,7 +202,7 @@ public class PackedBindableVariable implements BindableVariable {
     /** {@inheritDoc} */
     @Override
     public BindableVariable specializeMirror(Supplier<? extends BindingMirror> supplier) {
-        checkIsBindable();
+        checkNotBound();
         this.mirrorSupplier = requireNonNull(supplier);
         return this;
     }

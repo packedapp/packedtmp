@@ -28,7 +28,7 @@ import java.util.Set;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanSourceKind;
-import app.packed.binding.Key;
+import app.packed.bindings.Key;
 import app.packed.framework.Nullable;
 import app.packed.service.ExportedServiceCollisionException;
 import app.packed.service.ExportedServiceMirror;
@@ -208,10 +208,10 @@ public final class ServiceManager {
         Key<?> key = provider.entry.key;
 
         if (existingTarget.bean == thisTarget.bean) {
-            return "This bean is already providing a service for Key<" + key.toStringSimple() + ">, beanClass = " + format(existingTarget.bean.beanClass);
+            return "This bean is already providing a service for Key<" + key.toString() + ">, beanClass = " + format(existingTarget.bean.beanClass);
         }
         if (provider.resolution instanceof FromLifetimeArena) {
-            return "Cannot provide a service for Key<" + key.toStringSimple() + ">, as another bean of type " + format(existingTarget.bean.beanClass)
+            return "Cannot provide a service for Key<" + key.toString() + ">, as another bean of type " + format(existingTarget.bean.beanClass)
                     + " is already providing a service for the same key";
 
             // return "Another bean of type " + format(existingTarget.bean.beanClass) + " is already providing a service for Key<" +

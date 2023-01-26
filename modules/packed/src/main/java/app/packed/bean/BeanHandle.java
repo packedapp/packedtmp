@@ -25,7 +25,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationPath;
-import app.packed.binding.Key;
+import app.packed.bindings.Key;
 import app.packed.container.Realm;
 import app.packed.context.Context;
 import app.packed.errorhandling.ErrorHandler;

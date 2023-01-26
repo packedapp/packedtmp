@@ -112,9 +112,9 @@ public final class CircularServiceDependencyChecker {
         int size = dependencies.size();
         StringBuilder sb = new StringBuilder("Circular dependencies between " + size + " services: ");
         if (size == 2) {
-            sb.append(dependencies.pollLast().key.toStringSimple());
+            sb.append(dependencies.pollLast().key);
             sb.append(" <-> ");
-            sb.append(dependencies.pollLast().key.toStringSimple());
+            sb.append(dependencies.pollLast().key);
         } else {
             ServiceManagerEntry e = dependencies.pollLast();
             do {

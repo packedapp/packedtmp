@@ -29,8 +29,8 @@ import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.stream.IntStream;
 
-import app.packed.binding.Key;
-import app.packed.binding.Variable;
+import app.packed.bindings.Key;
+import app.packed.bindings.Variable;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionPoint;
 import app.packed.framework.Nullable;
@@ -93,15 +93,15 @@ public final class TypeVariableExtractor {
 
     public static void main(String[] args) {
         Op1<@Nullable String, Long> o = new Op1<@Nullable String, Long>(s -> 12L) {};
-        
+
         TypeVariableExtractor tve = TypeVariableExtractor.of(Op1.class);
-        
+
         System.out.println(tve.extractAllVariables(o.getClass(), Error::new)[0]);
         System.out.println(tve.extractAllVariables(o.getClass(), Error::new)[1]);
-        
+
     }
 
-    public <T extends Throwable> Type[] extractAllTypes(Class<?> from, ErrorProcessor<T> ep) throws T {
+    private <T extends Throwable> Type[] extractAllTypes(Class<?> from, ErrorProcessor<T> ep) throws T {
         if (!baseType.isAssignableFrom(from)) {
             String op = Modifier.isInterface(from.getModifiers()) == isInterface ? "extend" : "implement";
             throw new IllegalArgumentException(StringFormatter.format(from) + " does not " + op + " " + StringFormatter.format(baseType));
@@ -117,7 +117,6 @@ public final class TypeVariableExtractor {
         return result;
     }
 
-
     public <T extends Throwable> Variable extractVariable(Class<?> from, ErrorProcessor<T> ep) throws T {
         if (indexes.length != 1) {
             throw new UnsupportedOperationException("This method can only be used when the extractor was extracts a single index, baseType = "
@@ -125,7 +124,7 @@ public final class TypeVariableExtractor {
         }
         return extractAllVariables(from, ep)[0];
     }
-    
+
     public <T extends Throwable> Type extractType(Class<?> from, ErrorProcessor<T> ep) throws T {
         if (indexes.length != 1) {
             throw new UnsupportedOperationException("This method can only be used when the extractor was extracts a single index, baseType = "

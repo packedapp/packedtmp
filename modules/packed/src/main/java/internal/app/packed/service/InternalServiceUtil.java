@@ -15,7 +15,7 @@
  */
 package internal.app.packed.service;
 
-import app.packed.binding.Key;
+import app.packed.bindings.Key;
 
 /**
  *

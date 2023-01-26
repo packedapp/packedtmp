@@ -30,7 +30,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.binding.Key;
+import app.packed.bindings.Key;
 import internal.app.packed.service.KeyHelper;
 
 /**

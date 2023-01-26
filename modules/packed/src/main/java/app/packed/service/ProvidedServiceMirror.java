@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-import app.packed.binding.Key;
+import app.packed.bindings.Key;
 import app.packed.container.BaseAssembly;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.service.ProvidedService;

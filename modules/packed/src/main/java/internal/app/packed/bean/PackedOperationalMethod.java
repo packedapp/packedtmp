@@ -24,31 +24,19 @@ import java.lang.reflect.Method;
 
 import app.packed.bean.BeanIntrospector.OperationalMethod;
 import app.packed.bean.InaccessibleBeanMemberException;
-import app.packed.binding.Key;
-import app.packed.framework.Nullable;
+import app.packed.bindings.Key;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
-import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
 import internal.app.packed.service.KeyHelper;
 
 /** Internal implementation of BeanMethod. Discard after use. */
-public final class PackedOperationalMethod extends PackedOperationalMember<Method> implements OperationalMethod {
-
-    /** The operation type (lazily created). */
-    @Nullable
-    private OperationType type;
+public final class PackedOperationalMethod extends PackedOperationalExecutable<Method> implements OperationalMethod {
 
     PackedOperationalMethod(ContributingExtension contributor, Method method, Annotation[] annotations, boolean allowInvoke) {
         super(contributor, method, annotations);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean hasInvokeAccess() {
-        return false;
     }
 
     /** {@inheritDoc} */
@@ -59,8 +47,8 @@ public final class PackedOperationalMethod extends PackedOperationalMember<Metho
 
     /** {@inheritDoc} */
     @Override
-    public Key<?> methodToKey() {
-        return KeyHelper.convertMethodReturnType(member);
+    public Key<?> toKey() {
+        return KeyHelper.convert(member.getGenericReturnType(), member.getAnnotations(), this);
     }
 
     /** {@inheritDoc} */
@@ -87,16 +75,6 @@ public final class PackedOperationalMethod extends PackedOperationalMember<Metho
         return operation.toHandle();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public OperationType operationType() {
-        OperationType t = type;
-        if (t == null) {
-            t = type = OperationType.ofExecutable(member);
-        }
-        return t;
-    }
-
     /**
      * Look for hook annotations on a single method.
      * 
@@ -113,7 +91,7 @@ public final class PackedOperationalMethod extends PackedOperationalMember<Metho
                 ContributingExtension contributor = iBean.computeContributor(fh.extensionType());
 
                 PackedOperationalMethod pbm = new PackedOperationalMethod(contributor, method, annotations, fh.isInvokable());
-                PackedAnnotationCollection pac = new PackedAnnotationCollection(new Annotation[] { a1 });
+                PackedAnnotationList pac = new PackedAnnotationList(new Annotation[] { a1 });
                 contributor.introspector().hookOnAnnotatedMethod(pac, pbm);
             }
         }

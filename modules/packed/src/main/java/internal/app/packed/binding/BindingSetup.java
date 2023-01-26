@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
-import app.packed.binding.BindingClassifierKind;
-import app.packed.binding.mirror.BindingMirror;
+import app.packed.bindings.BindingClassifierKind;
+import app.packed.bindings.mirror.BindingMirror;
 import app.packed.container.Realm;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationMirror;

@@ -22,8 +22,8 @@ import java.lang.annotation.Target;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import app.packed.binding.Key;
-import app.packed.binding.Qualifier;
+import app.packed.bindings.Key;
+import app.packed.bindings.Qualifier;
 import app.packed.container.BaseAssembly;
 import app.packed.operation.Op1;
 import app.packed.service.ServiceLocator;

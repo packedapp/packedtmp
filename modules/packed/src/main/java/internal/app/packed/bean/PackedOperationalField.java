@@ -26,7 +26,8 @@ import java.lang.reflect.Modifier;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.OperationalField;
 import app.packed.bean.InaccessibleBeanMemberException;
-import app.packed.binding.Variable;
+import app.packed.bindings.Key;
+import app.packed.bindings.Variable;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
@@ -34,6 +35,7 @@ import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanHookModel.AnnotatedField;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
+import internal.app.packed.service.KeyHelper;
 
 /** Responsible for scanning fields on a bean. */
 public final class PackedOperationalField extends PackedOperationalMember<Field> implements OperationalField {
@@ -83,9 +85,15 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
         return member;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Key<?> toKey() {
+        return KeyHelper.convert(member.getGenericType(), member.getAnnotations(), this);
+    }
+
     /** Callback into an extension's {@link BeanIntrospector#hookOnAnnotatedField(OperationalField)} method. */
     void matchy() {
-        ce.introspector().hookOnAnnotatedField(PackedAnnotationCollection.of(), this);
+        ce.introspector().hookOnAnnotatedField(PackedAnnotationList.of(), this);
         ce.scanner.resolveOperations(); // resolve bindings for any operation(s) that have been created
     }
 

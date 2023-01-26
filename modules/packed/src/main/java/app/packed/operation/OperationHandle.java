@@ -27,9 +27,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanIntrospector.BindableVariable;
 import app.packed.bean.BeanIntrospector.OperationalField;
 import app.packed.bean.BeanIntrospector.OperationalMethod;
+import app.packed.bindings.BindableVariable;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;

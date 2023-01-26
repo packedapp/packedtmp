@@ -19,7 +19,8 @@ package app.packed.extension;
  *
  */
 // Annotation must be used somewhere where someone consumes it
-// fx @InterruptOnStop
+// fx @InterruptOnStop.
+// Hvis den bare er placeret tilfaeldigt fejler vi
 @interface DependantOperator {
     Class<? extends Extension<?>> extension();
 }

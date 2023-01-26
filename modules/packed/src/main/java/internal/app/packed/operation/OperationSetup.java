@@ -157,9 +157,9 @@ public sealed abstract class OperationSetup {
         // Whether or not we need the bean instance
         boolean requiresBeanInstance = false;
         if (this instanceof MethodOperationSetup s) {
-            requiresBeanInstance = !Modifier.isStatic(s.getModifiers());
+            requiresBeanInstance = !Modifier.isStatic(s.modifiers());
         } else if (this instanceof FieldOperationSetup s) {
-            requiresBeanInstance = !Modifier.isStatic(s.getModifiers());
+            requiresBeanInstance = !Modifier.isStatic(s.modifiers());
         }
 
         int osInit = 0;
@@ -314,7 +314,7 @@ public sealed abstract class OperationSetup {
         }
 
         /** @see Member#getModifiers(). */
-        public final int getModifiers() {
+        public final int modifiers() {
             return member.getModifiers();
         }
 

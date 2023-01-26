@@ -12,13 +12,13 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.bindings.BindableVariable;
+import app.packed.bindings.Key;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanIntrospector.BindableVariable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.Inject;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.bean.LifecycleOrdering;
-import app.packed.binding.Key;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
@@ -64,7 +64,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *             if a supplier has already been registered for the specified key in the same container, or if the
      *             extension is no longer configurable.
      * @see CodeGenerated
-     * @see BindableVariable#bindToGeneratedConstant(Supplier)
+     * @see BindableVariable#bindGeneratedConstant(Supplier)
      */
     public <K> void addCodeGenerated(BeanConfiguration bean, Key<K> key, Supplier<? extends K> supplier) {
         requireNonNull(bean, "bean is null");
@@ -307,9 +307,9 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * <p>
      * This annotation can only used on beans owned by an extension.
      * 
-     * @see BindableVariable#bindToGeneratedConstant(java.util.function.Supplier)
+     * @see BindableVariable#bindGeneratedConstant(java.util.function.Supplier)
      * @see BaseExtensionPoint#addCodeGenerated(app.packed.bean.BeanConfiguration, Class, java.util.function.Supplier)
-     * @see BaseExtensionPoint#addCodeGenerated(app.packed.bean.BeanConfiguration, app.packed.binding.Key,
+     * @see BaseExtensionPoint#addCodeGenerated(app.packed.bean.BeanConfiguration, app.packed.bindings.Key,
      *      java.util.function.Supplier)
      */
     @Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.TYPE_USE })

@@ -24,8 +24,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.binding.Key;
-import app.packed.binding.Qualifier;
+import app.packed.bindings.Key;
+import app.packed.bindings.Qualifier;
 import app.packed.operation.Op;
 
 /**
@@ -263,7 +263,7 @@ public interface ServiceTransformer {
      *             if the type of any new key is not assignable to the service type
      */
     // Take text from Map#compute
-    default void rekeyAll(Function<Key<?>, app.packed.binding.Key<?>> rekeyingFunction) {
+    default void rekeyAll(Function<Key<?>, app.packed.bindings.Key<?>> rekeyingFunction) {
         for (Key<?> s : keys()) {
             Key<?> key = rekeyingFunction.apply(s);
             if (key == null) {
@@ -288,13 +288,9 @@ public interface ServiceTransformer {
         rekeyAll(s -> s.withTag(tag));
     }
 
-    default void rekeyAllWith(Annotation qualifier) {
+    default void rekeyAllAddQualifier(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
-        rekeyAll(s -> s.with(qualifier));
-    }
-
-    default void rekeyAllWithClassTag(Class<?> tag) {
-        throw new UnsupportedOperationException();
+        rekeyAll(s -> s.withQualifier(qualifier));
     }
 
     /**

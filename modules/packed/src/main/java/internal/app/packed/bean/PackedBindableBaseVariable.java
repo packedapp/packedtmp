@@ -19,28 +19,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanIntrospector.AnnotationCollection;
-import app.packed.bean.BeanIntrospector.BindableBaseVariable;
-import app.packed.bean.BeanIntrospector.BindableVariable;
-import app.packed.binding.Key;
-import app.packed.binding.Variable;
-import app.packed.binding.mirror.BindingMirror;
+import app.packed.bindings.BindableVariable;
+import app.packed.bindings.BindableWrappedVariable;
+import app.packed.bindings.Key;
+import app.packed.bindings.Variable;
+import app.packed.bindings.mirror.BindingMirror;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
+import app.packed.framework.AnnotationList;
 import app.packed.framework.Nullable;
 import app.packed.operation.Op;
 
 /**
  *
  */
-public class PackedBindableBaseVariable implements BindableBaseVariable {
+public class PackedBindableBaseVariable implements BindableWrappedVariable {
     public final PackedBindableVariable v;
 
     PackedBindableBaseVariable(PackedBindableVariable v) {
         this.v = v;
     }
 
-    public AnnotationCollection annotations() {
+    public AnnotationList annotations() {
         return v.annotations();
     }
 
@@ -52,28 +52,24 @@ public class PackedBindableBaseVariable implements BindableBaseVariable {
         return v.availableInvocationArguments();
     }
 
-    public void bindCompositeRecord() {
-        v.bindCompositeRecord();
-    }
-
     public void bindConstant(@Nullable Object obj) {
         v.bindConstant(obj);
     }
 
-    public void bindTo(Op<?> op) {
-        v.bindTo(op);
+    public void bindOp(Op<?> op) {
+        v.bindOp(op);
     }
 
-    public void bindToInvocationArgument(int argumentIndex) {
-        v.bindToInvocationArgument(argumentIndex);
+    public void bindInvocationArgument(int argumentIndex) {
+        v.bindInvocationArgument(argumentIndex);
     }
 
-    public void bindToInvocationContextArgument(Class<? extends Context<?>> context, int argumentIndex) {
-        v.bindToInvocationContextArgument(context, argumentIndex);
+    public void bindInvocationArgumentForContext(Class<? extends Context<?>> context, int argumentIndex) {
+        v.bindInvocationArgumentForContext(context, argumentIndex);
     }
 
-    public void checkAssignableTo(Class<?>... additionalClazzes) {
-        v.checkAssignableTo(additionalClazzes);
+    public Class<?> checkAssignableTo(Class<?>... additionalClazzes) {
+        return v.checkAssignableTo(additionalClazzes);
     }
 
     public boolean equals(Object obj) {
@@ -90,10 +86,6 @@ public class PackedBindableBaseVariable implements BindableBaseVariable {
 
     public Class<? extends Extension<?>> invokedBy() {
         return v.invokedBy();
-    }
-
-    public boolean isAssignable(Class<?> clazz, Class<?>... additionalClazzes) {
-        return v.isAssignable(clazz, additionalClazzes);
     }
 
     public boolean isBound() {
@@ -116,12 +108,12 @@ public class PackedBindableBaseVariable implements BindableBaseVariable {
         return v.variable();
     }
 
-    public Key<?> variableToKey() {
-        return v.variableToKey();
+    public Key<?> toKey() {
+        return v.toKey();
     }
 
-    public BindableBaseVariable wrapAsBaseBindable() {
-        return v.wrapAsBaseBindable();
+    public BindableWrappedVariable unwrap() {
+        return v.unwrap();
     }
 
     /** {@inheritDoc} */
@@ -186,7 +178,20 @@ public class PackedBindableBaseVariable implements BindableBaseVariable {
 
     /** {@inheritDoc} */
     @Override
-    public void bindToGeneratedConstant(Supplier<?> consumer) {
-        v.bindToGeneratedConstant(consumer);
+    public void bindGeneratedConstant(Supplier<?> consumer) {
+        v.bindGeneratedConstant(consumer);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void bindInvocationArgument(Class<?> argumentType) {
+        v.bindInvocationArgument(argumentType);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BindableWrappedVariable allowStaticFieldBinding() {
+        v.allowStaticFieldBinding();
+        return this;
     }
 }

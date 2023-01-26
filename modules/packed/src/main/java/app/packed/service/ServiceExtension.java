@@ -25,8 +25,9 @@ import app.packed.application.BuildException;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
-import app.packed.binding.Key;
+import app.packed.bindings.Key;
 import app.packed.extension.FrameworkExtension;
+import app.packed.framework.AnnotationList;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.binding.BindingProvider.FromOperation;
@@ -143,7 +144,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
             /** {@inheritDoc} */
             @Override
             public void hookOnAnnotatedField(Annotation hook, OperationalField field) {
-                Key<?> key = field.fieldToKey();
+                Key<?> key = field.toKey();
 
                 if (!Modifier.isStatic(field.modifiers())) {
                     if (beanKind() != BeanKind.CONTAINER) {
@@ -157,8 +158,8 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
 
             /** {@inheritDoc} */
             @Override
-            public void hookOnAnnotatedMethod(AnnotationCollection hooks, OperationalMethod method) {
-                Key<?> key = method.methodToKey();
+            public void hookOnAnnotatedMethod(AnnotationList hooks, OperationalMethod method) {
+                Key<?> key = method.toKey();
                 boolean isProviding = method.annotations().isPresent(ProvideService.class);
                 boolean isExporting = method.annotations().isPresent(ExportService.class);
 

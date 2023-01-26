@@ -23,7 +23,7 @@ import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
 
-import app.packed.binding.Variable;
+import app.packed.bindings.Variable;
 import app.packed.operation.CapturingOp;
 import app.packed.operation.OperationType;
 import internal.app.packed.binding.InternalDependency;

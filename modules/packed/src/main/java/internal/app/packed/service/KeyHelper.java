@@ -18,19 +18,22 @@ package internal.app.packed.service;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-import app.packed.binding.Key;
-import internal.app.packed.util.QualifierUtil;
+import app.packed.bindings.Key;
 
 /**
  *
  */
 public class KeyHelper {
+
+    public static Key<?> convert(Type type, Annotation[] annotations, Object source) {
+        return Key.convert(type, annotations, true, source);
+    }
 
     /**
      * Returns a key matching the type of the specified field and any qualifier that may be present on the field.
@@ -46,13 +49,12 @@ public class KeyHelper {
      */
     // I think throw IAE. And then have package private methods that take a ThrowableFactory.
     // RuntimeException -> should be ConversionException
-    
+
     // TODO move to introspector, And then we can throw BeanDE
     // Or at least have their own version
     public static Key<?> convertField(Field field) {
         requireNonNull(field, "field is null");
-        Annotation[] annotation = QualifierUtil.findQualifier(field.getAnnotations());
-        return Key.convertTypeNullableAnnotation(field, field.getGenericType(), annotation);
+        return convert(field.getGenericType(), field.getAnnotations(), field);
     }
 
     /**
@@ -69,12 +71,6 @@ public class KeyHelper {
      */
     public static Key<?> convertMethodReturnType(Method method) {
         requireNonNull(method, "method is null");
-        // Maaske er det langsommere med AT end de andre
-        AnnotatedType at = method.getAnnotatedReturnType();
-        if (at.getType() == void.class) {
-            throw new RuntimeException("@Provides method " + method + " cannot have void return type");
-        }
-        Annotation[] annotation = QualifierUtil.findQualifier(at.getAnnotations());
-        return Key.convertTypeNullableAnnotation(method, method.getGenericReturnType(), annotation);
+        return convert(method.getGenericReturnType(), method.getAnnotations(), method);
     }
 }

@@ -18,48 +18,39 @@ package app.packed.bean;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import app.packed.bean.BeanHook.AnnotatedFieldHook;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
 import app.packed.bean.BeanHook.TypedProvisionHook;
-import app.packed.binding.InvalidKeyException;
-import app.packed.binding.Key;
-import app.packed.binding.Qualifier;
-import app.packed.binding.Variable;
-import app.packed.binding.mirror.BindingMirror;
+import app.packed.bindings.BindableVariable;
+import app.packed.bindings.BindableWrappedVariable;
+import app.packed.bindings.InvalidKeyException;
+import app.packed.bindings.Key;
+import app.packed.bindings.Variable;
 import app.packed.container.Realm;
-import app.packed.context.Context;
-import app.packed.context.ContextTemplate.InvocationContextArgument;
 import app.packed.extension.BaseExtensionPoint;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
+import app.packed.framework.AnnotationList;
 import app.packed.framework.Nullable;
-import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationTemplate;
-import app.packed.operation.OperationTemplate.InvocationArgument;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.ContributingExtension;
-import internal.app.packed.bean.PackedAnnotationCollection;
+import internal.app.packed.bean.PackedAnnotationList;
+import internal.app.packed.bean.PackedOperationalConstructor;
 import internal.app.packed.bean.PackedOperationalField;
 import internal.app.packed.bean.PackedOperationalMethod;
-import internal.app.packed.service.KeyHelper;
-import internal.app.packed.util.QualifierUtil;
 import internal.app.packed.util.StringFormatter;
 
 /**
@@ -106,8 +97,8 @@ public abstract class BeanIntrospector {
     }
 
     /** {@return an annotation reader for the bean class.} */
-    public final AnnotationCollection beanAnnotations() {
-        return new PackedAnnotationCollection(beanClass().getAnnotations());
+    public final AnnotationList beanAnnotations() {
+        return new PackedAnnotationList(beanClass().getAnnotations());
     }
 
     /** {@return the bean class that is being introspected.} */
@@ -167,15 +158,27 @@ public abstract class BeanIntrospector {
         throw new BeanInstallationException("OOPS " + postFix);
     }
 
+    public void hookOnAnnotatedClass(Annotation hook, OperationalClass clazz) {}
+
     // Replace set with something like AnnotatedHookSet
-    public void hookOnAnnotatedClass(AnnotationCollection hooks, OperationalClass on) {
-        for (Annotation a: hooks) {
-            hookOnAnnotatedClass(a, on);
+    /**
+     * 
+     * The default implementation calls {@link #hookOnAnnotatedClass(Annotation, OperationalClass)}
+     * 
+     * @param hooks
+     *            the annotation(s) that hook
+     * @param an
+     */
+    public void hookOnAnnotatedClass(AnnotationList hooks, OperationalClass clazz) {
+        for (Annotation a : hooks) {
+            hookOnAnnotatedClass(a, clazz);
         }
     }
-    
-    public void hookOnAnnotatedClass(Annotation hook, OperationalClass on) {}
-    
+
+    public void hookOnAnnotatedField(Annotation hook, OperationalField of) {
+        throw new InternalExtensionException(extension().fullName() + " failed to handle field annotation(s) " + hook);
+    }
+
     /**
      * A callback method that is called for fields that are annotated with a field hook annotation defined by the extension:
      * 
@@ -192,14 +195,10 @@ public abstract class BeanIntrospector {
      * @see AnnotatedFieldHook
      */
     // onFieldHook(Set<Class<? extends Annotation<>> hooks, BeanField));
-    public void hookOnAnnotatedField(AnnotationCollection hooks, OperationalField of) {
-        for (Annotation a: hooks) {
+    public void hookOnAnnotatedField(AnnotationList hooks, OperationalField of) {
+        for (Annotation a : hooks) {
             hookOnAnnotatedField(a, of);
         }
-    }
-
-    public void hookOnAnnotatedField(Annotation hook, OperationalField of) {
-        throw new InternalExtensionException(extension().fullName() + " failed to handle field annotation(s) " + hook);
     }
 
     public void hookOnAnnotatedMethod(Annotation hook, OperationalMethod on) {
@@ -213,8 +212,8 @@ public abstract class BeanIntrospector {
      * 
      * @see AnnotatedMethodHook
      */
-    public void hookOnAnnotatedMethod(AnnotationCollection hooks, OperationalMethod on) {
-        for (Annotation a: hooks) {
+    public void hookOnAnnotatedMethod(AnnotationList hooks, OperationalMethod on) {
+        for (Annotation a : hooks) {
             hookOnAnnotatedMethod(a, on);
         }
     }
@@ -225,10 +224,7 @@ public abstract class BeanIntrospector {
      * 
      * @see AnnotatedVariableHook
      */
-    // We have Annotation instead of Class<? super Annotation> because it is nice when we get pattern matching
-    public void hookOnAnnotatedVariable(Annotation hook, BindableVariable v) {
-        // could test if getClass is beanIntrospector, in which case they probably forgot to override extension.newIntrospector
-        // Otherwise they forgot to implement binding hook
+    public void hookOnProvidedAnnotatedVariable(Annotation hook, BindableVariable var) {
         throw new InternalExtensionException(extension().fullName() + " failed to handle parameter hook annotation(s) " + hook);
     }
 
@@ -237,10 +233,10 @@ public abstract class BeanIntrospector {
      * 
      * @see TypedProvisionHook
      */
-    public void hookOnVariableType(Class<?> hook, BindableBaseVariable v) {
+    public void hookOnProvidedVariableType(Class<?> hook, BindableWrappedVariable v) {
         throw new InternalExtensionException(extension().fullName() + " failed to handle type hook " + StringFormatter.format(hook));
     }
-    
+
     /**
      * Invoked by a MethodHandle from ExtensionSetup.
      * 
@@ -277,299 +273,6 @@ public abstract class BeanIntrospector {
         return s;
     }
 
-    /**
-     * An annotation reader can be used to process annotations on bean elements.
-     * 
-     * @see AnnotatedElement
-     */
-    // Maybe BeanAnnotationReader? Don't think we will use it elsewhere?
-    // AnnotatedBeanElement?
-    public sealed interface AnnotationCollection extends Iterable<Annotation> permits PackedAnnotationCollection {
-
-        Annotation[] toArray();
-        
-        default <T extends Annotation> void ifPresent(Class<T> annotationClass, Consumer<T> consumer) {
-            T t = readRequired(annotationClass);
-            consumer.accept(t);
-        }
-
-        boolean isPresent(Class<? extends Annotation> annotationClass);
-
-        /** {@return whether or not there are any annotations to read.} */
-        boolean isEmpty();
-
-        // Det er taenk
-        Annotation[] readAnyOf(Class<?>... annotationTypes);
-
-        /**
-         * Returns a annotation of the specified type or throws {@link BeanInstallationException} if the annotation is not
-         * present
-         * 
-         * @param <T>
-         *            the type of the annotation to query for and return if present
-         * @param annotationClass
-         *            the Class object corresponding to the annotation type
-         * @return the annotation for the specified annotation type if present
-         * 
-         * @throws BeanInstallationException
-         *             if the specified annotation is not present or the annotation is a repeatable annotation and there are not
-         *             exactly 1 occurrences of it
-         * 
-         * @see AnnotatedElement#getAnnotation(Class)
-         */
-        //// foo bean was expected method to dddoooo to be annotated with
-        <T extends Annotation> T readRequired(Class<T> annotationClass);
-
-        /** {@return the number of annotations.} */
-        int size();
-
-        // Q) Skal vi bruge den udefra beans???
-        // A) Nej vil ikke mene vi beskaeftiger os med andre ting hvor vi laeser det.
-        // Altsaa hvad med @Composite??? Det er jo ikke en bean, det bliver noedt til at vaere fake metoder...
-        // Paa hver bean som bruger den...
-        // Vi exponere den jo ikke, saa kan jo ogsaa bare bruge den...
-
-        // I think the only we reason we call it BeanAnnotationReader is because
-        // if we called AnnotationReader is should really be located in a utility package
-    }
-
-    /**
-     * Opts into
-     * 
-     * Optional
-     * 
-     * Provider
-     * 
-     * Lazy
-     * 
-     * Nullable
-     * 
-     * Validate (Er jo i virkeligheden peek??
-     * 
-     * Default
-     */
-    public interface BindableBaseVariable extends BindableVariable {
-
-        /**
-         * Binds to {@link Nullable}, {@link Optional}, Default value.
-         * 
-         * <p>
-         * For raw er det automatisk en fejl
-         * 
-         * @throws UnsupportedOperationException
-         *             if the underlying field does not support
-         */
-        void bindNone();
-
-        // Problemet er vi gerne vil smide en god fejlmeddelse
-        // Det kan man vel ogsaa...
-        //// isOptional()->bindOptionallTo()
-        //// else provide()
-        // Will automatically handle, @Nullable, and Default
-        default void bindToOptional(Op<Optional<?>> op) {}
-
-        default void bindToOptional(Op<Optional<?>> op, Runnable missing) {}
-
-        void checkNotRequired();
-
-        void checkRequired();
-
-        boolean hasDefaults();
-
-        boolean isLazy();
-
-        boolean isNullable();
-
-        boolean isOptional();
-
-        boolean isProvider();
-
-        boolean isRequired();
-
-        Variable originalVariable();
-
-        default boolean tryBindNone() {
-            return false;
-        }
-    }
-
-    /**
-     *
-     */
-    // Hoved problemet er wrappers og denne gradvise peeling
-    // Hvordan det praecis skal foregaa er lidt ukendt
-    public interface BindableVariable {
-
-        // boolean isNested()???
-        
-        AnnotationCollection annotations();
-
-        default Map<Class<? extends Context<?>>, List<Class<?>>> availableContexts() {
-            return Map.of();
-        }
-
-        // Hmm, vi vil jo ogsaa gerne have contexts med...
-        // Map<Context.class, List<>>
-        List<Class<?>> availableInvocationArguments();
-
-        /**
-         * 
-         * @throws UnsupportedOperationException
-         *             if the underlying variable is not a {@link Record}
-         */
-        default void bindCompositeRecord() {} // bindComposite?
-
-        /**
-         * Binds the specified value to the parameter.
-         * <p>
-         * Vi tager Nullable med saa vi bruge raw.
-         * <p>
-         * Tror vi smider et eller andet hvis vi er normal og man angiver null. Kan kun bruges for raw
-         * <p>
-         * See {@link #bindToGeneratedConstant(Supplier)}
-         * 
-         * @param value
-         *            the value to bind
-         * @throws ClassCastException
-         *             if the type of the value does not match the underlying parameter
-         * @throws IllegalStateException
-         *             if a binding has already been created for the underlying parameter.
-         */
-        void bindConstant(@Nullable Object value);
-
-        /**
-         * 
-         * 
-         * @param op
-         */
-        void bindTo(Op<?> op);
-
-        /**
-         * Binds the variable to a constant that is generated as part of the codegen.
-         * <p>
-         * The specified is never called more than once.
-         * <p>
-         * The specified supplier is only called if a code gen phase of the application is active. Otherwise the supplier will
-         * never be called.
-         * 
-         * @param supplier
-         *            the supplier of the constant
-         * @see #bindConstant(Object)
-         */
-        void bindToGeneratedConstant(Supplier<@Nullable ?> supplier);
-
-        // Taenker vi smider en InternalExtensionException paa runtime?
-        // Eller maaske har vi en specific CodeGenerationException
-        // Er fx brugt fra @CodeGenerated
-        // Will be invoked doing code generation.
-
-        /**
-         * @param argumentIndex
-         *            the index of the argument
-         * 
-         * @throws IndexOutOfBoundsException
-         * @throws IllegalArgumentException
-         *             if the invocation argument is not of kind {@link OperationTemplate.ArgumentKind#ARGUMENT}
-         * @throws UnsupportedOperationException
-         *             if the {@link #invokedBy()} is not identical to the binding extension
-         * @throws ClassCastException
-         * 
-         * @see OperationTemplate
-         * @see InvocationArgument
-         */
-        void bindToInvocationArgument(int argumentIndex);
-
-        /**
-         * @param argumentIndex
-         * @param context
-         * 
-         * @see InvocationContextArgument
-         */
-        default void bindToInvocationContextArgument(Class<? extends Context<?>> context, int argumentIndex) {
-            throw new UnsupportedOperationException();
-        }
-
-        // bindLazy-> Per Binding? PerOperation? PerBean, ?PerBeanInstance ?PerContainer ? PerContainerInstance ?
-        // PerApplicationInstance
-
-        // Kan only do this if is invoking extension!!
-
-        default void checkAssignableTo(Class<?>... additionalClazzes) {
-            boolean isAssignable = false;
-            Class<?> rt = variable().getRawType();
-            for (Class<?> class1 : additionalClazzes) {
-                if (class1.isAssignableFrom(rt)) {
-                    isAssignable = true;
-                    break;
-                }
-            }
-            if (!isAssignable) {
-                throw new BeanInstallationException(variable() + ", Must be assignable to one of " + Arrays.toString(additionalClazzes));
-            }
-        }
-
-        /**
-         * @param postFix
-         *            the message to include in the final message
-         * 
-         * @throws BeanInstallationException
-         *             always thrown
-         */
-        default void failWith(String postFix) {
-            throw new BeanInstallationException("OOPS " + postFix);
-        }
-
-        /** {@return the extension that is responsible for invoking the underlying operation.} */
-        Class<? extends Extension<?>> invokedBy();
-
-        default boolean isAssignable(Class<?> clazz, Class<?>... additionalClazzes) {
-            return false;
-        }
-
-        /**
-         * @return
-         */
-        boolean isBound();
-
-        /** {@return the raw type of the variable.} */
-        default Class<?> rawType() {
-            return variable().getRawType();
-        }
-
-        // we are actually specializing the binding and not the variable.
-        // But don't really want to create a BindingHandle... just for this method
-        BindableVariable specializeMirror(Supplier<? extends BindingMirror> supplier);
-
-        Variable variable();
-
-        /**
-         * @return
-         * 
-         * @throws InvalidKeyException
-         *             if a valid key could not be read
-         */
-        // readAsKey, parseKey?
-        default Key<?> variableToKey() {
-            if (variable().getAnnotations().length != 0) {
-                // throw new UnsupportedOperationException("Does not support anno conversion");
-            }
-            Annotation[] anno = List.of(variable().getAnnotations()).stream().filter(e -> e.annotationType().isAnnotationPresent(Qualifier.class))
-                    .toArray(i -> new Annotation[i]);
-            if (anno.length == 0) {
-                anno = QualifierUtil.NO_QUALIFIERS;
-            }
-            return Key.convertTypeNullableAnnotation(this, variable().getType(), anno);
-        }
-
-        default BindableBaseVariable wrapAsBaseBindable() {
-            // peel ->
-
-            // peel, unwrap
-            // Ville vaere fedt hvis alle metoderne havde samme prefix
-            throw new UnsupportedOperationException();
-        }
-    }
-
     // CheckRealmIsApplication
     // CheckRealmIsExtension
     /**
@@ -579,11 +282,17 @@ public abstract class BeanIntrospector {
      */
     public interface OperationalClass {
 
-        void forEachConstructor(Consumer<? super OperationalConstructor> m);
+        void forEachConstructor(Consumer<? super OperationalConstructor> action);
 
-        void forEachMethod(Consumer<? super OperationalMethod> m);
+        void forEachField(Consumer<? super OperationalField> action);
+
+        void forEachMethod(Consumer<? super OperationalMethod> action);
 
         boolean hasFullAccess();
+
+        // Fields first, include subclasses, ... blabla
+        // Maybe on top of full access have boolean custom processing on ClassHook
+        void setProcessingStrategy(Object strategy);
 
         // Hvad med Invokeable thingies??? FX vi tager ExtensionContext for invokables
         // Masske har vi BeanClass.Builder() istedet for???
@@ -593,9 +302,7 @@ public abstract class BeanIntrospector {
 //           throw new UnsupportedOperationException();
 //       }
 
-        // Fields first, include subclasses, ... blabla
-        // Maybe on top of full access have boolean custom processing on ClassHook
-        void setProcessingStrategy(Object strategy);
+        Key<?> toKey();
     }
 
     /**
@@ -606,7 +313,7 @@ public abstract class BeanIntrospector {
      */
     // Do we need a BeanExecutable??? Not sure we have a use case
     // Or maybe we just have BeanMethod (Problem with constructor() though)
-    public interface OperationalConstructor {
+    public sealed interface OperationalConstructor permits PackedOperationalConstructor {
 
         /** {@return the underlying constructor.} */
         Constructor<?> constructor();
@@ -619,7 +326,7 @@ public abstract class BeanIntrospector {
          * @apiNote the method is named getModifiers instead of modifiers to be consistent with
          *          {@link Constructor#getModifiers()}
          */
-        int getModifiers();
+        int modifiers();
 
         OperationHandle newOperation(OperationTemplate template);
 
@@ -638,13 +345,7 @@ public abstract class BeanIntrospector {
     public sealed interface OperationalField permits PackedOperationalField {
 
         /** {@return an annotation reader for the field.} */
-        AnnotationCollection annotations();
-
-        // newBindableOperation?
-        default BindableVariable bindable() {
-            // get access is checked when we create the bindinable
-            throw new UnsupportedOperationException();
-        }
+        AnnotationList annotations();
 
         /**
          * @param postFix
@@ -653,29 +354,10 @@ public abstract class BeanIntrospector {
          * @throws BeanInstallationException
          *             always thrown
          */
-        default void failWith(String postFix) {
-            throw new BeanInstallationException("Field " + field() + ": " + postFix);
-        }
+        void failWith(String postFix);
 
         /** {@return the underlying field.} */
         Field field();
-
-        /**
-         * Attempts to convert field to a {@link Key} or fails by throwing {@link BeanInstallationException} if the field does
-         * not represent a proper key.
-         * <p>
-         * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
-         * key. As a binding hook is typically used in cases where this would be needed.
-         * 
-         * @return a key representing the field
-         * 
-         * @throws BeanInstallationException
-         *             if the field does not represent a proper key
-         */
-        // I honestly think KeyException is better here? IDK
-        default Key<?> fieldToKey() {
-            return KeyHelper.convertField(field());
-        }
 
         /**
          * {@return the modifiers of the field.}
@@ -684,6 +366,10 @@ public abstract class BeanIntrospector {
          */
         int modifiers();
 
+        default BindableVariable newInjectOperation() {
+            throw new UnsupportedOperationException();
+        }
+        
         /**
          * Creates a new operation that can read the field.
          * <p>
@@ -733,6 +419,21 @@ public abstract class BeanIntrospector {
         OperationHandle newSetOperation(OperationTemplate template);
 
         /**
+         * Attempts to convert field to a {@link Key} or fails by throwing {@link KeyExceptio} if the field does not represent a
+         * proper key.
+         * <p>
+         * This method will use the exact type of the field. And not attempt to peel away injection wrapper types such as
+         * {@link Optional} before constructing the key. As a binding hook is typically used in cases where this would be
+         * needed.
+         * 
+         * @return a key representing the field
+         * 
+         * @throws KeyException
+         *             if the field does not represent a valid key
+         */
+        Key<?> toKey();
+
+        /**
          * {@return the underlying field represented as a {@code Variable}.}
          * 
          * @see Variable#ofField(Field)
@@ -746,7 +447,7 @@ public abstract class BeanIntrospector {
     public sealed interface OperationalMethod permits PackedOperationalMethod {
 
         /** {@return an annotation reader for the method.} */
-        AnnotationCollection annotations();
+        AnnotationList annotations();
 
         /**
          * @param postFix
@@ -755,9 +456,7 @@ public abstract class BeanIntrospector {
          * @throws BeanInstallationException
          *             always thrown
          */
-        default void failWith(String postFix) {
-            throw new BeanInstallationException("OOPS " + postFix);
-        }
+        void failWith(String postFix);
 
         /**
          * @return
@@ -767,20 +466,6 @@ public abstract class BeanIntrospector {
 
         /** {@return the underlying method.} */
         Method method();
-
-        /**
-         * Attempts to convert the annotated return type of the method to a {@link Key}, or fails by throwing
-         * {@link BeanInstallationException} if the annotated return type does not represent a valid key.
-         * <p>
-         * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
-         * key.
-         * 
-         * @return a key representing the return type of the method
-         * 
-         * @throws InvalidKeyException
-         *             if the return type of the method does not represent a proper key
-         */
-        Key<?> methodToKey();
 
         /**
          * {@return the modifiers of the underlying method.}
@@ -810,6 +495,20 @@ public abstract class BeanIntrospector {
 
         /** {@return the default type of operation that will be created.} */
         OperationType operationType();
+
+        /**
+         * Attempts to convert the annotated return type of the method to a {@link Key}, or fails by throwing
+         * {@link BeanInstallationException} if the annotated return type does not represent a valid key.
+         * <p>
+         * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
+         * key.
+         * 
+         * @return a key representing the return type of the method
+         * 
+         * @throws InvalidKeyException
+         *             if the return type of the method does not represent a proper key
+         */
+        Key<?> toKey();
     }
 }
 

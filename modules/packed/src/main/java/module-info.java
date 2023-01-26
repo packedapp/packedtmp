@@ -3,7 +3,7 @@ module app.packed {
     
     exports app.packed.application;
     exports app.packed.bean;
-    exports app.packed.binding;
+    exports app.packed.bindings;
     exports app.packed.context;
     exports app.packed.container;
     exports app.packed.extension;
@@ -17,7 +17,7 @@ module app.packed {
     exports app.packed.service;
 
     // temporary sandbox thingies
-    exports app.packed.binding.mirror;
+    exports app.packed.bindings.mirror;
     exports app.packed.lifetime.sandbox;
     exports app.packed.extension.bridge;
 

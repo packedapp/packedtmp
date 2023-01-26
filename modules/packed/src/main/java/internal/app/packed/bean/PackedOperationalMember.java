@@ -18,17 +18,17 @@ package internal.app.packed.bean;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 
-import app.packed.bean.BeanIntrospector.AnnotationCollection;
+import app.packed.bean.BeanInstallationException;
+import app.packed.framework.AnnotationList;
 
-/**
- *
- */
-abstract class PackedOperationalMember<M extends Member> {
+/** The super class of operational members. The inheritance hierarchy follows that of {@link Member}. */
+@SuppressWarnings("rawtypes")
+abstract sealed class PackedOperationalMember<M extends Member> permits PackedOperationalField, PackedOperationalExecutable {
 
     /** Annotations on the member. */
     private final Annotation[] annotations;
 
-    /** The extension that can create operations from the field. */
+    /** The extension that can create new operations from the member. */
     final ContributingExtension ce;
 
     /** The member. */
@@ -40,8 +40,8 @@ abstract class PackedOperationalMember<M extends Member> {
         this.annotations = annotations;
     }
 
-    public final AnnotationCollection annotations() {
-        return new PackedAnnotationCollection(annotations);
+    public final AnnotationList annotations() {
+        return new PackedAnnotationList(annotations);
     }
 
     /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */
@@ -49,6 +49,10 @@ abstract class PackedOperationalMember<M extends Member> {
         if (ce.bean().container.assembly.isDone()) {
             throw new IllegalStateException("This method must be called before the assembly is closed");
         }
+    }
+
+    public void failWith(String postFix) {
+        throw new BeanInstallationException("Field " + member + ": " + postFix);
     }
 
     public final int modifiers() {

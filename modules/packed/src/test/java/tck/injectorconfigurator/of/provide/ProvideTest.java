@@ -24,7 +24,7 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bean.BeanConfiguration;
-import app.packed.binding.Key;
+import app.packed.bindings.Key;
 import app.packed.operation.Op0;
 import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.ServiceLocator;
@@ -67,7 +67,7 @@ public class ProvideTest {
     static <T> void testSingleton(ServiceLocator i, Key<T> key, T instance) {
         assertThat(i.findInstance(key)).containsSame(instance);
         assertThat(i.use(key)).isSameAs(instance);
-        if (!key.hasQualifiers()) {
+        if (!key.isQualified()) {
             @SuppressWarnings("unchecked")
             Class<T> rawType = (Class<T>) key.rawType();
             assertThat(i.findInstance(rawType)).containsSame(instance);

@@ -17,7 +17,7 @@ package app.packed.service;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.binding.Key;
+import app.packed.bindings.Key;
 
 /**
  * A configuration of a container bean.

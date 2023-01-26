@@ -61,7 +61,7 @@ public final class ContributingExtension {
 
     void matchAnnotatedField(Field field, Annotation[] annotations, Annotation[] hooks, AnnotatedField... annotatedFields) {
         PackedOperationalField of = new PackedOperationalField(this, field, annotations, annotatedFields);
-        PackedAnnotationCollection pac = new PackedAnnotationCollection(hooks);
+        PackedAnnotationList pac = new PackedAnnotationList(hooks);
         introspector.hookOnAnnotatedField(pac, of);
     }
 

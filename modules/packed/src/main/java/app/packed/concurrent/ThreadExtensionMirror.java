@@ -15,6 +15,11 @@
  */
 package app.packed.concurrent;
 
+import java.lang.invoke.MethodHandles;
+import java.util.function.Function;
+
+import app.packed.bindings.QualifierUtil;
+import app.packed.bindings.Tag;
 import app.packed.extension.ExtensionMirror;
 
 /**
@@ -22,4 +27,5 @@ import app.packed.extension.ExtensionMirror;
  */
 public class ThreadExtensionMirror extends ExtensionMirror<ThreadExtension> {
 
+    static final Function<String, Tag> FT = QualifierUtil.syntheticFunction(MethodHandles.lookup(), Tag.class, String.class, "value");
 }

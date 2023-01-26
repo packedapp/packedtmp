@@ -27,10 +27,10 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanHook.TypedProvisionHook;
+import app.packed.bindings.Key;
+import app.packed.bindings.mirror.BindingMirror;
+import app.packed.bindings.mirror.DependenciesMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.binding.Key;
-import app.packed.binding.mirror.BindingMirror;
-import app.packed.binding.mirror.DependenciesMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.context.ContextMirror;
 import app.packed.context.ContextualizedElementMirror;

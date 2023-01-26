@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.binding.Provider;
+import app.packed.bindings.Provider;
 
 /**
  * A specialization of {@link ServiceLocator} where all service instances have some kind of common super type
