@@ -33,8 +33,9 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanHookModel.AnnotatedField;
+import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
+import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.service.KeyHelper;
 
 /** Responsible for scanning fields on a bean. */
@@ -49,14 +50,14 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
     PackedOperationalField(BeanScanner scanner, Class<? extends Extension<?>> extensionType, Field field, boolean allowGet, boolean allowSet,
             Annotation[] annotations, AnnotatedField... annotatedFields) {
         super(scanner.computeContributor(extensionType), field, annotations);
-        this.allowGet = allowGet || ce.hasFullAccess();
-        this.allowSet = allowSet || ce.hasFullAccess();
+        this.allowGet = allowGet || extension.hasFullAccess();
+        this.allowSet = allowSet || extension.hasFullAccess();
     }
 
     PackedOperationalField(BeanScanner scanner, Field field, Annotation[] annotations, AnnotatedField... annotatedFields) {
         super(scanner.computeContributor(annotatedFields[0].extensionType()), field, annotations);
-        boolean allowGet = ce.hasFullAccess();
-        boolean allowSet = ce.hasFullAccess();
+        boolean allowGet = extension.hasFullAccess();
+        boolean allowSet = extension.hasFullAccess();
         for (AnnotatedField annotatedField : annotatedFields) {
             allowGet |= annotatedField.isGettable();
             allowSet |= annotatedField.isSettable();
@@ -65,10 +66,10 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
         this.allowSet = allowSet;
     }
 
-    PackedOperationalField(ContributingExtension scanner, Field field, Annotation[] annotations, AnnotatedField... annotatedFields) {
+    PackedOperationalField(OperationalExtension scanner, Field field, Annotation[] annotations, AnnotatedField... annotatedFields) {
         super(scanner, field, annotations);
-        boolean allowGet = ce.hasFullAccess();
-        boolean allowSet = ce.hasFullAccess();
+        boolean allowGet = extension.hasFullAccess();
+        boolean allowSet = extension.hasFullAccess();
         for (AnnotatedField annotatedField : annotatedFields) {
             allowGet |= annotatedField.isGettable();
             allowSet |= annotatedField.isSettable();
@@ -76,8 +77,6 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
         this.allowGet = allowGet;
         this.allowSet = allowSet;
     }
-
-
 
     /** {@inheritDoc} */
     @Override
@@ -85,16 +84,10 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
         return member;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Key<?> toKey() {
-        return KeyHelper.convert(member.getGenericType(), member.getAnnotations(), this);
-    }
-
     /** Callback into an extension's {@link BeanIntrospector#hookOnAnnotatedField(OperationalField)} method. */
     void matchy() {
-        ce.introspector().hookOnAnnotatedField(PackedAnnotationList.of(), this);
-        ce.scanner.resolveOperations(); // resolve bindings for any operation(s) that have been created
+        extension.introspector.hookOnAnnotatedField(PackedAnnotationList.of(), this);
+        extension.scanner.resolveOperations(); // resolve bindings for any operation(s) that have been created
     }
 
     /** {@inheritDoc} */
@@ -102,7 +95,7 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
     public OperationHandle newGetOperation(OperationTemplate template) {
         checkConfigurable();
 
-        Lookup lookup = ce.scanner.oc.lookup(member);
+        Lookup lookup = extension.scanner.oc.lookup(member);
 
         MethodHandle methodHandle;
         try {
@@ -119,7 +112,7 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
     @Override
     public OperationHandle newOperation(OperationTemplate template, AccessMode accessMode) {
         checkConfigurable();
-        Lookup lookup = ce.scanner.oc.lookup(member);
+        Lookup lookup = extension.scanner.oc.lookup(member);
 
         VarHandle varHandle;
         try {
@@ -134,11 +127,11 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
 
     private OperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
         template = template.withReturnType(member.getType());
-        OperationSetup operation = new FieldOperationSetup(ce.extension(), ce.scanner.bean, OperationType.ofFieldAccess(member, accessMode), template, mh, member,
-                accessMode);
+        OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, OperationType.ofField(member, accessMode), template, 
+                new OperationFieldTarget(member, accessMode), mh);
 
-        ce.scanner.unBoundOperations.add(operation);
-        ce.scanner.bean.operations.add(operation);
+        extension.scanner.unBoundOperations.add(operation);
+        extension.scanner.bean.operations.add(operation);
         return operation.toHandle();
     }
 
@@ -146,7 +139,7 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
     @Override
     public OperationHandle newSetOperation(OperationTemplate template) {
         checkConfigurable();
-        Lookup lookup = ce.scanner.oc.lookup(member);
+        Lookup lookup = extension.scanner.oc.lookup(member);
 
         // Create a method handle by unreflecting the field.
         // Will fail if the framework does not have access to the member
@@ -159,6 +152,12 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
 
         AccessMode accessMode = Modifier.isVolatile(member.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
         return newOperation(template, methodHandle, accessMode);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Key<?> toKey() {
+        return KeyHelper.convert(member.getGenericType(), member.getAnnotations(), this);
     }
 
     /** {@inheritDoc} */

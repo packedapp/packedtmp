@@ -20,10 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.lang.invoke.VarHandle;
-import java.lang.invoke.VarHandle.AccessMode;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -44,11 +40,9 @@ import internal.app.packed.binding.BindingProvider.FromOperation;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.ExtensionServiceBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
+import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
 
@@ -59,15 +53,8 @@ public sealed abstract class OperationSetup {
     private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), OperationMirror.class, "initialize", void.class,
             OperationSetup.class);
 
-    /** A MethodHandle for creating a new handle {@link OperationMirror#initialize(OperationSetup)}. */
-    private static final MethodHandle MH_NEW_OPERATION_HANDLE = LookupUtil.findConstructor(MethodHandles.lookup(), OperationHandle.class, OperationSetup.class);
-
     /** An empty array of {@code BindingSetup}. */
     private static final BindingSetup[] NO_BINDINGS = new BindingSetup[0];
-
-    /** A handle that can access OperationHandle#operation. */
-    private static final VarHandle VH_OPERATION_HANDLE_CRACK = LookupUtil.findVarHandle(MethodHandles.lookup(), OperationHandle.class, "operation",
-            OperationSetup.class);
 
     /** The bean this operation belongs to. */
     public final BeanSetup bean;
@@ -75,40 +62,33 @@ public sealed abstract class OperationSetup {
     /** Bindings for this operation. */
     public final BindingSetup[] bindings;
 
-    /** By who this operation is invoked */
-    public InvocationSite invocationSite;
+    /** Supplies a mirror for the operation */
+    public Supplier<? extends OperationMirror> mirrorSupplier;
+
+    /** The operator of the operation. */
+    public final ExtensionSetup operator;
 
     /** The operation's template. */
     public final PackedOperationTemplate template;
 
-    /** Whether or not this operation can still be configured. */
-    public boolean isClosed;
-
-    /** Whether or not an invoker has been computed */
-    boolean isComputed;
-
-    // Maybe store it in subclasses?
-    public MethodHandle methodHandle;
-
-    private MethodHandle generatedMethodHandle;
-
-    /** Supplies a mirror for the operation */
-    public Supplier<? extends OperationMirror> mirrorSupplier;
-
-    /** The name of the operation */
-    public String name; // name = operator.simpleName + "Operation"
-
-    public BindingSetup onBinding;
-
-    // Not final atm because, we might allow an extension to transfer ownership to another extension
-    // What about composites?
-    public ExtensionSetup operator;
-
     /** The type of this operation. */
     public final OperationType type;
 
+    private MethodHandle zGeneratedMethodHandle;
+
+    /** By who this operation is invoked */
+    public InvocationSite zInvocationSite;
+
+    // Maybe store it in subclasses?
+    public MethodHandle zMethodHandle;
+
+    /** The name of the operation */
+    public String zName; // name = operator.simpleName + "Operation"
+
+    public BindingSetup zOnBinding;
+
     @Nullable
-    public OperationSetup parent;
+    public OperationSetup zParent;
 
     private OperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type, OperationTemplate template) {
         this.operator = requireNonNull(operator);
@@ -118,12 +98,18 @@ public sealed abstract class OperationSetup {
         this.template = requireNonNull((PackedOperationTemplate) template);
     }
 
+    public OperationTarget target() {
+        return (OperationTarget) this;
+    }
+
     public final Set<BeanSetup> dependsOn() {
         HashSet<BeanSetup> result = new HashSet<>();
+        // TODO hmm, skal inkludere extensions???
         forEachBinding(b -> {
             if (b instanceof ExtensionServiceBindingSetup s) {
                 requireNonNull(s.extensionBean);
                 result.add(s.extensionBean);
+
             } else if (b instanceof ServiceBindingSetup s) {
                 if (s.entry.provider != null) {
                     result.add(s.entry.provider.bean);
@@ -135,8 +121,8 @@ public sealed abstract class OperationSetup {
 
     // Ideen er vi har et raw method, og naar vi returnere
     // Skulle det gerne vaere et method handle der matcher template.invocationType
-    protected MethodHandle doBuild() {
-        MethodHandle mh = methodHandle;
+    private MethodHandle doBuild() {
+        MethodHandle mh = zMethodHandle;
 
 //        System.out.println("-------------");
 //        System.out.println("Generating MethodHandle for " + type);
@@ -155,12 +141,7 @@ public sealed abstract class OperationSetup {
 //        System.out.println("Building Operation [bean = " + bean.path() + ": " + mh);
 
         // Whether or not we need the bean instance
-        boolean requiresBeanInstance = false;
-        if (this instanceof MethodOperationSetup s) {
-            requiresBeanInstance = !Modifier.isStatic(s.modifiers());
-        } else if (this instanceof FieldOperationSetup s) {
-            requiresBeanInstance = !Modifier.isStatic(s.modifiers());
-        }
+        boolean requiresBeanInstance = this instanceof MemberOperationSetup s && s.needsBeanInstance();
 
         int osInit = 0;
         if (requiresBeanInstance) {
@@ -198,8 +179,8 @@ public sealed abstract class OperationSetup {
         bean.container.application.checkInCodegenPhase();
         // Burde kun skulle laves en gang, men nogle forskellige steder der kalder
         // den metode, skal lige finde ud af hvorfra
-        if (generatedMethodHandle != null) {
-            return generatedMethodHandle;
+        if (zGeneratedMethodHandle != null) {
+            return zGeneratedMethodHandle;
         }
 
         MethodHandle mh = doBuild();
@@ -211,7 +192,7 @@ public sealed abstract class OperationSetup {
             System.err.println("Actual " + mh.type());
             throw new Error();
         }
-        return generatedMethodHandle = mh;
+        return zGeneratedMethodHandle = mh;
     }
 
     /** {@return a new mirror.} */
@@ -229,11 +210,7 @@ public sealed abstract class OperationSetup {
 
     /** {@return an operation handle for this operation.} */
     public final OperationHandle toHandle() {
-        try {
-            return (OperationHandle) MH_NEW_OPERATION_HANDLE.invokeExact(this);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
+        return new PackedOperationHandle(this);
     }
 
     /** {@return the type of operation.} */
@@ -249,7 +226,20 @@ public sealed abstract class OperationSetup {
      * @return the operation setup
      */
     public static OperationSetup crack(OperationHandle handle) {
-        return (OperationSetup) VH_OPERATION_HANDLE_CRACK.get(handle);
+        return ((PackedOperationHandle) handle).operation();
+    }
+
+    /** An operation that returns the bean instance the operation is defined on. */
+    public static final class BeanAccessOperationSetup extends OperationSetup {
+
+        /**
+         * @param operator
+         * @param site
+         */
+        public BeanAccessOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template) {
+            super(operator, bean, operationType, template);
+            zName = "InstantAccess";
+        }
     }
 
     /** An operation that invokes the abstract method on a {@link FunctionalInterface}. */
@@ -266,7 +256,7 @@ public sealed abstract class OperationSetup {
         public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
                 MethodHandle methodHandle, SamType samType, Method implementationMethod) {
             super(operator, bean, operationType, template);
-            this.methodHandle = requireNonNull(methodHandle);
+            this.zMethodHandle = requireNonNull(methodHandle);
             this.samType = requireNonNull(samType);
             this.implementationMethod = requireNonNull(implementationMethod);
         }
@@ -290,119 +280,33 @@ public sealed abstract class OperationSetup {
         }
     }
 
-    /** An operation that returns the bean instance the operation is defined on. */
-    public static final class BeanAccessOperationSetup extends OperationSetup {
-
-        /**
-         * @param operator
-         * @param site
-         */
-        public BeanAccessOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template) {
-            super(operator, bean, operationType, template);
-            name = "InstantAccess";
-        }
-    }
-
     /** An operation that invokes or accesses a {@link Member}. */
-    public sealed static abstract class MemberOperationSetup<T extends Member> extends OperationSetup {
+    public static final class MemberOperationSetup extends OperationSetup {
+
         /** The {@link Member member}. */
-        final T member;
+        public final OperationMemberTarget<?> target;
+        // MH -> mirror - no gen
+        // MH -> Gen - With caching (writethrough to whereever the bean cache it)
+        // MH -> LazyGen - With caching
 
-        private MemberOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template, T member) {
+        public MemberOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
+                OperationMemberTarget<?> member, MethodHandle methodHandle) {
             super(operator, bean, operationType, template);
-            this.member = requireNonNull(member);
-        }
-
-        /** @see Member#getModifiers(). */
-        public final int modifiers() {
-            return member.getModifiers();
-        }
-
-        /** An operation that invokes an underlying {@link Method}. */
-        public static final class ConstructorOperationSetup extends MemberOperationSetup<Constructor<?>> implements OperationTarget.OfConstructor {
-
-            /**
-             * @param operator
-             * @param site
-             */
-            public ConstructorOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationTemplate template, Constructor<?> constructor,
-                    MethodHandle methodHandle) {
-                super(operator, bean, OperationType.ofExecutable(constructor), template, constructor);
-                this.methodHandle = methodHandle;
-                name = "constructor";
+            this.target = requireNonNull(member);
+            this.zMethodHandle = methodHandle;
+            if (member instanceof OperationConstructorTarget) {
+                zName = "constructor";
                 mirrorSupplier = BeanFactoryMirror::new;
             }
-
-            /** {@inheritDoc} */
-            @Override
-            public Constructor<?> constructor() {
-                return member;
-            }
-
-            public String toString() {
-                return "Constructor: " + StringFormatter.formatSimple(constructor());
-            }
         }
 
-        /** An operation that can access an underlying {@link Field}. */
-        public static final class FieldOperationSetup extends MemberOperationSetup<Field> implements OperationTarget.OfField {
-
-            /** The way we access the field. */
-            private final AccessMode accessMode;
-
-            /**
-             * @param operator
-             * @param site
-             */
-            public FieldOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
-                    MethodHandle methodHandle, Field field, AccessMode accessMode) {
-                super(operator, bean, operationType, template, field);
-                this.methodHandle = methodHandle;
-                this.accessMode = requireNonNull(accessMode);
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public AccessMode accessMode() {
-                return accessMode;
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public Field field() {
-                return member;
-            }
-
-            public String toString() {
-                return "Field " + StringFormatter.format(member) + " (AccessMode + " + accessMode + ")";
-            }
+        public boolean needsBeanInstance() {
+            return !(target instanceof OperationConstructorTarget) && !Modifier.isStatic(target.modifiers());
         }
 
-        /** An operation that invokes an underlying {@link Method}. */
-        public static final class MethodOperationSetup extends MemberOperationSetup<Method> implements OperationTarget.OfMethod {
-
-            /**
-             * @param operator
-             * @param site
-             */
-            public MethodOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type, OperationTemplate template, Method method,
-                    MethodHandle methodHandle) {
-                super(operator, bean, type, template, method);
-                this.methodHandle = methodHandle;
-            }
-            // MH -> mirror - no gen
-            // MH -> Gen - With caching (writethrough to whereever the bean cache it)
-            // MH -> LazyGen - With caching
-
-            /** {@inheritDoc} */
-            @Override
-            public Method method() {
-                return member;
-            }
-
-            public String toString() {
-                return "Method " + StringFormatter.format(member);
-            }
+        @Override
+        public OperationTarget target() {
+            return (OperationTarget) target;
         }
     }
 
@@ -416,7 +320,7 @@ public sealed abstract class OperationSetup {
         public MethodHandleOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
                 MethodHandle methodHandle) {
             super(operator, bean, operationType, template);
-            this.methodHandle = methodHandle;
+            this.zMethodHandle = methodHandle;
         }
 
         /** {@inheritDoc} */

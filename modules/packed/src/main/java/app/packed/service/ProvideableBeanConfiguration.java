@@ -33,8 +33,9 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
         super(handle);
     }
 
+    // Final??
     public Key<T> defaultKey() {
-        return handle().defaultKey();
+        return instanceHandle().defaultKey();
     }
 
     ProvideableBeanConfiguration<T> describeAs(String description) {
@@ -52,7 +53,7 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
     }
 
     public ProvideableBeanConfiguration<T> exportAs(Key<? super T> key) {
-        handle().serviceExportAs(key);
+        instanceHandle().serviceExportAs(key);
         return this;
     }
 
@@ -78,8 +79,7 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
     }
 
     public ProvideableBeanConfiguration<T> provide() {
-        Key<T> defaultKey = handle().defaultKey();
-        handle().serviceProvideAs(defaultKey);
+        instanceHandle().serviceProvideAs(defaultKey());
         return this;
     }
 
@@ -93,7 +93,7 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      * @see #provideAs(Key)
      */
     public ProvideableBeanConfiguration<T> provideAs(Class<? super T> key) {
-        handle().serviceProvideAs(Key.of(key));
+        instanceHandle().serviceProvideAs(Key.of(key));
         return this;
     }
 
@@ -107,7 +107,7 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      * @see #provideAs(Class)
      */
     public ProvideableBeanConfiguration<T> provideAs(Key<? super T> key) {
-        handle().serviceProvideAs(key);
+        instanceHandle().serviceProvideAs(key);
         return this;
     }
 }

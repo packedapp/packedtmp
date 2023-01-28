@@ -42,7 +42,7 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
-    protected BeanHandle<T> handle() {
+    protected final BeanHandle<T> instanceHandle() {
         return (BeanHandle<T>) super.handle();
     }
 

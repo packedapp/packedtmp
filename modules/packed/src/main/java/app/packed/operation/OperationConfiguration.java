@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 /**
  *
  */
-
 // Hmm, fungere ikke super godt med Bean.findOperation();
 // Med mindre vi giver muligheden for at saette det ala operation mirror
 public class OperationConfiguration {
@@ -38,18 +37,19 @@ public class OperationConfiguration {
         this.handle = requireNonNull(handle, "handle is null");
     }
 
-    protected final OperationHandle handle() {
-        return handle;
-    }
-
     protected final void checkConfigurable() {
 
+    }
+
+    protected final OperationHandle handle() {
+        return handle;
     }
 
     OperationConfiguration runBefore(Runnable runnable) {
         return this;
     }
 
+    /** {@return the target of the operation.} */
     public OperationTarget target() {
         return handle.target();
     }

@@ -36,12 +36,9 @@ import app.packed.bindings.Variable;
 /**
  * An operation type represents the arguments and return variable for an operation.
  * 
- * @apiNote This class is modelled after {@link MethodType}. But uses {@link Type} instead of {@link Class} as the base
- *          element, additional in includes annotations on element.
+ * @apiNote This class is modelled after {@link MethodType}. But uses {@link Variable} instead of {@link Class} as the
+ *          base element type. This means that both detailed {@link Type} an annotations may be available.
  */
-
-// Mit problem med den her er lidt method return type...
-// Altsaa annoteringer er jo ikke noedvendigvis knyttede til retur typen, fx @Get
 public final /* primitive */ class OperationType {
 
     /** May be used for operation types without parameter variables. */
@@ -97,11 +94,11 @@ public final /* primitive */ class OperationType {
      */
     @Override
     public int hashCode() {
-        int hashCode = 31 + returnVar.hashCode();
-        for (Variable ptype : parameterVars) {
-            hashCode = 31 * hashCode + ptype.hashCode();
+        int h = 31 + returnVar.hashCode();
+        for (Variable v : parameterVars) {
+            h = 31 * h + v.hashCode();
         }
-        return hashCode;
+        return h;
     }
 
     public Variable parameter(int index) {
@@ -111,23 +108,19 @@ public final /* primitive */ class OperationType {
     /**
      * Return an array of field descriptors for the parameter types of the method type described by this descriptor
      * 
-     * @return field descriptors for the parameter types
-     * @apiNote freezeable arrays might be supported in the future. In which case we will not return a copy
+     * @return parameter variables for this operation
+     * @apiNote if freezable arrays will be supported in the future. This method may return a frozen array
      */
     public Variable[] parameterArray() {
         return Arrays.copyOf(parameterVars, parameterVars.length);
     }
 
-    /** {@return the number of parameter variables in this operation type.} */
+    /** {@return the number of parameter variables for this operation type.} */
     public int parameterCount() {
         return parameterVars.length;
     }
 
-    /**
-     * Return an immutable list of the parameter variable of this operation typer
-     * 
-     * @return field descriptors for the parameter types
-     */
+    /** {@return an immutable list of the parameter variables of this operation type.} */
     public List<Variable> parameterList() {
         return List.of(parameterVars);
     }
@@ -141,7 +134,7 @@ public final /* primitive */ class OperationType {
     }
 
     /** {@return the return variable.} */
-    public Class<?> returnType() {
+    public Class<?> returnRawType() {
         return returnVar.getRawType();
     }
 
@@ -188,7 +181,7 @@ public final /* primitive */ class OperationType {
         System.out.println(vh.hasInvokeExactBehavior());
 
         MethodType mt = vh.accessModeType(AccessMode.COMPARE_AND_EXCHANGE);
-        System.out.println(OperationType.ofFieldAccess(f, AccessMode.COMPARE_AND_EXCHANGE_RELEASE));
+        System.out.println(OperationType.ofField(f, AccessMode.COMPARE_AND_EXCHANGE_RELEASE));
         System.out.println(mt);
     }
 
@@ -230,13 +223,12 @@ public final /* primitive */ class OperationType {
     }
 
     /**
-     * {@return an op type representing the signature of the specified executable.}
+     * {@return an operation type representing the invocation of specified executable.}
      * 
      * @param executable
-     *            the executable to return a op type for.
+     *            the executable to return an operation type for.
      */
     public static OperationType ofExecutable(Executable executable) {
-        // Is wether or not we need the bean a boolean property?
         requireNonNull(executable, "executable is null");
         Variable returnVariable = executable instanceof Method m ? Variable.ofMethodReturnType(m) : Variable.ofConstructor((Constructor<?>) executable);
         Parameter[] parameters = executable.getParameters();
@@ -252,7 +244,15 @@ public final /* primitive */ class OperationType {
     }
 
     // I think we can move this internally
-    public static OperationType ofFieldAccess(Field field, AccessMode accessMode) {
+    /**
+     * {@return an operation type representing the access of the specified fiel.}
+     * 
+     * @param field
+     *            the executable to return an operation type for.
+     * @param accessMode
+     *            how the field is access
+     */
+    public static OperationType ofField(Field field, AccessMode accessMode) {
         requireNonNull(field, "field is null");
         requireNonNull(accessMode, "accessMode is null");
         Variable fieldVar = Variable.ofField(field);
@@ -282,11 +282,23 @@ public final /* primitive */ class OperationType {
         }
     }
 
+    /**
+     * {@return an operation type representing reading of a field.}
+     * 
+     * @param field
+     *            the field to read.
+     */
     public static OperationType ofFieldGet(Field field) {
         requireNonNull(field, "field is null");
         return OperationType.of(Variable.ofField(field));
     }
 
+    /**
+     * {@return an operation type representing writing of a field.}
+     * 
+     * @param field
+     *            the field to write.
+     */
     public static OperationType ofFieldSet(Field field) {
         requireNonNull(field, "field is null");
         return OperationType.of(Variable.of(void.class), Variable.ofField(field));
@@ -311,21 +323,5 @@ public final /* primitive */ class OperationType {
             }
             return new OperationType(returnVar, vars);
         }
-    }
-
-    class NonStatic {
-        List<?> f;
-
-        NonStatic(List<?> l) {}
-
-        public void me(List<?> l) {}
-    }
-
-    static class Static {
-        List<?> f;
-
-        Static(List<?> l) {}
-
-        public void me(List<?> l) {}
     }
 }

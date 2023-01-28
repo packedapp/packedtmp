@@ -44,9 +44,9 @@ import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
 import internal.app.packed.binding.BindingProvider.FromOperation;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
 import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.StringFormatter;
 
@@ -220,8 +220,8 @@ public final class ServiceManager {
             // return "Another bean of type " + format(existingTarget.bean.beanClass) + " is already providing a service for Key<" +
             // key.toStringSimple() + ">";
         } else if (provider.resolution instanceof FromOperation os) {
-            if (os.operation instanceof MethodOperationSetup m) {
-                String ss = StringFormatter.formatShortWithParameters(m.method());
+            if (os.operation instanceof MemberOperationSetup m && m.target instanceof OperationMethodTarget t) {
+                String ss = StringFormatter.formatShortWithParameters(t.method());
                 return "A method " + ss + " is already providing a service for Key<" + key + ">";
             }
         }

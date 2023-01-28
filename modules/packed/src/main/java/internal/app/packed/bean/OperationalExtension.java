@@ -24,35 +24,24 @@ import internal.app.packed.bean.BeanScannerFieldHelper.FieldPair;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
- *
- */
-/**
  * An instance of this class is created per extension that participates in the introspection. The main purpose of the
  * class is to make sure that the extension points to the same bean introspector for the whole of the introspection.
  */
-public final class ContributingExtension {
+public final class OperationalExtension {
 
-    final ExtensionSetup extension;
-    final BeanIntrospector introspector;
+    /** The actual extension. */
+    public final ExtensionSetup extension;
+
     boolean hasFullAccess;
-    final BeanScanner scanner;
 
-    ContributingExtension(BeanScanner scanner, ExtensionSetup extension, BeanIntrospector introspector) {
+    final BeanIntrospector introspector;
+
+    public final BeanScanner scanner;
+
+    OperationalExtension(BeanScanner scanner, ExtensionSetup extension, BeanIntrospector introspector) {
         this.extension = extension;
         this.introspector = introspector;
         this.scanner = scanner;
-    }
-
-    public BeanSetup bean() {
-        return scanner.bean;
-    }
-
-    public ExtensionSetup extension() {
-        return extension;
-    }
-
-    public BeanIntrospector introspector() {
-        return introspector;
     }
 
     public boolean hasFullAccess() {
@@ -63,15 +52,6 @@ public final class ContributingExtension {
         PackedOperationalField of = new PackedOperationalField(this, field, annotations, annotatedFields);
         PackedAnnotationList pac = new PackedAnnotationList(hooks);
         introspector.hookOnAnnotatedField(pac, of);
-    }
-
-    // I think we need to already have checked that we only have 1 providing annotation
-    public void onAnnotatedField(Field f, Annotation[] fieldAnnotations, FieldPair pair) {
-
-    }
-
-    public void onAnnotatedField(Field f, Annotation[] fieldAnnotations, FieldPair... pair) {
-
     }
 
     public void onAnnotatedField(Field f, Annotation a1, Annotation a2) {
@@ -87,10 +67,19 @@ public final class ContributingExtension {
             isSetable |= af.isSettable();
         }
     }
-    
+
+    // I think we need to already have checked that we only have 1 providing annotation
+    public void onAnnotatedField(Field f, Annotation[] fieldAnnotations, FieldPair pair) {
+
+    }
+
+    public void onAnnotatedField(Field f, Annotation[] fieldAnnotations, FieldPair... pair) {
+
+    }
+
     static class OnField {
-        Field f;
         Annotation[] annotations;
+        Field f;
         FieldPair[] pairs;
     }
 }

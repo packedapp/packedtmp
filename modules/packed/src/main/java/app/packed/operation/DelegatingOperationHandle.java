@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package app.packed.operation;
 
-import app.packed.container.Realm;
-import app.packed.extension.ExtensionPoint.UseSite;
+import app.packed.extension.ExtensionPoint;
+import internal.app.packed.operation.PackedDelegatingOperationHandle;
 
 /**
  *
  */
-public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UseSite {
+public sealed interface DelegatingOperationHandle permits PackedDelegatingOperationHandle {
+    
+    boolean isDelegated();
+    
+    OperationHandle newOperation(ExtensionPoint.UseSite context, OperationTemplate template);
 
-    /** {@inheritDoc} */
-    @Override
-    public Realm realm() {
-        return extension.extensionTree.extensionModel.realm();
-    }
+    /** {@return the target of this operation.} */
+    OperationTarget target();
+    
+    /** {@return the type of this operation.} */
+    OperationType type();
 }

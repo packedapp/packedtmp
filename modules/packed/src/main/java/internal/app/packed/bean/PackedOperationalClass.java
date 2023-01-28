@@ -13,19 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package internal.app.packed.bean;
 
-import app.packed.container.Realm;
-import app.packed.extension.ExtensionPoint.UseSite;
+import app.packed.bean.BeanIntrospector.OperationalClass;
 
 /**
  *
  */
-public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UseSite {
+public abstract class PackedOperationalClass implements OperationalClass {
 
-    /** {@inheritDoc} */
-    @Override
-    public Realm realm() {
-        return extension.extensionTree.extensionModel.realm();
-    }
 }

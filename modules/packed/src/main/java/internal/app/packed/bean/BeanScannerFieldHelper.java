@@ -102,13 +102,13 @@ public class BeanScannerFieldHelper {
         }
         Map<Class<? extends Extension<?>>, List<FieldPair>> m = list.stream().collect(Collectors.groupingBy(e -> e.af.extensionType()));
         m.forEach((k, v) -> {
-            ContributingExtension ce = scanner.computeContributor(k);
+            OperationalExtension ce = scanner.computeContributor(k);
             ce.onAnnotatedField(field, annotations, v.toArray(i -> new FieldPair[i]));
         });
     }
 
     private static void match1(BeanScanner scanner, Field field, Annotation[] annotations, FieldPair pair) {
-        ContributingExtension ce = scanner.computeContributor(pair.af.extensionType());
+        OperationalExtension ce = scanner.computeContributor(pair.af.extensionType());
         ce.onAnnotatedField(field, annotations, pair);
     }
 
@@ -126,7 +126,7 @@ public class BeanScannerFieldHelper {
             match1(scanner, field, annotations, p1);
             match1(scanner, field, annotations, p2);
         }
-        ContributingExtension ce = scanner.computeContributor(p1.af.extensionType());
+        OperationalExtension ce = scanner.computeContributor(p1.af.extensionType());
         ce.onAnnotatedField(field, annotations, p1, p2);
 
     }

@@ -163,7 +163,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
                 boolean isProviding = method.annotations().isPresent(ProvideService.class);
                 boolean isExporting = method.annotations().isPresent(ExportService.class);
 
-                OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
+                OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
 
                 if (!Modifier.isStatic(method.modifiers())) {
                     if (beanKind() != BeanKind.CONTAINER) {

@@ -184,7 +184,7 @@ class FieldScan {
             } else {
                 // TODO we should sort by extension order when we have more than 1 match
                 for (MultiMatch mf : multiMatches.values()) {
-                    ContributingExtension contributor = scanner.computeContributor(mf.extensionClass);
+                    OperationalExtension contributor = scanner.computeContributor(mf.extensionClass);
 
                     // Create the wrapped field that is exposed to the extension
                     PackedOperationalField f = new PackedOperationalField(scanner, e.extensionType(), field, mf.allowGet, mf.allowSet, annotations);
@@ -198,7 +198,7 @@ class FieldScan {
             boolean isGettable, boolean isSettable, Annotation[] hooks) {
         if (kind == AnnotatedFieldKind.FIELD) {
             PackedOperationalField of = new PackedOperationalField(scanner, extensionType, f, isGettable, isSettable, annotations);
-            of.ce.introspector().hookOnAnnotatedField(PackedAnnotationList.of(hooks[0]), of);
+            of.extension.introspector.hookOnAnnotatedField(PackedAnnotationList.of(hooks[0]), of);
         } else {
 
             // Okay we need to make a new operation
@@ -234,7 +234,7 @@ class FieldScan {
             PackedOperationalField of = new PackedOperationalField(scanner, af0.extensionType(), f, af0.isGettable() || af1.isGettable(),
                     af0.isSettable() || af1.isSettable(), annotations);
 
-            of.ce.introspector().hookOnAnnotatedField(PackedAnnotationList.of(a0, a1), of);
+            of.extension.introspector.hookOnAnnotatedField(PackedAnnotationList.of(a0, a1), of);
         } else {
 
             match1(scanner, f, annotations, af0, new Annotation[] { a0 });
@@ -244,7 +244,7 @@ class FieldScan {
 
     private static void matchAnnotatedField(BeanScanner scanner, Field field, Annotation[] annotations, Annotation[] hooks, AnnotatedField... annotatedFields) {
         PackedOperationalField of = new PackedOperationalField(scanner, field, annotations, annotatedFields);
-        of.ce.introspector().hookOnAnnotatedField(PackedAnnotationList.of(hooks), of);
+        of.extension.introspector.hookOnAnnotatedField(PackedAnnotationList.of(hooks), of);
     }
 
     static void matchManySameExtension(BeanScanner scanner, Field f, Annotation[] annotations, P... ps) {

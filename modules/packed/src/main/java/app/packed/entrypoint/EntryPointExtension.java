@@ -72,7 +72,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
 
                 MainThreadOfControl mc = container.lifetime.entryPoint.mainThread();
 
-                OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
+                OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
                 OperationHandle os = method.newOperation(temp);
                 os.specializeMirror(() -> new EntryPointMirror(index));
 

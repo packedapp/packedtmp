@@ -236,7 +236,7 @@ public final class BeanSetup {
     }
 
     public static BeanSetup crack(OperationalMethod m) {
-        return ((PackedOperationalMethod) m).ce.scanner.bean;
+        return ((PackedOperationalMethod) m).extension.scanner.bean;
     }
     /**
      * Extracts a bean setup from a bean configuration.

@@ -40,8 +40,9 @@ import internal.app.packed.binding.BindingProvider.FromOperation;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.BindingSetup.HookBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
+import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.operation.PackedOp;
 
 /** Implementation of {@link BindableVariable}. */
@@ -160,10 +161,10 @@ public class PackedBindableVariable implements BindableVariable {
         checkBeforeBinding();
         PackedOp<?> pop = PackedOp.crack(op);
 
-        OperationTemplate ot = operation.template.withReturnType(pop.type().returnType());
+        OperationTemplate ot = operation.template.withReturnType(pop.type().returnRawType());
         OperationSetup os = pop.newOperationSetup(operation.bean, bindingExtension, ot);
 
-        os.parent = operation;
+        os.zParent = operation;
 
         BindingSetup bs = new HookBindingSetup(operation, index, Realm.application());
         bs.provider = new FromOperation(os);
@@ -182,7 +183,7 @@ public class PackedBindableVariable implements BindableVariable {
 
     private void checkBeforeBinding() {
         checkNotBound();
-        if (operation instanceof FieldOperationSetup fos && Modifier.isStatic(fos.modifiers()) && !allowStaticFieldBinding) {
+        if (operation instanceof MemberOperationSetup  mos && mos.target instanceof OperationFieldTarget fos && Modifier.isStatic(fos.modifiers()) && !allowStaticFieldBinding) {
             throw new BeanInstallationException("Static field binding is not supported for");
         }
         // TODO check if field static

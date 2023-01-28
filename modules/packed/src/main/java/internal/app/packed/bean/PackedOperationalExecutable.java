@@ -41,7 +41,7 @@ sealed abstract class PackedOperationalExecutable<E extends Executable>
      * @param member
      * @param annotations
      */
-    PackedOperationalExecutable(ContributingExtension ce, E member, Annotation[] annotations) {
+    PackedOperationalExecutable(OperationalExtension ce, E member, Annotation[] annotations) {
         super(ce, member, annotations);
     }
 

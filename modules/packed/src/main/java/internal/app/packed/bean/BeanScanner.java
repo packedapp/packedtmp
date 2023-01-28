@@ -39,11 +39,13 @@ import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationTemplate;
+import app.packed.operation.OperationType;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.framework.devtools.PackedDevToolsIntegration;
+import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup.ConstructorOperationSetup;
+import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.ThrowableUtil;
@@ -58,7 +60,7 @@ public final class BeanScanner {
 
     /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
     private static final MethodHandle MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class,
-            "initialize", void.class, ContributingExtension.class);
+            "initialize", void.class, OperationalExtension.class);
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class,
@@ -79,7 +81,7 @@ public final class BeanScanner {
 
     /** Every extension that is activated by a hook. */
     // We sort it in the end
-    private final IdentityHashMap<Class<? extends Extension<?>>, ContributingExtension> extensions = new IdentityHashMap<>();
+    private final IdentityHashMap<Class<? extends Extension<?>>, OperationalExtension> extensions = new IdentityHashMap<>();
 
     final BeanHookModel hookModel;
 
@@ -87,7 +89,7 @@ public final class BeanScanner {
     // I think we embed once we gotten rid of use cases outside of this introspector
     final OpenClass oc;
 
-    final ArrayDeque<OperationSetup> unBoundOperations = new ArrayDeque<>();
+    public final ArrayDeque<OperationSetup> unBoundOperations = new ArrayDeque<>();
 
     BeanScanner(BeanSetup bean, @Nullable BeanIntrospector beanIntrospector, @Nullable Map<Class<?>, Object> attachments) {
         this.bean = bean;
@@ -103,7 +105,7 @@ public final class BeanScanner {
      * @param fullAccess
      * @return the contributor
      */
-    ContributingExtension computeContributor(Class<? extends Extension<?>> extensionType) {
+    OperationalExtension computeContributor(Class<? extends Extension<?>> extensionType) {
         return extensions.computeIfAbsent(extensionType, c -> {
             // Get the extension (installing it if necessary)
             ExtensionSetup extension = bean.container.useExtension(extensionType, null);
@@ -121,7 +123,7 @@ public final class BeanScanner {
                     throw ThrowableUtil.orUndeclared(t);
                 }
             }
-            ContributingExtension ce = new ContributingExtension(this, extension, introspector);
+            OperationalExtension ce = new OperationalExtension(this, extension, introspector);
 
             // Call BeanIntrospector#initialize
             try {
@@ -158,7 +160,8 @@ public final class BeanScanner {
         }
         ot = ot.withReturnType(bean.beanClass);
 
-        OperationSetup os = new ConstructorOperationSetup(bean.installedBy, bean, ot, constructor.constructor(), mh);
+        OperationSetup os = new MemberOperationSetup(bean.installedBy, bean, OperationType.ofExecutable(con), ot,
+                new OperationConstructorTarget(constructor.constructor()), mh);
         bean.operations.add(os);
         resolveNow(os);
     }
@@ -277,8 +280,8 @@ public final class BeanScanner {
         bean.introspecting = null; // move up down?
 
         // Call into every BeanIntrospector and tell them it is all over
-        for (ContributingExtension e : extensions.values()) {
-            e.introspector().afterHooks();
+        for (OperationalExtension e : extensions.values()) {
+            e.introspector.afterHooks();
         }
     }
 

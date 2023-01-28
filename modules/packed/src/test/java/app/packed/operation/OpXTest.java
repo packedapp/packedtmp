@@ -31,7 +31,7 @@ public class OpXTest {
     @Test
     public void integerFactory0() {
         Op<Integer> f = new Op0<>(() -> 1) {};
-        assertEquals(Integer.class, f.type().returnType());
+        assertEquals(Integer.class, f.type().returnRawType());
         checkThat(f).is(Integer.class);
         checkThat(f).hasNoDependencies();
 

@@ -22,10 +22,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
+import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
+import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.OperationSetup.FunctionOperationSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup.ConstructorOperationSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
 import internal.app.packed.operation.OperationSetup.MethodHandleOperationSetup;
 
 /**
@@ -36,17 +36,17 @@ import internal.app.packed.operation.OperationSetup.MethodHandleOperationSetup;
 public sealed interface OperationTarget {
 
     /** Represents an operation that invokes a {@link Constructor constructor}. */
-    sealed interface OfConstructor extends OperationTarget permits ConstructorOperationSetup {
+    sealed interface OfConstructor extends OperationTarget permits OperationConstructorTarget {
 
         /** {@return the underlying constructor.} */
         Constructor<?> constructor();
     }
 
     /** Represents an operation that gets, sets or updates a {@link Field field}. */
-    sealed interface OfField extends OperationTarget permits FieldOperationSetup {
+    sealed interface OfField extends OperationTarget permits OperationFieldTarget {
 
         /** {@return the mode used when accessing the field.} */
-        AccessMode accessMode(); // Could we have a list instead??? Or optional where is empty is VarHandle
+        AccessMode accessMode(); // If we support VarHandle, Optional? or fail
 
         /** {@return the underlying field.} */
         Field field();
@@ -66,7 +66,7 @@ public sealed interface OperationTarget {
     }
 
     /** Represents an operation that invokes a {@link Method method}. */
-    sealed interface OfMethod extends OperationTarget permits MethodOperationSetup {
+    sealed interface OfMethod extends OperationTarget permits OperationMethodTarget {
 
         /** {@return the invokable method.} */
         Method method();

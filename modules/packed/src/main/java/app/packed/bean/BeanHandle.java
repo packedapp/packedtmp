@@ -30,6 +30,7 @@ import app.packed.container.Realm;
 import app.packed.context.Context;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
+import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
@@ -60,10 +61,21 @@ public final /* primitive */ class BeanHandle<T> {
         this.bean = requireNonNull(bean);
     }
 
+    protected OperationHandle newFunctionalOperation(Class<?> functionalInterface, Object function, OperationType operationType) {
+        throw new UnsupportedOperationException();
+    }
+
+    protected DelegatingOperationHandle newDelegationFunctionalOperation(Class<?> functionalInterface, Object function, OperationType operationType) {
+        // We only take public exported types
+        throw new UnsupportedOperationException();
+    }
+
     // We need a extension bean
     // Dem der resolver bindings, skal goeres mens man introspector...
     public OperationHandle addFunctionalOperation(InstanceBeanConfiguration<?> operator, Class<?> functionalInterface, OperationType type,
             Object functionInstance) {
+        // I think we can ignore the operator now.
+        
         // Function, OpType.of(void.class, HttpRequest.class, HttpResponse.class), someFunc)
         throw new UnsupportedOperationException();
     }
@@ -275,7 +287,7 @@ class BeanHandleSandbox<T> {
     }
 
     public <K> OperationHandle overrideService(Key<K> key, K instance) {
-       // checkIsConfigurable();
+        // checkIsConfigurable();
 
         throw new UnsupportedOperationException();
     }

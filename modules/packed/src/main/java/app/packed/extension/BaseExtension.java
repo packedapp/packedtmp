@@ -228,7 +228,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             @Override
             public void hookOnAnnotatedMethod(Annotation annotation, OperationalMethod method) {
                 BeanSetup bean = BeanSetup.crack(method);
-                OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
+                OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
 
                 if (annotation instanceof Inject) {
                     OperationHandle handle = method.newOperation(temp);

@@ -28,7 +28,6 @@ import app.packed.bean.LifecycleOrdering;
 import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
-import app.packed.operation.OperationTemplate;
 
 /**
  *
@@ -68,7 +67,7 @@ public class Ddd extends BaseAssembly {
 
                 @Override
                 public void hookOnAnnotatedMethod(Annotation hooks, OperationalMethod on) {
-                    base().runOnBeanInject(on.newOperation(OperationTemplate.defaults()));
+                    base().runOnBeanInject(on.newDelegatingOperation());
                 }
             };
         }

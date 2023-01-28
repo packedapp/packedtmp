@@ -57,6 +57,13 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
         return op.bind(argument);
     }
 
+    /**
+     * Returns a canonicalized version of this op.
+     * <p>
+     * Bla bla
+     * 
+     * @return
+     */
     public final Op<R> canonicalize() {
         return op;
     }

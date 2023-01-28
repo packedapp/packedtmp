@@ -129,7 +129,7 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
     @Override
     public <T> BeanHandle<T> install(Op<T> op) {
         PackedOp<?> pop = PackedOp.crack(op);
-        Class<?> beanClass = pop.type.returnType();
+        Class<?> beanClass = pop.type.returnRawType();
         return install((Class<T>) beanClass, BeanSourceKind.OP, pop);
     }
 

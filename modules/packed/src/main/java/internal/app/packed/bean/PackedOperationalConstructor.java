@@ -32,7 +32,7 @@ public final class PackedOperationalConstructor extends PackedOperationalExecuta
      * @param member
      * @param annotations
      */
-    PackedOperationalConstructor(ContributingExtension ce, Constructor<?> member, Annotation[] annotations) {
+    PackedOperationalConstructor(OperationalExtension ce, Constructor<?> member, Annotation[] annotations) {
         super(ce, member, annotations);
     }
 

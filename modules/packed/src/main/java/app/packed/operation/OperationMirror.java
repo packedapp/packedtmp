@@ -27,10 +27,10 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanHook.TypedProvisionHook;
+import app.packed.bean.BeanMirror;
 import app.packed.bindings.Key;
 import app.packed.bindings.mirror.BindingMirror;
 import app.packed.bindings.mirror.DependenciesMirror;
-import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.context.ContextMirror;
 import app.packed.context.ContextualizedElementMirror;
@@ -154,7 +154,7 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror, 
     // Composites, What about services???
     // Services no, because one operation may be used multiple places
     public Optional<BindingMirror> nestedIn() {
-        return Optional.ofNullable(operation().onBinding).map(b -> b.mirror());
+        return Optional.ofNullable(operation().zOnBinding).map(b -> b.mirror());
     }
 
     /**
@@ -174,7 +174,7 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror, 
 
     /** {@return the operation site.} */
     public OperationTarget target() {
-        return (OperationTarget) operation();
+        return operation().target();
     }
 
     /** {@return the type of the operation.} */

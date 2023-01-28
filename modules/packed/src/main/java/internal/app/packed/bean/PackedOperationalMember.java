@@ -29,13 +29,13 @@ abstract sealed class PackedOperationalMember<M extends Member> permits PackedOp
     private final Annotation[] annotations;
 
     /** The extension that can create new operations from the member. */
-    final ContributingExtension ce;
+    final OperationalExtension extension;
 
     /** The member. */
     final M member;
 
-    PackedOperationalMember(ContributingExtension ce, M member, Annotation[] annotations) {
-        this.ce = ce;
+    PackedOperationalMember(OperationalExtension ce, M member, Annotation[] annotations) {
+        this.extension = ce;
         this.member = member;
         this.annotations = annotations;
     }
@@ -46,7 +46,7 @@ abstract sealed class PackedOperationalMember<M extends Member> permits PackedOp
 
     /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */
     final void checkConfigurable() {
-        if (ce.bean().container.assembly.isDone()) {
+        if (extension.extension.container.assembly.isDone()) {
             throw new IllegalStateException("This method must be called before the assembly is closed");
         }
     }

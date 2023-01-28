@@ -42,7 +42,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * {@link IllegalStateException} being thrown.
  * 
  * @see Extension#use(Class)
- * @see UsageContext
+ * @see UseSite
  * 
  * @param <E>
  *            The type of extension this extension point is a part of.
@@ -65,7 +65,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     /**
      * A context for this extension point. Is initialized via {@link #initialize(PackedExtensionPointContext)}..
      * <p>
-     * This field should only be read via {@link #context()}.
+     * This field should only be read via {@link #contextUse()}.
      */
     @Nullable
     private PackedExtensionPointContext context;
@@ -90,14 +90,18 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
         // We only check the extension that uses the extension point.
         // Because the extension the extension points belongs to, is always a direct
         // dependency and will be closed before the extension that provides the extension point.
-        ExtensionTreeSetup extensionTree = context().usedBy().extensionTree;
+        ExtensionTreeSetup extensionTree = contextUse().usedBy().extensionTree;
         if (extensionTree.isDone()) {
             throw new IllegalStateException(extensionTree.realmType() + " is no longer configurable");
         }
     }
 
+    protected final UseSite context() {
+        return contextUse();
+    }
+
     /** {@return the context for this extension point.} */
-    private final PackedExtensionPointContext context() {
+    private final PackedExtensionPointContext contextUse() {
         PackedExtensionPointContext c = context;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of an extension point.");
@@ -108,7 +112,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     /** {@return the extension instance that this extension point is a part of.} */
     @SuppressWarnings("unchecked")
     protected final E extension() {
-        return (E) context().extension().instance();
+        return (E) contextUse().extension().instance();
     }
 
     /**
@@ -125,22 +129,18 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
         this.context = new PackedExtensionPointContext(extension, usedBy);
     }
 
-    protected final UsageContext usageContext() {
-        return context();
-    }
-
     /** {@return the type of extension that are using the extension point.} */
     protected final Class<? extends Extension<?>> usedBy() {
-        return context().usedBy().extensionType;
+        return contextUse().usedBy().extensionType;
     }
-    
+
     /**
      * A context object that can be injected into subclasses of {@link ExtensionPoint}.
      */
     // Inner class: UseSite
     //// Er lidt underlig maaske med UseSite hvis man tager den som parameter
     //// Men vil ikke mere hvor man skal tage et ExtensionPointContext???
-    public sealed interface UsageContext permits PackedExtensionPointContext {
+    public sealed interface UseSite permits PackedExtensionPointContext {
         Realm realm();
     }
 }

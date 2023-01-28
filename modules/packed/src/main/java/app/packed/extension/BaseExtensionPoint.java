@@ -12,16 +12,17 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
-import app.packed.bindings.BindableVariable;
-import app.packed.bindings.Key;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.Inject;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.bean.LifecycleOrdering;
+import app.packed.bindings.BindableVariable;
+import app.packed.bindings.Key;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
+import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
@@ -85,7 +86,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     public <T> InstanceBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, usageContext()).install(implementation);
+        BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, context()).install(implementation);
         return new InstanceBeanConfiguration<>(handle);
     }
 
@@ -97,7 +98,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public <T> InstanceBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, usageContext()).install(op);
+        BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, context()).install(op);
         return new InstanceBeanConfiguration<>(handle);
     }
 
@@ -119,13 +120,13 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
-        BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, usageContext()).installIfAbsent(clazz,
+        BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, context()).installIfAbsent(clazz,
                 h -> action.accept(new InstanceBeanConfiguration<>(h)));
         return new InstanceBeanConfiguration<>(handle);
     }
 
     public <T> InstanceBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, usageContext()).installInstance(instance);
+        BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, context()).installInstance(instance);
         return new InstanceBeanConfiguration<>(handle);
     }
 
@@ -137,7 +138,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public BeanConfiguration installStatic(Class<?> beanClass) {
-        BeanHandle<?> handle = newBeanForExtension(BeanKind.STATIC, usageContext()).install(beanClass);
+        BeanHandle<?> handle = newBeanForExtension(BeanKind.STATIC, context()).install(beanClass);
         return new BeanConfiguration(handle);
     }
 
@@ -149,7 +150,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return the installer
      */
     public BeanInstaller newBean(BeanKind kind) {
-        return new PackedBeanInstaller(extension().extension, kind, (PackedExtensionPointContext) usageContext());
+        return new PackedBeanInstaller(extension().extension, kind, (PackedExtensionPointContext) context());
     }
 
     /**
@@ -159,7 +160,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            the kind of bean to installer
      * @return the installer
      */
-    public BeanInstaller newBeanForExtension(BeanKind kind, UsageContext forExtension) {
+    public BeanInstaller newBeanForExtension(BeanKind kind, UseSite forExtension) {
         requireNonNull(forExtension, "forExtension is null");
         return new PackedBeanInstaller(extension().extension, kind, (PackedExtensionPointContext) forExtension);
     }
@@ -176,19 +177,20 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     /**
-     * Emulates the {@link Inject} annotation.
+     * Creates a new inject operation from the specified handle.
      * 
      * @param handle
      *            the operation that should be executed as part of its bean's injection phase
-     * @return 
+     * @return a configuration object
      * @see Inject
      */
-    public OperationConfiguration runOnBeanInject(OperationHandle handle) {
+    public OperationConfiguration runOnBeanInject(DelegatingOperationHandle h) {
+        OperationHandle handle = h.newOperation(context(), OperationTemplate.defaults());
         OperationSetup o = OperationSetup.crack(handle);
         o.bean.lifecycle.addInitialize(handle, null);
         return new OperationConfiguration(handle);
     }
-
+        
     /**
      * An installer for installing beans into a container.
      * <p>
@@ -196,7 +198,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * are limited.
      * 
      * @see BaseExtensionPoint#newBean(BeanKind)
-     * @see BaseExtensionPoint#newBeanForExtension(BeanKind, app.packed.extension.ExtensionPoint.UsageContext)
+     * @see BaseExtensionPoint#newBeanForExtension(BeanKind, app.packed.extension.ExtensionPoint.UseSite)
      */
 // Maybe put it back on handle. If we get OperationInstaller
 // Maybe Builder after all... Alle ved hvad en builder er

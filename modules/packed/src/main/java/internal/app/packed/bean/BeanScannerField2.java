@@ -33,8 +33,8 @@ import app.packed.bean.BeanHook.AnnotatedVariableHook;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.OperationalField;
-import app.packed.bindings.Variable;
 import app.packed.bean.InaccessibleBeanMemberException;
+import app.packed.bindings.Variable;
 import app.packed.extension.Extension;
 import app.packed.framework.AnnotationList;
 import app.packed.operation.OperationHandle;
@@ -42,8 +42,9 @@ import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanHookModel.AnnotatedField;
 import internal.app.packed.bean.BeanHookModel.AnnotatedFieldKind;
+import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
+import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 
 /** Responsible for scanning fields on a bean. */
 public final class BeanScannerField2 {
@@ -58,7 +59,7 @@ public final class BeanScannerField2 {
     private final Annotation[] annotations;
 
     /** The extension that can create operations from the field. */
-    private final ContributingExtension ce;
+    private final OperationalExtension ce;
 
     /** The field. */
     private final Field field;
@@ -98,7 +99,7 @@ public final class BeanScannerField2 {
     }
 
     /** {@inheritDoc} */
-    
+
     public AnnotationList annotations() {
         return new PackedAnnotationList(annotations);
     }
@@ -111,26 +112,26 @@ public final class BeanScannerField2 {
     }
 
     /** {@inheritDoc} */
-    
+
     public Field field() {
         return field;
     }
 
     /** Callback into an extension's {@link BeanIntrospector#hookOnAnnotatedField(OperationalField)} method. */
     private void matchy() {
-        //ce.introspector().hookOnAnnotatedField(Set.of(), this);
+        // ce.introspector().hookOnAnnotatedField(Set.of(), this);
         isDone = true;
         scanner.resolveOperations(); // resolve bindings for any operation(s) that have been created
     }
 
     /** {@inheritDoc} */
-    
+
     public int modifiers() {
         return field.getModifiers();
     }
 
     /** {@inheritDoc} */
-    
+
     public OperationHandle newGetOperation(OperationTemplate template) {
         checkConfigurable();
 
@@ -148,7 +149,7 @@ public final class BeanScannerField2 {
     }
 
     /** {@inheritDoc} */
-    
+
     public OperationHandle newOperation(OperationTemplate template, AccessMode accessMode) {
         checkConfigurable();
         Lookup lookup = scanner.oc.lookup(field);
@@ -166,8 +167,8 @@ public final class BeanScannerField2 {
 
     private OperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
         template = template.withReturnType(field.getType());
-        OperationSetup operation = new FieldOperationSetup(ce.extension(), scanner.bean, OperationType.ofFieldAccess(field, accessMode), template, mh, field,
-                accessMode);
+        OperationSetup operation = new MemberOperationSetup(ce.extension, scanner.bean, OperationType.ofField(field, accessMode), template,
+                new OperationFieldTarget(field, accessMode), mh);
 
         scanner.unBoundOperations.add(operation);
         scanner.bean.operations.add(operation);
@@ -175,7 +176,7 @@ public final class BeanScannerField2 {
     }
 
     /** {@inheritDoc} */
-    
+
     public OperationHandle newSetOperation(OperationTemplate template) {
         checkConfigurable();
         Lookup lookup = scanner.oc.lookup(field);
@@ -194,7 +195,7 @@ public final class BeanScannerField2 {
     }
 
     /** {@inheritDoc} */
-    
+
     public Variable variable() {
         return Variable.ofField(field);
     }
@@ -357,7 +358,7 @@ public final class BeanScannerField2 {
             } else {
                 // TODO we should sort by extension order when we have more than 1 match
                 for (MultiMatch mf : multiMatches.values()) {
-                    ContributingExtension contributor = scanner.computeContributor(mf.extensionClass);
+                    OperationalExtension contributor = scanner.computeContributor(mf.extensionClass);
 
                     // Create the wrapped field that is exposed to the extension
                     BeanScannerField2 f = new BeanScannerField2(scanner, e.extensionType(), field, mf.allowGet, mf.allowSet, annotations);
@@ -367,13 +368,11 @@ public final class BeanScannerField2 {
         }
     }
 
-
-
     static void match(BeanScanner scanner, Field f, Annotation[] annotations, AnnotatedFieldKind kind, Class<? extends Extension<?>> extensionType,
             boolean isGettable, boolean isSettable, Annotation[] hooks) {
         if (kind == AnnotatedFieldKind.FIELD) {
             BeanScannerField2 of = new BeanScannerField2(scanner, extensionType, f, isGettable, isSettable, annotations);
-      //      of.ce.introspector().hookOnAnnotatedField(Set.of(hooks[0].annotationType()), of);
+            // of.ce.introspector().hookOnAnnotatedField(Set.of(hooks[0].annotationType()), of);
             of.isDone = true;
         } else {
 
@@ -392,10 +391,10 @@ public final class BeanScannerField2 {
         BeanScannerField2 of = new BeanScannerField2(scanner, f, annotations, afs);
         @SuppressWarnings("unused")
         Set<?> set = Set.copyOf(List.of(hooks).stream().map(Object::getClass).toList());
-    //    of.ce.introspector().hookOnAnnotatedField((Set<Class<? extends Annotation>>) set, of);
+        // of.ce.introspector().hookOnAnnotatedField((Set<Class<? extends Annotation>>) set, of);
         of.isDone = true;
     }
-    
+
     static void match1(BeanScanner scanner, Field f, Annotation[] annotations, AnnotatedField af, Annotation[] hooks) {
         if (af.kind() == AnnotatedFieldKind.FIELD) {
             processAnnotatedField(scanner, f, annotations, hooks, af);
@@ -413,7 +412,7 @@ public final class BeanScannerField2 {
             BeanScannerField2 of = new BeanScannerField2(scanner, af0.extensionType(), f, af0.isGettable() || af1.isGettable(),
                     af0.isSettable() || af1.isSettable(), annotations);
 
-     //       of.ce.introspector().hookOnAnnotatedField(Set.of(a0.annotationType(), a1.annotationType()), of);
+            // of.ce.introspector().hookOnAnnotatedField(Set.of(a0.annotationType(), a1.annotationType()), of);
             of.isDone = true;
         } else {
             // TODO Sort

@@ -26,6 +26,7 @@ import app.packed.extension.CustomBeanHook.CustomBindingHook;
  *
  */
 class AssemblyMetaHolder {
+    
     final Class<? extends Annotation> annotationType;
     final Set<String> bindings;
 

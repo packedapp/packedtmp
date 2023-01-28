@@ -22,8 +22,8 @@ import java.time.LocalDateTime;
 
 import app.packed.application.App;
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
-import app.packed.bindings.BindableVariable;
 import app.packed.bean.BeanIntrospector;
+import app.packed.bindings.BindableVariable;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.operation.Op0;

@@ -40,13 +40,14 @@ import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
 import app.packed.framework.AnnotationList;
 import app.packed.framework.Nullable;
+import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.ContributingExtension;
+import internal.app.packed.bean.OperationalExtension;
 import internal.app.packed.bean.PackedAnnotationList;
 import internal.app.packed.bean.PackedOperationalConstructor;
 import internal.app.packed.bean.PackedOperationalField;
@@ -74,7 +75,7 @@ public abstract class BeanIntrospector {
      * {@link #initialize(ExtensionDescriptor, BeanSetup)}.
      */
     @Nullable
-    private ContributingExtension setup;
+    private OperationalExtension setup;
 
     /**
      * A callback method that is invoked before any calls to any of the {@code hookOn} methods on this class.
@@ -93,7 +94,7 @@ public abstract class BeanIntrospector {
 //    }
 
     private BeanSetup bean() {
-        return setup().bean();
+        return setup().scanner.bean;
     }
 
     /** {@return an annotation reader for the bean class.} */
@@ -144,7 +145,7 @@ public abstract class BeanIntrospector {
 //    }
 
     private ExtensionDescriptor extension() {
-        return setup().extension().model;
+        return setup().extension.model;
     }
 
     /**
@@ -247,7 +248,7 @@ public abstract class BeanIntrospector {
      * @throws IllegalStateException
      *             if called more than once
      */
-    final void initialize(ContributingExtension ce) {
+    final void initialize(OperationalExtension ce) {
         if (this.setup != null) {
             throw new IllegalStateException("This scanner has already been initialized.");
         }
@@ -265,8 +266,8 @@ public abstract class BeanIntrospector {
      * @throws IllegalStateException
      *             if called from the constructor of the class
      */
-    private ContributingExtension setup() {
-        ContributingExtension s = setup;
+    private OperationalExtension setup() {
+        OperationalExtension s = setup;
         if (s == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of " + getClass());
         }
@@ -493,6 +494,8 @@ public abstract class BeanIntrospector {
          */
         OperationHandle newOperation(OperationTemplate template);
 
+        DelegatingOperationHandle newDelegatingOperation();
+        
         /** {@return the default type of operation that will be created.} */
         OperationType operationType();
 
