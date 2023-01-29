@@ -160,8 +160,8 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
             @Override
             public void hookOnAnnotatedMethod(AnnotationList hooks, OperationalMethod method) {
                 Key<?> key = method.toKey();
-                boolean isProviding = method.annotations().isPresent(ProvideService.class);
-                boolean isExporting = method.annotations().isPresent(ExportService.class);
+                boolean isProviding = method.annotations().containsType(ProvideService.class);
+                boolean isExporting = method.annotations().containsType(ExportService.class);
 
                 OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
 

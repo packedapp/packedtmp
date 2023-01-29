@@ -39,7 +39,7 @@ import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
-import internal.app.packed.bean.PackedBindableVariable;
+import internal.app.packed.binding.PackedBindableVariable;
 
 /**
  * An operation handle is direct reference to an underlying method, constructor, field, or similar low-level operation.

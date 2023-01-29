@@ -28,6 +28,8 @@ import app.packed.framework.AnnotationList;
 /** Implementation of {@link AnnotationList}. */
 public record PackedAnnotationList(Annotation[] annotations) implements AnnotationList {
 
+    public static final PackedAnnotationList EMPTY = new PackedAnnotationList(new Annotation[0]);
+
     @Override
     public boolean equals(Object obj) {
         return obj instanceof PackedAnnotationList pal && Arrays.equals(annotations, pal.annotations);
@@ -37,8 +39,6 @@ public record PackedAnnotationList(Annotation[] annotations) implements Annotati
     public int hashCode() {
         return Arrays.hashCode(annotations);
     }
-
-    public static final PackedAnnotationList EMPTY = new PackedAnnotationList(new Annotation[0]);
     
     public static PackedAnnotationList of(Annotation... annotations) {
         return new PackedAnnotationList(annotations);
@@ -46,7 +46,7 @@ public record PackedAnnotationList(Annotation[] annotations) implements Annotati
 
     /** {@inheritDoc} */
     @Override
-    public boolean isPresent(Class<? extends Annotation> annotationClass) {
+    public boolean containsType(Class<? extends Annotation> annotationClass) {
         for (int i = 0; i < annotations.length; i++) {
             if (annotations[i].annotationType() == annotationClass) {
                 return true;

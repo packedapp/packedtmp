@@ -38,7 +38,6 @@ public class QualifierTest {
 
     @Test
     public void cannotDefineSameProvidedKeys() {
-
         AbstractThrowableAssert<?, ?> at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedFieldKeys.class)));
         at.isExactlyInstanceOf(ProvidedServiceCollisionException.class);
         at.hasNoCause();

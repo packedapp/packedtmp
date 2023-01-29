@@ -154,7 +154,7 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror, 
     // Composites, What about services???
     // Services no, because one operation may be used multiple places
     public Optional<BindingMirror> nestedIn() {
-        return Optional.ofNullable(operation().zOnBinding).map(b -> b.mirror());
+        return Optional.ofNullable(operation().parent).map(b -> b.operation().bindings[b.bindingIndex()].mirror());
     }
 
     /**

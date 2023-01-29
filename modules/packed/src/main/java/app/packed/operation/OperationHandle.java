@@ -81,6 +81,8 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      */
     // Tror vi force laver (reserves) en binding her.
     // Det er jo kun meningen at man skal binden den hvis man kalder denne metode.
+    // parameter virker kun som navn hvis man ikke "reservere" binding.
+    // Men binder med det samme
     BindableVariable parameter(int index);
 
     /**

@@ -54,6 +54,4 @@ public class CompanionBinding  {
     protected BindingMirror mirror0() {
         throw new UnsupportedOperationException();
     }
-    
-
-}
+    }

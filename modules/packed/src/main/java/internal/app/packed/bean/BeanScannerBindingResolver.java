@@ -24,6 +24,7 @@ import internal.app.packed.bean.BeanHookModel.AnnotatedParameterType;
 import internal.app.packed.bean.BeanHookModel.ParameterType;
 import internal.app.packed.binding.ExtensionServiceBindingSetup;
 import internal.app.packed.binding.InternalDependency;
+import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.operation.OperationSetup;
 
 /**

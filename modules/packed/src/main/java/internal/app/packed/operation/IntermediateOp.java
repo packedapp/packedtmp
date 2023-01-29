@@ -22,14 +22,15 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
 import app.packed.container.Realm;
+import app.packed.framework.Nullable;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingProvider.FromConstant;
-import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.operation.OperationSetup.NestedOperationParent;
 import internal.app.packed.util.LookupUtil;
 
 /** An intermediate (non-terminal) op. */
@@ -51,8 +52,8 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
 
     /** {@inheritDoc} */
     @Override
-    public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template) {
-        return nextOp.newOperationSetup(bean, operator, template);
+    public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template, @Nullable NestedOperationParent nestedParent) {
+        return nextOp.newOperationSetup(bean, operator, template, nestedParent);
     }
 
     /** A op that binds 1 or more constants. */
@@ -74,14 +75,12 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template) {
-            OperationSetup os = super.newOperationSetup(bean, operator, template);
+        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template, @Nullable NestedOperationParent nestedParent) {
+            OperationSetup os = super.newOperationSetup(bean, operator, template, nestedParent);
             for (int i = 0; i < indexes.length; i++) {
                 int index = indexes[i];
                 Object argument = arguments[i];
-                BindingSetup bs = new ManualBindingSetup(os, index, Realm.application());
-                bs.provider = new FromConstant(argument.getClass(), argument);
-                os.bindings[index] = bs;
+                os.bindings[index] = new ManualBindingSetup(os, index, Realm.application(), new FromConstant(argument.getClass(), argument));
             }
             return os;
         }

@@ -29,6 +29,7 @@ import app.packed.extension.Extension;
 import app.packed.framework.AnnotationList;
 import app.packed.framework.Nullable;
 import app.packed.operation.Op;
+import internal.app.packed.binding.PackedBindableVariable;
 
 /**
  *

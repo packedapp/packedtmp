@@ -20,10 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
+import app.packed.framework.Nullable;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.operation.OperationSetup.NestedOperationParent;
 
 /** A terminal op. */
 abstract sealed class TerminalOp<R> extends PackedOp<R> {
@@ -53,9 +55,10 @@ abstract sealed class TerminalOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template) {
+        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template, @Nullable NestedOperationParent nestedParent) {
             template = template.withReturnType(type.returnRawType());
-            OperationSetup os = new OperationSetup.FunctionOperationSetup(operator, bean, type, template, mhOperation, samType, implementationMethod);
+            OperationSetup os = new OperationSetup.FunctionOperationSetup(operator, bean, type, template, nestedParent, mhOperation, samType,
+                    implementationMethod);
             return os;
         }
     }
@@ -69,8 +72,8 @@ abstract sealed class TerminalOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template) {
-            return new OperationSetup.MethodHandleOperationSetup(operator, bean, type, template, mhOperation);
+        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template, @Nullable NestedOperationParent nestedParent) {
+            return new OperationSetup.MethodHandleOperationSetup(operator, bean, type, template, nestedParent, mhOperation);
         }
     }
 }

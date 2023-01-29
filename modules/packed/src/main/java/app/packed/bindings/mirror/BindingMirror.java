@@ -62,11 +62,11 @@ public class BindingMirror implements Mirror {
 
     /** {@return the index of this binding into OperationMirror#bindings().} */
     public int bindingIndex() { // alternative parameterIndex
-        return binding().index;
+        return binding().operationBindingIndex;
     }
 
     public Optional<BindingProviderKind> bindingKind() {
-        return Optional.ofNullable(binding().provider).map(b -> b.kind());
+        return Optional.ofNullable(binding().provider()).map(b -> b.kind());
     }
 
     /** {@return the x who created binding.} */
@@ -139,7 +139,7 @@ public class BindingMirror implements Mirror {
     /** {@return the underlying variable that has been bound.} */
     public Variable variable() {
         BindingSetup b = binding();
-        return b.operation.type.parameter(b.index);
+        return b.operation.type.parameter(b.operationBindingIndex);
     }
 
     public String toString() {

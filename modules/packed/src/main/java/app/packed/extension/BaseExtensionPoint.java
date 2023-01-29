@@ -30,7 +30,7 @@ import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.PackedExtensionPointContext;
-import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.PackedOperationHandle;
 
 /** An {@link ExtensionPoint extension point} class for {@link BaseExtension}. */
 public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
@@ -169,10 +169,10 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         throw new UnsupportedOperationException();
     }
 
-    public OperationConfiguration runOnBeanInitialization(OperationHandle handle, LifecycleOrdering ordering) {
+    public OperationConfiguration runOnBeanInitialization(DelegatingOperationHandle h, LifecycleOrdering ordering) {
         requireNonNull(ordering, "ordering is null");
-        OperationSetup o = OperationSetup.crack(handle);
-        o.bean.lifecycle.addInitialize(handle, ordering);
+        OperationHandle handle = h.newOperation(context(), OperationTemplate.defaults());
+        ((PackedOperationHandle) handle).operation().bean.lifecycle.addInitialize(handle, ordering);
         return new OperationConfiguration(handle);
     }
 
@@ -186,8 +186,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public OperationConfiguration runOnBeanInject(DelegatingOperationHandle h) {
         OperationHandle handle = h.newOperation(context(), OperationTemplate.defaults());
-        OperationSetup o = OperationSetup.crack(handle);
-        o.bean.lifecycle.addInitialize(handle, null);
+        ((PackedOperationHandle) handle).operation().bean.lifecycle.addInitialize(handle, null);
         return new OperationConfiguration(handle);
     }
         

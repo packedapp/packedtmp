@@ -15,6 +15,8 @@
  */
 package internal.app.packed.operation;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -24,14 +26,14 @@ import java.lang.reflect.Method;
 import app.packed.operation.OperationTarget;
 import internal.app.packed.util.StringFormatter;
 
-/**
- *
- */
+/** A operation target wrapping a {@link Member}. */
 public sealed abstract class OperationMemberTarget<M extends Member> {
+
+    /** The member. */
     final M member;
 
     private OperationMemberTarget(M member) {
-        this.member = member;
+        this.member = requireNonNull(member);
     }
 
     /** @see Member#getModifiers(). */
@@ -61,6 +63,7 @@ public sealed abstract class OperationMemberTarget<M extends Member> {
 
     public static final class OperationFieldTarget extends OperationMemberTarget<Field> implements OperationTarget.OfField {
 
+        /** The field's access mode. */
         final AccessMode accessMode;
 
         /**
@@ -83,6 +86,7 @@ public sealed abstract class OperationMemberTarget<M extends Member> {
             return member;
         }
 
+        /** {@inheritDoc} */
         public String toString() {
             return "Field " + StringFormatter.format(member) + " (AccessMode + " + accessMode + ")";
         }
@@ -103,6 +107,7 @@ public sealed abstract class OperationMemberTarget<M extends Member> {
             return member;
         }
 
+        /** {@inheritDoc} */
         public String toString() {
             return "Method " + StringFormatter.format(member);
         }

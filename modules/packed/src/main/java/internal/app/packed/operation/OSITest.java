@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import app.packed.application.App;
 import app.packed.bean.BeanHook.AnnotatedVariableHook;
 import app.packed.bean.BeanIntrospector;
+import app.packed.bean.OnInitialize;
 import app.packed.bindings.BindableVariable;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
@@ -46,12 +47,18 @@ public class OSITest extends BaseAssembly {
 
     public static class BB {
 
-        //, @InitializationTime LocalDateTime i1,
-        //@InitializationTime LocalDateTime i2
-        public BB(@InitializationTime LocalDateTime i2) {
-            //System.out.println(c1 + " " + c2);
-            //System.out.println(n1 + " " + n2);
-            //System.out.println(i1 + " " + i2);
+        public BB(@Now LocalDateTime i2) {
+            System.out.println(i2);
+        }
+
+        @OnInitialize
+        public void sd(@Now LocalDateTime i2, @BuildTime LocalDateTime i24) {
+            System.out.println(i2);
+        }
+
+        @OnInitialize
+        public static void fsd(@Now LocalDateTime i2, @BuildTime LocalDateTime i24) {
+            System.out.println(i2 + " " + i24);
         }
     }
 
@@ -69,7 +76,8 @@ public class OSITest extends BaseAssembly {
                 public void hookOnProvidedAnnotatedVariable(Annotation hook, BindableVariable d) {
                     if (hook instanceof BuildTime) {
                         d.checkAssignableTo(LocalDateTime.class);
-                        d.bindConstant(LocalDateTime.now());
+                        // d.bindConstant(LocalDateTime.now());
+                        d.bindGeneratedConstant(() -> LocalDateTime.now());
                     } else if (hook instanceof InitializationTime) {
                         applicationRoot().base().installIfAbsent(AppInitializeTime.class);
                         d.checkAssignableTo(LocalDateTime.class);

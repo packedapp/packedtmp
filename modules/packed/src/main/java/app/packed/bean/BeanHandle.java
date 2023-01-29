@@ -61,25 +61,6 @@ public final /* primitive */ class BeanHandle<T> {
         this.bean = requireNonNull(bean);
     }
 
-    protected OperationHandle newFunctionalOperation(Class<?> functionalInterface, Object function, OperationType operationType) {
-        throw new UnsupportedOperationException();
-    }
-
-    protected DelegatingOperationHandle newDelegationFunctionalOperation(Class<?> functionalInterface, Object function, OperationType operationType) {
-        // We only take public exported types
-        throw new UnsupportedOperationException();
-    }
-
-    // We need a extension bean
-    // Dem der resolver bindings, skal goeres mens man introspector...
-    public OperationHandle addFunctionalOperation(InstanceBeanConfiguration<?> operator, Class<?> functionalInterface, OperationType type,
-            Object functionInstance) {
-        // I think we can ignore the operator now.
-        
-        // Function, OpType.of(void.class, HttpRequest.class, HttpResponse.class), someFunc)
-        throw new UnsupportedOperationException();
-    }
-
     /** {@return the bean class.} */
     public Class<?> beanClass() {
         return bean.beanClass;
@@ -185,6 +166,29 @@ public final /* primitive */ class BeanHandle<T> {
         bean.named(name);
     }
 
+    protected DelegatingOperationHandle newDelegationFunctionalOperation(Class<?> functionalInterface, Object function, OperationType operationType) {
+        // We only take public exported types
+        throw new UnsupportedOperationException();
+    }
+
+    protected OperationHandle newFunctionalOperation(Class<?> functionalInterface, Object function, OperationType operationType) {
+        throw new UnsupportedOperationException();
+    }
+
+    // We need a extension bean
+    // Dem der resolver bindings, skal goeres mens man introspector...
+    // Burde have en OperationType uden annoteringer
+    // Maaske bare stripper annoteringer...
+    // Men okay vi kan stadig fx bruge Logger som jo stadig skulle
+    // supplies uden et hook
+    public OperationHandle newFunctionalOperation(InstanceBeanConfiguration<?> operator, Class<?> functionalInterface, OperationType type,
+            Object functionInstance) {
+        // I think we can ignore the operator now.
+        
+        // Function, OpType.of(void.class, HttpRequest.class, HttpResponse.class), someFunc)
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * @return
      */
@@ -261,6 +265,14 @@ public final /* primitive */ class BeanHandle<T> {
 
 class BeanHandleSandbox<T> {
 
+    public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void decorateInstance(Function<? super T, ? extends T> decorator) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * @param <K>
      *            the type of key
@@ -282,23 +294,15 @@ class BeanHandleSandbox<T> {
         throw new UnsupportedOperationException();
     }
 
-    public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation) {
-        throw new UnsupportedOperationException();
+    public <B> void onInitialize(Class<B> extensionBeanClass, BiConsumer<? super B, ? super T> consumer) {
+        // checkHasInstances
+        // We add a operation to this beanhandle...
     }
 
     public <K> OperationHandle overrideService(Key<K> key, K instance) {
         // checkIsConfigurable();
 
         throw new UnsupportedOperationException();
-    }
-
-    public void decorateInstance(Function<? super T, ? extends T> decorator) {
-        throw new UnsupportedOperationException();
-    }
-
-    public <B> void onInitialize(Class<B> extensionBeanClass, BiConsumer<? super B, ? super T> consumer) {
-        // checkHasInstances
-        // We add a operation to this beanhandle...
     }
 
     public void peekInstance(Consumer<? super T> consumer) {

@@ -220,7 +220,7 @@ public final class ServiceManager {
             // return "Another bean of type " + format(existingTarget.bean.beanClass) + " is already providing a service for Key<" +
             // key.toStringSimple() + ">";
         } else if (provider.resolution instanceof FromOperation os) {
-            if (os.operation instanceof MemberOperationSetup m && m.target instanceof OperationMethodTarget t) {
+            if (os.operation() instanceof MemberOperationSetup m && m.target instanceof OperationMethodTarget t) {
                 String ss = StringFormatter.formatShortWithParameters(t.method());
                 return "A method " + ss + " is already providing a service for Key<" + key + ">";
             }

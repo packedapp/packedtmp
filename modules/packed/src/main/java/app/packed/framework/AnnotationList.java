@@ -22,6 +22,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.List;
 import java.util.function.Consumer;
 
+import app.packed.bean.BeanInstallationException;
 import internal.app.packed.bean.PackedAnnotationList;
 
 /**
@@ -31,6 +32,10 @@ import internal.app.packed.bean.PackedAnnotationList;
  */
 public sealed interface AnnotationList extends Iterable<Annotation> permits PackedAnnotationList {
 
+    boolean contains(Annotation annotation);
+
+    boolean containsType(Class<? extends Annotation> annotationClass);
+
     default <T extends Annotation> void ifPresent(Class<T> annotationClass, Consumer<T> consumer) {
         T t = readRequired(annotationClass);
         consumer.accept(t);
@@ -38,8 +43,6 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
 
     /** {@return whether or not there are any annotations to read.} */
     boolean isEmpty();
-
-    boolean isPresent(Class<? extends Annotation> annotationClass);
 
     // Det er taenk
     Annotation[] readAnyOf(Class<?>... annotationTypes);
@@ -66,9 +69,9 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
     /** {@return the number of annotations in the list.} */
     int size();
 
-    List<Annotation> toList();
-
     Annotation[] toArray();
+
+    List<Annotation> toList();
 
     static AnnotationList of() {
         return PackedAnnotationList.EMPTY;
@@ -79,14 +82,14 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
         return new PackedAnnotationList(new Annotation[] { annotation });
     }
 
+    static AnnotationList of(Annotation... annotations) {
+        return new PackedAnnotationList(annotations.clone());
+    }
+
     static AnnotationList of(Annotation annotation1, Annotation annotation2) {
         requireNonNull(annotation1, "annotation1 is null");
         requireNonNull(annotation2, "annotation2 is null");
         return new PackedAnnotationList(new Annotation[] { annotation1, annotation2 });
-    }
-
-    static AnnotationList of(Annotation... annotations) {
-        return new PackedAnnotationList(annotations.clone());
     }
     // Q) Skal vi bruge den udefra beans???
     // A) Nej vil ikke mene vi beskaeftiger os med andre ting hvor vi laeser det.

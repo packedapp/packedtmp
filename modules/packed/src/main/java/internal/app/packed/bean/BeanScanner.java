@@ -287,7 +287,7 @@ public final class BeanScanner {
 
     private void introspectClass() {}
 
-    void resolveNow(OperationSetup operation) {
+    public void resolveNow(OperationSetup operation) {
         for (int i = 0; i < operation.bindings.length; i++) {
             BindingSetup binding = operation.bindings[i];
             if (binding == null) {

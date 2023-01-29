@@ -36,6 +36,7 @@ import internal.app.packed.bean.BeanHookModel.AnnotatedField;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
+import internal.app.packed.operation.PackedOperationHandle;
 import internal.app.packed.service.KeyHelper;
 
 /** Responsible for scanning fields on a bean. */
@@ -125,7 +126,7 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
         return newOperation(template, mh, accessMode);
     }
 
-    private OperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
+    private PackedOperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
         template = template.withReturnType(member.getType());
         OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, OperationType.ofField(member, accessMode), template, 
                 new OperationFieldTarget(member, accessMode), mh);

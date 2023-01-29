@@ -38,7 +38,7 @@ import app.packed.service.ServiceLocator;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanLocal;
-import internal.app.packed.bean.PackedBindableVariable;
+import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;

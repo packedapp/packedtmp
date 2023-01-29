@@ -62,11 +62,19 @@ public sealed abstract class OperationSetup {
     /** Bindings for this operation. */
     public final BindingSetup[] bindings;
 
+    /** The generated method handle. */
+    @Nullable
+    private MethodHandle generatedMethodHandle;
+
     /** Supplies a mirror for the operation */
     public Supplier<? extends OperationMirror> mirrorSupplier;
 
     /** The operator of the operation. */
     public final ExtensionSetup operator;
+
+    /** Any parent this operation might have. */
+    @Nullable
+    public final NestedOperationParent parent;
 
     /** The operation's template. */
     public final PackedOperationTemplate template;
@@ -74,32 +82,16 @@ public sealed abstract class OperationSetup {
     /** The type of this operation. */
     public final OperationType type;
 
-    private MethodHandle zGeneratedMethodHandle;
-
-    /** By who this operation is invoked */
-    public InvocationSite zInvocationSite;
-
-    // Maybe store it in subclasses?
-    public MethodHandle zMethodHandle;
-
     /** The name of the operation */
     public String zName; // name = operator.simpleName + "Operation"
 
-    public BindingSetup zOnBinding;
-
-    @Nullable
-    public OperationSetup zParent;
-
-    private OperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type, OperationTemplate template) {
+    private OperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type, OperationTemplate template, @Nullable NestedOperationParent parent) {
         this.operator = requireNonNull(operator);
-        this.type = requireNonNull(type);
         this.bean = requireNonNull(bean);
+        this.type = requireNonNull(type);
+        this.parent = parent;
         this.bindings = type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[type.parameterCount()];
         this.template = requireNonNull((PackedOperationTemplate) template);
-    }
-
-    public OperationTarget target() {
-        return (OperationTarget) this;
     }
 
     public final Set<BeanSetup> dependsOn() {
@@ -119,57 +111,14 @@ public sealed abstract class OperationSetup {
         return result;
     }
 
-    // Ideen er vi har et raw method, og naar vi returnere
-    // Skulle det gerne vaere et method handle der matcher template.invocationType
-    private MethodHandle doBuild() {
-        MethodHandle mh = zMethodHandle;
-
-//        System.out.println("-------------");
-//        System.out.println("Generating MethodHandle for " + type);
-//        System.out.println("InvocationType : " + template.invocationType());
-//        System.out.println(getClass());
-//        System.out.println();
-        if (this instanceof BeanAccessOperationSetup baos) {
-            return baos.bean.accessBeanX().provideSpecial();
-        }
-
-        // System.out.println(mh.type() + " " + site);
-
-//        System.out.println("--------Build Invoker-------------------");
-//        System.out.println("Bean = " + bean.path() + ", operation = " + name + ", target = " + target.getClass().getSimpleName());
-//        System.out.println(type);
-//        System.out.println("Building Operation [bean = " + bean.path() + ": " + mh);
-
-        // Whether or not we need the bean instance
-        boolean requiresBeanInstance = this instanceof MemberOperationSetup s && s.needsBeanInstance();
-
-        int osInit = 0;
-        if (requiresBeanInstance) {
-            mh = MethodHandles.collectArguments(mh, 0, bean.accessBeanX().provideSpecial());
-            osInit = 1;
-        } else if (bindings.length == 0) {
-            return MethodHandles.dropArguments(mh, 0, template.invocationType().parameterArray());
-        }
-
-        if (bindings.length > 0) {
-            Osi osi = new Osi();
-            osi.nextIndex = osInit;
-            osi.mh = mh;
-            osi.process(this);
-            mh = osi.mh;
-        }
-
-        return mh;
-    }
-
     // readOnly. Will not work if for example, resolving a binding
     public final void forEachBinding(Consumer<? super BindingSetup> binding) {
         for (BindingSetup bs : bindings) {
             if (bs == null) {
                 System.out.println(type + " ");
             }
-            if (bs.provider != null && bs.provider instanceof FromOperation nested) {
-                nested.operation.forEachBinding(binding);
+            if (bs.provider() != null && bs.provider() instanceof FromOperation nested) {
+                nested.operation().forEachBinding(binding);
             }
             binding.accept(bs);
         }
@@ -177,23 +126,16 @@ public sealed abstract class OperationSetup {
 
     public final MethodHandle generateMethodHandle() {
         bean.container.application.checkInCodegenPhase();
-        // Burde kun skulle laves en gang, men nogle forskellige steder der kalder
-        // den metode, skal lige finde ud af hvorfra
-        if (zGeneratedMethodHandle != null) {
-            return zGeneratedMethodHandle;
+        MethodHandle mh = generatedMethodHandle;
+        if (mh == null) {
+            mh = generatedMethodHandle = new OperationCodeGenerator().generate(this, methodHandle());
         }
-
-        MethodHandle mh = doBuild();
-
-        requireNonNull(mh);
-        if (!mh.type().equals(template.methodType)) {
-            System.err.println("OperationType " + this.toString());
-            System.err.println("Expected " + template.methodType);
-            System.err.println("Actual " + mh.type());
-            throw new Error();
-        }
-        return zGeneratedMethodHandle = mh;
+        assert (mh.type() == template.methodType);
+        return mh;
     }
+
+    /** {@return the initial method handle.} */
+    abstract MethodHandle methodHandle();
 
     /** {@return a new mirror.} */
     public final OperationMirror mirror() {
@@ -208,8 +150,13 @@ public sealed abstract class OperationSetup {
         return mirror;
     }
 
+    /** {@return the target of the operation.} */
+    public OperationTarget target() {
+        return (OperationTarget) this;
+    }
+
     /** {@return an operation handle for this operation.} */
-    public final OperationHandle toHandle() {
+    public final PackedOperationHandle toHandle() {
         return new PackedOperationHandle(this);
     }
 
@@ -237,8 +184,14 @@ public sealed abstract class OperationSetup {
          * @param site
          */
         public BeanAccessOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template) {
-            super(operator, bean, operationType, template);
+            super(operator, bean, operationType, template, null);
             zName = "InstantAccess";
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        MethodHandle methodHandle() {
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -247,6 +200,8 @@ public sealed abstract class OperationSetup {
 
         private final Method implementationMethod;
 
+        private final MethodHandle methodHandle;
+
         private final SamType samType;
 
         /**
@@ -254,9 +209,9 @@ public sealed abstract class OperationSetup {
          * @param site
          */
         public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
-                MethodHandle methodHandle, SamType samType, Method implementationMethod) {
-            super(operator, bean, operationType, template);
-            this.zMethodHandle = requireNonNull(methodHandle);
+                @Nullable NestedOperationParent nestedParent, MethodHandle methodHandle, SamType samType, Method implementationMethod) {
+            super(operator, bean, operationType, template, nestedParent);
+            this.methodHandle = requireNonNull(methodHandle);
             this.samType = requireNonNull(samType);
             this.implementationMethod = requireNonNull(implementationMethod);
         }
@@ -278,26 +233,40 @@ public sealed abstract class OperationSetup {
         public Method interfaceMethod() {
             return samType.saMethod();
         }
+
+        /** {@inheritDoc} */
+        @Override
+        MethodHandle methodHandle() {
+            return methodHandle;
+        }
     }
 
     /** An operation that invokes or accesses a {@link Member}. */
     public static final class MemberOperationSetup extends OperationSetup {
 
+        private final MethodHandle methodHandle;
+
         /** The {@link Member member}. */
         public final OperationMemberTarget<?> target;
+
         // MH -> mirror - no gen
         // MH -> Gen - With caching (writethrough to whereever the bean cache it)
         // MH -> LazyGen - With caching
-
         public MemberOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
                 OperationMemberTarget<?> member, MethodHandle methodHandle) {
-            super(operator, bean, operationType, template);
+            super(operator, bean, operationType, template, null);
             this.target = requireNonNull(member);
-            this.zMethodHandle = methodHandle;
+            this.methodHandle = requireNonNull(methodHandle);
             if (member instanceof OperationConstructorTarget) {
                 zName = "constructor";
                 mirrorSupplier = BeanFactoryMirror::new;
             }
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        MethodHandle methodHandle() {
+            return methodHandle;
         }
 
         public boolean needsBeanInstance() {
@@ -313,14 +282,22 @@ public sealed abstract class OperationSetup {
     /** An operation that invokes a method handle. */
     public static final class MethodHandleOperationSetup extends OperationSetup implements OperationTarget.OfMethodHandle {
 
+        final MethodHandle methodHandle;
+
         /**
          * @param operator
          * @param site
          */
         public MethodHandleOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
-                MethodHandle methodHandle) {
-            super(operator, bean, operationType, template);
-            this.zMethodHandle = methodHandle;
+                @Nullable NestedOperationParent nestedParent, MethodHandle methodHandle) {
+            super(operator, bean, operationType, template, nestedParent);
+            this.methodHandle = requireNonNull(methodHandle);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        MethodHandle methodHandle() {
+            return methodHandle;
         }
 
         /** {@inheritDoc} */
@@ -329,4 +306,7 @@ public sealed abstract class OperationSetup {
             return type.toMethodType();
         }
     }
+
+    /** The parent of a nested operation. */
+    public record NestedOperationParent(OperationSetup operation, int bindingIndex) {}
 }

@@ -33,6 +33,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.IntermediateOp.BoundOp;
 import internal.app.packed.operation.IntermediateOp.PeekingOp;
+import internal.app.packed.operation.OperationSetup.NestedOperationParent;
 
 /** The internal implementation of Op. */
 @SuppressWarnings("rawtypes")
@@ -89,7 +90,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
         return bind(0, argument);
     }
 
-    public abstract OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template);
+    public abstract OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template, @Nullable NestedOperationParent nestedParent);
 
     /** {@inheritDoc} */
     public final Op<R> peek(Consumer<? super R> action) {

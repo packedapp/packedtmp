@@ -13,21 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings.mirror;
+package app.packed.application;
 
 /**
  *
  */
-// What about @Default... Optional, osv)
-public enum BindingProviderKind {
+public class CodegenException extends BuildException {
 
-    /** A constant. */
-    CONSTANT,
-    
-    /** An argument that is provided when invoking the operation. */
-    ARGUMENT,
-        
-    /** The binding is a result of another operation. */
-    OPERATION;
+    private static final long serialVersionUID = -9153170517785461951L;
+
+    /**
+     * @param message
+     */
+    public CodegenException(String message) {
+        super(message);
+    }
+
+    public CodegenException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }
-// LifetimeConstant

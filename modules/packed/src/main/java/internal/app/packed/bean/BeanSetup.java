@@ -183,9 +183,8 @@ public final class BeanSetup {
 
     // Relative to x
     public OperationSetup instanceAccessOperation() {
-        OperationTemplate def = OperationTemplate.defaults().withReturnType(beanClass);
-        BeanAccessOperationSetup os = new BeanAccessOperationSetup(installedBy, this, OperationType.of(beanClass), def);
-        return os;
+        OperationTemplate template = OperationTemplate.defaults().withReturnType(beanClass);
+        return new BeanAccessOperationSetup(installedBy, this, OperationType.of(beanClass), template);
     }
 
     /** {@return a new mirror.} */
@@ -341,7 +340,7 @@ public final class BeanSetup {
                 ot = bean.lifetime.lifetimes().get(0).template;
             }
 
-            OperationSetup os = op.newOperationSetup(bean, bean.installedBy, ot);
+            OperationSetup os = op.newOperationSetup(bean, bean.installedBy, ot, null);
             bean.operations.add(os);
         }
 

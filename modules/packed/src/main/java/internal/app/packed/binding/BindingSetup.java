@@ -24,25 +24,21 @@ import java.util.function.Supplier;
 import app.packed.bindings.BindingClassifierKind;
 import app.packed.bindings.mirror.BindingMirror;
 import app.packed.container.Realm;
-import app.packed.framework.Nullable;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.Osi;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
 
-/** The configuration of a single binding in an operation. */
+/** The configuration of an operation's binding. */
 public abstract class BindingSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_BINDING_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BindingMirror.class, "initialize",
             void.class, BindingSetup.class);
 
+    /** The extension that owns the binding. */
     public final Realm boundBy;
-
-    /** The index into {@link OperationSetup#bindings}. */
-    public final int index;
 
     /** Supplies a mirror for the operation */
     public Supplier<? extends BindingMirror> mirrorSupplier;
@@ -50,17 +46,14 @@ public abstract class BindingSetup {
     /** The operation this binding is a part of. */
     public final OperationSetup operation;
 
-    /** Provider for the binding. */
-    @Nullable
-    public BindingProvider provider;
+    /** The index into {@link OperationSetup#bindings}. */
+    public final int operationBindingIndex;
 
-    public BindingSetup(OperationSetup operation, int index, Realm user) {
+    public BindingSetup(OperationSetup operation, int index, Realm boundBy) {
         this.operation = requireNonNull(operation);
-        this.index = index;
-        this.boundBy = requireNonNull(user);
+        this.operationBindingIndex = index;
+        this.boundBy = requireNonNull(boundBy);
     }
-
-    public abstract MethodHandle bindIntoOperation(Osi osi, MethodHandle methodHandle);
 
     public abstract BindingClassifierKind kind();
 
@@ -77,21 +70,16 @@ public abstract class BindingSetup {
         return mirror;
     }
 
+    public abstract BindingProvider provider();
+
     public static final class HookBindingSetup extends BindingSetup {
 
-        /**
-         * @param operation
-         * @param index
-         * @param user
-         */
-        public HookBindingSetup(OperationSetup operation, int index, Realm user) {
-            super(operation, index, user);
-        }
+        /** Provider for the binding. */
+        public final BindingProvider provider;
 
-        /** {@inheritDoc} */
-        @Override
-        public MethodHandle bindIntoOperation(Osi osi, MethodHandle methodHandle) {
-            return null;
+        public HookBindingSetup(OperationSetup operation, int index, Realm user, BindingProvider provider) {
+            super(operation, index, user);
+            this.provider = requireNonNull(provider);
         }
 
         /** {@inheritDoc} */
@@ -99,29 +87,35 @@ public abstract class BindingSetup {
         public BindingClassifierKind kind() {
             return BindingClassifierKind.BINDING_ANNOTATION;
         }
+
+        public BindingProvider provider() {
+            return provider;
+        }
     }
 
     public static final class ManualBindingSetup extends BindingSetup {
+
+        /** Provider for the binding. */
+        public final BindingProvider provider;
 
         /**
          * @param operation
          * @param index
          * @param user
          */
-        public ManualBindingSetup(OperationSetup operation, int index, Realm user) {
+        public ManualBindingSetup(OperationSetup operation, int index, Realm user, BindingProvider provider) {
             super(operation, index, user);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodHandle bindIntoOperation(Osi osi, MethodHandle methodHandle) {
-            return null;
+            this.provider = provider;
         }
 
         /** {@inheritDoc} */
         @Override
         public BindingClassifierKind kind() {
             return BindingClassifierKind.MANUAL;
+        }
+
+        public BindingProvider provider() {
+            return provider;
         }
     }
 }

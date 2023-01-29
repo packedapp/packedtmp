@@ -15,16 +15,12 @@
  */
 package internal.app.packed.binding;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-
 import app.packed.bindings.BindingClassifierKind;
 import app.packed.container.Realm;
 import app.packed.extension.BaseExtension;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.Osi;
 
 /**
  *
@@ -46,16 +42,9 @@ public final class ExtensionServiceBindingSetup extends BindingSetup {
         }
         this.extensionBeanClass = extensionBeanClass;
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle bindIntoOperation(Osi osi, MethodHandle methodHandle) {
-        System.out.println(methodHandle);
-        osi.is.push(0);
-        System.out.println("!");
-        MethodHandle mh = extensionBean.instanceAccessOperation().generateMethodHandle();
-        System.out.println("!2");
-        return MethodHandles.collectArguments(methodHandle, index, mh);
+    
+    public BindingProvider provider() {
+        return extensionBean.accessBeanX();
     }
 
     public BindingClassifierKind kind() {

@@ -38,13 +38,13 @@ record PackedVariable(AnnotatedElement annotatedElement, PackedVariableType type
 
     public boolean equals(Object obj) {
         // We treat the ordering of annotations as significant
-        return obj instanceof Variable v && getType().equals(v.getType()) && Arrays.equals(getAnnotations(), v.getAnnotations());
+        return obj == this || obj instanceof Variable v && getType().equals(v.getType()) && Arrays.equals(getAnnotations(), v.getAnnotations());
     }
 
     public int hashCode() {
         return type.hashCode() ^ Arrays.hashCode(annotatedElement.getAnnotations());
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {

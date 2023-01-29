@@ -124,11 +124,14 @@ import internal.app.packed.util.types.Types;
 
 // Tror vi kan supportere nogenlunde det hele
 
+// Open questions
+// how does adding qualifiers work. Replace vs fail on already existing qualifier
 public abstract class Key<T> {
 
     /** A cache of keys created by {@link #Key()}. */
     private static final ClassValue<Key<?>> CAPTURED_KEY_CACHE = new ClassValue<>() {
 
+        /** Type variable extractor for finding the type and optional qualifiers of an extending key. */
         private static final TypeVariableExtractor EXTRACTOR = TypeVariableExtractor.of(Key.class);
 
         /** {@inheritDoc} */
@@ -136,7 +139,10 @@ public abstract class Key<T> {
         protected Key<?> computeValue(Class<?> implementation) {
             // We first convert it to a variable, as it contains both the type and any annotations
             Variable v = EXTRACTOR.extractVariable(implementation, e -> new InvalidKeyException(e));
-            return convert(v.getType(), v.getAnnotations(), false, this);
+
+            Type type = convertType(v.getType(), this);
+            PackedAnnotationList annotations = qualifiersConvertExplicit(v.getAnnotations(), this);
+            return new CanonicalizedKey<>(type, annotations);
         }
     };
 
@@ -147,7 +153,7 @@ public abstract class Key<T> {
         @Override
         protected Key<?> computeValue(Class<?> key) {
             Type type = convertType(key, null);
-            return new CanonicalizedKey<>(type, NO_QUALIFIERS);
+            return new CanonicalizedKey<>(type, PackedAnnotationList.EMPTY);
         }
     };
 
@@ -155,9 +161,7 @@ public abstract class Key<T> {
     private static final Set<Class<?>> FORBIDDEN_TYPES = Set.of(Optional.class, OptionalDouble.class, OptionalInt.class, OptionalLong.class, Void.class,
             Provider.class, Key.class);
 
-    private static final PackedAnnotationList NO_QUALIFIERS = new PackedAnnotationList(new Annotation[0]);
-
-    /** We eagerly compute the hash code, as we assume most keys are going to be used in some kind of hash table. */
+    /** We eagerly compute the hash code, as we assume most keys are going to be used in a hash table of some kind. */
     private final int hash;
 
     /** Qualifiers for this key. */
@@ -181,9 +185,7 @@ public abstract class Key<T> {
      * Create a new key.
      * 
      * @param type
-     *            the type of the key
-     * @param rawType
-     *            the raw type of the key
+     *            the type part of the key
      * @param qualifiers
      *            optional qualifiers
      * @param hash
@@ -191,7 +193,7 @@ public abstract class Key<T> {
      */
     private Key(Type type, PackedAnnotationList qualifiers, int hash) {
         this.type = requireNonNull(type);
-        this.qualifiers = qualifiers;
+        this.qualifiers = requireNonNull(qualifiers);
         this.hash = hash;
     }
 
@@ -254,7 +256,7 @@ public abstract class Key<T> {
      */
     public final boolean isQualifiedWithType(Class<? extends Annotation> qualifierType) {
         requireNonNull(qualifierType, "qualifierType is null");
-        return qualifiers.isPresent(qualifierType);
+        return qualifiers.containsType(qualifierType);
     }
 
     /**
@@ -336,17 +338,34 @@ public abstract class Key<T> {
     }
 
     public final Key<T> withoutQualifierOfType(Class<? extends Annotation> qualifierType) {
-        throw new UnsupportedOperationException();
+        requireNonNull(qualifierType, "qualifierType");
+        Annotation[] annotations = qualifiers.annotations();
+        for (int i = 0; i < annotations.length; i++) {
+            if (annotations[i].annotationType() == qualifierType) {
+                if (annotations.length == 1) {
+                    return withoutQualifiers();
+                }
+                Annotation[] newAnnotations = new Annotation[annotations.length - 1];
+                for (int j = 0; j < i; j++) {
+                    newAnnotations[j] = annotations[j];
+                }
+                for (int j = i + 1; j < annotations.length; j++) {
+                    newAnnotations[j] = annotations[j - 1];
+                }
+                return new CanonicalizedKey<>(type, new PackedAnnotationList(newAnnotations));
+            }
+        }
+        return this; // we don't fail if qualifier type is not present
     }
 
     /**
-     * Returns a key with no qualifier but retaining this key's type. If this key has no qualifiers
+     * Returns a key with no qualifier but retaining the type of this key. If this key has no qualifiers
      * ({@code isQualified() == false}), returns this key.
      * 
      * @return this key without qualifiers
      */
     public final Key<T> withoutQualifiers() {
-        return isQualified() ? new CanonicalizedKey<>(type, NO_QUALIFIERS) : this;
+        return isQualified() ? new CanonicalizedKey<>(type, PackedAnnotationList.EMPTY) : this;
     }
 
     /**
@@ -366,14 +385,8 @@ public abstract class Key<T> {
     // with(Annotation... qualifiers) altsaa hvor tit har man brug for det?????
     public final Key<T> withQualifier(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
-        checkQualifierAnnotationPresent(qualifier);
+        qualifiersCheckQualifierAnnotationPresent(qualifier);
 
-//        Annotation[] qualifiers;
-//        if (isQualified()) {
-//
-//        } else {
-//            qualifiers=new Annotation[] { qualifier };
-//        }
         if (!isQualified()) {
             return new CanonicalizedKey<>(type, new PackedAnnotationList(new Annotation[] { qualifier }));
         }
@@ -444,16 +457,33 @@ public abstract class Key<T> {
         return withQualifier(new TaggedAnno());
     }
 
-    private static void checkQualifierAnnotationPresent(Annotation e) {
-        Class<?> annotationType = e.annotationType();
-        // TODO check also withQualifier
-        // TODO is class value faster?
-        if (annotationType.isAnnotationPresent(Qualifier.class)) {
-            return;
+    public final <E> Key<E> withType(Class<E> type) {
+        requireNonNull(type, "type is null");
+        return new CanonicalizedKey<>(convertType(type, null), qualifiers);
+    }
+
+    /**
+     * @param type
+     *            the type part of the new key
+     * @return the new key
+     * @throws InvalidKeyException
+     *             if the specified type is not valid as the type part of a key
+     */
+    // Hmm, Ville naesten syntes at IAE er bedre en IKE
+    public final Key<?> withType(Type type) {
+        requireNonNull(type, "type is null");
+        return new CanonicalizedKey<>(convertType(type, null), qualifiers);
+    }
+
+    public static Key<?> convert(Type type, Annotation[] annotations, boolean ignoreNonQualifyingAnnotations, Object source) {
+        Type t = convertType(type, source);
+        PackedAnnotationList apl;
+        if (!ignoreNonQualifyingAnnotations) {
+            apl = qualifiersConvertExplicit(annotations, source);
+        } else {
+            apl = qualifiersConvert(annotations, source);
         }
-        // Har maaske nogle steder jeg hellere vil have IllegalArgumentException...
-        // InjectExtension??? I think that's better...
-        throw new IllegalArgumentException("@" + format(annotationType) + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
+        return new CanonicalizedKey<>(t, apl);
     }
 
     // How do we support adding qualifiers?
@@ -461,48 +491,6 @@ public abstract class Key<T> {
 
     // If source == null we are creating the key directly (new Key<>(), or Off);
     // And we filter non-qualifyign annotations instead of failing on the them
-
-    public static Key<?> convert(Type type, Annotation[] annotations, boolean ignoreNonQualifyingAnnotations, Object source) {
-        Type t = convertType(type, source);
-        PackedAnnotationList apl = convertAnnotations(annotations, !ignoreNonQualifyingAnnotations, source);
-        return new CanonicalizedKey<>(t, apl);
-    }
-
-    private static PackedAnnotationList convertAnnotations(Annotation[] annotations, boolean failOnNonQualifyingAnnotations, Object source) {
-        return switch (annotations.length) {
-        case 0 -> NO_QUALIFIERS;
-        case 1 -> {
-            Annotation a = annotations[0];
-            if (isQualifierAnnotationPresent(a)) {
-                yield new PackedAnnotationList(annotations);
-            } else if (failOnNonQualifyingAnnotations) {
-                throw new InvalidKeyException("");
-            } else {
-                yield NO_QUALIFIERS;
-            }
-        }
-        default -> {
-            Annotation[] qualifiers = new Annotation[0];
-            for (Annotation a : annotations) {
-                Class<? extends Annotation> annotationType = a.annotationType();
-                if (annotationType.isAnnotationPresent(Qualifier.class)) {
-                    if (qualifiers.length == 0) {
-                        qualifiers = new Annotation[1];
-                        qualifiers[0] = a;
-                    } else {
-                        Annotation[] q = new Annotation[qualifiers.length + 1];
-                        for (int i = 0; i < qualifiers.length; i++) {
-                            q[i] = qualifiers[i];
-                        }
-                        q[qualifiers.length] = a;
-                        qualifiers = q;
-                    }
-                }
-            }
-            yield new PackedAnnotationList(qualifiers);
-        }
-        };
-    }
 
     private static Type convertType(Type t, Object source) {
         if (t instanceof Class<?> cl) {
@@ -573,10 +561,6 @@ public abstract class Key<T> {
         }
     }
 
-    private static boolean isQualifierAnnotationPresent(Annotation a) {
-        return a.annotationType().isAnnotationPresent(Qualifier.class);
-    }
-
     /**
      * Returns a class key with no qualifiers from the specified class.
      *
@@ -595,6 +579,13 @@ public abstract class Key<T> {
         return (Key<T>) CLASS_TO_KEY_CACHE.get(key);
     }
 
+    static <T> Key<T> of(Class<T> key, Annotation... qualifiers) {
+        // maybe just have of(key).withQualifiers(...)
+        Key<T> k = of(key);
+        PackedAnnotationList pal = qualifiersConvertExplicit(qualifiers.clone(), null);
+        return new CanonicalizedKey<>(k.type, pal);
+    }
+
     public static Key<?> of(Type type, Annotation... qualifiers) {
         requireNonNull(type, "type is null");
         requireNonNull(qualifiers, "qualifiers is null");
@@ -610,7 +601,88 @@ public abstract class Key<T> {
         return result;
     }
 
-    static Annotation[] sort(Annotation[] annotations) {
+    private static void qualifiersCheckQualifierAnnotationPresent(Annotation e) {
+        Class<?> annotationType = e.annotationType();
+        // TODO check also withQualifier
+        // TODO is class value faster?
+        if (annotationType.isAnnotationPresent(Qualifier.class)) {
+            return;
+        }
+        // Har maaske nogle steder jeg hellere vil have IllegalArgumentException...
+        // InjectExtension??? I think that's better...
+        throw new IllegalArgumentException("@" + format(annotationType) + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
+    }
+
+    private static PackedAnnotationList qualifiersConvert(Annotation[] annotations, Object source) {
+        return switch (annotations.length) {
+        case 0 -> PackedAnnotationList.EMPTY;
+        case 1 -> {
+            yield qualifiersIsAnnotationPresent(annotations[0]) ? new PackedAnnotationList(annotations) : PackedAnnotationList.EMPTY;
+        }
+        default -> {
+            int count = 0;
+            for (int i = 0; i < annotations.length; i++) {
+                // Array is safe to modify. Or is it?
+                // I think we are sharing it
+                Annotation a = annotations[i];
+                if (qualifiersIsAnnotationPresent(a)) {
+                    if (count > 0) {
+                        annotations[i - count] = a;
+                    }
+                } else {
+                    count++;
+                }
+            }
+            if (count > 0) {
+                annotations = Arrays.copyOf(annotations, annotations.length - count);
+            }
+            yield new PackedAnnotationList(qualifiersSort(annotations));
+        }
+        };
+    }
+
+    private static PackedAnnotationList qualifiersConvertExplicit(Annotation[] annotations, Object source) {
+        return switch (annotations.length) {
+        case 0 -> PackedAnnotationList.EMPTY;
+        case 1 -> {
+            if (qualifiersIsAnnotationPresent(annotations[0])) {
+                yield new PackedAnnotationList(annotations);
+            } else {
+                throw new InvalidKeyException("");
+            }
+        }
+        default -> {
+            for (Annotation a : annotations) {
+                if (!qualifiersIsAnnotationPresent(a)) {
+                    throw new InvalidKeyException("asdasd");
+                }
+            }
+            yield new PackedAnnotationList(qualifiersSort(annotations));
+        }
+        };
+    }
+
+    private static boolean qualifiersIsAnnotationPresent(Annotation a) {
+        return a.annotationType().isAnnotationPresent(Qualifier.class);
+    }
+
+    private static Annotation[] qualifiersSort(Annotation[] annotations) {
+        Arrays.sort(annotations, (a1, a2) -> {
+            Class<? extends Annotation> a1t = a1.annotationType();
+            Class<? extends Annotation> a2t = a2.annotationType();
+            if (a1t == a2t) {
+                throw new InvalidKeyException("Cannot use multiple qualifiers of the same type");
+            }
+            int c = a1t.getSimpleName().compareTo(a2t.getSimpleName());
+            if (c != 0) {
+                return c;
+            }
+            c = a1t.getCanonicalName().compareTo(a2t.getCanonicalName());
+            if (c != 0) {
+                return c;
+            }
+            throw new InvalidKeyException("Cannot use multiple qualifiers with the same canonical name");
+        });
         // Fails on qualifiers with same name
         return annotations;
     }

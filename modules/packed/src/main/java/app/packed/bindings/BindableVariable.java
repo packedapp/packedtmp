@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import app.packed.application.BuildGoal;
+import app.packed.application.CodegenException;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bindings.mirror.BindingMirror;
 import app.packed.context.Context;
@@ -40,11 +42,13 @@ import internal.app.packed.service.KeyHelper;
 public interface BindableVariable {
 
     /**
-     * By default binding to static fields is not allowed
+     * By default binding to static fields is not allowed and will
      * <p>
      * Calling this method has no effect if the underlying variable is not a field.
      * 
      * @return
+     * @throws IllegalStateException
+     *             if called after the variable has been bound
      */
     BindableVariable allowStaticFieldBinding();
 
@@ -60,9 +64,7 @@ public interface BindableVariable {
     List<Class<?>> availableInvocationArguments();
 
     /**
-     * Binds the specified constant value to the variable.
-     * <p>
-     * Vi tager Nullable med saa vi bruge raw.
+     * Binds the specified constant value to the underlying variable.
      * <p>
      * Tror vi smider et eller andet hvis vi er normal og man angiver null. Kan kun bruges for raw
      * <p>
@@ -80,16 +82,15 @@ public interface BindableVariable {
     void bindConstant(@Nullable Object value);
 
     /**
-     * Binds the variable to a constant that is generated as part of the application's code generating phase.
+     * Binds the underlying variable to a constant that is generated as part of the application's code generating phase.
      * <p>
-     * The specified supplier is only called if a code gen phase of the application is active. Otherwise the supplier will
-     * never be called. The specified supplier is never called more than once.
+     * If the application does not have a {@link BuildGoal#isCodeGenerating() code generating} phase. The specified supplier
+     * is never invoked.
      * <p>
-     * If the specified supplier generates a value that is assignable to the value. The runtime will throw an
-     * {@link ClassCastException} in the code generating phase. TODO what about null-> primitive?? IAE like bindConstant
-     * does not work
-     * 
-     *
+     * If the specified supplier returns a value that is not assignable to the underlying variable. The runtime will throw a
+     * {@link CodegenException} in the application's code generating phase.
+     * <p>
+     * The specified supplier is never invoked more than once for a single binding.
      * 
      * @param supplier
      *            the supplier of the constant
@@ -97,6 +98,10 @@ public interface BindableVariable {
      */
     void bindGeneratedConstant(Supplier<@Nullable ?> supplier);
 
+    /**
+     * @param argumentType
+     */
+    // Er den for farlig? Man kan jo kun binde hvis man ogsaa er operator
     void bindInvocationArgument(Class<?> argumentType);
 
     /**
@@ -173,8 +178,7 @@ public interface BindableVariable {
     /** {@return the extension that is responsible for invoking the underlying operation.} */
     Class<? extends Extension<?>> invokedBy();
 
-
-    /** {@return whether or not the variable has been bound.} */
+    /** {@return whether or not the underlying variable has been bound.} */
     boolean isBound();
 
     /** {@return the raw type of the variable.} */
@@ -204,9 +208,6 @@ public interface BindableVariable {
         return KeyHelper.convert(variable().getType(), variable().getAnnotations(), this);
     }
 
-    /** {@return the variable that can be bound.} */
-    Variable variable();
-
     default BindableWrappedVariable unwrap() {
         // peel ->
 
@@ -214,10 +215,13 @@ public interface BindableVariable {
         // Ville vaere fedt hvis alle metoderne havde samme prefix
         throw new UnsupportedOperationException();
     }
-    
- 
-    enum VariableKind {
-        FIELD, PARAMETER, TYPE_ANNOTATION;
+
+    /** {@return the variable that can be bound.} */
+    Variable variable();
+
+    // The target of a binding
+    enum Target {
+        FIELD, PARAMETER, TYPE_PARAMETER;
     }
 }
 
@@ -230,6 +234,7 @@ interface Sanfbox extends BindableVariable {
      */
     void bindCompositeRecord(); // bindComposite?
     // Har saa mange metoder i forvejen
+
     default void checkAssignableTo(Class<?> clazz) {
         requireNonNull(clazz, "clazz is null");
         Class<?> rawType = variable().getRawType();

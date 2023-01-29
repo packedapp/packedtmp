@@ -25,7 +25,7 @@ import java.util.function.Function;
  *
  */
 // Common on static interface methods on annotations
-public class QualifierUtil {
+public final class QualifierUtil {
 
     /** You are not qualified to call this constructor. */
     private QualifierUtil() {}

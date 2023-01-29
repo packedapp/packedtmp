@@ -15,17 +15,16 @@
  */
 package internal.app.packed.service;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
+import static java.util.Objects.requireNonNull;
 
 import app.packed.bindings.BindingClassifierKind;
 import app.packed.container.Realm;
 import app.packed.framework.Nullable;
 import app.packed.service.ServiceBindingMirror;
 import app.packed.service.ServiceExtension;
+import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.Osi;
 
 /**
  * A binding to a service.
@@ -52,23 +51,13 @@ public final class ServiceBindingSetup extends BindingSetup {
      */
     ServiceBindingSetup(OperationSetup operation, int index, ServiceManagerEntry entry, boolean required) {
         super(operation, index, Realm.extension(ServiceExtension.class));
-        this.entry = entry;
+        this.entry = requireNonNull(entry);
         this.required = required;
         mirrorSupplier = () -> new ServiceBindingMirror(this);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle bindIntoOperation(Osi osi, MethodHandle methodHandle) {
-        // 0 Skal nok erstattest hvis vi ikke kun tager PackedExtensionContext
-        osi.is.push(0);
-        MethodHandle mh = entry.provider.resolution.provideSpecial();
-        
-//        System.out.println();
-//        System.out.println(index);
-//        System.out.println(methodHandle.type());
-//        System.out.println(mh.type());
-        return MethodHandles.collectArguments(methodHandle, index, mh);
+    public BindingProvider provider() {
+        return entry.provider == null ? null : entry.provider.resolution;
     }
 
     /** {@return whether or not the service could be resolved.} */
