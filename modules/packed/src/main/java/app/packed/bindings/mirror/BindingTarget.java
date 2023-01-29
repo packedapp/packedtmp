@@ -15,7 +15,10 @@
  */
 package app.packed.bindings.mirror;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
 /**
@@ -23,24 +26,35 @@ import java.lang.reflect.Parameter;
  */
 public sealed interface BindingTarget {
 
-    /** Represents an operation that gets, sets or updates a {@link Field field}. */
+    /** Represents the binding of a {@link Field field}. */
     non-sealed interface OfField extends BindingTarget {
+
         /** {@return the field.} */
         Field field();
     }
-    
+
     non-sealed interface OfMethodHandleParameter extends BindingTarget {}
 
-    //(@Foo fff)
-    /** Represents an operation that gets, sets or updates a {@link Field field}. */
+    /**
+     * Represents the binding of a {@link Parameter parameter} in a {@link Method method} or {@link Constructor
+     * constructor}.
+     */
     non-sealed interface OfParameter extends BindingTarget {
+
+        /**
+         * @return
+         */
+        Executable executable();
+
+        /** {@return the index of the parameter.} */
+        int index();
 
         /** {@return the parameter.} */
         Parameter parameter();
     }
-    
+
     // Op1<@Foo fff, String> IDK kunne ogsaa vaere parameter...
     non-sealed interface OfTypeParameter extends BindingTarget {
-        
+
     }
 }

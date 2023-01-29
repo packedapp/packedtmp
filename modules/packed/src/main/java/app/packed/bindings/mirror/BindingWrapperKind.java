@@ -25,6 +25,7 @@ import java.util.OptionalLong;
  * <p>
  * Custom wrapper kinds are not supported.
  */
+// What about TraceBinding<T>?
 public enum BindingWrapperKind {
 
     /**
