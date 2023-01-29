@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 
@@ -60,7 +60,7 @@ public interface ContextTemplate {
     @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.PARAMETER })
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @AnnotatedVariableHook(extension = BaseExtension.class)
+    @AnnotatedBindingHook(extension = BaseExtension.class)
     public @interface InvocationContextArgument {
         Class<? extends Context<?>> context();
 

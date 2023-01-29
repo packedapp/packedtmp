@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationPath;
-import app.packed.bean.BeanHook.TypedProvisionHook;
+import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.bean.BeanMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
@@ -38,7 +38,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * <p>
  * At runtime you can have a ContainerMirror injected 
  */
-@TypedProvisionHook(extension = MirrorExtension.class)
+@BindingTypeHook(extension = MirrorExtension.class)
 public non-sealed class ContainerMirror implements ContextualizedElementMirror , Mirror {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */

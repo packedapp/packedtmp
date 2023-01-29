@@ -3,7 +3,7 @@ package app.packed.application;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.bean.BeanHook.TypedProvisionHook;
+import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
@@ -29,7 +29,7 @@ import internal.app.packed.operation.OperationSetup;
  * <p>
  * Like many other mirrors this class is exte extendable via {@link BootstrapApp.Composer#}
  */
-@TypedProvisionHook(extension = MirrorExtension.class)
+@BindingTypeHook(extension = MirrorExtension.class)
 public non-sealed class ApplicationMirror implements Mirror , ContextualizedElementMirror {
 
     /**

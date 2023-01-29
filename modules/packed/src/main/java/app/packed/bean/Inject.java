@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.extension.BaseExtension;
 
 /**
@@ -46,7 +46,7 @@ import app.packed.extension.BaseExtension;
 @Target({ ElementType.CONSTRUCTOR, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedVariableHook(extension = BaseExtension.class)
+@AnnotatedBindingHook(extension = BaseExtension.class)
 @AnnotatedMethodHook(allowInvoke = true, extension = BaseExtension.class)
 public @interface Inject {}
 // For en metode er det inject metoden

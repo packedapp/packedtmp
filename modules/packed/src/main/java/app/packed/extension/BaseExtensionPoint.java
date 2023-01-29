@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.Inject;
@@ -315,7 +315,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     @Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.TYPE_USE })
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedVariableHook(extension = BaseExtension.class)
+    @AnnotatedBindingHook(extension = BaseExtension.class)
     public @interface CodeGenerated {}
 
     // Vi har brug ContainerInstaller fordi, man ikke konfigure noget efter man har linket

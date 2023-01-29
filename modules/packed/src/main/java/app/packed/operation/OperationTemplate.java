@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
 
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.bindings.BindableVariable;
 import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
@@ -163,7 +163,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.PARAMETER })
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @AnnotatedVariableHook(extension = BaseExtension.class)
+    @AnnotatedBindingHook(extension = BaseExtension.class)
     public @interface InvocationArgument {
         int index() default 0;
     }

@@ -17,7 +17,7 @@ package internal.app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.bindings.BindingClassifierKind;
+import app.packed.bindings.BindingKind;
 import app.packed.container.Realm;
 import app.packed.framework.Nullable;
 import app.packed.service.ServiceBindingMirror;
@@ -65,7 +65,7 @@ public final class ServiceBindingSetup extends BindingSetup {
         return entry.provider != null;
     }
 
-    public BindingClassifierKind kind() {
-        return BindingClassifierKind.KEY;
+    public BindingKind kind() {
+        return BindingKind.SERVICE;
     }
 }

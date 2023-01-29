@@ -1,9 +1,9 @@
 package app.packed.concurrent.scheduling;
 
-import app.packed.bean.BeanHook.TypedProvisionHook;
+import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.context.Context;
 
-@TypedProvisionHook(extension = SchedulingExtension.class, requiresContext = SchedulingContext.class)
+@BindingTypeHook(extension = SchedulingExtension.class, requiresContext = SchedulingContext.class)
 public interface SchedulingContext extends Context<SchedulingExtension> /* extends AttributedElement */ {
 
     long invocationCount();

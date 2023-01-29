@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.time.LocalDateTime;
 
 import app.packed.application.App;
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.OnInitialize;
 import app.packed.bindings.BindableVariable;
@@ -63,7 +63,7 @@ public class OSITest extends BaseAssembly {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedVariableHook(extension = MyExt.class)
+    @AnnotatedBindingHook(extension = MyExt.class)
     @interface BuildTime {}
 
     static class MyExt extends Extension<MyExt> {
@@ -111,10 +111,10 @@ public class OSITest extends BaseAssembly {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedVariableHook(extension = MyExt.class)
+    @AnnotatedBindingHook(extension = MyExt.class)
     @interface Now {}
 
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedVariableHook(extension = MyExt.class)
+    @AnnotatedBindingHook(extension = MyExt.class)
     @interface InitializationTime {}
 }

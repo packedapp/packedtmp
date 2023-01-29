@@ -42,7 +42,7 @@ class OperationCodeGenerator {
         // instance fields and methods, needs a bean instance
         boolean requiresBeanInstance = operation instanceof MemberOperationSetup s && s.needsBeanInstance();
         if (requiresBeanInstance) {
-            mh = provide(mh, operation.bean.accessBeanX());
+            mh = provide(mh, operation.bean.beanInstanceBindingProvider());
         }
 
         for (BindingSetup binding : operation.bindings) {

@@ -35,6 +35,49 @@ import app.packed.extension.Extension;
 // or Maybe just interface BeanHooks?
 public @interface BeanHook {
 
+    /**
+     * <p>
+     * Attempting to place multiple annotated variable hook annotations on a single field or parameter will result in a
+     * {@link InvalidBeanClassException} being thrown at build-time.
+     * 
+     * @see BeanIntrospector#hookOnProvidedAnnotatedVariable(java.lang.annotation.Annotation, app.packed.bean.BeanIntrospector.BindableVariable)
+     */
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @BeanHook
+    public @interface AnnotatedBindingHook {
+
+        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
+        Class<? extends Extension<?>> extension();
+
+        /**
+         * Contexts that are required in order to use the binding class or annotation.
+         * <p>
+         * If this binding is attempted to be used without the context being available a {@link OutOfContextException} will be
+         * thrown.
+         * <p>
+         * If this method returns multiple contexts they will <strong>all</strong> be required.
+         * 
+         * @return stuff
+         */
+        Class<? extends Context<?>>[] requiresContext() default {};
+
+        enum Mode {
+
+            // Tror maaske vi skal overskrive en eller anden klasse
+            // Som siger hvad vi skal goere i de enkelte tilfaelde
+
+            DECORATE, DEFAULT, PEEK;
+
+            // Kan kun vaere en Default annotering (Default og @Nullable?)
+            
+            // Alle decorates er altid koert foerned peek.
+            //// fx vil vi altid have Peek efter decorate ved validering
+            //// selvom decorate annotering er efter peek
+        }
+    }
+
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
@@ -109,56 +152,13 @@ public @interface BeanHook {
     }
 
     /**
-     * <p>
-     * Attempting to place multiple annotated variable hook annotations on a single field or parameter will result in a
-     * {@link InvalidBeanClassException} being thrown at build-time.
-     * 
-     * @see BeanIntrospector#hookOnProvidedAnnotatedVariable(java.lang.annotation.Annotation, app.packed.bean.BeanIntrospector.BindableVariable)
-     */
-    @Target(ElementType.ANNOTATION_TYPE)
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    @BeanHook
-    public @interface AnnotatedVariableHook {
-
-        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
-        Class<? extends Extension<?>> extension();
-
-        /**
-         * Contexts that are required in order to use the binding class or annotation.
-         * <p>
-         * If this binding is attempted to be used without the context being available a {@link OutOfContextException} will be
-         * thrown.
-         * <p>
-         * If this method returns multiple contexts they will <strong>all</strong> be required.
-         * 
-         * @return stuff
-         */
-        Class<? extends Context<?>>[] requiresContext() default {};
-
-        enum Mode {
-
-            // Tror maaske vi skal overskrive en eller anden klasse
-            // Som siger hvad vi skal goere i de enkelte tilfaelde
-
-            PEEK, DECORATE, DEFAULT;
-
-            // Kan kun vaere en Default annotering (Default og @Nullable?)
-            
-            // Alle decorates er altid koert foerned peek.
-            //// fx vil vi altid have Peek efter decorate ved validering
-            //// selvom decorate annotering er efter peek
-        }
-    }
-
-    /**
      *
      */
     @Target(ElementType.TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @BeanHook
-    public @interface TypedProvisionHook {
+    public @interface BindingTypeHook {
 
         /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
         Class<? extends Extension<?>> extension();

@@ -15,7 +15,7 @@
  */
 package internal.app.packed.binding;
 
-import app.packed.bindings.BindingClassifierKind;
+import app.packed.bindings.BindingKind;
 import app.packed.container.Realm;
 import app.packed.extension.BaseExtension;
 import internal.app.packed.bean.BeanSetup;
@@ -44,10 +44,10 @@ public final class ExtensionServiceBindingSetup extends BindingSetup {
     }
     
     public BindingProvider provider() {
-        return extensionBean.accessBeanX();
+        return extensionBean.beanInstanceBindingProvider();
     }
 
-    public BindingClassifierKind kind() {
-        return BindingClassifierKind.KEY;
+    public BindingKind kind() {
+        return BindingKind.SERVICE;
     }
 }

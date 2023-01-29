@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationPath;
-import app.packed.bean.BeanHook.TypedProvisionHook;
+import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.bindings.mirror.DependenciesMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
@@ -33,7 +33,7 @@ import internal.app.packed.operation.OperationSetup;
  * <p>
  * Instances of this class is typically obtained from calls to {@link ApplicationMirror} or {@link ContainerMirror}.
  */
-@TypedProvisionHook(extension = MirrorExtension.class)
+@BindingTypeHook(extension = MirrorExtension.class)
 public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirror {
 
     /**

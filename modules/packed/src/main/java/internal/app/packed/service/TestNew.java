@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 import java.util.List;
 
 import app.packed.application.App;
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.bindings.BindableVariable;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
@@ -107,7 +107,7 @@ public class TestNew extends BaseAssembly {
 
     @Target({ ElementType.PARAMETER })
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedVariableHook(extension = MyExt.class)
+    @AnnotatedBindingHook(extension = MyExt.class)
     @interface XX {
         String value();
     }

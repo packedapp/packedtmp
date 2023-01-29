@@ -15,13 +15,13 @@
  */
 package app.packed.concurrent;
 
-import app.packed.bean.BeanHook.TypedProvisionHook;
+import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.context.Context;
 
 /**
  *
  */
-@TypedProvisionHook(extension = ThreadExtension.class)
+@BindingTypeHook(extension = ThreadExtension.class)
 public interface DaemonContext extends Context<ThreadExtension> {
 
     boolean isShutdown();

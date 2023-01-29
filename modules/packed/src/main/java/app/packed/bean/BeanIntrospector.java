@@ -26,8 +26,8 @@ import java.util.function.Consumer;
 
 import app.packed.bean.BeanHook.AnnotatedFieldHook;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
-import app.packed.bean.BeanHook.TypedProvisionHook;
+import app.packed.bean.BeanHook.AnnotatedBindingHook;
+import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.bindings.BindableVariable;
 import app.packed.bindings.BindableWrappedVariable;
 import app.packed.bindings.InvalidKeyException;
@@ -223,7 +223,7 @@ public abstract class BeanIntrospector {
      * @param variable
      *            a binding
      * 
-     * @see AnnotatedVariableHook
+     * @see AnnotatedBindingHook
      */
     public void hookOnProvidedAnnotatedVariable(Annotation hook, BindableVariable var) {
         throw new InternalExtensionException(extension().fullName() + " failed to handle parameter hook annotation(s) " + hook);
@@ -232,7 +232,7 @@ public abstract class BeanIntrospector {
     /**
      * @param v
      * 
-     * @see TypedProvisionHook
+     * @see BindingTypeHook
      */
     public void hookOnProvidedVariableType(Class<?> hook, BindableWrappedVariable v) {
         throw new InternalExtensionException(extension().fullName() + " failed to handle type hook " + StringFormatter.format(hook));

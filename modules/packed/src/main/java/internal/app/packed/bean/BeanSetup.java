@@ -69,7 +69,7 @@ public final class BeanSetup {
     /** The kind of bean. */
     public final BeanKind beanKind;
 
-    /** The source ({@code null}, {@link Class}, {@link PackedOp}, or an instance) */
+    /** The source ({@code null}, {@link Class}, {@link PackedOp}, otherwise an instance) */
     @Nullable
     public final Object beanSource;
 
@@ -162,7 +162,7 @@ public final class BeanSetup {
         }
     }
 
-    public BindingProvider accessBeanX() {
+    public BindingProvider beanInstanceBindingProvider() {
         if (beanSourceKind == BeanSourceKind.INSTANCE) {
             return new FromConstant(beanSource.getClass(), beanSource);
         } else if (beanKind == BeanKind.CONTAINER) { // we've already checked if instance
@@ -234,9 +234,6 @@ public final class BeanSetup {
         return new PackedNamespacePath(paths);
     }
 
-    public static BeanSetup crack(OperationalMethod m) {
-        return ((PackedOperationalMethod) m).extension.scanner.bean;
-    }
     /**
      * Extracts a bean setup from a bean configuration.
      * 
@@ -249,8 +246,6 @@ public final class BeanSetup {
         BeanHandle<?> handle = (BeanHandle<?>) VH_BEAN_CONFIGURATION_TO_HANDLE.get(configuration);
         return crack(handle);
     }
-    
-    
     /**
      * Extracts a bean setup from a bean handle.
      * 
@@ -261,6 +256,11 @@ public final class BeanSetup {
     public static BeanSetup crack(BeanHandle<?> handle) {
         requireNonNull(handle, "handle is null");
         return (BeanSetup) VH_BEAN_HANDLE_TO_SETUP.get(handle);
+    }
+    
+    
+    public static BeanSetup crack(OperationalMethod m) {
+        return ((PackedOperationalMethod) m).extension.scanner.bean;
     }
 
     static BeanSetup install(PackedBeanInstaller installer, BeanKind beanKind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,

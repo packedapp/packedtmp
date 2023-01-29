@@ -235,7 +235,7 @@ public final /* primitive */ class BeanHandle<T> {
             // or " + BeanKind.LAZY);
         }
 
-        bean.container.sm.serviceProvide(k, bean.instanceAccessOperation(), bean.accessBeanX());
+        bean.container.sm.serviceProvide(k, bean.instanceAccessOperation(), bean.beanInstanceBindingProvider());
     }
 
     public void setErrorHandler(ErrorHandler errorHandler) {

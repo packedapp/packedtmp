@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionContext;
 
@@ -44,7 +44,7 @@ import app.packed.extension.ExtensionContext;
 @Target({ ElementType.PARAMETER, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedVariableHook(extension = BaseExtension.class, requiresContext = ExtensionContext.class)
+@AnnotatedBindingHook(extension = BaseExtension.class, requiresContext = ExtensionContext.class)
 public @interface AncestorBean {} // childExtension? instead
 
 //Alternativt en ContainerLaucherContext? med context services.

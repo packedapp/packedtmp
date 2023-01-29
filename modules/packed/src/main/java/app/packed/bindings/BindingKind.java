@@ -15,14 +15,13 @@
  */
 package app.packed.bindings;
 
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 
 /**
  *
  */
-public enum BindingClassifierKind {
+public enum BindingKind {
 
     /**
      * The binding has been created manually.
@@ -39,19 +38,10 @@ public enum BindingClassifierKind {
      * 
      * 
      * 
+     * @see TypedProvisionHook
      * @see AnnotatedVariableHook
      **/
-    BINDING_ANNOTATION,
+    HOOK,
 
-    /**
-     * The binding has been created because of a Hook. Either the variable is annotated with a binding hook. Or the variable
-     * class is annotated with BindingHook
-     * 
-     * 
-     * 
-     * @see VariableTypeHook
-     **/
-    BINDING_TYPE, // or BINDING_TYPE
-    
-    KEY, // There is a key
+    SERVICE;
 }

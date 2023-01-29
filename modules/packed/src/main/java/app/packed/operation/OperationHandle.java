@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import app.packed.bindings.BindableVariable;
-import app.packed.bindings.BindingClassifierKind;
+import app.packed.bindings.BindingKind;
 import app.packed.context.Context;
 import internal.app.packed.operation.PackedOperationHandle;
 
@@ -69,7 +69,7 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      * <p>
      * This operation is no longer configurable when this method returns.
      * <p>
-     * The will report a {@link BindingClassifierKind#MANUAL} as binding classifier
+     * The will report a {@link BindingKind#MANUAL} as binding classifier
      * 
      * @param index
      *            the index of the parameter to bind

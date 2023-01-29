@@ -19,6 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.util.Optional;
 
+import app.packed.bindings.BindingKind;
 import app.packed.bindings.Variable;
 import app.packed.container.Realm;
 import app.packed.extension.Extension;
@@ -60,17 +61,12 @@ public class BindingMirror implements Mirror {
         return b;
     }
 
-    /** {@return the index of this binding into OperationMirror#bindings().} */
-    public int bindingIndex() { // alternative parameterIndex
-        return binding().operationBindingIndex;
-    }
-
-    public Optional<BindingProviderKind> bindingKind() {
-        return Optional.ofNullable(binding().provider()).map(b -> b.kind());
+    public final BindingKind bindingKind() {
+        return binding().kind();
     }
 
     /** {@return the x who created binding.} */
-    public Realm boundBy() {
+    public final Realm boundBy() {
         return binding().boundBy;
     }
 
@@ -123,12 +119,22 @@ public class BindingMirror implements Mirror {
         return binding().operation.mirror();
     }
 
+    /** {@return the index of this binding into OperationMirror#bindings().} */
+    public final int operationBindingIndex() { // alternative parameterIndex
+        return binding().operationBindingIndex;
+    }
+
+    public Optional<BindingProviderKind> providerKind() {
+        return Optional.ofNullable(binding().provider()).map(b -> b.kind());
+    }
+
     public Optional<OperationMirror> providingOperation() {
         return Optional.empty();
     }
 
     /**
-     * Returns the field or parameter underlying the binding. Or empty if the underlying operation is a {@link MethodHandle}.
+     * Returns the field or parameter underlying the binding. Or empty if the underlying operation is a
+     * {@link MethodHandle}.
      * 
      * @return stuff
      */
@@ -136,14 +142,15 @@ public class BindingMirror implements Mirror {
         return Optional.empty();
     }
 
+    /** {@inheritDoc} */
+    public String toString() {
+        return binding.toString();
+    }
+
     /** {@return the underlying variable that has been bound.} */
     public Variable variable() {
         BindingSetup b = binding();
         return b.operation.type.parameter(b.operationBindingIndex);
-    }
-
-    public String toString() {
-        return binding.toString();
     }
 }
 //; // What are we having injected... Giver det mening for functions????

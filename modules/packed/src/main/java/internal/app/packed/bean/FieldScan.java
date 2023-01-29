@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 
 import app.packed.bean.BeanHook.AnnotatedFieldHook;
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
+import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.bean.BeanInstallationException;
 import app.packed.extension.Extension;
 import internal.app.packed.bean.BeanHookModel.AnnotatedField;
@@ -100,8 +100,8 @@ class FieldScan {
      *            the field to introspect
      * 
      * @throws BeanInstallationException
-     *             if there are multiple {@link AnnotatedVariableHook} on the field. Or if there are both
-     *             {@link AnnotatedFieldHook} and {@link AnnotatedVariableHook} annotations
+     *             if there are multiple {@link AnnotatedBindingHook} on the field. Or if there are both
+     *             {@link AnnotatedFieldHook} and {@link AnnotatedBindingHook} annotations
      * 
      * @apiNote Currently we allow multiple {@link AnnotatedFieldHook} on a field. This might change in the future, but for
      *          now we allow it.

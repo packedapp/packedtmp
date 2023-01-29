@@ -21,17 +21,20 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
-import app.packed.bindings.BindingClassifierKind;
+import app.packed.bindings.BindingKind;
 import app.packed.bindings.mirror.BindingMirror;
 import app.packed.container.Realm;
 import app.packed.operation.OperationMirror;
+import internal.app.packed.binding.BindingSetup.HookBindingSetup;
+import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
 
 /** The configuration of an operation's binding. */
-public abstract class BindingSetup {
+public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindingSetup, ServiceBindingSetup, ExtensionServiceBindingSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_BINDING_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BindingMirror.class, "initialize",
@@ -55,7 +58,7 @@ public abstract class BindingSetup {
         this.boundBy = requireNonNull(boundBy);
     }
 
-    public abstract BindingClassifierKind kind();
+    public abstract BindingKind kind();
 
     /** {@return a new mirror.} */
     public BindingMirror mirror() {
@@ -84,8 +87,8 @@ public abstract class BindingSetup {
 
         /** {@inheritDoc} */
         @Override
-        public BindingClassifierKind kind() {
-            return BindingClassifierKind.BINDING_ANNOTATION;
+        public BindingKind kind() {
+            return BindingKind.HOOK;
         }
 
         public BindingProvider provider() {
@@ -110,8 +113,8 @@ public abstract class BindingSetup {
 
         /** {@inheritDoc} */
         @Override
-        public BindingClassifierKind kind() {
-            return BindingClassifierKind.MANUAL;
+        public BindingKind kind() {
+            return BindingKind.MANUAL;
         }
 
         public BindingProvider provider() {

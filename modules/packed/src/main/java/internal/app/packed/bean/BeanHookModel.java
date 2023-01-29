@@ -25,8 +25,8 @@ import java.util.Map;
 
 import app.packed.bean.BeanHook.AnnotatedFieldHook;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
-import app.packed.bean.BeanHook.AnnotatedVariableHook;
-import app.packed.bean.BeanHook.TypedProvisionHook;
+import app.packed.bean.BeanHook.AnnotatedBindingHook;
+import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.bean.BeanIntrospector.OperationalField;
 import app.packed.bindings.BindableVariable;
 import app.packed.extension.CustomBeanHook;
@@ -91,11 +91,11 @@ public final class BeanHookModel {
                 result = new AnnotatedField(AnnotatedFieldKind.FIELD, fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet());
             }
 
-            AnnotatedVariableHook bindingHook = type.getAnnotation(AnnotatedVariableHook.class);
+            AnnotatedBindingHook bindingHook = type.getAnnotation(AnnotatedBindingHook.class);
             if (bindingHook != null) {
                 if (result != null) {
                     throw new InternalExtensionException(
-                            annotationType + " cannot both be annotated with " + AnnotatedFieldHook.class + " and " + AnnotatedVariableHook.class);
+                            annotationType + " cannot both be annotated with " + AnnotatedFieldHook.class + " and " + AnnotatedBindingHook.class);
                 }
                 checkExtensionClass(type, bindingHook.extension());
                 result = new AnnotatedField(AnnotatedFieldKind.VARIABLE, bindingHook.extension(), false, true);
@@ -123,7 +123,7 @@ public final class BeanHookModel {
         @Override
         protected AnnotatedParameterType computeValue(Class<?> type) {
 
-            AnnotatedVariableHook h = type.getAnnotation(AnnotatedVariableHook.class);
+            AnnotatedBindingHook h = type.getAnnotation(AnnotatedBindingHook.class);
 
             Class<? extends Annotation> cl = bindings.get(type.getName());
             if (cl != null) {
@@ -150,7 +150,7 @@ public final class BeanHookModel {
 
         @Override
         protected ParameterType computeValue(Class<?> type) {
-            TypedProvisionHook h = type.getAnnotation(TypedProvisionHook.class);
+            BindingTypeHook h = type.getAnnotation(BindingTypeHook.class);
             Class<? extends Annotation> cl = bindings.get(type.getName());
             if (cl != null) {
                 Class<?> declaringClass = cl.getDeclaringClass();
