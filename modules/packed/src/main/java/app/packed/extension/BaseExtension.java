@@ -1,12 +1,16 @@
 package app.packed.extension;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 
+import app.packed.application.BuildException;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstallationException;
@@ -33,15 +37,19 @@ import app.packed.operation.Op1;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.InvocationArgument;
+import app.packed.service.ExportService;
+import app.packed.service.ProvideService;
 import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanLocal;
+import internal.app.packed.binding.BindingProvider.FromOperation;
 import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  * An extension that defines the foundational APIs for managing beans, containers and applications.
@@ -60,6 +68,43 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /** Create a new base extension. */
     BaseExtension() {}
+
+    /**
+     * Provides every service from the specified locator.
+     * 
+     * @param locator
+     *            the locator to provide services from
+     * @throws IllegalArgumentException
+     *             if the specified locator is not implemented by Packed
+     */
+    public void provideAll(ServiceLocator locator) {
+        requireNonNull(locator, "locator is null");
+//        if (!(locator instanceof AbstractServiceLocator l)) {
+//            throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
+//                    + " are currently not supported, locator type = " + locator.getClass().getName());
+//        }
+        checkIsConfigurable();
+        throw new UnsupportedOperationException();
+    }
+
+//    public void provideAll(ServiceLocator locator, Consumer<ServiceTransformer> transformer) {
+//        // ST.contract throws UOE
+//    }
+
+    // Think we need installPrototype (Which will fail if not provided or exported)
+    // providePrototype would then be installPrototype().provide() // not ideal
+    // Men taenker vi internt typisk arbejde op i mod implementering. Dog ikke altid
+    // providePerRequest <-- every time the service is requested
+    // Also these beans, can typically just be composites??? Nah
+    public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
+        BeanHandle<T> handle = newBeanInstaller(BeanKind.MANYTON).lifetimes(OperationTemplate.defaults()).install(implementation);
+        return new ProvideableBeanConfiguration<T>(handle).provide();
+    }
+
+    public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> op) {
+        BeanHandle<T> handle = newBeanInstaller(BeanKind.MANYTON).lifetimes(OperationTemplate.defaults()).install(op);
+        return new ProvideableBeanConfiguration<T>(handle).provide();
+    }
 
     <K> void addCodeGenerated(BeanSetup bean, Key<K> key, Supplier<? extends K> supplier) {
         // BindableVariable bv = CODEGEN.get(bean).get(key);
@@ -134,6 +179,48 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     public <T> ProvideableBeanConfiguration<T> installLazy(Op<T> op) {
         BeanHandle<T> handle = newBeanInstaller(BeanKind.LAZY).install(op);
         return new ProvideableBeanConfiguration<>(handle); // Providable???
+    }
+
+    // One of 3 models...
+    // Fails on other exports
+    // Ignores other exports
+    // interacts with other exports in some way
+    /**
+     * Exports all container services and any services that have been explicitly anchored via of anchoring methods.
+     * <p>
+     * 
+     * <ul>
+     * <li><b>Service already exported.</b> The service that have already been exported (under any key) are always
+     * ignored.</li>
+     * <li><b>Key already exported.</b>A service has already been exported under the specified key.
+     * <li><b>Are requirements.</b> Services that come from parent containers are always ignored.</li>
+     * <li><b>Not part of service contract.</b> If a service contract has set. Only services for whose key is part of the
+     * contract is exported.</li>
+     * </ul>
+     * <p>
+     * This method can be invoked more than once. But use cases for this are limited.
+     */
+    // Altsaa tror mere vi er ude efter noget a.la. exported.services = internal.services
+    // Saa maske smide ISE hvis der allerede er exporteret services. Det betyder naesten ogsaa
+    // at @Export ikke er supporteret
+    // ect have exportAll(boolean ignoreExplicitExports) (Otherwise fails)
+
+    // All provided services are automatically exported
+    public void exportAll() {
+        // Tror vi aendre den til streng service solve...
+        // Og saa tager vi bare alle services() og exportere
+
+        // Add exportAll(Predicate); //Maybe some exportAll(Consumer<ExportedConfg>)
+        // exportAllAs(Function<?, Key>
+
+        // Export all entries except foo which should be export as Boo
+        // exportAll(Predicate) <- takes key or service configuration???
+
+        // export all _services_.. Also those that are already exported as something else???
+        // I should think not... Det er er en service vel... SelectedAll.keys().export()...
+        checkIsConfigurable();
+
+        extension.container.sm.exportAll = true;
     }
 
     /**
@@ -219,6 +306,17 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     // OperationHandle handle = field.newSetOperation(null) .newOperation(temp);
                     // bean.lifecycle.addInitialize(handle, null);
                     throw new UnsupportedOperationException();
+                } else if (hook instanceof ProvideService) {
+                    Key<?> key = field.toKey();
+
+                    if (!Modifier.isStatic(field.modifiers())) {
+                        if (beanKind() != BeanKind.CONTAINER) {
+                            throw new BuildException("Not okay)");
+                        }
+                    }
+
+                    OperationSetup operation = OperationSetup.crack(field.newGetOperation(OperationTemplate.defaults()));
+                    extension.container.sm.serviceProvide(key, operation, new FromOperation(operation));
                 } else {
                     super.hookOnAnnotatedField(hook, field);
                 }
@@ -242,6 +340,28 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                 } else if (annotation instanceof OnStop oi) {
                     OperationHandle handle = method.newOperation(temp);
                     bean.lifecycle.addStop(handle, oi.ordering());
+                } else if ((annotation instanceof ProvideService) || (annotation instanceof ExportService)) {
+                    Key<?> key = method.toKey();
+                    boolean isProviding = method.annotations().containsType(ProvideService.class);
+                    boolean isExporting = method.annotations().containsType(ExportService.class);
+
+                    OperationTemplate temp2 = OperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
+
+                    if (!Modifier.isStatic(method.modifiers())) {
+                        if (beanKind() != BeanKind.CONTAINER) {
+                            throw new BuildException("Not okay)");
+                        }
+                    }
+
+                    if (isProviding) {
+                        OperationSetup operation = OperationSetup.crack(method.newOperation(temp2));
+                        extension.container.sm.serviceProvide(key, operation, new FromOperation(operation));
+                    }
+
+                    if (isExporting) {
+                        OperationSetup operation = OperationSetup.crack(method.newOperation(temp2));
+                        extension.container.sm.serviceExport(key, operation);
+                    }
                 } else {
                     super.hookOnAnnotatedMethod(annotation, method);
                 }
@@ -305,6 +425,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     v.checkAssignableTo(PackedExtensionContext.class, ExtensionContext.class);
                 }
             }
+
         };
     }
 
@@ -316,6 +437,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     @Override
     protected BaseExtensionPoint newExtensionPoint() {
         return new BaseExtensionPoint();
+    }
+
+    /** {@return a mirror for this extension.} */
+    @Override
+    protected BaseExtensionMirror newExtensionMirror() {
+        return new BaseExtensionMirror(extension.container);
     }
 
     @Override
@@ -330,7 +457,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
         // process child extensions first
         super.onAssemblyClose();
-        
+
         for (Entry<CodeGeneratorKey, BindableVariable> e : codegenVariables.entrySet()) {
             if (!e.getValue().isBound()) {
                 throw new InternalExtensionException(e.getKey().key() + " not bound for bean " + e.getKey().bean());
@@ -339,6 +466,67 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         // A lifetime root lets order some dependencies
         if (isLifetimeRoot()) {
             extension.container.lifetime.orderDependencies();
+        }
+    }
+
+    // requires bliver automatisk anchoret...
+    // anchorAllChildExports-> requireAllChildExports();
+    public void serviceRequire(Class<?>... keys) {
+        serviceRequire(Key.ofAll(keys));
+    }
+
+    /**
+     * Explicitly adds the specified key to the list of required services. There are typically two situations in where
+     * explicitly adding required services can be useful:
+     * <p>
+     * First, services that are cannot be specified at build time. But is needed later... Is mainly useful when we the
+     * services to. For example, importAll() that injector might not a service itself. But other that make use of the
+     * injector might.
+     * 
+     * 
+     * <p>
+     * Second, for manual service requirement, although it is often preferable to use contracts here
+     * <p>
+     * In any but the simplest of cases, contracts are useful
+     * 
+     * @param keys
+     *            the key(s) to add
+     */
+    public void serviceRequire(Key<?>... keys) {
+        requireNonNull(keys, "keys is null");
+        checkIsConfigurable();
+        // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
+        for (@SuppressWarnings("unused")
+        Key<?> key : keys) {
+            // delegate.ios.requirementsOrCreate().require(key, false /* , cs */);
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public void serviceRequireOptionally(Class<?>... keys) {
+        serviceRequireOptionally(Key.ofAll(keys));
+    }
+
+    /**
+     * Adds the specified key to the list of optional services.
+     * <p>
+     * If a key is added optionally and the same key is later added as a normal (mandatory) requirement either explicitly
+     * via # {@link #serviceRequire(Key...)} or implicitly via, for example, a constructor dependency. The key will be
+     * removed from the list of optional services and only be listed as a required key.
+     * 
+     * @param keys
+     *            the key(s) to add
+     */
+    // How does this work with child services...
+    // They will be consumed
+    public void serviceRequireOptionally(Key<?>... keys) {
+        requireNonNull(keys, "keys is null");
+        checkIsConfigurable();
+        // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
+        for (@SuppressWarnings("unused")
+        Key<?> key : keys) {
+            throw new UnsupportedOperationException();
+//            delegate.ios.requirementsOrCreate().require(key, true /* , cs */);
         }
     }
 

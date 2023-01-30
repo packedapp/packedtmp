@@ -1,4 +1,4 @@
-package app.packed.service;
+package app.packed.extension;
 
 import static java.util.Objects.requireNonNull;
 
@@ -8,13 +8,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import app.packed.bindings.Key;
-import app.packed.extension.ExtensionMirror;
+import app.packed.service.ExportedServiceMirror;
+import app.packed.service.ProvidedServiceMirror;
+import app.packed.service.ServiceContract;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.service.ExportedService;
 import internal.app.packed.service.ServiceManagerEntry;
 
-/** A mirror for the {@link ServiceExtension}. */
-public final class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
+/** A mirror for the {@link BaseExtension}. */
+public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {
 
     /** The container the extension is a part of. */
     private final ContainerSetup container;
@@ -25,7 +27,7 @@ public final class ServiceExtensionMirror extends ExtensionMirror<ServiceExtensi
      * @param container
      *            the container the extension is a part of
      */
-    ServiceExtensionMirror(ContainerSetup container) {
+    BaseExtensionMirror(ContainerSetup container) {
         this.container = requireNonNull(container);
     }
 

@@ -29,6 +29,7 @@ import app.packed.application.BootstrapApp;
 import app.packed.bindings.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.extension.BaseExtensionMirror;
 
 /**
  * A service contract details of a contractee.
@@ -252,8 +253,7 @@ public final class ServiceContract {
     }
 
     /**
-     * Returns a service contract from the specified image. Or fails with {@link UnsupportedOperationException}. if the a
-     * contract
+     * Returns a service contract from the specified assembly.
      * 
      * @param assembly
      *            the image to return a contract for
@@ -272,7 +272,7 @@ public final class ServiceContract {
     // Syntes maaske vi kalde dem reflect alligevel... Saa man er klar over hvad det er man laver...
     public static ServiceContract of(Assembly assembly, Wirelet... wirelets) {
         ApplicationMirror m = MIRROR_DRIVER.mirrorOf(assembly, wirelets);
-        return m.container().findExtension(ServiceExtensionMirror.class).map(e -> e.contract()).orElse(ServiceContract.EMPTY);
+        return m.container().findExtension(BaseExtensionMirror.class).map(e -> e.contract()).orElse(ServiceContract.EMPTY);
     }
 
     /**

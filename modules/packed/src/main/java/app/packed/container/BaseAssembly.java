@@ -21,7 +21,6 @@ import app.packed.extension.CustomBeanHook.JavaBaseSupport;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.service.ProvideableBeanConfiguration;
-import app.packed.service.ServiceExtension;
 
 /**
  * Extends {@link ContainerAssembly} with shortcuts for some commonly used extensions and their methods.
@@ -86,7 +85,7 @@ public abstract class BaseAssembly extends BuildableAssembly {
     }
 
     protected final void exportAll() {
-        service().exportAll();
+        base().exportAll();
     }
 
     /**
@@ -236,11 +235,11 @@ public abstract class BaseAssembly extends BuildableAssembly {
     }
 
     protected final <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        return service().providePrototype(implementation);
+        return base().providePrototype(implementation);
     }
 
     protected final <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> factory) {
-        return service().providePrototype(factory);
+        return base().providePrototype(factory);
     }
 
     /**
@@ -254,18 +253,6 @@ public abstract class BaseAssembly extends BuildableAssembly {
      */
     protected final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
         return container().selectWirelets(wireletClass);
-    }
-
-    /**
-     * Returns a {@link ServiceExtension} instance.
-     * <p>
-     * Calling this method is short for {@code use(ServiceExtension.class)}
-     * 
-     * @return a service extension instance
-     * @see #use(Class)
-     */
-    protected final ServiceExtension service() {
-        return use(ServiceExtension.class);
     }
 
     /**

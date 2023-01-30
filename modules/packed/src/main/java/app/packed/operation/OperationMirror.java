@@ -34,6 +34,7 @@ import app.packed.bindings.mirror.DependenciesMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.context.ContextMirror;
 import app.packed.context.ContextualizedElementMirror;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.MirrorExtension;
@@ -48,7 +49,7 @@ import internal.app.packed.operation.OperationSetup;
  * A mirror for an operation on a bean.
  * <p>
  * This class can be extended to provide more detailed information about a particular type of operation. For example,
- * the {@link app.packed.service.ServiceExtension} provides details about an exported service via
+ * the {@link BaseExtension} provides details about an exported service via
  * {@link ExportedServiceMirror}.
  * <p>
  * NOTE: Subclasses of this class:

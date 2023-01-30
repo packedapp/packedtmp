@@ -29,7 +29,6 @@ import app.packed.bean.BeanIntrospector.OperationalMethod;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.framework.AnnotationList;
-import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 
 /**
@@ -43,7 +42,6 @@ public class AnnotatedMethodHookTester {
             @Override
             protected void build() {
                 use(MyExt.class).addOM((a, b) -> c.accept(b));
-                use(ServiceExtension.class);
                 provide(type).export();
                 for (int i = 0; i < additionalTypes.length; i++) {
                     provide(additionalTypes[i]);

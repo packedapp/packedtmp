@@ -17,9 +17,9 @@ package app.packed.extension.bridge.sandbox;
 
 import java.lang.invoke.MethodHandles;
 
+import app.packed.extension.BaseExtension;
 import app.packed.extension.bridge.ExtensionBridgeTemplate;
 import app.packed.operation.Op1;
-import app.packed.service.ServiceExtension;
 
 /**
  *
@@ -27,7 +27,7 @@ import app.packed.service.ServiceExtension;
 class ExtensionBridgeInnerUsage {
 
     public static void main(String[] args) {
-        ExtensionBridgeTemplate<ServiceExtension> b = ExtensionBridgeTemplate.of(MethodHandles.lookup(), ServiceExtension.class);
+        ExtensionBridgeTemplate<BaseExtension> b = ExtensionBridgeTemplate.of(MethodHandles.lookup(), BaseExtension.class);
         b.onUse(s -> s.exportAll());
         b.expose(new Op1<MyExtBean, String>(e -> e.foo) {});
         b.build();

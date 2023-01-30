@@ -22,6 +22,7 @@ import java.util.function.Predicate;
 
 import app.packed.bindings.Key;
 import app.packed.container.Wirelet;
+import app.packed.extension.BaseExtension;
 
 /**
  * This class provide wirelets that can be used to transform and filter services being pull and pushed into containers.
@@ -36,7 +37,7 @@ import app.packed.container.Wirelet;
  * 
  * <p>
  * All Wirelets on this class can only be used on container components. And the container must use a
- * {@link ServiceExtension}.
+ * {@link BaseExtension}.
  */
 public final class ServiceWirelets {
 
@@ -62,7 +63,7 @@ public final class ServiceWirelets {
      * The wirelet can only be used when wiring non-root containers.
      * 
      * @return a wirelet that will anchor all services
-     * @see ServiceExtension#anchorAll()
+     * @see BaseExtension#anchorAll()
      */
     public static Wirelet anchorAll() {
         return anchorIf(t -> true);

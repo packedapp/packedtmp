@@ -18,7 +18,10 @@ package app.packed.concurrent;
 import app.packed.extension.FrameworkExtension;
 
 /**
- * Thread extensions
+ * An extension that allows for multiple threads in the container
+ * <p>
+ * There is nothing forcing anyone to use this extension for forking threads.
+ * 
  */
 // Controls everything about threads...
 

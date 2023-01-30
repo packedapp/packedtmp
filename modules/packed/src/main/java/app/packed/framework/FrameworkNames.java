@@ -18,7 +18,6 @@ package app.packed.framework;
 import java.util.Set;
 
 import app.packed.extension.BaseExtension;
-import app.packed.service.ServiceExtension;
 
 /**
  * This class contains various names of extensions and modules that can be used to avoid loading the.
@@ -37,9 +36,6 @@ public final class FrameworkNames {
 
     /** The class name of {@link BaseExtension}. */
     public static final String BASE_BASE_EXTENSION = BASE_MODULE + ".extension.BaseExtension";
-
-    /** The class name of {@link ServiceExtension}. */
-    public static final String BASE_SERVICE_EXTENSION = BASE_MODULE + ".service.ServiceExtension";
 
     /** The name of the devtools module. */
     public static final String DEVTOOLS_MODULE = "app.packed.devtools";

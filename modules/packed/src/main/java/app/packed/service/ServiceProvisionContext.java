@@ -20,6 +20,7 @@ import java.util.Optional;
 import app.packed.bindings.Key;
 import app.packed.bindings.mirror.BindingTarget;
 import app.packed.context.Context;
+import app.packed.extension.BaseExtension;
 
 /**
  *
@@ -37,7 +38,7 @@ import app.packed.context.Context;
 // Tror ikke vi har den...
 // Syntes det bliver for besvaergeligt
 
-interface ServiceProvisionContext extends Context<ServiceExtension> {
+interface ServiceProvisionContext extends Context<BaseExtension> {
     Optional<BindingTarget> target();
     Key<?> key();
 }

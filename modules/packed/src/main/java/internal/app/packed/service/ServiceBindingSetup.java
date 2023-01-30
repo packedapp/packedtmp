@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.bindings.BindingKind;
 import app.packed.container.Realm;
+import app.packed.extension.BaseExtension;
 import app.packed.framework.Nullable;
 import app.packed.service.ServiceBindingMirror;
-import app.packed.service.ServiceExtension;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.operation.OperationSetup;
@@ -50,7 +50,7 @@ public final class ServiceBindingSetup extends BindingSetup {
      * @param index
      */
     ServiceBindingSetup(OperationSetup operation, int index, ServiceManagerEntry entry, boolean required) {
-        super(operation, index, Realm.extension(ServiceExtension.class));
+        super(operation, index, Realm.extension(BaseExtension.class));
         this.entry = requireNonNull(entry);
         this.required = required;
         mirrorSupplier = () -> new ServiceBindingMirror(this);

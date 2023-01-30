@@ -33,10 +33,11 @@ import app.packed.bindings.Qualifier;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.AbstractComposer.ComposerAssembly;
-import app.packed.extension.ContainerGuest;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
+import app.packed.extension.BaseExtension;
+import app.packed.extension.ContainerGuest;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
@@ -109,7 +110,7 @@ import internal.app.packed.service.PackedServiceLocator;
  * <p>
  * Unless otherwise specified the set of services provided by a service locator is always unchangeable.
  */
-@BindingTypeHook(extension = ServiceExtension.class)
+@BindingTypeHook(extension = BaseExtension.class)
 public interface ServiceLocator {
 
     /**
@@ -391,38 +392,23 @@ public interface ServiceLocator {
      */
     public static final class Composer extends AbstractComposer {
 
-        private boolean initialized;
-
         /** For internal use only. */
         private Composer() {}
 
-        /**
-         * Returns an instance of the injector extension.
-         * 
-         * @return an instance of the injector extension
-         */
-        private ServiceExtension extension() {
-            // container().onFirstUse(ServiceExtension.class, e -> e.exportAll());
-            ServiceExtension se = use(ServiceExtension.class);
-            if (!initialized) {
-                se.exportAll();
-                initialized = true;
-            }
-            return se;
+        @Override
+        protected void preCompose() {
+            base().exportAll();
         }
 
         public <T> ProvideableBeanConfiguration<T> install(Class<T> op) {
-            extension();
             return base().install(op);
         }
 
         public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
-            extension();
             return base().install(op);
         }
 
         public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-            extension();
             return base().installInstance(instance);
         }
 
@@ -467,7 +453,6 @@ public interface ServiceLocator {
          * @return a service configuration for the service
          */
         public <T> ProvideableBeanConfiguration<T> provide(Class<T> implementation) {
-            extension();
             return base().install(implementation).provide();
         }
 
@@ -484,7 +469,6 @@ public interface ServiceLocator {
          * @return a service configuration for the service
          */
         public <T> ProvideableBeanConfiguration<T> provide(Op<T> op) {
-            extension();
             return base().install(op).provide();
         }
 
@@ -526,7 +510,6 @@ public interface ServiceLocator {
         // Er ikke sikker paa vi skal have wirelets her....
         // Hvis det er noedvendigt saa maa man lave en ny injector taenker jeg....
         public void provideAll(ServiceLocator injector) {
-            extension();
             throw new UnsupportedOperationException();
         }
 
@@ -548,18 +531,15 @@ public interface ServiceLocator {
         // Ohh we need to analyze them differently, because we should ignore all constructors.
         // Should not fail if we fx have two public constructors of equal lenght
         public <T> ProvideableBeanConfiguration<T> provideInstance(T instance) {
-            extension();
             return base().installInstance(instance).provide();
         }
 
         public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-            extension();
-            return use(ServiceExtension.class).providePrototype(implementation);
+            return use(BaseExtension.class).providePrototype(implementation);
         }
 
         public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> factory) {
-            extension();
-            return use(ServiceExtension.class).providePrototype(factory);
+            return use(BaseExtension.class).providePrototype(factory);
         }
     }
 }

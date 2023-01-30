@@ -32,8 +32,6 @@ import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
-import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceExtensionMirror;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
@@ -87,6 +85,19 @@ public abstract class Extension<E extends Extension<E>> {
      */
     protected Extension() {}
 
+    /**
+     * {@return an instance of this extension that is used in the application's root container. Will return this if this
+     * extension is the root extension}
+     */
+    @SuppressWarnings("unchecked")
+    protected final E applicationRoot() {
+        ExtensionSetup s = extension;
+        while (s.treeParent != null) {
+            s = s.treeParent;
+        }
+        return (E) s.instance();
+    }
+
     /** {@return the base extension point.} */
     protected final BaseExtensionPoint base() {
         return use(BaseExtensionPoint.class);
@@ -115,6 +126,11 @@ public abstract class Extension<E extends Extension<E>> {
         return extension.container.path();
     }
 
+    /** {@return whether or not the container is the root container in the application.} */
+    protected final boolean isApplicationRoot() {
+        return extension.treeParent == null;
+    }
+
     /**
      * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
      * 
@@ -129,11 +145,6 @@ public abstract class Extension<E extends Extension<E>> {
     // Her er det jo root container vi skal teste
     protected final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return extension.container.isExtensionUsed(extensionType);
-    }
-
-    /** {@return whether or not the container is the root container in the application.} */
-    protected final boolean isApplicationRoot() {
-        return extension.treeParent == null;
     }
 
     protected final boolean isLifetimeRoot() {
@@ -184,7 +195,7 @@ public abstract class Extension<E extends Extension<E>> {
 
     /**
      * This method can be overridden to provide a customized {@link ExtensionMirror mirror} for the extension. For example,
-     * {@link ServiceExtension} overrides this method to provide an instance of {@link ServiceExtensionMirror}.
+     * {@link BaseExtension} overrides this method to provide an instance of {@link BaseExtensionMirror}.
      * <p>
      * This method should never return null.
      * 
@@ -285,19 +296,6 @@ public abstract class Extension<E extends Extension<E>> {
     protected final Optional<E> parent() {
         ExtensionSetup parent = extension.treeParent;
         return parent == null ? Optional.empty() : Optional.of((E) parent.instance());
-    }
-
-    /**
-     * {@return an instance of this extension that is used in the application's root container. Will return this if this
-     * extension is the root extension}
-     */
-    @SuppressWarnings("unchecked")
-    protected final E applicationRoot() {
-        ExtensionSetup s = extension;
-        while (s.treeParent != null) {
-            s = s.treeParent;
-        }
-        return (E) s.instance();
     }
 
     /**

@@ -37,12 +37,6 @@ public class ServiceBindingMirror extends BindingMirror {
         this.binding = requireNonNull(binding);
     }
 
-    /** {@return a mirror of the service extension.} */
-    /// Hvad goer vi med extension beans?? De har jo saadan set en anden realm.
-    public ServiceExtensionMirror extension() {
-        return operation().bean().container().use(ServiceExtensionMirror.class);
-    }
-
     /** {@return whether or not the service is required.} */
     public boolean isRequired() {
         return binding.required;
@@ -61,7 +55,9 @@ public class ServiceBindingMirror extends BindingMirror {
         return binding.entry.key;
     }
 
-    public Optional<ProvidedServiceMirror> providedService() {
+    // non null if resolved
+    // Der er noget med en sti til servicen.
+    public Optional<ProvidedServiceMirror> providedVia() {
         throw new UnsupportedOperationException();
     }
 }

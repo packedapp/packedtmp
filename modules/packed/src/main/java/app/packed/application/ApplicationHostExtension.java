@@ -33,6 +33,8 @@ import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 // Skal man ogsaa bruge den til lazy???
 // Eller kun til dynamic.
 
+// Er ude i maaske multiple application er paa BaseExtension.
+// Men vil man deploye at runtime jo need this host/deployer extension
 public class ApplicationHostExtension extends FrameworkExtension<ApplicationHostExtension> {
 
     static final OperationTemplate ot = OperationTemplate.raw().withArg(ApplicationInitializationContext.class).withReturnTypeObject();

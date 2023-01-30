@@ -30,7 +30,6 @@ import app.packed.container.BuildableAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.service.ServiceExtension;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -59,9 +58,6 @@ public abstract class VerifyingTestCase {
         return cc;
     }
 
-    protected final ServiceExtension services() {
-        return use(ServiceExtension.class);
-    }
 
     protected final <E extends Extension<?>> E use(Class<E> extensionClass) {
         return cc().use(extensionClass);

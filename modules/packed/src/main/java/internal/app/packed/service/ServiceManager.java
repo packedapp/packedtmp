@@ -29,13 +29,13 @@ import java.util.Set;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bindings.Key;
+import app.packed.extension.BaseExtension;
 import app.packed.framework.Nullable;
 import app.packed.service.ExportedServiceCollisionException;
 import app.packed.service.ExportedServiceMirror;
 import app.packed.service.ProvideService;
 import app.packed.service.ProvidedServiceCollisionException;
 import app.packed.service.ProvidedServiceMirror;
-import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 import app.packed.service.UnsatisfiableServiceDependencyException;
 import internal.app.packed.bean.BeanSetup;
@@ -147,7 +147,6 @@ public final class ServiceManager {
             throw new ExportedServiceCollisionException("Jmm");
         }
         es.os.mirrorSupplier = () -> new ExportedServiceMirror(es);
-        operation.bean.container.useExtension(ServiceExtension.class, null);
         return es;
     }
 
@@ -155,7 +154,7 @@ public final class ServiceManager {
      * Provides a service for the specified operation.
      * <p>
      * This method is called either because a bean is registered directly via {@link BeanHandle#serviceProvideAs(Key)} or
-     * from {@link ServiceExtension#newBeanIntrospector} because someone used the {@link ProvideService} annotation.
+     * from {@link BaseExtension#newBeanIntrospector} because someone used the {@link ProvideService} annotation.
      * 
      * @param key
      *            the key for which to provide a service for

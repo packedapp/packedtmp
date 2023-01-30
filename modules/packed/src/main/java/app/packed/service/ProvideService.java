@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 
 import app.packed.bean.BeanHook.AnnotatedFieldHook;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
+import app.packed.extension.BaseExtension;
 
 /**
  * An annotation indicating that an annotated method or field on a bean provides a service to the container in which the
@@ -52,6 +53,6 @@ import app.packed.bean.BeanHook.AnnotatedMethodHook;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedMethodHook(extension = ServiceExtension.class, allowInvoke = true)
-@AnnotatedFieldHook(extension = ServiceExtension.class, allowGet = true)
+@AnnotatedMethodHook(extension = BaseExtension.class, allowInvoke = true)
+@AnnotatedFieldHook(extension = BaseExtension.class, allowGet = true)
 public @interface ProvideService {}
