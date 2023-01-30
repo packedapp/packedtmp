@@ -298,7 +298,4 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
      * @param transformer
      *            transforms the exported services
      */
-    public void transformExports(Consumer<? super Object> transformer) {
-        // delegate.ios.exportsOrCreate().setExportTransformer(transformer);
-    }
 }

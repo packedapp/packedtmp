@@ -247,10 +247,10 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                 }
             }
 
-            /** Handles {@link FromGuest}, {@link InvocationArgument} and {@link CodeGenerated}. */
+            /** Handles {@link ContainerGuest}, {@link InvocationArgument} and {@link CodeGenerated}. */
             @Override
             public void hookOnProvidedAnnotatedVariable(Annotation hook, BindableVariable v) {
-                if (hook instanceof FromGuest) {
+                if (hook instanceof ContainerGuest) {
                     Variable va = v.variable();
                     if (va.getRawType().equals(String.class)) {
                         v.bindOp(new Op1<@InvocationArgument ApplicationInitializationContext, String>(a -> a.name()) {});

@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.concurrent;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.BeanHook.AnnotatedBindingHook;
+import app.packed.extension.BaseExtension;
+import app.packed.extension.DependantOperator;
 
 /**
  *
  */
-@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.TYPE_USE })
+@DependantOperator(extension = BaseExtension.class)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@AnnotatedBindingHook(extension = BaseExtension.class)
-public @interface FromGuest {}
-
-// Alternativt en Qualifier og saa local services...
-// Og evt ingen context...
+public @interface Fork {
+    
+    boolean interruptOnStop() default false;
+    
+    String joinPolicy() default "";
+}

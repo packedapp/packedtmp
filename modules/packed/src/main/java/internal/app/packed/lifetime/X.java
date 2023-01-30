@@ -20,9 +20,9 @@ import static java.util.Objects.requireNonNull;
 import app.packed.bean.OnInitialize;
 import app.packed.bean.OnStart;
 import app.packed.bean.OnStop;
+import app.packed.concurrent.Fork;
 import app.packed.container.BaseAssembly;
 import app.packed.entrypoint.Main;
-import app.packed.extension.Fork;
 import internal.app.packed.lifetime.sandbox.Program;
 
 /**

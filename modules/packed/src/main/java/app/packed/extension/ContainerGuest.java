@@ -20,15 +20,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.BeanHook.AnnotatedBindingHook;
+
 /**
  *
  */
-@DependantOperator(extension = BaseExtension.class)
-@Target(ElementType.METHOD)
+@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Fork {
-    
-    boolean interruptOnStop() default false;
-    
-    String joinPolicy() default "";
-}
+@AnnotatedBindingHook(extension = BaseExtension.class)
+public @interface ContainerGuest {}
+
+// Alternativt en Qualifier og saa local services...
+// Og evt ingen context...
