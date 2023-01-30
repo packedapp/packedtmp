@@ -13,22 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.service.sandbox;
+
+import java.util.Collection;
+
+import app.packed.service.ServiceBindingMirror;
 
 /**
  *
  */
-public class UnsatisfiableServiceDependencyException extends RuntimeException {
+// vs ProvideOperationMirror? and ExportOperationMirror
+public interface ServiceMirror {
 
-    private static final long serialVersionUID = 1L;
-
-    public UnsatisfiableServiceDependencyException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public UnsatisfiableServiceDependencyException(String message) {
-        super(message);
-    }
-    
-    
+    Collection<ServiceBindingMirror> bindings();
 }

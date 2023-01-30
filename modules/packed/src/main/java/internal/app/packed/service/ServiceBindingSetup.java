@@ -53,9 +53,10 @@ public final class ServiceBindingSetup extends BindingSetup {
         super(operation, index, Realm.extension(BaseExtension.class));
         this.entry = requireNonNull(entry);
         this.required = required;
-        mirrorSupplier = () -> new ServiceBindingMirror(this);
+        this.mirrorSupplier = () -> new ServiceBindingMirror(this);
     }
 
+    /** {@inheritDoc} */
     public BindingProvider provider() {
         return entry.provider == null ? null : entry.provider.resolution;
     }
@@ -65,6 +66,7 @@ public final class ServiceBindingSetup extends BindingSetup {
         return entry.provider != null;
     }
 
+    /** {@inheritDoc} */
     public BindingKind kind() {
         return BindingKind.SERVICE;
     }

@@ -25,8 +25,8 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bindings.Key;
-import app.packed.service.ProvideService;
-import app.packed.service.ProvidedServiceCollisionException;
+import app.packed.bindings.KeyAlreadyInUseException;
+import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceLocator.Composer;
 import testutil.stubs.annotation.StringQualifier;
@@ -39,16 +39,16 @@ public class QualifierTest {
     @Test
     public void cannotDefineSameProvidedKeys() {
         AbstractThrowableAssert<?, ?> at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedFieldKeys.class)));
-        at.isExactlyInstanceOf(ProvidedServiceCollisionException.class);
+        at.isExactlyInstanceOf(KeyAlreadyInUseException.class);
         at.hasNoCause();
         // TODO check message
 
         at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedMethodKeys.class)));
-        at.isExactlyInstanceOf(ProvidedServiceCollisionException.class);
+        at.isExactlyInstanceOf(KeyAlreadyInUseException.class);
         at.hasNoCause();
 
         at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedMemberKeys.class)));
-        at.isExactlyInstanceOf(ProvidedServiceCollisionException.class);
+        at.isExactlyInstanceOf(KeyAlreadyInUseException.class);
         at.hasNoCause();
     }
 
@@ -92,22 +92,22 @@ public class QualifierTest {
 
     public static class MultipleIdenticalQualifiedFieldKeys {
 
-        @ProvideService
+        @Provide
         @StringQualifier("A")
         private Long A = 0L;
 
-        @ProvideService
+        @Provide
         @StringQualifier("A")
         private Long B = 0L;
     }
 
     public static class MultipleIdenticalQualifiedMemberKeys {
 
-        @ProvideService
+        @Provide
         @StringQualifier("A")
         private Long A = 0L;
 
-        @ProvideService
+        @Provide
         @StringQualifier("A")
         static Long b() {
             return 0L;
@@ -116,13 +116,13 @@ public class QualifierTest {
 
     public static class MultipleIdenticalQualifiedMethodKeys {
 
-        @ProvideService
+        @Provide
         @StringQualifier("A")
         static Long a() {
             return 0L;
         }
 
-        @ProvideService
+        @Provide
         @StringQualifier("A")
         static Long b() {
             return 0L;
@@ -135,15 +135,15 @@ public class QualifierTest {
         // @StringQualifier("A")
         // private static Long A;
 
-        @ProvideService
+        @Provide
         @StringQualifier("B")
         private static Long B;
 
-        @ProvideService
+        @Provide
         @StringQualifier("C")
         private static Long C;
 
-        @ProvideService
+        @Provide
         private static Long L;
     }
 }

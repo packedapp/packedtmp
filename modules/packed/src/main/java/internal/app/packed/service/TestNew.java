@@ -29,7 +29,7 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
-import app.packed.service.ProvideService;
+import app.packed.service.Provide;
 import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.ServiceBindingMirror;
 
@@ -78,7 +78,7 @@ public class TestNew extends BaseAssembly {
 
     public static class Fop {
 
-        @ProvideService
+        @Provide
         public static Integer foo(@XX("Nice") String s) {
             System.out.println("Got " + s);
             return 34;

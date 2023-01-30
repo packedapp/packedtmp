@@ -61,29 +61,37 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      */
     MethodType invocationType();
 
-    // Ogsaa en template ting taenker jeg? IDK
-    void named(String name);
-
     /**
-     * Allows f a binding for the parameter with the specified index.
+     * This will create a {@link BindingKind#MANUAL manual} binding for the parameter with the specified index.
+     * <p>
+     * The {@link BindableVariable} must be bound at some point before the assembly closes. Otherwise a BuildException is
+     * thrown.
      * <p>
      * This operation is no longer configurable when this method returns.
      * <p>
      * The will report a {@link BindingKind#MANUAL} as binding classifier
      * 
-     * @param index
+     * @param parameterIndex
      *            the index of the parameter to bind
      * @return a bindable variable
      * @throws IndexOutOfBoundsException
      *             if the parameter index is out of bounds
      * @throws UnsupportedOperationException
      *             if a function
+     * @throws IllegalStateException
+     *             this method must be called before the runtime starts resolving parameters. It is best to call this
+     *             immidealy after having created the operation. The actual binding can be done at a laver point\
+     * @see BindingKind#MANUAL
      */
     // Tror vi force laver (reserves) en binding her.
     // Det er jo kun meningen at man skal binden den hvis man kalder denne metode.
     // parameter virker kun som navn hvis man ikke "reservere" binding.
     // Men binder med det samme
-    BindableVariable parameter(int index);
+    // reserve
+    BindableVariable manuallyBindable(int parameterIndex);
+
+    // Ogsaa en template ting taenker jeg? IDK
+    void named(String name);
 
     /**
      * Specializes the mirror that is returned for the operation.

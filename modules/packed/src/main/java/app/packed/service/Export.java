@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ExportService {
+public @interface Export {
     
     // Overrides the return type
     Class<?> as() default FromMethodSignature.class;

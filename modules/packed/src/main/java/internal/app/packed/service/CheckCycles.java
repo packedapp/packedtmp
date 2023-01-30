@@ -22,9 +22,9 @@ import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.BaseExtensionMirror;
-import app.packed.service.ExportService;
+import app.packed.service.Export;
 import app.packed.service.ExportedServiceMirror;
-import app.packed.service.ProvideService;
+import app.packed.service.Provide;
 import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.ProvidedServiceMirror;
 
@@ -72,13 +72,13 @@ public class CheckCycles extends BaseAssembly {
 
     public record B() {
 
-        @ProvideService
+        @Provide
         String dppro() {
             return null;
         }
 
-        @ProvideService
-        @ExportService
+        @Provide
+        @Export
         C ppro() {
             return null;
         }

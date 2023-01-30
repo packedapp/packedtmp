@@ -24,6 +24,7 @@ import java.util.function.Supplier;
 import app.packed.bindings.BindingKind;
 import app.packed.bindings.mirror.BindingMirror;
 import app.packed.container.Realm;
+import app.packed.framework.Nullable;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.binding.BindingSetup.HookBindingSetup;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
@@ -52,9 +53,9 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
     /** The index into {@link OperationSetup#bindings}. */
     public final int operationBindingIndex;
 
-    public BindingSetup(OperationSetup operation, int index, Realm boundBy) {
+    public BindingSetup(OperationSetup operation, int operationBindingIndex, Realm boundBy) {
         this.operation = requireNonNull(operation);
-        this.operationBindingIndex = index;
+        this.operationBindingIndex = operationBindingIndex;
         this.boundBy = requireNonNull(boundBy);
     }
 
@@ -99,8 +100,9 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
     public static final class ManualBindingSetup extends BindingSetup {
 
         /** Provider for the binding. */
+        @Nullable
         public final BindingProvider provider;
-
+        
         /**
          * @param operation
          * @param index
@@ -117,6 +119,8 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
             return BindingKind.MANUAL;
         }
 
+        /** {@inheritDoc} */
+        @Nullable
         public BindingProvider provider() {
             return provider;
         }

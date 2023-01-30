@@ -29,15 +29,14 @@ import java.util.Set;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bindings.Key;
+import app.packed.bindings.KeyAlreadyInUseException;
+import app.packed.bindings.UnsatisfiableDependencyException;
 import app.packed.extension.BaseExtension;
 import app.packed.framework.Nullable;
-import app.packed.service.ExportedServiceCollisionException;
 import app.packed.service.ExportedServiceMirror;
-import app.packed.service.ProvideService;
-import app.packed.service.ProvidedServiceCollisionException;
+import app.packed.service.Provide;
 import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.ServiceLocator;
-import app.packed.service.UnsatisfiableServiceDependencyException;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingProvider;
 import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
@@ -144,7 +143,7 @@ public final class ServiceManager {
         ExportedService existing = exports.putIfAbsent(es.key, es);
         if (existing != null) {
             // A service with the key has already been exported
-            throw new ExportedServiceCollisionException("Jmm");
+            throw new KeyAlreadyInUseException("Jmm");
         }
         es.os.mirrorSupplier = () -> new ExportedServiceMirror(es);
         return es;
@@ -154,7 +153,7 @@ public final class ServiceManager {
      * Provides a service for the specified operation.
      * <p>
      * This method is called either because a bean is registered directly via {@link BeanHandle#serviceProvideAs(Key)} or
-     * from {@link BaseExtension#newBeanIntrospector} because someone used the {@link ProvideService} annotation.
+     * from {@link BaseExtension#newBeanIntrospector} because someone used the {@link Provide} annotation.
      * 
      * @param key
      *            the key for which to provide a service for
@@ -171,7 +170,7 @@ public final class ServiceManager {
 
         // Fail if there is there is already an existing provider with the same key
         if (entry.provider != null) {
-            throw new ProvidedServiceCollisionException(makeDublicateProvideErrorMsg(entry.provider, operation));
+            throw new KeyAlreadyInUseException(makeDublicateProvideErrorMsg(entry.provider, operation));
         }
 
         // Create a new provider
@@ -195,7 +194,7 @@ public final class ServiceManager {
                 for (var b = e.bindings; b != null; b = b.nextFriend) {
                     System.out.println("Binding not resolved " + b);
                 }
-                throw new UnsatisfiableServiceDependencyException("For key " + e.key);
+                throw new UnsatisfiableDependencyException("For key " + e.key);
             }
         }
     }

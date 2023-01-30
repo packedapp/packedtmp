@@ -38,6 +38,8 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     /** Creates a new base extension point. */
     BaseExtensionPoint() {}
 
+    // Alternativt tager vi ikke en bean. Men en container som er implicit
+    
     public <K> void addCodeGenerated(BeanConfiguration bean, Class<K> key, Supplier<? extends K> supplier) {
         addCodeGenerated(bean, Key.of(key), supplier);
     }
@@ -306,7 +308,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * Man kan selvfoelgelig kun bruge den paa
      * 
      * <p>
-     * This annotation can only used on beans owned by an extension.
+     * This annotation can only used by extension beans.
      * 
      * @see BindableVariable#bindGeneratedConstant(java.util.function.Supplier)
      * @see BaseExtensionPoint#addCodeGenerated(app.packed.bean.BeanConfiguration, Class, java.util.function.Supplier)

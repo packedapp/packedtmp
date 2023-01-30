@@ -16,7 +16,7 @@
 package app.packed.extension;
 
 /**
- *
+ * An annotation that must be comsumed by a hook somewhere
  */
 // Annotation must be used somewhere where someone consumes it
 // fx @InterruptOnStop.

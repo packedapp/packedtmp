@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.bindings;
 
 import app.packed.application.BuildException;
 
@@ -22,9 +22,8 @@ import app.packed.application.BuildException;
 // Binding
 // Giver bare ikke rigtig mening navngivningsmaessigt...
 // Dependency yws, binding no.
-
 // IDeen er er lidt at lave en generiks vi kan ikke lave den binding fordi xxx.
-public class UnsatisfiableServiceException extends BuildException {
+public class UnsatisfiableDependencyException extends BuildException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -37,7 +36,7 @@ public class UnsatisfiableServiceException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public UnsatisfiableServiceException(String message) {
+    public UnsatisfiableDependencyException(String message) {
         super(message);
     }
 
@@ -51,7 +50,7 @@ public class UnsatisfiableServiceException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public UnsatisfiableServiceException(String message, Throwable cause) {
+    public UnsatisfiableDependencyException(String message, Throwable cause) {
         super(message, cause);
     }
 }

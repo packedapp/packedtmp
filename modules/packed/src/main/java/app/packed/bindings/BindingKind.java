@@ -17,6 +17,7 @@ package app.packed.bindings;
 
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
+import app.packed.service.ServiceBindingMirror;
 
 /**
  *
@@ -43,5 +44,11 @@ public enum BindingKind {
      **/
     HOOK,
 
+    /**
+     * 
+     * Service bindings are always represented by a {@link ServiceBindingMirror} which contains the key of the service.
+     * 
+     * @see ServiceBindingMirror
+     */
     SERVICE;
 }

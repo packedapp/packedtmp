@@ -23,13 +23,13 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bindings.Key;
-import app.packed.service.ProvideService;
+import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceLocator.Composer;
 import testutil.stubs.annotation.StringQualifier;
 
 /**
- * Tests {@link ProvideService} on fields and methods.
+ * Tests {@link Provide} on fields and methods.
  */
 public class MembersProvideTest {
 
@@ -62,41 +62,41 @@ public class MembersProvideTest {
 
 public  static class VisibilityNonStatic {
 
-        @ProvideService
+        @Provide
         @StringQualifier("f_package")
         final String F_PACKAGE = "package_f";
 
-        @ProvideService
+        @Provide
         @StringQualifier("f_private")
         private final String F_PRIVATE = "private_f";
 
-        @ProvideService
+        @Provide
         @StringQualifier("f_protected")
         protected final String F_PROTECTED = "protected_f";
 
-        @ProvideService
+        @Provide
         @StringQualifier("f_public")
         public final String F_PUBLIC = "public_f";
 
-        @ProvideService
+        @Provide
         @StringQualifier("m_package")
         String m_package() {
             return "package_m";
         }
 
-        @ProvideService
+        @Provide
         @StringQualifier("m_private")
         private String m_private() {
             return "private_m";
         }
 
-        @ProvideService
+        @Provide
         @StringQualifier("m_protected")
         protected String m_protected() {
             return "protected_m";
         }
 
-        @ProvideService
+        @Provide
         @StringQualifier("m_public")
         public String m_public() {
             return "public_m";
@@ -105,41 +105,41 @@ public  static class VisibilityNonStatic {
 
 public  static class VisibilityStatic {
 
-        @ProvideService
+        @Provide
         @StringQualifier("f_package")
         static final String F_PACKAGE = "package_f";
 
-        @ProvideService
+        @Provide
         @StringQualifier("f_private")
         private static final String F_PRIVATE = "private_f";
 
-        @ProvideService
+        @Provide
         @StringQualifier("f_protected")
         protected static final String F_PROTECTED = "protected_f";
 
-        @ProvideService
+        @Provide
         @StringQualifier("f_public")
         public static final String F_PUBLIC = "public_f";
 
-        @ProvideService
+        @Provide
         @StringQualifier("m_package")
         static String m_package() {
             return "package_m";
         }
 
-        @ProvideService
+        @Provide
         @StringQualifier("m_private")
         private static String m_private() {
             return "private_m";
         }
 
-        @ProvideService
+        @Provide
         @StringQualifier("m_protected")
         protected static String m_protected() {
             return "protected_m";
         }
 
-        @ProvideService
+        @Provide
         @StringQualifier("m_public")
         public static String m_public() {
             return "public_m";

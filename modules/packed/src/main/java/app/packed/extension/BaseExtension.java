@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.application.BuildException;
@@ -27,6 +28,7 @@ import app.packed.bindings.Key;
 import app.packed.bindings.Variable;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
+import app.packed.container.ContainerGuest;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
@@ -37,9 +39,10 @@ import app.packed.operation.Op1;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.InvocationArgument;
-import app.packed.service.ExportService;
-import app.packed.service.ProvideService;
+import app.packed.service.Export;
+import app.packed.service.Provide;
 import app.packed.service.ProvideableBeanConfiguration;
+import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
@@ -306,7 +309,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     // OperationHandle handle = field.newSetOperation(null) .newOperation(temp);
                     // bean.lifecycle.addInitialize(handle, null);
                     throw new UnsupportedOperationException();
-                } else if (hook instanceof ProvideService) {
+                } else if (hook instanceof Provide) {
                     Key<?> key = field.toKey();
 
                     if (!Modifier.isStatic(field.modifiers())) {
@@ -340,10 +343,10 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                 } else if (annotation instanceof OnStop oi) {
                     OperationHandle handle = method.newOperation(temp);
                     bean.lifecycle.addStop(handle, oi.ordering());
-                } else if ((annotation instanceof ProvideService) || (annotation instanceof ExportService)) {
+                } else if ((annotation instanceof Provide) || (annotation instanceof Export)) {
                     Key<?> key = method.toKey();
-                    boolean isProviding = method.annotations().containsType(ProvideService.class);
-                    boolean isExporting = method.annotations().containsType(ExportService.class);
+                    boolean isProviding = method.annotations().containsType(Provide.class);
+                    boolean isExporting = method.annotations().containsType(Export.class);
 
                     OperationTemplate temp2 = OperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
 
@@ -530,5 +533,68 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         }
     }
 
-    record CodeGeneratorKey(BeanSetup bean, Key<?> key) {}
+    private record CodeGeneratorKey(BeanSetup bean, Key<?> key) {}
+}
+
+/**
+ * An extension that deals with the service functionality of a container.
+ * <p>
+ * This extension provides the following functionality:
+ * 
+ * is extension provides functionality for exposing and consuming services.
+ * 
+ * 
+ */
+//Functionality for
+//* Explicitly requiring services: require, requiOpt & Manual Requirements Management
+//* Exporting services: export, exportAll
+
+//// Was
+// Functionality for
+// * Explicitly requiring services: require, requiOpt & Manual Requirements Management
+// * Exporting services: export, exportAll
+// * Providing components or injectors (provideAll)
+// * Manual Injection
+
+// Har ikke behov for delete fra ServiceLocator
+
+// Future potential functionality
+/// Contracts
+/// Security for public injector.... Maaske skal man explicit lave en public injector???
+/// Transient requirements Management (automatic require unresolved services from children)
+/// Integration pits
+// MHT til Manuel Requirements Management
+// (Hmm, lugter vi noget profile?? Nahh, folk maa extende BaseAssembly og vaelge det..
+// Hmm saa auto instantiere vi jo injector extensionen
+//// Det man gerne vil kunne sige er at hvis InjectorExtensionen er aktiveret. Saa skal man
+// altid bruge Manual Requirements
+// contracts bliver installeret direkte paa ContainerConfiguration
+
+// Profile virker ikke her. Fordi det er ikke noget man dynamisk vil switche on an off..
+// Maybe have an Container.onExtensionActivation(Extension e) <- man kan overskrive....
+// Eller @ContainerStuff(onActivation = FooActivator.class) -> ForActivator extends ContainerController
+
+// Taenker den kun bliver aktiveret hvis vi har en factory med mindste 1 unresolved dependency....
+// D.v.s. install(Class c) -> aktivere denne extension, hvis der er unresolved dependencies...
+// Ellers selvfoelgelig hvis man bruger provide/@Provides\
+
+class ZServiceSandbox {
+
+    // Validates the outward facing contract
+    public void checkContract(Consumer<? super ServiceContract> validator) {}
+
+    // Det der er ved validator ServiceContractChecker er at man kan faa lidt mere context med
+    // checkContract(Service(c->c.checkExact(sc));// ContractChecker.exact(sc));
+    public void checkContractExact(ServiceContract sc) {}
+
+    /**
+     * Performs a final transformation of any exported service.
+     * 
+     * This method can perform any final adjustments of services before they are made available to any parent container.
+     * <p>
+     * The transformation takes place xxxx
+     * 
+     * @param transformer
+     *            transforms the exported services
+     */
 }

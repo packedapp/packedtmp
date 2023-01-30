@@ -28,8 +28,6 @@ import app.packed.bindings.Provider;
  * 
  * @see ServiceLocator#selectAll()
  * @see ServiceLocator#selectAssignableTo(Class)
- * @see ServiceLocator#selectWithAnyQualifiers(Class)
- * @see ServiceLocator#selectWithAnyQualifiers(app.packed.framework.TypeToken)
  */
 public interface ServiceSelection<S> extends ServiceLocator {
 

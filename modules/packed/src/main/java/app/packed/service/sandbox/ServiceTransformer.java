@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.service.sandbox;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,6 +27,7 @@ import java.util.function.Function;
 import app.packed.bindings.Key;
 import app.packed.bindings.Qualifier;
 import app.packed.operation.Op;
+import app.packed.service.ServiceContract;
 
 /**
  *

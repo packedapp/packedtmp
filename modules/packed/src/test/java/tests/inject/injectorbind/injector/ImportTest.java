@@ -27,7 +27,7 @@ import app.packed.bindings.Qualifier;
 import app.packed.container.BaseAssembly;
 import app.packed.operation.Op1;
 import app.packed.service.ServiceLocator;
-import app.packed.service.ServiceWirelets;
+import app.packed.service.sandbox.ServiceWirelets;
 
 /**
  *

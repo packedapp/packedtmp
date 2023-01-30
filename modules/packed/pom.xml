@@ -26,6 +26,12 @@
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
+    
+    <dependency>
+  <groupId>org.ow2.asm</groupId>
+  <artifactId>asm-tree</artifactId>
+  <version>9.2</version>
+</dependency>
   </dependencies>
 
 <!--

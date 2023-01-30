@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.bindings;
 
 import app.packed.application.BuildException;
 
 /**
- * An exception thrown at build time to indicate a dependency cycle between multiple service providers.
+ * An exception that is thrown when attempting to provide multiple services for the same key.
  */
-public class CircularServiceDependencyException extends BuildException {
+public class KeyAlreadyInUseException extends BuildException {
 
     private static final long serialVersionUID = 1L;
 
@@ -32,9 +32,21 @@ public class CircularServiceDependencyException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    // Super useful to provide the cycle I think. Don't know when we get to cross container cycles
-    // Then you can just do what ever you want it e.printBeans()
-    public CircularServiceDependencyException(String message /*, List<ServiceProvisionMirror> cycle */) {
+    public KeyAlreadyInUseException(String message) {
         super(message);
+    }
+
+    /**
+     * Creates a new exception with the specified detailed message and cause.
+     *
+     * @param cause
+     *            the cause (which is saved for later retrieval by the {@link #getCause()}method). (A{@code null} value is
+     *            permitted, and indicates that the cause is nonexistent or unknown.)
+     * @param message
+     *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
+     *            method.
+     */
+    public KeyAlreadyInUseException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

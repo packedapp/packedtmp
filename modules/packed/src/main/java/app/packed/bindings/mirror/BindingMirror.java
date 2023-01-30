@@ -110,15 +110,6 @@ public class BindingMirror implements Mirror {
         return binding().operationBindingIndex;
     }
 
-    public Optional<OperationMirror> providingOperation() {
-        // What about lifetime
-        BindingProvider p = binding().provider();
-        if (p instanceof FromOperation fo) {
-            return Optional.ofNullable(fo.operation().mirror());
-        }
-        return Optional.empty();
-    }
-
     /** {@inheritDoc} */
     public String toString() {
         return binding.toString();
@@ -148,6 +139,15 @@ public class BindingMirror implements Mirror {
 
     public Optional<BindingProviderKind> zProviderKind() {
         return Optional.ofNullable(binding().provider()).map(b -> b.kind());
+    }
+
+    public final Optional<OperationMirror> zProvidingOperation() {
+        // What about lifetime
+        BindingProvider p = binding().provider();
+        if (p instanceof FromOperation fo) {
+            return Optional.ofNullable(fo.operation().mirror());
+        }
+        return Optional.empty();
     }
 
     /**

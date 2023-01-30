@@ -73,6 +73,8 @@ public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
                 } else if (hook == OperationMirror.class) {
                     binding.bindConstant(operation.mirror());
                 } else {
+                    // binding.unwrap(BindingTracer.class);
+                    
                     // Not a supported mirror type, let checkAssignableTo throw an exception 
                     binding.checkAssignableTo(ApplicationMirror.class, ContainerMirror.class, AssemblyMirror.class, BeanMirror.class, OperationMirror.class);
                 }

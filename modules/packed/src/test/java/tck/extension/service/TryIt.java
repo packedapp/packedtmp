@@ -17,7 +17,7 @@ package tck.extension.service;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.service.ProvideService;
+import app.packed.service.Provide;
 
 /**
  *
@@ -49,7 +49,7 @@ public class TryIt extends VerifyingTestCase {
     public void fooxxx() {
         class MyX {
 
-            @ProvideService
+            @Provide
             public String s(Integer ss) {
                 throw new UnsupportedOperationException();
             }

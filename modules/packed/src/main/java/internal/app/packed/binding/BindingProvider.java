@@ -21,7 +21,7 @@ import app.packed.bindings.mirror.BindingProviderKind;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 
-/** Provider of a value for a binding. */
+/** Provides values for bindings. */
 public sealed interface BindingProvider {
 
     /** {@return the kind of provider.} */
@@ -33,7 +33,7 @@ public sealed interface BindingProvider {
         /** {@inheritDoc} */
         @Override
         public BindingProviderKind kind() {
-            return BindingProviderKind.OPERATION;
+            return BindingProviderKind.CONSTANT;
         }
     }
 

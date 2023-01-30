@@ -28,7 +28,7 @@ import internal.app.packed.service.ProvidedService;
 /**
  * A mirror that represents a service provision operation.
  * 
- * @see ProvideService
+ * @see Provide
  * @see BaseAssembly#provide(Class)
  * @see ProvideableBeanConfiguration#provide()
  */

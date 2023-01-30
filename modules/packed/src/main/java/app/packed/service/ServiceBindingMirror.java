@@ -55,7 +55,7 @@ public class ServiceBindingMirror extends BindingMirror {
         return binding.entry.key;
     }
 
-    // non null if resolved
+    // non null if resolvedx
     // Der er noget med en sti til servicen.
     public Optional<ProvidedServiceMirror> providedVia() {
         throw new UnsupportedOperationException();

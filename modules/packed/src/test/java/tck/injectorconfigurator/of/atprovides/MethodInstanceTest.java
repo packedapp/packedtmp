@@ -27,14 +27,14 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.application.BuildException;
 import app.packed.operation.Op0;
-import app.packed.service.ProvideService;
+import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceLocator.Composer;
 
-/** Tests {@link ProvideService#constant()}. */
+/** Tests {@link Provide#constant()}. */
 public class MethodInstanceTest {
 
-    /** Tests default {@link ProvideService#constant()} on instance methods. */
+    /** Tests default {@link Provide#constant()} on instance methods. */
     @Test
     public void provide() {
         MixedMethods.test(c -> c.provideInstance(new MixedMethods()));
@@ -107,12 +107,12 @@ public class MethodInstanceTest {
         // return l;
         // }
 
-        @ProvideService
+        @Provide
         Integer p() {
             return p;
         }
 
-        @ProvideService
+        @Provide
         Short s() {
             return s;
         }
@@ -147,7 +147,7 @@ public class MethodInstanceTest {
             b.set(true);
         }
 
-        @ProvideService
+        @Provide
         public Short s() {
             return s;
         }
@@ -161,7 +161,7 @@ public class MethodInstanceTest {
             b.set(true);
         }
 
-        @ProvideService
+        @Provide
         public Short s() {
             return s;
         }

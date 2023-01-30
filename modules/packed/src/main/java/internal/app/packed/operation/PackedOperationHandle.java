@@ -109,7 +109,7 @@ public final record PackedOperationHandle(OperationSetup operation) implements O
     // bind(index).toConstant("Foo");
     // Maybe take an consumer to make sure it is "executed"
     @Override
-    public BindableVariable parameter(int index) {
+    public BindableVariable manuallyBindable(int index) {
 
         // This method does not throw IllegalStateExtension, but OnBinding may.
         // custom invocationContext must have been set before calling this method

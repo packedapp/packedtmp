@@ -23,14 +23,14 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import app.packed.operation.Op0;
-import app.packed.service.ProvideService;
+import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceLocator.Composer;
 
-/** Tests {@link ProvideService#constant()} on static methods. */
+/** Tests {@link Provide#constant()} on static methods. */
 public class MethodStaticTest {
 
-    /** Tests default {@link ProvideService#constant()} on static methods. */
+    /** Tests default {@link Provide#constant()} on static methods. */
     @Test
     public void provide() {
         MixedMethodsInstantiable.test(c -> c.provideInstance(new MixedMethodsInstantiable()));
@@ -47,7 +47,7 @@ public class MethodStaticTest {
     // {})).lazy());
     // }
 
-    /** Tests prototype {@link ProvideService#constant()} on static methods. */
+    /** Tests prototype {@link Provide#constant()} on static methods. */
     @Test
     public void providePrototype() {
         MixedMethodsNoInstantiation.test(c -> c.providePrototype(MixedMethodsNoInstantiation.class));
@@ -73,12 +73,12 @@ public class MethodStaticTest {
         // return L;
         // }
 
-        @ProvideService
+        @Provide
         static Integer p() {
             return P;
         }
 
-        @ProvideService
+        @Provide
         static Short s() {
             return S;
         }
@@ -129,12 +129,12 @@ public class MethodStaticTest {
         // return L;
         // }
 
-        @ProvideService
+        @Provide
         static Integer p() {
             return P;
         }
 
-        @ProvideService
+        @Provide
         static Short s() {
             return S;
         }

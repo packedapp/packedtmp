@@ -18,7 +18,7 @@ package internal.app.packed.service;
 import java.util.ArrayDeque;
 
 import app.packed.application.BuildException;
-import app.packed.service.CircularServiceDependencyException;
+import app.packed.bindings.CircularDependencyException;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 
@@ -97,7 +97,7 @@ public final class CircularServiceDependencyChecker {
 
                     // Create a proper error me
                     String errorMsg = createErrorMessage(dependencies);
-                    throw new CircularServiceDependencyException(errorMsg);
+                    throw new CircularDependencyException(errorMsg);
                 }
                 detectCycle(next, stack, dependencies);
                 dependencies.pop();

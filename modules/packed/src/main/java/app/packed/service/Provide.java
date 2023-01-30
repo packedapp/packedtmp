@@ -55,4 +55,4 @@ import app.packed.extension.BaseExtension;
 @Documented
 @AnnotatedMethodHook(extension = BaseExtension.class, allowInvoke = true)
 @AnnotatedFieldHook(extension = BaseExtension.class, allowGet = true)
-public @interface ProvideService {}
+public @interface Provide {}
