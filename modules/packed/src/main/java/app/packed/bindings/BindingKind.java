@@ -27,7 +27,7 @@ public enum BindingKind {
     /**
      * The binding has been created manually.
      * 
-     * @see OperationHandle#bindable(int)
+     * @see OperationHandle#manuallyBindable(int)
      * @see Op#bind(Object)
      * @see Op#bind(int, Object, Object...)
      */
