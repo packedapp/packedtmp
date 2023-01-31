@@ -15,7 +15,6 @@
  */
 package app.packed.operation;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Constructor;

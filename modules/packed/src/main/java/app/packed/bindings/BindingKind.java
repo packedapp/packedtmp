@@ -15,10 +15,6 @@
  */
 package app.packed.bindings;
 
-import app.packed.operation.Op;
-import app.packed.operation.OperationHandle;
-import app.packed.service.ServiceBindingMirror;
-
 /**
  *
  */
@@ -39,8 +35,8 @@ public enum BindingKind {
      * 
      * 
      * 
-     * @see TypedProvisionHook
-     * @see AnnotatedVariableHook
+     * @see BindingTypeHook
+     * @see AnnotatedBindingHook
      **/
     HOOK,
 

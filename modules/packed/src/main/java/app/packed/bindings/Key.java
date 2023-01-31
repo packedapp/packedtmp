@@ -15,8 +15,6 @@
  */
 package app.packed.bindings;
 
-import static internal.app.packed.util.StringFormatter.format;
-import static internal.app.packed.util.StringFormatter.formatSimple;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
@@ -32,14 +30,12 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 
-import app.packed.bean.BeanIntrospector.OperationalField;
 import app.packed.framework.AnnotationList;
 import app.packed.framework.Nullable;
 import internal.app.packed.bean.PackedAnnotationList;
 import internal.app.packed.util.AnnotationUtil;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
-import internal.app.packed.util.types.GenericType.CanonicalizedGenericType;
 import internal.app.packed.util.types.TypeUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
 import internal.app.packed.util.types.Types;
@@ -306,9 +302,9 @@ public abstract class Key<T> {
         sb.append("Key<");
         if (isQualified()) {
             if (longFormat) {
-                sb.append(format(qualifiers.annotations()[0]));
+                sb.append(StringFormatter.format(qualifiers.annotations()[0]));
             } else {
-                sb.append(formatSimple(qualifiers.annotations()[0]));
+                sb.append(StringFormatter.formatSimple(qualifiers.annotations()[0]));
             }
         }
         if (longFormat) {
@@ -611,7 +607,7 @@ public abstract class Key<T> {
         }
         // Har maaske nogle steder jeg hellere vil have IllegalArgumentException...
         // InjectExtension??? I think that's better...
-        throw new IllegalArgumentException("@" + format(annotationType) + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
+        throw new IllegalArgumentException("@" + StringFormatter.format(annotationType) + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
     }
 
     private static PackedAnnotationList qualifiersConvert(Annotation[] annotations, Object source) {

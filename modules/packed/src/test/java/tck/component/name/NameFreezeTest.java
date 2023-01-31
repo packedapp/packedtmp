@@ -23,8 +23,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bean.BeanConfiguration;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.Wirelet;
 import testutil.util.AbstractApplicationTest;
 import testutil.util.ContainerConfigurationTester;
 
@@ -93,8 +91,8 @@ public class NameFreezeTest extends AbstractApplicationTest {
     }
 
     /**
-     * Test that we cannot call {@link BaseContainerConfiguration#named(String)} after having observed the name via
-     * {@link BaseContainerConfiguration#getName()}.
+     * Test that we cannot call {@link ContainerConfiguration#named(String)} after having observed the name via
+     * {@link ContainerConfiguration#path()}.
      */
     @Test
     public void container_setName_cannotBeCalledAfter_getName() {
@@ -103,7 +101,7 @@ public class NameFreezeTest extends AbstractApplicationTest {
     }
 
     /**
-     * Test that we cannot call {@link BaseContainerConfiguration#named(String)} after having installed a component in the
+     * Test that we cannot call {@link ContainerConfiguration#named(String)} after having installed a component in the
      * container.
      * <p>
      * We could actually allow this as long as any new components does not observe their path in any way. However, for

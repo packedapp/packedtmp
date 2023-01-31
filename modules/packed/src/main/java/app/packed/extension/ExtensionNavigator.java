@@ -77,7 +77,7 @@ public final /* primitive */ class ExtensionNavigator<E extends Extension<E>> im
     /** {@inheritDoc} */
     @Override
     public Iterator<E> iterator() {
-        return new AbstractTreeNode.MappedPreOrderIterator<>(originExtension, e -> (E) extensionType.cast(e.instance()));
+        return new AbstractTreeNode.MappedPreOrderIterator<>(originExtension, e -> extensionType.cast(e.instance()));
     }
 
 //    /** {@return the root of the tree.} */

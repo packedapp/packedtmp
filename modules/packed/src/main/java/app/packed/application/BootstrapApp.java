@@ -29,7 +29,6 @@ import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.framework.Nullable;
 import app.packed.operation.Op;
-import app.packed.service.ServiceLocator;
 import internal.app.packed.application.ApplicationDriver;
 import internal.app.packed.application.BootstrapAppSetup;
 import internal.app.packed.container.AssemblySetup;

@@ -47,7 +47,7 @@ public enum BeanKind {
      * <p>
      * Functional beans are always bound to the lifetime of the container in which they are registered.
      * 
-     * @see BeanExtension#installStatic(Class)
+     * @see BaseExtension#installStatic(Class)
      **/
     STATIC;
 

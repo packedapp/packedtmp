@@ -25,13 +25,11 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.BootstrapApp;
 import app.packed.application.BuildGoal;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
-import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.sandbox.OldLifetimeKind;

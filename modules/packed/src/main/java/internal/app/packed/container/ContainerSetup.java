@@ -27,7 +27,6 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationPath;
 import app.packed.container.Assembly;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;

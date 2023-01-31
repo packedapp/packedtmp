@@ -32,8 +32,8 @@ import internal.app.packed.util.types.GenericType.CanonicalizedGenericType;
 /** Tests {@link GenericType}. */
 public class GenericTypeTest {
 
-    static final GenericType<Integer> TL_INTEGER = new GenericType<Integer>() {};
-    static final GenericType<List<?>> TL_LIST_WILDCARD = new GenericType<List<?>>() {};
+    static final GenericType<Integer> TL_INTEGER = new GenericType<>() {};
+    static final GenericType<List<?>> TL_LIST_WILDCARD = new GenericType<>() {};
 
     @Test
     public void canonicalize() {
@@ -124,7 +124,7 @@ public class GenericTypeTest {
         /** A custom type literal to check that T is passed down to super classes. */
         class MyTypeLiteral<T> extends GenericType<T> {}
 
-        MyTypeLiteral<Integer> integerNew = new MyTypeLiteral<Integer>() {};
+        MyTypeLiteral<Integer> integerNew = new MyTypeLiteral<>() {};
 
         assertThat(integerNew.rawType()).isSameAs(Integer.class);
         assertThat(integerNew.type()).isSameAs(Integer.class);
@@ -212,7 +212,7 @@ public class GenericTypeTest {
     /** Tests an primitive int type literal. */
     @Test
     public void tl_IntegerArray() {
-        GenericType<Integer[]> integerNew = new GenericType<Integer[]>() {};
+        GenericType<Integer[]> integerNew = new GenericType<>() {};
 
         assertThat(integerNew.rawType()).isSameAs(Integer[].class);
         assertThat(integerNew.type()).isSameAs(Integer[].class);
@@ -235,7 +235,7 @@ public class GenericTypeTest {
     /** Tests an primitive int type literal. */
     @Test
     public void tl_IntegerArrayArray() {
-        GenericType<Integer[][]> integerArrayArrayNew = new GenericType<Integer[][]>() {};
+        GenericType<Integer[][]> integerArrayArrayNew = new GenericType<>() {};
 
         assertThat(integerArrayArrayNew.rawType()).isSameAs(Integer[][].class);
         assertThat(integerArrayArrayNew.type()).isSameAs(Integer[][].class);
@@ -257,7 +257,7 @@ public class GenericTypeTest {
     /** Tests {@code List<String>}. */
     @Test
     public void tl_ListString() throws Exception {
-        GenericType<List<String>> listStringNew = new GenericType<List<String>>() {};
+        GenericType<List<String>> listStringNew = new GenericType<>() {};
 
         assertThat(listStringNew.rawType()).isSameAs(List.class);
 
@@ -296,7 +296,7 @@ public class GenericTypeTest {
     /** Tests {@code Map<? extends String, ? super Integer>}. */
     @Test
     public void tl_mapItsComplicated() throws Exception {
-        GenericType<Map<? extends String, ? super Integer>> listStringNew = new GenericType<Map<? extends String, ? super Integer>>() {};
+        GenericType<Map<? extends String, ? super Integer>> listStringNew = new GenericType<>() {};
         // Type
         class Tmpx {
             @SuppressWarnings("unused")
@@ -322,7 +322,7 @@ public class GenericTypeTest {
     /** Tests an primitive int type literal. */
     @Test
     public void tl_String() {
-        GenericType<String> stringNew = new GenericType<String>() {};
+        GenericType<String> stringNew = new GenericType<>() {};
 
         assertThat(stringNew.rawType()).isSameAs(String.class);
         assertThat(stringNew.type()).isSameAs(String.class);

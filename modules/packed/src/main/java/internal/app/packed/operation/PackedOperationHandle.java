@@ -20,15 +20,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanIntrospector.OperationalField;
-import app.packed.bean.BeanIntrospector.OperationalMethod;
 import app.packed.bindings.BindableVariable;
 import app.packed.context.Context;
 import app.packed.extension.Extension;

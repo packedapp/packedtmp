@@ -23,7 +23,7 @@ import java.lang.reflect.Type;
 // Replaced by converter project...
 public abstract class OldTypeConverter<T> {
 
-    public static final OldTypeConverter<Type> IDENTITY = new OldTypeConverter<Type>() {
+    public static final OldTypeConverter<Type> IDENTITY = new OldTypeConverter<>() {
 
         @Override
         public Type convert(Type t) {

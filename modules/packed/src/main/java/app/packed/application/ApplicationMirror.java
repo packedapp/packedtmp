@@ -4,10 +4,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanHook.BindingTypeHook;
-import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.container.Wirelet;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;

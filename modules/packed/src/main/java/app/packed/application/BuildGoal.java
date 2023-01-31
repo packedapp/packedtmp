@@ -15,9 +15,6 @@
  */
 package app.packed.application;
 
-import app.packed.container.Assembly;
-import app.packed.container.Wirelet;
-
 /**
  * The goal of a build task.
  */

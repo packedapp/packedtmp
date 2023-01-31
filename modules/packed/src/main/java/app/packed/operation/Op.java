@@ -17,8 +17,6 @@ package app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
@@ -30,7 +28,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.bean.InaccessibleBeanMemberException;
-import app.packed.bean.Inject;
 import app.packed.framework.Nullable;
 import internal.app.packed.operation.PackedOp;
 

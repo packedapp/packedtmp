@@ -28,7 +28,7 @@ public class Op1Test {
     @Test
     public void toInteger() {
 
-        Op1<String, Integer> f = new Op1<String, Integer>(Integer::valueOf) {};
+        Op1<String, Integer> f = new Op1<>(Integer::valueOf) {};
         
         // Make an abstract op test?
         // Maybe just asssert.

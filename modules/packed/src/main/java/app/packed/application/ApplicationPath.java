@@ -15,8 +15,6 @@
  */
 package app.packed.application;
 
-import java.nio.file.Path;
-
 import app.packed.framework.Nullable;
 import internal.app.packed.util.PackedNamespacePath;
 

@@ -24,7 +24,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.BeanHook;
-import app.packed.bean.BeanHook.AnnotatedFieldHook;
 import app.packed.framework.FrameworkNames;
 
 /**

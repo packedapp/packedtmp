@@ -24,13 +24,9 @@ import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMirror;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.lifetime.LifetimeSetup;
 
 /**
  * This mirror represents a container lifetime.

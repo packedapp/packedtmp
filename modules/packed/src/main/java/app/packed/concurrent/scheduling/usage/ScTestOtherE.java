@@ -24,11 +24,11 @@ import java.time.Duration;
 
 import app.packed.application.App;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
+import app.packed.bean.BeanIntrospector;
 import app.packed.concurrent.scheduling.ScheduledOperationConfiguration;
 import app.packed.concurrent.scheduling.SchedulingContext;
 import app.packed.concurrent.scheduling.SchedulingExtension;
 import app.packed.concurrent.scheduling.SchedulingExtensionPoint;
-import app.packed.bean.BeanIntrospector;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;

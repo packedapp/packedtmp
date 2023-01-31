@@ -15,7 +15,6 @@
  */
 package app.packed.container;
 
-import app.packed.bindings.Qualifier;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.CustomBeanHook.JavaBaseSupport;
 import app.packed.extension.Extension;

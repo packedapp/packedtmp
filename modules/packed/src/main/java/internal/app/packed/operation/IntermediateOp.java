@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 
 import app.packed.container.Realm;
 import app.packed.framework.Nullable;
-import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;

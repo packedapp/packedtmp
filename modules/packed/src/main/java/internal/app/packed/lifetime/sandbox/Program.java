@@ -15,15 +15,12 @@
  */
 package internal.app.packed.lifetime.sandbox;
 
-import java.util.NoSuchElementException;
-
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.BootstrapApp;
 import app.packed.bindings.Key;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerGuest;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.RunState;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
 

@@ -24,9 +24,9 @@ import java.util.List;
 
 import app.packed.application.App;
 import app.packed.bean.BeanHook.AnnotatedBindingHook;
-import app.packed.bindings.BindableVariable;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
+import app.packed.bindings.BindableVariable;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.service.Provide;

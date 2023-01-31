@@ -16,25 +16,17 @@
 package app.packed.bean;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Optional;
 import java.util.function.Consumer;
 
-import app.packed.bean.BeanHook.AnnotatedFieldHook;
-import app.packed.bean.BeanHook.AnnotatedMethodHook;
-import app.packed.bean.BeanHook.AnnotatedBindingHook;
-import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.bindings.BindableVariable;
 import app.packed.bindings.BindableWrappedVariable;
-import app.packed.bindings.InvalidKeyException;
 import app.packed.bindings.Key;
 import app.packed.bindings.Variable;
 import app.packed.container.Realm;
-import app.packed.extension.BaseExtensionPoint;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
@@ -42,8 +34,6 @@ import app.packed.framework.AnnotationList;
 import app.packed.framework.Nullable;
 import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;

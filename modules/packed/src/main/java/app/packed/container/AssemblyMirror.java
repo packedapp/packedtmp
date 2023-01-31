@@ -5,12 +5,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.extension.MirrorExtension;
 import app.packed.framework.Nullable;
-import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.Mirror;

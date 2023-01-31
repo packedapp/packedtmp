@@ -46,7 +46,7 @@ public class KeyTest {
     static final Type TL_LIST_WILDCARD = new GenericType<List<Object>>() {}.type(); // wildcards are filtered
 
     static final Key<Integer> KEY_INT_OF = Key.of(int.class);
-    static final Key<Integer> KEY_INTEGER = new Key<Integer>() {};
+    static final Key<Integer> KEY_INTEGER = new Key<>() {};
     static final Key<Integer> KEY_INTEGER_OF = Key.of(Integer.class);
 
     static final Key<Integer> KEY_INTEGER_X = new Key<@CharQualifier('X') Integer>() {};
@@ -54,13 +54,13 @@ public class KeyTest {
     static final Key<Integer> KEY_INTEGER_Y = new Key<@CharQualifier('Y') Integer>() {};
     static final Key<Integer> KEY_INTEGER_Y_OF = Key.of(Integer.class).withQualifier(AnnotationInstances.CHAR_QUALIFIER_Y);
 
-    static final Key<List<String>> KEY_LIST_STRING = new Key<List<String>>() {};
-    static final Key<List<?>> KEY_LIST_WILDCARD = new Key<List<?>>() {};
+    static final Key<List<String>> KEY_LIST_STRING = new Key<>() {};
+    static final Key<List<?>> KEY_LIST_WILDCARD = new Key<>() {};
 
     static final Key<List<?>> KEY_LIST_WILDCARD_X = new Key<@CharQualifier('X') List<?>>() {};
-    static final Key<String> KEY_STRING = new Key<String>() {};
+    static final Key<String> KEY_STRING = new Key<>() {};
 
-    static final Key<Map<? extends String, ?>> TL_MAP = new Key<Map<? extends String, ?>>() {};
+    static final Key<Map<? extends String, ?>> TL_MAP = new Key<>() {};
 
     @Test
     public void canonicalize() {

@@ -18,12 +18,8 @@ package app.packed.lifetime;
 import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMirror;
 import app.packed.framework.Nullable;
-import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
-import internal.app.packed.lifetime.LifetimeSetup;
 
 /**
  * A bean lifetime represents a bean whose lifetime is independent of its container's lifetime.

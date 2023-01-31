@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.OptionalInt;
 
 import app.packed.bean.BeanHook.AnnotatedBindingHook;
-import app.packed.bindings.BindableVariable;
 import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
 import app.packed.errorhandling.ErrorHandler;

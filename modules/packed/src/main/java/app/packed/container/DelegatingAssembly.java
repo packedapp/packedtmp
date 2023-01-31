@@ -17,9 +17,6 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.application.BuildException;
-import app.packed.bean.BeanHook;
-
 /**
  * An assembly that delegates all calls to another assembly.
  * <p>

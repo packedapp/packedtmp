@@ -17,7 +17,6 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanSourceKind;
 import app.packed.bean.Inject;
 import app.packed.bean.OnInitialize;
 import app.packed.bean.OnStart;
@@ -27,7 +26,6 @@ import app.packed.bindings.BindableWrappedVariable;
 import app.packed.bindings.Key;
 import app.packed.bindings.Variable;
 import app.packed.container.Assembly;
-import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerGuest;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
@@ -101,12 +99,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     // Also these beans, can typically just be composites??? Nah
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
         BeanHandle<T> handle = newBeanInstaller(BeanKind.MANYTON).lifetimes(OperationTemplate.defaults()).install(implementation);
-        return new ProvideableBeanConfiguration<T>(handle).provide();
+        return new ProvideableBeanConfiguration<>(handle).provide();
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> op) {
         BeanHandle<T> handle = newBeanInstaller(BeanKind.MANYTON).lifetimes(OperationTemplate.defaults()).install(op);
-        return new ProvideableBeanConfiguration<T>(handle).provide();
+        return new ProvideableBeanConfiguration<>(handle).provide();
     }
 
     <K> void addCodeGenerated(BeanSetup bean, Key<K> key, Supplier<? extends K> supplier) {

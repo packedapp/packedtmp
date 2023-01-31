@@ -80,7 +80,7 @@ public class KeyMicro {
 
     @Benchmark
     public Key<String> newKeyString() {
-        return new Key<String>() {};
+        return new Key<>() {};
     }
 
     @Benchmark

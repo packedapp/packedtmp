@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import app.packed.lifetime.BeanLifetimeMirror;
-import app.packed.lifetime.LifetimeMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.util.LookupUtil;

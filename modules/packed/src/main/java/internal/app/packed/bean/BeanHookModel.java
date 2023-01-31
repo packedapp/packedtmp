@@ -23,12 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.bean.BeanHook.AnnotatedFieldHook;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
-import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.bean.BeanHook.BindingTypeHook;
-import app.packed.bean.BeanIntrospector.OperationalField;
-import app.packed.bindings.BindableVariable;
 import app.packed.extension.CustomBeanHook;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;

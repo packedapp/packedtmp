@@ -20,8 +20,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 
-import app.packed.bean.BeanHook.AnnotatedFieldHook;
-import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.bean.BeanInstallationException;
 import app.packed.extension.Extension;
 import internal.app.packed.bean.BeanHookModel.AnnotatedField;

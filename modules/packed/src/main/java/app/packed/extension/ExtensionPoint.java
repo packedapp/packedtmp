@@ -1,8 +1,6 @@
 package app.packed.extension;
 
 import app.packed.container.Realm;
-import app.packed.entrypoint.EntryPointExtensionPoint;
-import app.packed.extension.Extension.DependsOn;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.container.ExtensionSetup;

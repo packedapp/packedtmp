@@ -17,7 +17,6 @@ package internal.app.packed.service;
 
 import java.util.ArrayDeque;
 
-import app.packed.application.BuildException;
 import app.packed.bindings.CircularDependencyException;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;

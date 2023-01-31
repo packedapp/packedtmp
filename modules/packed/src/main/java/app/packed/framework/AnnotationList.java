@@ -18,11 +18,9 @@ package app.packed.framework;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.util.List;
 import java.util.function.Consumer;
 
-import app.packed.bean.BeanInstallationException;
 import internal.app.packed.bean.PackedAnnotationList;
 
 /**

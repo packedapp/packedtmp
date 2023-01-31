@@ -21,9 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.BeanIntrospector.OperationalField;
 import app.packed.context.Context;
-import app.packed.context.OutOfContextException;
 import app.packed.extension.Extension;
 
 /**
@@ -38,9 +36,9 @@ public @interface BeanHook {
     /**
      * <p>
      * Attempting to place multiple annotated variable hook annotations on a single field or parameter will result in a
-     * {@link InvalidBeanClassException} being thrown at build-time.
+     * {@link BeanInstallationException} being thrown at build-time.
      * 
-     * @see BeanIntrospector#hookOnProvidedAnnotatedVariable(java.lang.annotation.Annotation, app.packed.bean.BeanIntrospector.BindableVariable)
+     * @see BeanIntrospector#hookOnProvidedAnnotatedVariable(java.lang.annotation.Annotation, app.packed.bindings.BindableVariable)
      */
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RetentionPolicy.RUNTIME)
@@ -96,7 +94,7 @@ public @interface BeanHook {
 
     /**
      * In order to process fields that are annotated with the target annotation,
-     * {@link BeanIntrospector#hookOnAnnotatedField(OperationalField)} must be overridden.
+     * {@link BeanIntrospector#hookOnProvidedVariableType(Class, app.packed.bindings.BindableWrappedVariable)} must be overridden.
      * 
      * @see BeanIntrospector#hookOnAnnotatedField(OperationalField)
      */

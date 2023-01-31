@@ -15,12 +15,6 @@
  */
 package app.packed.bean;
 
-import java.lang.invoke.MethodHandles.Lookup;
-
-import app.packed.container.AbstractComposer;
-import app.packed.container.BuildableAssembly;
-import app.packed.extension.InternalExtensionException;
-
 /**
  * This exception is thrown when installing a bean, and the framework does not have reflective permissions to access one
  * or more members (constructor, field or method) of the bean.

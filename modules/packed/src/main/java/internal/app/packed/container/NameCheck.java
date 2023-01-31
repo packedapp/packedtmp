@@ -30,9 +30,7 @@ public class NameCheck {
      */
     public static String checkComponentName(String name) {
         requireNonNull(name, "name is null");
-        if (name != null) {
-
-        }
+       
         return name;
     }
 }

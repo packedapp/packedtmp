@@ -21,7 +21,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import app.packed.bindings.BindableVariable;
-import app.packed.bindings.BindingKind;
 import app.packed.context.Context;
 import internal.app.packed.operation.PackedOperationHandle;
 

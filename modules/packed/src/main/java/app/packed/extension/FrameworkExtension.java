@@ -15,8 +15,6 @@
  */
 package app.packed.extension;
 
-import app.packed.framework.Framework;
-
 /**
  * A framework extension indicates that an extension is part of the framework.
  * <p>

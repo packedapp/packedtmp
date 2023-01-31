@@ -15,15 +15,12 @@
  */
 package internal.app.packed.util.types;
 
-import static internal.app.packed.util.StringFormatter.format;
-import static internal.app.packed.util.StringFormatter.formatSimple;
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.Parameter;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import app.packed.framework.Nullable;
+import internal.app.packed.util.StringFormatter;
 
 /**
  * A TypeLiteral represents a generic type {@code T}. This class is used to work around the limitation that Java does
@@ -99,7 +96,7 @@ public abstract class GenericType<T> {
     // Not sure we want this public
     public final GenericType<T> canonicalize() {
         if (getClass() == CanonicalizedGenericType.class) {
-            return (CanonicalizedGenericType<T>) this;
+            return this;
         }
         return new CanonicalizedGenericType<>(type);
     }
@@ -148,7 +145,7 @@ public abstract class GenericType<T> {
     /** {@inheritDoc} */
     @Override
     public final String toString() {
-        return format(type);
+        return StringFormatter.format(type);
     }
 
     /**
@@ -158,7 +155,7 @@ public abstract class GenericType<T> {
      * @return a simple string representation of this type
      */
     public final String toStringSimple() {
-        return formatSimple(type);
+        return StringFormatter.formatSimple(type);
     }
 
     /**
@@ -181,7 +178,7 @@ public abstract class GenericType<T> {
      */
     public static <T> GenericType<T> of(Class<T> type) {
         requireNonNull(type, "type is null");
-        return new CanonicalizedGenericType<T>(type);
+        return new CanonicalizedGenericType<>(type);
     }
 
     /**

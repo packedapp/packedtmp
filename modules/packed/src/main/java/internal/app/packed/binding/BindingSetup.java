@@ -25,7 +25,6 @@ import app.packed.bindings.BindingKind;
 import app.packed.bindings.mirror.BindingMirror;
 import app.packed.container.Realm;
 import app.packed.framework.Nullable;
-import app.packed.operation.OperationMirror;
 import internal.app.packed.binding.BindingSetup.HookBindingSetup;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.operation.OperationSetup;

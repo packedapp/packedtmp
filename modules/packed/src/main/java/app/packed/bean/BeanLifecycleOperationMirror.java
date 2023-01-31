@@ -15,7 +15,6 @@
  */
 package app.packed.bean;
 
-import app.packed.extension.BaseExtension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.RunState;
 import app.packed.operation.OperationMirror;

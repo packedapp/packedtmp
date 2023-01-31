@@ -15,24 +15,22 @@
  */
 package app.packed.bean;
 
-import app.packed.operation.Op;
-
 /** This enum represents the various type of sources that can be used when installing a bean. */
 public enum BeanSourceKind {
 
     /**
      * A {@link Class} was specified when installing the bean.
      * 
-     * @see BeanExtension#install(Class)
-     * @see BeanExtension#installLazy(Class)
-     * @see BeanExtension#installStatic(Class)
+     * @see BaseExtension#install(Class)
+     * @see BaseExtension#installLazy(Class)
+     * @see BaseExtension#installStatic(Class)
      */
     CLASS,
 
     /**
      * A bean instance was specified when installing the bean.
      * 
-     * @see BeanExtension#installInstance(Object)
+     * @see BaseExtension#installInstance(Object)
      */
     INSTANCE,
 
@@ -42,8 +40,8 @@ public enum BeanSourceKind {
     /**
      * An {@link Op} was specified when installing the bean.
      * 
-     * @see BeanExtension#install(Op)
-     * @see BeanExtension#installLazy(Op)
+     * @see BaseExtension#install(Op)
+     * @see BaseExtension#installLazy(Op)
      */
     OP;
 }

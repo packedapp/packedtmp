@@ -15,14 +15,11 @@
  */
 package app.packed.bindings.mirror;
 
-import java.lang.invoke.MethodHandle;
 import java.util.Optional;
 
 import app.packed.bindings.BindingKind;
 import app.packed.bindings.Variable;
 import app.packed.container.Realm;
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMirror;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.binding.BindingProvider;

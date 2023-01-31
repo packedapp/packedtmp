@@ -3,7 +3,6 @@ package app.packed.container;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -82,7 +81,7 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
         return container().assembly.mirror();
     }
 
-    /** {@return a {@link Collection} view of all the beans defined in the container.} */
+    /** {@return a link Collection view of all the beans defined in the container.} */
     // returning stream vs collection... I took a look at the methods in Collection.
     // And size + isEmpty is the only interesting ones
     // Arghhh den er sgu rar for Iterable...

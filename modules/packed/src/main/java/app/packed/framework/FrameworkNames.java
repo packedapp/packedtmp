@@ -17,8 +17,6 @@ package app.packed.framework;
 
 import java.util.Set;
 
-import app.packed.extension.BaseExtension;
-
 /**
  * This class contains various names of extensions and modules that can be used to avoid loading the.
  * 

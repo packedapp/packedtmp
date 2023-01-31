@@ -86,7 +86,7 @@ public class InjectorBindAssemblyTest {
         BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {
-                providePrototype(new Op0<Long>(al::incrementAndGet) {}).export();
+                providePrototype(new Op0<>(al::incrementAndGet) {}).export();
             }
         };
 

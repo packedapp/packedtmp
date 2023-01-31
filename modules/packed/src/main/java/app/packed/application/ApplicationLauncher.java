@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 import java.util.function.Function;
 
-import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.RunState;
 import internal.app.packed.application.BootstrapAppSetup.MappedApplicationImage;

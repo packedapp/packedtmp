@@ -15,8 +15,6 @@
  */
 package internal.app.packed.service;
 
-import static internal.app.packed.util.StringFormatter.format;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -26,15 +24,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bindings.Key;
 import app.packed.bindings.KeyAlreadyInUseException;
 import app.packed.bindings.UnsatisfiableDependencyException;
-import app.packed.extension.BaseExtension;
 import app.packed.framework.Nullable;
 import app.packed.service.ExportedServiceMirror;
-import app.packed.service.Provide;
 import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.bean.BeanSetup;
@@ -206,10 +201,10 @@ public final class ServiceManager {
         Key<?> key = provider.entry.key;
 
         if (existingTarget.bean == thisTarget.bean) {
-            return "This bean is already providing a service for Key<" + key.toString() + ">, beanClass = " + format(existingTarget.bean.beanClass);
+            return "This bean is already providing a service for Key<" + key.toString() + ">, beanClass = " + StringFormatter.format(existingTarget.bean.beanClass);
         }
         if (provider.resolution instanceof FromLifetimeArena) {
-            return "Cannot provide a service for Key<" + key.toString() + ">, as another bean of type " + format(existingTarget.bean.beanClass)
+            return "Cannot provide a service for Key<" + key.toString() + ">, as another bean of type " + StringFormatter.format(existingTarget.bean.beanClass)
                     + " is already providing a service for the same key";
 
             // return "Another bean of type " + format(existingTarget.bean.beanClass) + " is already providing a service for Key<" +

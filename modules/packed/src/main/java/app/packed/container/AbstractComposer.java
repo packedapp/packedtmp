@@ -152,12 +152,12 @@ public abstract class AbstractComposer {
             if (existing == null) {
                 try {
                     composer.preCompose();
-                    
+
                     // Run AssemblyHook.onPreBuild if hooks are present
                     assemblyModel.preBuild(configuration);
 
                     // Call actions build method with this composer
-                    action.build((C) composer);
+                    action.build(composer);
 
                     // Run AssemblyHook.onPostBuild if hooks are present
                     assemblyModel.postBuild(configuration);

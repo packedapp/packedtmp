@@ -26,7 +26,6 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
-import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.RunState;
 import app.packed.lifetime.sandbox.ManagedLifetime;
 import app.packed.operation.OperationTemplate;

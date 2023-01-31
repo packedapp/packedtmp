@@ -18,9 +18,6 @@ package app.packed.operation;
 import static java.util.Objects.requireNonNull;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
-
-import app.packed.bindings.Qualifier;
 
 /**
  * An {@link Op} type that wraps a {@link Function} taking a single argument.

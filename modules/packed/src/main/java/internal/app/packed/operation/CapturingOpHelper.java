@@ -35,7 +35,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  */
 public class CapturingOpHelper {
 
-    private static final ClassValue<Base> BASE = new ClassValue<Base>() {
+    private static final ClassValue<Base> BASE = new ClassValue<>() {
 
         @Override
         protected Base computeValue(Class<?> type) {

@@ -17,7 +17,6 @@ package internal.app.packed.binding;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;

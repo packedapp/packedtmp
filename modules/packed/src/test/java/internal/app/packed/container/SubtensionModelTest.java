@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
-import app.packed.extension.InternalExtensionException;
 import testutil.stubs.Throwables;
 
 public class SubtensionModelTest {

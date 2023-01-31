@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.container.AbstractComposer.ComposerAssembly;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;

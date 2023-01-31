@@ -21,7 +21,6 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.MirrorExtension;
 import app.packed.framework.Nullable;
-import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.BeanSetup;

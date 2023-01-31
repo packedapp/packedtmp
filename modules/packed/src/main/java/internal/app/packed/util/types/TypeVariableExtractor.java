@@ -29,12 +29,8 @@ import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.stream.IntStream;
 
-import app.packed.bindings.Key;
 import app.packed.bindings.Variable;
-import app.packed.extension.ExtensionMirror;
-import app.packed.extension.ExtensionPoint;
 import app.packed.framework.Nullable;
-import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import internal.app.packed.errorhandling.ErrorProcessor;
 import internal.app.packed.util.StringFormatter;

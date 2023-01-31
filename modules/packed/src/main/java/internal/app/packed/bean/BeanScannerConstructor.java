@@ -15,14 +15,13 @@
  */
 package internal.app.packed.bean;
 
-import static internal.app.packed.util.StringFormatter.format;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
 import app.packed.bean.Inject;
 import app.packed.operation.OperationType;
+import internal.app.packed.util.StringFormatter;
 
 /**
  * Tries to find a single static method or constructor on the specified class using the following rules:
@@ -79,19 +78,19 @@ final record BeanScannerConstructor(Constructor<?> constructor, OperationType op
     // ConstructorInjectionException (lyder mere som noget vi ville smide naar vi instantiere det
     private static Constructor<?> getConstructor(Class<?> clazz, boolean allowInjectAnnotation, Function<String, RuntimeException> errorMaker) {
         if (clazz.isAnnotation()) { // must be checked before isInterface
-            String errorMsg = format(clazz) + " is an annotation and cannot be instantiated";
+            String errorMsg = StringFormatter.format(clazz) + " is an annotation and cannot be instantiated";
             throw errorMaker.apply(errorMsg);
         } else if (clazz.isInterface()) {
-            String errorMsg = format(clazz) + " is an interface and cannot be instantiated";
+            String errorMsg = StringFormatter.format(clazz) + " is an interface and cannot be instantiated";
             throw errorMaker.apply(errorMsg);
         } else if (clazz.isArray()) {
-            String errorMsg = format(clazz) + " is an array and cannot be instantiated";
+            String errorMsg = StringFormatter.format(clazz) + " is an array and cannot be instantiated";
             throw errorMaker.apply(errorMsg);
         } else if (clazz.isPrimitive()) {
-            String errorMsg = format(clazz) + " is a primitive class and cannot be instantiated";
+            String errorMsg = StringFormatter.format(clazz) + " is a primitive class and cannot be instantiated";
             throw errorMaker.apply(errorMsg);
         } else if (Modifier.isAbstract(clazz.getModifiers())) {
-            String errorMsg = format(clazz) + " is an abstract class and cannot be instantiated";
+            String errorMsg = StringFormatter.format(clazz) + " is an abstract class and cannot be instantiated";
             throw errorMaker.apply(errorMsg);
         }
 
@@ -108,7 +107,7 @@ final record BeanScannerConstructor(Constructor<?> constructor, OperationType op
         for (Constructor<?> c : constructors) {
             if (c.isAnnotationPresent(Inject.class)) {
                 if (constructor != null) {
-                    String errorMsg = "Multiple constructors annotated with @" + Inject.class.getSimpleName() + " on class " + format(clazz);
+                    String errorMsg = "Multiple constructors annotated with @" + Inject.class.getSimpleName() + " on class " + StringFormatter.format(clazz);
                     throw errorMaker.apply(errorMsg);
                 }
                 constructor = c;
@@ -164,7 +163,7 @@ final record BeanScannerConstructor(Constructor<?> constructor, OperationType op
 
     private static RuntimeException getErrMsg(Class<?> type, String visibility, Function<String, RuntimeException> errorMaker) {
         String errorMsg = "No constructor annotated with @" + Inject.class.getSimpleName() + ". And multiple " + visibility + " constructors on class "
-                + format(type);
+                + StringFormatter.format(type);
         return errorMaker.apply(errorMsg);
     }
 }

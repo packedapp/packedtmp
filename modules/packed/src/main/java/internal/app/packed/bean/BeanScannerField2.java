@@ -28,11 +28,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
-import app.packed.bean.BeanHook.AnnotatedFieldHook;
-import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanIntrospector.OperationalField;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bindings.Variable;
 import app.packed.extension.Extension;

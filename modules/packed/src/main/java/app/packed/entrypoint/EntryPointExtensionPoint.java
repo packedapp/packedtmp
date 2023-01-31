@@ -18,10 +18,8 @@ package app.packed.entrypoint;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import app.packed.application.BuildException;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
-import app.packed.extension.InternalExtensionException;
 import app.packed.operation.OperationHandle;
 
 /** An extension point for {@link EntryPointExtension}. */

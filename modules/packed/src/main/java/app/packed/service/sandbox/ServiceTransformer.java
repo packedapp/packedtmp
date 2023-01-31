@@ -19,13 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.bindings.Key;
-import app.packed.bindings.Qualifier;
 import app.packed.operation.Op;
 import app.packed.service.ServiceContract;
 

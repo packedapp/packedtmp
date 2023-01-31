@@ -15,7 +15,6 @@
  */
 package internal.app.packed.container;
 
-import static internal.app.packed.util.StringFormatter.format;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
@@ -320,15 +319,15 @@ public final class ExtensionModel implements ExtensionDescriptor {
             }
 
             if (Modifier.isAbstract(extensionClass.getModifiers())) {
-                throw new InternalExtensionException(format(extensionClass) + " cannot be an abstract class");
+                throw new InternalExtensionException(StringFormatter.format(extensionClass) + " cannot be an abstract class");
             } else if (ClassUtil.isInnerOrLocal(extensionClass)) {
-                throw new InternalExtensionException(format(extensionClass) + " cannot be an an inner or local class");
+                throw new InternalExtensionException(StringFormatter.format(extensionClass) + " cannot be an an inner or local class");
             }
 
             // An extension must provide an empty constructor
             Constructor<?>[] constructors = extensionClass.getDeclaredConstructors();
             if (constructors.length != 1) {
-                throw new InternalExtensionException(format(extensionClass) + " must declare exactly 1 constructor");
+                throw new InternalExtensionException(StringFormatter.format(extensionClass) + " must declare exactly 1 constructor");
             }
 
             Constructor<?> constructor = constructors[0];

@@ -17,7 +17,6 @@ package app.packed.service.sandbox;
 
 import app.packed.bindings.BindableVariable;
 import app.packed.bindings.Key;
-import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.operation.OperationHandle;
 
 // ServiceDomain? Something where keys are unique

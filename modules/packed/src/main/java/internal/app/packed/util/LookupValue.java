@@ -16,7 +16,6 @@
 package internal.app.packed.util;
 
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -30,7 +29,7 @@ public abstract class LookupValue<T> {
         /** {@inheritDoc} */
         @Override
         protected ConcurrentHashMap<Integer, T> computeValue(Class<?> type) {
-            return new ConcurrentHashMap<Integer, T>(1);
+            return new ConcurrentHashMap<>(1);
         }
     };
 

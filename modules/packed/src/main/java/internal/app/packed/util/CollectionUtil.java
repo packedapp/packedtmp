@@ -316,7 +316,7 @@ public class CollectionUtil {
         protected void checkUpdate(Object instance) {}
     }
 
-    public static final class MappedCollection<F, T> extends AbstractCollection<T> implements Collection<T> {
+    public static final class MappedCollection<F, T> extends AbstractCollection<T> {
         private final Collection<F> collection;
         private final Function<? super F, ? extends T> mapper;
 

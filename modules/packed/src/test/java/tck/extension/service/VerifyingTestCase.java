@@ -67,7 +67,7 @@ public abstract class VerifyingTestCase {
         mirrorChecks.add(action);
     }
 
-    public static final class MyExt implements org.junit.jupiter.api.extension.Extension , InvocationInterceptor {
+    public static final class MyExt implements InvocationInterceptor {
 
         @Override
         public void interceptTestMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext)

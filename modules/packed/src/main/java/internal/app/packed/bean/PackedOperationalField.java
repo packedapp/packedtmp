@@ -23,7 +23,6 @@ import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.OperationalField;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bindings.Key;

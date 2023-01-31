@@ -22,7 +22,6 @@ import java.util.function.Predicate;
 
 import app.packed.bindings.Key;
 import app.packed.container.Wirelet;
-import app.packed.extension.BaseExtension;
 import app.packed.service.ServiceContract;
 
 /**
