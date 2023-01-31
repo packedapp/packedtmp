@@ -59,7 +59,7 @@ public final class ContainerLifetimeLaunch {
     }
 
     // An internal builder
-    public final class Builder {
+    public static final class Builder {
 
         final HashSet<Key<?>> keys = new HashSet<>();
 

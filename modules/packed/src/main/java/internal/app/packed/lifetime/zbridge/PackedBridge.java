@@ -57,7 +57,7 @@ public final class PackedBridge<E> {
     }
 
     // ExtensionBean -> T
-    public class Extractor {
+    public static class Extractor {
         Key<?> key;
 
         // Must be resolved in lifetime container...

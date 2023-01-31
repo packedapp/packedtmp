@@ -326,7 +326,7 @@ public final class BeanScanner {
      */
     // TODO should we know whether or the lookup is Packed one or a user supplied??
     // lookup.getClass().getModule==OpenClass.getModule...? nah virker ikke paa classpath
-    final class OpenClass {
+    static final class OpenClass {
 
         /** The app.packed.base module. */
         private static final Module APP_PACKED_BASE_MODULE = OpenClass.class.getModule();

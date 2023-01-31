@@ -92,25 +92,25 @@ public class NameGeneratedTest extends AbstractApplicationTest {
     }
 
     /** We normally remove the suffix 'Assembly', so make sure Assembly works */
-    private class Assembly extends AbstractConsumableAssembly {
+    private static class Assembly extends AbstractConsumableAssembly {
         Assembly(Consumer<? super ContainerConfigurationTester> ca) {
             super(ca);
         }
     }
 
-    private class HelloWorld extends AbstractConsumableAssembly {
+    private static class HelloWorld extends AbstractConsumableAssembly {
         HelloWorld(Consumer<? super ContainerConfigurationTester> ca) {
             super(ca);
         }
     }
 
-    private class HelloWorldAssembly extends AbstractConsumableAssembly {
+    private static class HelloWorldAssembly extends AbstractConsumableAssembly {
         HelloWorldAssembly(Consumer<? super ContainerConfigurationTester> ca) {
             super(ca);
         }
     }
 
-    private class S extends AbstractConsumableAssembly {
+    private static class S extends AbstractConsumableAssembly {
         S(Consumer<? super ContainerConfigurationTester> ca) {
             super(ca);
         }

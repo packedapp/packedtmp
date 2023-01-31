@@ -35,7 +35,7 @@ public class TarjanTest {
         assertThat(ExtensionDependencyValidator.dependenciesOf(Tarj12.class)).containsExactly(Tarj1.class, Tarj2.class);
     }
 
-    private class TarjNoAnnotation extends Extension<TarjNoAnnotation> {}
+    private static class TarjNoAnnotation extends Extension<TarjNoAnnotation> {}
 
     @Packlet(extension = {})
     private class Tarj extends Extension<Tarj> {}
