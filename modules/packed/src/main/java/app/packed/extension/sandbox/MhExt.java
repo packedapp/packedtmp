@@ -74,6 +74,7 @@ public class MhExt extends BaseAssembly {
             h = base().newBean(BeanKind.MANYTON).lifetimes(OperationTemplate.raw()).install(cl);
         }
 
+        @Override
         public void onAssemblyClose() {
             InstanceBeanConfiguration<EBean> b = base().install(EBean.class);
             

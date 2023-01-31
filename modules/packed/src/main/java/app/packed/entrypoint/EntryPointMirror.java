@@ -20,6 +20,7 @@ public class EntryPointMirror extends OperationMirror {
         return entryPointId;
     }
 
+    @Override
     public String toString() {
         return "Entrypoint Main - " + super.target();
     }

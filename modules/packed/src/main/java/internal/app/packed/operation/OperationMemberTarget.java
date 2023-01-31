@@ -56,6 +56,7 @@ public sealed abstract class OperationMemberTarget<M extends Member> {
             return member;
         }
 
+        @Override
         public String toString() {
             return "Constructor " + StringFormatter.format(member);
         }
@@ -87,6 +88,7 @@ public sealed abstract class OperationMemberTarget<M extends Member> {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
             return "Field " + StringFormatter.format(member) + " (AccessMode + " + accessMode + ")";
         }
@@ -108,6 +110,7 @@ public sealed abstract class OperationMemberTarget<M extends Member> {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
             return "Method " + StringFormatter.format(member);
         }

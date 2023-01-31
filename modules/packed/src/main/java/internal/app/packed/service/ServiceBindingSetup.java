@@ -57,6 +57,7 @@ public final class ServiceBindingSetup extends BindingSetup {
     }
 
     /** {@inheritDoc} */
+    @Override
     public BindingProvider provider() {
         return entry.provider == null ? null : entry.provider.resolution;
     }
@@ -67,6 +68,7 @@ public final class ServiceBindingSetup extends BindingSetup {
     }
 
     /** {@inheritDoc} */
+    @Override
     public BindingKind kind() {
         return BindingKind.SERVICE;
     }

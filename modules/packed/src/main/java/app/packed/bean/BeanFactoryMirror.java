@@ -20,6 +20,7 @@ import app.packed.operation.OperationMirror;
 /** A mirror for operations that create {@link #bean() bean} instances. */
 public class BeanFactoryMirror extends OperationMirror {
 
+    @Override
     public String toString() {
         return "BeanFactory - " + super.target();
     }

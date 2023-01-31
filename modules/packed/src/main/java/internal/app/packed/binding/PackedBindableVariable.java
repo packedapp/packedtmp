@@ -200,6 +200,7 @@ public final class PackedBindableVariable implements BindableVariable {
     }
 
     /** {@return whether or not a binding has already been created.} */
+    @Override
     public boolean isBound() {
         return operation.bindings[index] != null;
     }

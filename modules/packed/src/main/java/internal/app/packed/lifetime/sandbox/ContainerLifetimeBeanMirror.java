@@ -75,6 +75,7 @@ class ContainerLifetimeBeanMirror extends BeanMirror {
     
     // I virkeligheden er det jo ikke InjectorImpl der styre creation af den lifetime
     // Men Bootstrap appen. InjectorImpl holder bare noget info...
+    @Override
     public Collection<LifetimeMirror> managesLifetimes() {
         throw new UnsupportedOperationException();
     }

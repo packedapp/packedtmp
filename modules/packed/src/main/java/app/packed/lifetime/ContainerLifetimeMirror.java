@@ -133,6 +133,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
     }
 
     /** {@return any parent lifetime this lifetime is contained within.} */
+    @Override
     public Optional<ContainerLifetimeMirror> parent() {
         return Optional.ofNullable(lifetime().treeParent).map(e -> e.mirror());
     }

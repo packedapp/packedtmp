@@ -258,6 +258,7 @@ public final /* primitive */ class BeanHandle<T> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return bean.toString();
     }

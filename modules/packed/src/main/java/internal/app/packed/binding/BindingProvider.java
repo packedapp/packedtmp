@@ -41,6 +41,7 @@ public sealed interface BindingProvider {
     public record FromConstant(Class<?> constantType, Object constant) implements BindingProvider {
 
         /** {@inheritDoc} */
+        @Override
         public BindingProviderKind kind() {
             return BindingProviderKind.CONSTANT;
         }

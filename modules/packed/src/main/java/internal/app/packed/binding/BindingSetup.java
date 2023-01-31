@@ -92,6 +92,7 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
             return BindingKind.HOOK;
         }
 
+        @Override
         public BindingProvider provider() {
             return provider;
         }
@@ -120,6 +121,7 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
         }
 
         /** {@inheritDoc} */
+        @Override
         @Nullable
         public BindingProvider provider() {
             return provider;

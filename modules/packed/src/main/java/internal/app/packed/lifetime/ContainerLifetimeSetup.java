@@ -141,6 +141,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     }
 
     /** {@return a mirror that can be exposed to end-users.} */
+    @Override
     public ContainerLifetimeMirror mirror() {
         ContainerLifetimeMirror mirror = new ContainerLifetimeMirror();
 

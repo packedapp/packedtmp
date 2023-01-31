@@ -109,6 +109,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
      * 
      * @return whether or not the applications produced by this driver are runnable
      */
+    @Override
     public OldLifetimeKind lifetimeKind() {
         return lifetimeKind;
     }
@@ -136,6 +137,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
      *            the launch context to use for creating the application instance
      * @return the new application instance
      */
+    @Override
     @SuppressWarnings("unchecked")
     public A newInstance(ApplicationInitializationContext context) {
         Object result;

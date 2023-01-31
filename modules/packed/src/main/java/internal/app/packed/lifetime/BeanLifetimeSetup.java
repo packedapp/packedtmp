@@ -53,6 +53,7 @@ public final class BeanLifetimeSetup implements LifetimeSetup {
     }
 
     /** {@return a mirror that can be exposed to end-users.} */
+    @Override
     public BeanLifetimeMirror mirror() {
         BeanLifetimeMirror mirror = new BeanLifetimeMirror();
 

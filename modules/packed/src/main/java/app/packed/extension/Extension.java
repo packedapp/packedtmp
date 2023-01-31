@@ -392,12 +392,13 @@ public abstract class Extension<E extends Extension<E>> {
         // Create a new extension point
         ExtensionPoint<?> newExtensionPoint = otherExtension.instance().newExtensionPoint();
 
+        if (newExtensionPoint == null) {
+            throw new NullPointerException(
+                    "Extension " + otherExtension.model.fullName() + " returned null from " + otherExtension.model.name() + ".newExtensionPoint()");
+        }
+        
         // Make sure it is a proper type of the requested extension point
         if (!extensionPointClass.isInstance(newExtensionPoint)) {
-            if (newExtensionPoint == null) {
-                throw new NullPointerException(
-                        "Extension " + otherExtension.model.fullName() + " returned null from " + otherExtension.model.name() + ".newExtensionPoint()");
-            }
             throw new InternalExtensionException(otherExtension.extensionType.getSimpleName() + ".newExtensionPoint() was expected to return an instance of "
                     + extensionPointClass + ", but returned an instance of " + newExtensionPoint.getClass());
         }

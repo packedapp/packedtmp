@@ -56,6 +56,7 @@ public final class ExtensionTreeSetup extends RealmSetup {
     }
 
     /** {@return whether or not the realm is closed.} */
+    @Override
     public boolean isDone() {
         return isDone;
     }

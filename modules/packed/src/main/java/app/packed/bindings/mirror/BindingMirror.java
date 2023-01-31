@@ -111,6 +111,7 @@ public class BindingMirror implements Mirror {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return binding.toString();
     }

@@ -55,6 +55,7 @@ public record PackedAnnotationList(Annotation[] annotations) implements Annotati
         return false;
     }
 
+    @Override
     public boolean contains(Annotation annotation) {
         requireNonNull(annotation, "annotation is null");
         for (int i = 0; i < annotations.length; i++) {
