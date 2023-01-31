@@ -159,7 +159,7 @@ public final class TypeVariableExtractor {
      */
     private <T extends Throwable> Type findTypeParameterFromSuperClass0(Class<?> superClass, int index, ErrorProcessor<T> ep) throws T {
         Type t = superClass.getGenericSuperclass();
-        if (!(t instanceof ParameterizedType)) {
+        if (!(t instanceof ParameterizedType pt)) {
             String name = superClass.getSuperclass().getTypeParameters()[index].getName();
             StringJoiner sj = new StringJoiner(", ", baseType.getSimpleName() + "<", ">");
             for (Type ty : baseType.getTypeParameters()) {
@@ -168,7 +168,6 @@ public final class TypeVariableExtractor {
             // TODO I think we have a special extension for this
             throw ep.onError("Cannot determine type variable <" + name + "> for " + sj.toString() + " on class " + format(superClass));
         }
-        ParameterizedType pt = (ParameterizedType) t;
         return pt.getActualTypeArguments()[index];
     }
 

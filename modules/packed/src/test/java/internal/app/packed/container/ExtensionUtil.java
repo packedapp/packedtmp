@@ -16,6 +16,7 @@
 package internal.app.packed.container;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import app.packed.extension.Extension;
@@ -59,9 +60,7 @@ final class ExtensionUtil {
             }
             ArrayList<Class<?>> list = new ArrayList<>();
 
-            for (Class<?> c : ue.extension()) {
-                list.add(c);
-            }
+            Collections.addAll(list, ue.extension());
 
             String[] strings = ue.optionalExtensions();
             if (strings.length > 0) {

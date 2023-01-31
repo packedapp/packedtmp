@@ -54,13 +54,11 @@ public class Types {
             //return c.isArray() ? new GenericArrayTypeImpl(canonicalize(c.getComponentType())) : c;
         } else if (type instanceof CompositeType) {
             return type;
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType p = (ParameterizedType) type;
+        } else if (type instanceof ParameterizedType p) {
             return new ParameterizedTypeImpl(p.getOwnerType(), p.getRawType(), p.getActualTypeArguments());
         } else if (type instanceof GenericArrayType) {
             return new GenericArrayTypeImpl(((GenericArrayType) type).getGenericComponentType());
-        } else if (type instanceof WildcardType) {
-            WildcardType w = (WildcardType) type;
+        } else if (type instanceof WildcardType w) {
             return new WildcardTypeImpl(w.getUpperBounds(), w.getLowerBounds());
         }
         return type; // default, for example, CompositeType
