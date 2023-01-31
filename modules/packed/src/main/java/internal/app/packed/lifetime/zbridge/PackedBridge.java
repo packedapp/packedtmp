@@ -16,28 +16,38 @@
 package internal.app.packed.lifetime.zbridge;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.bindings.Key;
 import app.packed.extension.Extension;
+import app.packed.operation.Op;
 
 /**
  *
  */
+// Muligheder
 
-//Ideen er vi share den her mellem EB og Builder
-//Vi kan gaa far Builder->EB man aldrig den anden vej
-//PackedEB er altid super condensed
-//Builderen laver en copy on write
+// Vi kan altid require en annotation... @ProvideContainerGuest
+// Vi kan registrere nogle ops... som skal knyttes paa en bean..
 
-public final class PackedBridge<E> {
+public final class PackedBridge<E extends Extension<E>> {
 
-    public final Class<? extends Extension<?>> extensionClass;
+    public final Class<? extends Extension<E>> extensionClass;
 
-    PackedBridge(Class<? extends Extension<?>> extensionClass) {
+    PackedBridge(Class<? extends Extension<E>> extensionClass) {
         this.extensionClass = extensionClass;
+    }
+
+    /**
+     * @param type
+     * @return
+     */
+    public PackedBridge<E> addInvocationArgument(Class<?> type) {
+        return null;
     }
 
     public List<Class<?>> invocationArguments() {
@@ -56,8 +66,29 @@ public final class PackedBridge<E> {
         return null;
     }
 
+    public PackedBridge<E> provide(Class<?> extensionBean, Op<?> op) {
+        // Adds synthetic operation to extensionBean
+        return null;
+    }
+
+
+    public <K> PackedBridge<E> provideGeneratedConstant(Class<K> key, Function<? super E, ? extends K> provider) {
+        return provideGeneratedConstant(Key.of(key), provider);
+    }
+
+    public <K> PackedBridge<E> provideGeneratedConstant(Key<K> key, Function<? super E, ? extends K> provider) {
+        // Must only be created once. And used everywhere on the guest
+        return null;
+    }
+
+    public static <E extends Extension<E>> PackedBridge<E> builder(MethodHandles.Lookup lookup, Class<E> extensionType) {
+        return new PackedBridge<>(extensionType);
+    }
+
     // ExtensionBean -> T
     public static class Extractor {
+        MethodHandle extractor;
+
         Key<?> key;
 
         // Must be resolved in lifetime container...
@@ -66,8 +97,6 @@ public final class PackedBridge<E> {
         // Paa beanen? Ja det maa det jo vaere...
         // Hvis vi har flere dependencies... kan det jo ikke vaere paa extension beanen...
         //
-
-        MethodHandle extractor;
     }
 
 }

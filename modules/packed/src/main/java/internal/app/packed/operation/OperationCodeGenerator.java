@@ -19,12 +19,12 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
-import internal.app.packed.binding.BindingProvider;
-import internal.app.packed.binding.BindingProvider.FromCodeGenerated;
-import internal.app.packed.binding.BindingProvider.FromConstant;
-import internal.app.packed.binding.BindingProvider.FromInvocationArgument;
-import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
-import internal.app.packed.binding.BindingProvider.FromOperation;
+import internal.app.packed.binding.BindingResolution;
+import internal.app.packed.binding.BindingResolution.FromCodeGenerated;
+import internal.app.packed.binding.BindingResolution.FromConstant;
+import internal.app.packed.binding.BindingResolution.FromInvocationArgument;
+import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
+import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
@@ -46,7 +46,7 @@ class OperationCodeGenerator {
         }
 
         for (BindingSetup binding : operation.bindings) {
-            mh = provide(mh, binding.provider());
+            mh = provide(mh, binding.resolver());
         }
 
         int[] result = new int[permuters.size()];
@@ -64,7 +64,7 @@ class OperationCodeGenerator {
         return mh;
     }
 
-    private MethodHandle provide(MethodHandle mh, BindingProvider p) {
+    private MethodHandle provide(MethodHandle mh, BindingResolution p) {
         if (p instanceof FromConstant c) {
             return MethodHandles.insertArguments(mh, permuters.size(), c.constant());
         } else if (p instanceof FromCodeGenerated g) {

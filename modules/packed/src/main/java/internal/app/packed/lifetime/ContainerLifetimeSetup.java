@@ -24,6 +24,7 @@ import java.util.Set;
 
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
+import app.packed.extension.ExtensionContext;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.RunState;
@@ -46,7 +47,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
     private static final MethodHandle MH_INVOKE_INITIALIZER = LookupUtil.findStaticOwn(MethodHandles.lookup(), "invokeInitializer", void.class, BeanSetup.class,
-            MethodHandle.class, PackedExtensionContext.class);
+            MethodHandle.class, ExtensionContext.class);
 
     /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
     private static final MethodHandle MH_LIFETIME_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ContainerLifetimeMirror.class,
@@ -94,7 +95,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         }
     }
 
-    public PackedExtensionContext newRuntimePool() {
+    public ExtensionContext newRuntimePool() {
         return PackedExtensionContext.create(size);
     }
 
@@ -183,7 +184,13 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
                 bean.container.application.addCodeGenerator(() -> {
                     MethodHandle mha = os.generateMethodHandle();
+
+                    // We store container beans in a generic object array.
+                    // Don't care about the exact type of the bean.
+                    mha = mha.asType(mha.type().changeReturnType(Object.class));
+
                     mha = MH_INVOKE_INITIALIZER.bindTo(bean).bindTo(mha);
+
                     initialization.methodHandles.add(mha);
                 });
             }
@@ -214,10 +221,10 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         }
     }
 
-    public static void invokeInitializer(BeanSetup bean, MethodHandle mh, PackedExtensionContext pec) {
+    public static void invokeInitializer(BeanSetup bean, MethodHandle mh, ExtensionContext ec) {
         Object instance;
         try {
-            instance = mh.invoke(pec);
+            instance = mh.invokeExact(ec);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -227,6 +234,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         if (!bean.beanClass.isInstance(instance)) {
             throw new Error("Expected " + bean.beanClass + ", was " + instance.getClass());
         }
+        PackedExtensionContext pec = (PackedExtensionContext) ec;
         pec.storeObject(bean.lifetimeStoreIndex, instance);
     }
 }

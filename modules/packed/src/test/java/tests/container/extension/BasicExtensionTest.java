@@ -28,18 +28,10 @@ import testutil.util.AbstractApplicationTest;
 /** Tests basic functionality of a {@link Extension}. */
 public class BasicExtensionTest extends AbstractApplicationTest {
 
-    /**
-     * Checks that {@link Extension#buildContext()} is identical to {@link ContainerConfiguration#buildContext()}.
-     */
-    // @Test
-    // public void buildContext() {
-    // appOf(c -> assertThat(c.use(TestExtension.class).publicBuildContext()).isSameAs(c.buildContext()));
-    // }
-
     /** Checks that we cannot call certain methods from the constructor of an extension. */
     @Disabled // this is okay now
     @Test
-    public void cannotCallExtensionsFromConstructor() {
+    public void cannotCallUseExtensionFromConstructor() {
         appOf(c -> assertThat(c.use(CallingMethodsFromTheConstructor.class)).isNotNull());
     }
 

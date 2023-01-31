@@ -22,13 +22,13 @@ import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 
 /** Provides values for bindings. */
-public sealed interface BindingProvider {
+public sealed interface BindingResolution {
 
     /** {@return the kind of provider.} */
     BindingProviderKind kind();
 
     /** This provider will create a constant at code generation time. */
-    public record FromCodeGenerated(Supplier<?> supplier) implements BindingProvider {
+    public record FromCodeGenerated(Supplier<?> supplier) implements BindingResolution {
 
         /** {@inheritDoc} */
         @Override
@@ -38,7 +38,7 @@ public sealed interface BindingProvider {
     }
 
     /** Provides values from a constant. */
-    public record FromConstant(Class<?> constantType, Object constant) implements BindingProvider {
+    public record FromConstant(Class<?> constantType, Object constant) implements BindingResolution {
 
         /** {@inheritDoc} */
         @Override
@@ -48,7 +48,7 @@ public sealed interface BindingProvider {
     }
 
     /** Provides values from an operation invocation argument. */
-    public record FromInvocationArgument(int argumentIndex) implements BindingProvider {
+    public record FromInvocationArgument(int argumentIndex) implements BindingResolution {
 
         /** {@inheritDoc} */
         @Override
@@ -58,7 +58,7 @@ public sealed interface BindingProvider {
     }
 
     /** Provides values by accessing a lifetime arena. */
-    public record FromLifetimeArena(ContainerLifetimeSetup containerLifetime, int index, Class<?> type) implements BindingProvider {
+    public record FromLifetimeArena(ContainerLifetimeSetup containerLifetime, int index, Class<?> type) implements BindingResolution {
 
         /** {@inheritDoc} */
         @Override
@@ -68,7 +68,7 @@ public sealed interface BindingProvider {
     }
 
     /** Provides values from the result of an operation. */
-    public record FromOperation(OperationSetup operation) implements BindingProvider {
+    public record FromOperation(OperationSetup operation) implements BindingResolution {
 
         /** {@inheritDoc} */
         @Override

@@ -21,9 +21,9 @@ import java.util.function.Supplier;
 
 import app.packed.bindings.BindableVariable;
 import app.packed.bindings.BindableWrappedVariable;
+import app.packed.bindings.BindingMirror;
 import app.packed.bindings.Key;
 import app.packed.bindings.Variable;
-import app.packed.bindings.mirror.BindingMirror;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.framework.AnnotationList;

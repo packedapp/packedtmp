@@ -55,6 +55,10 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
 
     public BootstrapAppSetup(OldLifetimeKind lifetimeKind, Supplier<? extends ApplicationMirror> mirrorSupplier, MethodHandle mh, Wirelet wirelet) {
         this.wirelet = wirelet;
+
+        // newInstance wants Object return
+        mh = mh.asType(mh.type().changeReturnType(Object.class));
+
         this.mhConstructor = requireNonNull(mh);
         this.mirrorSupplier = requireNonNull(mirrorSupplier);
         this.lifetimeKind = requireNonNull(lifetimeKind);
@@ -140,7 +144,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
     public A newInstance(ApplicationInitializationContext context) {
         Object result;
         try {
-            result = mhConstructor.invoke(context);
+            result = mhConstructor.invokeExact(context);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

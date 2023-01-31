@@ -17,6 +17,7 @@ package internal.app.packed.lifetime.runtime;
 
 import java.lang.invoke.MethodHandle;
 
+import app.packed.extension.ExtensionContext;
 import app.packed.framework.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
@@ -28,11 +29,12 @@ import internal.app.packed.util.ThrowableUtil;
 public class ContainerRunner {
 
     /** The runtime component node we are building. */
-    private PackedExtensionContext pool;
+    private ExtensionContext pool;
 
     /** If the application is stateful, the applications runtime. */
     @Nullable
     public final PackedManagedLifetime runtime;
+
     ContainerSetup container;
 
     ContainerRunner(PackedManagedLifetime runtime) {
@@ -48,7 +50,7 @@ public class ContainerRunner {
     /**
      * @return
      */
-    public PackedExtensionContext pool() {
+    public ExtensionContext pool() {
         return pool;
     }
 
@@ -63,7 +65,7 @@ public class ContainerRunner {
         // Run all initializers
         for (MethodHandle mh : container.lifetime.initialization.methodHandles) {
             try {
-                mh.invoke(pool);
+                mh.invokeExact(pool);
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
@@ -74,7 +76,7 @@ public class ContainerRunner {
         // Run all initializers
         for (MethodHandle mh : container.lifetime.startup.methodHandles) {
             try {
-                mh.invoke(pool);
+                mh.invokeExact(pool);
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
@@ -85,7 +87,7 @@ public class ContainerRunner {
         // Run all initializers
         for (MethodHandle mh : container.lifetime.shutdown.methodHandles) {
             try {
-                mh.invoke(pool);
+                mh.invokeExact(pool);
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }

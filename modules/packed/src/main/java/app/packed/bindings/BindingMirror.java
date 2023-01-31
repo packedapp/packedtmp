@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings.mirror;
+package app.packed.bindings;
 
 import java.util.Optional;
 
-import app.packed.bindings.BindingKind;
-import app.packed.bindings.Variable;
+import app.packed.bindings.mirror.BindingProviderKind;
+import app.packed.bindings.mirror.BindingTarget;
+import app.packed.bindings.mirror.DependenciesMirror;
 import app.packed.container.Realm;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.binding.BindingProvider;
-import internal.app.packed.binding.BindingProvider.FromOperation;
+import internal.app.packed.binding.BindingResolution;
+import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.Mirror;
 
@@ -136,12 +137,12 @@ public class BindingMirror implements Mirror {
     }
 
     public Optional<BindingProviderKind> zProviderKind() {
-        return Optional.ofNullable(binding().provider()).map(b -> b.kind());
+        return Optional.ofNullable(binding().resolver()).map(b -> b.kind());
     }
 
     public final Optional<OperationMirror> zProvidingOperation() {
         // What about lifetime
-        BindingProvider p = binding().provider();
+        BindingResolution p = binding().resolver();
         if (p instanceof FromOperation fo) {
             return Optional.ofNullable(fo.operation().mirror());
         }

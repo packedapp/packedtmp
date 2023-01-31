@@ -13,28 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.bridge;
+package internal.app.packed.lifetime.zbridge;
 
-import app.packed.bean.BeanHandle;
-import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.extension.Extension;
+import app.packed.service.ServiceLocator;
 
 /**
  *
  */
-// Har ikke nogle host objekter. Det er jo en almindelige bean...
+public class MyE extends Extension<MyE> {
+    String foo;
 
-// Saa hvis vi endelig ville lave det, skal det generisks for beans.
-public class ContainerGuestBean<T> extends InstanceBeanConfiguration<T> {
 
-    /**
-     * @param handle
-     */
-    public ContainerGuestBean(BeanHandle<T> handle) {
-        super(handle);
-    }
 
-    public ContainerGuestBean<T> addBridge(ExtensionLifetimeBridge bridge) {
-        return this;
+
+    static class RuntimeBean {
+
+        ServiceLocator calc() {
+            throw new UnsupportedOperationException();
+        }
     }
 }
-// Guest ->

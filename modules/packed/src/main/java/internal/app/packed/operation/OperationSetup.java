@@ -35,7 +35,7 @@ import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.binding.BindingProvider.FromOperation;
+import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.ExtensionServiceBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -114,7 +114,7 @@ public sealed abstract class OperationSetup {
     public final void forEachBinding(Consumer<? super BindingSetup> binding) {
         for (BindingSetup bs : bindings) {
             requireNonNull(bs);
-            if (bs.provider() != null && bs.provider() instanceof FromOperation nested) {
+            if (bs.resolver() != null && bs.resolver() instanceof FromOperation nested) {
                 nested.operation().forEachBinding(binding);
             }
             binding.accept(bs);

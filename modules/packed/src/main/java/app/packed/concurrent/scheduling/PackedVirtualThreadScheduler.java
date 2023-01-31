@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import internal.app.packed.lifetime.runtime.PackedExtensionContext;
+import app.packed.extension.ExtensionContext;
 
 /**
  *
@@ -30,9 +30,9 @@ import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 @SuppressWarnings("preview")
 public class PackedVirtualThreadScheduler {
 
-    final PackedExtensionContext pec;
+    final ExtensionContext pec;
 
-    public PackedVirtualThreadScheduler(PackedExtensionContext pec) {
+    public PackedVirtualThreadScheduler(ExtensionContext pec) {
         this.pec = pec;
     }
 

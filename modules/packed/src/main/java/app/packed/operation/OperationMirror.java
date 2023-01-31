@@ -27,8 +27,8 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.bean.BeanMirror;
+import app.packed.bindings.BindingMirror;
 import app.packed.bindings.Key;
-import app.packed.bindings.mirror.BindingMirror;
 import app.packed.bindings.mirror.DependenciesMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.context.ContextMirror;
@@ -40,13 +40,13 @@ import app.packed.lifetime.LifetimeMirror;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.service.ServiceManagerEntry;
 
 /**
  * A mirror for an operation on a bean.
  * <p>
  * This class can be extended to provide more detailed information about a particular type of operation. For example,
- * the {@link BaseExtension} provides details about an exported service via
- * {@link ExportedServiceMirror}.
+ * the {@link BaseExtension} provides details about an exported service via {@link ExportedServiceMirror}.
  * <p>
  * NOTE: Subclasses of this class:
  * <ul>
@@ -54,7 +54,7 @@ import internal.app.packed.operation.OperationSetup;
  * </ul>
  */
 @BindingTypeHook(extension = MirrorExtension.class)
-public non-sealed class OperationMirror implements ContextualizedElementMirror, Mirror {
+public non-sealed class OperationMirror implements ContextualizedElementMirror , Mirror {
 
     /**
      * The internal configuration of the operation we are mirrored. Is initially null but populated via
@@ -141,11 +141,13 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror, 
     // For example, if a bean is provided as a service. Calling this method on any of the
     // operations on the bean will include the key under which the bean is being provided.
     public Set<Key<?>> keys() {
-        Set<Key<?>> set = new HashSet<>(operation().bean.container.sm.keysAvailableInternally());
-//        for (ContextMirror ocm : contexts()) {
-//            set.addAll(ocm.keys());
-//        }
-        return Set.copyOf(set);
+        HashSet<Key<?>> result = new HashSet<>();
+        for (ServiceManagerEntry e : operation().bean.container.sm.entries.values()) {
+            if (e.provider != null) {
+                result.add(e.key);
+            }
+        }
+        return Set.copyOf(result);
     }
 
     // Composites, What about services???

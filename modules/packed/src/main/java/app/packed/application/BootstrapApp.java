@@ -187,6 +187,7 @@ public final class BootstrapApp<A> {
         if (o != null) {
             mh = comp.ahe.mh;
         }
+
         BootstrapAppSetup<A> a = new BootstrapAppSetup<>(comp.lifetimeKind, comp.mirrorSupplier, mh, null);
         return new BootstrapApp<>(a);
     }

@@ -18,7 +18,7 @@ package internal.app.packed.service;
 import static java.util.Objects.requireNonNull;
 
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.binding.BindingProvider;
+import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -33,9 +33,9 @@ public final class ProvidedService {
     /** The operation that provides the service. */
     public final OperationSetup operation;
 
-    public final BindingProvider resolution;
+    public final BindingResolution resolution;
 
-    ProvidedService(OperationSetup operation, ServiceManagerEntry entry, BindingProvider resolution) {
+    ProvidedService(OperationSetup operation, ServiceManagerEntry entry, BindingResolution resolution) {
         this.operation = requireNonNull(operation);
         this.bean = requireNonNull(operation.bean);
         this.entry = requireNonNull(entry);

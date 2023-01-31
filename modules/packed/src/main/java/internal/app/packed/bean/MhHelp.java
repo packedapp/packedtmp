@@ -49,8 +49,8 @@ public class MhHelp {
         MethodHandle fa = MethodHandles.filterArguments(ADD, 0, ADD, INC);
 
         System.out.println(fa.type());
-        System.out.println(fa.invoke(1, 2));
-        System.out.println(fa.invoke(123, 2));
+        System.out.println(fa.invokeExact(1, 2));
+        System.out.println(fa.invokeExact(123, 2));
     }
 
     public static void mainz(String[] args) {

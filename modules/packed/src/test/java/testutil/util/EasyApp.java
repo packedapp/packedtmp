@@ -13,28 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.bridge;
+package testutil.util;
 
-import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.container.AbstractComposer;
 
 /**
  *
  */
-// Har ikke nogle host objekter. Det er jo en almindelige bean...
+public class EasyApp {
 
-// Saa hvis vi endelig ville lave det, skal det generisks for beans.
-public class ContainerGuestBean<T> extends InstanceBeanConfiguration<T> {
+//    create()
 
-    /**
-     * @param handle
-     */
-    public ContainerGuestBean(BeanHandle<T> handle) {
-        super(handle);
-    }
 
-    public ContainerGuestBean<T> addBridge(ExtensionLifetimeBridge bridge) {
-        return this;
+    public static class Consumer extends AbstractComposer {
+
+        public <T> InstanceBeanConfiguration<T> install(Class<T> clazz) {
+            return base().install(clazz);
+        }
     }
 }
-// Guest ->

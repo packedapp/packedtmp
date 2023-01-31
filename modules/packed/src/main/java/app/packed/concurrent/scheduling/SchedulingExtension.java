@@ -29,11 +29,11 @@ import app.packed.concurrent.scheduling.ScheduledOperationConfiguration.Schedule
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
+import app.packed.extension.ExtensionContext;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionPoint;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
-import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 
 /**
  *
@@ -116,7 +116,7 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
 
         final PackedVirtualThreadScheduler vts;
 
-        SchedulingBean(@CodeGenerated FinalSchedule[] mhs, PackedExtensionContext pec) {
+        SchedulingBean(@CodeGenerated FinalSchedule[] mhs, ExtensionContext pec) {
             this.vts = new PackedVirtualThreadScheduler(pec);
 
             for (FinalSchedule p : mhs) {

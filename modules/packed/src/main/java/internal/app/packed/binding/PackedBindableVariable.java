@@ -25,8 +25,8 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanInstallationException;
 import app.packed.bindings.BindableVariable;
+import app.packed.bindings.BindingMirror;
 import app.packed.bindings.Variable;
-import app.packed.bindings.mirror.BindingMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.framework.AnnotationList;
@@ -35,10 +35,10 @@ import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.PackedAnnotationList;
-import internal.app.packed.binding.BindingProvider.FromCodeGenerated;
-import internal.app.packed.binding.BindingProvider.FromConstant;
-import internal.app.packed.binding.BindingProvider.FromInvocationArgument;
-import internal.app.packed.binding.BindingProvider.FromOperation;
+import internal.app.packed.binding.BindingResolution.FromCodeGenerated;
+import internal.app.packed.binding.BindingResolution.FromConstant;
+import internal.app.packed.binding.BindingResolution.FromInvocationArgument;
+import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.BindingSetup.HookBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
@@ -100,7 +100,7 @@ public final class PackedBindableVariable implements BindableVariable {
         return operation.template.invocationType().parameterList();
     }
 
-    private void bind(BindingProvider provider) {
+    private void bind(BindingResolution provider) {
         assert (operation.bindings[index] == null);
         operation.bindings[index] = new HookBindingSetup(operation, index, bindingExtension.extensionTree.realm(), provider);
     }

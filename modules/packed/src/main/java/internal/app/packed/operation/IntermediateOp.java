@@ -26,7 +26,7 @@ import app.packed.framework.Nullable;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.binding.BindingProvider.FromConstant;
+import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup.NestedOperationParent;

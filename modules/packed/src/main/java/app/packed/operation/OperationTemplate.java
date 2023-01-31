@@ -23,7 +23,6 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalInt;
 
 import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.context.Context;
@@ -67,23 +66,15 @@ import internal.app.packed.operation.PackedOperationTemplate;
 
 public sealed interface OperationTemplate permits PackedOperationTemplate {
 
-    // return -1 instead...
-    default OptionalInt indexOfBeanInstance() {
-        return OptionalInt.empty();
-    }
-
-    default OptionalInt indexOfExtensionContext() {
-        return OptionalInt.empty();
-    }
-
     int beanInstanceIndex();
 
-    // Tror vi styrer return type her.
-    // Man boer smide custom fejl beskeder
+    boolean isIgnoreReturn();
 
     default /* Ordered */ Map<Class<? extends Context<?>>, List<Class<?>>> contexts() {
         throw new UnsupportedOperationException();
     }
+
+    int extensionContextIndex();
 
     // All but noErrorHandling will install an outward interceptor
     default OperationTemplate handleErrors(ErrorHandler errorHandler) {
@@ -96,15 +87,12 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
      */
     MethodType invocationType();
 
-    boolean requiresExtensionContext();
-
     /**
      * @param type
      * @return
      *
      * @see BindableVariable#provideFromInvocationArgument(int)
      */
-    // Kan man have have loese args som ikke er del af en context???
     OperationTemplate withArg(Class<?> type);
 
     default OperationTemplate withBeanInstance() {
@@ -121,7 +109,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         throw new UnsupportedOperationException();
     }
 
-    OperationTemplate withIgnoreReturnType();
+    OperationTemplate withIgnoreReturn();
 
     OperationTemplate withReturnType(Class<?> type);
 
@@ -142,19 +130,18 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     static OperationTemplate raw() {
         return new PackedOperationTemplate(-1, -1, MethodType.methodType(void.class), false);
     }
-
-    enum ArgumentKind {
-
-        ARGUMENT,
-
-        /** The invocation argument is a bean instance. */
-        BEAN_INSTANCE,
-
-        /** The invocation argument is an extension bean context. */
-        // Maaske noget andet end context, given dens mening
-        EXTENSION_BEAN_CONTEXT; // InvocationContext
-    }
-
+//
+//    enum ArgumentKind {
+//
+//        ARGUMENT,
+//
+//        /** The invocation argument is a bean instance. */
+//        BEAN_INSTANCE,
+//
+//        /** The invocation argument is an extension bean context. */
+//        // Maaske noget andet end context, given dens mening
+//        EXTENSION_BEAN_CONTEXT; // InvocationContext
+//    }
 
     /**
      * Move to operation template?

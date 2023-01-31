@@ -22,7 +22,7 @@ import app.packed.container.Realm;
 import app.packed.extension.BaseExtension;
 import app.packed.framework.Nullable;
 import app.packed.service.ServiceBindingMirror;
-import internal.app.packed.binding.BindingProvider;
+import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.operation.OperationSetup;
 
@@ -58,7 +58,7 @@ public final class ServiceBindingSetup extends BindingSetup {
 
     /** {@inheritDoc} */
     @Override
-    public BindingProvider provider() {
+    public BindingResolution resolver() {
         return entry.provider == null ? null : entry.provider.resolution;
     }
 

@@ -45,11 +45,10 @@ import app.packed.service.ServiceLocator;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanLocal;
-import internal.app.packed.binding.BindingProvider.FromOperation;
+import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
-import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -317,7 +316,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     }
 
                     OperationSetup operation = OperationSetup.crack(field.newGetOperation(OperationTemplate.defaults()));
-                    extension.container.sm.serviceProvide(key, operation, new FromOperation(operation));
+                    extension.container.sm.provide(key, operation, new FromOperation(operation));
                 } else {
                     super.hookOnAnnotatedField(hook, field);
                 }
@@ -327,7 +326,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             @Override
             public void hookOnAnnotatedMethod(Annotation annotation, OperationalMethod method) {
                 BeanSetup bean = BeanSetup.crack(method);
-                OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
+                OperationTemplate temp = OperationTemplate.defaults().withIgnoreReturn();
 
                 if (annotation instanceof Inject) {
                     OperationHandle handle = method.newOperation(temp);
@@ -356,12 +355,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
                     if (isProviding) {
                         OperationSetup operation = OperationSetup.crack(method.newOperation(temp2));
-                        extension.container.sm.serviceProvide(key, operation, new FromOperation(operation));
+                        extension.container.sm.provide(key, operation, new FromOperation(operation));
                     }
 
                     if (isExporting) {
                         OperationSetup operation = OperationSetup.crack(method.newOperation(temp2));
-                        extension.container.sm.serviceExport(key, operation);
+                        extension.container.sm.export(key, operation);
                     }
                 } else {
                     super.hookOnAnnotatedMethod(annotation, method);
@@ -412,18 +411,13 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             @Override
             public void hookOnProvidedVariableType(Class<?> hook, BindableWrappedVariable v) {
-                if (hook == PackedExtensionContext.class) {
-                    if (v.availableInvocationArguments().isEmpty() || v.availableInvocationArguments().get(0) != ExtensionContext.class) {
-                        // throw new Error(v.availableInvocationArguments().toString());
-                    }
-                    v.bindInvocationArgument(0);
-                } else if (hook == ExtensionContext.class) {
+                if (hook == ExtensionContext.class) {
                     if (v.availableInvocationArguments().isEmpty() || v.availableInvocationArguments().get(0) != ExtensionContext.class) {
                         // throw new Error(v.availableInvocationArguments().toString());
                     }
                     v.bindInvocationArgument(0);
                 } else {
-                    v.checkAssignableTo(PackedExtensionContext.class, ExtensionContext.class);
+                    v.checkAssignableTo(ExtensionContext.class);
                 }
             }
 

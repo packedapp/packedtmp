@@ -22,6 +22,7 @@ import java.lang.reflect.Parameter;
 /**
  *
  */
+// Vi kan faa denne via OperationTarget, syntes jeg maaske er fint for nu
 public sealed interface BindingTarget {
 
     /** Represents the binding of a {@link Field field}. */
@@ -39,9 +40,7 @@ public sealed interface BindingTarget {
      */
     non-sealed interface OfParameter extends BindingTarget {
 
-        /**
-         * @return
-         */
+        /** {@return the parameters executable.} */
         Executable executable();
 
         /** {@return the index of the parameter.} */

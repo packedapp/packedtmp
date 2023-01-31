@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanInstallationException;
-import app.packed.bindings.mirror.BindingMirror;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.framework.AnnotationList;

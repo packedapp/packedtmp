@@ -44,7 +44,7 @@ public final class ExtensionServiceBindingSetup extends BindingSetup {
     }
 
     @Override
-    public BindingProvider provider() {
+    public BindingResolution resolver() {
         return extensionBean.beanInstanceBindingProvider();
     }
 

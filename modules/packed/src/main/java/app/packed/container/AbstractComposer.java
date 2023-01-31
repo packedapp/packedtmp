@@ -57,8 +57,6 @@ public abstract class AbstractComposer {
         return use(BaseExtension.class);
     }
 
-    protected void preCompose() {}
-
     /**
      * Returns the configuration of the <strong>root</strong> container defined by this composer.
      * <p>
@@ -102,6 +100,8 @@ public abstract class AbstractComposer {
         requireNonNull(lookup, "lookup cannot be null");
         configuration().handle.container.assembly.lookup(lookup);
     }
+
+    protected void preCompose() {}
 
     protected <E extends Extension<?>> E use(Class<E> extensionClass) {
         return configuration().use(extensionClass);

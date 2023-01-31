@@ -34,7 +34,7 @@ public abstract class AbstractApplicationTest {
         };
     }
 
-    public static AppTester appOf(Assembly  source, Wirelet... wirelets) {
+    public static AppTester appOf(Assembly source, Wirelet... wirelets) {
         return new AppTester(source, wirelets);
     }
 

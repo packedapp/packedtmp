@@ -60,7 +60,7 @@ final class BeanScannerBindingResolver {
         InternalDependency ia = InternalDependency.fromVariable(v);
 
         if (resolveAsService) {
-            operation.bindings[index] = iBean.bean.container.sm.serviceBind(ia.key(), !ia.isOptional(), operation, index);
+            operation.bindings[index] = iBean.bean.container.sm.bind(ia.key(), !ia.isOptional(), operation, index);
         } else {
             ExtensionServiceBindingSetup b = new ExtensionServiceBindingSetup(operation, index, v.getRawType());
             operation.bindings[index] = b;

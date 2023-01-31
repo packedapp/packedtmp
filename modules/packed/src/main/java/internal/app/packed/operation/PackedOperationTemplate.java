@@ -4,22 +4,26 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodType;
 
+import app.packed.extension.ExtensionContext;
 import app.packed.operation.OperationTemplate;
-import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 
 public final class PackedOperationTemplate implements OperationTemplate {
 
-    public static PackedOperationTemplate DEFAULTS = new PackedOperationTemplate(0, -1, MethodType.methodType(void.class, PackedExtensionContext.class), false);
+    public static PackedOperationTemplate DEFAULTS = new PackedOperationTemplate(0, -1, MethodType.methodType(void.class, ExtensionContext.class), false);
     final int beanInstanceIndex;
     final int extensionContext;
 
     final MethodType methodType;
-    boolean ignoreReturnType;
+    boolean ignoreReturn;
 
-    public PackedOperationTemplate(int extensionContext, int beanInstanceIndex, MethodType methodType, boolean ignoreReturnType) {
+    public PackedOperationTemplate(int extensionContext, int beanInstanceIndex, MethodType methodType, boolean ignoreReturn) {
         this.extensionContext = extensionContext;
         this.beanInstanceIndex = beanInstanceIndex;
+        if (ignoreReturn) {
+            methodType = methodType.changeReturnType(void.class);
+        }
         this.methodType = methodType;
+        this.ignoreReturn = ignoreReturn;
     }
 
     /** {@inheritDoc} */
@@ -36,16 +40,10 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
     /** {@inheritDoc} */
     @Override
-    public boolean requiresExtensionContext() {
-        return extensionContext != -1;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public OperationTemplate withArg(Class<?> type) {
         requireNonNull(type, "type is null");
         MethodType mt = methodType.appendParameterTypes(type);
-        return new PackedOperationTemplate(extensionContext, beanInstanceIndex, mt, ignoreReturnType);
+        return new PackedOperationTemplate(extensionContext, beanInstanceIndex, mt, ignoreReturn);
     }
 
     /** {@inheritDoc} */
@@ -56,7 +54,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
             throw new UnsupportedOperationException("Already has a bean instance at index " + beanInstanceIndex);
         }
         int index = extensionContext == -1 ? 0 : 1;
-        return new PackedOperationTemplate(extensionContext, index, methodType, ignoreReturnType);
+        return new PackedOperationTemplate(extensionContext, index, methodType, ignoreReturn);
     }
 
     /** {@inheritDoc} */
@@ -64,13 +62,25 @@ public final class PackedOperationTemplate implements OperationTemplate {
     public OperationTemplate withReturnType(Class<?> returnType) {
         requireNonNull(returnType, "returnType is null");
         MethodType mt = methodType.changeReturnType(returnType);
-        return new PackedOperationTemplate(extensionContext, beanInstanceIndex, mt, ignoreReturnType);
+        return new PackedOperationTemplate(extensionContext, beanInstanceIndex, mt, ignoreReturn);
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationTemplate withIgnoreReturnType() {
+    public OperationTemplate withIgnoreReturn() {
         MethodType mt = methodType.changeReturnType(void.class);
         return new PackedOperationTemplate(extensionContext, beanInstanceIndex, mt, true);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isIgnoreReturn() {
+        return ignoreReturn;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int extensionContextIndex() {
+        return extensionContext;
     }
 }

@@ -24,15 +24,16 @@ import java.util.Set;
 
 import app.packed.bindings.Key;
 import app.packed.bindings.Provider;
+import app.packed.extension.BaseExtensionPoint.CodeGenerated;
+import app.packed.extension.ExtensionContext;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceSelection;
-import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
  *
  */
-public record PackedServiceLocator(PackedExtensionContext context, Map<Key<?>, MethodHandle> map) implements ServiceLocator {
+public record PackedServiceLocator(ExtensionContext context, @CodeGenerated Map<Key<?>, MethodHandle> map) implements ServiceLocator {
 
     /** {@inheritDoc} */
     @Override

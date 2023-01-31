@@ -26,10 +26,10 @@ import app.packed.framework.Nullable;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetupClassMapContainer.MuInst;
-import internal.app.packed.binding.BindingProvider;
-import internal.app.packed.binding.BindingProvider.FromConstant;
-import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
-import internal.app.packed.binding.BindingProvider.FromOperation;
+import internal.app.packed.binding.BindingResolution;
+import internal.app.packed.binding.BindingResolution.FromConstant;
+import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
+import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
@@ -162,7 +162,7 @@ public final class BeanSetup {
         }
     }
 
-    public BindingProvider beanInstanceBindingProvider() {
+    public BindingResolution beanInstanceBindingProvider() {
         if (beanSourceKind == BeanSourceKind.INSTANCE) {
             return new FromConstant(beanSource.getClass(), beanSource);
         } else if (beanKind == BeanKind.CONTAINER) { // we've already checked if instance

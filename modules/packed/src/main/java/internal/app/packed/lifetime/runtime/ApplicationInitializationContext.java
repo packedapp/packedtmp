@@ -74,7 +74,7 @@ public final class ApplicationInitializationContext {
      * @return a service locator for the application
      */
     public ServiceLocator serviceLocator() {
-        return application.container.sm.exportedServices(cr.pool());
+        return application.container.sm.newExportedServiceLocator(cr.pool());
     }
 
     /**

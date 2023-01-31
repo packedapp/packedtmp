@@ -51,7 +51,7 @@ public class EntryPointSetup {
             }
 
             try {
-                mainThread.generatedMethodHandle.invoke(runner.pool());
+                mainThread.generatedMethodHandle.invokeExact(runner.pool());
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }

@@ -15,26 +15,14 @@
  */
 package app.packed.extension.bridge;
 
-import app.packed.bean.BeanHandle;
-import app.packed.bean.InstanceBeanConfiguration;
-
 /**
  *
  */
-// Har ikke nogle host objekter. Det er jo en almindelige bean...
+public class Usage {
 
-// Saa hvis vi endelig ville lave det, skal det generisks for beans.
-public class ContainerGuestBean<T> extends InstanceBeanConfiguration<T> {
+    public static void main(ContainerGuestBean<?> b) {
 
-    /**
-     * @param handle
-     */
-    public ContainerGuestBean(BeanHandle<T> handle) {
-        super(handle);
-    }
+        b.addBridge(ExtensionLifetimeBridge.EXPORTED_SERVICE_LOCATOR);
 
-    public ContainerGuestBean<T> addBridge(ExtensionLifetimeBridge bridge) {
-        return this;
     }
 }
-// Guest ->

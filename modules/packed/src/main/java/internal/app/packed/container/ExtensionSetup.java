@@ -42,7 +42,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     public final Class<? extends Extension<?>> extensionType;
 
     /** The extension's injection manager. */
-    public final ExtensionInjectionManager injectionManager;
+    public final ExtensionServiceManager injectionManager;
 
     /** The extension instance that is exposed to users, instantiated and set in {@link #initialize()}. */
     @Nullable
@@ -67,10 +67,10 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         this.extensionType = requireNonNull(extensionType);
         if (parent == null) {
             this.extensionTree = new ExtensionTreeSetup(this, extensionType);
-            this.injectionManager = new ExtensionInjectionManager(null);
+            this.injectionManager = new ExtensionServiceManager(null);
         } else {
             this.extensionTree = parent.extensionTree;
-            this.injectionManager = new ExtensionInjectionManager(parent.injectionManager);
+            this.injectionManager = new ExtensionServiceManager(parent.injectionManager);
         }
         this.model = requireNonNull(extensionTree.extensionModel);
     }

@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
 import app.packed.bindings.BindingKind;
-import app.packed.bindings.mirror.BindingMirror;
+import app.packed.bindings.BindingMirror;
 import app.packed.container.Realm;
 import app.packed.framework.Nullable;
 import internal.app.packed.binding.BindingSetup.HookBindingSetup;
@@ -40,10 +40,14 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
     private static final MethodHandle MH_BINDING_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BindingMirror.class, "initialize",
             void.class, BindingSetup.class);
 
-    /** The extension that owns the binding. */
+    /**
+     * The realm that owns the binding.
+     * <p>
+     * May be the application itself if using {@link app.packed.operation.Op#bind(Object)} or similar.
+     */
     public final Realm boundBy;
 
-    /** Supplies a mirror for the operation */
+    /** Supplies a mirror for the binding */
     public Supplier<? extends BindingMirror> mirrorSupplier;
 
     /** The operation this binding is a part of. */
@@ -52,12 +56,13 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
     /** The index into {@link OperationSetup#bindings}. */
     public final int operationBindingIndex;
 
-    public BindingSetup(OperationSetup operation, int operationBindingIndex, Realm boundBy) {
+    protected BindingSetup(OperationSetup operation, int operationBindingIndex, Realm boundBy) {
         this.operation = requireNonNull(operation);
         this.operationBindingIndex = operationBindingIndex;
         this.boundBy = requireNonNull(boundBy);
     }
 
+    /** {@return the binding kind.} */
     public abstract BindingKind kind();
 
     /** {@return a new mirror.} */
@@ -73,14 +78,20 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
         return mirror;
     }
 
-    public abstract BindingProvider provider();
+    public abstract BindingResolution resolver();
 
+    /**
+     * A binding that was created do to some kind of binding hook.
+     *
+     * @see app.packed.bean.BeanHook.AnnotatedBindingHook
+     * @see app.packed.bean.BeanHook.BindingTypeHook
+     */
     public static final class HookBindingSetup extends BindingSetup {
 
         /** Provider for the binding. */
-        public final BindingProvider provider;
+        public final BindingResolution provider;
 
-        public HookBindingSetup(OperationSetup operation, int index, Realm user, BindingProvider provider) {
+        public HookBindingSetup(OperationSetup operation, int index, Realm user, BindingResolution provider) {
             super(operation, index, user);
             this.provider = requireNonNull(provider);
         }
@@ -92,23 +103,30 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
         }
 
         @Override
-        public BindingProvider provider() {
+        public BindingResolution resolver() {
             return provider;
         }
     }
 
+    /**
+     * A binding that was created manually.
+     *
+     * @see app.packed.operation.OperationHandle#manuallyBindable(int)
+     * @see app.packed.operation.Op#bind(Object)
+     * @see app.packed.operation.Op#bind(int, Object, Object...)
+     */
     public static final class ManualBindingSetup extends BindingSetup {
 
         /** Provider for the binding. */
         @Nullable
-        public final BindingProvider provider;
+        public final BindingResolution provider;
 
         /**
          * @param operation
          * @param index
          * @param user
          */
-        public ManualBindingSetup(OperationSetup operation, int index, Realm user, BindingProvider provider) {
+        public ManualBindingSetup(OperationSetup operation, int index, Realm user, BindingResolution provider) {
             super(operation, index, user);
             this.provider = provider;
         }
@@ -122,7 +140,7 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
         /** {@inheritDoc} */
         @Override
         @Nullable
-        public BindingProvider provider() {
+        public BindingResolution resolver() {
             return provider;
         }
     }

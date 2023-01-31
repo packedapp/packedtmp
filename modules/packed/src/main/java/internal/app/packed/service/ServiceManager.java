@@ -18,24 +18,22 @@ package internal.app.packed.service;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import app.packed.bean.BeanSourceKind;
 import app.packed.bindings.Key;
 import app.packed.bindings.KeyAlreadyInUseException;
 import app.packed.bindings.UnsatisfiableDependencyException;
+import app.packed.extension.ExtensionContext;
 import app.packed.framework.Nullable;
 import app.packed.service.ExportedServiceMirror;
 import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.binding.BindingProvider;
-import internal.app.packed.binding.BindingProvider.FromLifetimeArena;
-import internal.app.packed.binding.BindingProvider.FromOperation;
+import internal.app.packed.binding.BindingResolution;
+import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
+import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
@@ -60,9 +58,11 @@ public final class ServiceManager {
     public final LinkedHashMap<Key<?>, ExportedService> exports = new LinkedHashMap<>();
 
     public ServiceManager(ContainerSetup container) {
+        // For now we a ServiceLocator as the root of the application.
+        // Bridges
+
         if (container.treeParent == null) {
             container.application.addCodeGenerator(() -> {
-
                 this.exportedServices = CollectionUtil.copyOf(exports, n -> {
                     MethodHandle mh;
                     OperationSetup o = n.os;
@@ -78,62 +78,47 @@ public final class ServiceManager {
                     if (!(o instanceof MemberOperationSetup) && o.bean.beanSourceKind == BeanSourceKind.INSTANCE) {
                         // It is a a constant
                         mh = MethodHandles.constant(Object.class, o.bean.beanSource);
-                        mh = MethodHandles.dropArguments(mh, 0, PackedExtensionContext.class);
+                        mh = MethodHandles.dropArguments(mh, 0, ExtensionContext.class);
                     } else if (accessor >= 0) {
                         mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, accessor);
                     } else {
                         mh = o.generateMethodHandle();
                     }
                     mh = mh.asType(mh.type().changeReturnType(Object.class));
-                    assert (mh.type().equals(MethodType.methodType(Object.class, PackedExtensionContext.class)));
+                    assert (mh.type().equals(MethodType.methodType(Object.class, ExtensionContext.class)));
                     return mh;
                 });
             });
         }
     }
 
-    public ServiceLocator exportedServices(PackedExtensionContext context) {
-        Map<Key<?>, MethodHandle> m = exportedServices;
-        if (m == null) {
-            throw new UnsupportedOperationException("Exported services not available");
-        }
-        return new PackedServiceLocator(context, m);
-    }
-
-    public Set<Key<?>> keysAvailableInternally() {
-        HashSet<Key<?>> result = new HashSet<>();
-        // All all requirements
-        for (Entry<Key<?>, ServiceManagerEntry> e : entries.entrySet()) {
-            ServiceManagerEntry sme = e.getValue();
-            if (sme.provider != null) {
-                result.add(e.getKey());
-            }
-        }
-        return Set.copyOf(result);
-    }
-
-    public ServiceBindingSetup serviceBind(Key<?> key, boolean isRequired, OperationSetup operation, int index) {
-        return entries.compute(key, (k, v) -> {
-            if (v == null) {
-                v = new ServiceManagerEntry(k);
+    public ServiceBindingSetup bind(Key<?> key, boolean isRequired, OperationSetup operation, int operationBindingIndex) {
+        return entries.compute(key, (k, e) -> {
+            if (e == null) {
+                e = new ServiceManagerEntry(k);
             }
             if (isRequired) {
-                v.isRequired = true;
+                e.isRequired = true;
             }
-            ServiceBindingSetup sbs = new ServiceBindingSetup(operation, index, v, isRequired);
-            ServiceBindingSetup existing = v.bindings;
+
+            // Create the new binding
+            ServiceBindingSetup binding = new ServiceBindingSetup(operation, operationBindingIndex, e, isRequired);
+
+            // Add this binding to the list of bindings for the entry
+            ServiceBindingSetup existing = e.bindings;
             if (existing == null) {
-                v.bindings = sbs;
+                e.bindings = binding;
             } else {
-                existing.nextFriend = sbs;
-                v.bindings = sbs;
+                existing.nextFriend = binding;
+                e.bindings = binding;
             }
-            return v;
+
+            return e;
         }).bindings;
     }
 
     // 3 Muligheder -> Field, Method, BeanInstance
-    public ExportedService serviceExport(Key<?> key, OperationSetup operation) {
+    public ExportedService export(Key<?> key, OperationSetup operation) {
         ExportedService es = new ExportedService(operation, key);
         ExportedService existing = exports.putIfAbsent(es.key, es);
         if (existing != null) {
@@ -144,32 +129,40 @@ public final class ServiceManager {
         return es;
     }
 
+    public ServiceLocator newExportedServiceLocator(ExtensionContext context) {
+        Map<Key<?>, MethodHandle> m = exportedServices;
+        if (m == null) {
+            throw new UnsupportedOperationException("Exported services not available");
+        }
+        return new PackedServiceLocator(context, m);
+    }
+
     /**
      * Provides a service for the specified operation.
      * <p>
      * This method is called either because a bean is registered directly via {@link BeanHandle#serviceProvideAs(Key)} or
-     * from {@link BaseExtension#newBeanIntrospector} because someone used the {@link Provide} annotation.
+     * from {@link BaseExtension#newBeanIntrospector} because someone used a {@link Provide} annotation.
      *
      * @param key
-     *            the key for which to provide a service for
+     *            the key to provide a service for
      * @param operation
      *            the operation that provides the service
      * @return a provided service
      */
-    // 3 Muligheder -> Field, Method, BeanInstance
-    public ProvidedService serviceProvide(Key<?> key, OperationSetup operation, BindingProvider r) {
+    public ProvidedService provide(Key<?> key, OperationSetup operation, BindingResolution resolution) {
         BeanSetup bean = operation.bean;
+
         ServiceManagerEntry entry = entries.computeIfAbsent(key, ServiceManagerEntry::new);
 
-        // Check lifetimes
+        // Check same lifetime as the container, or own prototype service
 
-        // Fail if there is there is already an existing provider with the same key
+        // Check if there is an existing provider for the same key, in which case we fail
         if (entry.provider != null) {
             throw new KeyAlreadyInUseException(makeDublicateProvideErrorMsg(entry.provider, operation));
         }
 
         // Create a new provider
-        ProvidedService provider = entry.provider = new ProvidedService(operation, entry, r);
+        ProvidedService provider = entry.provider = new ProvidedService(operation, entry, resolution);
 
         operation.mirrorSupplier = () -> new ProvidedServiceMirror(entry.provider);
 
@@ -177,7 +170,7 @@ public final class ServiceManager {
         bean.serviceProviders.add(provider);
 
         if (exportAll) {
-            serviceExport(key, operation);
+            export(key, operation);
         }
 
         return provider;
@@ -194,16 +187,17 @@ public final class ServiceManager {
         }
     }
 
-    private static String makeDublicateProvideErrorMsg(ProvidedService provider, OperationSetup otherOperation) {
-        OperationSetup existingTarget = provider.operation;
-        OperationSetup thisTarget = otherOperation;
+    private static String makeDublicateProvideErrorMsg(ProvidedService existingProvider, OperationSetup newProvider) {
+        OperationSetup existingTarget = existingProvider.operation;
+        OperationSetup thisTarget = newProvider;
 
-        Key<?> key = provider.entry.key;
+        Key<?> key = existingProvider.entry.key;
 
         if (existingTarget.bean == thisTarget.bean) {
-            return "This bean is already providing a service for Key<" + key.toString() + ">, beanClass = " + StringFormatter.format(existingTarget.bean.beanClass);
+            return "This bean is already providing a service for Key<" + key.toString() + ">, beanClass = "
+                    + StringFormatter.format(existingTarget.bean.beanClass);
         }
-        if (provider.resolution instanceof FromLifetimeArena) {
+        if (existingProvider.resolution instanceof FromLifetimeArena) {
             return "Cannot provide a service for Key<" + key.toString() + ">, as another bean of type " + StringFormatter.format(existingTarget.bean.beanClass)
                     + " is already providing a service for the same key";
 
@@ -212,7 +206,7 @@ public final class ServiceManager {
 
             // return "Another bean of type " + format(existingTarget.bean.beanClass) + " is already providing a service for Key<" +
             // key.toStringSimple() + ">";
-        } else if (provider.resolution instanceof FromOperation os) {
+        } else if (existingProvider.resolution instanceof FromOperation os) {
             if (os.operation() instanceof MemberOperationSetup m && m.target instanceof OperationMethodTarget t) {
                 String ss = StringFormatter.formatShortWithParameters(t.method());
                 return "A method " + ss + " is already providing a service for Key<" + key + ">";

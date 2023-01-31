@@ -37,23 +37,13 @@ public final class ExtensionBridgeTemplate<E extends Extension<E>> {
         this.bridge = requireNonNull(bridge);
     }
 
-    public ExtensionBridge build() {
-        return new ExtensionBridge(bridge);
-    }
-
     public ExtensionBridgeTemplate<E> addInvocationArgument(Class<?> key) {
         throw new UnsupportedOperationException();
     }
 
-    public ExtensionBridgeTemplate<E> onUse(Consumer<? super E> action) {
-        bridge = bridge.onUse(action);
-        return this;
+    public ExtensionLifetimeBridge build() {
+       throw new UnsupportedOperationException();
     }
-
-    public ExtensionBridgeTemplate<E> onNeverUsed(Runnable action) {
-        throw new UnsupportedOperationException();
-    }
-
 
     public ExtensionBridgeTemplate<E> expose(Op<?> op) {
         throw new UnsupportedOperationException();
@@ -63,9 +53,19 @@ public final class ExtensionBridgeTemplate<E extends Extension<E>> {
         throw new UnsupportedOperationException();
     }
 
+
     //exposeOrInstace(ServiceBean->SL.wrap, ServiceLocator.empty())
     public <S> ExtensionBridgeTemplate<E> exposeOrInstance(Op<S> op, S constant) {
         throw new UnsupportedOperationException();
+    }
+
+    public ExtensionBridgeTemplate<E> onNeverUsed(Runnable action) {
+        throw new UnsupportedOperationException();
+    }
+
+    public ExtensionBridgeTemplate<E> onUse(Consumer<? super E> action) {
+        bridge = bridge.onUse(action);
+        return this;
     }
 
     public static <E extends Extension<E>> ExtensionBridgeTemplate<E> of(MethodHandles.Lookup lookup, Class<E> extensionType) {

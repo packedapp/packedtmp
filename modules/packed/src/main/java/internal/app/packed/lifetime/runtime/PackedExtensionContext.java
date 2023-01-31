@@ -17,6 +17,7 @@ package internal.app.packed.lifetime.runtime;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 
 import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.extension.BaseExtension;
@@ -31,9 +32,15 @@ import internal.app.packed.util.LookupUtil;
 public final /* primitive */ class PackedExtensionContext implements ExtensionContext {
 
     /** A method handle for calling {@link #read(int)} at runtime. */
-    public static final MethodHandle MH_CONSTANT_POOL_READER = LookupUtil.findVirtualOwn(MethodHandles.lookup(), "read", Object.class, int.class);
+    public static final MethodHandle MH_CONSTANT_POOL_READER;
 
-    public static final PackedExtensionContext EMPTY = new PackedExtensionContext(0);
+    static {
+        MethodHandle m = LookupUtil.findVirtualOwn(MethodHandles.lookup(), "read", Object.class, int.class);
+        MethodType mt = m.type().changeParameterType(0, ExtensionContext.class);
+        MH_CONSTANT_POOL_READER = m.asType(mt);
+    }
+
+    public static final ExtensionContext EMPTY = new PackedExtensionContext(0);
 
     final Object[] objects;
 
@@ -41,7 +48,7 @@ public final /* primitive */ class PackedExtensionContext implements ExtensionCo
         objects = new Object[size];
     }
 
-    public static PackedExtensionContext create(int size) {
+    public static ExtensionContext create(int size) {
         if (size == 0) {
             return EMPTY;
         } else {
