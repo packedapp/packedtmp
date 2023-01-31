@@ -32,7 +32,7 @@ public @interface Tag {
 
     /**
      * Returns the tag.
-     * 
+     *
      * @return the tag
      */
     // Problemet er lidt at vi helst vil vaere ligeglade med raekkefolgen...
@@ -40,6 +40,6 @@ public @interface Tag {
     // Og vi boer faktisk ogsaa acceptere dublikater... Hmmm
 
     // Hvis vi har et array er vi ikke ligeglade med raekkefolgen af values
-    
+
     String value();
 }

@@ -5,7 +5,7 @@ package internal.app.packed.container;
  * mirror types.
  */
 
-// We don't 
+// We don't
 
 // http://bracha.org/mirrors.pdf
 

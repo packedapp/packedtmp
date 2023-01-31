@@ -32,14 +32,14 @@ import internal.app.packed.util.types.TypeUtil;
  */
 sealed interface PackedVariableType {
 
-    // IDK. 
+    // IDK.
     // Nu er det kun field og parameter
     Optional<String> name();
-    
+
     Class<?> rawType();
 
     Type type();
-    
+
     record OfType(Type type) implements PackedVariableType {
         public OfType {
             requireNonNull(type, "clazz is null");

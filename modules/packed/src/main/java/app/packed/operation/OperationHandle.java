@@ -38,9 +38,9 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      * This method can only be called in the code generating phase of the application's build process.
      * <p>
      * The type of the returned method handle is {@code invocationType()}.
-     * 
+     *
      * @return the generated method handle
-     * 
+     *
      * @throws IllegalStateException
      *             if called outside of the code generating phase of the application. Or if called more than once
      */
@@ -55,7 +55,7 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      * <p>
      * Method handles generated via {@link #generateMethodHandle()} will always return their {@link MethodHandle#type()
      * type} as the returned value
-     * 
+     *
      * @see OperationTemplate
      */
     MethodType invocationType();
@@ -69,7 +69,7 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      * This operation is no longer configurable when this method returns.
      * <p>
      * The will report a {@link BindingKind#MANUAL} as binding classifier
-     * 
+     *
      * @param parameterIndex
      *            the index of the parameter to bind
      * @return a bindable variable
@@ -98,7 +98,7 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      * The specified supplier may be called multiple times for the same operation.
      * <p>
      * The specified supplier should never return {@code null}.
-     * 
+     *
      * @param supplier
      *            a mirror supplier that is called if a mirror is required
      * @throws IllegalStateException

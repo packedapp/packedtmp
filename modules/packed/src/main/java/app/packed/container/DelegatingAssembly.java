@@ -21,7 +21,7 @@ import static java.util.Objects.requireNonNull;
  * An assembly that delegates all calls to another assembly.
  * <p>
  * Typical use cases for delegating assembly are:
- * 
+ *
  * Hide methods on the original assembly. Or to configure a assembly, for example, in test scenarios where you want to
  * specify an assembly class in an annotation.
  * <p>

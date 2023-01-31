@@ -18,7 +18,7 @@ package internal.app.packed.bean;
 import app.packed.bindings.Key;
 
 /**
- * 
+ *
  */
 // Altsaa Vi har jo lidt brug for den i forbindelse med extension beans taenker jeg...
 // Der er ingen grund til at scanne dem flere gange...
@@ -36,15 +36,15 @@ final class BeanModel {
     BeanModel(Class<?> clazz) {
         this.clazz = clazz;
     }
-    
+
     public Key<?> defaultKey() {
         // What if instance has Qualifier???
         return Key.of(clazz);
     }
-    
+
     /**
      * Returns the default prefix for the source.
-     * 
+     *
      * @return the default prefix for the source
      */
     public String simpleName() {

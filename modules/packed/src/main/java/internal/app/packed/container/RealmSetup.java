@@ -63,7 +63,7 @@ public abstract sealed class RealmSetup permits ExtensionTreeSetup, AssemblySetu
 
     /**
      * Returns the type that was used to create this realm.
-     * 
+     *
      * @return the type that was used to create this realm.
      */
     // rename to lookupClass()???;

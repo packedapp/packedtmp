@@ -29,7 +29,7 @@ public class OperationConfiguration {
 
     /**
      * Create a new bean configuration using the specified handle.
-     * 
+     *
      * @param handle
      *            the bean handle
      */

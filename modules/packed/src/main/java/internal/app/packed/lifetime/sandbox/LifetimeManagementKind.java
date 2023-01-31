@@ -24,10 +24,10 @@ package internal.app.packed.lifetime.sandbox;
 // Eller noget helt 3. Har den bare med for at kunne summe lidt over den
 public enum LifetimeManagementKind {
     Stateless,  //Stregn taget er der vel ikke model her... Der er ingen lifetimes
-    
+
     Unmanaged,
-    
+
     Managed_Async, // Start + Stop seperately
-    
+
     Managed_sync // One LifetimeOperation
 }

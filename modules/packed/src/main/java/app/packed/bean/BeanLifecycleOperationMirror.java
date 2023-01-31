@@ -31,13 +31,13 @@ public class BeanLifecycleOperationMirror extends OperationMirror {
 
     /**
      * The lifetime the operation is run in.
-     * 
+     *
      * @return
      */
     public LifetimeMirror lifetime() {
         return bean().lifetime();
     }
-    
+
     public boolean isNaturalOrder() {
        throw new UnsupportedOperationException();
     }

@@ -26,10 +26,10 @@ import internal.app.packed.container.ContainerSetup;
  * that are directly connected and part of the same build.
  * <p>
  * This class server two main purposes:
- * 
+ *
  * Finds dependency circles either within the same container or across containers that are not in a parent-child
  * relationship.
- * 
+ *
  * Responsible for invoking the callback for
  * every DependencyNode. We do this here, because we guarantee that all dependants of a dependant are always
  * invoked before the dependant itself.

@@ -47,12 +47,12 @@ public class LocalServiceMap<V> {
     }
 
     // Producing multiple services with the same key is not supported
-    
+
     public void produceConstant(Key<?> key, Object constant) {}
-    
+
     public void produceService(Key<?> key, OperationHandle handle) {}
 
     public void produceOptionalService(Key<?> key, OperationHandle handle) {}
-    
+
     public void resolve() {}
 }

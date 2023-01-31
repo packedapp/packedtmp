@@ -88,12 +88,12 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror, 
         }
         return List.of(hooks);
     }
-    
+
     /** {@return a set of any contexts initiated by invoking the operation.} */
     public Set<ContextMirror> createsContexts() {
         throw new UnsupportedOperationException();
     }
-    
+
     public Optional<LifetimeMirror> createsLifetime() {
         throw new UnsupportedOperationException();
     }
@@ -102,7 +102,7 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror, 
     DependenciesMirror dependencies() {
         throw new UnsupportedOperationException();
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
@@ -117,7 +117,7 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror, 
 
     /**
      * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the extension.
-     * 
+     *
      * @param owner
      *            the internal configuration of the extension to mirror
      */
@@ -156,7 +156,7 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror, 
 
     /**
      * {@return the internal configuration of operation.}
-     * 
+     *
      * @throws IllegalStateException
      *             if {@link #initialize(OperationSetup)} has not been called.
      */
@@ -195,7 +195,7 @@ class ZandboxOM {
     /**
      * Returns whether or new component lifetime is created every time the operation is invoked. The lifetime will last jast
      * for the lifetime of the operation.
-     * 
+     *
      * {@return true if the operation creates a new bean instance every time it is invoked, otherwise false.}
      */
     // Creates a new Lifetime just for the duration of the operation!
@@ -317,11 +317,11 @@ class ZandboxOM {
      * This might not match the return type of any underlying method. For examples, you might return a completable future (a
      * wrapper) if returning the result in a wrapper. see method declaredResultType() for actual returning class??? or do we
      * just inspect operation type
-     * 
+     *
      * Also with regards to return type. If the operator ignores the result, this method typically just returns void.class
-     * 
+     *
      * @return the
-     * 
+     *
      * @see Method#getReturnType()
      */
     // why not just return void???
@@ -363,9 +363,9 @@ class ZandboxOM {
 //ScheduleTaskMirror vs ScheduledTaskMirror
 
 ///**
-//* 
+//*
 //* If the lifetime
-//* 
+//*
 //* {@return the lifetime of the the operation.}
 //*/
 

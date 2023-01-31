@@ -26,4 +26,4 @@ public class EntryPointMirror extends OperationMirror {
     }
 
 }
-// CliCommandMirror extends EntryPointMirro <---  
+// CliCommandMirror extends EntryPointMirro <---

@@ -40,40 +40,40 @@ class Letters {
     public static final J J0 = new J();
 
     /** A test stub. */
-    public static class A {};
+    public static class A {}
 
     /** A test stub. */
-    public static class B {};
+    public static class B {}
 
     /** A test stub. */
-    public static class C {};
+    public static class C {}
 
     /** A test stub. */
-    public static class D {};
+    public static class D {}
 
     /** A test stub. */
-    public static class E {};
+    public static class E {}
 
     /** A test stub. */
-    public static class F {};
+    public static class F {}
 
     /** A test stub. */
-    public static class G {};
+    public static class G {}
 
     /** A test stub. */
-    public static class H {};
+    public static class H {}
 
     /** A test stub. */
-    public static class I {};
+    public static class I {}
 
     /** A test stub. */
-    public static class J {};
+    public static class J {}
 
     /** A test stub. */
-    public static class K {};
+    public static class K {}
 
     /** A test stub. */
-    public static class L {};
+    public static class L {}
 
     /** A test stub. */
     public static class NeedsA {

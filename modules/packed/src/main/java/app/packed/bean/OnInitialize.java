@@ -43,11 +43,11 @@ import app.packed.extension.BaseExtension;
  * Methods (or fields) annotated with {@link Inject} are always executed before methods annotated with
  * {@code OnInitialize}. And the two annotation should be placed on the same method. As this would mean the method would
  * be invoked twice, once in the bean's <b>injection</b> phase and once in the bean's <b>initialization</b> phase.
- * 
+ *
  * @see Inject
  * @see OnStart
  * @see OnStop
- * 
+ *
  * @see BeanLifecycleOperationMirror
  */
 @Target(ElementType.METHOD)
@@ -62,4 +62,4 @@ public @interface OnInitialize {
     LifecycleOrder ordering() default LifecycleOrder.BEFORE_DEPENDENCIES;
 }
 
-// int priorityOnBean() default 0;  
+// int priorityOnBean() default 0;

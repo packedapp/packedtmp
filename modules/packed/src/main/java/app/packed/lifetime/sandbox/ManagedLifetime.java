@@ -26,7 +26,7 @@ package app.packed.lifetime.sandbox;
 public interface ManagedLifetime {
 
     // Hvad hvis vi kalder den i initialize
-    
+
     // Hvis man er initialized skal man bare smide...
     boolean tryFail(Throwable cause);
 }
@@ -40,8 +40,8 @@ public interface ManagedLifetime {
 
 //Int state
 //Outcome (Object result/Throwable failure)
-//Awaiters (if you need to signal stuff) 
+//Awaiters (if you need to signal stuff)
 //Thread (used for callation)
 //
-//--- 
+//---
 //Det her er mere eller mindre indholdet af FutureTask

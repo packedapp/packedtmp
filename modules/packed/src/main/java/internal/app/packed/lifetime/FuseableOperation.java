@@ -35,7 +35,7 @@ public final class FuseableOperation {
     public final ArrayDeque<OperationHandle> operations = new ArrayDeque<>();
 
     public final ArrayDeque<MethodHandle> methodHandles = new ArrayDeque<>();
-    
+
     public FuseableOperation(OperationTemplate template) {
         this.template = requireNonNull(template);
     }

@@ -67,8 +67,8 @@ public class SimpleMirrorTest {
         assertEquals(asm, cm.assembly());
         //assertThat(cm.children()).isEmpty();
         assertEquals(am.extensionTypes(), cm.extensionTypes());
-        
-        
+
+
         // BeanMirror
         assertThat(cm.beans()).hasSize(1);
 

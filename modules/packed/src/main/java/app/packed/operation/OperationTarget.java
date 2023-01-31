@@ -29,7 +29,7 @@ import internal.app.packed.operation.OperationSetup.MethodHandleOperationSetup;
 
 /**
  * The target of an operation.
- * 
+ *
  * @see OperationMirror#target()
  */
 public sealed interface OperationTarget {

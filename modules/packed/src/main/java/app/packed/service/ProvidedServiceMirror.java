@@ -26,7 +26,7 @@ import internal.app.packed.service.ProvidedService;
 
 /**
  * A mirror that represents a service provision operation.
- * 
+ *
  * @see Provide
  * @see BaseAssembly#provide(Class)
  * @see ProvideableBeanConfiguration#provide()
@@ -49,7 +49,7 @@ public class ProvidedServiceMirror extends OperationMirror {
 
     /**
      * Returns a stream of all the places where the provided value is directly used.
-     * 
+     *
      * @return
      */
     public Stream<ServiceBindingMirror> useSites() {

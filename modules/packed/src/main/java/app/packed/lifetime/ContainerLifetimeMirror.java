@@ -75,7 +75,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
      * otherwise empty.
      * <p>
      * A wrapper and {@link #managedBy()} is always two different beans.
-     * 
+     *
      * @return
      */
     public Optional<BeanMirror> holderBean() { // Do we need a ContainerWrapperBeanMirror?
@@ -84,7 +84,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
 
     /**
      * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the extension.
-     * 
+     *
      * @param owner
      *            the internal configuration of the extension to mirror
      */
@@ -101,7 +101,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
 
     /**
      * {@return the internal configuration of operation.}
-     * 
+     *
      * @throws IllegalStateException
      *             if {@link #initialize(ApplicationSetup)} has not been called.
      */
@@ -116,7 +116,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
 
     /**
      * @return
-     * 
+     *
      */
     public List<OperationMirror> operations2() {
         ArrayList<OperationMirror> operations = new ArrayList<>();
@@ -154,6 +154,6 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
 //interface ComponentMirrorPath extends Iterable<ComponentMirror> {
 //
 // ComponentMirror from();
-// 
+//
 // ComponentMirror to();
 //}

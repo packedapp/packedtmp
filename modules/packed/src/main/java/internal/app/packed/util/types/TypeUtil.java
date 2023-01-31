@@ -36,7 +36,7 @@ public final class TypeUtil {
      * Returns true if the specified {@code type} is free from type variables, otherwise false. For example,
      * {@code List<Map<String, ? extends Integer>} is free from type variables. {@code List<Map<String, ? extends T>} is
      * not.
-     * 
+     *
      * @param type
      *            the type to check
      * @return true is the specified type is free from type variable, otherwise false
@@ -122,7 +122,7 @@ public final class TypeUtil {
 //            default -> null;
 //            }
 //        }
-        
+
         if (type instanceof Class<?> cl) {
             return cl;
         } else if (type instanceof ParameterizedType pt) {
@@ -138,7 +138,7 @@ public final class TypeUtil {
 
     /**
      * Returns a set of all type variable names that occurs in the specified type
-     * 
+     *
      * @param type
      *            the type to check
      * @return a set of all type variable names that occurs in the specified type
@@ -153,7 +153,7 @@ public final class TypeUtil {
 
     /**
      * Helper method for {@link #typeVariableNamesOf(Type)}.
-     * 
+     *
      * @param addTo
      *            the set to add each variable to
      * @param type

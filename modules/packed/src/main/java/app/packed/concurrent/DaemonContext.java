@@ -25,7 +25,7 @@ import app.packed.context.Context;
 public interface DaemonContext extends Context<ThreadExtension> {
 
     boolean isShutdown();
-    
+
     // should probably check isShutdown();
     void await() throws InterruptedException;
 

@@ -40,7 +40,7 @@ public final class StringFormatter {
      * Creates a short string representation of the specified type. Basically this method uses {@link Class#getSimpleName()}
      * instead of {@link Class#getCanonicalName()}. Which results in short string such as {@code List<String>} instead of
      * {@code java.util.List<java.lang.String>}.
-     * 
+     *
      * @param type
      *            the type to create a short representation of
      * @return the representation
@@ -53,7 +53,7 @@ public final class StringFormatter {
 
     /**
      * Helper method for {@link #formatSimple(Type)}.
-     * 
+     *
      * @param type
      *            the type to process
      * @param sb

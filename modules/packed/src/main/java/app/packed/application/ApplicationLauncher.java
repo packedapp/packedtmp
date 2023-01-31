@@ -34,26 +34,26 @@ import internal.app.packed.application.BootstrapAppSetup.SingleShotApplicationIm
  * from a single image.
  * <p>
  * Application images typically have two main use cases:
- * 
+ *
  * GraalVM Native Image
- * 
+ *
  * Recurrent instantiation of the same application.
- * 
+ *
  * Creating artifacts in Packed is already really fast, and you can easily create one 10 or hundres of microseconds. But
  * by using artifact images you can into hundres or thousounds of nanoseconds.
  * <p>
  * Use cases: Extremely fast startup.. graal
- * 
+ *
  * Instantiate the same container many times
  * <p>
  * Limitations:
- * 
+ *
  * No structural changes... Only whole artifacts
- * 
+ *
  * <p>
  * An image can be used to create new instances of {@link app.packed.application.App} or other applications. Artifact
  * images can not be used as a part of other containers, for example, via
- * 
+ *
  * @see App#newLauncher(Assembly, Wirelet...)
  * @see App#newImage(Assembly, Wirelet...)
  */
@@ -65,7 +65,7 @@ public sealed interface ApplicationLauncher<A> permits SingleShotApplicationImag
 
     /**
      * Launches an instance of the application that this image represents.
-     * 
+     *
      * @throws RuntimeException
      *             if the application failed to launch
      * @throws IllegalStateException
@@ -94,7 +94,7 @@ public sealed interface ApplicationLauncher<A> permits SingleShotApplicationImag
      * <p>
      * Launches an instance of the application. What happens here is dependent on application driver that created the image.
      * The behaviour of this method is identical to {@link BootstrapApp#launch(Assembly, Wirelet...)}.
-     * 
+     *
      * @param wirelets
      *            optional wirelets
      * @return an application instance
@@ -103,7 +103,7 @@ public sealed interface ApplicationLauncher<A> permits SingleShotApplicationImag
 
     /**
      * Returns a new application image that maps the result of the launch.
-     * 
+     *
      * @param <E>
      *            the type to map the launch result to
      * @param mapper
@@ -121,7 +121,7 @@ interface Zimgbox<A> {
 
 //  /**
 //  * Launches an instance of the application that this image represents.
-//  * 
+//  *
 //  * @throws ApplicationLaunchException
 //  *             if the application failed to launch
 //  * @throws IllegalStateException
@@ -147,9 +147,9 @@ interface Zimgbox<A> {
 
     /**
      * Returns the launch mode of application(s) created by this image.
-     * 
+     *
      * @return the launch mode of the application
-     * 
+     *
      */
     // ApplicationInfo instead???
     RunState launchMode(); // usageMode??
@@ -165,7 +165,7 @@ interface Zimgbox<A> {
 
     /**
      * Returns a mirror for the application if available.
-     * 
+     *
      * @param image
      *            the image to extract the application mirror from
      * @return a mirror for the application

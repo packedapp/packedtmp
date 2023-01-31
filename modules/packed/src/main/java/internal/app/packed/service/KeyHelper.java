@@ -35,7 +35,7 @@ public class KeyHelper {
 
     /**
      * Returns a key matching the type of the specified field and any qualifier that may be present on the field.
-     * 
+     *
      * @param field
      *            the field to return a key for
      * @return a key matching the type of the field and any qualifier that may be present on the field
@@ -57,7 +57,7 @@ public class KeyHelper {
 
     /**
      * Returns a key matching the return type of the specified method and any qualifier that may be present on the method.
-     * 
+     *
      * @param method
      *            the method for to return a key for
      * @return the key matching the return type of the method and any qualifier that may be present on the method

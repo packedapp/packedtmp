@@ -64,7 +64,7 @@ public abstract class AbstractComposer {
      * <p>
      * This method can only be called from within the {@link ComposerAction#build(AbstractComposer)} method. Otherwise, an
      * {@link IllegalStateException} is thrown.
-     * 
+     *
      * @return the configuration of the container this composer defines
      * @throws IllegalStateException
      *             if called from outside of {@link ComposerAction#build(AbstractComposer)}
@@ -86,13 +86,13 @@ public abstract class AbstractComposer {
      * This method can be used as an alternative
      * <p>
      * Example
-     * 
+     *
      * <p>
      * The lookup object passed to this method is only to used to access members on beans that are installed via this
      * composer. It is never exposed directly to extensions.
      * <p>
      * This method is typically never called more than once.
-     * 
+     *
      * @param lookup
      *            the lookup object
      * @throws IllegalStateException
@@ -139,7 +139,7 @@ public abstract class AbstractComposer {
         /**
          * Invoked by the runtime (via a MethodHandle). This method is mostly machinery that makes sure that the assembly is not
          * used more than once.
-         * 
+         *
          * @param assembly
          *            the realm used to call container hooks
          * @param configuration

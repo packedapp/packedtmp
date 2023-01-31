@@ -41,5 +41,5 @@ public final class ProvidedService {
         this.entry = requireNonNull(entry);
         this.resolution = requireNonNull(resolution);
     }
-    
+
 }

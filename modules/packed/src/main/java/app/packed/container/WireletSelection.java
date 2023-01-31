@@ -22,34 +22,34 @@ import internal.app.packed.container.PackedWireletSelection;
  * <p>
  * Skal vi have wildcard? {@code extends SSSfoo> eller supportere vi ogsaa SelectWirelets}, jeg ville
  * mene vi supportere begge.
- * 
+ *
  * Maaske selecter vi differently??? ... exact type for SelectWirelet, eller alle super klasser for
- * 
- * 
+ *
+ *
  * <p>
  * The selecting class must be in the same module as the type of wirelet selected
  * <p>
  * There a couple of ways to select wirelets. For extension space wirelets
- * 
+ *
  * at buildtime:. ExtensionConfiguration#selectWirelets, ExtensionselectWirelets Hook injection?? Could make sense for
  * some class hooks
- * 
+ *
  * at runtime: SelectWirelet<> on an extension Runtime class
- * 
+ *
  * For user space wirelets: BaseAssembly..
  * <p>
  * Note: Invoking this method remove every wirelet from this selection. But will also make the wirelet as well as any
  * other selections of the same container (or component) instance. Maaske det her skal staa i den gennerelle
  * dokumentation. Build-wirelets bliver jo proceseret paa et andet tidspunkt. Saa der er vel 2 regler..
- * 
- * 
+ *
+ *
  * <p>
  * It is consider an error to invoke more than a single method for a single instance. Unless the peek methods. Where you
  * can do what you want
- * 
+ *
  * @param <W>
  *            the type of wirelets in this selection
- * 
+ *
  * @implNote We expect the number of wirelets for a single component to be small in practice. So the current
  *           implementation will iterate through every wirelet specified when wiring the component on every operation on
  *           this interface. This is unlikely to effect performance.
@@ -62,7 +62,7 @@ import internal.app.packed.container.PackedWireletSelection;
 // Jo maaske er det bare den der iterere foerst... Ja selvf. Hvis man ikke kalder metoder sker
 // der jo ikke noget alligevel, saa lav en test.
 
-// Was SelectWirelets 
+// Was SelectWirelets
 
 // Problemet med at have en onX on wireletten..
 // Er at vi ikke kan finalize noget i constructeren... fordi den vil tage en constructed Extensor i onExtensor()
@@ -72,9 +72,9 @@ public sealed interface WireletSelection<W extends Wirelet> permits PackedWirele
 
     // l.orElse(w->w.launchMode, defaultLaunchmode);
     /**
-     * 
+     *
      * Typically for extract a value for a wirelet and using that if present
-     * 
+     *
      * @param <E>
      * @param mapper
      *            a mapper
@@ -90,7 +90,7 @@ public sealed interface WireletSelection<W extends Wirelet> permits PackedWirele
     /**
      * Performs the given action for each wirelet in the selection. Unlike {@link #processEach(Consumer)} this method does
      * not remove the wirelet from this selection or any other selection.
-     * 
+     *
      * @param action
      *            the action to perform
      */
@@ -110,7 +110,7 @@ public sealed interface WireletSelection<W extends Wirelet> permits PackedWirele
     /**
      * Performs the given action for each wirelet in this selection. Removing each wirelet from this selection as well as
      * any other selection.
-     * 
+     *
      * @param action
      *            the action to perform
      * @see #peekEach(Consumer)
@@ -118,7 +118,7 @@ public sealed interface WireletSelection<W extends Wirelet> permits PackedWirele
     void processEach(Consumer<? super W> action); // return boolean = if any elements selected?
 
     /**
-     * 
+     *
      * @param <E>
      * @param mapper
      *            the mapper to apply (if non-empty) to the last wirelet before returning the result
@@ -136,7 +136,7 @@ public sealed interface WireletSelection<W extends Wirelet> permits PackedWirele
      * Returns the last wirelet in this selection or empty {@code Optional}, if no wirelets are present.
      * <p>
      * This is a <a href="package-summary.html#StreamOps">consumable operation</a>.
-     * 
+     *
      * @return the last wirelet in this selection or empty {@code Optional}, if no wirelets are present
      */
     // consumeAllReturnLast
@@ -147,7 +147,7 @@ public sealed interface WireletSelection<W extends Wirelet> permits PackedWirele
 
     /**
      * Returns an empty selection of wirelets.
-     * 
+     *
      * @param <W>
      *            the type of wirelets in the selection
      * @return an empty wirelet selection
@@ -162,7 +162,7 @@ public sealed interface WireletSelection<W extends Wirelet> permits PackedWirele
     // Hvad med dem der ikke bliver consumet? skal vi have en WireletHandle.peekCount()???
     /**
      * This method is mainly used for testing purposes.
-     * 
+     *
      * @param <W>
      *            the type of wirelets in the selection
      * @param wireletClass
@@ -185,7 +185,7 @@ public sealed interface WireletSelection<W extends Wirelet> permits PackedWirele
 
 //@DynamicInject
 
-//Okay... Saa kan entent tage 
+//Okay... Saa kan entent tage
 //ExtensionSetup
 //ComponentSetup
 //Component
@@ -220,7 +220,7 @@ public sealed interface WireletSelection<W extends Wirelet> permits PackedWirele
 
 //Den her doede fordi vi ikke kan lide UseWirelet..
 
-//// Det her var den helt gamle maade hvor vi angav paa wireletten  
+//// Det her var den helt gamle maade hvor vi angav paa wireletten
 //
 ////cannot be consumed individually. Only as either
 ////List or Set....

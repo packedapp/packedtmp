@@ -12,7 +12,7 @@ public enum BeanKind {
      * may exists in the container. Think we need to check other bean types as well.
      * <p>
      * non-void
-     * 
+     *
      */
     CONTAINER,
 
@@ -46,7 +46,7 @@ public enum BeanKind {
      * lifecycle annotations such as {@link Inject} or {@link OnStart} will fail with
      * <p>
      * Functional beans are always bound to the lifetime of the container in which they are registered.
-     * 
+     *
      * @see BaseExtension#installStatic(Class)
      **/
     STATIC;

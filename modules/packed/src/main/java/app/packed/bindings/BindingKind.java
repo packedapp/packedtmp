@@ -22,7 +22,7 @@ public enum BindingKind {
 
     /**
      * The binding has been created manually.
-     * 
+     *
      * @see OperationHandle#manuallyBindable(int)
      * @see Op#bind(Object)
      * @see Op#bind(int, Object, Object...)
@@ -32,18 +32,18 @@ public enum BindingKind {
     /**
      * The binding has been created because of a Hook. Either the variable is annotated with a binding hook. Or the variable
      * class is annotated with BindingHook
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @see BindingTypeHook
      * @see AnnotatedBindingHook
      **/
     HOOK,
 
     /**
-     * 
+     *
      * Service bindings are always represented by a {@link ServiceBindingMirror} which contains the key of the service.
-     * 
+     *
      * @see ServiceBindingMirror
      */
     SERVICE;

@@ -34,14 +34,14 @@ class ExtensionBeanConfigurationHelper {
         MethodHandle case1 = MethodHandles.insertArguments(caseMh, 1, "case 1: ");
 
         MethodHandle mhSwitch = MethodHandles.tableSwitch(caseDefault, case0, case1);
-        
+
         System.out.println((String) mhSwitch.invokeExact(-1, "data"));
         System.out.println((String) mhSwitch.invokeExact(0, "data"));
         System.out.println((String) mhSwitch.invokeExact(1, "data"));
         System.out.println((String) mhSwitch.invokeExact(2, "data"));
 //
 //        MethodHandles.lo
-//        
+//
 //        assertEquals("default: data", (String) mhSwitch.invokeExact(-1, "data"));
 //        assertEquals("case 0: data", (String) mhSwitch.invokeExact(0, "data"));
 //        assertEquals("case 1: data", (String) mhSwitch.invokeExact(1, "data"));

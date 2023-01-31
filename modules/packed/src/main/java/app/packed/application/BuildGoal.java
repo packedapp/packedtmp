@@ -23,21 +23,21 @@ public enum BuildGoal {
 
     /**
      * The goal is to build an {@link ApplicationImage} that can be launched a single time.
-     * 
+     *
      * @see App#newLauncher(Assembly, Wirelet...)
      */
     LAUNCH_LATER,
 
     /**
      * The goal is to build an application and then immediately launch it.
-     * 
+     *
      * @see App#launch(Assembly, Wirelet...)
      */
     LAUNCH_NOW,
 
     /**
      * The goal is to build an application image that can be launched multiple times.
-     * 
+     *
      * @see App#newImage(Assembly, Wirelet...)
      */
     LAUNCH_REPEATABLE,
@@ -51,7 +51,7 @@ public enum BuildGoal {
 
     /**
      * The goal is to verify that the application is structural correct.
-     * 
+     *
      * @see App#verify(Assembly, Wirelet...)
      */
     VERIFY;

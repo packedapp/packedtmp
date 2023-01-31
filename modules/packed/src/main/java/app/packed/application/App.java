@@ -23,7 +23,7 @@ import app.packed.container.Wirelet;
 /**
  * An entry point for... This class contains a number of methods that can be to execute or analyze programs that are
  * written use Packed.
- * 
+ *
  * An entry point for all the various types of applications that are available in Packed.
  * <p>
  * This class does not prov For creating application -instances -mirrors and -images.
@@ -38,7 +38,7 @@ public final class App {
     private App() {}
 
     /**
-     * 
+     *
      * @return
      */
     static App.Customizer customize() {
@@ -47,7 +47,7 @@ public final class App {
 
     /**
      * Builds an application from the specified assembly and returns a mirror representing the application.
-     * 
+     *
      * @param assembly
      *            the application's assembly
      * @param wirelets
@@ -69,7 +69,7 @@ public final class App {
      * <p>
      * If you need to launch multiple instances of the same application use {@link #newImage(Assembly, Wirelet...)}. Or
      * maybe use that Application wirelet... I don't really think it is that common
-     * 
+     *
      * @param assembly
      *            the application's assembly
      * @param wirelets
@@ -98,7 +98,7 @@ public final class App {
      * <p>
      * If the application is built successfully from the assembly. A single instance of the application will be created and
      * executed. This method will block until the application reaches the {@link RunState#TERMINATED terminated} state.
-     * 
+     *
      * @param assembly
      *            the assembly representing the application
      * @param wirelets

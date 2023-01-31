@@ -43,14 +43,14 @@ import app.packed.service.ServiceContract;
 // Imports (styret af requires, og
 // Exports // Maaske alligevel ikke
 
-// Og saa lidt internt??? 
+// Og saa lidt internt???
 
 //Create services
 
 //Create (Replaces existing services)
 //-- Prototype (Factory, Class)
 //-- Singleton (Factory, Class, Instance)
-//-- Other ServiceLocator) 
+//-- Other ServiceLocator)
 
 //Update
 //-- Rekey
@@ -69,14 +69,14 @@ import app.packed.service.ServiceContract;
 
 // Naeste gang vi implementere den. Bygger vi den langsom...
 public interface ServiceTransformer {
- 
+
    default ServiceContract contract() {
        throw new UnsupportedOperationException();
    }
-    
+
     /**
      * A version of {@link #decorate(Key, Function)} that takes a {@code class} key. See other method for details.
-     * 
+     *
      * @param <T>
      *            the type of the service that should be decorated
      * @param key
@@ -95,7 +95,7 @@ public interface ServiceTransformer {
      * Decorates a service with the specified key using the specified decoration function.
      * <p>
      * If the service that is being decorated is constant. The function will be invoked at most
-     * 
+     *
      * @param <T>
      *            the type of the service that should be decorated
      * @param key
@@ -118,15 +118,15 @@ public interface ServiceTransformer {
      * iterators. The returned map will never support insertion or update operations.
      * <p>
      * The returned map will retain any thread-safety guarantees provided by the registry itself.
-     * 
+     *
      * @return a set view containing the keys for every service in this registry
      */
     Set<Key<?>> keys();
-    
+
     /**
      * <p>
      * If the specified factory does not have declare any variables. The new services will have public (constant) scope.
-     * 
+     *
      * @param factory
      * @throws IllegalStateException
      *             if the specified factory has dependencies that cannot be resolved among available services.
@@ -145,7 +145,7 @@ public interface ServiceTransformer {
     // in most situations you probably want to use this one
 
     void map(Op<?> factory);
-    
+
     default <T> void peek(Class<T> key, Consumer<? super T> consumer) {
         peek(Key.of(key), consumer);
     }
@@ -155,7 +155,7 @@ public interface ServiceTransformer {
     // provide a constant via an instance
     /**
      * Provides a new constant service returning the specified instance on every request.
-     * 
+     *
      * @param <T>
      *            the type of the service being added
      * @param key
@@ -172,7 +172,7 @@ public interface ServiceTransformer {
     /**
      * <p>
      * If an existing service with the specified key already exists this method will replace it.
-     * 
+     *
      * @param <T>
      *            the type
      * @param key
@@ -189,7 +189,7 @@ public interface ServiceTransformer {
      * service of the specific type as a requirement.
      * <p>
      * Invoking this method is identical to invoking {@code provideInstance(instance.getClass(), instance)}.
-     * 
+     *
      * @param instance
      *            the service to provide
      */
@@ -201,7 +201,7 @@ public interface ServiceTransformer {
 
     /**
      * A version of
-     * 
+     *
      * @param existingKey
      *            the key of an existing service
      * @param newKey
@@ -222,7 +222,7 @@ public interface ServiceTransformer {
      * service it must be done in a compatible way.
      * <p>
      * Technically as services are immutable a new service is created.
-     * 
+     *
      * @param existingKey
      *            the key of an existing service
      * @param newKey
@@ -242,7 +242,7 @@ public interface ServiceTransformer {
     /**
      * <p>
      * The rekeying function should not call other mutating operations on this transformer during computation.
-     * 
+     *
      * <pre> {@code
      * for (Service s : this) {
      *    Key<?> key = rekeyingFunction.apply(s);
@@ -253,7 +253,7 @@ public interface ServiceTransformer {
      *    }
      * }
      * }</pre>
-     * 
+     *
      * @param rekeyingFunction
      *            the function used for rekeying
      * @throws IllegalStateException
@@ -275,7 +275,7 @@ public interface ServiceTransformer {
 
     /**
      * Rekey all service
-     * 
+     *
      * @param tag
      */
     // IDK, can add them later
@@ -295,7 +295,7 @@ public interface ServiceTransformer {
     /**
      * <p>
      * Keys for which a corresponding service is not present, are ignored.
-     * 
+     *
      * @param keys
      *            the keys that should be removed
      */
@@ -307,7 +307,7 @@ public interface ServiceTransformer {
      * Attempts to remove services with any of the specified keys.
      * <p>
      * Keys for which a service is not present are ignored.
-     * 
+     *
      * @param keys
      *            the keys of services that should be removed
      */
@@ -339,13 +339,13 @@ public interface ServiceTransformer {
 
     /**
      * Remove every key {@link Class} or {@link Key}
-     * 
+     *
      * @param keys
      *            the keys to remove
      * @throws IllegalArgumentException
      *             if the specified collection contain objects that are not instances of either {@link Key} or
      *             {@link Class}.
-     * 
+     *
      * @see #retainAll(Collection)
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -367,7 +367,7 @@ public interface ServiceTransformer {
     /**
      * Similar to {@link #map(Op)} except that it will automatically remove all dependencies of the factory once the
      * mapping has finished.
-     * 
+     *
      * @param factory
      *            the factory
      */
@@ -376,7 +376,7 @@ public interface ServiceTransformer {
     default void retain(Class<?>... keys) {
         retain(Key.ofAll(keys));
     }
-    
+
     default void retain(Key<?>... keys) {
         keys().retainAll(Set.of(keys));
     }

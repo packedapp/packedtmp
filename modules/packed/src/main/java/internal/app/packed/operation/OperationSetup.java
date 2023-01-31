@@ -164,7 +164,7 @@ public sealed abstract class OperationSetup {
 
     /**
      * Extracts an operation setup from an operation handle.
-     * 
+     *
      * @param handle
      *            the handle to extract from
      * @return the operation setup

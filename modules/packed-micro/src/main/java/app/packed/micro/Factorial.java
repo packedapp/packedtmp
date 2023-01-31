@@ -63,7 +63,7 @@ public class Factorial {
     public static long factorial(int n) {
         return (n < factorials.length) ? factorials[n] : Long.MAX_VALUE;
     }
-    
+
     public static long factorial2(int n) {
         return (n < factorials.length) ? facts.get(n) : Long.MAX_VALUE;
     }
@@ -72,14 +72,14 @@ public class Factorial {
         int x = 15;
         return factorial(x);
     }
-    
+
     @Benchmark
     public static long facList(Blackhole blackHole) {
         int x = 15;
 
         return factorial2(x);
     }
-    
+
     @Benchmark
     public static long facConstant(Blackhole blackHole) {
         return 4123123123L;

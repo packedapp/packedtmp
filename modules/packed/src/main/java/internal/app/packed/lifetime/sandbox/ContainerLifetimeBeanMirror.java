@@ -72,7 +72,7 @@ class ContainerLifetimeBeanMirror extends BeanMirror {
 
     /** {@return a collection of the lifetimes managed by this bean.} */
     // Hmm, skal den her paa BeanMirror???
-    
+
     // I virkeligheden er det jo ikke InjectorImpl der styre creation af den lifetime
     // Men Bootstrap appen. InjectorImpl holder bare noget info...
     @Override
@@ -90,7 +90,7 @@ class ContainerLifetimeBeanMirror extends BeanMirror {
      * Returns a non-empty list of all the lifetime management operations this bean provide.
      * <p>
      * The first operation in the returned list is always the launch operation.
-     * 
+     *
      * @return a list of all lifetime management operations this bean provides
      */
     public List<LifetimeOperationMirror> managementOperations() {
@@ -149,7 +149,7 @@ interface Zandbox1 {
 
     /**
      * Returns a non-empty list of dependencies for this lifetime holder.
-     * 
+     *
      * @return a list of dependencies for this lifetime holder
      */
     // Er jo ogsaa paa

@@ -7,7 +7,7 @@ public final class SecurityChecks {
 
     /**
      * Tests whether two classes are in the same package.
-     * 
+     *
      * @param c1
      *            the first class
      * @param c2
@@ -29,7 +29,7 @@ public final class SecurityChecks {
 
     /**
      * Returns whether or not the specified class is restricted.
-     * 
+     *
      * @param clazz
      *            the class to test
      * @return whether or not the specified class is restricted

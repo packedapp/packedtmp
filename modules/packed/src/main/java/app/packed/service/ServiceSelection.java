@@ -25,7 +25,7 @@ import app.packed.bindings.Provider;
 /**
  * A specialization of {@link ServiceLocator} where all service instances have some kind of common super type
  * {@code <S>}. Instances of this interface are normally created via the various select methods on ServiceLocator.
- * 
+ *
  * @see ServiceLocator#selectAll()
  * @see ServiceLocator#selectAssignableTo(Class)
  */
@@ -33,7 +33,7 @@ public interface ServiceSelection<S> extends ServiceLocator {
 
     /**
      * Acquires a service instance for each service in this selection and performs the specified action.
-     * 
+     *
      * @param action
      *            the action to perform on each instance
      */
@@ -44,7 +44,7 @@ public interface ServiceSelection<S> extends ServiceLocator {
 
     /**
      * Acquires a service instance for each service in this selection returning them as a stream
-     * 
+     *
      * @return a stream of all instances in the selection
      */
     Stream<S> instanceStream();

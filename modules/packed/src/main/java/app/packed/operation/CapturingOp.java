@@ -25,7 +25,7 @@ import internal.app.packed.operation.PackedOp;
  * A abstract op that captures the type an annotated return type and annotated type apra
  * <p>
  * Currently, this class cannot be extended outside of this package. This will likely change in the future.
- * 
+ *
  * @see Op0
  * @see Op1
  * @see Op2
@@ -37,7 +37,7 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
 
     /**
      * Create a new operation.
-     * 
+     *
      * @param function
      *            the function instance
      */
@@ -61,7 +61,7 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
      * Returns a canonicalized version of this op.
      * <p>
      * Bla bla
-     * 
+     *
      * @return
      */
     public final Op<R> canonicalize() {

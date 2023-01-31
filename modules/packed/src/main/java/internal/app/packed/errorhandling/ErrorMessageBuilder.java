@@ -81,7 +81,7 @@ public final class ErrorMessageBuilder implements CharSequence {
         emb.sb.append("parameter " + p.getName());
         return emb;
     }
-    
+
     public static ErrorMessageBuilder of(Variable v) {
         ErrorMessageBuilder emb = new ErrorMessageBuilder();
         emb.sb.append("variable " + v);

@@ -29,11 +29,11 @@ public class Op1Test {
     public void toInteger() {
 
         Op1<String, Integer> f = new Op1<>(Integer::valueOf) {};
-        
+
         // Make an abstract op test?
         // Maybe just asssert.
         // assertKeyEquals(key, Class);
-        
+
         checkThat(f).is(Integer.class);
         // These would only be non-empty if we had made the factory from Factory.ofMethod(Integer.class, "valueOf",
         // String.class)

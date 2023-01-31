@@ -33,9 +33,9 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * A mirror of a container.
  * <p>
  * At build-time you typically obtain a ContainerMirror by calling {@link ApplicationMirror#}
- * 
+ *
  * <p>
- * At runtime you can have a ContainerMirror injected 
+ * At runtime you can have a ContainerMirror injected
  */
 @BindingTypeHook(extension = MirrorExtension.class)
 public non-sealed class ContainerMirror implements ContextualizedElementMirror , Mirror {
@@ -108,7 +108,7 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
 
     /**
      * {@return the internal configuration of the container we are mirroring.}
-     * 
+     *
      * @throws IllegalStateException
      *             if {@link #initialize(ContainerSetup)} has not been called previously.
      */
@@ -144,7 +144,7 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     /**
      * <p>
      * If you know for certain that extension is used in the container you can use {@link #use(Class)} instead.
-     * 
+     *
      * @param <T>
      *            the type of mirror
      * @param extensionMirrorType
@@ -164,7 +164,7 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
 
     /**
      * Invoked by the runtime with the internal configuration of the container to mirror.
-     * 
+     *
      * @param bean
      *            the internal configuration of the container to mirror
      */
@@ -182,7 +182,7 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
 
     /**
      * Returns whether or not an extension of the specified type is in use by the container.
-     * 
+     *
      * @param extensionType
      *            the type of extension to test
      * @return {@code true} if the container uses an extension of the specified type, otherwise {@code false}
@@ -230,7 +230,7 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     /**
      * Returns an mirror of the specified type if the container is using the extension the mirror is a part of. Or throws
      * {@link NoSuchElementException} if the container does not use the specified extension type.
-     * 
+     *
      * @param <T>
      *            the type of mirror
      * @param extensionMirrorType
@@ -252,7 +252,7 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
 
     /**
      * Creates a new mirror if an. Otherwise returns {@code null}
-     * 
+     *
      * @param container
      *            the container to test for presence extension may be present
      * @param mirrorClass
@@ -328,7 +328,7 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
 // *
 // * @param options
 // *            specifying the order and contents of the stream
-// * 
+// *
 // * @return a component stream consisting of this component and all of its descendants in any order
 // */
 //ComponentMirrorStream stream(ComponentMirrorStream.Option... options);
@@ -347,11 +347,11 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
 //}
 
 ///**
-// * 
-// * 
+// *
+// *
 // * <p>
 // * This operation does not allocate any objects internally.
-// * 
+// *
 // * @implNote Implementations of this method should never generate object (which is a bit difficult
 // * @param action
 // *            oops

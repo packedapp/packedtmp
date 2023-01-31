@@ -31,7 +31,7 @@ import app.packed.extension.BaseExtension;
 
 // https://stackoverflow.com/questions/47683465/how-do-i-get-the-binding-target-in-a-guice-provider
 
-// En slags reducer -> ServiceProvisionMirror -> Parameter 
+// En slags reducer -> ServiceProvisionMirror -> Parameter
 
 // Vi kan ikke rigtigt tage et mirror...
 

@@ -30,7 +30,7 @@ public final class ContainerHandle {
      * <p>
      * When hosting an application, we must merge the parents unsupported extensions and the new guests applications drivers
      * unsupported extensions
-     * 
+     *
      * @return a set of disabled extensions
      */
     public Set<Class<? extends Extension<?>>> bannedExtensions() {
@@ -38,7 +38,7 @@ public final class ContainerHandle {
     }
 
     /**
-     * 
+     *
      * @throws IllegalStateException
      *             if the container is no longer configurable
      */
@@ -62,7 +62,7 @@ public final class ContainerHandle {
 
     /**
      * Returns whether or not the bean is still configurable.
-     * 
+     *
      * @return {@code true} if the bean is still configurable
      */
     public boolean isConfigurable() {
@@ -75,7 +75,7 @@ public final class ContainerHandle {
     /**
      * If the container is registered with its own lifetime. This method returns a list of the container's lifetime
      * operations.
-     * 
+     *
      * @return a list of lifetime operations if the container has its own lifetime
      */
     public List<OperationHandle> lifetimeOperations() {

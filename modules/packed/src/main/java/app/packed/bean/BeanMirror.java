@@ -57,7 +57,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
 
     /**
      * {@return the internal configuration of the bean we are mirroring.}
-     * 
+     *
      * @throws IllegalStateException
      *             if {@link #initialize(BeanSetup)} has not been called previously.
      */
@@ -75,7 +75,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
      * <p>
      * Beans that do not have a proper class, for example, a {@link BeanKind#FUNCTIONAL functional} bean. Will have
      * {@code void.class} as their bean class.
-     * 
+     *
      * @return the type (class) of the bean.
      */
     public Class<?> beanClass() {
@@ -108,7 +108,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
 
     /**
      * If instances of this bean is created at runtime. This method will return the operation that creates the instance.
-     * 
+     *
      * @return operation that creates instances of the bean. Or empty if instances are never created
      */
     // instantiatedBy
@@ -131,7 +131,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
 
     /**
      * Invoked by the runtime with the internal configuration of the bean to mirror.
-     * 
+     *
      * @param bean
      *            the internal configuration of the bean to mirror
      */
@@ -149,7 +149,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
      * container instance. Or if a functional or static bean.
      * <p>
      * A lazy bean or prototype bean will return
-     * 
+     *
      * @return the bean's lifetime
      */
     public LifetimeMirror lifetime() {
@@ -179,7 +179,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
 
     /**
      * Returns a stream of all of the operations declared by the bean with the specified mirror type.
-     * 
+     *
      * @param <T>
      * @param operationType
      *            the type of operations to include
@@ -196,7 +196,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
      * drive
      * <p>
      * Another thing is extension member, which is slightly different.
-     * 
+     *
      * @return any extension the bean's driver is part of
      */
     // handledBy, managedBy
@@ -292,7 +292,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
 
         /**
          * Creates a new mirror
-         * 
+         *
          * @param from
          *            the from part of the relationship
          * @param to

@@ -27,9 +27,9 @@ public abstract class PackedDevToolsIntegration {
 
     static {
         // ServiceLoader adds ~ 12 ms to startup time
-        
+
         // Maybe just a Class.forname()....
-        
+
         INSTANCE = new NoDevTools();// ServiceLoader.load(PackedDevToolsIntegration.class).findFirst().orElseGet(() -> new NoDevTools());
     }
 

@@ -34,7 +34,7 @@ import app.packed.bindings.Variable;
 
 /**
  * An operation type represents the arguments and return variable for an operation.
- * 
+ *
  * @apiNote This class is modelled after {@link MethodType}. But uses {@link Variable} instead of {@link Class} as the
  *          base element type. This means that both detailed {@link Type} an annotations may be available.
  */
@@ -70,7 +70,7 @@ public final /* primitive */ class OperationType {
     /**
      * Compares the specified object with this optional type for equality. That is, it returns {@code true} if and only if
      * the specified object is also an operation type with exactly the same parameters and return variable.
-     * 
+     *
      * @param obj
      *            object to compare
      * @see Object#equals(Object)
@@ -85,7 +85,7 @@ public final /* primitive */ class OperationType {
      * <p>
      * It is defined to be the same as the hash code of a List whose elements are the return variable followed by the
      * parameter variables.
-     * 
+     *
      * @return the hash code value for this function type
      * @see Object#hashCode()
      * @see #equals(Object)
@@ -106,7 +106,7 @@ public final /* primitive */ class OperationType {
 
     /**
      * Return an array of field descriptors for the parameter types of the method type described by this descriptor
-     * 
+     *
      * @return parameter variables for this operation
      * @apiNote if freezable arrays will be supported in the future. This method may return a frozen array
      */
@@ -164,8 +164,8 @@ public final /* primitive */ class OperationType {
     public String toString() {
         // TODO We should probably call something else that toString();
         StringJoiner sj = new StringJoiner(",", "(", ")" + returnVar.toString());
-        for (int i = 0; i < parameterVars.length; i++) {
-            sj.add(parameterVars[i].toString());
+        for (Variable parameterVar : parameterVars) {
+            sj.add(parameterVar.toString());
         }
         return sj.toString();
     }
@@ -195,7 +195,7 @@ public final /* primitive */ class OperationType {
 
     /**
      * Returns a function type with the given return variable. The resulting function type has no parameter variables.
-     * 
+     *
      * @param returnVariable
      *            the return variable
      * @return a operation type with the given return and no parameters
@@ -223,7 +223,7 @@ public final /* primitive */ class OperationType {
 
     /**
      * {@return an operation type representing the invocation of specified executable.}
-     * 
+     *
      * @param executable
      *            the executable to return an operation type for.
      */
@@ -245,7 +245,7 @@ public final /* primitive */ class OperationType {
     // I think we can move this internally
     /**
      * {@return an operation type representing the access of the specified fiel.}
-     * 
+     *
      * @param field
      *            the executable to return an operation type for.
      * @param accessMode
@@ -283,7 +283,7 @@ public final /* primitive */ class OperationType {
 
     /**
      * {@return an operation type representing reading of a field.}
-     * 
+     *
      * @param field
      *            the field to read.
      */
@@ -294,7 +294,7 @@ public final /* primitive */ class OperationType {
 
     /**
      * {@return an operation type representing writing of a field.}
-     * 
+     *
      * @param field
      *            the field to write.
      */
@@ -305,7 +305,7 @@ public final /* primitive */ class OperationType {
 
     /**
      * {@return an operation type representing the signature of the specified executable.}
-     * 
+     *
      * @param methodType
      *            the method type to convert
      */

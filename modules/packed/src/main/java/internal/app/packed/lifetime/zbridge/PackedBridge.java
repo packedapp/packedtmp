@@ -59,14 +59,14 @@ public final class PackedBridge<E> {
     // ExtensionBean -> T
     public class Extractor {
         Key<?> key;
-        
+
         // Must be resolved in lifetime container...
         Set<Key<?>> requirements; // must only make use of services... Or maybe just resolve it as OperationType
         // Hvor bliver det her en synthetic metode???
         // Paa beanen? Ja det maa det jo vaere...
         // Hvis vi har flere dependencies... kan det jo ikke vaere paa extension beanen...
-        // 
-        
+        //
+
         MethodHandle extractor;
     }
 

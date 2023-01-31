@@ -36,7 +36,7 @@ import internal.app.packed.container.Mirror;
 
 // Scheduling
 // @Schedule foo() on ContainerBean -> OperationSpan
-// SExt.schedule(Op<?>) 
+// SExt.schedule(Op<?>)
 // @Schedule foo() on SExt.registerScheduler(Bean) ->OperationSpan
 // @Schedule
 public interface ContextMirror extends Mirror {
@@ -48,10 +48,10 @@ public interface ContextMirror extends Mirror {
 
     /** {@return the extension that defines the context.} */
     Class<? extends Extension<?>> extensionClass();
-    
+
     /**
      * All the operations that may create the context.
-     * 
+     *
      * @return
      */
     Collection<OperationMirror> initiatingOperations();

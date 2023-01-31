@@ -21,7 +21,7 @@ import app.packed.extension.FrameworkExtension;
  * An extension that allows for multiple threads in the container
  * <p>
  * There is nothing forcing anyone to use this extension for forking threads.
- * 
+ *
  */
 // Controls everything about threads...
 
@@ -36,10 +36,10 @@ import app.packed.extension.FrameworkExtension;
 // Hvad hvis lukker den ned asynchront indefra containeren??
 
 public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
-    
+
     /** Creates a new thread extension. */
     ThreadExtension() {}
-    
+
     // disableThis
     // disableThis+Kids
     // disableThis for everyone except LifecycleExtension

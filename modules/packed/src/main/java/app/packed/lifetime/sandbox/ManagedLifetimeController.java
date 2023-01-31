@@ -26,7 +26,7 @@ import app.packed.lifetime.RunState;
 
 /**
  * An application runtime is available for all runnable applications.
- * 
+ *
  * A component instance.
  */
 // Restarting a guest actually means terminated an existing guest instance. And starting a new one.
@@ -99,7 +99,7 @@ public interface ManagedLifetimeController {
      * Normally, there is no need to call this methods since most methods on the component will lazily start the component
      * whenever it is needed. For example, invoking use will automatically start the component if it has not already been
      * started by another action.
-     * 
+     *
      * @see #startAsync(Object)
      */
     void start();
@@ -114,14 +114,14 @@ public interface ManagedLifetimeController {
      * Returns the current state of the component.
      * <p>
      * Calling this method will never block the current thread.
-     * 
+     *
      * @return the current state of the component
      */
     RunState state();
 
     /**
      * Stops the component.
-     * 
+     *
      * @param options
      *            optional stop options
      * @see #stopAsync(Object, StopOption...)
@@ -135,7 +135,7 @@ public interface ManagedLifetimeController {
     /**
      * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
      * but no new tasks will be started. Invocation has no additional effect if the application has already been shut down.
-     * 
+     *
      * @param <T>
      *            the type of result in case of success
      * @param result
@@ -184,7 +184,7 @@ public interface ManagedLifetimeController {
 //    static <T> T execute(Assembly<?> assembly, TypeToken<T> resultType, Wirelet... wirelets) {
 //        throw new UnsupportedOperationException();
 //    }
-//    
+//
 //    static <T> Image<T> imageOf(Assembly<?> assembly, Class<T> resultType, Wirelet... wirelets) {
 //        throw new UnsupportedOperationException();
 //    }

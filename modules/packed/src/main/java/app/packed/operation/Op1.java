@@ -36,7 +36,7 @@ import java.util.function.Function;
  *   InjectorBuilder builder = new InjectorBuilder();
  *   builder.bind(new FunctionFactory<@SystemProperty("threads") Integer, ExecutorService>(t -> Executors.newFixedThreadPool(t)){});}
  * </pre>
- * 
+ *
  * A special {@link Op} type that wraps a {@link Supplier} in order to dynamically provide new instances.
  * <p>
  * Is typically used like this:
@@ -45,8 +45,8 @@ import java.util.function.Function;
  * Op<Long> f = new Op1<>(System::currentTimeMillis) {}};</pre>
  * <p>
  * In this example we create a new class inheriting from Factory0 is order to capture information about the suppliers
- * type variable (in this case {@code Long}). 
- * 
+ * type variable (in this case {@code Long}).
+ *
  * @param <T>
  *            The type of the argument that this op takes
  * @param <R>

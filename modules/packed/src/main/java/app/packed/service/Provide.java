@@ -29,21 +29,21 @@ import app.packed.extension.BaseExtension;
  * An annotation indicating that an annotated method or field on a bean provides a service to the container in which the
  * bean is installed. The key under which the service is registered is return type of the method or the field type
  * respectively.
- * 
+ *
  * <p>
  * Both fields and methods can make used of qualifiers to specify the exact key they are made available under. For
  * example, given to two qualifier annotations: {@code @Left} and {@code @Right}<pre>
  *  &#64;Left
  *  &#64;ProvideService
  *  String name = "left";
- *   
+ *
  *  &#64;Right
  *  &#64;ProvideService
  *  String provide() {
  *      return "right";
  *  }
  *  </pre>
- * 
+ *
  * The field will is made available with the key {@code Key<@Left String>} while the method will be made available with
  * the key {@code Key<@Right String>}.
  * <p>

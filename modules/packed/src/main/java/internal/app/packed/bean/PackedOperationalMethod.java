@@ -101,7 +101,7 @@ public final class PackedOperationalMethod extends PackedOperationalExecutable<M
 
     /**
      * Look for hook annotations on a single method.
-     * 
+     *
      * @param method
      *            the method to look for annotations on
      */

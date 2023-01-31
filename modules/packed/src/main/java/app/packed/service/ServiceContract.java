@@ -33,21 +33,21 @@ import app.packed.extension.BaseExtensionMirror;
 
 /**
  * A service contract details of a contractee.
- * 
+ *
  * services are needed (represented by a Key)
- * 
- * 
+ *
+ *
  * A service contract consists of two parts. A part detailing which services are required in order for owning entity to
  * be successfully constructed. And another part that the details what kind of services the owning entity provides after
  * having being constructed.
- * 
+ *
  * Both the consuming side and the providing part
  * <p>
  * The required part is split into parts
- * 
- * 
+ *
+ *
  * optional Optional services that the entity might use if available.
- * 
+ *
  * provides Service that the entity makes available to users of the entity.
  */
 
@@ -130,17 +130,14 @@ public final class ServiceContract {
      * <li>The new contract introduces no new <strong>required</strong> services. It is allowed to add
      * <strong>optional</strong> services.</li>
      * </ul>
-     * 
+     *
      * @param other
      *            the older contract
      * @return whether or not this contract is fully backwards compatible with the other contract
      */
     boolean isBackwardsCompatibleWith(ServiceContract other) {
         requireNonNull(other, "other is null");
-        if (!other.requires.containsAll(requires)) {
-            return false;
-        }
-        if (!provides.containsAll(other.provides)) {
+        if (!other.requires.containsAll(requires) || !provides.containsAll(other.provides)) {
             return false;
         }
         return true;
@@ -148,7 +145,7 @@ public final class ServiceContract {
 
     /**
      * Returns whether or not this contract has any clauses.
-     * 
+     *
      * @return whether or not this contract has any clauses
      */
     public boolean isEmpty() {
@@ -157,7 +154,7 @@ public final class ServiceContract {
 
     /**
      * Creates a new builder that can be used to modify this contract. For example, by adding or removing keys.
-     * 
+     *
      * @return the new builder
      */
     // transform(), change(), adapt, update()
@@ -172,7 +169,7 @@ public final class ServiceContract {
 
     /**
      * Returns an immutable set of keys of all of the services the owning entity provides.
-     * 
+     *
      * @return an immutable set of keys of all of the services the owning entity provides
      */
     public Set<Key<?>> provides() {
@@ -181,7 +178,7 @@ public final class ServiceContract {
 
     /**
      * Returns an immutable set of keys for which a service <b>must</b> be made by the owning entity.
-     * 
+     *
      * @return an immutable set of all keys that <b>must</b> be made available to the entity
      */
     public Set<Key<?>> requires() {
@@ -190,7 +187,7 @@ public final class ServiceContract {
 
     /**
      * Returns an immutable set of all of the optional service keys of the owning entity.
-     * 
+     *
      * @return an immutable set of all of the optional service keys of the owning entity
      */
     public Set<Key<?>> requiresOptional() {
@@ -229,9 +226,9 @@ public final class ServiceContract {
     /**
      * Creates a new service contract by performing the specified action on a new {@link ServiceContract.Builder } instance.
      * Usage:
-     * 
+     *
      * which is equivalent to:
-     * 
+     *
      * @param action
      *            the build action to perform
      * @return the new contract
@@ -245,7 +242,7 @@ public final class ServiceContract {
 
     /**
      * Returns a new service contract builder.
-     * 
+     *
      * @return a new service contract builder
      */
     public static ServiceContract.Builder builder() {
@@ -254,7 +251,7 @@ public final class ServiceContract {
 
     /**
      * Returns a service contract from the specified assembly.
-     * 
+     *
      * @param assembly
      *            the image to return a contract for
      * @return the contract
@@ -294,7 +291,7 @@ public final class ServiceContract {
 
         /**
          * Creates a new contract builder builder from an existing service contract.
-         * 
+         *
          * @param existing
          *            the contract to create a contract builder builder from
          */
@@ -308,8 +305,8 @@ public final class ServiceContract {
 
         /**
          * Builds and returns a new service contract from this builder.
-         * 
-         * 
+         *
+         *
          * @return the new service contract
          * @throws IllegalStateException
          *             if any keys have been registered both as optional and required
@@ -364,7 +361,7 @@ public final class ServiceContract {
          * <p>
          * If there are keys that have both been added as a required and required optionally. The keys under required optionally
          * will be removed.
-         * 
+         *
          * @param keys
          *            the keys to add
          * @return this builder
@@ -391,7 +388,7 @@ public final class ServiceContract {
 
         /**
          * Adds the specified key to the list of required services.
-         * 
+         *
          * @param keys
          *            the keys to add
          * @return this builder
@@ -402,7 +399,7 @@ public final class ServiceContract {
 
         /**
          * Adds the specified key to the list of required services.
-         * 
+         *
          * @param keys
          *            the keys to add
          * @return this builder
@@ -417,7 +414,7 @@ public final class ServiceContract {
 
         /**
          * Adds the specified key to the list of optional services.
-         * 
+         *
          * @param keys
          *            the keys to add
          * @return this builder

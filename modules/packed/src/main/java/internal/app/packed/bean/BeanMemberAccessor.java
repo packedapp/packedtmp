@@ -45,7 +45,7 @@ public abstract sealed class BeanMemberAccessor {
 
     /**
      * Creates a new accessor from the specified lookup.
-     * 
+     *
      * @param lookup
      *            the lookup to use
      * @return the new accessor
@@ -54,7 +54,7 @@ public abstract sealed class BeanMemberAccessor {
 
     /**
      * Returns a container source model for the specified type
-     * 
+     *
      * @param sourceType
      *            the container source type
      * @return a container source model for the specified type
@@ -99,7 +99,7 @@ public abstract sealed class BeanMemberAccessor {
 
         /**
          * Creates a new model.
-         * 
+         *
          * @param realmType
          *            the realm type
          */

@@ -23,7 +23,7 @@ public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {
 
     /**
      * Creates a new mirror
-     * 
+     *
      * @param container
      *            the container the extension is a part of
      */
@@ -33,7 +33,7 @@ public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {
 
     /**
      * Returns the service contract for the container.
-     * 
+     *
      * @return the service contract for the container
      * @throws IllegalStateException
      *             if dependencies have not been resolved

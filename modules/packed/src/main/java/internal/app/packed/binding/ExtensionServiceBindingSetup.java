@@ -42,7 +42,7 @@ public final class ExtensionServiceBindingSetup extends BindingSetup {
         }
         this.extensionBeanClass = extensionBeanClass;
     }
-    
+
     @Override
     public BindingProvider provider() {
         return extensionBean.beanInstanceBindingProvider();

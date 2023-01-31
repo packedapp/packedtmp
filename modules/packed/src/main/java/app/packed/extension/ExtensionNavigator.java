@@ -26,7 +26,7 @@ import internal.app.packed.util.AbstractTreeNode;
 
 /**
  * Represents a rooted tree of extensions of the same type with a single extension as the origin.
- * 
+ *
  * @param <E>
  *            the type of extensions
  */
@@ -34,7 +34,7 @@ public final /* primitive */ class ExtensionNavigator<E extends Extension<E>> im
 
     /** We save the extension type mainly for casting. */
     private final Class<E> extensionType;
-    
+
     private final ExtensionSetup originExtension;
 
     ExtensionNavigator(ExtensionSetup originExtension, Class<E> extensionType) {

@@ -26,7 +26,7 @@ public class SchedulingExtensionPoint extends ExtensionPoint<SchedulingExtension
 
     /**
      * Schedules an operation.
-     * 
+     *
      * @param operation
      *            the operation to schedule
      * @return a configuration object

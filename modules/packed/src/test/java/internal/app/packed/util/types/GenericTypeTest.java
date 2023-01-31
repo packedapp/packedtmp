@@ -74,11 +74,11 @@ public class GenericTypeTest {
 //        npe(GenericType::fromMethodReturnType, m, "method");
 //        assertThat(LIST_WILDCARD).isEqualTo(GenericType.fromMethodReturnType(m).type());
 //    }
-//    
+//
 //
 //    /**
 //     * Returns the type of the specified field as a type token.
-//     * 
+//     *
 //     * @param field
 //     *            the field to return a type token for
 //     * @return the type token for the field
@@ -91,7 +91,7 @@ public class GenericTypeTest {
 //
 //    /**
 //     * Returns the type of the specified method's return type as a type token.
-//     * 
+//     *
 //     * @param method
 //     *            the method whose return type to return a type token for
 //     * @return the type token for the return type of the specified method

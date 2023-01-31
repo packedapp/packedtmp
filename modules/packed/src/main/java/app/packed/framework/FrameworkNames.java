@@ -19,7 +19,7 @@ import java.util.Set;
 
 /**
  * This class contains various names of extensions and modules that can be used to avoid loading the.
- * 
+ *
  */
 // Fx kan det vaere svaert at lave Application layers...
 // Hvis man ikke gider importere alle pakker
@@ -39,7 +39,7 @@ public final class FrameworkNames {
     public static final String DEVTOOLS_MODULE = "app.packed.devtools";
 
     static final String FRAMEWORK = "Packed";
-    
+
     static final String WEB_MODULE = "app.packed.web";
 
     static final String WEB_WEB_EXTENSION = WEB_MODULE + ".WebExtension";

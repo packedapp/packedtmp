@@ -46,7 +46,7 @@ public class AssemblyMirror implements Mirror {
 
     /**
      * {@return the internal configuration of application.}
-     * 
+     *
      * @throws IllegalStateException
      *             if {@link #initialize(ApplicationSetup)} has not been called.
      */
@@ -66,7 +66,7 @@ public class AssemblyMirror implements Mirror {
 
     /**
      * {@return a stream of any child assemblies defined by this assembly.}
-     * 
+     *
      * @see ContainerConfiguration#link(Assembly, Wirelet...)
      */
     public Stream<AssemblyMirror> children() { // method should be aligned with other trees
@@ -113,7 +113,7 @@ public class AssemblyMirror implements Mirror {
 
     /**
      * Invoked by {@link AssemblySetup#mirror()} to initialize this mirror.
-     * 
+     *
      * @param assembly
      *            the internal configuration of the application to mirror
      */

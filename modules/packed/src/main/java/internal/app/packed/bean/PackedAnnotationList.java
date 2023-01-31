@@ -39,7 +39,7 @@ public record PackedAnnotationList(Annotation[] annotations) implements Annotati
     public int hashCode() {
         return Arrays.hashCode(annotations);
     }
-    
+
     public static PackedAnnotationList of(Annotation... annotations) {
         return new PackedAnnotationList(annotations);
     }
@@ -47,8 +47,8 @@ public record PackedAnnotationList(Annotation[] annotations) implements Annotati
     /** {@inheritDoc} */
     @Override
     public boolean containsType(Class<? extends Annotation> annotationClass) {
-        for (int i = 0; i < annotations.length; i++) {
-            if (annotations[i].annotationType() == annotationClass) {
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType() == annotationClass) {
                 return true;
             }
         }
@@ -58,8 +58,8 @@ public record PackedAnnotationList(Annotation[] annotations) implements Annotati
     @Override
     public boolean contains(Annotation annotation) {
         requireNonNull(annotation, "annotation is null");
-        for (int i = 0; i < annotations.length; i++) {
-            if (annotations[i].equals(annotation)) {
+        for (Annotation annotation2 : annotations) {
+            if (annotation2.equals(annotation)) {
                 return true;
             }
         }
@@ -75,9 +75,9 @@ public record PackedAnnotationList(Annotation[] annotations) implements Annotati
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Annotation> T readRequired(Class<T> annotationClass) {
-        for (int i = 0; i < annotations.length; i++) {
-            if (annotations[i].annotationType() == annotationClass) {
-                return (T) annotations[i];
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType() == annotationClass) {
+                return (T) annotation;
             }
         }
         throw new IllegalStateException();
@@ -104,8 +104,8 @@ public record PackedAnnotationList(Annotation[] annotations) implements Annotati
     @Override
     public void forEach(Consumer<? super Annotation> action) {
         requireNonNull(action, "action is null");
-        for (int i = 0; i < annotations.length; i++) {
-            action.accept(annotations[i]);
+        for (Annotation annotation : annotations) {
+            action.accept(annotation);
         }
     }
 

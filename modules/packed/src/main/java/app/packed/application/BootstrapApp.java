@@ -43,7 +43,7 @@ import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
  * Bootstrap applications are normally never exposed to end users.
  * <p>
  * If these are not sufficient, it is very easy to build your own.
- * 
+ *
  * Which is probably your best bet is to look at the source code of them to create your own.
  * <p>
  * This class can be used to create custom artifact types if the built-in artifact types such as {@link App} and
@@ -51,7 +51,7 @@ import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
  * {@link ServiceLocator} uses an artifact driver themselves.
  * <p>
  * Normally, you never create more than a single instance of an application driver.
- * 
+ *
  * @param <A>
  *            the type of applications this bootstrap app creates.
  */
@@ -69,7 +69,7 @@ public final class BootstrapApp<A> {
      * <p>
      * This method is typical not called directly by end-users. But indirectly through methods such as
      * {@link App#run(Assembly, Wirelet...)} .
-     * 
+     *
      * @param assembly
      *            the main assembly of the application
      * @param wirelets
@@ -89,7 +89,7 @@ public final class BootstrapApp<A> {
 
     /**
      * Creates a new application mirror from the specified assembly and optional wirelets.
-     * 
+     *
      * @param assembly
      *            the assembly to create an application mirror from
      * @param wirelets
@@ -108,7 +108,7 @@ public final class BootstrapApp<A> {
 
     /**
      * Create a new application image by using the specified assembly and optional wirelets.
-     * 
+     *
      * @param assembly
      *            the assembly that should be used to build the image
      * @param wirelets
@@ -127,7 +127,7 @@ public final class BootstrapApp<A> {
 
     /**
      * Verifies that a valid application can be build.
-     * 
+     *
      * @param assembly
      *            the assembly defining the application that should be verified
      * @param wirelets
@@ -147,15 +147,15 @@ public final class BootstrapApp<A> {
      * ApplicationDriver<App> driver = App.driver();
      * driver = driver.with(ApplicationWirelets.timeToRun(2, TimeUnit.MINUTES));
      * }</pre>
-     * 
+     *
      * ApplicationW
      * <p>
      * This method will make no attempt of validating the specified wirelets.
-     * 
+     *
      * <p>
      * Wirelets that were specified when creating the driver, or through previous invocation of this method. Will be
      * processed before the specified wirelets.
-     * 
+     *
      * @param wirelets
      *            the wirelets to add
      * @return the augmented application driver
@@ -193,7 +193,7 @@ public final class BootstrapApp<A> {
 
     /**
      * A composer for creating bootstrap app instances.
-     * 
+     *
      * @see BootstrapApp#of(Class, ComposerAction)
      * @see BootstrapApp#of(Op, ComposerAction)
      * @see BootstrapApp#of(ComposerAction)
@@ -219,7 +219,7 @@ public final class BootstrapApp<A> {
          * Application produced by the driver are executable. And will be launched by the specified launch mode by default.
          * <p>
          * The default launchState can be overridden at later point by using XYZ
-         * 
+         *
          * @return this builder
          */
         public Composer managedLifetime() {

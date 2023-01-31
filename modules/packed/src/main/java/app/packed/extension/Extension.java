@@ -39,21 +39,21 @@ import internal.app.packed.util.types.ClassUtil;
 
 /**
  * Extensions are main mechanism by which the framework can be extended with new features.
- * 
+ *
  * Extensions are the primary way to extend the framework with new features. In fact most features provided by Packed
  * itself is using the same extension mechanism available to any user.
  * <p>
- * 
+ *
  * For example, allows you to extend the basic functionality of containers.
  * <p>
  * Extensions form the basis, extensible model
  * <p>
  * constructor visibility is ignored. As long as user has class visibility. They can can use an extension via, for
  * example, {@link BaseAssembly#use(Class)} or {@link ContainerConfiguration#use(Class)}.
- * 
+ *
  * <p>
  * Step1 // package private constructor // open to app.packed.base // exported to other users to use
- * 
+ *
  * <p>
  * Any packages where extension implementations, custom hooks or extension wirelet pipelines are located must be open to
  * 'app.packed.base'
@@ -63,9 +63,9 @@ import internal.app.packed.util.types.ClassUtil;
  * {@link ContainerConfiguration#use(Class)}. The extension subclass should not be declared final as it is expected that
  * future versions of Packed will supports some debug configuration that relies on extending extensions. And capturing
  * interactions with the extension.
- * 
+ *
  * @see ExtensionDescriptor
- * 
+ *
  * @param <E>
  *            The type of the extension subclass
  */
@@ -76,7 +76,7 @@ public abstract class Extension<E extends Extension<E>> {
 
     /**
      * Creates a new extension. Subclasses should have a single package-private constructor.
-     * 
+     *
      * @throws IllegalStateException
      *             if attempting to construct the extension manually
      */
@@ -107,7 +107,7 @@ public abstract class Extension<E extends Extension<E>> {
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
-     * 
+     *
      * @throws IllegalStateException
      *             if the extension is no longer configurable.
      */
@@ -130,7 +130,7 @@ public abstract class Extension<E extends Extension<E>> {
 
     /**
      * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
-     * 
+     *
      * @param extensionType
      *            the extension type to test
      * @return {@code true} if the extension is currently in use, otherwise {@code false}
@@ -163,7 +163,7 @@ public abstract class Extension<E extends Extension<E>> {
 
     /**
      * Returns an extension navigator with this extension instance as the current extension.
-     * 
+     *
      * @return an extension navigator
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -174,13 +174,13 @@ public abstract class Extension<E extends Extension<E>> {
 
     /**
      * Returns a bean introspector
-     * 
+     *
      * Whenever a Hook annotation is found
      * <p>
      * This method is never called more than once for a single bean.
-     * 
+     *
      * @return a new bean introspector
-     * 
+     *
      * @throws InternalExtensionException
      *             if the method is not overridden
      */
@@ -195,7 +195,7 @@ public abstract class Extension<E extends Extension<E>> {
      * {@link BaseExtension} overrides this method to provide an instance of {@link BaseExtensionMirror}.
      * <p>
      * This method should never return null.
-     * 
+     *
      * @return a customized mirror for the extension
      * @throws InternalExtensionException
      *             if the method is not overridden
@@ -209,9 +209,9 @@ public abstract class Extension<E extends Extension<E>> {
      * Returns a new extension point for the extension
      * <p>
      * This method should never return null.
-     * 
+     *
      * @return a new extension point
-     * 
+     *
      * @throws UnsupportedOperationException
      *             if the extension does not support extension points.
      */
@@ -246,22 +246,22 @@ public abstract class Extension<E extends Extension<E>> {
      * extension is used.
      * <p>
      * This method is typically use to
-     * 
+     *
      * <p>
      * Extensions that depends on this extension will always have their {@link #onAssemblyClose()} method executed before
      * this extension. Therefore you can assume that noone will
-     * 
+     *
      * If there are other extension that depends on this extension.
-     * 
+     *
      * This method is always invoked after
-     * 
+     *
      * <p>
      * This is the last opportunity to wire any components that requires extensions that have not already been added.
      * Attempting to wire extensions at a later time will fail with InternalExtensionException
      * <p>
      * If you need, for example, to install bean that depends on a particular dependency being installed (by other) You
      * should installed via {@link #onApplicationClose()}.
-     * 
+     *
      * @see #checkIsPreLinkage()
      */
     // When the realm in which the extension's container is located is closed
@@ -280,7 +280,7 @@ public abstract class Extension<E extends Extension<E>> {
      * <p>
      * Since most methods on {@code Extension} cannot be invoked from the constructor. This method can be used instead to
      * perform post instantiation of the extension as needed.
-     * 
+     *
      * @see #onAssemblyClose()
      * @see #onApplicationClose()
      */
@@ -300,7 +300,7 @@ public abstract class Extension<E extends Extension<E>> {
      * <p>
      * If the application has no code generation phase. For example, if building a {@link BuildGoal#MIRROR}. The specified
      * action will not be executed.
-     * 
+     *
      * @param action
      *            the action to run
      * @throws IllegalStateException
@@ -318,7 +318,7 @@ public abstract class Extension<E extends Extension<E>> {
      * <p>
      * If this extension defines any runtime wirelet. A check must also be made at runtime, you must remember to check if
      * there are any unprocessed wirelets at runtime. As this may happen when creating an image
-     * 
+     *
      * @param <T>
      *            the type of wirelets to select
      * @param wireletClass
@@ -354,7 +354,7 @@ public abstract class Extension<E extends Extension<E>> {
      * <p>
      * Only extension points of extensions that have been explicitly registered as dependencies by using {@link DependsOn}
      * may be specified as arguments to this method.
-     * 
+     *
      * @param <P>
      *            the type of extension point to return
      * @param extensionPointClass
@@ -393,7 +393,7 @@ public abstract class Extension<E extends Extension<E>> {
             throw new NullPointerException(
                     "Extension " + otherExtension.model.fullName() + " returned null from " + otherExtension.model.name() + ".newExtensionPoint()");
         }
-        
+
         // Make sure it is a proper type of the requested extension point
         if (!extensionPointClass.isInstance(newExtensionPoint)) {
             throw new InternalExtensionException(otherExtension.extensionType.getSimpleName() + ".newExtensionPoint() was expected to return an instance of "

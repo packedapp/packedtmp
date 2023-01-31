@@ -27,11 +27,11 @@ package internal.app.packed.lifetime.sandbox;
 
 public enum LifetimeOperationKind {
     INITIALIZE, // Unmanaged
-    
+
     INITIALIZE_AND_START, //Managed_async
-    
+
     STOP,  // Managed_async
-    
+
     EXECUTE; // Managed_sync
 }
 

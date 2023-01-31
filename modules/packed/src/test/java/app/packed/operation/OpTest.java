@@ -28,7 +28,7 @@ import app.packed.bindings.Qualifier;
 @Disabled
 public class OpTest {
 
-    
+
 
     // /** Tests {@link Factory#forInstance(Object)}. */
     // @Test

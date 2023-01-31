@@ -20,13 +20,13 @@ import app.packed.extension.Extension;
 /**
  * A static context. By static we mean that is can be determined at runtime whether or not a given context is available
  * in a container, bean or operation.
- * 
- * 
+ *
+ *
  * @param <E>
  *            the extension the runtime context is a part of
  */
 
-// A context has a 
+// A context has a
 //// ContextClass
 //// ContextSpan
 

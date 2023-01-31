@@ -95,7 +95,7 @@ public final /* primitive */ class AssemblyModel {
 
     /**
      * Return an assembly model for the specified class.
-     * 
+     *
      * @param assemblyClass
      *            the type of assembly to return a model for
      * @return a model for the specified assembly

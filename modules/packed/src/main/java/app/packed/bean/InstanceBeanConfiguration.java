@@ -24,7 +24,7 @@ import internal.app.packed.util.SpecFix;
 
 /**
  * The configuration of a bean that deals with beans that are instantiated.
- * 
+ *
  * @param <T>
  *            the type of bean instances
  */
@@ -32,7 +32,7 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 
     /**
      * Creates a new InstanceBeanConfiguration
-     * 
+     *
      * @param handle
      *            the bean handle
      */
@@ -97,7 +97,7 @@ class InstanceBeanConfigurationSandbox<T> {
 //  public <K> InstanceBeanConfiguration<T> initializeWithInstance(Class<K> key, K instance) {
 //      return initializeWithInstance(Key.of(key), instance);
 //  }
-//  
+//
 //  public <K> InstanceBeanConfiguration<T> initializeWithInstance(Key<K> key, K instance) {
 //      handle().initializeWithInstance(key, instance);
 //      return this;
@@ -110,7 +110,7 @@ class InstanceBeanConfigurationSandbox<T> {
      * <p>
      * Notice: If you return a subclass of {@link #beanClass()} and the subclass uses hooks, for example, these will be
      * ignored. hooks are always resolved against {@link #beanClass()}
-     * 
+     *
      * @param decorator
      *            the decorator to apply to newly constructed bean instances
      * @return this configuration

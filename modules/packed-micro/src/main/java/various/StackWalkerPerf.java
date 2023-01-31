@@ -41,7 +41,7 @@ import org.openjdk.jmh.annotations.Warmup;
 public class StackWalkerPerf {
 
     static final StackWalker sw2 = StackWalker.getInstance();
-    
+
     static final StackWalker sw = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
 //    @Benchmark
@@ -63,7 +63,7 @@ public class StackWalkerPerf {
     public int lineNumberWithoutClassRef() {
         return sw2.walk(e->e.limit(1).toList().get(0)).getLineNumber();
     }
-    
+
     @Benchmark
     public int lineNumberWithClassRef() {
         return sw.walk(e->e.limit(1).toList().get(0)).getLineNumber();

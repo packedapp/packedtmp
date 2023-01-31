@@ -23,10 +23,10 @@ public enum BindingProviderKind {
 
     /** A constant. */
     CONSTANT,
-    
+
     /** An argument that is provided when invoking the operation. */
     ARGUMENT,
-        
+
     /** The binding is a result of another operation. */
     OPERATION;
 }

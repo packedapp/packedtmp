@@ -63,7 +63,7 @@ import internal.app.packed.util.types.Types;
 //// Hvad hvis vi bruger @Prime annotation.. Saa faar vi jo nogle andre dependencies.
 // Som ikke er synlige...
 
-//Dependency Chain.... 
+//Dependency Chain....
 
 //Dependency er flyttet til en intern klasse. Fordi den er begyndt at blive lidt for kompleks.
 // Naar vi tilfoere composites. Hvor der ikke rigtig laengere er en parameter til en service mapning.
@@ -103,7 +103,7 @@ public final class InternalDependency {
 
     /**
      * Creates a new service dependency.
-     * 
+     *
      * @param key
      *            the key
      * @param optionality
@@ -124,7 +124,7 @@ public final class InternalDependency {
      * {@code null} if a parameter is annotated with {@link Nullable}.
      * <p>
      * If this dependency is not optional this method throws an {@link UnsupportedOperationException}.
-     * 
+     *
      * @return a matching optional empty type. Or null if the variable is annotated with {@link Nullable}.
      * @throws UnsupportedOperationException
      *             if this dependency is not optional
@@ -203,7 +203,7 @@ public final class InternalDependency {
      * @param object
      *            the object to potentially wrap in an optional type @return the specified object if not optional, or a the
      *            specified object in an optional type if optional.
-     * 
+     *
      * @return the wrapped object if needed
      * @throws ClassCastException
      *             if this dependency is an optional type and type of this dependency does not match the specified object.
@@ -270,11 +270,11 @@ public final class InternalDependency {
             optionallaity = Optionality.REQUIRED;
         }
         // TL is free from Optional
-        
+
         Key<?> key = KeyHelper.convert(t, v.getAnnotations(), v);
-                
-        
-        
+
+
+
         return new InternalDependency(v.getRawType(), key, optionallaity);
     }
 

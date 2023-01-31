@@ -77,7 +77,7 @@ public class MhExt extends BaseAssembly {
         @Override
         public void onAssemblyClose() {
             InstanceBeanConfiguration<EBean> b = base().install(EBean.class);
-            
+
             base().addCodeGenerated(b, MethodHandle.class, () -> {
                 // new Exception().printStackTrace();
                 if (h != null) {

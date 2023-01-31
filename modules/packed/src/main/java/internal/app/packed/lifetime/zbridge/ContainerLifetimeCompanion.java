@@ -63,10 +63,10 @@ import app.packed.operation.Op;
 interface ContainerLifetimeCompanion {
 
     Set<Key<?>> keys(); // will be override services
-    
+
     ContainerLifetimeCompanion hide(Key<?> key);
     ContainerLifetimeCompanion rekey();
-    
+
     static <E extends Extension<E>> Builder<E> builder(MethodHandles.Lookup lookup, Class<E> extensionType) {
         throw new UnsupportedOperationException();
     }
@@ -81,7 +81,7 @@ interface ContainerLifetimeCompanion {
 
         // or maybe extensionOptional
         Builder<E> requireExtension();
-        
+
         Builder<E> onBuild(E extension);
 
         <B, C> Builder<E> provide(Class<C> key, Class<B> extensionBeanType, Function<B, C> extractor);
@@ -94,7 +94,7 @@ interface ContainerLifetimeCompanion {
         void fromExtensionBean(Class<?> beanClass);
 
         <B> void fromExtensionBean(Class<B> beanClass, Function<B, K> function);
-        
+
         void ifMissingInstance(K instance); // ServiceLocator.empty()
         void ifMissing(Supplier<K> supplier);
     }

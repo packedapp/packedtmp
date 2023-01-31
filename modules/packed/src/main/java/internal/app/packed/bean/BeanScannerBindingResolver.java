@@ -35,30 +35,30 @@ final class BeanScannerBindingResolver {
 
         // Extracts the variable we want to resolve
         Variable v = operation.type.parameter(index);
-        
+
         // First, see if there are AnnotatedVariableHooks on the variable
         if (tryResolveWithBindingAnnotation(iBean, v, operation, index)) {
             return;
         }
 
         // Peel it
-        
+
         // Next, see if there are any VariableTypeHooks on the variable
         ParameterType hook = iBean.hookModel.testParameterType(v.getRawType());
         if (hook != null) {
             OperationalExtension contributor = iBean.computeContributor(hook.extensionType());
             PackedBindableVariable h = new PackedBindableVariable(iBean, operation, index, contributor.extension, v);
-            
+
             contributor.introspector.hookOnProvidedVariableType(v.getRawType(), new PackedBindableBaseVariable(h));
             if (operation.bindings[index] != null) {
                 return;
             }
         }
-        
+
         // Finally, we resolve it as a service
         boolean resolveAsService = operation.operator.extensionType == BaseExtension.class;
         InternalDependency ia = InternalDependency.fromVariable(v);
-        
+
         if (resolveAsService) {
             operation.bindings[index] = iBean.bean.container.sm.serviceBind(ia.key(), !ia.isOptional(), operation, index);
         } else {
@@ -70,7 +70,7 @@ final class BeanScannerBindingResolver {
 
     /**
      * Look for hook annotations on a variable)
-     * 
+     *
      * @param var
      *            the method to look for annotations on
      * @return
@@ -78,8 +78,7 @@ final class BeanScannerBindingResolver {
     private static boolean tryResolveWithBindingAnnotation(BeanScanner introspector, Variable var, OperationSetup os, int index) {
         Annotation[] annotations = var.getAnnotations();
 
-        for (int i = 0; i < annotations.length; i++) {
-            Annotation a1 = annotations[i];
+        for (Annotation a1 : annotations) {
             Class<? extends Annotation> a1Type = a1.annotationType();
             AnnotatedParameterType hook = introspector.hookModel.testParameterAnnotation(a1Type);
             if (hook != null) {

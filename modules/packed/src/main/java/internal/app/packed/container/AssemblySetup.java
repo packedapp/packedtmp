@@ -95,7 +95,7 @@ public final class AssemblySetup extends RealmSetup {
 
     /**
      * This constructor is used for an assembly that defines an application.
-     * 
+     *
      * @param driver
      *            the application driver
      * @param goal

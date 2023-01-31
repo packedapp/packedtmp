@@ -26,7 +26,7 @@ import internal.app.packed.util.LookupUtil;
 /**
  * All strongly connected components relate to the same pod.
  */
-// Long term, this might just be an Object[] array. But for now its a class, in case we need stuff that isn't stored in the array. 
+// Long term, this might just be an Object[] array. But for now its a class, in case we need stuff that isn't stored in the array.
 @BindingTypeHook(extension = BaseExtension.class)
 public final /* primitive */ class PackedExtensionContext implements ExtensionContext {
 
@@ -34,7 +34,7 @@ public final /* primitive */ class PackedExtensionContext implements ExtensionCo
     public static final MethodHandle MH_CONSTANT_POOL_READER = LookupUtil.findVirtualOwn(MethodHandles.lookup(), "read", Object.class, int.class);
 
     public static final PackedExtensionContext EMPTY = new PackedExtensionContext(0);
-    
+
     final Object[] objects;
 
     private PackedExtensionContext(int size) {

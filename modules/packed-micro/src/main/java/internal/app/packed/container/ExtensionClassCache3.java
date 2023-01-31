@@ -39,7 +39,7 @@ final class ExtensionClassCache3<T> {
 
     /**
      * Creates a new extension of the specified type.
-     * 
+     *
      * @param <T>
      *            the type of extension
      * @param extensionClass

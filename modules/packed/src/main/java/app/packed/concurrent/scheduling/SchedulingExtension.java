@@ -118,7 +118,7 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
 
         SchedulingBean(@CodeGenerated FinalSchedule[] mhs, PackedExtensionContext pec) {
             this.vts = new PackedVirtualThreadScheduler(pec);
-            
+
             for (FinalSchedule p : mhs) {
                 vts.schedule(p.callMe, p.s.d());
             }

@@ -24,8 +24,8 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
 /**
- * In Packed a variable (this interface) represents an annotated type of some kind This interface represents a variable of some kind, for example, a {@link Field}, Pa 
- * 
+ * In Packed a variable (this interface) represents an annotated type of some kind This interface represents a variable of some kind, for example, a {@link Field}, Pa
+ *
  * {@code AnnotatedVariable} represents a type and an annotated element. A variable is simple wrapper around a
  * {@link TypeToken} and an {@link AnnotatedElement}. A variable is typically constructed from a {@link Field},
  * {@link Parameter}, {@link TypeVariable} or the return type of a {@link Method}. But it can also be synthetically
@@ -50,16 +50,16 @@ import java.lang.reflect.TypeVariable;
  */
 // extends AnnotatedType???? It is more or less AnnotatedType...
 // VariableType, VarType?
-// Maaske supportere vi capture... 
+// Maaske supportere vi capture...
 public sealed interface Variable extends AnnotatedElement permits PackedVariable {
 
     Type getType();
 
     /**
      * Returns the raw type (Class) of the variable.
-     * 
+     *
      * @return the raw type of the variable
-     * 
+     *
      * @see Field#getType()
      * @see Parameter#getType()
      * @see Method#getReturnType()
@@ -77,7 +77,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
 
     /**
      * Returns a variable representing the type of the specified field as well as any annotations present on the field.
-     * 
+     *
      * @param field
      *            the field to return a variable from
      * @return the variable
@@ -88,7 +88,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
 
     /**
      * Returns a variable from the return type of the specified method.
-     * 
+     *
      * @param method
      *            the method to return a variable from
      * @return the variable
@@ -99,7 +99,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
 
     /**
      * Returns a variable representing the specified parameter.
-     * 
+     *
      * @param parameter
      *            the parameter to return a variable from
      * @return the variable
@@ -113,7 +113,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
     static Variable ofTypeVariable(TypeVariable<?> typeVariable) {
         return new PackedVariable(typeVariable, new PackedVariableType.OfTypeVariable(typeVariable));
     }
-    
+
     static Variable ofTypeAndAnnotations(Type type, AnnotatedElement element) {
         return new PackedVariable(element, new PackedVariableType.OfType(type));
     }

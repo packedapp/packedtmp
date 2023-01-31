@@ -42,7 +42,7 @@ import internal.app.packed.util.StringFormatter;
  * {@link IllegalStateException} is thrown.</li>
  * </ul>
  * <p>
- * 
+ *
  * @param <T>
  *            the implementation type
  * @param implementation

@@ -34,7 +34,7 @@ public enum BindingWrapperKind {
 
     /**
      * This wrapper kind supports repeated delivery of values.
-     *  
+     *
      * @see Provider
      **/
     PROVIDER,

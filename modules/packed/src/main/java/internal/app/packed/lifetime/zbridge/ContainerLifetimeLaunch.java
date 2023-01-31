@@ -66,11 +66,11 @@ public final class ContainerLifetimeLaunch {
         public Builder managed() {
             return this;
         }
-        
+
         void add(PackedBridge<?> bridge) {
             // if contains any keys -> fail
             // or if provides the same service -> fail
-            
+
         }
     }
 }

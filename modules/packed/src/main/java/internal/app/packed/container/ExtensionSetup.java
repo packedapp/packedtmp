@@ -53,7 +53,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
     /**
      * Creates a new extension setup.
-     * 
+     *
      * @param parent
      *            any parent this extension might have, null if the root extension
      * @param container
@@ -115,7 +115,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
         // Hvad hvis en extension linker en af deres egne assemblies.
         // If the extension is added in the root container of an assembly. We need to add it there
-        
+
         if (isAssemblyRoot) {
             container.assembly.extensions.add(this);
         }
@@ -130,7 +130,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
     /**
      * Returns the extension instance.
-     * 
+     *
      * @return the extension instance
      * @throws InternalExtensionException
      *             if trying to call this method from the constructor of the extension
@@ -145,7 +145,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
     /**
      * Returns Extension#setup, is mainly used for core extensions that need special functionality
-     * 
+     *
      * @param extension
      *            the extension to crack
      * @return the extension setup

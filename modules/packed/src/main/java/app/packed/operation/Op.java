@@ -34,7 +34,7 @@ import internal.app.packed.operation.PackedOp;
 /**
  * An object that creates other objects. Factories are always immutable and any method that returnsfactory is an
  * immutable that creates this
- * 
+ *
  * Factories are used for creating new instances of a particular type.
  * <p>
  * This class does not expose any methods that actually create new objects, this is all hidden in the internals of
@@ -43,7 +43,7 @@ import internal.app.packed.operation.PackedOp;
  * A {@link Op} type that uses a {@link Supplier} to provide instances.
  * <p>
  * This class is typically used like this:
- * 
+ *
  * <pre> {@code Op<Long> f = new Op0<>(System::currentTimeMillis) {};}</pre>
  * <p>
  * In this example we create a new class that extends Factory0 is order to capture information about the suppliers type
@@ -51,9 +51,9 @@ import internal.app.packed.operation.PackedOp;
  * information at runtime.
  * <p>
  * Qualifier annotations can be used if they have {@link ElementType#TYPE_USE} in their {@link Target}:
- * 
+ *
  * <pre> {@code Op<Long> f = new Op0<@SomeQualifier Long>(() -> 1L) {};}</pre>
- * 
+ *
  * @apiNote Op implementations does not generally implement {@link #hashCode()} or {@link #equals(Object)}.
  */
 @SuppressWarnings("rawtypes") // eclipse being difficult
@@ -64,7 +64,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
      * <p>
      * This method is typically used to bind arguments to parameters on a method or constructors. A typical example is a
      * constructor which takes two parameters of the same type.
-     * 
+     *
      * @param position
      *            the index of the first variable to bind
      * @param argument
@@ -84,11 +84,11 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
 
     /**
      * Binds the first variable of the operation to the specified argument.
-     * 
+     *
      * @param argument
      *            the argument to bind.
      * @return a new operation
-     * 
+     *
      * @throws ClassCastException
      *             if the argument does not match the leading variable type.
      * @throws IndexOutOfBoundsException
@@ -100,7 +100,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
 
     /**
      * Returns a new operation that will perform the specified action with the result before returning it.
-     * 
+     *
      * @param action
      *            the action that will be run with the result as an argument on each invocation
      * @return the new operation
@@ -114,7 +114,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
 
     /**
      * Creates a new operation that will invoke the specified constructor.
-     * 
+     *
      * @param constructor
      *            the constructor that will be called when operation is invoked
      * @return the new operation
@@ -144,7 +144,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
      * <p>
      * If the specified method is not a static method. The returned factory will have the method's declaring class as its
      * first variable. Use to bind an instance of the declaring class.
-     * 
+     *
      * @param <T>
      *            the type of value returned by the method
      * @param method
@@ -167,20 +167,20 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
 interface ZandboxOp<R> {
 
     /**
-     * 
+     *
      * <p>
      * At invocationtime
-     * 
+     *
      * {@link NullPointerException} will be thrown if the supplier return null, but does not take a reference type
-     * 
+     *
      * {@link ClassCastException} if we create something that does not match
-     * 
+     *
      * @param position
      *            the index of the first variable to bind
      * @param supplier
      *            the supplier
      * @return a new operation
-     * 
+     *
      * @throws IndexOutOfBoundsException
      *             if (@code position) is less than {@code 0} or greater than {@code N - 1 - L} where {@code N} is the
      *             number of variables and {@code L} is the length of the additional argument array.
@@ -228,7 +228,7 @@ interface ZandboxOp<R> {
 
     /**
      * Returns a new factory that maps every object this factory create using the specified mapper.
-     * 
+     *
      * @param <R>
      *            the type of result to map to
      * @param type
@@ -246,7 +246,7 @@ interface ZandboxOp<R> {
 
     /**
      * Returns a new factory that maps every object this factory create using the specified mapper.
-     * 
+     *
      * @param <R>
      *            the type of result to map to
      * @param mapper

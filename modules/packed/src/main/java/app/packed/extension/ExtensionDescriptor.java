@@ -38,10 +38,10 @@ public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescript
      * <p>
      * bla bla same fullname different classloaders. However, in practice this should only be a problem if attempting to add
      * both extensions to the same container
-     * 
+     *
      * @param descriptor
      *            the descriptor to be compared.
-     * 
+     *
      * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the
      *         specified object.
      *
@@ -67,7 +67,7 @@ public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescript
      * <p>
      * The full name is defined as the canonical name of the {@link #type() extension type} as returned by
      * {@link Class#getCanonicalName()}.
-     * 
+     *
      * @return the full name of the extension
      * @see #name()
      */
@@ -77,7 +77,7 @@ public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescript
      * Returns the module the extension is part of.
      * <p>
      * This module of an extension is always the module that the {@link #type() extension type} is located in.
-     * 
+     *
      * @return the module the extension is part of
      * @see Class#getModule()
      */
@@ -104,7 +104,7 @@ public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescript
      * For Module Versions — A Research Log</a>
      * <p>
      * Packed itself places no semantic meaning to module versions. And this method is purely for informational purposes.
-     * 
+     *
      * @return the version of the extension's module if present
      * @see Module#getDescriptor()
      * @see ModuleDescriptor#version()
@@ -120,7 +120,7 @@ public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescript
      * <p>
      * The name is defined as the simple name of the {@link #type() extension type} as returned by
      * {@link Class#getSimpleName()}.
-     * 
+     *
      * @return the name of the extension.
      * @see #fullName()
      */
@@ -132,7 +132,7 @@ public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescript
      * Extensions without any dependencies always have depth 0. Otherwise the depth of an extension it is the maximum depth
      * of any of its direct dependencies plus 1. This has the nice property, that any dependencies (including transitive
      * dependencies) of an extension will always have a depth that is less than the depth of the extension itself.
-     * 
+     *
      * @return the depth of the extension
      */
     int orderingDepth();
@@ -142,7 +142,7 @@ public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescript
 
     /**
      * Returns a descriptor for the specified extension type.
-     * 
+     *
      * @param extensionType
      *            the type of extension to return a descriptor for
      * @return a descriptor for the specified extension type
@@ -159,7 +159,7 @@ interface SandboxExtensionDescriptor {
 
     /**
      * An extension might have an attached library (or more than 1?).
-     * 
+     *
      * @return
      */
     default Optional<Module> libraryModule() {

@@ -53,16 +53,16 @@ import internal.app.packed.binding.PackedBindableVariable;
  * <li>By calling {@link OperationalField#newOperation(java.lang.invoke.VarHandle.AccessMode)} to create a new operation
  * that can {@code access} the underlying {@link Field}.
  * </ul>
- * 
- * 
+ *
+ *
  * This class is used to configure a operation.
- * 
+ *
  * This class contains a number of configuration methods:
- * 
+ *
  * List them
- * 
- * 
- * 
+ *
+ *
+ *
  * This class currently supports:
  * <ul>
  * <li>Creating method handles that can invoke the underlying operation.</li>
@@ -76,7 +76,7 @@ import internal.app.packed.binding.PackedBindableVariable;
  * <li>Name the operation (not implemented yet).</li>
  * </ul>
  * <p>
- * 
+ *
  * @see OperationalMethod#newOperation()
  * @see OperationalField#newGetOperation()
  * @see OperationalField#newSetOperation()
@@ -140,7 +140,7 @@ public final record PackedOperationHandle(OperationSetup operation) implements O
     public MethodHandle generateMethodHandle(Object lifetimeHandle) {
         // Fx
         // Eller hvad tager vi praecis som parameter????
-        
+
         // Hmm er jo lettere sagt end gjort, vi
         throw new UnsupportedOperationException();
     }
@@ -297,7 +297,7 @@ interface ZandboxOH {
 
     // /**
 //  * If this operation is created from a variable (typically a field), returns its accessMode. Otherwise empty.
-//  * 
+//  *
 //  * @return
 //  */
 // default Optional<AccessMode> accessMode() {
@@ -401,7 +401,7 @@ interface ZandboxOH {
 
 //Vi skal have en eller anden form for naming.
 //int OperationID?
-//noget omkring Instance (requiresInstance) Altsaa det er lidt 
+//noget omkring Instance (requiresInstance) Altsaa det er lidt
 //noget omkring wrapping mode
 
 //FactoryInvoker??? Fraekt hvis faa dem bundet sammen
@@ -416,13 +416,13 @@ interface ZandboxOH {
 
 //Lad os sige vi godt vil generere en hidden class extension bean...
 
-// Vi har ikke MethodType/Factory type her... Det maa komme fra BeanConstructor/BeanMethod 
-// 
+// Vi har ikke MethodType/Factory type her... Det maa komme fra BeanConstructor/BeanMethod
+//
 
 //OperationHandle??? Vi dropper builder parten... Eller maaske ikke IDK
 //Vi har brug for at saette nogle ting inde vi skanner og tilfoejer operationer
 //i nogen tilfaelde..
-//Fx 
+//Fx
 
 ////Sources
 //* Fra MethodHook/FieldHook/InjectionHook

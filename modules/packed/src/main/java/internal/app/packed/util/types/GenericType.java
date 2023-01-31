@@ -62,7 +62,7 @@ public abstract class GenericType<T> {
 
     /**
      * Constructs a new type token by deriving the actual type from the type parameter of the extending class.
-     * 
+     *
      * @throws RuntimeException
      *             if the type could not be determined
      */
@@ -75,7 +75,7 @@ public abstract class GenericType<T> {
 
     /**
      * Constructs a type token from the specific type.
-     * 
+     *
      * @param type
      *            the type to create a type token from
      */
@@ -90,7 +90,7 @@ public abstract class GenericType<T> {
     /**
      * To avoid accidentally holding on to any instance that defines this type token as an anonymous class. This method
      * creates a new type token instance without any reference to the instance that defined the anonymous class.
-     * 
+     *
      * @return the type token
      */
     // Not sure we want this public
@@ -151,7 +151,7 @@ public abstract class GenericType<T> {
     /**
      * Returns a string where all the class names are replaced by their simple names. For example this method will return
      * {@code List<String>} instead of {@code java.util.List<java.lang.String>} as {@link #toString()} does.
-     * 
+     *
      * @return a simple string representation of this type
      */
     public final String toStringSimple() {
@@ -183,7 +183,7 @@ public abstract class GenericType<T> {
 
     /**
      * Returns the type of the specified parameter as a type token.
-     * 
+     *
      * @param type
      *            the parameter to return a type token for
      * @return the type token for the parameter
@@ -213,7 +213,7 @@ public abstract class GenericType<T> {
 
         /**
          * Creates a new type token instance
-         * 
+         *
          * @param type
          *            the type
          */

@@ -72,7 +72,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /**
      * Provides every service from the specified locator.
-     * 
+     *
      * @param locator
      *            the locator to provide services from
      * @throws IllegalArgumentException
@@ -132,7 +132,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     /**
      * Installs a bean of the specified type. A single instance of the specified class will be instantiated when the
      * container is initialized.
-     * 
+     *
      * @param implementation
      *            the type of bean to install
      * @return the configuration of the bean
@@ -145,7 +145,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /**
      * Installs a component that will use the specified {@link Op} to instantiate the component instance.
-     * 
+     *
      * @param op
      *            the factory to install
      * @return the configuration of the bean
@@ -189,7 +189,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     /**
      * Exports all container services and any services that have been explicitly anchored via of anchoring methods.
      * <p>
-     * 
+     *
      * <ul>
      * <li><b>Service already exported.</b> The service that have already been exported (under any key) are always
      * ignored.</li>
@@ -226,11 +226,11 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /**
      * Installs a new {@link BeanKind#STATIC static} bean.
-     * 
+     *
      * @param implementation
      *            the static bean class
      * @return a configuration for the bean
-     * 
+     *
      * @see BeanKind#STATIC
      * @see BeanSourceKind#CLASS
      */
@@ -241,7 +241,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /**
      * Creates a new child container by linking the specified assembly.
-     * 
+     *
      * @param assembly
      *            the assembly to link
      * @param wirelets
@@ -288,7 +288,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /**
      * Creates a new BeanIntrospector for handling annotations managed by BeanExtension.
-     * 
+     *
      * @see Inject
      * @see OnInitialize
      * @see OnStart
@@ -483,13 +483,13 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * First, services that are cannot be specified at build time. But is needed later... Is mainly useful when we the
      * services to. For example, importAll() that injector might not a service itself. But other that make use of the
      * injector might.
-     * 
-     * 
+     *
+     *
      * <p>
      * Second, for manual service requirement, although it is often preferable to use contracts here
      * <p>
      * In any but the simplest of cases, contracts are useful
-     * 
+     *
      * @param keys
      *            the key(s) to add
      */
@@ -514,7 +514,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * If a key is added optionally and the same key is later added as a normal (mandatory) requirement either explicitly
      * via # {@link #serviceRequire(Key...)} or implicitly via, for example, a constructor dependency. The key will be
      * removed from the list of optional services and only be listed as a required key.
-     * 
+     *
      * @param keys
      *            the key(s) to add
      */
@@ -538,10 +538,10 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
  * An extension that deals with the service functionality of a container.
  * <p>
  * This extension provides the following functionality:
- * 
+ *
  * is extension provides functionality for exposing and consuming services.
- * 
- * 
+ *
+ *
  */
 //Functionality for
 //* Explicitly requiring services: require, requiOpt & Manual Requirements Management
@@ -587,11 +587,11 @@ class ZServiceSandbox {
 
     /**
      * Performs a final transformation of any exported service.
-     * 
+     *
      * This method can perform any final adjustments of services before they are made available to any parent container.
      * <p>
      * The transformation takes place xxxx
-     * 
+     *
      * @param transformer
      *            transforms the exported services
      */

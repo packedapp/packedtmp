@@ -43,7 +43,7 @@ public final class ReflectionUtil {
         if (e.getParameterCount() == 0) {
             return 0;
         }
-        
+
         Parameter[] p = e.getParameters();
         int i = 0;
         while (!parameter.equals(p[i])) {

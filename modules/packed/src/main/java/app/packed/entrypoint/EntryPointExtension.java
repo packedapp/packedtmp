@@ -43,7 +43,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
 
     /**
      * Create a new service extension.
-     * 
+     *
      * @param configuration
      *            an extension configuration object.
      */

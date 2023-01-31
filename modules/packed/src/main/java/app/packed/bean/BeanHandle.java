@@ -42,7 +42,7 @@ import internal.app.packed.service.InternalServiceUtil;
  * <p>
  * Instances of {@code BeanHandle} should never be exposed directly to end-users or other extensions. Instead they
  * should be returned wrapped in {@link BeanConfiguration} (or subclasses hereof).
- * 
+ *
  */
 public final /* primitive */ class BeanHandle<T> {
 
@@ -51,7 +51,7 @@ public final /* primitive */ class BeanHandle<T> {
 
     /**
      * Creates a new BeanHandle.
-     * 
+     *
      * @param bean
      *            the bean to wrap
      */
@@ -79,7 +79,7 @@ public final /* primitive */ class BeanHandle<T> {
      * <p>
      * A bean declared by the application is configurable as long as the assembly from which it was installed is
      * configurable. A bean declared by the application is configurable as long as the extension is configurable.
-     * 
+     *
      * @throws IllegalStateException
      *             if the bean is no longer configurable
      */
@@ -96,9 +96,9 @@ public final /* primitive */ class BeanHandle<T> {
 
     /**
      * Returns the key that the bean will be made available under as default if provided as service.
-     * 
+     *
      * @return the default key
-     * 
+     *
      * @see ProvideableBeanConfiguration#provide()
      * @see ProvideableBeanConfiguration#export()
      * @throws UnsupportedOperationException
@@ -126,7 +126,7 @@ public final /* primitive */ class BeanHandle<T> {
 
     /**
      * Returns whether or not the bean is still configurable.
-     * 
+     *
      * @return {@code true} if the bean is still configurable
      */
     public boolean isConfigurable() {
@@ -139,9 +139,9 @@ public final /* primitive */ class BeanHandle<T> {
      * The operations in the returned list must be computed exactly once. For example, via
      * {@link OperationHandle#generateMethodHandle()}. Otherwise a build exception will be thrown. Maybe this goes for all
      * operation customizers.
-     * 
+     *
      * @return a list of lifetime operations
-     * 
+     *
      * @see BeanInstaller#lifetimes(app.packed.operation.OperationTemplate...)
      */
     public List<OperationHandle> lifetimeOperations() {
@@ -153,7 +153,7 @@ public final /* primitive */ class BeanHandle<T> {
 
     /**
      * Sets the name of the bean, overriding any existing name.
-     * 
+     *
      * @param name
      *            the name of the bean
      * @throws IllegalArgumentException
@@ -182,7 +182,7 @@ public final /* primitive */ class BeanHandle<T> {
     public OperationHandle newFunctionalOperation(InstanceBeanConfiguration<?> operator, Class<?> functionalInterface, OperationType type,
             Object functionInstance) {
         // I think we can ignore the operator now.
-        
+
         // Function, OpType.of(void.class, HttpRequest.class, HttpResponse.class), someFunc)
         throw new UnsupportedOperationException();
     }
@@ -211,14 +211,14 @@ public final /* primitive */ class BeanHandle<T> {
      * <p>
      * This method is rarely called directly, but instead via the various provide methods on
      * {@link ProvideableBeanConfiguration}.
-     * 
+     *
      * @param key
      *            the key of the provided serviceto which to provide the service as
      * @throws ClassCastException
      *             if a service could not be provided because the key is not assignable to the type of the underlying bean
      * @throws UnsupportedOperationException
      *             if instances of the bean cannot be provided as a service
-     * 
+     *
      * @see ProvideableBeanConfiguration#provide()
      * @see ProvideableBeanConfiguration#provideAs(Class)
      * @see ProvideableBeanConfiguration#provideAs(Key)
@@ -242,7 +242,7 @@ public final /* primitive */ class BeanHandle<T> {
 
     /**
      * Sets a supplier that creates a special bean mirror instead of the generic {@code BeanMirror} when requested.
-     * 
+     *
      * @param supplier
      *            the supplier used to create the bean mirror
      * @apiNote the specified supplier may be called multiple times for the same bean. In which case an equivalent mirror
@@ -282,7 +282,7 @@ class BeanHandleSandbox<T> {
      *
      * @throws UnsupportedOperationException
      *             if the bean handle does not have instances
-     * 
+     *
      * @see InstanceBeanConfiguration#initializeWithInstance(Class, Object)
      * @see InstanceBeanConfiguration#initializeWithInstance(Key, Object)
      */

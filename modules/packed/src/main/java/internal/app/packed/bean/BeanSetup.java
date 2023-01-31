@@ -236,7 +236,7 @@ public final class BeanSetup {
 
     /**
      * Extracts a bean setup from a bean configuration.
-     * 
+     *
      * @param configuration
      *            the configuration to extract from
      * @return the bean setup
@@ -248,7 +248,7 @@ public final class BeanSetup {
     }
     /**
      * Extracts a bean setup from a bean handle.
-     * 
+     *
      * @param handle
      *            the handle to extract from
      * @return the bean setup
@@ -257,8 +257,8 @@ public final class BeanSetup {
         requireNonNull(handle, "handle is null");
         return (BeanSetup) VH_BEAN_HANDLE_TO_SETUP.get(handle);
     }
-    
-    
+
+
     public static BeanSetup crack(OperationalMethod m) {
         return ((PackedOperationalMethod) m).extension.scanner.bean;
     }

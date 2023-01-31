@@ -102,7 +102,7 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
         /** Provider for the binding. */
         @Nullable
         public final BindingProvider provider;
-        
+
         /**
          * @param operation
          * @param index

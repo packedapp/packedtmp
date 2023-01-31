@@ -19,9 +19,9 @@ package internal.app.packed.lifetime.sandbox;
  *
  */
 public sealed interface LifetimePlan {
-    
+
     non-sealed interface InitializeOnly extends LifetimePlan{}
-    
+
     // Ogsaa noget med Await
     non-sealed interface MultiThreadMultiState extends LifetimePlan{}
 }

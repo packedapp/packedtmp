@@ -26,12 +26,12 @@ import app.packed.operation.OperationHandle;
 public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension> {
 
     EntryPointExtensionPoint() {}
-    
+
     public OperationHandle specializeMirror(OperationHandle configuration, int id, Supplier<? extends EntryPointMirror> supplier) {
         // Ved ikke lige helt hvordan den skal fungere
         return configuration;
     }
-    
+
 
     /**
      * {@return the extension that is managing the
@@ -39,11 +39,11 @@ public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension
     public Optional<Class<? extends Extension<?>>> dispatcher() {
         return Optional.ofNullable(extension().shared.dispatcher);
     }
-    
+
     /**
      * @param beanOperation
      * @return the entry point id
-     * 
+     *
      * @throws
      * @throws BuildException
      *             if another extension is already managing end points
@@ -63,10 +63,10 @@ public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension
         return extension().registerEntryPoint(usedBy(), isMain);
     }
 
-    
+
     /**
      * Selects
-     * 
+     *
      * <p>
      * If an extension that is not the managing extension. Attempts to have an instance of this interface injected. The
      * build will fail with an {@link InternalExtensionException}.

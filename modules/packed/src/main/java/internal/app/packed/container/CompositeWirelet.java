@@ -8,7 +8,7 @@ import app.packed.container.Wirelet;
  * A wirelet that combines multiple wirelets into a single wirelet.
  * <p>
  * Is exposed to end users via various static methods on {@link Wirelet}.
- * 
+ *
  * @see Wirelet
  */
 public final class CompositeWirelet extends Wirelet {
@@ -24,7 +24,7 @@ public final class CompositeWirelet extends Wirelet {
 
     /**
      * Create a new wirelet array.
-     * 
+     *
      * @param wirelets
      *            the flattened wirelets to wrap
      */
@@ -49,7 +49,7 @@ public final class CompositeWirelet extends Wirelet {
 
     /**
      * Copies multiple wirelets from one array to another array.
-     * 
+     *
      * @param source
      *            the source to copy from
      * @param dest
@@ -133,7 +133,7 @@ public final class CompositeWirelet extends Wirelet {
 
     /**
      * Combines multiple wirelets into a single wirelet. Flattens the wirelets in the process
-     * 
+     *
      * @param wirelets
      *            the wirelets to combine
      * @return the combined wirelet

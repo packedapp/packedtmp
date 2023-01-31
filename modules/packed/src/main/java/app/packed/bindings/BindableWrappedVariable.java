@@ -22,17 +22,17 @@ import app.packed.operation.Op;
 
 /**
  * Opts into
- * 
+ *
  * Optional
- * 
+ *
  * Provider
- * 
+ *
  * Lazy
- * 
+ *
  * Nullable
- * 
+ *
  * Validate (Er jo i virkeligheden peek??
- * 
+ *
  * Default
  */
 public interface BindableWrappedVariable extends BindableVariable {
@@ -42,10 +42,10 @@ public interface BindableWrappedVariable extends BindableVariable {
 
     /**
      * Binds to {@link Nullable}, {@link Optional}, Default value.
-     * 
+     *
      * <p>
      * For raw er det automatisk en fejl
-     * 
+     *
      * @throws UnsupportedOperationException
      *             if the underlying field does not support
      */
@@ -81,15 +81,15 @@ public interface BindableWrappedVariable extends BindableVariable {
     default List<Class<?>> wrapperClasses() {
         return List.of();
     }
-    
+
     default boolean isWrapped() {
         return false;
     }
-    
+
     default boolean tryBindNone() {
         return false;
     }
-    
+
     /**
     *
     */

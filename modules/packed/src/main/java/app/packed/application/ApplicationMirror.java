@@ -46,7 +46,7 @@ public non-sealed class ApplicationMirror implements Mirror , ContextualizedElem
 
     /**
      * {@return the internal configuration of application.}
-     * 
+     *
      * @throws IllegalStateException
      *             if {@link #initialize(ApplicationSetup)} has not been called.
      */
@@ -93,7 +93,7 @@ public non-sealed class ApplicationMirror implements Mirror , ContextualizedElem
 
     /**
      * Invoked by {@link ApplicationSetup#mirror()} to initialize this mirror.
-     * 
+     *
      * @param application
      *            the internal configuration of the application to mirror
      */
@@ -113,7 +113,7 @@ public non-sealed class ApplicationMirror implements Mirror , ContextualizedElem
      * Returns the name of the application.
      * <p>
      * The name of an application is always identical to the name of the root container.
-     * 
+     *
      * @return the name of the application
      * @see Wirelet#named(String)
      */
@@ -152,13 +152,13 @@ public non-sealed class ApplicationMirror implements Mirror , ContextualizedElem
 
     /**
      * Returns an extension mirror of the specified type. Or fails by throwing {@link UnsupportedOperationException}.
-     * 
+     *
      * @param <T>
      *            The type of extension mirror
      * @param type
      *            The type of extension mirror
      * @return an extension mirror of the specified type
-     * 
+     *
      * @see ContainerMirror#use(Class)
      */
     public <E extends ExtensionMirror<?>> E use(Class<E> type) {

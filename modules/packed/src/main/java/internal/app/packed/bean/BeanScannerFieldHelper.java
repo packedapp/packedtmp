@@ -72,8 +72,7 @@ public class BeanScannerFieldHelper {
 
         // More than 2 annotations on the field
         ArrayList<FieldPair> list = new ArrayList<>(5);
-        for (int i = 0; i < annotations.length; i++) {
-            Annotation annotation = annotations[i];
+        for (Annotation annotation : annotations) {
             AnnotatedField af = scanner.hookModel.testFieldAnnotation(annotation.annotationType());
             if (af != null) {
                 if (af.kind() == AnnotatedFieldKind.VARIABLE) {

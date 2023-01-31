@@ -39,16 +39,16 @@ public class ApplicationHostConfiguration<T> extends InstanceBeanConfiguration<T
     // 1-deploye
     // 1-deploye-and remove
     // m-deploye-and remove
-    
+
     public void deployLazy(Supplier<? extends Assembly> assemblySupplier, Wirelet... wirelets) {}
 }
 
 class MyS {
-    
+
     public void host(ApplicationHostConfiguration<?> host, ServiceContract s) {
         // s maa enten kunne vaere requires, eller kun provide
         // s maa kun vaere provide...
-        
+
         // Men kan godt have static requires. og dynamiske provides
     }
 }

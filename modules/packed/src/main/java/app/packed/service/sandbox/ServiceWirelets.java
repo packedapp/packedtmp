@@ -26,15 +26,15 @@ import app.packed.service.ServiceContract;
 
 /**
  * This class provide wirelets that can be used to transform and filter services being pull and pushed into containers.
- * 
+ *
  * Service wirelets are processed in two stages.
- * 
+ *
  * In the first stage which happens immediately after the container receiving the service wirelet has been wired.
- * 
+ *
  * The second stage is at the end of the configuration of the container
- * 
+ *
  * Get some inspiration from streams
- * 
+ *
  * <p>
  * All Wirelets on this class can only be used on container components. And the container must use a
  * {@link BaseExtension}.
@@ -61,7 +61,7 @@ public final class ServiceWirelets {
      * Anchors every accessible service exported by the child container into the parent container.
      * <p>
      * The wirelet can only be used when wiring non-root containers.
-     * 
+     *
      * @return a wirelet that will anchor all services
      * @see BaseExtension#anchorAll()
      */
@@ -78,14 +78,14 @@ public final class ServiceWirelets {
     /**
      * Returns a wirelet that will invoke the specified action with the service contract of the container that is being
      * wired. The wirelet it typically use to check the contents of.
-     * 
+     *
      * But it can also be used, for example, for debugging.
-     * 
+     *
      * <p>
      * This wirelet is processed at the linkage site.
      * <p>
      * The contract being provided is never effected previous transformations, for example, via {@link #crack(Consumer)}.
-     * 
+     *
      * @param action
      *            the action to perform
      * @return a wirelet
@@ -114,7 +114,7 @@ public final class ServiceWirelets {
      * service of the specific type as a requirement.
      * <p>
      * Invoking this method is identical to invoking {@code to(t -> t.provideInstance(instance))}.
-     * 
+     *
      * @param instance
      *            the service to provide
      * @return a wirelet that will provide the specified service
@@ -134,12 +134,12 @@ public final class ServiceWirelets {
      * This method is similar to {@link #crack(Consumer)} but also provides the service of the child.
      * <p>
      * This wirelet is processed in the 1st stage, immediately after a container has been linked.
-     * 
+     *
      * <p>
      * This is a <a href="package-summary.html#StreamOps">eager wirelet</a>.
      * <p>
      * The service contract provided to the consumer is never effected by previous wirelet transformations.
-     * 
+     *
      * @param transformation
      *            the transformation to perform
      * @return the transforming wirelet
@@ -171,7 +171,7 @@ public final class ServiceWirelets {
 
 // Preview... <-- filter annotations with prΩeview????
 // Fucking attributer jo... Service#Preview=true
-// 
+//
 
 // A common pattern of x(class...), x(key...), xIf(Predicate), XAll()
 class ServiceWSandbox {

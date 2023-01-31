@@ -120,7 +120,7 @@ public enum RunState {
     public boolean isStableState() {
         return !isTransitionalState();
     }
-    
+
     public boolean isTransitionalState() {
         return this == INITIALIZING || this == STARTING || this == STOPPING;
     }
@@ -133,8 +133,8 @@ public enum RunState {
     public boolean isShutdown() {
         return this == STOPPING || this == TERMINATED;
     }
-    
+
     public boolean isAlive() {
-        return this != UNINITIALIZED && this != TERMINATED;    
+        return this != UNINITIALIZED && this != TERMINATED;
     }
 }

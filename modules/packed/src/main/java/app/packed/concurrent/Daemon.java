@@ -29,9 +29,9 @@ import app.packed.bean.BeanHook.AnnotatedMethodHook;
 @Retention(RetentionPolicy.RUNTIME)
 @AnnotatedMethodHook(allowInvoke = true, extension = ThreadExtension.class)
 public @interface Daemon {
-    
+
     boolean interruptOnStop() default true;
-    
+
     // error handling...
     boolean restart() default true;
 }

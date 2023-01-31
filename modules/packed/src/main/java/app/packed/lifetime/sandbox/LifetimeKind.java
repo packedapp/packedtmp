@@ -22,8 +22,8 @@ package app.packed.lifetime.sandbox;
 // ROOT -> Er nok Family root
 public enum LifetimeKind {
     // Eager -> (root?)
-    
+
     // Faktum
-    
+
     ROOT, LAZY, MANY;
 }

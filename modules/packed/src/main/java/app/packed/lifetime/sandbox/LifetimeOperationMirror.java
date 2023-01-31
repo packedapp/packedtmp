@@ -24,7 +24,7 @@ import app.packed.operation.OperationMirror;
  * An operation whose sole purpose is to create and/or destroy lifetimes.
  * <p>
  * Ot
- * 
+ *
  */
 // Ved ikke om den kommer med som en egentlig operation
 // Giver god mening med, vi bliver ihvertfald noedt til at gentaenke
@@ -33,7 +33,7 @@ import app.packed.operation.OperationMirror;
 // Altsaa hvis en @Get laver en ny bean saa er det jo ikke en LifetimeOperation
 // WebGetOperationMirror ved jo ikke om den laver en ny lifetime...
 
-// Og saa alligevel.. @Get -> Kalder jo ogsaa Bean.factory operationen 
+// Og saa alligevel.. @Get -> Kalder jo ogsaa Bean.factory operationen
 // Har vi nogle prefix operationer?
 
 // Virker den kun hvis man har create and destroy a.la. Session.
@@ -41,25 +41,25 @@ import app.packed.operation.OperationMirror;
 
 
 public final class LifetimeOperationMirror extends /* Nested */ OperationMirror {
-    
+
     // Wehether or not this lifetime operation concerns the bean that defines it.
     // Or a container
-    // Men 
+    // Men
     public boolean managesOwnBean() {
         return false; //managedLifetime.isContainer(); maybe we don't need a method
     }
-    
+
     // Hmmm.. IDK Hvorfor skal den vaere paa en seperat bean (for beans?)
     // Kan vel ligges paa en ExtensionBean taenker jeg???
     public LifetimeMirror managesLifetime() {
         // Altsaa application vil nogle gange laver flere jo.
         throw new UnsupportedOperationException();
     }
-//    
+//
 //    public boolean isAvailableExternal() {
 //        return true;
 //    }
-//    
+//
 //    public boolean isAvailableInternal() {
 //        // Launching operation is never available internal
 //        // Ved ikke om de giver mening de her operationer
@@ -67,7 +67,7 @@ public final class LifetimeOperationMirror extends /* Nested */ OperationMirror 
 //        // saa er det jo ogsaa internt
 //        return true;
 //    }
-    
+
     // OperationPlan (me thinks)
     // SingleThreaded
     public List<OperationMirror> operations() {
@@ -75,9 +75,9 @@ public final class LifetimeOperationMirror extends /* Nested */ OperationMirror 
         // En slags composite operation
         // Kan jo baade vaere serielt og parallelt.
 
-        // Maaske har vi en specielt "liste" 
+        // Maaske har vi en specielt "liste"
         // Maaske er det bare aabent for interapition
-        
+
         // Kan alle operationer vaere composites????
         return List.of();
     }

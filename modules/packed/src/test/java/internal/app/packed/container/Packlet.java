@@ -26,17 +26,17 @@ import app.packed.extension.Extension;
 
 /**
  * An annotation indicating that the runtime must install one or more extensions of annotated type requires
- * 
+ *
  * A meta-annotation that can be placed on annotations...
- * 
+ *
  * The annotation can currently be used in the following places:
- * 
+ *
  * On an {@link Extension}
- * 
+ *
  * On Annotation, Instances
- * 
+ *
  * ComponentType??? Ja det er jo saadan hvad InstanceOf
- * 
+ *
  * <p>
  * This annotation cannot be used on subclasses of {@link CommonContainerAssembly} as we want to avoid situations where some
  * extensions are added via class annotations and others via {@link CommonContainerAssembly#build()}. Giving the false impression to
@@ -53,7 +53,7 @@ public @interface Packlet {
 
     /**
      * Returns the extensions that the annotated type uses.
-     * 
+     *
      * @return the extensions that the annotated type uses
      */
     Class<? extends Extension<?>>[] extension();
@@ -64,7 +64,7 @@ public @interface Packlet {
      * <p>
      * Checking whether or not an optional dependency is available is done exactly once per usage site. Caching the result
      * for future usage.
-     * 
+     *
      * @return any optional extensions that should be used
      * @see Class#forName(String)
      */

@@ -104,7 +104,7 @@ import internal.app.packed.service.PackedServiceLocator;
  */
 
 /**
- * 
+ *
  * <p>
  * Unless otherwise specified the set of services provided by a service locator is always unchangeable.
  */
@@ -221,14 +221,14 @@ public interface ServiceLocator {
      * iterators. The returned map will never support insertion or update operations.
      * <p>
      * The returned set will retain any thread-safety guarantees provided by the locator itself.
-     * 
+     *
      * @return a set view containing the keys of every provided service.
      */
     Set<Key<?>> keys();
 
     /**
      * Returns a service selection with all of the services in this locator.
-     * 
+     *
      * @return a service selection with all of the services in this locator
      */
     ServiceSelection<?> selectAll();
@@ -237,7 +237,7 @@ public interface ServiceLocator {
      * Returns a service selection where the raw type of every service key is assignable to the specified type.
      * <p>
      * Unlike this method {@link #selectWithAnyQualifiers(Class)} this method will also select any
-     * 
+     *
      * @param <T>
      *            the assignable type
      * @param type
@@ -307,7 +307,7 @@ public interface ServiceLocator {
 
     /**
      * Returns an application driver that can be used to create standalone service locator instances.
-     * 
+     *
      * @return an application driver
      * @see #newLauncher(Assembly, Wirelet...)
      * @see #of(Consumer)
@@ -334,7 +334,7 @@ public interface ServiceLocator {
 
     /**
      * Creates a new service locator image from the specified assembly and optional wirelets.
-     * 
+     *
      * @param assembly
      *            the assembly to use for creating the image
      * @param wirelets
@@ -357,7 +357,7 @@ public interface ServiceLocator {
 
     /**
      * Creates a new service locator from the specified assembly and optional wirelets.
-     * 
+     *
      * @param assembly
      *            the assembly that should be used to create the service locator
      * @param wirelets
@@ -383,7 +383,7 @@ public interface ServiceLocator {
      * A lightweight configuration object that can be used to create injectors via. This is thought of alternative to using
      * a {@link BaseAssembly}. Unlike assemblies all services are automatically exported once defined. For example useful in
      * tests.
-     * 
+     *
      * <p>
      * The main difference compared assemblies is that there is no concept of encapsulation. All services are exported by
      * default.
@@ -434,16 +434,16 @@ public interface ServiceLocator {
          * <p>
          * The following two example are equivalent
          * </p>
-         * <pre> 
-         * Injector i = Injector.of(c -&gt; { 
-         *    c.provide(SomeService.class); 
+         * <pre>
+         * Injector i = Injector.of(c -&gt; {
+         *    c.provide(SomeService.class);
          * });
-         * </pre> <pre> 
-         * Injector i = Injector.of(c -&gt; { 
+         * </pre> <pre>
+         * Injector i = Injector.of(c -&gt; {
          *   c.provide(SomeService.class).as(new Key&lt;&#64;SomeQualifier SomeService&gt;() {});
          * });
          * </pre>
-         * 
+         *
          * @param <T>
          *            the type of service to provide
          * @param implementation
@@ -459,7 +459,7 @@ public interface ServiceLocator {
          * instantiate the service instance.
          * <p>
          * The default key for the service is determined by {@link Op#toKey()}.
-         * 
+         *
          * @param <T>
          *            the type of service to bind
          * @param op
@@ -474,15 +474,15 @@ public interface ServiceLocator {
          * Binds all services from the specified injector.
          * <p>
          * A simple example, importing a singleton {@code String} service from one injector into another:
-         * 
+         *
          * <pre> {@code
          * Injector importFrom = Injector.of(c -&gt; c.bind("foostring"));
-         * 
+         *
          * Injector importTo = Injector.of(c -&gt; {
-         *   c.bind(12345); 
+         *   c.bind(12345);
          *   c.provideAll(importFrom);
          * });
-         * 
+         *
          * System.out.println(importTo.with(String.class));// prints "foostring"}}
          * </pre>
          * <p>
@@ -490,7 +490,7 @@ public interface ServiceLocator {
          * <p>
          * For example, the following example takes the injector we created in the previous example, and creates a new injector
          * that only imports the {@code String.class} service.
-         * 
+         *
          * <pre>
          * Injector i = Injector.of(c -&gt; {
          *   c.injectorBind(importTo, InjectorImportStage.accept(String.class));
@@ -500,7 +500,7 @@ public interface ServiceLocator {
          *   c.provideAll(importTo, InjectorImportStage.reject(Integer.class));
          * });
          * </pre> @param injector the injector to bind services from
-         * 
+         *
          * @param injector
          *            the injector to import services from
          */

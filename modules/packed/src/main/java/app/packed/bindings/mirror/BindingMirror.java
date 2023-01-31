@@ -29,7 +29,7 @@ import internal.app.packed.container.Mirror;
 
 /**
  * A mirror representing the bound parameter of an operation.
- * 
+ *
  * @see OperationMirror#bindings()
  */
 public class BindingMirror implements Mirror {
@@ -46,7 +46,7 @@ public class BindingMirror implements Mirror {
 
     /**
      * {@return the internal configuration of the binding.}
-     * 
+     *
      * @throws IllegalStateException
      *             if {@link #initialize(BindingSetup)} has not been called.
      */
@@ -83,7 +83,7 @@ public class BindingMirror implements Mirror {
 
     /**
      * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the extension.
-     * 
+     *
      * @param owner
      *            the internal configuration of the extension to mirror
      */
@@ -126,7 +126,7 @@ public class BindingMirror implements Mirror {
 
     /**
      * Either the binding itself is a constant. Or the providing method provides a constant.
-     * 
+     *
      * @return whether or not the a constant
      */
     public boolean zIsConstant() {
@@ -151,7 +151,7 @@ public class BindingMirror implements Mirror {
     /**
      * Returns the field or parameter underlying the binding. Or empty if the underlying operation is a
      * {@link MethodHandle}.
-     * 
+     *
      * @return stuff
      */
     public final Optional<BindingTarget> zTarget() {
@@ -189,7 +189,7 @@ interface Sandbox {
 
     /**
      * If this dependency is the result of another operation.
-     * 
+     *
      * @return
      */
     // Talking about some caching here makes sense
@@ -209,7 +209,7 @@ interface Sandbox {
 
     /**
      * If this dependency is the result of another operation.
-     * 
+     *
      * @return
      */
     // Talking about some caching here makes sense

@@ -34,8 +34,8 @@ import internal.app.packed.operation.PackedOperationTemplate;
 
 /**
  * An operation template defines the basic behaviour of an operation and is typically reused across multiple operations.
- * 
- * 
+ *
+ *
  * <p>
  */
 // I can't see why we should not define context here
@@ -43,7 +43,7 @@ import internal.app.packed.operation.PackedOperationTemplate;
 // So we can condense information
 
 // Components
-//// ExtensionContext  (Or InvocationContext??? IDK bliver jo brugt across multi usage) 
+//// ExtensionContext  (Or InvocationContext??? IDK bliver jo brugt across multi usage)
 //// BeanInstance
 //// Wirelet[] (For containers)
 //// Contexts
@@ -91,7 +91,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     }
 
     /**
-     * 
+     *
      * @return the method type representing the invocation
      */
     MethodType invocationType();
@@ -101,7 +101,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     /**
      * @param type
      * @return
-     * 
+     *
      * @see BindableVariable#provideFromInvocationArgument(int)
      */
     // Kan man have have loese args som ikke er del af en context???
@@ -122,7 +122,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     }
 
     OperationTemplate withIgnoreReturnType();
-    
+
     OperationTemplate withReturnType(Class<?> type);
 
     // 3 choices?
@@ -154,7 +154,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         // Maaske noget andet end context, given dens mening
         EXTENSION_BEAN_CONTEXT; // InvocationContext
     }
-    
+
 
     /**
      * Move to operation template?

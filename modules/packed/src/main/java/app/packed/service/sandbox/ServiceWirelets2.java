@@ -24,24 +24,24 @@ import app.packed.container.Wirelet;
  *
  */
 public class ServiceWirelets2 {
-    
+
     static Wirelet requireTransient() {
         throw new UnsupportedOperationException();
     }
-    
+
     static Wirelet exportTransient() {
         throw new UnsupportedOperationException();
     }
-    
+
     // Hmm gider vi gemme de assemblys paa runtime?
     // Maaske hellere noget incremental???
-    
+
     // Smid dem paa Qualifier?
     @Qualifier
     @interface LinkedAssemblyQualifier {
         Class<? extends Assembly> value();
     }
-    
+
     interface ServiceBuildInfo {
         Key<?> key();
         boolean isOptional();

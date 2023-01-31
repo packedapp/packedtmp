@@ -30,8 +30,8 @@ import app.packed.extension.DependantOperator;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Fork {
-    
+
     boolean interruptOnStop() default false;
-    
+
     String joinPolicy() default "";
 }

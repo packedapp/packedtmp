@@ -45,7 +45,7 @@ public @interface OnStop {
     /**
      * <p>
      * Notice that the default ordering is the opposite of the ordering from {@link OnInitialize} and {@link OnStart}.
-     * 
+     *
      * @return
      */
     LifecycleOrder ordering() default LifecycleOrder.AFTER_DEPENDENCIES;

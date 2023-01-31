@@ -7,7 +7,7 @@ import app.packed.context.Context;
 public interface SchedulingContext extends Context<SchedulingExtension> /* extends AttributedElement */ {
 
     long invocationCount();
-    
+
     void pause();
 
     void resume();

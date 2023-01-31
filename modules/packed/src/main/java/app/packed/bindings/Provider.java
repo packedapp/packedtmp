@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 /**
  * A provider of values.
- * 
+ *
  * @param <T>
  *            the type of instances that are provided
  */
@@ -37,7 +37,7 @@ public interface Provider<T> {
 
     /**
      * Returns an infinite stream of instances.
-     * 
+     *
      * @return an infinite stream of instances
      */
     default Stream<T> stream() {
@@ -46,7 +46,7 @@ public interface Provider<T> {
 
     /**
      * Returns a provider that will be provide the specified instance for every invocation of {@link #provide()}.
-     * 
+     *
      * @param <T>
      *            the type of the provider
      * @param instance
@@ -82,7 +82,7 @@ public interface Provider<T> {
 // * This method is always allowed to return false.
 // * <p>
 // * The default value is false.
-// * 
+// *
 // * @return true if this provider is guaranteed to return the same instance on every invocation. Otherwise false.
 // */
 //// I'm not sure if we want this...
@@ -95,5 +95,5 @@ public interface Provider<T> {
 //Previously this interface also contained information about where
 //the instances came from. However, this information is now only
 //available from InjectionContext or ServiceProvider.. ServiceProvider
-//To avoid storing all this static information if we don't need to 
+//To avoid storing all this static information if we don't need to
 //We let people implement this in order to help with testing.

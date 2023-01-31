@@ -39,7 +39,7 @@ public final class ExtensionTreeSetup extends RealmSetup {
      * Creates a new realm.
      * <p>
      * This constructor is called from the constructor of the specified root
-     * 
+     *
      * @param root
      *            the root extension
      * @param extensionType

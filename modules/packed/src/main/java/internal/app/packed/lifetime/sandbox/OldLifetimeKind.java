@@ -46,7 +46,7 @@ public enum OldLifetimeKind {
 //
 //// Functional+ Static does not have a lifetime. dvs Optional paa alle componenter
 //enum AlternativeNaming2 {
-//    NONE, 
+//    NONE,
 //
 //    UNMANAGED,
 //
@@ -62,7 +62,7 @@ public enum OldLifetimeKind {
 // Og App har en Managed Lifetime
 
 // Unmanaged Lifetime typically relies on the garbage collection to clean up things.
-// Cleaner can be used. But 
+// Cleaner can be used. But
 
 // Or Tracked vs Untracked
 

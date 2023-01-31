@@ -84,16 +84,16 @@ public @interface OnStart {
     /** Can be used, for example, */
     String JOIN_ON_KEEP_RUNNING = "LIFETIME_KEEP_RUNNING";
 
-    
+
     // Fork with default settings, otherwise use Fork
     boolean fork() default false;
-    
+
     LifecycleOrder ordering() default LifecycleOrder.BEFORE_DEPENDENCIES;
 }
 //
 ///**
 // * Starts a new thread to run the given task.
-// * 
+// *
 // * @return {@code true} if
 // */
 //// Synchronous before dependencies
@@ -113,7 +113,7 @@ public @interface OnStart {
 //
 ///**
 // * Whether or not any thread will be interrupted if shutdown while starting
-// * 
+// *
 // * @return
 // */
 //// Only if Async??? I think this only works on forked...

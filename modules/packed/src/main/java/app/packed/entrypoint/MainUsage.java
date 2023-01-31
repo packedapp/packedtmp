@@ -41,12 +41,12 @@ public class MainUsage extends BaseAssembly {
     }
 
     public static class MyBean {
-        
+
         public MyBean(OperationMirror am) {
             System.out.println(am.type());
             System.out.println(am.keys());
-        }        
-        
+        }
+
         @Main
         public void hello() {
             System.out.println("Hello");

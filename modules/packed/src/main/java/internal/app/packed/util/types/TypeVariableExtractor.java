@@ -37,7 +37,7 @@ import internal.app.packed.util.StringFormatter;
 
 /**
  * A small utility class that allows easy extraction of type variables.
- * 
+ *
  * @see ExtensionMirror
  * @see ExtensionPoint
  * @see Key
@@ -149,7 +149,7 @@ public final class TypeVariableExtractor {
     }
 
     /**
-     * 
+     *
      * @param superClass
      *            the super class
      * @param index
@@ -207,9 +207,9 @@ public final class TypeVariableExtractor {
         if (indexes.length == 0) {
             return new TypeVariableExtractor(baseType, typeVariables, IntStream.range(0, typeVariables.length).toArray());
         } else {
-            for (int i = 0; i < indexes.length; i++) {
-                if (indexes[i] < 0 || indexes[i] >= typeVariables.length) {
-                    throw new IllegalArgumentException("Cannot specify non existing index, index = " + indexes[i]);
+            for (int element : indexes) {
+                if (element < 0 || element >= typeVariables.length) {
+                    throw new IllegalArgumentException("Cannot specify non existing index, index = " + element);
                 }
             }
             return new TypeVariableExtractor(baseType, typeVariables, indexes);

@@ -50,7 +50,7 @@ public class ExtensionDependenciesTest extends AbstractApplicationTest {
 
     @DependsOn(extensions = Ex3.class)
     static final class Ex2 extends Extension<Ex2> {
-        
+
         @Override
         protected Sub newExtensionPoint() {
             return new Sub();

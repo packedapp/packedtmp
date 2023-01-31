@@ -22,9 +22,9 @@ import java.util.function.BiFunction;
 /**
  * A {@link Op} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input to the
  * bi-function being the two dependencies.
- * 
- * 
- * 
+ *
+ *
+ *
  * @param <T>
  *            The type of the first argument this op takes
  * @param <U>

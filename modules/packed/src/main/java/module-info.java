@@ -1,6 +1,6 @@
 module app.packed {
     requires transitive jdk.jfr;
-    
+
     exports app.packed.application;
     exports app.packed.bean;
     exports app.packed.bindings;

@@ -25,7 +25,7 @@ import internal.app.packed.bean.PackedAnnotationList;
 
 /**
  * An annotation reader can be used to process annotations on bean elements.
- * 
+ *
  * @see AnnotatedElement
  */
 public sealed interface AnnotationList extends Iterable<Annotation> permits PackedAnnotationList {
@@ -48,17 +48,17 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
     /**
      * Returns a annotation of the specified type or throws {@link BeanInstallationException} if the annotation is not
      * present
-     * 
+     *
      * @param <T>
      *            the type of the annotation to query for and return if present
      * @param annotationClass
      *            the Class object corresponding to the annotation type
      * @return the annotation for the specified annotation type if present
-     * 
+     *
      * @throws BeanInstallationException
      *             if the specified annotation is not present or the annotation is a repeatable annotation and there are not
      *             exactly 1 occurrences of it
-     * 
+     *
      * @see AnnotatedElement#getAnnotation(Class)
      */
     //// foo bean was expected method to dddoooo to be annotated with

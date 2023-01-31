@@ -81,7 +81,7 @@ final class ExtensionUtil {
      * Returns a list of extensions specified via {@link Packlet}. This method will try to resolve any
      * {@link Packlet#optionalExtensions()} specified extensions. This will be only be done on the first call to this method
      * and returned cached.
-     * 
+     *
      * @param c
      *            the class to
      * @return a list of extensions

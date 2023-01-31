@@ -49,7 +49,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
 
 /**
  * A model of an {@link Extension}. Exposed to end-users as {@link ExtensionDescriptor}.
- * 
+ *
  * @implNote This could have been a record, but there are so many fields that that we get a better overview as a plain
  *           class.
  */
@@ -100,7 +100,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /**
      * Creates a new extension model from the specified builder.
-     * 
+     *
      * @param builder
      *            the builder of the model
      */
@@ -118,7 +118,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /**
      * Returns any value of nest annotation.
-     * 
+     *
      * @param eType
      *            the type look for an ExtensionMember annotation on
      * @return an extension the specified type is a member of
@@ -150,7 +150,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
 
         // Then we compare the full name (class.getCanonicalName());
-        
+
         // Should we have compare on String.lenght first instead???
         // A lot faster
         int c = nameFull.compareTo(m.nameFull);
@@ -210,7 +210,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /**
      * Creates a new instance of the extension.
-     * 
+     *
      * @param extension
      *            the setup of the extension
      * @return a new extension instance
@@ -262,7 +262,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /**
      * Returns an model for the specified extension type.
-     * 
+     *
      * @param extensionType
      *            the extension type to return a model for
      * @return an extension model for the specified extension type
@@ -301,7 +301,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
         /**
          * Builds and returns an extension model.
-         * 
+         *
          * @return the extension model
          */
         private ExtensionModel build(Loader loader) {
@@ -356,7 +356,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
         /**
          * Adds the specified dependency to the caller class if valid.
-         * 
+         *
          * @param extensions
          *            the extensions
          * @see Extension#$dependsOn(Class...)

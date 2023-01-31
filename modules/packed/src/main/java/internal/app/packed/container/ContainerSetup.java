@@ -102,7 +102,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
 
     /**
      * Create a new container.
-     * 
+     *
      * @param application
      *            the application this container is a part of
      * @param assembly
@@ -228,7 +228,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
 
     /**
      * Returns whether or not the specified extension class is used.
-     * 
+     *
      * @param extensionClass
      *            the extension to test
      * @return true if the specified extension type is used, otherwise false
@@ -261,13 +261,9 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
 
         String currentName = name;
 
-        if (newName.equals(currentName)) {
-            return;
-        }
-
         // If the name of the component (container) has been set using a wirelet.
         // Any attempt to override will be ignored
-        if (isNameInitializedFromWirelet) {
+        if (newName.equals(currentName) || isNameInitializedFromWirelet) {
             return;
         }
 
@@ -307,7 +303,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      * <p>
      * If the requesting extension is non-null. The calller must already have checked that the requested extension is a
      * direct dependency of the requesting extension.
-     * 
+     *
      * @param extensionClass
      *            the type of extension to return a setup for
      * @param requestedByExtension

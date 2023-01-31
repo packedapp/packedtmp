@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Export {
-    
+
     // Overrides the return type
     Class<?> as() default FromMethodSignature.class;
 }
@@ -34,7 +34,7 @@ class FromMethodSignature {}
 // Saa syntes vi skal have en exported=true paa Provide
 
 // Problemet er saa at man ikke kun kan exportere...
-// med mindre man bruger mode = ProvideOnly, ExportOnly, Both 
+// med mindre man bruger mode = ProvideOnly, ExportOnly, Both
 // Hvilket virker langt mere kompliceret
 
 

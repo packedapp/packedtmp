@@ -42,7 +42,7 @@ public final class ThrowableUtil {
 
     /**
      * Throws the specified throwable ignore whatever type it has
-     * 
+     *
      * @param throwable
      *            the throwable to throw
      */
@@ -57,7 +57,7 @@ public final class ThrowableUtil {
 
     /**
      * Throws the specified throwable.
-     * 
+     *
      * @param <E>
      *            the type of throwable to throw
      * @param throwable

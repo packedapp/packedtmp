@@ -43,8 +43,8 @@ public class AnnotatedMethodHookTester {
             protected void build() {
                 use(MyExt.class).addOM((a, b) -> c.accept(b));
                 provide(type).export();
-                for (int i = 0; i < additionalTypes.length; i++) {
-                    provide(additionalTypes[i]);
+                for (Class<?> additionalType : additionalTypes) {
+                    provide(additionalType);
                 }
             }
         };

@@ -26,7 +26,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * <p>
  * If an extension defines classes that are only used by other extensions and not application developers. They should be
  * declared as nested classes on an extension point. See, for example, {@link EntryPointExtensionPoint}.
- * 
+ *
  * NOTE: In order to properly implement an extension point you:
  * <ul>
  * <li>Must override {@link Extension#newExtensionPoint()} in order to provide a new instance of the extension
@@ -38,10 +38,10 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * <p>
  * Attempting to use any of the methods on this class from the constructor of a subclass, will result in an
  * {@link IllegalStateException} being thrown.
- * 
+ *
  * @see Extension#use(Class)
  * @see UseSite
- * 
+ *
  * @param <E>
  *            The type of extension this extension point is a part of.
  */
@@ -79,7 +79,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
      * Checks that the extension that uses this extension point is still configurable.
      * <p>
      * Subclasses typically want to call this method before any mutating operation
-     * 
+     *
      * @see Extension#checkIsConfigurable()
      * @throws IllegalStateException
      *             if the extension that uses this extension point is no longer configurable.
@@ -116,7 +116,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     /**
      * Invoked by {@link packed.internal.container.ExtensionMirrorModel#initialize(ExtensionMirror, ExtensionSetup)} to set
      * the context of this extension point.
-     * 
+     *
      * @param context
      *            the context of this extension point
      */

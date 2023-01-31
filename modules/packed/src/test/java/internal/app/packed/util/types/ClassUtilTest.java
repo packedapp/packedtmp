@@ -55,7 +55,7 @@ public class ClassUtilTest {
         // TODO should we include anonymous class??
         // assertThat(ClassUtil.isInnerOrLocalClass(new Object() {}.getClass())).isTrue();
     }
-    
+
 
     /** Tests {@link ClassUtil#isOptionalType(Class)}. */
     @Test

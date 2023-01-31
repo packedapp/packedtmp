@@ -13,7 +13,7 @@ public class BeanConfiguration {
 
     /**
      * Create a new bean configuration using the specified handle.
-     * 
+     *
      * @param handle
      *            the bean handle
      */
@@ -82,11 +82,11 @@ public class BeanConfiguration {
      * Once this method has been invoked, the name of the component can no longer be changed via {@link #named(String)}.
      * <p>
      * If building an image, the path of the instantiated component might be prefixed with another path.
-     * 
+     *
      * <p>
      * Returns the path of this configuration. Invoking this method will initialize the name of the component. The component
      * path returned does not maintain any reference to this configuration object.
-     * 
+     *
      * @return the path of this configuration.
      */
     // I'm not sure we want to expose midt build? IDK

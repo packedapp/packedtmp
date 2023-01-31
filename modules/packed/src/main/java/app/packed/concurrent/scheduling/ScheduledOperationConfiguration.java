@@ -23,7 +23,7 @@ import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 
 /**
- * 
+ *
  */
 // Maybe we only have 1 schedule per operation...
 // I actually think so

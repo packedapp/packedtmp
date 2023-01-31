@@ -46,13 +46,13 @@ public class ExtensionBridgeBeanConfiguration<T> extends InstanceBeanConfigurati
     public ExtensionBridgeBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
     }
-    // addCompanion 
-    
+    // addCompanion
+
     public ContainerHandle linkNewManyContainer(Assembly assembly, Wirelet[] wirelets) {
         throw new UnsupportedOperationException();
     }
-    
+
     public ContainerHandle newManyContainer(Wirelet[] wirelets) {
         throw new UnsupportedOperationException();
-    } 
+    }
 }

@@ -35,10 +35,10 @@ import app.packed.extension.BaseExtension;
  * <p>
  * While we support direct injection onto fields and into methods. We recommend using constructor injection where ever
  * possible. List reasons...
- * 
+ *
  * <p>
  * The annotation can also be applied to
- * 
+ *
  * <p>
  * Injection of services into static fields or method are not supported. There is no general support for injecting into
  * static fields or methods. If you absolutely need it, it is fairly easy to support yourself

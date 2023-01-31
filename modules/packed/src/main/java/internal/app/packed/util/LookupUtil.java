@@ -97,7 +97,7 @@ public final class LookupUtil {
     /**
      * A utility method that wraps any {@link ReflectiveOperationException} thrown by
      * {@link Lookup#findVirtual(Class, String, MethodType)} in an {@link ExceptionInInitializerError}.
-     * 
+     *
      * @param refc
      *            the ref
      * @param name
@@ -119,7 +119,7 @@ public final class LookupUtil {
 
     /**
      * Tests whether or not the specified lookup is
-     * 
+     *
      * @param lookup
      *            the lookup to the
      * @return whether it is default

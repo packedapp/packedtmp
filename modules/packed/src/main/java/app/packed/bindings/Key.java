@@ -45,7 +45,7 @@ import internal.app.packed.util.types.Types;
  * annotations called {@link Qualifier qualifiers}.
  * <p>
  * A key can be constructed in a number of different ways:
- * 
+ *
  * It does so by requiring users to create a subclass of this class which enables retrieval of the type information even
  * at runtime. Some examples of non-qualified keys are:
  *
@@ -53,7 +53,7 @@ import internal.app.packed.util.types.Types;
  * Key<List<String>> list = new Key<List<String>>() {};
  * Key<Map<Integer, List<Integer>>> list = new Key<>() {};}
  * </pre>
- * 
+ *
  * Given a custom defined qualifier: <pre> {@code
  * &#64;Qualifier
  * public @interface Name {
@@ -63,11 +63,11 @@ import internal.app.packed.util.types.Types;
  * Key<List<String>> list = new Key<@Named("foo") List<String>>() {};
  * Key<List<String>> list = new Key<@Named List<String>>() {}; //uses default value}
  * </pre>
- * 
+ *
  * In addition to these, extensions also the option to create keys using:
- * 
+ *
  * {@link OperationalField#toKey()} {@link BindableVariable#toKey()}
- * 
+ *
  * In order for a key to be valid, the type part of the key must not:
  * <ul>
  * <li>Be an {@link Class#isAnnotation() annotation interface}.</li>
@@ -75,7 +75,7 @@ import internal.app.packed.util.types.Types;
  * {@link OptionalInt}, {@link OptionalLong} or {@link OptionalDouble} as they are reserved types.</li>
  * <li>Contain {@link TypeVariable type variable}</li>
  * </ul>
- * 
+ *
  * Furthermore, the qualifier part of the key must not:
  * <ul>
  * <li>Have multiple qualifiers with the same {@link Annotation#annotationType() annotation type}.
@@ -98,14 +98,14 @@ import internal.app.packed.util.types.Types;
  * <li>If there are multiple qualifiers on the key. They will be ordered lexically, first accordingling to their
  * {@link Class#getSimpleName()} and secondaly to {@link Class#getCanonicalName()}.</li>
  * </ul>
- * 
+ *
  * <p>
  * This class is heavily inspired by the similar named class in the
  * <a href="https://google.github.io/guice/api-docs/latest/javadoc/com/google/inject/Key.html">Guice</a> project.
  */
 
 //Created by user a.la
-//Key.of 
+//Key.of
 //Created while parsing a bean a.la.
 //public void foo(@SomeInvalidQualifier Void k)
 
@@ -179,7 +179,7 @@ public abstract class Key<T> {
 
     /**
      * Create a new key.
-     * 
+     *
      * @param type
      *            the type part of the key
      * @param qualifiers
@@ -201,7 +201,7 @@ public abstract class Key<T> {
      * <p>
      * To avoid accidentally holding on to any instance that defines this key as an anonymous class. This method creates a
      * new key instance without any reference to the instance that defined the anonymous class.
-     * 
+     *
      * @return the canonicalized key
      */
     public final Key<T> canonicalize() {
@@ -230,7 +230,7 @@ public abstract class Key<T> {
 
     /**
      * Returns whether or not this key has a qualifier equivalent to the specified qualifier.
-     * 
+     *
      * @param qualifier
      *            the qualifier to test
      * @return {@code true} if this key has the specified qualifier
@@ -243,10 +243,10 @@ public abstract class Key<T> {
 
     /**
      * Returns whether or not this key has any qualifiers of the specified type.
-     * 
+     *
      * @param qualifierType
      *            the type of qualifier
-     * 
+     *
      * @return {@code true} if this key has a qualifier of the specified type
      * @implNote this method does not test if the specified annotation type is annotated with {@link Qualifier}
      */
@@ -258,7 +258,7 @@ public abstract class Key<T> {
     /**
      * Returns whether or not this key is equivalent to a key with no qualifiers of the specified type. Is shorthand for
      * {@code key.equals(Key.of(c))}.
-     * 
+     *
      * @param c
      *            the class
      * @return true if a class key, otherwise false
@@ -289,7 +289,7 @@ public abstract class Key<T> {
     /**
      * Returns a string where all the class names are replaced by their simple names. For example this method will return
      * {@code List<String>} instead of {@code java.util.List<java.lang.String>} as returned by {@link #toString()}.
-     * 
+     *
      * @return a simple string
      */
     @Override
@@ -318,7 +318,7 @@ public abstract class Key<T> {
     /**
      * Returns a string where all the class names are replaced by their simple names. For example this method will return
      * {@code List<String>} instead of {@code java.util.List<java.lang.String>} as returned by {@link #toString()}.
-     * 
+     *
      * @return a simple string
      */
     public final String toStringLong() {
@@ -358,7 +358,7 @@ public abstract class Key<T> {
     /**
      * Returns a key with no qualifier but retaining the type of this key. If this key has no qualifiers
      * ({@code isQualified() == false}), returns this key.
-     * 
+     *
      * @return this key without qualifiers
      */
     public final Key<T> withoutQualifiers() {
@@ -367,7 +367,7 @@ public abstract class Key<T> {
 
     /**
      * Returns a new key retaining its original type but with the specified qualifier.
-     * 
+     *
      * @param qualifier
      *            the new key's qualifier
      * @return the new key
@@ -429,7 +429,7 @@ public abstract class Key<T> {
 
     /**
      * Calling this method will replace any existing qualifier.
-     * 
+     *
      * @param name
      *            the qualifier name
      * @return the new key
@@ -566,7 +566,7 @@ public abstract class Key<T> {
      * @param key
      *            the class key to return a key from
      * @return a key matching the specified class with no qualifiers
-     * 
+     *
      * @throws InvalidKeyException
      *             if the specified class does not represent a valid key
      */
@@ -689,7 +689,7 @@ public abstract class Key<T> {
 
         /**
          * Creates a new canonicalized key.
-         * 
+         *
          * @param type
          *            the (checked) type
          * @param qualifiers

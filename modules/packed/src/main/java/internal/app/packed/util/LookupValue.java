@@ -50,7 +50,7 @@ public abstract class LookupValue<T> {
     /**
      * Returns the value for the given lookup object. If no value has yet been computed, it is obtained by an invocation of
      * the {@link #computeValue computeValue} method.
-     * 
+     *
      * @param lookup
      *            the lookup object
      * @return the value for the given lookup object

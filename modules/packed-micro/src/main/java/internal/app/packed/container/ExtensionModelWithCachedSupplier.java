@@ -54,7 +54,7 @@ final class ExtensionModelWithCachedSupplier<T> {
 
     /**
      * Creates a new extension class cache.
-     * 
+     *
      * @param type
      *            the extension type
      */
@@ -90,7 +90,7 @@ final class ExtensionModelWithCachedSupplier<T> {
 
     /**
      * Creates a new extension of the specified type.
-     * 
+     *
      * @param <T>
      *            the type of extension
      * @param extensionClass

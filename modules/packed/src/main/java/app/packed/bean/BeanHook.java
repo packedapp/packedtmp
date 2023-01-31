@@ -37,7 +37,7 @@ public @interface BeanHook {
      * <p>
      * Attempting to place multiple annotated variable hook annotations on a single field or parameter will result in a
      * {@link BeanInstallationException} being thrown at build-time.
-     * 
+     *
      * @see BeanIntrospector#hookOnProvidedAnnotatedVariable(java.lang.annotation.Annotation, app.packed.bindings.BindableVariable)
      */
     @Target(ElementType.ANNOTATION_TYPE)
@@ -56,7 +56,7 @@ public @interface BeanHook {
          * thrown.
          * <p>
          * If this method returns multiple contexts they will <strong>all</strong> be required.
-         * 
+         *
          * @return stuff
          */
         Class<? extends Context<?>>[] requiresContext() default {};
@@ -69,7 +69,7 @@ public @interface BeanHook {
             DECORATE, DEFAULT, PEEK;
 
             // Kan kun vaere en Default annotering (Default og @Nullable?)
-            
+
             // Alle decorates er altid koert foerned peek.
             //// fx vil vi altid have Peek efter decorate ved validering
             //// selvom decorate annotering er efter peek
@@ -95,7 +95,7 @@ public @interface BeanHook {
     /**
      * In order to process fields that are annotated with the target annotation,
      * {@link BeanIntrospector#hookOnProvidedVariableType(Class, app.packed.bindings.BindableWrappedVariable)} must be overridden.
-     * 
+     *
      * @see BeanIntrospector#hookOnAnnotatedField(OperationalField)
      */
     @Target(ElementType.ANNOTATION_TYPE)
@@ -131,9 +131,9 @@ public @interface BeanHook {
          * <p>
          * Methods such as idk and... will
          * fail with {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
-         * 
+         *
          * @return whether or not the implementation is allowed to invoke the target method
-         * 
+         *
          */
         // maybe just invokable = true, idk og saa Field.gettable and settable
         // invocationAccess
@@ -168,7 +168,7 @@ public @interface BeanHook {
          * thrown.
          * <p>
          * If this method returns multiple contexts they will <strong>all</strong> be required.
-         * 
+         *
          * @return stuff
          */
         Class<? extends Context<?>>[] requiresContext() default {};

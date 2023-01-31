@@ -28,7 +28,7 @@ import app.packed.service.ProvideableBeanConfiguration;
  * service().provide(Foo.class) or even just provide(Foo.class).
  * <p>
  * All extensions defined in this module
- * 
+ *
  * Assemblies provide a simply way to package components and build modular application. This is useful, for example,
  * for:
  * <ul>
@@ -44,7 +44,7 @@ import app.packed.service.ProvideableBeanConfiguration;
  * <li><b>{@link BaseAssembly}</b> which assemblies information about both services and components, and creates
  * container instances using .</li>
  * </ul>
- * 
+ *
  * @apiNote We never return, for example, Assembly or BaseAssembly. As this would make extending the class difficult
  *          unless we defined all methods as non-final. Method Chaining is used on the component level... Not on the
  *          assembly level?
@@ -52,17 +52,17 @@ import app.packed.service.ProvideableBeanConfiguration;
 
 /**
  * A container assembly. Typically you
- * 
- * 
+ *
+ *
  * Assemblies are the main source of system configuration. Basically a assembly is just a thin wrapper around
  * {@link ContainerConfiguration}. Delegating every invocation in the class to an instance of
  * {@link ContainerConfiguration} available via {@link #container()}.
  * <p>
  * A assembly instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with
  * an {@link IllegalStateException}.
- * 
+ *
  * A generic assembly. Normally you would extend {@link BaseAssembly}
- * 
+ *
  * @see BaseAssembly
  */
 // Skal have en strategi for hvilke extension vi har med
@@ -75,7 +75,7 @@ public abstract class BaseAssembly extends BuildableAssembly {
      * Returns a {@link BaseExtension} instance.
      * <p>
      * Calling this method is short for {@code use(BaseExtension.class)}
-     * 
+     *
      * @return a base extension instance
      * @see #use(Class)
      */
@@ -91,7 +91,7 @@ public abstract class BaseAssembly extends BuildableAssembly {
      * Installs a component that will use the specified {@link Op} to instantiate the component instance.
      * <p>
      * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
-     * 
+     *
      * @param implementation
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
@@ -105,7 +105,7 @@ public abstract class BaseAssembly extends BuildableAssembly {
 
     /**
      * Installs a bean that will use the specified {@link Op} to instantiate the bean.
-     * 
+     *
      * @param <T>
      *            the type of bean to install
      * @param op
@@ -134,7 +134,7 @@ public abstract class BaseAssembly extends BuildableAssembly {
 
     /**
      * Returns whether or not the specified extension is in use.
-     * 
+     *
      * @param extensionType
      *            the extension class to test
      * @return whether or not the specified extension is in use
@@ -147,7 +147,7 @@ public abstract class BaseAssembly extends BuildableAssembly {
 
     /**
      * Links the specified assembly as part of the same application and container that this container is part of.
-     * 
+     *
      * @param assembly
      *            the assembly to link
      * @param wirelets
@@ -242,7 +242,7 @@ public abstract class BaseAssembly extends BuildableAssembly {
     }
 
     /**
-     * 
+     *
      * @param <W>
      *            the type of wirelets to select
      * @param wireletClass
@@ -260,7 +260,7 @@ public abstract class BaseAssembly extends BuildableAssembly {
      * If this is the first time an extension of the specified type has been requested. This method will create a new
      * instance of the extension. This instance will then be returned for all subsequent requests for the same extension
      * type.
-     * 
+     *
      * @param <E>
      *            the type of extension to return
      * @param extensionClass
@@ -287,7 +287,7 @@ public abstract class BaseAssembly extends BuildableAssembly {
 //* Returns a {@link ScheduledJobExtension} instance.
 //* <p>
 //* Calling this method is short for {@code use(SchedulerExtension.class)}
-//* 
+//*
 //* @return a time extension instance
 //* @see #use(Class)
 //*/
@@ -299,7 +299,7 @@ public abstract class BaseAssembly extends BuildableAssembly {
 // * Returns a {@link TimeExtension} instance.
 // * <p>
 // * Calling this method is short for {@code use(TimeExtension.class)}
-// * 
+// *
 // * @return a time extension instance
 // * @see #use(Class)
 // */
@@ -326,27 +326,27 @@ public abstract class BaseAssembly extends BuildableAssembly {
 ///**
 // * Exposes an internal service outside of this container, equivalent to calling {@code expose(Key.of(key))}. A typical
 // * use case if having a single
-// * 
+// *
 // * When you expose an internal service, the descriptions and tags it may have are copied to the exposed services.
 // * Overridden them will not effect the internal service from which the exposed service was created.
-// * 
+// *
 // * <p>
 // * Once an internal service has been exposed, the internal service is made immutable. For example,
-// * {@code setDescription()} will fail in the following example with a runtime exception: <pre>{@code 
+// * {@code setDescription()} will fail in the following example with a runtime exception: <pre>{@code
 // * ServiceConfiguration<?> sc = bind(ServiceImpl.class);
 // * expose(ServiceImpl.class).as(Service.class);
 // * sc.setDescription("foo");}
 // * </pre>
 // * <p>
-// * A single internal service can be exposed under multiple keys: <pre>{@code 
+// * A single internal service can be exposed under multiple keys: <pre>{@code
 // * bind(ServiceImpl.class);
 // * expose(ServiceImpl.class).as(Service1.class).setDescription("Service 1");
 // * expose(ServiceImpl.class).as(Service2.class).setDescription("Service 2");}
 // * </pre>
-// * 
+// *
 // * @param <T>
 // *            the type of the exposed service
-// * 
+// *
 // * @param key
 // *            the key of the internal service to expose
 // * @return a service configuration for the exposed service
@@ -358,19 +358,19 @@ public abstract class BaseAssembly extends BuildableAssembly {
 //
 ///**
 // * Exposes an internal service outside of this container.
-// * 
-// * 
-// * <pre> {@code  
+// *
+// *
+// * <pre> {@code
 // * bind(ServiceImpl.class);
 // * expose(ServiceImpl.class);}
 // * </pre>
-// * 
+// *
 // * You can also choose to expose a service under a different key then what it is known as internally in the
-// * <pre> {@code  
+// * <pre> {@code
 // * bind(ServiceImpl.class);
 // * expose(ServiceImpl.class).as(Service.class);}
 // * </pre>
-// * 
+// *
 // * @param <T>
 // *            the type of the exposed service
 // * @param key

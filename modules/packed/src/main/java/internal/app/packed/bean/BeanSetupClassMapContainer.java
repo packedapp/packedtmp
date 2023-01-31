@@ -24,7 +24,7 @@ final class BeanSetupClassMapContainer {
 
     /** A map of all non-void bean classes. Used for controlling non-multi-install beans. */
     final HashMap<Class<?>, Object> beanClassMap = new HashMap<>();
-    
+
     static class MuInst {
         int counter;
     }

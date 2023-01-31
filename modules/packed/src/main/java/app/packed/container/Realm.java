@@ -73,7 +73,7 @@ public /* primitive */ final class Realm {
 
     /**
      * Returns a realm for the specified extension.
-     * 
+     *
      * @param extensionClass
      *            the type of extension to return a realm for
      * @return a realm for the specified extension

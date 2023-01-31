@@ -44,12 +44,12 @@ public final class ExtensionBridgeTemplate<E extends Extension<E>> {
     public ExtensionBridgeTemplate<E> addInvocationArgument(Class<?> key) {
         throw new UnsupportedOperationException();
     }
-    
+
     public ExtensionBridgeTemplate<E> onUse(Consumer<? super E> action) {
         bridge = bridge.onUse(action);
         return this;
     }
-    
+
     public ExtensionBridgeTemplate<E> onNeverUsed(Runnable action) {
         throw new UnsupportedOperationException();
     }

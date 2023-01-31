@@ -48,7 +48,7 @@ public final class EntryPointExtensionMirror extends ExtensionMirror<EntryPointE
 
     /**
      * @return
-     * 
+     *
      * @see Main
      */
     public boolean hasMain() {

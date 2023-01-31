@@ -149,7 +149,7 @@ public final class ServiceManager {
      * <p>
      * This method is called either because a bean is registered directly via {@link BeanHandle#serviceProvideAs(Key)} or
      * from {@link BaseExtension#newBeanIntrospector} because someone used the {@link Provide} annotation.
-     * 
+     *
      * @param key
      *            the key for which to provide a service for
      * @param operation

@@ -29,7 +29,7 @@ import java.util.function.Supplier;
  * <p>
  * In this example we create an anonymous class inheriting from Op0 in order to capture information about the suppliers
  * type variable (in this case {@code Long}).
- * 
+ *
  * @param <R>
  *            the type of objects this op returns
  * @see Op1

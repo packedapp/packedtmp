@@ -42,7 +42,7 @@ public class ClassUtil {
     /**
      * Converts the specified primitive wrapper class to the corresponding primitive class. Or returns the specified class
      * if it is not a primitive wrapper class.
-     * 
+     *
      * @param <T>
      *            the type to unbox
      * @param type
@@ -75,7 +75,7 @@ public class ClassUtil {
 
     /**
      * Tests if the specified class is an inner class.
-     * 
+     *
      * @param clazz
      *            the class to test
      * @return whether or not the specified class is an inner class
@@ -86,7 +86,7 @@ public class ClassUtil {
 
     /**
      * Tests if the class is an optional type.
-     * 
+     *
      * @param type
      *            the type to test
      * @return whether or not the specified is an optional type
@@ -134,7 +134,7 @@ public class ClassUtil {
         }
         return type;
     }
-    
+
     public static <T extends Mirror> T mirrorHelper(Class<T> t, Supplier<T> supplier, Supplier<? extends T> specializedSupplier) {
         // Create a new BeanMirror
         if (specializedSupplier == null) {

@@ -28,22 +28,22 @@ public class CompanionBinding  {
     PackedBridge<?> bridge;
 
     // Vi bygger en application
-    
+
     // ApplicationDriver.wrapperBean
     // for each companion dependency..
     // Lav noget der tager (Object[]) -> Arg)
-    
+
     // Altsaa Applicationen skal jo bare lave saadan en MH????
-    
+
     // Man maa lave application foerst.
     // Foerend man kan lave launch metoden
-    //// 
-    
+    ////
+
     // UserSpace, ExtensionSpace, FrameworkSpace
-    
-    
+
+
     // Kan vel kun paa ting man direkte depender paa?
-    
+
 
     /** {@inheritDoc} */
     public Realm boundBy() {

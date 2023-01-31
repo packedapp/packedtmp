@@ -46,7 +46,7 @@ public final class WireletWrapper {
         }
         return new PackedWireletSelection<>(this, wireletClass);
     }
-    
+
     public int unconsumed() {
         return unconsumed;
     }

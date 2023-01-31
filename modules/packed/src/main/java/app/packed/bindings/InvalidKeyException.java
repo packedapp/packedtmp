@@ -3,9 +3,9 @@ package app.packed.bindings;
 /**
  *
  * No Type variables
- * 
+ *
  * No forbidden types
- * 
+ *
  * No qualifiers of the same type or canonical name
  */
 public class InvalidKeyException extends RuntimeException {

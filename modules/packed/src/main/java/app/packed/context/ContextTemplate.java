@@ -43,7 +43,7 @@ public interface ContextTemplate {
 
     /**
      * Creates a new context template, adding the specified argument type to the list of invocation arguments.
-     * 
+     *
      * @param argument
      *            the argument type to add
      * @return the new context template

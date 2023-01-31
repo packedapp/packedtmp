@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 /**
  * An annotation that can be places on an assembly.
- * 
+ *
  * Can be used on subclasses of {@link Assembly} or as a meta-annotation that can be applied to {@link Assembly}
  * subclass.
  */
@@ -26,7 +26,7 @@ public @interface AssemblyHook {
 
     /**
      * Whether or not the hook applies to all containers defined by the assembly. The default value is {@code true}.
-     * 
+     *
      * @return whether or not the hook should be applied to all containers defined by the assembly
      */
     boolean applyToAllContainers() default true;
@@ -47,10 +47,10 @@ public @interface AssemblyHook {
 
     /**
      * An assembly hook is super cool
-     * 
+     *
      * <p>
      * For the methods on this interface taking a {@link ContainerConfiguration} the following applies:
-     * 
+     *
      * The realm of the container configuration will be this class. Any value specified to
      * {@link Assembly#lookup(MethodHandles.Lookup)} will be reset before next context or the actual build method
      */
@@ -60,28 +60,28 @@ public @interface AssemblyHook {
          * Invoked immediately after the runtime has called {@link Assembly#build()}.
          * <p>
          * If {@link Assembly#build()} throws an exception this method will not be invoked.
-         * 
+         *
          * @param configuration
          *            the configuration of the container
          */
-        default void afterBuild(ContainerConfiguration configuration) {};
+        default void afterBuild(ContainerConfiguration configuration) {}
 
         /**
          * Invoked immediately before the runtime calls {@link Assembly#build()}
-         * 
+         *
          * @param configuration
          *            the configuration of the container
          */
-        default void beforeBuild(ContainerConfiguration configuration) {};
+        default void beforeBuild(ContainerConfiguration configuration) {}
 
         /**
          * on because it should be a notification thingy, or should we reserve on to Async
-         * 
+         *
          * onSuccess??? verify?
-         * 
+         *
          * @param mirror
          */
-        default void onCompleted(ContainerMirror mirror) {};
+        default void onCompleted(ContainerMirror mirror) {}
     }
 }
 

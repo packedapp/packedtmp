@@ -26,7 +26,7 @@ public abstract class InternalWirelet extends Wirelet {
 
     /**
      * Checks that the specified component is the root component (container) of an application.
-     * 
+     *
      * @param component
      *            the component to check
      * @throws IllegalArgumentException
@@ -48,7 +48,7 @@ public abstract class InternalWirelet extends Wirelet {
 
     /**
      * Invoked by the runtime when the component is initially wired at build-time.
-     * 
+     *
      * @param component
      *            the component that is being wired
      */
@@ -102,7 +102,7 @@ public abstract class InternalWirelet extends Wirelet {
 
         /**
          * Creates a new name wirelet
-         * 
+         *
          * @param name
          *            the name to override any existing container name with
          */

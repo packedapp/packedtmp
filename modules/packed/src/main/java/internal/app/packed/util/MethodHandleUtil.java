@@ -27,7 +27,7 @@ import java.util.OptionalLong;
  *
  */
 class MethodHandleUtil {
-    
+
     /** A method handle that calls {@link OptionalDouble#of(double)} (double)OptionalDouble. */
     public static final MethodHandle OPTIONAL_DOUBLE_OF = LookupUtil.findStaticPublic(OptionalDouble.class, "of", OptionalDouble.class, double.class);
 
@@ -48,11 +48,11 @@ class MethodHandleUtil {
     public static final MethodHandle optionalOfTo(Class<?> type) {
         return MethodHandles.explicitCastArguments(OPTIONAL_OF, MethodType.methodType(Optional.class, type));
     }
-    
+
     public static void main(String[] args) {
         System.out.println(OPTIONAL_DOUBLE_OF.type());
         System.out.println(optionalOfTo(String.class).type());
-        
+
     }
 }
 
@@ -78,7 +78,7 @@ class MethodHandleUtil {
 
 //public static MethodHandle throwSupplying(MethodType type, Supplier<? extends Throwable> supplier) {
 //   MethodHandle empty = MethodHandles.empty(type);
-//   
+//
 //   empty.asType(type)
 //   MethodHandles.filterArguments( OPTIONAL_EMPTY, 0, null)
 //    return MethodHandles.filterArguments(target, position, replaceWith);

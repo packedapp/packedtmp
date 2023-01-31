@@ -38,7 +38,7 @@ import internal.app.packed.util.LookupUtil;
  * is mainly used through one of its subclasses such as {@link BaseAssembly}.
  * <p>
  * Assemblies are composable via linking.
- * 
+ *
  * <p>
  * Subclasses of this class supports 2 type based annotations. . Which controls how containers and beans are added
  * respectively.
@@ -48,7 +48,7 @@ import internal.app.packed.util.LookupUtil;
  * <p>
  * An assembly can never be used more than once. Trying to do so will result in an {@link IllegalStateException} being
  * thrown.
- * 
+ *
  * @see BaseAssembly
  */
 // LinkedAssembly, LinkableAssembly
@@ -87,7 +87,7 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
      * <p>
      * This method is typically used by assemblies that define configuration methods that must be called before
      * {@link #build()} is invoked.
-     * 
+     *
      * @throws IllegalStateException
      *             if {@link #build()} has already been invoked
      * @see #isPreBuild()
@@ -103,7 +103,7 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
      * <p>
      * This method can only be called from within the {@link #build()} method. Trying to call it outside of {@link #build()}
      * will throw an {@link IllegalStateException}.
-     * 
+     *
      * @return the configuration of the container
      * @throws IllegalStateException
      *             if called from outside of the {@link #build()} method
@@ -121,7 +121,7 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
     /**
      * Invoked by the runtime (via a MethodHandle). This method is mostly machinery that makes sure that the assembly is not
      * used more than once.
-     * 
+     *
      * @param assembly
      *            the realm used to call container hooks
      * @param configuration
@@ -157,9 +157,9 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
 
     /**
      * Returns whether or not {@link #build()} has been called.
-     * 
+     *
      * @return {@code true} if {@link #build()} has not been called yet, otherwise {@code false}
-     * 
+     *
      * @see #checkIsPreBuild()
      */
     protected final boolean isPreBuild() {
@@ -173,13 +173,13 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
      * This method can be used as an alternative
      * <p>
      * Example
-     * 
+     *
      * <p>
      * The lookup object passed to this method is only used internally. And only for the sake of accessing those bean
      * installed by the assembly
      * <p>
      * This method will typically never be called more than once.
-     * 
+     *
      * @param lookup
      *            the lookup object
      * @throws IllegalStateException

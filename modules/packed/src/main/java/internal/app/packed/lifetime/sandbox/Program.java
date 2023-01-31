@@ -27,14 +27,14 @@ import app.packed.service.ServiceLocator;
 /**
  * An App (application) is a type of artifact provided by Packed.
  */
-// Skal have et 
+// Skal have et
 // Maaske bliver den sgu app igen
 public interface Program extends AutoCloseable {
 
     /**
      * Closes the app (synchronously). Calling this method is equivalent to calling {@code host().stop()}, but this method
      * is called close in order to support try-with resources via {@link AutoCloseable}.
-     * 
+     *
      * @see ManagedLifetimeController#stop(ManagedLifetimeController.StopOption...)
      **/
     @Override
@@ -47,14 +47,14 @@ public interface Program extends AutoCloseable {
 
     /**
      * Returns the applications's host.
-     * 
+     *
      * @return this application's host.
      */
     ManagedLifetimeController runtime();
 
     /**
      * Returns this app's service locator.
-     * 
+     *
      * @return the service locator for this app
      */
     ServiceLocator services();
@@ -65,7 +65,7 @@ public interface Program extends AutoCloseable {
      * This method is shortcut for {@code services().use(key)}
      * <p>
      * If the application is not already running
-     * 
+     *
      * @param <T>
      *            the type of service to return
      * @param key
@@ -84,7 +84,7 @@ public interface Program extends AutoCloseable {
      * This method is shortcut for {@code services().use(key)}
      * <p>
      * If the application is not already running
-     * 
+     *
      * @param <T>
      *            the type of service to return
      * @param key
@@ -99,7 +99,7 @@ public interface Program extends AutoCloseable {
 
     /**
      * Returns an {@link BootstrapApp artifact driver} for {@link Program}.
-     * 
+     *
      * @return an artifact driver for App
      */
     private static BootstrapApp<ProgramImplementation> driver() {
@@ -111,7 +111,7 @@ public interface Program extends AutoCloseable {
      * <p>
      * The state of the applications returned by {@link ApplicationLauncher#launch(Wirelet...)} will be unless
      * GuestWirelet.delayStart
-     * 
+     *
      * @param assembly
      *            the assembly to use for creating the image
      * @param wirelets
@@ -132,7 +132,7 @@ public interface Program extends AutoCloseable {
      * Applications that are created using this method is always automatically started. If you wish to delay the start
      * process you can use LifetimeWirelets#lazyStartE. Which will return an application in the {@link RunState#INITIALIZED}
      * phase instead.
-     * 
+     *
      * @param assembly
      *            the assembly to use for creating the application
      * @param wirelets

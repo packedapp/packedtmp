@@ -14,11 +14,11 @@ import internal.app.packed.container.Mirror;
  * Stuff managed
  * <p>
  * Stuff not managed
- * 
+ *
  * Functional beans
- * 
+ *
  * Validator beans
- * 
+ *
  */
 // Lifetime - The period during which something exists, lasts, or is in progress.
 
@@ -28,30 +28,30 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
 
     /**
      * If this lifetime is not stateless returns the bean that controls creation and destruction of the lifetime.
-     * 
+     *
      * @return
      */
     public Optional<BeanMirror> managedBy() {
         List<OperationMirror> operations = operations();
         return operations.isEmpty() ? Optional.empty() : Optional.of(operations.get(0).bean());
     }
-    
+
     /**
      * empty for statelss (or BootstrapApps)
-     * 
+     *
      * 1 for unmananged
-     * 
+     *
      * 1 or 2 for managed
-     * 
+     *
      * <p>
      * If this method returns more than 1 lifetime operation mirror. The returned operations will always be defined on the
      * same bean
-     * 
+     *
      * @return a list of this lifetime's lifetime operations
      */
     public List<OperationMirror> operations() {
         throw new UnsupportedOperationException();
-    } 
+    }
 
     // If has a holder
     // -- If is a bean -> Holder is in same container as the root of the lifetime
@@ -62,11 +62,11 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
     // Hvad med sync/async start/stop??? Det er externt bestemt
     /**
      * First operation always creates the lifetime. Last operation always destroys the lifetime if managed.
-     * 
+     *
      * If managed and size = 1 the operation does all of it
-     * 
+     *
      * Only the create operation takes parameters
-     * 
+     *
      * @return
      */
     // interne operationer (i lifetimen)

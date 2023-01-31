@@ -27,7 +27,7 @@ import internal.app.packed.bean.BeanSetup;
 
 /**
  * Manages all beans for a single container.
- * 
+ *
  * <p>
  * We might embed the functionality directly into ExtensionSetup once the implementation is finalized.
  */

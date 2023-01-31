@@ -20,9 +20,9 @@ package app.packed.context;
  */
 // Alternativt ContextScope
 public enum ContextSpan {
-    CONTAINER, BEAN, 
-    
-    /** The contexts are available only for the particular operation. 
+    CONTAINER, BEAN,
+
+    /** The contexts are available only for the particular operation.
      * This doesn't mean that other operations on the same bean can define the same context */
     OPERATION;
 }

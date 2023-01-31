@@ -38,36 +38,36 @@ import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 public class ApplicationHostExtension extends FrameworkExtension<ApplicationHostExtension> {
 
     static final OperationTemplate ot = OperationTemplate.raw().withArg(ApplicationInitializationContext.class).withReturnTypeObject();
-    
+
     MethodHandle mh;
     ApplicationHostExtension() {}
-    
+
     public <T> ApplicationHostConfiguration<T> newApplication(Class<T> guestBean) {
         // We need the attachment, because ContainerGuest is on
         BeanInstaller bi = base().newBean(BeanKind.MANYTON).attach(InstallingAppHost.class, new InstallingAppHost()).lifetimes(ot);
         return newApplication(bi.install(guestBean));
     }
-    
+
     public <T> ApplicationHostConfiguration<T> newApplication(Op<T> guestBean) {
         // We need the attachment, because ContainerGuest is on
         BeanInstaller bi = base().newBean(BeanKind.MANYTON).attach(InstallingAppHost.class, new InstallingAppHost()).lifetimes(ot);
         return newApplication(bi.install(guestBean));
     }
-    
+
     private <T> ApplicationHostConfiguration<T> newApplication(BeanHandle<T> handle) {
         OperationHandle oh = handle.lifetimeOperations().get(0);
         this.runOnCodegen(() -> {
             mh = oh.generateMethodHandle();
         });
         return new ApplicationHostConfiguration<>(handle);
-        
+
     }
 
 
     static class BootstrapBean {
 
     }
-    
+
     static class InstallingAppHost {
 
 

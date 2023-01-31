@@ -38,9 +38,9 @@ public class VariableTest {
         for (Field f : XX.class.getDeclaredFields()) {
             Variable v = Variable.ofField(f);
             assertThat(v.getRawType()).isEqualTo(f.getType());
-            assertThat(v.getRawType()).isEqualTo(f.getGenericType());    
+            assertThat(v.getRawType()).isEqualTo(f.getGenericType());
         }
-        
+
     }
 
     public void assertFieldEquals(Field field) {

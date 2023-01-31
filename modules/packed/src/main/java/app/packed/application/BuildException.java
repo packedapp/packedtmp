@@ -23,7 +23,7 @@ package app.packed.application;
  */
 // Taenker configurations fejl maaske smider ConfigException - Det kan jo baade vaere paa runtime og build time
 
-// Vi wrapper ikke altid i BuildException. Giver ikke mening fx at fx wrappe NPE. Det goer Guice og det er 
+// Vi wrapper ikke altid i BuildException. Giver ikke mening fx at fx wrappe NPE. Det goer Guice og det er
 // aerlig talt mere besvaerligt at laese hvad der sker end bare et simpelt stacktrace
 
 // PackedException, PackedBuildException, PackedRuntimeException
@@ -62,6 +62,6 @@ public class BuildException extends RuntimeException {
     }
 }
 //ApplicationBuildException (Men saa lukker vi for at vi ikke kan deploye beans adhoc)...
-//Det er maaske fint. Syntes helt sikkert vi skal omnavngive den hvis vi kun bruger den til 
+//Det er maaske fint. Syntes helt sikkert vi skal omnavngive den hvis vi kun bruger den til
 //applications.
 // Det er jo stadig en slags build af en application. Bare runtime extension

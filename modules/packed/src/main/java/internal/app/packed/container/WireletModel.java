@@ -45,7 +45,7 @@ public final class WireletModel {
 
     /**
      * Create a new wirelet model.
-     * 
+     *
      * @param clazz
      *            the wirelet type
      */
@@ -59,7 +59,7 @@ public final class WireletModel {
 
     /**
      * Returns a model for the specified wirelet type.
-     * 
+     *
      * @param wireletType
      *            the wirelet type to return a model for.
      * @return the model

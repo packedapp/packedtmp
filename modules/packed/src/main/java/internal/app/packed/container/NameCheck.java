@@ -23,14 +23,14 @@ import static java.util.Objects.requireNonNull;
 public class NameCheck {
     /**
      * Checks the name of the component.
-     * 
+     *
      * @param name
      *            the name to check
      * @return the name if valid
      */
     public static String checkComponentName(String name) {
         requireNonNull(name, "name is null");
-       
+
         return name;
     }
 }

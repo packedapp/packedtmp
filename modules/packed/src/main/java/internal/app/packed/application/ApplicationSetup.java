@@ -61,7 +61,7 @@ public final class ApplicationSetup {
 
     /**
      * Create a new application.
-     * 
+     *
      * @param driver
      *            the application driver
      * @param goal
@@ -81,7 +81,7 @@ public final class ApplicationSetup {
     /**
      * Registers an action that will be called in the code generation phase. The action is executed for goals
      * {@link BuildGoal#MIRROR} or {@link BuildGoal#VERIFY}.
-     * 
+     *
      * @param action
      *            the action to run
      * @throws IllegalStateException
@@ -100,7 +100,7 @@ public final class ApplicationSetup {
 
     /**
      * Checks that we are in the code generating phase.
-     * 
+     *
      * @throws IllegalStateException
      *             if not in the code generating phase
      */

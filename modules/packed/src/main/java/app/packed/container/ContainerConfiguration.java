@@ -15,7 +15,7 @@ import internal.app.packed.container.ExtensionSetup;
  */
 // We don't allow extension of ContainerConfiguration... It doesn't really work
 // assemblies, or composers. Works fine though when return newContainer().
-// 
+//
 public final class ContainerConfiguration {
 
     /**
@@ -35,7 +35,7 @@ public final class ContainerConfiguration {
 
     /**
      * Create a new container configuration.
-     * 
+     *
      * @param handle
      *            the container handle
      */
@@ -44,7 +44,7 @@ public final class ContainerConfiguration {
     }
 
     /**
-     * 
+     *
      * @throws IllegalStateException
      *             if the container is no longer configurable
      */
@@ -62,7 +62,7 @@ public final class ContainerConfiguration {
 
     /**
      * {@return an unmodifiable view of the extensions that are currently used by this container.}
-     * 
+     *
      * @see #use(Class)
      * @see BaseAssembly#extensionsTypes()
      * @see ContainerMirror#extensionsTypes()
@@ -80,7 +80,7 @@ public final class ContainerConfiguration {
     /**
      * Returns whether or not the specified extension is used by this extension, other extensions, or user code in the same
      * container as this extension.
-     * 
+     *
      * @param extensionType
      *            the extension type to test
      * @return {@code true} if the extension is currently in use, otherwise {@code false}
@@ -93,7 +93,7 @@ public final class ContainerConfiguration {
 
 //    /**
 //     * Links a new assembly.
-//     * 
+//     *
 //     * @param assembly
 //     *            the assembly to link
 //     * @param realm
@@ -139,7 +139,7 @@ public final class ContainerConfiguration {
      * Registers a callback that will be invoked whenever
      * <p>
      * If {@code Extension.class} is specified. The given action is invoked for every extension that is used.
-     * 
+     *
      * @param <E>
      *            the type of
      * @param extensionType
@@ -162,11 +162,11 @@ public final class ContainerConfiguration {
      * Once this method has been invoked, the name of the component can no longer be changed via {@link #named(String)}.
      * <p>
      * If building an image, the path of the instantiated component might be prefixed with another path.
-     * 
+     *
      * <p>
      * Returns the path of this configuration. Invoking this method will initialize the name of the component. The component
      * path returned does not maintain any reference to this configuration object.
-     * 
+     *
      * @return the path of this configuration.
      */
     public final ApplicationPath path() {
@@ -190,7 +190,7 @@ public final class ContainerConfiguration {
      * If this is the first time an extension of the specified type has been requested. This method will create a new
      * instance of the extension. This instance will then be returned for all subsequent requests for the same extension
      * type.
-     * 
+     *
      * @param <E>
      *            the type of extension to return
      * @param extensionClass

@@ -30,7 +30,7 @@ import app.packed.bean.BeanIntrospector;
 // Maybe have a BeanLocalMap as well
 public final class PackedBeanLocal<T> {
     private PackedBeanLocal() {
-        
+
     }
 
     public T get(BeanConfiguration configuration) {
@@ -40,7 +40,7 @@ public final class PackedBeanLocal<T> {
     public T get(BeanHandle<?> handle) {
         return get(BeanSetup.crack(handle));
     }
-    
+
     public T get(BeanIntrospector bi) {
         throw new UnsupportedOperationException();
     }

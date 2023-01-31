@@ -111,7 +111,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     /**
      * Reserves room for a single object.
-     * 
+     *
      * @return the index to store the object in at runtime
      */
     private int reserve(Class<?> cls) {

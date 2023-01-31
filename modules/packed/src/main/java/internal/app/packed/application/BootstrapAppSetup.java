@@ -63,7 +63,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
 
     /**
      * Update an application driver with a new wirelet.
-     * 
+     *
      * @param existing
      *            the existing driver
      * @param wirelet
@@ -82,7 +82,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
      * <p>
      * When hosting an application, we must merge the parents unsupported extensions and the new guests applications drivers
      * unsupported extensions
-     * 
+     *
      * @return a set of disabled extensions
      */
     public Set<Class<? extends Extension<?>>> bannedExtensions() {
@@ -104,7 +104,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
      * Returns whether or not applications produced by this driver have an {@link ManagedLifetimeController}.
      * <p>
      * Applications that are not runnable will always be launched in the Initial state.
-     * 
+     *
      * @return whether or not the applications produced by this driver are runnable
      */
     @Override
@@ -130,7 +130,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
 
     /**
      * Create a new application instance using the specified launch context.
-     * 
+     *
      * @param context
      *            the launch context to use for creating the application instance
      * @return the new application instance
@@ -225,7 +225,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
 //        /**
 //         * Disables 1 or more extensions. Attempting to use a disabled extension will result in an RestrictedExtensionException
 //         * being thrown
-//         * 
+//         *
 //         * @param extensionTypes
 //         *            the types of extension to disable
 //         * @return
@@ -269,7 +269,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
 
     /**
      * Indicates that the any application create by this driver is not runnable.
-     * 
+     *
      * @return this builder
      */
     // https://en.wikipedia.org/wiki/Runtime_system
@@ -287,9 +287,9 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
     // fx disallow(NetExtension.class); -> you want to use network.. to bad for you...
 
 //        default Builder linkExtensionBean(Class<? extends Extension> extensionType, Class<?> extensionBean) {
-//            
+//
 //            // Taenker lidt den bliver erstattet af ApplicationController?
-//            
+//
 //            // extension must be available...
 //            // An extensionBean of the specified type must be installed by the extension in the root container
 //            return this;

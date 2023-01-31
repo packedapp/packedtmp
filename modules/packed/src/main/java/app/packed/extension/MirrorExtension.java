@@ -37,7 +37,7 @@ import internal.app.packed.operation.OperationSetup;
  * <p>
  * At some point in the future we might support a compact mirror mode where each extension only keep a minimal set of
  * information at runtime.
- * 
+ *
  * @see ApplicationMirror
  * @see ContainerMirror
  * @see AssemblyMirror
@@ -52,7 +52,7 @@ public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
     /**
      * Creates bindings for {@link ApplicationMirror}, {@link ContainerMirror}, {@link AssemblyMirror},{@link BeanMirror},
      * and {@link OperationMirror}.
-     * 
+     *
      * {@inheritDoc}
      */
     @Override
@@ -74,8 +74,8 @@ public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
                     binding.bindConstant(operation.mirror());
                 } else {
                     // binding.unwrap(BindingTracer.class);
-                    
-                    // Not a supported mirror type, let checkAssignableTo throw an exception 
+
+                    // Not a supported mirror type, let checkAssignableTo throw an exception
                     binding.checkAssignableTo(ApplicationMirror.class, ContainerMirror.class, AssemblyMirror.class, BeanMirror.class, OperationMirror.class);
                 }
             }

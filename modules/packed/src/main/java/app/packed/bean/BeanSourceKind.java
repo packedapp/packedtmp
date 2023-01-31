@@ -20,7 +20,7 @@ public enum BeanSourceKind {
 
     /**
      * A {@link Class} was specified when installing the bean.
-     * 
+     *
      * @see BaseExtension#install(Class)
      * @see BaseExtension#installLazy(Class)
      * @see BaseExtension#installStatic(Class)
@@ -29,7 +29,7 @@ public enum BeanSourceKind {
 
     /**
      * A bean instance was specified when installing the bean.
-     * 
+     *
      * @see BaseExtension#installInstance(Object)
      */
     INSTANCE,
@@ -39,7 +39,7 @@ public enum BeanSourceKind {
 
     /**
      * An {@link Op} was specified when installing the bean.
-     * 
+     *
      * @see BaseExtension#install(Op)
      * @see BaseExtension#installLazy(Op)
      */

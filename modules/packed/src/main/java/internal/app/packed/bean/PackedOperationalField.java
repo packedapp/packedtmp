@@ -127,7 +127,7 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
 
     private PackedOperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
         template = template.withReturnType(member.getType());
-        OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, OperationType.ofField(member, accessMode), template, 
+        OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, OperationType.ofField(member, accessMode), template,
                 new OperationFieldTarget(member, accessMode), mh);
 
         extension.scanner.unBoundOperations.add(operation);

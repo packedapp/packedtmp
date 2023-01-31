@@ -44,7 +44,7 @@ public interface LifetimeState {
 
     /**
      * Returns whether or not the container is transitioning from one state to another.
-     * 
+     *
      * @return true if the container's desired state is different from its actual state, other false
      */
     default boolean isTransitioning() {
@@ -55,7 +55,7 @@ public interface LifetimeState {
 
     /**
      * If the current state is a failure state. Returns the actual failure.
-     * 
+     *
      * @return the state failure (optional)
      */
     // Can we fail without an exception? Why not
@@ -64,7 +64,7 @@ public interface LifetimeState {
 }
 
 interface zaLS {
-    
+
     // Det er ikke umiddelbart muligt at returnere den nye container...
     // Eftersom den maaske er ved at vaere constructed
     boolean isRestarting();

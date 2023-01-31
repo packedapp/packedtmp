@@ -23,7 +23,7 @@ package app.packed.extension;
  * <p>
  * A framework extension must be places in a {@link Module module} whose {@link Module#getName() name} is contained in
  * {@link Framework#moduleNames()} or the unnamed module.
- * 
+ *
  * @implNote This class is not sealed as the framework may consists of multiple modules in the future.
  */
 public abstract class FrameworkExtension<E extends FrameworkExtension<E>> extends Extension<E> {}

@@ -27,7 +27,7 @@ public final class AnnotationUtil {
 
     /**
      * Validates that the specified annotation type has retention policy runtime.
-     * 
+     *
      * @param <T>
      *            the type of annotation to validate
      * @param annotationType
@@ -35,7 +35,7 @@ public final class AnnotationUtil {
      * @return the specified annotation type
      * @throws IllegalArgumentException
      *             if a runtime retention policy was not present on the annotation type
-     * 
+     *
      */
     //TODO take Function<String, RuntimeException> as parameter
     public static <T extends Annotation> Class<T> validateRuntimeRetentionPolicy(Class<T> annotationType) {

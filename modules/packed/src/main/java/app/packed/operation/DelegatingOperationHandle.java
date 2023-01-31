@@ -22,14 +22,14 @@ import internal.app.packed.operation.PackedDelegatingOperationHandle;
  *
  */
 public sealed interface DelegatingOperationHandle permits PackedDelegatingOperationHandle {
-    
+
     boolean isDelegated();
-    
+
     OperationHandle newOperation(ExtensionPoint.UseSite context, OperationTemplate template);
 
     /** {@return the target of this operation.} */
     OperationTarget target();
-    
+
     /** {@return the type of this operation.} */
     OperationType type();
 }

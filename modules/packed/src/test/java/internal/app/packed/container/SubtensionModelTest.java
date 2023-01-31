@@ -12,7 +12,7 @@ public class SubtensionModelTest {
 
     // Disse test er udkommenterede efter vi introducere ExtensionSupportContext
     // Nu tager vi et ExtensionTree... og det er bare knapt saa let at simulere
-    
+
 //    /** Tests common functionality. */
 //    @Test
 //    public void common() {
@@ -49,7 +49,7 @@ public class SubtensionModelTest {
     @Test
     public void unresolvedConstructor() {
         // We do not currently fail on unresolved types???
-        
+
         // SubtensionModel sm = SubtensionModel.of(TestExtension.UnresolvedConstructor.class);
         // System.out.println(sm);
         // sm.newInstance(new TestExtension(), ServiceExtension.class);

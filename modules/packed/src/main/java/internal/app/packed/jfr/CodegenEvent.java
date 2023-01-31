@@ -22,5 +22,5 @@ import jdk.jfr.StackTrace;
  */
 @StackTrace(false)
 public class CodegenEvent extends jdk.jfr.Event {
-    
+
 }

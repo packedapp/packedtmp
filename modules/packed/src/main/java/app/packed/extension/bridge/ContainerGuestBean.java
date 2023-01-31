@@ -32,9 +32,9 @@ public class ContainerGuestBean<T> extends InstanceBeanConfiguration<T> {
     public ContainerGuestBean(BeanHandle<T> handle) {
         super(handle);
     }
-    
+
     public ContainerGuestBean<T> addBridge(ExtensionBridge bridge) {
         return this;
     }
 }
-// Guest -> 
+// Guest ->

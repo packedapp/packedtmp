@@ -34,7 +34,7 @@ import internal.app.packed.entrypoint.EntryPointSetup;
  */
 // Altsaa det fede var jo hvis vi kunne lave en generisk statemachine.
 /// current state + Mask
-/// Error bit (data = 
+/// Error bit (data =
 // Desired state + Mask
 // Extra data... Startup/Initialization exception
 public final class PackedManagedLifetime implements ManagedLifetimeController {
@@ -169,13 +169,13 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
         initialize(container, cr); // may throw
 
         start(container, cr);
-        
+
         EntryPointSetup ep = container.lifetime.entryPoint;
 
         if (ep != null) {
             ep.enter(cr);
         }
-        
+
         shutdown(container, cr);
 
     }

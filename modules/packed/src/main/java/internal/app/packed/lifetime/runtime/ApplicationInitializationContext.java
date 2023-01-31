@@ -70,7 +70,7 @@ public final class ApplicationInitializationContext {
     /**
      * Returns a service locator for the system. If a service extension is not installed, returns
      * {@link ServiceLocator#of()}.
-     * 
+     *
      * @return a service locator for the application
      */
     public ServiceLocator serviceLocator() {
@@ -79,7 +79,7 @@ public final class ApplicationInitializationContext {
 
     /**
      * Launches the application. Either directly or from an image
-     * 
+     *
      * @param <A>
      *            the type of application shell
      * @param driver

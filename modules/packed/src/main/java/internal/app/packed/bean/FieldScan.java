@@ -65,8 +65,7 @@ class FieldScan {
 
         // More than 2 annotations on the field
         ArrayList<Pair> list = new ArrayList<>(5);
-        for (int i = 0; i < annotations.length; i++) {
-            Annotation annotation = annotations[i];
+        for (Annotation annotation : annotations) {
             AnnotatedField af = scanner.hookModel.testFieldAnnotation(annotation.annotationType());
             if (af != null) {
                 list.add(new Pair(af, annotation));
@@ -93,14 +92,14 @@ class FieldScan {
 
     /**
      * Introspect a single field on a bean looking for hook annotations.
-     * 
+     *
      * @param field
      *            the field to introspect
-     * 
+     *
      * @throws BeanInstallationException
      *             if there are multiple {@link AnnotatedBindingHook} on the field. Or if there are both
      *             {@link AnnotatedFieldHook} and {@link AnnotatedBindingHook} annotations
-     * 
+     *
      * @apiNote Currently we allow multiple {@link AnnotatedFieldHook} on a field. This might change in the future, but for
      *          now we allow it.
      */

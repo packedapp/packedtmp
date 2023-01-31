@@ -325,11 +325,7 @@ public class Types {
 
         @Override
         public boolean isFreeFromTypeVariables() {
-            if (ownerType != null && !Types.isFreeFromTypeVariables(ownerType)) {
-                return false;
-            }
-
-            if (!Types.isFreeFromTypeVariables(rawType)) {
+            if ((ownerType != null && !Types.isFreeFromTypeVariables(ownerType)) || !Types.isFreeFromTypeVariables(rawType)) {
                 return false;
             }
 

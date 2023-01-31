@@ -40,7 +40,7 @@ public interface BindableVariable {
      * By default binding to static fields is not allowed and will
      * <p>
      * Calling this method has no effect if the underlying variable is not a field.
-     * 
+     *
      * @return
      * @throws IllegalStateException
      *             if called after the variable has been bound
@@ -64,7 +64,7 @@ public interface BindableVariable {
      * Tror vi smider et eller andet hvis vi er normal og man angiver null. Kan kun bruges for raw
      * <p>
      * See {@link #bindGeneratedConstant(Supplier)}
-     * 
+     *
      * @param value
      *            the value to bind
      * @throws IllegalArgumentException
@@ -86,7 +86,7 @@ public interface BindableVariable {
      * {@link CodegenException} in the application's code generating phase.
      * <p>
      * The specified supplier is never invoked more than once for a single binding.
-     * 
+     *
      * @param supplier
      *            the supplier of the constant
      * @see #bindConstant(Object)
@@ -102,7 +102,7 @@ public interface BindableVariable {
     /**
      * @param argumentIndex
      *            the index of the argument
-     * 
+     *
      * @throws IndexOutOfBoundsException
      *             if the specified index does not represent a valid argument
      * @throws IllegalArgumentException
@@ -110,7 +110,7 @@ public interface BindableVariable {
      * @throws UnsupportedOperationException
      *             if the {@link #invokedBy()} is not identical to the binding extension
      * @throws ClassCastException
-     * 
+     *
      * @see OperationTemplate
      * @see InvocationArgument
      */
@@ -119,7 +119,7 @@ public interface BindableVariable {
     /**
      * @param argumentIndex
      * @param context
-     * 
+     *
      * @see InvocationContextArgument
      */
     default void bindInvocationArgumentForContext(Class<? extends Context<?>> context, int argumentIndex) {
@@ -128,7 +128,7 @@ public interface BindableVariable {
 
     /**
      * Binds an operation that will invoked every time the variable is needed
-     * 
+     *
      * @param op
      *            the operation to bind
      */
@@ -162,7 +162,7 @@ public interface BindableVariable {
     /**
      * @param postFix
      *            the message to include in the final message
-     * 
+     *
      * @throws BeanInstallationException
      *             always thrown
      */
@@ -182,10 +182,10 @@ public interface BindableVariable {
     }
 
     /**
-     * 
+     *
      * we are actually specializing the binding and not the variable. But don't really want to create a BindingHandle...
      * just for this method
-     * 
+     *
      * @param supplier
      * @return
      */
@@ -193,9 +193,9 @@ public interface BindableVariable {
 
     /**
      * Parses the variable to a key.
-     * 
+     *
      * @return a key representing the variable
-     * 
+     *
      * @throws InvalidKeyException
      *             if the variable does not represent a valid key
      */
@@ -223,7 +223,7 @@ public interface BindableVariable {
 interface Sanfbox extends BindableVariable {
 
     /**
-     * 
+     *
      * @throws UnsupportedOperationException
      *             if the underlying variable is not a {@link Record}
      */

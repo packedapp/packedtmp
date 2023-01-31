@@ -15,7 +15,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
     final MethodType methodType;
     boolean ignoreReturnType;
-    
+
     public PackedOperationTemplate(int extensionContext, int beanInstanceIndex, MethodType methodType, boolean ignoreReturnType) {
         this.extensionContext = extensionContext;
         this.beanInstanceIndex = beanInstanceIndex;

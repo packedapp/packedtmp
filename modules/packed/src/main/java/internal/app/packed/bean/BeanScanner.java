@@ -296,7 +296,7 @@ public final class BeanScanner {
     }
 
     /**
-     * 
+     *
      */
     void resolveOperations() {
         for (OperationSetup operation = unBoundOperations.pollFirst(); operation != null; operation = unBoundOperations.pollFirst()) {

@@ -29,7 +29,7 @@ public class Stuff {
     @Test
     public void foo() {
         record R() {
-            
+
             @OnM
             void foo() {}
         }

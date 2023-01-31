@@ -45,9 +45,9 @@ import internal.app.packed.bean.PackedOperationalMethod;
 import internal.app.packed.util.StringFormatter;
 
 /**
- * 
+ *
  * This class contains a number of overridable callback methods, all of them starting with {@code on}. Make list
- * 
+ *
  * @see Extension#newBeanIntrospector
  */
 
@@ -71,7 +71,7 @@ public abstract class BeanIntrospector {
      * A callback method that is invoked before any calls to any of the {@code hookOn} methods on this class.
      * <p>
      * This method can be used to setup data structures or perform validation.
-     * 
+     *
      * @see #beforeHooks()
      */
     public void afterHooks() {}
@@ -123,7 +123,7 @@ public abstract class BeanIntrospector {
      * This method can be used to provide final validation or registration of the bean.
      * <p>
      * If an exception is thrown at any time doing processing of the bean this method will not be called.
-     * 
+     *
      * @see #afterHooks()
      */
     public void beforeHooks() {}
@@ -141,7 +141,7 @@ public abstract class BeanIntrospector {
     /**
      * @param postFix
      *            the message to include in the final message
-     * 
+     *
      * @throws BeanInstallationException
      *             always thrown
      */
@@ -153,9 +153,9 @@ public abstract class BeanIntrospector {
 
     // Replace set with something like AnnotatedHookSet
     /**
-     * 
+     *
      * The default implementation calls {@link #hookOnAnnotatedClass(Annotation, OperationalClass)}
-     * 
+     *
      * @param hooks
      *            the annotation(s) that hook
      * @param an
@@ -172,13 +172,13 @@ public abstract class BeanIntrospector {
 
     /**
      * A callback method that is called for fields that are annotated with a field hook annotation defined by the extension:
-     * 
+     *
      * is annotated with an annotation that itself is annotated with {@link AnnotatedFieldHook} and where
      * {@link AnnotatedFieldHook#extension()} matches the type of this extension.
      * <p>
      * This method is never invoked more than once for a given field and extension. Even if there are multiple matching hook
      * annotations on the same field.
-     * 
+     *
      * @param hooks
      *            a non-empty collection of hooks
      * @param of
@@ -200,7 +200,7 @@ public abstract class BeanIntrospector {
 
     /**
      * @param on
-     * 
+     *
      * @see AnnotatedMethodHook
      */
     public void hookOnAnnotatedMethod(AnnotationList hooks, OperationalMethod on) {
@@ -212,7 +212,7 @@ public abstract class BeanIntrospector {
     /**
      * @param variable
      *            a binding
-     * 
+     *
      * @see AnnotatedBindingHook
      */
     public void hookOnProvidedAnnotatedVariable(Annotation hook, BindableVariable var) {
@@ -221,7 +221,7 @@ public abstract class BeanIntrospector {
 
     /**
      * @param v
-     * 
+     *
      * @see BindingTypeHook
      */
     public void hookOnProvidedVariableType(Class<?> hook, BindableWrappedVariable v) {
@@ -230,7 +230,7 @@ public abstract class BeanIntrospector {
 
     /**
      * Invoked by a MethodHandle from ExtensionSetup.
-     * 
+     *
      * @param extension
      *            the extension that owns the scanner
      * @param bean
@@ -252,7 +252,7 @@ public abstract class BeanIntrospector {
 
     /**
      * {@return the internal configuration class.}
-     * 
+     *
      * @throws IllegalStateException
      *             if called from the constructor of the class
      */
@@ -311,7 +311,7 @@ public abstract class BeanIntrospector {
 
         /**
          * Returns the modifiers of the constructor.
-         * 
+         *
          * @return the modifiers of the constructor
          * @see Constructor#getModifiers()
          * @apiNote the method is named getModifiers instead of modifiers to be consistent with
@@ -327,10 +327,10 @@ public abstract class BeanIntrospector {
 
     /**
      * This class represents a {@link Field} on a bean.
-     * 
+     *
      * @see BaseExtensionPoint.AnnotatedFieldHook
      * @see BeanIntrospector#hookOnAnnotatedField(BeanProcessor$BeanField)
-     * 
+     *
      * @apiNote There are currently no support for obtaining a {@link VarHandle} for a field.
      */
     public sealed interface OperationalField permits PackedOperationalField {
@@ -341,7 +341,7 @@ public abstract class BeanIntrospector {
         /**
          * @param postFix
          *            the message to include in the final message
-         * 
+         *
          * @throws BeanInstallationException
          *             always thrown
          */
@@ -352,7 +352,7 @@ public abstract class BeanIntrospector {
 
         /**
          * {@return the modifiers of the field.}
-         * 
+         *
          * @see Field#getModifiers()
          */
         int modifiers();
@@ -360,13 +360,13 @@ public abstract class BeanIntrospector {
         default BindableVariable newInjectOperation() {
             throw new UnsupportedOperationException();
         }
-        
+
         /**
          * Creates a new operation that can read the field.
          * <p>
          * If an {@link OperationMirror} is created for the operation. It will report {@link OperationTarget.OfField} as its
          * {@link OperationMirror#target()}.
-         * 
+         *
          * @param template
          *            a template for the operation
          * @return an operation handle
@@ -379,16 +379,16 @@ public abstract class BeanIntrospector {
          * <p>
          * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfField} as its
          * {@link OperationMirror#target()}.
-         * 
+         *
          * @param template
          *            a template for the operation
          * @param accessMode
          *            the access mode of the operation
-         * 
+         *
          * @return an operation handle
-         * 
+         *
          * @see VarHandle#toMethodHandle(java.lang.invoke.VarHandle.AccessMode)
-         * 
+         *
          * @apiNote There are currently no way to create more than one MethodHandle per operation (for example one for reading
          *          and one for writing a field). You must create an operation per access mode instead. It is also currently not
          *          possible to get a VarHandle for the field
@@ -400,11 +400,11 @@ public abstract class BeanIntrospector {
          * <p>
          * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfField} as its
          * {@link OperationMirror#target()}.
-         * 
+         *
          * @param template
          *            a template for the operation
          * @return an operation handle
-         * 
+         *
          * @see Lookup#unreflectSetter(Field)
          */
         OperationHandle newSetOperation(OperationTemplate template);
@@ -416,9 +416,9 @@ public abstract class BeanIntrospector {
          * This method will use the exact type of the field. And not attempt to peel away injection wrapper types such as
          * {@link Optional} before constructing the key. As a binding hook is typically used in cases where this would be
          * needed.
-         * 
+         *
          * @return a key representing the field
-         * 
+         *
          * @throws KeyException
          *             if the field does not represent a valid key
          */
@@ -426,7 +426,7 @@ public abstract class BeanIntrospector {
 
         /**
          * {@return the underlying field represented as a {@code Variable}.}
-         * 
+         *
          * @see Variable#ofField(Field)
          */
         Variable variable();
@@ -443,7 +443,7 @@ public abstract class BeanIntrospector {
         /**
          * @param postFix
          *            the message to include in the final message
-         * 
+         *
          * @throws BeanInstallationException
          *             always thrown
          */
@@ -467,16 +467,16 @@ public abstract class BeanIntrospector {
 
         /**
          * Creates a new operation that can invoke the underlying method.
-         * 
+         *
          * @param template
          *            a template for the operation
          * @return an operation handle
-         * 
+         *
          * @throws InaccessibleBeanMemberException
          *             if the framework does not have access to invoke the method
          * @throws InternalExtensionException
          *             if the extension does not have access to invoke the method
-         * 
+         *
          * @see OperationTarget.OfMethodHandle
          * @see Lookup#unreflect(Method)
          * @see BeanMethodHook#allowInvoke()
@@ -485,7 +485,7 @@ public abstract class BeanIntrospector {
         OperationHandle newOperation(OperationTemplate template);
 
         DelegatingOperationHandle newDelegatingOperation();
-        
+
         /** {@return the default type of operation that will be created.} */
         OperationType operationType();
 
@@ -495,9 +495,9 @@ public abstract class BeanIntrospector {
          * <p>
          * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
          * key.
-         * 
+         *
          * @return a key representing the return type of the method
-         * 
+         *
          * @throws InvalidKeyException
          *             if the return type of the method does not represent a proper key
          */
@@ -522,6 +522,6 @@ interface ZandboxBI {
 // Men det fungere ikke super godt. Isaer fordi vi ikke kan
 // switch on class literals
 //public void onHook(HookElement element) {
-//    
+//
 //}
 //

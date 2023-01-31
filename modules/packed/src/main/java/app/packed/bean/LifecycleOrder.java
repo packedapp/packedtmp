@@ -23,9 +23,9 @@ package app.packed.bean;
  */
 // LifecycleOrder
 public enum LifecycleOrder {
-    
+
     /** The operation must be executed before any dependencies in the same lifetime with the similar lifecycle phase. */
-    BEFORE_DEPENDENCIES, 
-    
+    BEFORE_DEPENDENCIES,
+
     AFTER_DEPENDENCIES;
 }

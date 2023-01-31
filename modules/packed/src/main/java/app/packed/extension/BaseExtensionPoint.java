@@ -37,17 +37,17 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     BaseExtensionPoint() {}
 
     // Alternativt tager vi ikke en bean. Men en container som er implicit
-    
+
     public <K> void addCodeGenerated(BeanConfiguration bean, Class<K> key, Supplier<? extends K> supplier) {
         addCodeGenerated(bean, Key.of(key), supplier);
     }
 
     /**
      * Registers a code generating supplier that can be used together with {@link CodeGenerated} annotation.
-     * 
+     *
      * <p>
      * Internally this mechanisms uses
-     * 
+     *
      * @param <K>
      *            the type of value the supplier produces
      * @param bean
@@ -56,7 +56,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            the type of key used together with {@link CodeGenerated}
      * @param supplier
      *            the supplier generating the value
-     * 
+     *
      * @throws IllegalArgumentException
      *             if the specified bean is not owned by this extension. Or if the specified bean is not part of the same
      *             container as this extension. Or if the specified bean does not have an injection site matching the
@@ -109,7 +109,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     /**
      * <p>
      * The configuration might be di
-     * 
+     *
      * @param <T>
      *            the type of bean to install
      * @param clazz
@@ -132,7 +132,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     /**
      * Installs a {@link BeanKind#STATIC static} bean.
-     * 
+     *
      * @param beanClass
      *            the type of static bean to install
      * @return a configuration object representing the installed bean
@@ -144,7 +144,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     /**
      * Creates a new bean installer for the application.
-     * 
+     *
      * @param kind
      *            the kind of bean to installer
      * @return the installer
@@ -155,7 +155,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     /**
      * Creates a new bean installer for an extension.
-     * 
+     *
      * @param kind
      *            the kind of bean to installer
      * @return the installer
@@ -178,7 +178,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     /**
      * Creates a new inject operation from the specified handle.
-     * 
+     *
      * @param handle
      *            the operation that should be executed as part of its bean's injection phase
      * @return a configuration object
@@ -189,13 +189,13 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         ((PackedOperationHandle) handle).operation().bean.lifecycle.addInitialize(handle, null);
         return new OperationConfiguration(handle);
     }
-        
+
     /**
      * An installer for installing beans into a container.
      * <p>
      * The various install methods can be called multiple times to install multiple beans. However, the use cases for this
      * are limited.
-     * 
+     *
      * @see BaseExtensionPoint#newBean(BeanKind)
      * @see BaseExtensionPoint#newBeanForExtension(BeanKind, app.packed.extension.ExtensionPoint.UseSite)
      */
@@ -209,7 +209,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
         /**
          * Installs the bean using the specified class as the bean source.
-         * 
+         *
          * @param <T>
          *            the
          * @param beanClass
@@ -229,7 +229,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
          * An option that allows for a special bean introspector to be used when introspecting the bean for the extension.
          * Normally, the runtime would call {@link Extension#newBeanIntrospector} to obtain an introspector for the registering
          * extension.
-         * 
+         *
          * @param introspector
          *            the introspector to use
          * @return the option
@@ -260,7 +260,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
          * Allows multiple beans of the same type in a container.
          * <p>
          * By default, a container only allows a single bean of particular type if non-void.
-         * 
+         *
          * @return this builder
          * @throws UnsupportedOperationException
          *             if bean kind is {@link BeanKind#FUNCTIONAL} or {@link BeanKind#STATIC}
@@ -293,7 +293,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
         /**
          * Marks the bean as synthetic.
-         * 
+         *
          * @return this installer
          */
         BeanInstaller synthetic();
@@ -304,10 +304,10 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * application.
      * <p>
      * Man kan selvfoelgelig kun bruge den paa
-     * 
+     *
      * <p>
      * This annotation can only used by extension beans.
-     * 
+     *
      * @see BindableVariable#bindGeneratedConstant(java.util.function.Supplier)
      * @see BaseExtensionPoint#addCodeGenerated(app.packed.bean.BeanConfiguration, Class, java.util.function.Supplier)
      * @see BaseExtensionPoint#addCodeGenerated(app.packed.bean.BeanConfiguration, app.packed.bindings.Key,
@@ -341,7 +341,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         /**
          * <p>
          * The container handle returned by this method is no longer {@link ContainerHandle#isConfigurable() configurable}
-         * 
+         *
          * @param assembly
          *            the assembly to link
          * @param wirelets
