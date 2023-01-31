@@ -59,7 +59,7 @@ public @interface OnInitialize {
      * @return whether or not the annotated method should be run before or after dependencies in the same lifetime are
      *         initialized.
      */
-    LifecycleOrdering ordering() default LifecycleOrdering.BEFORE_DEPENDENCIES;
+    LifecycleOrder ordering() default LifecycleOrder.BEFORE_DEPENDENCIES;
 }
 
 // int priorityOnBean() default 0;  

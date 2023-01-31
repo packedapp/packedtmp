@@ -61,6 +61,7 @@ public /* primitive */ final class Realm {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return isApplication() ? "Application" : extensionClass.getSimpleName();
     }

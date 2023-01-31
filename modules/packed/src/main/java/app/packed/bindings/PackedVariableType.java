@@ -51,10 +51,12 @@ sealed interface PackedVariableType {
             return TypeUtil.rawTypeOf(type);
         }
 
+        @Override
         public Optional<String> name() {
             return Optional.empty();
         }
 
+        @Override
         public String toString() {
             return type.getTypeName();
         }
@@ -76,10 +78,12 @@ sealed interface PackedVariableType {
             return clazz;
         }
 
+        @Override
         public Optional<String> name() {
             return Optional.empty();
         }
 
+        @Override
         public String toString() {
             return clazz.getCanonicalName();
         }
@@ -103,10 +107,12 @@ sealed interface PackedVariableType {
             return typeVariable.getGenericDeclaration().getClass();
         }
 
+        @Override
         public String toString() {
             return typeVariable.toString();
         }
 
+        @Override
         public Optional<String> name() {
             return Optional.empty();
         }
@@ -125,6 +131,7 @@ sealed interface PackedVariableType {
         }
 
         /** {@inheritDoc} */
+        @Override
         public Optional<String> name() {
             return Optional.of(parameter.getName());
         }
@@ -135,6 +142,7 @@ sealed interface PackedVariableType {
             return parameter.getType();
         }
 
+        @Override
         public String toString() {
             return parameter.getParameterizedType().toString();
         }
@@ -153,6 +161,7 @@ sealed interface PackedVariableType {
         }
 
         /** {@inheritDoc} */
+        @Override
         public Optional<String> name() {
             return Optional.empty();
         }
@@ -177,6 +186,7 @@ sealed interface PackedVariableType {
         }
 
         /** {@inheritDoc} */
+        @Override
         public Optional<String> name() {
             return Optional.empty();
         }
@@ -201,6 +211,7 @@ sealed interface PackedVariableType {
         }
 
         /** {@inheritDoc} */
+        @Override
         public Optional<String> name() {
             return Optional.of(field.getName());
         }
@@ -211,6 +222,7 @@ sealed interface PackedVariableType {
             return field.getType();
         }
 
+        @Override
         public String toString() {
             return field.getType().toString();
         }

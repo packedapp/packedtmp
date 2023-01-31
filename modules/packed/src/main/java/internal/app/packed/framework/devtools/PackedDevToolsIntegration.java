@@ -43,6 +43,7 @@ public abstract class PackedDevToolsIntegration {
      */
     static final class NoDevTools extends PackedDevToolsIntegration {
 
+        @Override
         public void goo() {
             System.out.println("No DevTools");
         }

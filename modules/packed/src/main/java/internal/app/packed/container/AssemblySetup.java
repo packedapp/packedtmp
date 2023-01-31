@@ -242,6 +242,7 @@ public final class AssemblySetup extends RealmSetup {
         }
     }
 
+    @Override
     public boolean isDone() {
         return isDone;
     }

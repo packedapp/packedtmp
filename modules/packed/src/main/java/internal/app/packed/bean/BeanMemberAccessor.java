@@ -108,6 +108,8 @@ public abstract sealed class BeanMemberAccessor {
             this.type = requireNonNull(realmType);
         }
 
+        /** {@inheritDoc} */
+        @Override
         MethodHandles.Lookup lookup() {
             // Making a lookup for the realm.
             MethodHandles.Lookup l = cachedLookup;

@@ -21,9 +21,10 @@ package app.packed.bean;
  * @see OnStart
  * @see OnStop
  */
-public enum LifecycleOrdering {
+// LifecycleOrder
+public enum LifecycleOrder {
     
-    /** The operation should be executed before any dependencies with the similar lifecycle phase. */
+    /** The operation must be executed before any dependencies in the same lifetime with the similar lifecycle phase. */
     BEFORE_DEPENDENCIES, 
     
     AFTER_DEPENDENCIES;

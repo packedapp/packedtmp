@@ -49,7 +49,7 @@ public @interface OnStop {
      * 
      * @return
      */
-    LifecycleOrdering ordering() default LifecycleOrdering.AFTER_DEPENDENCIES;
+    LifecycleOrder ordering() default LifecycleOrder.AFTER_DEPENDENCIES;
 
     // Timeout?
     public enum ForkPolicy {

@@ -75,6 +75,7 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public final OperationType type() {
         return op.type();
     }

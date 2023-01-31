@@ -89,7 +89,7 @@ public @interface OnStart {
     // Fork with default settings, otherwise use Fork
     boolean fork() default false;
     
-    LifecycleOrdering ordering() default LifecycleOrdering.BEFORE_DEPENDENCIES;
+    LifecycleOrder ordering() default LifecycleOrder.BEFORE_DEPENDENCIES;
 }
 //
 ///**

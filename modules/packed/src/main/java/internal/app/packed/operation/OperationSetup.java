@@ -114,9 +114,7 @@ public sealed abstract class OperationSetup {
     // readOnly. Will not work if for example, resolving a binding
     public final void forEachBinding(Consumer<? super BindingSetup> binding) {
         for (BindingSetup bs : bindings) {
-            if (bs == null) {
-                System.out.println(type + " ");
-            }
+            requireNonNull(bs);
             if (bs.provider() != null && bs.provider() instanceof FromOperation nested) {
                 nested.operation().forEachBinding(binding);
             }

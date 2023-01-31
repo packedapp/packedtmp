@@ -41,78 +41,97 @@ public class PackedBindableBaseVariable implements BindableWrappedVariable {
         this.v = v;
     }
 
+    @Override
     public AnnotationList annotations() {
         return v.annotations();
     }
 
+    @Override
     public Map<Class<? extends Context<?>>, List<Class<?>>> availableContexts() {
         return v.availableContexts();
     }
 
+    @Override
     public List<Class<?>> availableInvocationArguments() {
         return v.availableInvocationArguments();
     }
 
+    @Override
     public void bindConstant(@Nullable Object obj) {
         v.bindConstant(obj);
     }
 
+    @Override
     public void bindOp(Op<?> op) {
         v.bindOp(op);
     }
 
+    @Override
     public void bindInvocationArgument(int argumentIndex) {
         v.bindInvocationArgument(argumentIndex);
     }
 
+    @Override
     public void bindInvocationArgumentForContext(Class<? extends Context<?>> context, int argumentIndex) {
         v.bindInvocationArgumentForContext(context, argumentIndex);
     }
 
+    @Override
     public Class<?> checkAssignableTo(Class<?>... additionalClazzes) {
         return v.checkAssignableTo(additionalClazzes);
     }
 
+    @Override
     public boolean equals(Object obj) {
         return v.equals(obj);
     }
 
+    @Override
     public void failWith(String postFix) {
         v.failWith(postFix);
     }
 
+    @Override
     public int hashCode() {
         return v.hashCode();
     }
 
+    @Override
     public Class<? extends Extension<?>> invokedBy() {
         return v.invokedBy();
     }
 
+    @Override
     public boolean isBound() {
         return v.isBound();
     }
 
+    @Override
     public Class<?> rawType() {
         return v.rawType();
     }
 
+    @Override
     public BindableVariable specializeMirror(Supplier<? extends BindingMirror> supplier) {
         return v.specializeMirror(supplier);
     }
 
+    @Override
     public String toString() {
         return v.toString();
     }
 
+    @Override
     public Variable variable() {
         return v.variable();
     }
 
+    @Override
     public Key<?> toKey() {
         return v.toKey();
     }
 
+    @Override
     public BindableWrappedVariable unwrap() {
         return v.unwrap();
     }

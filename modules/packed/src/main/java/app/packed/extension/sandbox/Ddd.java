@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 import app.packed.application.App;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.LifecycleOrdering;
+import app.packed.bean.LifecycleOrder;
 import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
@@ -83,6 +83,6 @@ public class Ddd extends BaseAssembly {
          * @return whether or not the annotated method should be run before or after dependencies in the same lifetime are
          *         initialized.
          */
-        LifecycleOrdering ordering() default LifecycleOrdering.BEFORE_DEPENDENCIES;
+        LifecycleOrder ordering() default LifecycleOrder.BEFORE_DEPENDENCIES;
     }
 }

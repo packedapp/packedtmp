@@ -23,7 +23,7 @@ import app.packed.operation.Op;
 import internal.app.packed.util.SpecFix;
 
 /**
- * The configuration of a bean that has 1 or more bean instances.
+ * The configuration of a bean that deals with beans that are instantiated.
  * 
  * @param <T>
  *            the type of bean instances
@@ -45,19 +45,6 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
     protected final BeanHandle<T> instanceHandle() {
         return (BeanHandle<T>) super.handle();
     }
-
-//    public <K> InstanceBeanConfiguration<T> initializeWith(Class<K> key, Op<K> operation) {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    public <K> InstanceBeanConfiguration<T> initializeWithInstance(Class<K> key, K instance) {
-//        return initializeWithInstance(Key.of(key), instance);
-//    }
-//    
-//    public <K> InstanceBeanConfiguration<T> initializeWithInstance(Key<K> key, K instance) {
-//        handle().initializeWithInstance(key, instance);
-//        return this;
-//    }
 
     /** {@inheritDoc} */
     @Override
@@ -102,6 +89,19 @@ class InstanceBeanConfigurationSandbox<T> {
 // initializeWith
 
     // How do we handle null?
+
+//  public <K> InstanceBeanConfiguration<T> initializeWith(Class<K> key, Op<K> operation) {
+//      throw new UnsupportedOperationException();
+//  }
+//
+//  public <K> InstanceBeanConfiguration<T> initializeWithInstance(Class<K> key, K instance) {
+//      return initializeWithInstance(Key.of(key), instance);
+//  }
+//  
+//  public <K> InstanceBeanConfiguration<T> initializeWithInstance(Key<K> key, K instance) {
+//      handle().initializeWithInstance(key, instance);
+//      return this;
+//  }
 
     /**
      * <p>

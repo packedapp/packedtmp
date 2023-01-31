@@ -51,6 +51,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
     }
 
     /** {@inheritDoc} */
+    @Override
     public final Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
         requireNonNull(additionalArguments, "additionalArguments is null");
 
@@ -86,6 +87,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
     }
 
     /** {@inheritDoc} */
+    @Override
     public final Op<R> bind(@Nullable Object argument) {
         return bind(0, argument);
     }
@@ -93,6 +95,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
     public abstract OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template, @Nullable NestedOperationParent nestedParent);
 
     /** {@inheritDoc} */
+    @Override
     public final Op<R> peek(Consumer<? super R> action) {
         requireNonNull(action, "action is null");
         if (type.returnRawType() == void.class) {

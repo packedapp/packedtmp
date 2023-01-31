@@ -288,26 +288,27 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
         }
 
         // If we expect a mirror of a particular type, check it
-        if (mirrorClass != null) {
+     //   if (mirrorClass != null) {
             // Fail if the type of mirror returned by the extension does not match the specified mirror type
             if (!mirrorClass.isInstance(mirror)) {
                 throw new InternalExtensionException(extension.extensionType.getSimpleName() + ".newExtensionMirror() was expected to return an instance of "
                         + mirrorClass + ", but returned an instance of " + mirror.getClass());
             }
-        } else if (mirror.getClass() != ExtensionMirror.class) {
-            // Extensions are are allowed to return ExtensionMirror from newExtensionMirror in which case we have no additional
-            // checks
-
-            // If expectedMirrorClass == null we don't know what type of mirror to expect. Other than it must be parameterized with
-            // the right extension
-
-            // Must return a mirror for the same extension
-            Class<? extends Extension<?>> mirrorExtensionType = EXTENSION_TYPES.get(mirror.getClass());
-            if (mirrorExtensionType != extension.extensionType) {
-                throw new InternalExtensionException(
-                        "Extension " + extension.model.fullName() + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
-            }
-        }
+       // }
+//        else if (mirror.getClass() != ExtensionMirror.class) {
+//            // Extensions are are allowed to return ExtensionMirror from newExtensionMirror in which case we have no additional
+//            // checks
+//
+//            // If expectedMirrorClass == null we don't know what type of mirror to expect. Other than it must be parameterized with
+//            // the right extension
+//
+//            // Must return a mirror for the same extension
+//            Class<? extends Extension<?>> mirrorExtensionType = EXTENSION_TYPES.get(mirror.getClass());
+//            if (mirrorExtensionType != extension.extensionType) {
+//                throw new InternalExtensionException(
+//                        "Extension " + extension.model.fullName() + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
+//            }
+//        }
 
         try {
             MH_EXTENSION_MIRROR_INITIALIZE.invokeExact(mirror, extension);

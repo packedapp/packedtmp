@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.bean.BeanLifecycleOperationMirror;
-import app.packed.bean.LifecycleOrdering;
+import app.packed.bean.LifecycleOrder;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.RunState;
 import app.packed.operation.OperationHandle;
@@ -31,10 +31,10 @@ import app.packed.operation.OperationHandle;
 // Create it lazily for beans? Not all beans need it
 public final class LifetimeLifecycleSetup {
 
-    public void addInitialize(OperationHandle operation, @Nullable LifecycleOrdering ordering) {
+    public void addInitialize(OperationHandle operation, @Nullable LifecycleOrder ordering) {
         if (ordering == null) { // inject
             initializors.add(operation);
-        } else if (ordering == LifecycleOrdering.BEFORE_DEPENDENCIES) {
+        } else if (ordering == LifecycleOrder.BEFORE_DEPENDENCIES) {
             initializors.add(operation);
         } else {
             initializorsReverse.add(operation);
@@ -43,8 +43,8 @@ public final class LifetimeLifecycleSetup {
         operation.specializeMirror(() -> new BeanLifecycleOperationMirror());
     }
 
-    public void addStart(OperationHandle operation, LifecycleOrdering ordering) {
-        if (ordering == LifecycleOrdering.BEFORE_DEPENDENCIES) {
+    public void addStart(OperationHandle operation, LifecycleOrder ordering) {
+        if (ordering == LifecycleOrder.BEFORE_DEPENDENCIES) {
             start.add(operation);
         } else {
             startReverse.add(operation);
@@ -54,8 +54,8 @@ public final class LifetimeLifecycleSetup {
 
     }
 
-    public void addStop(OperationHandle operation, LifecycleOrdering ordering) {
-        if (ordering == LifecycleOrdering.AFTER_DEPENDENCIES) {
+    public void addStop(OperationHandle operation, LifecycleOrder ordering) {
+        if (ordering == LifecycleOrder.AFTER_DEPENDENCIES) {
             start.add(operation);
         } else {
             startReverse.add(operation);

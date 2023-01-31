@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 /** Implementation of {@link Variable}. We basically wrap an annotation part and a type part. */
 record PackedVariable(AnnotatedElement annotatedElement, PackedVariableType type) implements Variable {
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         Annotation[] annotations = annotatedElement.getAnnotations();
@@ -36,11 +37,13 @@ record PackedVariable(AnnotatedElement annotatedElement, PackedVariableType type
         return sb.toString();
     }
 
+    @Override
     public boolean equals(Object obj) {
         // We treat the ordering of annotations as significant
         return obj == this || obj instanceof Variable v && getType().equals(v.getType()) && Arrays.equals(getAnnotations(), v.getAnnotations());
     }
 
+    @Override
     public int hashCode() {
         return type.hashCode() ^ Arrays.hashCode(annotatedElement.getAnnotations());
     }

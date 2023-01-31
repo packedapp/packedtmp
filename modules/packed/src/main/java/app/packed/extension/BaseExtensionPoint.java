@@ -16,7 +16,7 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.Inject;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.bean.LifecycleOrdering;
+import app.packed.bean.LifecycleOrder;
 import app.packed.bindings.BindableVariable;
 import app.packed.bindings.Key;
 import app.packed.container.Assembly;
@@ -171,7 +171,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         throw new UnsupportedOperationException();
     }
 
-    public OperationConfiguration runOnBeanInitialization(DelegatingOperationHandle h, LifecycleOrdering ordering) {
+    public OperationConfiguration runOnBeanInitialization(DelegatingOperationHandle h, LifecycleOrder ordering) {
         requireNonNull(ordering, "ordering is null");
         OperationHandle handle = h.newOperation(context(), OperationTemplate.defaults());
         ((PackedOperationHandle) handle).operation().bean.lifecycle.addInitialize(handle, ordering);

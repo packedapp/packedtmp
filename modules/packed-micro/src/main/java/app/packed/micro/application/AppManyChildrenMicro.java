@@ -43,7 +43,7 @@ import app.packed.container.BaseAssembly;
 public class AppManyChildrenMicro {
 
     @Param({ "0", "1", "10", "100", "1000", "10000", "100000", "1000000" })
-    static long size;
+    static int size;
 
     @Benchmark
     public void manyChildren() {
