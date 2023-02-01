@@ -102,6 +102,26 @@ public final class ServiceManagerEntry {
 
     }
 
+    public Stream<ServiceBindingMirror> useSiteMirrors() {
+        ArrayList<ServiceBindingMirror> l = new ArrayList<>();
+        for (var b = bindings; b != null; b = b.nextFriend) {
+            l.add((ServiceBindingMirror) b.mirror());
+        }
+        return l.stream();
+    }
+
+    /**
+     *
+     */
+    public void verify() {
+        if (provider == null) {
+            for (var b = bindings; b != null; b = b.nextFriend) {
+                System.out.println("Binding not resolved " + b);
+            }
+            throw new UnsatisfiableDependencyException("For key " + key);
+        }
+    }
+
     private static String makeDublicateProvideErrorMsg(ProvidedServiceSetup existingProvider, OperationSetup newProvider) {
         OperationSetup existingTarget = existingProvider.operation;
         OperationSetup thisTarget = newProvider;
@@ -128,25 +148,5 @@ public final class ServiceManagerEntry {
             }
         }
         return thisTarget + "A service has already been bound for key " + key;
-    }
-
-    /**
-     *
-     */
-    public void verify() {
-        if (provider == null) {
-            for (var b = bindings; b != null; b = b.nextFriend) {
-                System.out.println("Binding not resolved " + b);
-            }
-            throw new UnsatisfiableDependencyException("For key " + key);
-        }
-    }
-
-    public Stream<ServiceBindingMirror> useSiteMirrors() {
-        ArrayList<ServiceBindingMirror> l = new ArrayList<>();
-        for (var b = bindings; b != null; b = b.nextFriend) {
-            l.add((ServiceBindingMirror) b.mirror());
-        }
-        return l.stream();
     }
 }

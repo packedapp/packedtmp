@@ -75,9 +75,6 @@ public final class AssemblySetup extends RealmSetup {
     /** The assembly instance. */
     public final Assembly assembly;
 
-    /** A model of the assembly. */
-    public final AssemblyModel assemblyModel;
-
     /** The container the assembly defines. */
     public final ContainerSetup container;
 
@@ -92,6 +89,9 @@ public final class AssemblySetup extends RealmSetup {
 
     /** Whether or not assembly is open for configuration. */
     private boolean isDone;
+
+    /** A model of the assembly. */
+    public final AssemblyModel model;
 
     /**
      * This constructor is used for an assembly that defines an application.
@@ -133,10 +133,10 @@ public final class AssemblySetup extends RealmSetup {
                 delegatingAssemblies.add(da.getClass());
             }
             this.delegatingAssemblies = List.copyOf(delegatingAssemblies);
-            this.assemblyModel = model;
+            this.model = model;
         } else {
             this.delegatingAssemblies = List.of();
-            this.assemblyModel = AssemblyModel.of(a.getClass());
+            this.model = AssemblyModel.of(a.getClass());
         }
 
         this.assembly = a;
@@ -169,7 +169,7 @@ public final class AssemblySetup extends RealmSetup {
         if (assembly instanceof BuildableAssembly ca) {
             // Invoke Assembly::doBuild, which in turn will invoke Assembly::build
             try {
-                MH_BUILDABLE_ASSEMBLY_DO_BUILD.invokeExact(ca, assemblyModel, container);
+                MH_BUILDABLE_ASSEMBLY_DO_BUILD.invokeExact(ca, model, container);
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
@@ -177,7 +177,7 @@ public final class AssemblySetup extends RealmSetup {
             // Invoke ComposerAssembly::doBuild
             ComposerAssembly<?> cas = (ComposerAssembly<?>) assembly;
             try {
-                MH_COMPOSER_ASSEMBLY_DO_BUILD.invokeExact(cas, assemblyModel, container);
+                MH_COMPOSER_ASSEMBLY_DO_BUILD.invokeExact(cas, model, container);
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }

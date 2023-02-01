@@ -92,7 +92,7 @@ public final class BeanScanner {
 
     BeanScanner(BeanSetup bean, @Nullable BeanIntrospector beanIntrospector, @Nullable Map<Class<?>, Object> attachments) {
         this.bean = bean;
-        this.hookModel = bean.container.assembly.assemblyModel.hookModel;
+        this.hookModel = bean.container.assembly.model.hookModel;
         this.beanIntrospector = beanIntrospector;
         this.oc = new OpenClass(PACKED, bean.beanClass);
         // We need to make a copy of attachments, as the the map may be updated in the BeanInstaller
