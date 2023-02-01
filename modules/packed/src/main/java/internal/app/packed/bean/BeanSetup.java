@@ -345,7 +345,7 @@ public final class BeanSetup {
         }
 
         if (bean.realm instanceof ExtensionTreeSetup e && bean.beanKind == BeanKind.CONTAINER) {
-            bean.ownedBy.injectionManager.addBean(bean);
+            bean.ownedBy.sm.addBean(bean);
         }
 
         // Scan the bean class for annotations unless the bean class is void

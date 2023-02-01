@@ -137,7 +137,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
     }
 
     /** {@inheritDoc} */
-    @Override
     public int compareTo(ExtensionDescriptor descriptor) {
         ExtensionModel m = (ExtensionModel) descriptor;
         // if (m.getClassLoader()!=this.getClassLoader())

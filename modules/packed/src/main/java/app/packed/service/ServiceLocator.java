@@ -106,7 +106,7 @@ import internal.app.packed.service.PackedServiceLocator;
 /**
  *
  * <p>
- * Unless otherwise specified the set of services provided by a service locator is always unchangeable.
+ * Unless otherwise specified the set of services provided by a service locator is unchangeable.
  */
 @BindingTypeHook(extension = BaseExtension.class)
 public interface ServiceLocator {

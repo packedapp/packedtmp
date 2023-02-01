@@ -17,6 +17,7 @@ package internal.app.packed.container;
 
 import static internal.app.packed.util.StringFormatter.format;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -24,9 +25,10 @@ import app.packed.bindings.Key;
 import app.packed.extension.InternalExtensionException;
 import app.packed.framework.Nullable;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.binding.ExtensionServiceBindingSetup;
 
 /**
- * Manages all beans for a single container.
+ * A service manager for extensions.
  *
  * <p>
  * We might embed the functionality directly into ExtensionSetup once the implementation is finalized.
@@ -34,6 +36,8 @@ import internal.app.packed.bean.BeanSetup;
 // Ideen er at vi har en manager per extension instance
 // Og saa leder man op recursivt
 public final class ExtensionServiceManager {
+
+    public final ArrayList<ExtensionServiceBindingSetup> bindings = new ArrayList<>();
 
     public final Map<Key<?>, BeanSetup> extensionBeans = new LinkedHashMap<>();
 

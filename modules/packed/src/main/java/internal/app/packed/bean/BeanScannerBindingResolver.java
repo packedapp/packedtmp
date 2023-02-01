@@ -64,7 +64,7 @@ final class BeanScannerBindingResolver {
         } else {
             ExtensionServiceBindingSetup b = new ExtensionServiceBindingSetup(operation, index, v.getRawType());
             operation.bindings[index] = b;
-            operation.operator.bindings.add(b);
+            operation.operator.sm.bindings.add(b);
         }
     }
 

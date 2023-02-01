@@ -26,6 +26,6 @@ public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSet
     /** {@inheritDoc} */
     @Override
     public Realm realm() {
-        return extension.extensionTree.extensionModel.realm();
+        return extension.extensionTree.model.realm();
     }
 }

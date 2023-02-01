@@ -86,7 +86,7 @@ public final class AssemblySetup extends RealmSetup {
 
     /**
      * All extensions that are used in the assembly ordered accordingly to their natural order. We cannot use
-     * {@link ContainerSetup#extensions} as we remove every node from {@link #build()}.
+     * {@link ContainerSetup#extensions} as we remove every node when calling {@link #build()}.
      */
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>();
 

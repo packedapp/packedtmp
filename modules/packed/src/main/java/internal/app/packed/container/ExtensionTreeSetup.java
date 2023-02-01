@@ -18,22 +18,20 @@ package internal.app.packed.container;
 import app.packed.container.Realm;
 import app.packed.extension.Extension;
 
-/**
- * A single instance of this class exists per extension per application. And is used to have a single point. Where we
- * can close the extension.
- * <p>
- * Since all extensions that are used throughout an application is always installed in the root container.
- */
+/** A single instance of this class exists per extension per application. */
 public final class ExtensionTreeSetup extends RealmSetup {
-
-    /** A model of the extension. */
-    final ExtensionModel extensionModel;
 
     /** Whether or not this type of extension is still configurable. */
     private boolean isDone;
 
+    /** A model of the extension. */
+    final ExtensionModel model;
+
     /** The root extension. */
     private final ExtensionSetup root;
+
+    /** The extension id. */
+    final int usageOrderId;
 
     /**
      * Creates a new realm.
@@ -46,8 +44,9 @@ public final class ExtensionTreeSetup extends RealmSetup {
      *            the type of extension
      */
     ExtensionTreeSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
-        this.extensionModel = ExtensionModel.of(extensionType);
+        this.model = ExtensionModel.of(extensionType);
         this.root = root;
+        this.usageOrderId = root.container.application.extensionId++;
     }
 
     void close() {
@@ -64,12 +63,12 @@ public final class ExtensionTreeSetup extends RealmSetup {
     /** {@inheritDoc} */
     @Override
     public Realm realm() {
-        return extensionModel.realm();
+        return model.realm();
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<? extends Extension<?>> realmType() {
-        return extensionModel.type();
+        return model.type();
     }
 }

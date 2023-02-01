@@ -30,18 +30,11 @@ import internal.app.packed.operation.OperationSetup;
 @BindingTypeHook(extension = MirrorExtension.class)
 public non-sealed class ApplicationMirror implements Mirror , ContextualizedElementMirror {
 
-    /**
-     * The internal configuration of the application we are mirrored. Is initially null but populated via
-     * {@link #initialize(ApplicationSetup)}.
-     */
+    /** The configuration of the application. Is initially null but populated via {@link #initialize(ApplicationSetup)}. */
     @Nullable
     private ApplicationSetup application;
 
-    /**
-     * Create a new application mirror.
-     * <p>
-     * Subclasses should have a single package-protected constructor.
-     */
+    /** Create a new application mirror. */
     public ApplicationMirror() {}
 
     /**

@@ -31,29 +31,8 @@ import internal.app.packed.container.ExtensionModel;
  * Unlike {@link ExtensionMirror} which contains information about a particular <strong>usage</strong> of an extension.
  * The information provided by this descriptor are static information about the extension itself.
  */
-public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescriptor>permits ExtensionModel {
-
-    /**
-     * In order to xxxx is a total order between all loaded extension forms..
-     * <p>
-     * bla bla same fullname different classloaders. However, in practice this should only be a problem if attempting to add
-     * both extensions to the same container
-     *
-     * @param descriptor
-     *            the descriptor to be compared.
-     *
-     * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the
-     *         specified object.
-     *
-     * @throws IllegalArgumentException
-     *             if full name of this descriptor and the specified descriptor are equal. But they are loaded by different
-     *             class loaders.
-     */
-    // Maaske kan vi kigge på classloader parent... Nej
-    // Det er jo kun inter container...
-    // Saa man kan bare ikke loade 2 containere med samme navn...
-    @Override
-    int compareTo(ExtensionDescriptor descriptor);
+// I don't think we exposes comparable
+public sealed interface ExtensionDescriptor permits ExtensionModel {
 
     /** {@return an immutable unordered set containing every dependency the extension declares.} */
     Set<Class<? extends Extension<?>>> dependencies();

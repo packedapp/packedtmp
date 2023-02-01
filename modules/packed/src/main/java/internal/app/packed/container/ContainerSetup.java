@@ -112,6 +112,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      * @param wirelets
      *            optional wirelets
      */
+    // Probably need to take an installer?
     public ContainerSetup(ApplicationSetup application, AssemblySetup assembly, @Nullable ContainerSetup parent, Wirelet[] wirelets) {
         super(parent);
 
@@ -128,10 +129,8 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             this.lifetime = parent.lifetime;
         }
 
-        // BaseExtension is used by every container
-        ExtensionSetup baseExtension = new ExtensionSetup(treeParent == null ? null : treeParent.extensions.get(BaseExtension.class), this,
-                BaseExtension.class);
-        baseExtension.initialize(assembly.container == null); //ugly
+        // Install BaseExtension which is automatically used by every container
+        ExtensionSetup.install(BaseExtension.class, this, null);
 
         // The rest of the constructor is just processing wirelets that have been specified by
         // the user or extension when wiring the component. The wirelets have not been null checked.
@@ -345,11 +344,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
                 }
             }
 
-            // The extension must be recursively installed into all ancestors (if not already installed)
-            ExtensionSetup extensionParent = treeParent == null ? null : treeParent.useExtension(extensionClass, requestedByExtension);
-
-            extension = new ExtensionSetup(extensionParent, this, extensionClass);
-            extension.initialize(assembly.container == this);
+            extension = ExtensionSetup.install(extensionClass, this, requestedByExtension);
         }
         return extension;
     }

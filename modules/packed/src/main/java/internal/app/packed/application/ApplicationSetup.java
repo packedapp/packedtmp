@@ -60,6 +60,13 @@ public final class ApplicationSetup {
     private ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
 
     /**
+     * All extensions used in an application has a unique instance id attached. This is used in case we have multiple
+     * extension with the same canonical name but from different class loaders. Where we then compare the extension id of
+     * the extensions as a last resort.
+     */
+    public int extensionId;
+
+    /**
      * Create a new application.
      *
      * @param driver
