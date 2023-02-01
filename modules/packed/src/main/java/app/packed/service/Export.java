@@ -6,20 +6,26 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.BeanHook.AnnotatedFieldHook;
+import app.packed.bean.BeanHook.AnnotatedMethodHook;
+import app.packed.extension.BaseExtension;
+
 /**
  *
  */
-@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@AnnotatedMethodHook(extension = BaseExtension.class, allowInvoke = true)
+@AnnotatedFieldHook(extension = BaseExtension.class, allowGet = true)
 public @interface Export {
 
     // Overrides the return type
+    // This attribute is primarily used
     Class<?> as() default FromMethodSignature.class;
 }
 
-class FromMethodSignature {}
-
+final class FromMethodSignature {}
 
 ////  ProvisionMode[] mode() default {}; // Use value from @Provide, if no @Provide and empty = On_DEMAND, otherwise use single value
 //
@@ -36,6 +42,5 @@ class FromMethodSignature {}
 // Problemet er saa at man ikke kun kan exportere...
 // med mindre man bruger mode = ProvideOnly, ExportOnly, Both
 // Hvilket virker langt mere kompliceret
-
 
 // Extensions cannot export services...

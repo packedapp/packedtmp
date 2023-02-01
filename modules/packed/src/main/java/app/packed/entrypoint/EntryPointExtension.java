@@ -31,6 +31,8 @@ import internal.app.packed.entrypoint.EntryPointSetup.MainThreadOfControl;
 // har entry points
 
 // ExecutionModel
+
+
 public class EntryPointExtension extends FrameworkExtension<EntryPointExtension> {
 
     /** The configuration of the application. */

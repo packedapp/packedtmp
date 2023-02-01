@@ -39,7 +39,7 @@ public class CheckCycles extends BaseAssembly {
         //bean().multiInstall(A.class).provide();
         ProvideableBeanConfiguration<A> aaa = base().multiInstall(A.class);
         aaa.provide();
-        aaa.provide();
+        //aaa.provide();
         provide(A.class);
         provide(B.class);
     }
@@ -51,9 +51,9 @@ public class CheckCycles extends BaseAssembly {
             System.out.println(b.beanClass().getSimpleName() + " " + b.factoryOperation().get().target());
         }
 
-        Collection<ProvidedServiceMirror> c = am.use(BaseExtensionMirror.class).provisions().values();
+        Collection<ProvidedServiceMirror> c = am.use(BaseExtensionMirror.class).serviceProviders().values();
 
-        Collection<ExportedServiceMirror> ex = am.use(BaseExtensionMirror.class).exports().values();
+        Collection<ExportedServiceMirror> ex = am.use(BaseExtensionMirror.class).serviceExports().values();
 
         BeanMirror b = am.container().beans().iterator().next();
 

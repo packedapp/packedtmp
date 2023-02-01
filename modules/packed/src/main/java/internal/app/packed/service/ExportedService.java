@@ -28,14 +28,14 @@ public final class ExportedService {
     public final Key<?> key;
 
     /** The operation that exports the service. */
-    public final OperationSetup os;
+    public final OperationSetup operation;
 
     /** A route to where the service is actually located. Null indicates directly from the operation */
     @Nullable
     public final ServicePath path;
 
     ExportedService(OperationSetup os, Key<?> key) {
-        this.os = os;
+        this.operation = os;
         this.key = key;
         this.path = null;
     }

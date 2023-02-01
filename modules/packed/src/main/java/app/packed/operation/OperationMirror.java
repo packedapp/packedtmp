@@ -18,7 +18,6 @@ package app.packed.operation;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodType;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -40,7 +39,6 @@ import app.packed.lifetime.LifetimeMirror;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.service.ServiceManagerEntry;
 
 /**
  * A mirror for an operation on a bean.
@@ -137,18 +135,18 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
         throw new UnsupportedOperationException();
     }
 
-    // The returned set of keys may contains key that result in a cycle.
-    // For example, if a bean is provided as a service. Calling this method on any of the
-    // operations on the bean will include the key under which the bean is being provided.
-    public Set<Key<?>> keys() {
-        HashSet<Key<?>> result = new HashSet<>();
-        for (ServiceManagerEntry e : operation().bean.container.sm.entries.values()) {
-            if (e.provider != null) {
-                result.add(e.key);
-            }
-        }
-        return Set.copyOf(result);
-    }
+//    // The returned set of keys may contains key that result in a cycle.
+//    // For example, if a bean is provided as a service. Calling this method on any of the
+//    // operations on the bean will include the key under which the bean is being provided.
+//    public Set<Key<?>> keys() {
+//        HashSet<Key<?>> result = new HashSet<>();
+//        for (ServiceManagerEntry e : operation().bean.container.sm.entries.values()) {
+//            if (e.provider() != null) {
+//                result.add(e.key);
+//            }
+//        }
+//        return Set.copyOf(result);
+//    }
 
     // Composites, What about services???
     // Services no, because one operation may be used multiple places

@@ -17,12 +17,11 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import app.packed.bindings.Key;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.service.ProvidedService;
+import internal.app.packed.service.ProvidedServiceSetup;
 
 /**
  * A mirror that represents a service provision operation.
@@ -31,14 +30,15 @@ import internal.app.packed.service.ProvidedService;
  * @see BaseAssembly#provide(Class)
  * @see ProvideableBeanConfiguration#provide()
  */
+// ServiceProvisionSiteMirror
 // Maaske er export med i path'en istedet for et saelvstaendig mirror
 // Her taenker jeg fx alle de wirelets der mapper fra og til...
 public class ProvidedServiceMirror extends OperationMirror {
 
     /** The service that is provided. */
-    final ProvidedService service;
+    final ProvidedServiceSetup service;
 
-    public ProvidedServiceMirror(@SuppressWarnings("exports") ProvidedService ps) {
+    public ProvidedServiceMirror(@SuppressWarnings("exports") ProvidedServiceSetup ps) {
         this.service = requireNonNull(ps);
     }
 
@@ -53,11 +53,7 @@ public class ProvidedServiceMirror extends OperationMirror {
      * @return
      */
     public Stream<ServiceBindingMirror> useSites() {
-        ArrayList<ServiceBindingMirror> l = new ArrayList<>();
-        for (var b = service.entry.bindings; b != null; b = b.nextFriend) {
-            l.add((ServiceBindingMirror) b.mirror());
-        }
-        return l.stream();
+        return service.entry.useSiteMirrors();
     }
 }
 

@@ -23,9 +23,15 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.bindings.Key;
+import app.packed.context.ContextTemplate;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
+import app.packed.operation.Op;
+import app.packed.operation.Op1;
+import app.packed.service.ServiceLocator;
 import app.packed.service.sandbox.ServiceTransformer;
 import internal.app.packed.lifetime.zbridge.PackedBridge;
+import internal.app.packed.service.PackedServiceLocator;
 
 /**
  *
@@ -40,7 +46,9 @@ public final class ExtensionLifetimeBridge {
     public static final ExtensionLifetimeBridge CONTAINER_NAME = null;
 
     /** A bridge that makes exported services available as {@link app.packed.service.ServiceLocator} in the guest. */
-    public static final ExtensionLifetimeBridge EXPORTED_SERVICE_LOCATOR = null;
+    public static final ExtensionLifetimeBridge EXPORTED_SERVICE_LOCATOR = builder(MethodHandles.lookup(), BaseExtension.class).onUse(e -> {
+        // install PackedServiceLocator
+    }).provide(PackedServiceLocator.class, new Op1<PackedServiceLocator, ServiceLocator>(e -> e) {}).build();
 
     public static final ExtensionLifetimeBridge MANAGED_LIFETIME_CONTROLLER = null;
 
@@ -56,6 +64,7 @@ public final class ExtensionLifetimeBridge {
         return bridge.extensionClass;
     }
 
+    // Context injection???
     public List<Class<?>> invocationArguments() {
         return bridge.invocationArguments();
     }
@@ -89,10 +98,28 @@ public final class ExtensionLifetimeBridge {
             this.bridge = requireNonNull(bridge);
         }
 
-        public Builder<E> addInvocationArgument(Class<?> type) {
-            bridge = bridge.addInvocationArgument(type);
+        // If arguments are needed from the lifetime start, must use a context.
+        public Builder<E> addContext(ContextTemplate template) {
             return this;
         }
+
+        // Ideen er at installere beans der kan be exposed to guest objektet.
+        // Fx ServiceLocator
+        // Hvorfor er det ikke bare extensions der installere den og ikke bridgen
+
+        // (e-> installGuest(F.class).dasd);
+
+        // OperationTemplate???
+
+        // 123 paa runtime som argument.
+        // Hvordan faar jeg det ind i en bean
+        // Anden end via ContextInjection???
+
+        // InvocationContextArgument
+
+        // Create an internalContext???
+
+        // Bliver noedt til at vaere unik. Kan ikke add
 
         /**
          * Builds and returns the new bridge.
@@ -108,5 +135,28 @@ public final class ExtensionLifetimeBridge {
             bridge = bridge.onUse(action);
             return this;
         }
+
+        public Builder<E> provide(Class<?> extensionBean, Op<?> op) {
+            // Adds synthetic operation to extensionBean
+            return this;
+        }
+
+        public <T> Builder<E> provide(Class<T> extensionBean, Class<T> key) {
+            return this;
+        }
+
+        public <T> Builder<E> provide(Class<T> extensionBean, Key<T> key) {
+            return this;
+        }
+
+//        public <T> Builder<E> provide(Key<T> key, Class<T> type) {
+//            bridge = bridge.addInvocationArgument(type);
+//            return this;
+//        }
+//
+//        public <T> Builder<E> provide(Class<T> type, Key<?> ) {
+//            bridge = bridge.addInvocationArgument(type);
+//            return this;
+//        }
     }
 }

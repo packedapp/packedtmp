@@ -38,7 +38,7 @@ public final class CircularServiceDependencyChecker {
 
     private static void dependencyCyclesFind(ArrayDeque<ServiceManagerEntry> stack, ArrayDeque<ServiceManagerEntry> dependencies, ContainerSetup container) {
         for (ServiceManagerEntry node : container.sm.entries.values()) {
-            if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
+            if (!node.hasBeenCheckForDependencyCycles) { // only process those nodes that have not been visited yet
                 detectCycle(node, stack, dependencies);
             }
         }
@@ -69,7 +69,7 @@ public final class CircularServiceDependencyChecker {
      *             if there is a cycle in the graph
      */
     private static void detectCycle(ServiceManagerEntry entry, ArrayDeque<ServiceManagerEntry> stack, ArrayDeque<ServiceManagerEntry> dependencies) {
-        ProvidedService ps = entry.provider;
+        ProvidedServiceSetup ps = entry.provider();
         ServiceBindingSetup binding = entry.bindings;
         if (ps == null || binding == null) {
             return; // leaf
@@ -80,9 +80,9 @@ public final class CircularServiceDependencyChecker {
         stack.push(entry);
         while (binding != null) {
             BeanSetup bean = binding.operation.bean;
-            for (ProvidedService psDep : bean.serviceProviders) {
+            for (ProvidedServiceSetup psDep : bean.serviceProviders) {
                 ServiceManagerEntry next = psDep.entry;
-                if (!next.needsPostProcessing) {
+                if (next.hasBeenCheckForDependencyCycles) {
                     continue;
                 }
 

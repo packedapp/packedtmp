@@ -5,17 +5,19 @@ import static java.util.Objects.requireNonNull;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import app.packed.bindings.Key;
+import app.packed.framework.Nullable;
 import app.packed.service.ExportedServiceMirror;
 import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.ServiceContract;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.service.ExportedService;
+import internal.app.packed.service.ProvidedServiceSetup;
 import internal.app.packed.service.ServiceManagerEntry;
 
-/** A mirror for the {@link BaseExtension}. */
+/** A mirror for {@link BaseExtension}. */
+// Or just directly on Application, Container... Move services into the main stream
 public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {
 
     /** The container the extension is a part of. */
@@ -32,38 +34,12 @@ public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {
     }
 
     /**
-     * Returns the service contract for the container.
-     *
-     * @return the service contract for the container
-     * @throws IllegalStateException
-     *             if dependencies have not been resolved
+     * {@return a service contract for the container}
+     * <p>
+     * If the configuration of the container has not been completed. This method return a contract on a best effort basis.
      */
-    public ServiceContract contract() {
-        if (!container.assembly.isDone()) {
-            // Den fungere ikke hvis vi ikke har resolvet alle services.
-            // Fordi vi ved jo ikke om en required service fx bliver provided af et link af en container
-            // senere hen, alternativet er kun at have
-            throw new IllegalStateException();
-        }
-
-        ServiceContract.Builder builder = ServiceContract.builder();
-
-        // Add all exports
-        container.sm.exports.keySet().forEach(k -> builder.provide(k));
-
-        // All all requirements
-        for (Entry<Key<?>, ServiceManagerEntry> e : container.sm.entries.entrySet()) {
-            ServiceManagerEntry sme = e.getValue();
-            if (sme.provider == null) {
-                if (sme.isRequired) {
-                    builder.require(e.getKey());
-                } else {
-                    builder.requireOptional(e.getKey());
-                }
-            }
-        }
-
-        return builder.build();
+    public ServiceContract serviceContract() {
+        return container.sm.newContract();
     }
 
     // Detaljeret info, ogsaa med dependency graph som kan extractes...
@@ -78,22 +54,27 @@ public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {
     // Map<K, V> resolved
     // Map<K, V> unresolvedOptional?();
 
-    /** { @return a map view of all the services that are exported by the container.} */
-    public Map<Key<?>, ExportedServiceMirror> exports() {
+    /** { @return a map of all the services that are exported by the container.} */
+    public Map<Key<?>, ExportedServiceMirror> serviceExports() {
         LinkedHashMap<Key<?>, ExportedServiceMirror> result = new LinkedHashMap<>();
         for (ExportedService e : container.sm.exports.values()) {
-            ExportedServiceMirror mirror = (ExportedServiceMirror) e.os.mirror();
+            ExportedServiceMirror mirror = (ExportedServiceMirror) e.operation.mirror();
             result.put(e.key, mirror);
         }
         return Collections.unmodifiableMap(result);
     }
 
-    /** { @return a map view of all the services that are provided internally in the container.} */
-    public Map<Key<?>, ProvidedServiceMirror> provisions() {
+    /** { @return a map of all the services that are provided internally in the container.} */
+    public Map<Key<?>, ProvidedServiceMirror> serviceProviders() {
+        // Not really a map view
         LinkedHashMap<Key<?>, ProvidedServiceMirror> result = new LinkedHashMap<>();
         for (ServiceManagerEntry e : container.sm.entries.values()) {
-            ProvidedServiceMirror mirror = (ProvidedServiceMirror) e.provider.operation.mirror();
-            result.put(e.key, mirror);
+            @Nullable
+            ProvidedServiceSetup provider = e.provider();
+            if (provider != null) {
+                ProvidedServiceMirror mirror = (ProvidedServiceMirror) provider.operation.mirror();
+                result.put(e.key, mirror);
+            }
         }
         return Collections.unmodifiableMap(result);
     }

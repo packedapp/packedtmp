@@ -59,12 +59,13 @@ public final class ServiceBindingSetup extends BindingSetup {
     /** {@inheritDoc} */
     @Override
     public BindingResolution resolver() {
-        return entry.provider == null ? null : entry.provider.resolution;
+        ProvidedServiceSetup provider = entry.provider();
+        return provider == null ? null : provider.resolution;
     }
 
     /** {@return whether or not the service could be resolved.} */
     public boolean isResolved() {
-        return entry.provider != null;
+        return entry.provider() != null;
     }
 
     /** {@inheritDoc} */

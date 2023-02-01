@@ -28,15 +28,14 @@ import internal.app.packed.operation.OperationSetup;
 /**
  * An extension that can be used to provide mirror instances at runtime.
  * <p>
- * This mirrors that can be injected at runtime are {@link ApplicationMirror}, {@link ContainerMirror},
+ * The mirrors that can be injected at runtime are {@link ApplicationMirror}, {@link ContainerMirror},
  * {@link AssemblyMirror}, {@link BeanMirror} and {@link OperationMirror}.
  * <p>
- * Something about we include everything.
  * This extension is mainly here as a kind of "marker extension". Indicating that somewhere in the application someone
- * has decided to reference a mirror. In which case mirrors for the whole application is available at runtime.
+ * has decided to reference a mirror at runtime. In which case mirrors for the whole application is available at runtime.
  * <p>
  * At some point in the future we might support a compact mirror mode where each extension only keep a minimal set of
- * information at runtime.
+ * information at runtime. However, for now all information about an application is present in every mirror.
  *
  * @see ApplicationMirror
  * @see ContainerMirror

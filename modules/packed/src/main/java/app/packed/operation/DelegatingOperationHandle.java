@@ -15,17 +15,27 @@
  */
 package app.packed.operation;
 
+import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
 import internal.app.packed.operation.PackedDelegatingOperationHandle;
 
 /**
+ * A special type of operation handle that allows an extension to delegate the execution of an operation to another
+ * operation.
  *
+ * @see app.packed.bean.BeanIntrospector.OperationalMethod#newDelegatingOperation()
  */
 public sealed interface DelegatingOperationHandle permits PackedDelegatingOperationHandle {
 
+    /** {@return the extension that created this handle.} */
+    Class<? extends Extension<?>> delegatedFrom();
+
+    /**
+     * {@return @{code true} if an operation has been created from this handle, otherwise false.}
+     */
     boolean isDelegated();
 
-    OperationHandle newOperation(ExtensionPoint.UseSite context, OperationTemplate template);
+    OperationHandle newOperation(OperationTemplate template, ExtensionPoint.UseSite useSite);
 
     /** {@return the target of this operation.} */
     OperationTarget target();

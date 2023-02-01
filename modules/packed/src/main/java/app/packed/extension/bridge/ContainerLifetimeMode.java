@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service.sandbox;
-
-import java.util.Collection;
-
-import app.packed.service.ServiceBindingMirror;
+package app.packed.extension.bridge;
 
 /**
  *
  */
-// vs ProvideOperationMirror? and ExportOperationMirror
-public interface ServiceMirror {
-
-    Collection<ServiceBindingMirror> bindings();
+public enum ContainerLifetimeMode {
+    INITIALIZATION_ONLY,
+    INITIALIZATION_START_STOP,
+    INITIALIZATION_AND_START_STOP,
+    ALL
 }

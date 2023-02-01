@@ -15,14 +15,40 @@
  */
 package app.packed.extension.bridge;
 
+import app.packed.container.Assembly;
+import app.packed.container.ContainerHandle;
+import app.packed.extension.Extension;
+import app.packed.operation.OperationHandle;
+
 /**
  *
  */
 public class Usage {
 
-    public static void main(ContainerGuestBean<?> b) {
+    public static void main(ContainerGuestBeanConfiguration<?> b) {
 
-        b.addBridge(ExtensionLifetimeBridge.EXPORTED_SERVICE_LOCATOR);
+//        b.addBridge(ExtensionLifetimeBridge.EXPORTED_SERVICE_LOCATOR);
 
     }
+}
+
+class MyE extends Extension<MyE> {
+
+
+    public void installSession(Assembly a) {
+        ContainerGuestBeanConfiguration<String> b = base().newContainerGuest(String.class);
+
+        ContainerHandle h = b.newInstaller(ContainerLifetimeMode.INITIALIZATION_AND_START_STOP).link(a);
+
+        // Det giver basalt set ingen mening ikke at have disse i et map?
+        // Men maaske det map ikke er synligt????
+
+        @SuppressWarnings("unused")
+        OperationHandle newSessionsHandle = h.lifetimeOperations().get(0);
+
+        // mhStart.invokeExact(containerMapBean)
+    }
+
+
+
 }

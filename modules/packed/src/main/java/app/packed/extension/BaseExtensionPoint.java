@@ -20,6 +20,8 @@ import app.packed.bindings.Key;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
+import app.packed.extension.bridge.ContainerGuestBeanConfiguration;
+import app.packed.extension.bridge.ExtensionLifetimeBridge;
 import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
@@ -30,7 +32,7 @@ import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.PackedOperationHandle;
 
-/** An {@link ExtensionPoint extension point} class for {@link BaseExtension}. */
+/** An {@link ExtensionPoint extension point} for {@link BaseExtension}. */
 public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     /** Creates a new base extension point. */
@@ -85,8 +87,39 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         be.addCodeGenerated(b, key, supplier);
     }
 
+    /**
+     * Creates a new bean installer for the application.
+     *
+     * @param kind
+     *            the kind of bean to installer
+     * @return the installer
+     */
+    public BeanInstaller beanInstaller(BeanKind kind) {
+        return new PackedBeanInstaller(extension().extension, kind, (PackedExtensionPointContext) context());
+    }
+
+    /**
+     * Creates a new bean installer for an extension.
+     *
+     * @param kind
+     *            the kind of bean to installer
+     * @return the installer
+     */
+    public BeanInstaller beanInstallerForExtension(BeanKind kind, UseSite forExtension) {
+        requireNonNull(forExtension, "forExtension is null");
+        return new PackedBeanInstaller(extension().extension, kind, (PackedExtensionPointContext) forExtension);
+    }
+
+    public ContainerInstaller containerInstaller() {
+        throw new UnsupportedOperationException();
+    }
+
+    public ContainerInstaller containerInstaller(InstanceBeanConfiguration<?> guestBean) {
+        throw new UnsupportedOperationException();
+    }
+
     public <T> InstanceBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, context()).install(implementation);
+        BeanHandle<T> handle = beanInstallerForExtension(BeanKind.CONTAINER, context()).install(implementation);
         return new InstanceBeanConfiguration<>(handle);
     }
 
@@ -98,7 +131,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public <T> InstanceBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, context()).install(op);
+        BeanHandle<T> handle = beanInstallerForExtension(BeanKind.CONTAINER, context()).install(op);
         return new InstanceBeanConfiguration<>(handle);
     }
 
@@ -120,13 +153,13 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
-        BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, context()).installIfAbsent(clazz,
+        BeanHandle<T> handle = beanInstallerForExtension(BeanKind.CONTAINER, context()).installIfAbsent(clazz,
                 h -> action.accept(new InstanceBeanConfiguration<>(h)));
         return new InstanceBeanConfiguration<>(handle);
     }
 
     public <T> InstanceBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = newBeanForExtension(BeanKind.CONTAINER, context()).installInstance(instance);
+        BeanHandle<T> handle = beanInstallerForExtension(BeanKind.CONTAINER, context()).installInstance(instance);
         return new InstanceBeanConfiguration<>(handle);
     }
 
@@ -138,56 +171,43 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public BeanConfiguration installStatic(Class<?> beanClass) {
-        BeanHandle<?> handle = newBeanForExtension(BeanKind.STATIC, context()).install(beanClass);
+        BeanHandle<?> handle = beanInstallerForExtension(BeanKind.STATIC, context()).install(beanClass);
         return new BeanConfiguration(handle);
     }
 
-    /**
-     * Creates a new bean installer for the application.
-     *
-     * @param kind
-     *            the kind of bean to installer
-     * @return the installer
-     */
-    public BeanInstaller newBean(BeanKind kind) {
-        return new PackedBeanInstaller(extension().extension, kind, (PackedExtensionPointContext) context());
-    }
-
-    /**
-     * Creates a new bean installer for an extension.
-     *
-     * @param kind
-     *            the kind of bean to installer
-     * @return the installer
-     */
-    public BeanInstaller newBeanForExtension(BeanKind kind, UseSite forExtension) {
-        requireNonNull(forExtension, "forExtension is null");
-        return new PackedBeanInstaller(extension().extension, kind, (PackedExtensionPointContext) forExtension);
-    }
-
-    public ContainerInstaller newContainer() {
+    public <T> ContainerGuestBeanConfiguration<T> newContainerGuest(Class<T> containerGuest, ExtensionLifetimeBridge... bridges) {
         throw new UnsupportedOperationException();
     }
 
     public OperationConfiguration runOnBeanInitialization(DelegatingOperationHandle h, LifecycleOrder ordering) {
         requireNonNull(ordering, "ordering is null");
-        OperationHandle handle = h.newOperation(context(), OperationTemplate.defaults());
+        OperationHandle handle = h.newOperation(OperationTemplate.defaults(), context());
         ((PackedOperationHandle) handle).operation().bean.lifecycle.addInitialize(handle, ordering);
         return new OperationConfiguration(handle);
     }
-
     /**
-     * Creates a new inject operation from the specified handle.
+     * Creates a new inject operation from the specified delegating operation handle.
      *
-     * @param handle
-     *            the operation that should be executed as part of its bean's injection phase
-     * @return a configuration object
+     * @param h
+     *            the delegating handle that the operation should be created from.
+     * @return a configuration object representing the inject operation
      * @see Inject
      */
     public OperationConfiguration runOnBeanInject(DelegatingOperationHandle h) {
-        OperationHandle handle = h.newOperation(context(), OperationTemplate.defaults());
-        ((PackedOperationHandle) handle).operation().bean.lifecycle.addInitialize(handle, null);
+        PackedOperationHandle handle = (PackedOperationHandle) h.newOperation(OperationTemplate.defaults(), context());
+        handle.operation().bean.lifecycle.addInitialize(handle, null);
         return new OperationConfiguration(handle);
+    }
+
+    public OperationConfiguration runOnBeanStart(DelegatingOperationHandle h, LifecycleOrder ordering) {
+        // What if I want to fork it??? on OC??
+        // Or do I need to call it immediately
+        // runOnLifecycle(RunState runstate, LifecycleOrder ordering)
+        throw new UnsupportedOperationException();
+    }
+
+    public OperationConfiguration runOnBeanStop(DelegatingOperationHandle h, LifecycleOrder ordering) {
+        throw new UnsupportedOperationException();
     }
 
     /**

@@ -53,7 +53,6 @@ public final class ExtensionBridgeTemplate<E extends Extension<E>> {
         throw new UnsupportedOperationException();
     }
 
-
     //exposeOrInstace(ServiceBean->SL.wrap, ServiceLocator.empty())
     public <S> ExtensionBridgeTemplate<E> exposeOrInstance(Op<S> op, S constant) {
         throw new UnsupportedOperationException();

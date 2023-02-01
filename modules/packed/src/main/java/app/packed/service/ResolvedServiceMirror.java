@@ -13,28 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.bridge;
+package app.packed.service;
 
-import app.packed.bean.BeanHandle;
-import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.bean.BeanMirror;
 
 /**
  *
  */
-// Har ikke nogle host objekter. Det er jo en almindelige bean...
+//Hvor faar vi den fra successfuld
+////En Bean (constant)
+////En Lifetime bean
+////En prototypeBean
+////En @Provide method
 
-// Saa hvis vi endelig ville lave det, skal det generisks for beans.
-public class ContainerGuestBean<T> extends InstanceBeanConfiguration<T> {
+// En prototype bean og @Provide har nok mest tilfaelles
+// De er en non-caching operation
+public interface ResolvedServiceMirror {
 
-    /**
-     * @param handle
-     */
-    public ContainerGuestBean(BeanHandle<T> handle) {
-        super(handle);
-    }
+    BeanMirror bean();
 
-    public ContainerGuestBean<T> addBridge(ExtensionLifetimeBridge bridge) {
-        return this;
-    }
+    boolean isBeanInstance();
 }
-// Guest ->

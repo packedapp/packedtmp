@@ -17,9 +17,7 @@ package app.packed.bindings;
 
 import app.packed.application.BuildException;
 
-/**
- * An exception that is thrown when attempting to provide multiple services for the same key.
- */
+/** An exception that is typically thrown when attempting to provide multiple services for the same key. */
 public class KeyAlreadyInUseException extends BuildException {
 
     private static final long serialVersionUID = 1L;

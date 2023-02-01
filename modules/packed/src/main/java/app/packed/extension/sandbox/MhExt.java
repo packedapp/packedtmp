@@ -71,7 +71,7 @@ public class MhExt extends BaseAssembly {
         BeanHandle<?> h;
 
         public void ownL(Class<?> cl) {
-            h = base().newBean(BeanKind.MANYTON).lifetimes(OperationTemplate.raw()).install(cl);
+            h = base().beanInstaller(BeanKind.MANYTON).lifetimes(OperationTemplate.raw()).install(cl);
         }
 
         @Override

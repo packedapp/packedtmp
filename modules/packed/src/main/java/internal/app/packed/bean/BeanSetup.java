@@ -43,7 +43,7 @@ import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.BeanAccessOperationSetup;
 import internal.app.packed.operation.PackedOp;
-import internal.app.packed.service.ProvidedService;
+import internal.app.packed.service.ProvidedServiceSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
@@ -116,7 +116,7 @@ public final class BeanSetup {
     public final RealmSetup realm;
 
     /** A list of services provided by the bean, used for circular dependency checks. */
-    public final List<ProvidedService> serviceProviders = new ArrayList<>();
+    public final List<ProvidedServiceSetup> serviceProviders = new ArrayList<>();
 
     /** All beans in a container are maintained in a linked list. */
     @Nullable

@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
+import app.packed.bean.BeanMirror;
 import app.packed.bindings.BindingMirror;
 import app.packed.bindings.Key;
 import internal.app.packed.service.ServiceBindingSetup;
@@ -27,6 +28,18 @@ import internal.app.packed.service.ServiceBindingSetup;
  * A binding of a service.
  */
 // findAll(SBM.class).filterOn(key.equals(String.class)).toList();
+
+// Hvor faar vi den fra successfuld
+//// En Bean (constant)
+//// En Lifetime bean
+//// En prototypeBean
+//// En @Provide method
+
+// unsuccessfull
+//// Missing
+//// missing but Optional
+//// missing but default
+
 
 public class ServiceBindingMirror extends BindingMirror {
 
@@ -53,6 +66,10 @@ public class ServiceBindingMirror extends BindingMirror {
     /** {@inheritDoc} */
     public Key<?> key() {
         return binding.entry.key;
+    }
+
+    public Optional<BeanMirror> providedBy() {
+        throw new UnsupportedOperationException();
     }
 
     // non null if resolvedx

@@ -26,6 +26,8 @@ import java.util.Optional;
 
 import app.packed.application.ApplicationPath;
 import app.packed.application.BuildGoal;
+import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
@@ -82,6 +84,10 @@ public abstract class Extension<E extends Extension<E>> {
      */
     protected Extension() {}
 
+    protected final BeanHandle<?> crack(BeanConfiguration configuration) {
+
+        throw new UnsupportedOperationException();
+    }
     /**
      * {@return an instance of this extension that is used in the application's root container. Will return this if this
      * extension is the root extension}

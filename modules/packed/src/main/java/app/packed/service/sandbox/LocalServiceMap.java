@@ -15,12 +15,12 @@
  */
 package app.packed.service.sandbox;
 
+import app.packed.bean.BeanHandle;
 import app.packed.bindings.BindableVariable;
 import app.packed.bindings.Key;
 import app.packed.operation.OperationHandle;
 
 // ServiceDomain? Something where keys are unique
-
 
 // Features:
 //// PerBean, PerContainer, PerApplication
@@ -42,17 +42,19 @@ public class LocalServiceMap<V> {
     // consumers
 
     // Vi har fundet en binding som vi gerne vil binde til en service
-    public void consumeService(BindableVariable handle) {
 
-    }
+    // Must be resolvable to a key
+    public void consume(BindableVariable variable) {}
 
     // Producing multiple services with the same key is not supported
 
     public void produceConstant(Key<?> key, Object constant) {}
 
-    public void produceService(Key<?> key, OperationHandle handle) {}
-
     public void produceOptionalService(Key<?> key, OperationHandle handle) {}
+
+    public void produce(Key<?> key, OperationHandle handle) {}
+
+    public <T> void produceBean(Key<T> key, BeanHandle<T> handle) {}
 
     public void resolve() {}
 }

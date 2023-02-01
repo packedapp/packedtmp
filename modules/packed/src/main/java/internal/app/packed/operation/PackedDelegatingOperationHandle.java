@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
+import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint.UseSite;
 import app.packed.framework.Nullable;
 import app.packed.operation.DelegatingOperationHandle;
@@ -58,6 +59,12 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
 
     /** {@inheritDoc} */
     @Override
+    public Class<? extends Extension<?>> delegatedFrom() {
+        return delegatedFrom.extensionType;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public boolean isDelegated() {
         return operation != null;
     }
@@ -72,7 +79,7 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(UseSite context, OperationTemplate template) {
+    public OperationHandle newOperation(OperationTemplate template, UseSite context) {
         PackedExtensionPointContext c = (PackedExtensionPointContext) context;
         return newOperation(c.usedBy(), template);
     }

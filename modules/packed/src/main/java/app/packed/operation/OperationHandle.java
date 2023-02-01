@@ -25,7 +25,7 @@ import app.packed.context.Context;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /**
- *
+ * An operation handle
  */
 public sealed interface OperationHandle permits PackedOperationHandle {
 

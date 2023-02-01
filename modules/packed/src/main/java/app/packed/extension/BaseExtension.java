@@ -52,11 +52,28 @@ import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.operation.OperationSetup;
 
 /**
- * An extension that defines the foundational APIs for managing beans, containers and applications.
+ * An extension that defines the foundational APIs for managing beans, services, containers and applications.
  * <p>
- * Every container will automatically have this extension added. And every extension automatically has a direct
- * dependency on this extension.
+ * Every container automatically uses this extension. And every extension automatically has a direct dependency on this
+ * extension.
+ * <p>
+ * This extension does not define an {@link ExtensionExtension extension mirror}. Instead all relevant methods are
+ * placed directly on {@link app.packed.bean.BeanMirror}, {@link app.packed.container.ContainerMirror} and
+ * {@link app.packed.application.ApplicationMirror}.
+ *
+ * @see BaseExtensionMirror
  */
+
+// Bean
+//// install
+
+// Container
+//// link
+
+// Service
+//// export
+//// require
+//// provide
 public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     static final PackedBeanLocal<Map<Key<?>, BindableVariable>> CODEGEN = PackedBeanLocal.of();
@@ -68,43 +85,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /** Create a new base extension. */
     BaseExtension() {}
-
-    /**
-     * Provides every service from the specified locator.
-     *
-     * @param locator
-     *            the locator to provide services from
-     * @throws IllegalArgumentException
-     *             if the specified locator is not implemented by Packed
-     */
-    public void provideAll(ServiceLocator locator) {
-        requireNonNull(locator, "locator is null");
-//        if (!(locator instanceof AbstractServiceLocator l)) {
-//            throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
-//                    + " are currently not supported, locator type = " + locator.getClass().getName());
-//        }
-        checkIsConfigurable();
-        throw new UnsupportedOperationException();
-    }
-
-//    public void provideAll(ServiceLocator locator, Consumer<ServiceTransformer> transformer) {
-//        // ST.contract throws UOE
-//    }
-
-    // Think we need installPrototype (Which will fail if not provided or exported)
-    // providePrototype would then be installPrototype().provide() // not ideal
-    // Men taenker vi internt typisk arbejde op i mod implementering. Dog ikke altid
-    // providePerRequest <-- every time the service is requested
-    // Also these beans, can typically just be composites??? Nah
-    public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        BeanHandle<T> handle = newBeanInstaller(BeanKind.MANYTON).lifetimes(OperationTemplate.defaults()).install(implementation);
-        return new ProvideableBeanConfiguration<>(handle).provide();
-    }
-
-    public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> op) {
-        BeanHandle<T> handle = newBeanInstaller(BeanKind.MANYTON).lifetimes(OperationTemplate.defaults()).install(op);
-        return new ProvideableBeanConfiguration<>(handle).provide();
-    }
 
     <K> void addCodeGenerated(BeanSetup bean, Key<K> key, Supplier<? extends K> supplier) {
         // BindableVariable bv = CODEGEN.get(bean).get(key);
@@ -120,12 +100,58 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         var.bindGeneratedConstant(supplier);
     }
 
+//    public void provideAll(ServiceLocator locator, Consumer<ServiceTransformer> transformer) {
+//        // ST.contract throws UOE
+//    }
+
     final void embed(Assembly assembly) {
         /// MHT til hooks. Saa tror jeg faktisk at man tager de bean hooks
         // der er paa den assembly der definere dem
 
         // Men der er helt klart noget arbejde der
         throw new UnsupportedOperationException();
+    }
+
+    // One of 3 models...
+    // Fails on other exports
+    // Ignores other exports
+    // interacts with other exports in some way
+    /**
+     * Exports all container services and any services that have been explicitly anchored via of anchoring methods.
+     * <p>
+     *
+     * <ul>
+     * <li><b>Service already exported.</b> The service that have already been exported (under any key) are always
+     * ignored.</li>
+     * <li><b>Key already exported.</b>A service has already been exported under the specified key.
+     * <li><b>Are requirements.</b> Services that come from parent containers are always ignored.</li>
+     * <li><b>Not part of service contract.</b> If a service contract has set. Only services for whose key is part of the
+     * contract is exported.</li>
+     * </ul>
+     * <p>
+     * This method can be invoked more than once. But use cases for this are limited.
+     */
+    // Altsaa tror mere vi er ude efter noget a.la. exported.services = internal.services
+    // Saa maske smide ISE hvis der allerede er exporteret services. Det betyder naesten ogsaa
+    // at @Export ikke er supporteret
+    // ect have exportAll(boolean ignoreExplicitExports) (Otherwise fails)
+
+    // All provided services are automatically exported
+    public void exportAll() {
+        // Tror vi aendre den til streng service solve...
+        // Og saa tager vi bare alle services() og exportere
+
+        // Add exportAll(Predicate); //Maybe some exportAll(Consumer<ExportedConfg>)
+        // exportAllAs(Function<?, Key>
+
+        // Export all entries except foo which should be export as Boo
+        // exportAll(Predicate) <- takes key or service configuration???
+
+        // export all _services_.. Also those that are already exported as something else???
+        // I should think not... Det er er en service vel... SelectedAll.keys().export()...
+        checkIsConfigurable();
+
+        extension.container.sm.exportAll = true;
     }
 
     /**
@@ -179,48 +205,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     public <T> ProvideableBeanConfiguration<T> installLazy(Op<T> op) {
         BeanHandle<T> handle = newBeanInstaller(BeanKind.LAZY).install(op);
         return new ProvideableBeanConfiguration<>(handle); // Providable???
-    }
-
-    // One of 3 models...
-    // Fails on other exports
-    // Ignores other exports
-    // interacts with other exports in some way
-    /**
-     * Exports all container services and any services that have been explicitly anchored via of anchoring methods.
-     * <p>
-     *
-     * <ul>
-     * <li><b>Service already exported.</b> The service that have already been exported (under any key) are always
-     * ignored.</li>
-     * <li><b>Key already exported.</b>A service has already been exported under the specified key.
-     * <li><b>Are requirements.</b> Services that come from parent containers are always ignored.</li>
-     * <li><b>Not part of service contract.</b> If a service contract has set. Only services for whose key is part of the
-     * contract is exported.</li>
-     * </ul>
-     * <p>
-     * This method can be invoked more than once. But use cases for this are limited.
-     */
-    // Altsaa tror mere vi er ude efter noget a.la. exported.services = internal.services
-    // Saa maske smide ISE hvis der allerede er exporteret services. Det betyder naesten ogsaa
-    // at @Export ikke er supporteret
-    // ect have exportAll(boolean ignoreExplicitExports) (Otherwise fails)
-
-    // All provided services are automatically exported
-    public void exportAll() {
-        // Tror vi aendre den til streng service solve...
-        // Og saa tager vi bare alle services() og exportere
-
-        // Add exportAll(Predicate); //Maybe some exportAll(Consumer<ExportedConfg>)
-        // exportAllAs(Function<?, Key>
-
-        // Export all entries except foo which should be export as Boo
-        // exportAll(Predicate) <- takes key or service configuration???
-
-        // export all _services_.. Also those that are already exported as something else???
-        // I should think not... Det er er en service vel... SelectedAll.keys().export()...
-        checkIsConfigurable();
-
-        extension.container.sm.exportAll = true;
     }
 
     /**
@@ -428,16 +412,16 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return new PackedContainerInstaller(extension.container);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected BaseExtensionPoint newExtensionPoint() {
-        return new BaseExtensionPoint();
-    }
-
     /** {@return a mirror for this extension.} */
     @Override
     protected BaseExtensionMirror newExtensionMirror() {
         return new BaseExtensionMirror(extension.container);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected BaseExtensionPoint newExtensionPoint() {
+        return new BaseExtensionPoint();
     }
 
     @Override
@@ -462,6 +446,38 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         if (isLifetimeRoot()) {
             extension.container.lifetime.orderDependencies();
         }
+    }
+
+    protected void onNew(BaseExtensionPoint p) {
+        // BeanConfiguration b = install(PackedServiceLocator.class);
+        // p.addCodeGenerated(b, new Key<Map<Key<?>, MethodHandle>>() {}, null);
+    }
+
+    /**
+     * Provides every service from the specified locator.
+     *
+     * @param locator
+     *            the locator to provide services from
+     */
+    public void provideAll(ServiceLocator locator) {
+        requireNonNull(locator, "locator is null");
+        checkIsConfigurable();
+        throw new UnsupportedOperationException();
+    }
+
+    // Think we need installPrototype (Which will fail if not provided or exported)
+    // providePrototype would then be installPrototype().provide() // not ideal
+    // Men taenker vi internt typisk arbejde op i mod implementering. Dog ikke altid
+    // providePerRequest <-- every time the service is requested
+    // Also these beans, can typically just be composites??? Nah
+    public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
+        BeanHandle<T> handle = newBeanInstaller(BeanKind.MANYTON).lifetimes(OperationTemplate.defaults()).install(implementation);
+        return new ProvideableBeanConfiguration<>(handle).provide();
+    }
+
+    public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> op) {
+        BeanHandle<T> handle = newBeanInstaller(BeanKind.MANYTON).lifetimes(OperationTemplate.defaults()).install(op);
+        return new ProvideableBeanConfiguration<>(handle).provide();
     }
 
     // requires bliver automatisk anchoret...

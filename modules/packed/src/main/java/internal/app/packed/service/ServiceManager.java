@@ -20,37 +20,33 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import app.packed.bean.BeanSourceKind;
 import app.packed.bindings.Key;
 import app.packed.bindings.KeyAlreadyInUseException;
-import app.packed.bindings.UnsatisfiableDependencyException;
 import app.packed.extension.ExtensionContext;
 import app.packed.framework.Nullable;
 import app.packed.service.ExportedServiceMirror;
-import app.packed.service.ProvidedServiceMirror;
+import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution;
-import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
-import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
-import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.util.CollectionUtil;
-import internal.app.packed.util.StringFormatter;
 
 /** Manages services in a single container. */
 public final class ServiceManager {
 
+    /** All entries in the service manager. This covers both bindings and service provisions. */
     public final LinkedHashMap<Key<?>, ServiceManagerEntry> entries = new LinkedHashMap<>();
 
     // All provided services are automatically exported
     public boolean exportAll;
 
-    /** A map of exported service method method handles, must be computed */
+    /** A map of exported service method method handles, must be computed. */
     @Nullable
     private Map<Key<?>, MethodHandle> exportedServices;
 
@@ -65,7 +61,7 @@ public final class ServiceManager {
             container.application.addCodeGenerator(() -> {
                 this.exportedServices = CollectionUtil.copyOf(exports, n -> {
                     MethodHandle mh;
-                    OperationSetup o = n.os;
+                    OperationSetup o = n.operation;
 
                     int accessor = -1;
                     if (o instanceof OperationSetup.BeanAccessOperationSetup) {
@@ -92,29 +88,32 @@ public final class ServiceManager {
         }
     }
 
+    public ServiceContract newContract() {
+        ServiceContract.Builder builder = ServiceContract.builder();
+
+        // Add all exports
+        exports.keySet().forEach(k -> builder.provide(k));
+
+        // All all requirements
+        for (Entry<Key<?>, ServiceManagerEntry> e : entries.entrySet()) {
+            ServiceManagerEntry sme = e.getValue();
+            if (sme.provider() == null) {
+                if (sme.isRequired) {
+                    builder.require(e.getKey());
+                } else {
+                    builder.requireOptional(e.getKey());
+                }
+            }
+        }
+
+        return builder.build();
+    }
+
+
+
     public ServiceBindingSetup bind(Key<?> key, boolean isRequired, OperationSetup operation, int operationBindingIndex) {
-        return entries.compute(key, (k, e) -> {
-            if (e == null) {
-                e = new ServiceManagerEntry(k);
-            }
-            if (isRequired) {
-                e.isRequired = true;
-            }
-
-            // Create the new binding
-            ServiceBindingSetup binding = new ServiceBindingSetup(operation, operationBindingIndex, e, isRequired);
-
-            // Add this binding to the list of bindings for the entry
-            ServiceBindingSetup existing = e.bindings;
-            if (existing == null) {
-                e.bindings = binding;
-            } else {
-                existing.nextFriend = binding;
-                e.bindings = binding;
-            }
-
-            return e;
-        }).bindings;
+        ServiceManagerEntry e = entries.computeIfAbsent(key, ServiceManagerEntry::new);
+        return e.bind(isRequired, operation, operationBindingIndex);
     }
 
     // 3 Muligheder -> Field, Method, BeanInstance
@@ -125,7 +124,7 @@ public final class ServiceManager {
             // A service with the key has already been exported
             throw new KeyAlreadyInUseException("Jmm");
         }
-        es.os.mirrorSupplier = () -> new ExportedServiceMirror(es);
+        es.operation.mirrorSupplier = () -> new ExportedServiceMirror(es);
         return es;
     }
 
@@ -149,25 +148,12 @@ public final class ServiceManager {
      *            the operation that provides the service
      * @return a provided service
      */
-    public ProvidedService provide(Key<?> key, OperationSetup operation, BindingResolution resolution) {
-        BeanSetup bean = operation.bean;
-
+    public ProvidedServiceSetup provide(Key<?> key, OperationSetup operation, BindingResolution resolution) {
         ServiceManagerEntry entry = entries.computeIfAbsent(key, ServiceManagerEntry::new);
 
-        // Check same lifetime as the container, or own prototype service
+        // TODO Check same lifetime as the container, or own prototype service
 
-        // Check if there is an existing provider for the same key, in which case we fail
-        if (entry.provider != null) {
-            throw new KeyAlreadyInUseException(makeDublicateProvideErrorMsg(entry.provider, operation));
-        }
-
-        // Create a new provider
-        ProvidedService provider = entry.provider = new ProvidedService(operation, entry, resolution);
-
-        operation.mirrorSupplier = () -> new ProvidedServiceMirror(entry.provider);
-
-        // add the service provider to the bean, this is used for cyclic dependency check later on
-        bean.serviceProviders.add(provider);
+        ProvidedServiceSetup provider = entry.setProvider(operation, resolution);
 
         if (exportAll) {
             export(key, operation);
@@ -178,40 +164,7 @@ public final class ServiceManager {
 
     public void verify() {
         for (ServiceManagerEntry e : entries.values()) {
-            if (e.provider == null) {
-                for (var b = e.bindings; b != null; b = b.nextFriend) {
-                    System.out.println("Binding not resolved " + b);
-                }
-                throw new UnsatisfiableDependencyException("For key " + e.key);
-            }
+            e.verify();
         }
-    }
-
-    private static String makeDublicateProvideErrorMsg(ProvidedService existingProvider, OperationSetup newProvider) {
-        OperationSetup existingTarget = existingProvider.operation;
-        OperationSetup thisTarget = newProvider;
-
-        Key<?> key = existingProvider.entry.key;
-
-        if (existingTarget.bean == thisTarget.bean) {
-            return "This bean is already providing a service for Key<" + key.toString() + ">, beanClass = "
-                    + StringFormatter.format(existingTarget.bean.beanClass);
-        }
-        if (existingProvider.resolution instanceof FromLifetimeArena) {
-            return "Cannot provide a service for Key<" + key.toString() + ">, as another bean of type " + StringFormatter.format(existingTarget.bean.beanClass)
-                    + " is already providing a service for the same key";
-
-            // return "Another bean of type " + format(existingTarget.bean.beanClass) + " is already providing a service for Key<" +
-            // key.toStringSimple() + ">";
-
-            // return "Another bean of type " + format(existingTarget.bean.beanClass) + " is already providing a service for Key<" +
-            // key.toStringSimple() + ">";
-        } else if (existingProvider.resolution instanceof FromOperation os) {
-            if (os.operation() instanceof MemberOperationSetup m && m.target instanceof OperationMethodTarget t) {
-                String ss = StringFormatter.formatShortWithParameters(t.method());
-                return "A method " + ss + " is already providing a service for Key<" + key + ">";
-            }
-        }
-        return thisTarget + "A service has already been bound for key " + key;
     }
 }
