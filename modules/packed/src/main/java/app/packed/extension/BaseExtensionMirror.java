@@ -13,8 +13,8 @@ import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.ServiceContract;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.service.ExportedService;
-import internal.app.packed.service.ProvidedServiceSetup;
-import internal.app.packed.service.ServiceManagerEntry;
+import internal.app.packed.service.ServiceProviderSetup;
+import internal.app.packed.service.ServiceSetup;
 
 /** A mirror for {@link BaseExtension}. */
 // Or just directly on Application, Container... Move services into the main stream
@@ -68,9 +68,9 @@ public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {
     public Map<Key<?>, ProvidedServiceMirror> serviceProviders() {
         // Not really a map view
         LinkedHashMap<Key<?>, ProvidedServiceMirror> result = new LinkedHashMap<>();
-        for (ServiceManagerEntry e : container.sm.entries.values()) {
+        for (ServiceSetup e : container.sm.entries.values()) {
             @Nullable
-            ProvidedServiceSetup provider = e.provider();
+            ServiceProviderSetup provider = e.provider();
             if (provider != null) {
                 ProvidedServiceMirror mirror = (ProvidedServiceMirror) provider.operation.mirror();
                 result.put(e.key, mirror);

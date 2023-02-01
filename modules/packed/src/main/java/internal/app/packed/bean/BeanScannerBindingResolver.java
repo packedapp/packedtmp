@@ -18,7 +18,6 @@ package internal.app.packed.bean;
 import java.lang.annotation.Annotation;
 
 import app.packed.bindings.Variable;
-import app.packed.extension.BaseExtension;
 import internal.app.packed.bean.BeanHookModel.AnnotatedParameterType;
 import internal.app.packed.bean.BeanHookModel.ParameterType;
 import internal.app.packed.binding.ExtensionServiceBindingSetup;
@@ -56,10 +55,9 @@ final class BeanScannerBindingResolver {
         }
 
         // Finally, we resolve it as a service
-        boolean resolveAsService = operation.operator.extensionType == BaseExtension.class;
         InternalDependency ia = InternalDependency.fromVariable(v);
 
-        if (resolveAsService) {
+        if (operation.bean.ownedBy == null) {
             operation.bindings[index] = iBean.bean.container.sm.bind(ia.key(), !ia.isOptional(), operation, index);
         } else {
             ExtensionServiceBindingSetup b = new ExtensionServiceBindingSetup(operation, index, v.getRawType());

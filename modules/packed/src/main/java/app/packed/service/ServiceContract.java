@@ -256,17 +256,6 @@ public final class ServiceContract {
      *            the image to return a contract for
      * @return the contract
      */
-    // Or should I return an empty contract???? Hmmmmmmmmmmmm
-    // Or an optional.. Technically the constract does not exist.
-    // Implications for other extension
-    // ofElseEmpty();
-    // I Think optional, jeg kunne godt forstille mig en contract som ikke har noget der svarer til empty.
-    // Men det er ogsaa fint.. Det her gaelder kun for ServiceContract...
-
-    // Tog foerhen en ComponentSystem... Men altsaa skal ikke bruge den paa runtime...
-    // Vil mene kontrakter primaert er en composition/build ting
-
-    // Syntes maaske vi kalde dem reflect alligevel... Saa man er klar over hvad det er man laver...
     public static ServiceContract of(Assembly assembly, Wirelet... wirelets) {
         ApplicationMirror m = MIRROR_DRIVER.mirrorOf(assembly, wirelets);
         return m.container().findExtension(BaseExtensionMirror.class).map(e -> e.serviceContract()).orElse(ServiceContract.EMPTY);

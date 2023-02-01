@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 import app.packed.bindings.Key;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.service.ProvidedServiceSetup;
+import internal.app.packed.service.ServiceProviderSetup;
 
 /**
  * A mirror that represents a service provision operation.
@@ -36,9 +36,9 @@ import internal.app.packed.service.ProvidedServiceSetup;
 public class ProvidedServiceMirror extends OperationMirror {
 
     /** The service that is provided. */
-    final ProvidedServiceSetup service;
+    final ServiceProviderSetup service;
 
-    public ProvidedServiceMirror(@SuppressWarnings("exports") ProvidedServiceSetup ps) {
+    public ProvidedServiceMirror(@SuppressWarnings("exports") ServiceProviderSetup ps) {
         this.service = requireNonNull(ps);
     }
 

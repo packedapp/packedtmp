@@ -26,40 +26,35 @@ import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.operation.OperationSetup;
 
-/**
- * A binding to a service.
- */
-// ContextService or ContainerService
-//// Vi kan ikke bestemme hvad foerened til sidst...
-//// fx initialize with er jo efter bean introspection
-
+/** Represents a binding to service (which may not exist.). */
 public final class ServiceBindingSetup extends BindingSetup {
 
-    /** An entry corresponding to the key. */
-    public final ServiceManagerEntry entry;
+    /** The service manager entry entry corresponding to the key. */
+    public final ServiceSetup entry;
 
     /** A binding in the same container for the same key */
     @Nullable
-    public ServiceBindingSetup nextFriend;
+    ServiceBindingSetup nextBinding;
 
     /** Whether or not the binding is required. */
-    public final boolean required;
+    public final boolean isRequired;
 
     /**
      * @param beanOperation
      * @param index
      */
-    ServiceBindingSetup(OperationSetup operation, int index, ServiceManagerEntry entry, boolean required) {
+    ServiceBindingSetup(OperationSetup operation, int index, ServiceSetup entry, boolean isRequired) {
         super(operation, index, Realm.extension(BaseExtension.class));
         this.entry = requireNonNull(entry);
-        this.required = required;
+        this.isRequired = isRequired;
         this.mirrorSupplier = () -> new ServiceBindingMirror(this);
     }
 
     /** {@inheritDoc} */
     @Override
+    @Nullable
     public BindingResolution resolver() {
-        ProvidedServiceSetup provider = entry.provider();
+        ServiceProviderSetup provider = entry.provider();
         return provider == null ? null : provider.resolution;
     }
 

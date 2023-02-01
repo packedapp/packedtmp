@@ -27,6 +27,17 @@ import internal.app.packed.container.Mirror;
 /**
  *
  */
+
+// Er andet end service dependencies interessant????
+
+// Du har en dependency paa en extension bean...
+// Though I don't give a fuck
+
+
+/// Dependencies er mellem beans
+
+// BeanMirror, List<ServiceBindingMirror>, Bean Mirror
+
 // Ideen er lidt at vi har en form for element der kan have dependencies.
 
 // Fx hvad depender en bean paa

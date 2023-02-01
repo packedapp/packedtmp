@@ -37,7 +37,7 @@ import internal.app.packed.util.StringFormatter;
 /**
  * An entry in a service manager.
  */
-public final class ServiceManagerEntry {
+public final class ServiceSetup {
 
     /** All bindings (in a interned linked list) that points to this entry. */
     @Nullable
@@ -52,11 +52,11 @@ public final class ServiceManagerEntry {
     /** The key of the entry. */
     public final Key<?> key;
 
-    /** The single provider of the service. Must only be set once */
+    /** The single provider of the service. Can only be set once. */
     @Nullable
-    private ProvidedServiceSetup provider;
+    private ServiceProviderSetup provider;
 
-    ServiceManagerEntry(Key<?> key) {
+    ServiceSetup(Key<?> key) {
         this.key = requireNonNull(key);
     }
 
@@ -73,25 +73,25 @@ public final class ServiceManagerEntry {
         if (existing == null) {
             bindings = binding;
         } else {
-            existing.nextFriend = binding;
+            existing.nextBinding = binding;
             bindings = binding;
         }
         return binding;
     }
 
     @Nullable
-    public ProvidedServiceSetup provider() {
+    public ServiceProviderSetup provider() {
         return provider;
     }
 
-    ProvidedServiceSetup setProvider(OperationSetup operation, BindingResolution resolution) {
+    ServiceProviderSetup setProvider(OperationSetup operation, BindingResolution resolution) {
         // Check if there is an existing provider for the same key, in which case we fail
         if (provider != null) {
             throw new KeyAlreadyInUseException(makeDublicateProvideErrorMsg(provider, operation));
         }
 
         // Create a new provider
-        ProvidedServiceSetup provider = this.provider = new ProvidedServiceSetup(operation, this, resolution);
+        ServiceProviderSetup provider = this.provider = new ServiceProviderSetup(operation, this, resolution);
 
         operation.mirrorSupplier = () -> new ProvidedServiceMirror(provider);
 
@@ -104,7 +104,7 @@ public final class ServiceManagerEntry {
 
     public Stream<ServiceBindingMirror> useSiteMirrors() {
         ArrayList<ServiceBindingMirror> l = new ArrayList<>();
-        for (var b = bindings; b != null; b = b.nextFriend) {
+        for (var b = bindings; b != null; b = b.nextBinding) {
             l.add((ServiceBindingMirror) b.mirror());
         }
         return l.stream();
@@ -115,25 +115,24 @@ public final class ServiceManagerEntry {
      */
     public void verify() {
         if (provider == null) {
-            for (var b = bindings; b != null; b = b.nextFriend) {
+            for (var b = bindings; b != null; b = b.nextBinding) {
                 System.out.println("Binding not resolved " + b);
             }
             throw new UnsatisfiableDependencyException("For key " + key);
         }
     }
 
-    private static String makeDublicateProvideErrorMsg(ProvidedServiceSetup existingProvider, OperationSetup newProvider) {
-        OperationSetup existingTarget = existingProvider.operation;
-        OperationSetup thisTarget = newProvider;
+    private String makeDublicateProvideErrorMsg(ServiceProviderSetup existingProvider, OperationSetup newOperation) {
+        OperationSetup existingOperation = existingProvider.operation;
 
-        Key<?> key = existingProvider.entry.key;
-
-        if (existingTarget.bean == thisTarget.bean) {
+        // The same bean providing the same service
+        if (existingOperation.bean == newOperation.bean) {
             return "This bean is already providing a service for " + key.toString() + ", beanClass = "
-                    + StringFormatter.format(existingTarget.bean.beanClass);
+                    + StringFormatter.format(existingOperation.bean.beanClass);
         }
+
         if (existingProvider.resolution instanceof FromLifetimeArena) {
-            return "Cannot provide a service for " + key.toString() + ", as another bean of type " + StringFormatter.format(existingTarget.bean.beanClass)
+            return "Cannot provide a service for " + key.toString() + ", as another bean of type " + StringFormatter.format(existingOperation.bean.beanClass)
                     + " is already providing a service for the same key";
 
             // return "Another bean of type " + format(existingTarget.bean.beanClass) + " is already providing a service for Key<" +
@@ -147,6 +146,6 @@ public final class ServiceManagerEntry {
                 return "A method " + ss + " is already providing a service for " + key;
             }
         }
-        return thisTarget + "A service has already been bound for key " + key;
+        return newOperation + "A service has already been bound for key " + key;
     }
 }

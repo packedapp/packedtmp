@@ -19,6 +19,7 @@ package app.packed.bindings.mirror;
  *
  */
 // What about @Default... Optional, osv)
+// Er ikke super interessant for brugere...
 public enum BindingProviderKind {
 
     /** A constant. */

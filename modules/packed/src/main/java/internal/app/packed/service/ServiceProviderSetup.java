@@ -23,10 +23,10 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
-public final class ProvidedServiceSetup {
+public final class ServiceProviderSetup {
 
     /** The service manager entry. */
-    public final ServiceManagerEntry entry;
+    public final ServiceSetup entry;
 
     /** The operation that provides the service. */
     public final OperationSetup operation;
@@ -34,7 +34,7 @@ public final class ProvidedServiceSetup {
     /** How the service is provided. */
     public final BindingResolution resolution;
 
-    ProvidedServiceSetup(OperationSetup operation, ServiceManagerEntry entry, BindingResolution resolution) {
+    ServiceProviderSetup(OperationSetup operation, ServiceSetup entry, BindingResolution resolution) {
         this.operation = requireNonNull(operation);
         this.entry = requireNonNull(entry);
         this.resolution = requireNonNull(resolution);

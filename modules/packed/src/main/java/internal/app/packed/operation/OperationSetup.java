@@ -40,7 +40,7 @@ import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.ExtensionServiceBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
-import internal.app.packed.service.ProvidedServiceSetup;
+import internal.app.packed.service.ServiceProviderSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -103,7 +103,7 @@ public sealed abstract class OperationSetup {
                 result.add(s.extensionBean);
 
             } else if (b instanceof ServiceBindingSetup s) {
-                ProvidedServiceSetup provider = s.entry.provider();
+                ServiceProviderSetup provider = s.entry.provider();
                 if (provider != null) {
                     result.add(provider.operation.bean);
                 }

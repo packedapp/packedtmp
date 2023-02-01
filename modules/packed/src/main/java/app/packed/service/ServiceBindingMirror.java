@@ -52,7 +52,7 @@ public class ServiceBindingMirror extends BindingMirror {
 
     /** {@return whether or not the service is required.} */
     public boolean isRequired() {
-        return binding.required;
+        return binding.isRequired;
     }
 
     public boolean isResolved() {

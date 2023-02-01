@@ -36,8 +36,8 @@ import internal.app.packed.container.ContainerSetup;
  */
 public final class CircularServiceDependencyChecker {
 
-    private static void dependencyCyclesFind(ArrayDeque<ServiceManagerEntry> stack, ArrayDeque<ServiceManagerEntry> dependencies, ContainerSetup container) {
-        for (ServiceManagerEntry node : container.sm.entries.values()) {
+    private static void dependencyCyclesFind(ArrayDeque<ServiceSetup> stack, ArrayDeque<ServiceSetup> dependencies, ContainerSetup container) {
+        for (ServiceSetup node : container.sm.entries.values()) {
             if (!node.hasBeenCheckForDependencyCycles) { // only process those nodes that have not been visited yet
                 detectCycle(node, stack, dependencies);
             }
@@ -50,8 +50,8 @@ public final class CircularServiceDependencyChecker {
     }
 
     public static void dependencyCyclesFind(ContainerSetup container) {
-        ArrayDeque<ServiceManagerEntry> stack = new ArrayDeque<>();
-        ArrayDeque<ServiceManagerEntry> dependencies = new ArrayDeque<>();
+        ArrayDeque<ServiceSetup> stack = new ArrayDeque<>();
+        ArrayDeque<ServiceSetup> dependencies = new ArrayDeque<>();
         dependencyCyclesFind(stack, dependencies, container);
     }
 
@@ -68,8 +68,8 @@ public final class CircularServiceDependencyChecker {
      * @throws BuildException
      *             if there is a cycle in the graph
      */
-    private static void detectCycle(ServiceManagerEntry entry, ArrayDeque<ServiceManagerEntry> stack, ArrayDeque<ServiceManagerEntry> dependencies) {
-        ProvidedServiceSetup ps = entry.provider();
+    private static void detectCycle(ServiceSetup entry, ArrayDeque<ServiceSetup> stack, ArrayDeque<ServiceSetup> dependencies) {
+        ServiceProviderSetup ps = entry.provider();
         ServiceBindingSetup binding = entry.bindings;
         if (ps == null || binding == null) {
             return; // leaf
@@ -80,8 +80,8 @@ public final class CircularServiceDependencyChecker {
         stack.push(entry);
         while (binding != null) {
             BeanSetup bean = binding.operation.bean;
-            for (ProvidedServiceSetup psDep : bean.serviceProviders) {
-                ServiceManagerEntry next = psDep.entry;
+            for (ServiceProviderSetup psDep : bean.serviceProviders) {
+                ServiceSetup next = psDep.entry;
                 if (next.hasBeenCheckForDependencyCycles) {
                     continue;
                 }
@@ -102,12 +102,12 @@ public final class CircularServiceDependencyChecker {
                 dependencies.pop();
             }
 
-            binding = binding.nextFriend;
+            binding = binding.nextBinding;
         }
         stack.pop();
     }
 
-    private static String createErrorMessage(ArrayDeque<ServiceManagerEntry> dependencies) {
+    private static String createErrorMessage(ArrayDeque<ServiceSetup> dependencies) {
         int size = dependencies.size();
         StringBuilder sb = new StringBuilder("Circular dependencies between " + size + " services: ");
         if (size == 2) {
@@ -115,7 +115,7 @@ public final class CircularServiceDependencyChecker {
             sb.append(" <-> ");
             sb.append(dependencies.pollLast().key);
         } else {
-            ServiceManagerEntry e = dependencies.pollLast();
+            ServiceSetup e = dependencies.pollLast();
             do {
                 sb.append(e.key);
                 if (!dependencies.isEmpty()) {

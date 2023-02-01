@@ -41,7 +41,7 @@ import internal.app.packed.util.CollectionUtil;
 public final class ServiceManager {
 
     /** All entries in the service manager. This covers both bindings and service provisions. */
-    public final LinkedHashMap<Key<?>, ServiceManagerEntry> entries = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, ServiceSetup> entries = new LinkedHashMap<>();
 
     // All provided services are automatically exported
     public boolean exportAll;
@@ -95,8 +95,8 @@ public final class ServiceManager {
         exports.keySet().forEach(k -> builder.provide(k));
 
         // All all requirements
-        for (Entry<Key<?>, ServiceManagerEntry> e : entries.entrySet()) {
-            ServiceManagerEntry sme = e.getValue();
+        for (Entry<Key<?>, ServiceSetup> e : entries.entrySet()) {
+            ServiceSetup sme = e.getValue();
             if (sme.provider() == null) {
                 if (sme.isRequired) {
                     builder.require(e.getKey());
@@ -112,7 +112,7 @@ public final class ServiceManager {
 
 
     public ServiceBindingSetup bind(Key<?> key, boolean isRequired, OperationSetup operation, int operationBindingIndex) {
-        ServiceManagerEntry e = entries.computeIfAbsent(key, ServiceManagerEntry::new);
+        ServiceSetup e = entries.computeIfAbsent(key, ServiceSetup::new);
         return e.bind(isRequired, operation, operationBindingIndex);
     }
 
@@ -148,12 +148,12 @@ public final class ServiceManager {
      *            the operation that provides the service
      * @return a provided service
      */
-    public ProvidedServiceSetup provide(Key<?> key, OperationSetup operation, BindingResolution resolution) {
-        ServiceManagerEntry entry = entries.computeIfAbsent(key, ServiceManagerEntry::new);
+    public ServiceProviderSetup provide(Key<?> key, OperationSetup operation, BindingResolution resolution) {
+        ServiceSetup entry = entries.computeIfAbsent(key, ServiceSetup::new);
 
         // TODO Check same lifetime as the container, or own prototype service
 
-        ProvidedServiceSetup provider = entry.setProvider(operation, resolution);
+        ServiceProviderSetup provider = entry.setProvider(operation, resolution);
 
         if (exportAll) {
             export(key, operation);
@@ -163,7 +163,7 @@ public final class ServiceManager {
     }
 
     public void verify() {
-        for (ServiceManagerEntry e : entries.values()) {
+        for (ServiceSetup e : entries.values()) {
             e.verify();
         }
     }
