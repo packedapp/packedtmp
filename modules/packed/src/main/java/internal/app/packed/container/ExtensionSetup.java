@@ -110,8 +110,6 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
         // Then we compare the full name (class.getCanonicalName());
 
-        // Should we have compare on String.lenght first instead???
-        // A lot faster
         int c = model.fullName().compareTo(otherModel.fullName());
         if (c != 0) {
             return c;
@@ -119,27 +117,6 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
         // Same canonical name, sort in order of use
         return extensionTree.usageOrderId - o.extensionTree.usageOrderId;
-    }
-
-    private void initialize(boolean isAssemblyRoot) {
-        instance = model.newInstance(this);
-
-        // Add the extension to the container's map of extensions
-        container.extensions.put(extensionType, this);
-
-        // Hvad hvis en extension linker en af deres egne assemblies.
-        // If the extension is added in the root container of an assembly. We need to add it there
-
-        if (isAssemblyRoot) {
-            container.assembly.extensions.add(this);
-        }
-
-        // Invoke Extension#onNew() before returning the extension/extension-point
-        try {
-            MH_EXTENSION_ON_NEW.invokeExact(instance);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
     }
 
     /**
@@ -186,7 +163,26 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         ExtensionSetup extensionParent = container.treeParent == null ? null : container.treeParent.useExtension(extensionType, requestedByExtension);
 
         ExtensionSetup extension = new ExtensionSetup(extensionParent, container, extensionType);
-        extension.initialize(container.assembly.container == null);
+
+        Extension<?> instance = extension.instance = extension.model.newInstance(extension);
+
+        // Add the extension to the container's map of extensions
+        container.extensions.put(extensionType, extension);
+
+        // Hvad hvis en extension linker en af deres egne assemblies.
+        // If the extension is added in the root container of an assembly. We need to add it there
+
+        boolean isAssemblyRoot = container.assembly.container == null;
+        if (isAssemblyRoot) {
+            container.assembly.extensions.add(extension);
+        }
+
+        // Invoke Extension#onNew() before returning the extension/extension-point
+        try {
+            MH_EXTENSION_ON_NEW.invokeExact(instance);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
         return extension;
     }
 }
