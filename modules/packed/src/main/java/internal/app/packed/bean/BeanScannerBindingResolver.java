@@ -20,7 +20,6 @@ import java.lang.annotation.Annotation;
 import app.packed.bindings.Variable;
 import internal.app.packed.bean.BeanHookModel.AnnotatedParameterType;
 import internal.app.packed.bean.BeanHookModel.ParameterType;
-import internal.app.packed.binding.ExtensionServiceBindingSetup;
 import internal.app.packed.binding.InternalDependency;
 import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.operation.OperationSetup;
@@ -60,9 +59,11 @@ final class BeanScannerBindingResolver {
         if (operation.bean.ownedBy == null) {
             operation.bindings[index] = iBean.bean.container.sm.bind(ia.key(), !ia.isOptional(), operation, index);
         } else {
-            ExtensionServiceBindingSetup b = new ExtensionServiceBindingSetup(operation, index, v.getRawType());
-            operation.bindings[index] = b;
-            operation.operator.sm.bindings.add(b);
+            operation.bindings[index] = operation.bean.ownedBy.sm.bind(ia.key(), !ia.isOptional(), operation, index);
+//
+//            ExtensionServiceBindingSetup b = new ExtensionServiceBindingSetup(operation, index, v.getRawType());
+//            operation.bindings[index] = b;
+//            operation.operator.sm.bindings.add(b);
         }
     }
 

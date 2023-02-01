@@ -109,8 +109,6 @@ public final class ServiceManager {
         return builder.build();
     }
 
-
-
     public ServiceBindingSetup bind(Key<?> key, boolean isRequired, OperationSetup operation, int operationBindingIndex) {
         ServiceSetup e = entries.computeIfAbsent(key, ServiceSetup::new);
         return e.bind(isRequired, operation, operationBindingIndex);

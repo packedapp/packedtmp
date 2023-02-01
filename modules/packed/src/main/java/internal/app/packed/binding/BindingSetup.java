@@ -34,7 +34,7 @@ import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
 
 /** The configuration of an operation's binding. */
-public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindingSetup, ServiceBindingSetup, ExtensionServiceBindingSetup {
+public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindingSetup, ServiceBindingSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_BINDING_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BindingMirror.class, "initialize",

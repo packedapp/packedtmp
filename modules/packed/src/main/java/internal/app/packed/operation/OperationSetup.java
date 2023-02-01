@@ -37,11 +37,10 @@ import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.BindingSetup;
-import internal.app.packed.binding.ExtensionServiceBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
-import internal.app.packed.service.ServiceProviderSetup;
 import internal.app.packed.service.ServiceBindingSetup;
+import internal.app.packed.service.ServiceProviderSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
@@ -96,13 +95,9 @@ public sealed abstract class OperationSetup {
 
     public final Set<BeanSetup> dependsOn() {
         HashSet<BeanSetup> result = new HashSet<>();
-        // TODO hmm, skal inkludere extensions???
+        // TODO hmm, skal inkludere extensions??? nope
         forEachBinding(b -> {
-            if (b instanceof ExtensionServiceBindingSetup s) {
-                requireNonNull(s.extensionBean);
-                result.add(s.extensionBean);
-
-            } else if (b instanceof ServiceBindingSetup s) {
+            if (b instanceof ServiceBindingSetup s) {
                 ServiceProviderSetup provider = s.entry.provider();
                 if (provider != null) {
                     result.add(provider.operation.bean);

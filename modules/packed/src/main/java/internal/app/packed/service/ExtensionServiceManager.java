@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package internal.app.packed.service;
 
 import static internal.app.packed.util.StringFormatter.format;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -25,7 +25,8 @@ import app.packed.bindings.Key;
 import app.packed.extension.InternalExtensionException;
 import app.packed.framework.Nullable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.binding.ExtensionServiceBindingSetup;
+import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  * A service manager for extensions.
@@ -37,10 +38,14 @@ import internal.app.packed.binding.ExtensionServiceBindingSetup;
 // Og saa leder man op recursivt
 public final class ExtensionServiceManager {
 
-    public final ArrayList<ExtensionServiceBindingSetup> bindings = new ArrayList<>();
+    public final HashMap<Key<?>, ServiceSetup> entries = new HashMap<>();
 
     public final Map<Key<?>, BeanSetup> extensionBeans = new LinkedHashMap<>();
 
+    public ServiceBindingSetup bind(Key<?> key, boolean isRequired, OperationSetup operation, int operationBindingIndex) {
+        ServiceSetup e = entries.computeIfAbsent(key, ServiceSetup::new);
+        return e.bind(isRequired, operation, operationBindingIndex);
+    }
     /** The (nullable) parent. */
     @Nullable
     final ExtensionServiceManager parent;
@@ -67,5 +72,26 @@ public final class ExtensionServiceManager {
             m = m.parent;
         } while (m != null);
         return null;
+    }
+
+    /**
+     *
+     */
+    public void resolve(ExtensionSetup e) {
+        // Resolve all bindings
+        for (ServiceSetup binding : entries.values()) {
+            Class<?> ebc = binding.key.rawType();
+            while (e != null) {
+                Object val = e.beanClassMap.get(ebc);
+                if (val instanceof BeanSetup b) {
+                    binding.setProvider(b.instanceAccessOperation(), b.beanInstanceBindingProvider());
+                    break;
+                } else if (val != null) {
+                    throw new InternalExtensionException("sd");
+                }
+                e = e.treeParent;
+            }
+
+        }
     }
 }

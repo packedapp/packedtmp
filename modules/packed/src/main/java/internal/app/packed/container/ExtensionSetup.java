@@ -10,8 +10,7 @@ import java.util.HashMap;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.framework.Nullable;
-import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.binding.ExtensionServiceBindingSetup;
+import internal.app.packed.service.ExtensionServiceManager;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -77,24 +76,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
             child.close();
         }
 
-        // Resolve all bindings
-        for (ExtensionServiceBindingSetup binding : sm.bindings) {
-            Class<?> ebc = binding.extensionBeanClass;
-            ExtensionSetup e = this;
-            while (e != null) {
-                Object val = e.beanClassMap.get(ebc);
-                if (val instanceof BeanSetup b) {
-                    binding.extensionBean = b;
-                    break;
-                } else if (val != null) {
-                    throw new InternalExtensionException("sd");
-                }
-                e = e.treeParent;
-            }
-            if (binding.extensionBean == null) {
-                throw new InternalExtensionException("Could not resolve " + ebc + " for " + binding);
-            }
-        }
+        sm.resolve(this);
     }
 
     /** {@inheritDoc} */
