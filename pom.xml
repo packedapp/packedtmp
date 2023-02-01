@@ -36,7 +36,7 @@
     <version.plugin.surefire>3.0.0-M9</version.plugin.surefire>
     <version.plugin.pitest>1.9.2</version.plugin.pitest>
     <version.plugin.animal-sniffer>1.21</version.plugin.animal-sniffer>
-    <version.plugin.enforcer>3.1.0</version.plugin.enforcer>
+    <version.plugin.enforcer>3.2.1</version.plugin.enforcer>
     <version.plugin.jacoco>0.8.8</version.plugin.jacoco>
     <version.plugin.coveralls>4.3.0</version.plugin.coveralls>
     <version.plugin.checkstyle>3.1.2</version.plugin.checkstyle>
