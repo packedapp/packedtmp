@@ -126,7 +126,7 @@ public non-sealed class ApplicationMirror implements Mirror , ContextualizedElem
         for (var b = cs.beanFirst; b != null; b = b.siblingNext) {
             StringBuilder sb = new StringBuilder();
             sb.append(b.path()).append("");
-            sb.append(" [").append(b.beanClass.getName()).append("], owner = " + b.owner.realm());
+            sb.append(" [").append(b.beanClass.getName()).append("], owner = " + b.owner());
             sb.append("\n");
             for (OperationSetup os : b.operations) {
                 sb.append("  ".repeat(b.path().depth()));

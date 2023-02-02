@@ -61,7 +61,6 @@ final class BeanScannerBindingResolver {
 
         Realm realm = operation.bean.owner.realm();
         Class<? extends Extension<?>> e = realm.isApplication() ? null : realm.extension();
-                                                                                                                       // operation.bean.ownedBy.extensionType;
         if (operation.parent != null) {
             e = operation.operator.extensionType;
         }
@@ -71,10 +70,6 @@ final class BeanScannerBindingResolver {
         } else {
             ExtensionSetup es = operation.bean.container.extensions.get(e);
             operation.bindings[index] = es.sm.bind(ia.key(), !ia.isOptional(), operation, index);
-//
-//            ExtensionServiceBindingSetup b = new ExtensionServiceBindingSetup(operation, index, v.getRawType());
-//            operation.bindings[index] = b;
-//            operation.operator.sm.bindings.add(b);
         }
     }
 

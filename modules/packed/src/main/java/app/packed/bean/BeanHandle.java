@@ -191,7 +191,7 @@ public final /* primitive */ class BeanHandle<T> {
      * @return
      */
     public Realm owner() {
-        return bean.owner.realm();
+        return bean.owner();
     }
 
     /** {@return the path of the bean.} */

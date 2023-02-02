@@ -22,6 +22,7 @@ import app.packed.bean.BeanIntrospector.OperationalMethod;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
+import app.packed.container.Realm;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
@@ -127,13 +128,14 @@ public final class BeanSetup {
         this.beanSource = beanSource;
         this.beanSourceKind = requireNonNull(beanSourceKind);
 
-        ExtensionSetup installedBy = installer.useSite == null ? installer.baseExtension : installer.useSite.usedBy();
-        this.installedBy = requireNonNull(installedBy);
+        if (installer.useSite == null) {
+            this.installedBy = installer.baseExtension;
+            this.owner = installer.baseExtension.container.assembly;
+        } else {
+            this.installedBy = installer.useSite.usedBy();
+            this.owner = installedBy.extensionTree;
+        }
         this.container = requireNonNull(installedBy.container);
-
-        RealmSetup realm = installer.useSite == null ? installer.baseExtension.container.assembly : installedBy.extensionTree;
-        this.owner = requireNonNull(realm);
-
 
         // Set the lifetime of the bean
         ContainerLifetimeSetup cls = container.lifetime;
@@ -206,6 +208,10 @@ public final class BeanSetup {
         this.name = newName;
     }
 
+    public Realm owner() {
+        return owner.realm();
+    }
+
     /** {@return the path of this component} */
     public ApplicationPath path() {
         int size = container.depth;
@@ -232,6 +238,7 @@ public final class BeanSetup {
         BeanHandle<?> handle = (BeanHandle<?>) VH_BEAN_CONFIGURATION_TO_HANDLE.get(configuration);
         return crack(handle);
     }
+
     /**
      * Extracts a bean setup from a bean handle.
      *
@@ -243,7 +250,6 @@ public final class BeanSetup {
         requireNonNull(handle, "handle is null");
         return (BeanSetup) VH_BEAN_HANDLE_TO_SETUP.get(handle);
     }
-
 
     public static BeanSetup crack(OperationalMethod m) {
         return ((PackedOperationalMethod) m).extension.scanner.bean;

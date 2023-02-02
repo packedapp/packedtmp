@@ -206,7 +206,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
 
     /** {@return the owner of the bean.} */
     public Realm owner() {
-        return bean().owner.realm();
+        return bean().owner();
     }
 
     public ApplicationPath path() {
@@ -255,7 +255,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
             for (OperationSetup os : bean.operations) {
                 os.forEachBinding(b -> {
                     if (b.boundBy.isExtension()) {
-                        if (b.boundBy != bean.owner.realm()) {
+                        if (b.boundBy != bean.owner()) {
                             set.add((b.boundBy.extension()));
                         }
                     }
@@ -340,7 +340,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
         }
 
         public boolean isInSameRealm() {
-            return from.owner.realm().equals(to.owner.realm());
+            return from.owner().equals(to.owner());
         }
 
         /** {@return the reverse relationship.} */
