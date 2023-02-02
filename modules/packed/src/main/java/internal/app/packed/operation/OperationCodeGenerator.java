@@ -17,6 +17,7 @@ package internal.app.packed.operation;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 
 import internal.app.packed.binding.BindingResolution;
@@ -53,9 +54,15 @@ class OperationCodeGenerator {
         for (int i = 0; i < permuters.size(); i++) {
             result[i] = permuters.get(i);
         }
-        mh = MethodHandles.permuteArguments(mh, operation.template.invocationType(), result);
+        MethodType mt = operation.template.invocationType();
 
-        if (!mh.type().equals(operation.template.methodType)) {
+        // Nested operations normally needs to return a value
+        if (operation.parent != null) {
+            mt = mt.changeReturnType(operation.type.returnRawType());
+        }
+        mh = MethodHandles.permuteArguments(mh, mt, result);
+
+        if (!mh.type().equals(mt)) {
             System.err.println("OperationType " + operation.type.toString());
             System.err.println("Expected " + operation.template.methodType);
             System.err.println("Actual " + mh.type());
