@@ -3,11 +3,13 @@ package app.packed.extension;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -39,9 +41,9 @@ import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.InvocationArgument;
 import app.packed.service.Export;
 import app.packed.service.Provide;
-import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
+import app.packed.service.ServiceableBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanLocal;
@@ -50,6 +52,9 @@ import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.service.PackedServiceLocator;
+import internal.app.packed.util.CollectionUtil;
+import internal.app.packed.util.MethodHandleUtil;
 
 /**
  * An extension that defines the foundational APIs for managing beans, services, containers and applications.
@@ -57,11 +62,15 @@ import internal.app.packed.operation.OperationSetup;
  * Every container automatically uses this extension. And every extension automatically has a direct dependency on this
  * extension.
  * <p>
+ * All methods on this class deals with beans Table area [bean,container,service] prefix desciption
+ *
+ *
+ * <p>
  * This extension does not define an {@link ExtensionExtension extension mirror}. Instead all relevant methods are
  * placed directly on {@link app.packed.bean.BeanMirror}, {@link app.packed.container.ContainerMirror} and
  * {@link app.packed.application.ApplicationMirror}.
  *
- * @see BaseExtensionMirror
+ * @see app.packed.container.BaseAssembly#base()
  */
 
 // Bean
@@ -163,9 +172,9 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return the configuration of the bean
      * @see BaseAssembly#install(Class)
      */
-    public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
+    public <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
         BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).install(implementation);
-        return new ProvideableBeanConfiguration<>(handle);
+        return new ServiceableBeanConfiguration<>(handle);
     }
 
     /**
@@ -176,9 +185,9 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return the configuration of the bean
      * @see CommonContainerAssembly#install(Op)
      */
-    public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
+    public <T> ServiceableBeanConfiguration<T> install(Op<T> op) {
         BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).install(op);
-        return new ProvideableBeanConfiguration<>(handle);
+        return new ServiceableBeanConfiguration<>(handle);
     }
 
     /**
@@ -192,19 +201,29 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      *            the component instance to install
      * @return this configuration
      */
-    public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
+    public <T> ServiceableBeanConfiguration<T> installInstance(T instance) {
         BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).installInstance(instance);
-        return new ProvideableBeanConfiguration<>(handle);
+        return new ServiceableBeanConfiguration<>(handle);
     }
 
-    public <T> ProvideableBeanConfiguration<T> installLazy(Class<T> implementation) {
+    public <T> ServiceableBeanConfiguration<T> installLazy(Class<T> implementation) {
         BeanHandle<T> handle = newBeanInstaller(BeanKind.LAZY).install(implementation);
-        return new ProvideableBeanConfiguration<>(handle); // Providable???
+        return new ServiceableBeanConfiguration<>(handle); // Providable???
     }
 
-    public <T> ProvideableBeanConfiguration<T> installLazy(Op<T> op) {
+    public <T> ServiceableBeanConfiguration<T> installLazy(Op<T> op) {
         BeanHandle<T> handle = newBeanInstaller(BeanKind.LAZY).install(op);
-        return new ProvideableBeanConfiguration<>(handle); // Providable???
+        return new ServiceableBeanConfiguration<>(handle); // Providable???
+    }
+
+    public <T> ServiceableBeanConfiguration<T> installPrototype(Class<T> implementation) {
+        BeanHandle<T> handle = newBeanInstaller(BeanKind.MANYTON).lifetimes(OperationTemplate.defaults()).install(implementation);
+        return new ServiceableBeanConfiguration<>(handle);
+    }
+
+    public <T> ServiceableBeanConfiguration<T> installPrototype(Op<T> op) {
+        BeanHandle<T> handle = newBeanInstaller(BeanKind.MANYTON).lifetimes(OperationTemplate.defaults()).install(op);
+        return new ServiceableBeanConfiguration<>(handle);
     }
 
     /**
@@ -239,30 +258,30 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @see BeanSourceKind#CLASS
      * @see BeanHandle.InstallOption#multi()
      */
-    public <T> ProvideableBeanConfiguration<T> multiInstall(Class<T> implementation) {
+    public <T> ServiceableBeanConfiguration<T> multiInstall(Class<T> implementation) {
         BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).multi().install(implementation);
-        return new ProvideableBeanConfiguration<>(handle);
+        return new ServiceableBeanConfiguration<>(handle);
     }
 
-    public <T> ProvideableBeanConfiguration<T> multiInstall(Op<T> op) {
+    public <T> ServiceableBeanConfiguration<T> multiInstall(Op<T> op) {
         BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).multi().install(op);
-        return new ProvideableBeanConfiguration<>(handle);
+        return new ServiceableBeanConfiguration<>(handle);
     }
 
-    public <T> ProvideableBeanConfiguration<T> multiInstallInstance(T instance) {
+    public <T> ServiceableBeanConfiguration<T> multiInstallInstance(T instance) {
         BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).multi().installInstance(instance);
-        return new ProvideableBeanConfiguration<>(handle);
+        return new ServiceableBeanConfiguration<>(handle);
     }
 
     // Skriv usecases naeste gang. Taenker over det hver gang
-    public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Class<T> implementation) {
+    public <T> ServiceableBeanConfiguration<T> multiInstallLazy(Class<T> implementation) {
         BeanHandle<T> handle = newBeanInstaller(BeanKind.LAZY).multi().install(implementation);
-        return new ProvideableBeanConfiguration<>(handle); // Providable???
+        return new ServiceableBeanConfiguration<>(handle); // Providable???
     }
 
-    public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Op<T> op) {
+    public <T> ServiceableBeanConfiguration<T> multiInstallLazy(Op<T> op) {
         BeanHandle<T> handle = newBeanInstaller(BeanKind.LAZY).multi().install(op);
-        return new ProvideableBeanConfiguration<>(handle); // Providable???
+        return new ServiceableBeanConfiguration<>(handle); // Providable???
     }
 
     BeanInstaller newBeanInstaller(BeanKind kind) {
@@ -448,21 +467,28 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         }
     }
 
-    protected void onNew(BaseExtensionPoint p) {
-        // BeanConfiguration b = install(PackedServiceLocator.class);
-        // p.addCodeGenerated(b, new Key<Map<Key<?>, MethodHandle>>() {}, null);
-    }
-
     /**
      * Provides every service from the specified locator.
      *
      * @param locator
      *            the locator to provide services from
+     * @throws KeyAlreadyInUseException
+     *             if the service locator provides any keys that are already in use
      */
-    public void provideAll(ServiceLocator locator) {
+    public Set<Key<?>> provideAll(ServiceLocator locator) {
         requireNonNull(locator, "locator is null");
         checkIsConfigurable();
-        throw new UnsupportedOperationException();
+        Map<Key<?>, MethodHandle> result = new HashMap<>();
+        if (locator instanceof PackedServiceLocator psl) {
+            result = CollectionUtil.copyOf(psl.map(), e -> e.bindTo(psl.context()));
+        } else {
+            result = CollectionUtil.copyOf(locator.toProviderMap(), p -> MethodHandleUtil.PROVIDER_GET.bindTo(p));
+        }
+        // I think we will insert a functional bean that provides all the services
+        extension.container.sm.provideAll(result);
+        return result.keySet(); // can probably return something more clever?
+        // Map<Key, OperationConfiguration>
+        //
     }
 
     // Think we need installPrototype (Which will fail if not provided or exported)
@@ -470,15 +496,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     // Men taenker vi internt typisk arbejde op i mod implementering. Dog ikke altid
     // providePerRequest <-- every time the service is requested
     // Also these beans, can typically just be composites??? Nah
-    public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        BeanHandle<T> handle = newBeanInstaller(BeanKind.MANYTON).lifetimes(OperationTemplate.defaults()).install(implementation);
-        return new ProvideableBeanConfiguration<>(handle).provide();
-    }
 
-    public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> op) {
-        BeanHandle<T> handle = newBeanInstaller(BeanKind.MANYTON).lifetimes(OperationTemplate.defaults()).install(op);
-        return new ProvideableBeanConfiguration<>(handle).provide();
-    }
 
     // requires bliver automatisk anchoret...
     // anchorAllChildExports-> requireAllChildExports();

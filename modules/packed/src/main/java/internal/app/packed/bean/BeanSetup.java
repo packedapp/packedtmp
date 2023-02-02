@@ -61,9 +61,6 @@ public final class BeanSetup {
     private static final VarHandle VH_BEAN_CONFIGURATION_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanConfiguration.class, "handle",
             BeanHandle.class);
 
-    /** A handle that can access BeanHandle#bean. */
-    private static final VarHandle VH_BEAN_HANDLE_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanHandle.class, "bean", BeanSetup.class);
-
     /** The bean class, is typical void.class for functional beans. */
     public final Class<?> beanClass;
 
@@ -235,7 +232,7 @@ public final class BeanSetup {
      */
     public static BeanSetup crack(BeanConfiguration configuration) {
         requireNonNull(configuration, "configuration is null");
-        BeanHandle<?> handle = (BeanHandle<?>) VH_BEAN_CONFIGURATION_TO_HANDLE.get(configuration);
+        PackedBeanHandle<?> handle = (PackedBeanHandle<?>) VH_BEAN_CONFIGURATION_TO_HANDLE.get(configuration);
         return crack(handle);
     }
 
@@ -246,9 +243,9 @@ public final class BeanSetup {
      *            the handle to extract from
      * @return the bean setup
      */
-    public static BeanSetup crack(BeanHandle<?> handle) {
+    public static BeanSetup crack(PackedBeanHandle<?> handle) {
         requireNonNull(handle, "handle is null");
-        return (BeanSetup) VH_BEAN_HANDLE_TO_SETUP.get(handle);
+        return handle.bean;
     }
 
     public static BeanSetup crack(OperationalMethod m) {

@@ -23,10 +23,15 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
+import app.packed.bindings.Provider;
+
 /**
  *
  */
-class MethodHandleUtil {
+public class MethodHandleUtil {
+
+    /** A method handle that calls {@link OptionalDouble#of(double)} (double)OptionalDouble. */
+    public static final MethodHandle PROVIDER_GET = LookupUtil.findVirtualPublic(Provider.class, "get", Object.class);
 
     /** A method handle that calls {@link OptionalDouble#of(double)} (double)OptionalDouble. */
     public static final MethodHandle OPTIONAL_DOUBLE_OF = LookupUtil.findStaticPublic(OptionalDouble.class, "of", OptionalDouble.class, double.class);

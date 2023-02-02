@@ -18,7 +18,7 @@ public class BeanConfiguration {
      *            the bean handle
      */
     public BeanConfiguration(BeanHandle<?> handle) {
-        this.handle = requireNonNull((BeanHandle<?>) handle, "handle is null");
+        this.handle = requireNonNull(handle, "handle is null");
     }
 
     /** {@return the bean class.} */

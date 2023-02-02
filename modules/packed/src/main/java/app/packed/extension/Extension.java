@@ -26,8 +26,8 @@ import java.util.Optional;
 
 import app.packed.application.ApplicationPath;
 import app.packed.application.BuildGoal;
-import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanIntrospector;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;

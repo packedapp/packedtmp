@@ -17,8 +17,6 @@ package internal.app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,16 +39,12 @@ import app.packed.operation.OperationTemplate;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.PackedOp;
-import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.ThrowableUtil;
 
 public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstaller {
 
     /** Illegal bean classes. */
+    // Allign with Key
     static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
-
-    /** A handle that can invoke {@link ComposerAssembly#doBuild(AssemblyModel, ContainerSetup)}. */
-    private static final MethodHandle MH_NEW_BEAN_HANDLE = LookupUtil.findConstructor(MethodHandles.lookup(), BeanHandle.class, BeanSetup.class);
 
     @Nullable
     private Map<Class<?>, Object> attachments;
@@ -97,11 +91,7 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
     }
 
     private <T> BeanHandle<T> from(BeanSetup bs) {
-        try {
-            return (BeanHandle<T>) MH_NEW_BEAN_HANDLE.invokeExact(bs);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
+        return new PackedBeanHandle<>(bs);
     }
 
     /** {@inheritDoc} */

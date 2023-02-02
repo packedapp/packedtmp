@@ -17,6 +17,7 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -205,6 +206,14 @@ public interface ServiceLocator {
             T instance = o.get();
             action.accept(instance);
         }
+    }
+
+    default Map<Key<?>, Provider<?>> toProviderMap() {
+        HashMap<Key<?>, Provider<?>> map = new HashMap<>();
+        for (Key<?> key : keys()) {
+            map.put(key, findProvider(key).get());
+        }
+        return Map.copyOf(map);
     }
 
     /** {@return true if this locator provides any services, otherwise false} */
@@ -398,15 +407,15 @@ public interface ServiceLocator {
             base().exportAll();
         }
 
-        public <T> ProvideableBeanConfiguration<T> install(Class<T> op) {
+        public <T> ServiceableBeanConfiguration<T> install(Class<T> op) {
             return base().install(op);
         }
 
-        public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
+        public <T> ServiceableBeanConfiguration<T> install(Op<T> op) {
             return base().install(op);
         }
 
-        public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
+        public <T> ServiceableBeanConfiguration<T> installInstance(T instance) {
             return base().installInstance(instance);
         }
 
@@ -450,7 +459,7 @@ public interface ServiceLocator {
          *            the implementation to provide a singleton instance of
          * @return a service configuration for the service
          */
-        public <T> ProvideableBeanConfiguration<T> provide(Class<T> implementation) {
+        public <T> ServiceableBeanConfiguration<T> provide(Class<T> implementation) {
             return base().install(implementation).provide();
         }
 
@@ -466,7 +475,7 @@ public interface ServiceLocator {
          *            the factory to bind
          * @return a service configuration for the service
          */
-        public <T> ProvideableBeanConfiguration<T> provide(Op<T> op) {
+        public <T> ServiceableBeanConfiguration<T> provide(Op<T> op) {
             return base().install(op).provide();
         }
 
@@ -528,16 +537,16 @@ public interface ServiceLocator {
         // All annotations will be processed like provide() except that constructors will not be processed
         // Ohh we need to analyze them differently, because we should ignore all constructors.
         // Should not fail if we fx have two public constructors of equal lenght
-        public <T> ProvideableBeanConfiguration<T> provideInstance(T instance) {
+        public <T> ServiceableBeanConfiguration<T> provideInstance(T instance) {
             return base().installInstance(instance).provide();
         }
 
-        public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-            return use(BaseExtension.class).providePrototype(implementation);
+        public <T> ServiceableBeanConfiguration<T> providePrototype(Class<T> implementation) {
+            return use(BaseExtension.class).installPrototype(implementation).provide();
         }
 
-        public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> factory) {
-            return use(BaseExtension.class).providePrototype(factory);
+        public <T> ServiceableBeanConfiguration<T> providePrototype(Op<T> factory) {
+            return use(BaseExtension.class).installPrototype(factory).provide();
         }
     }
 }

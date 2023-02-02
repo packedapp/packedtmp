@@ -16,7 +16,6 @@
 package internal.app.packed.bean;
 
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 
 /**
@@ -37,7 +36,7 @@ public final class PackedBeanLocal<T> {
         return get(BeanSetup.crack(configuration));
     }
 
-    public T get(BeanHandle<?> handle) {
+    public T get(PackedBeanHandle<?> handle) {
         return get(BeanSetup.crack(handle));
     }
 

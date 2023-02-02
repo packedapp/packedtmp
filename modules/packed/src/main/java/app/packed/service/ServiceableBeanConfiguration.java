@@ -23,64 +23,45 @@ import app.packed.bindings.Key;
  * A configuration of a container bean.
  */
 // ServiceableBeanConfiguration?
-public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
+public class ServiceableBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
     /**
+     * Create a new bean configuration.
+     *
      * @param handle
-     *            the bean driver to use for creating the bean
+     *            the bean handle this configuration wraps
      */
-    public ProvideableBeanConfiguration(BeanHandle<T> handle) {
+    public ServiceableBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
     }
 
-    // Final??
+    /** {@return the default key that services will be provided as.} */
     public Key<T> defaultKey() {
         return instanceHandle().defaultKey();
     }
 
-    ProvideableBeanConfiguration<T> describeAs(String description) {
-        // describeExportAs
-        // describeProvisionAs
-        return this;
-    }
-
-    public ProvideableBeanConfiguration<T> export() {
+    public ServiceableBeanConfiguration<T> export() {
         return exportAs(defaultKey());
     }
 
-    public ProvideableBeanConfiguration<T> exportAs(Class<? super T> key) {
+    public ServiceableBeanConfiguration<T> exportAs(Class<? super T> key) {
         return exportAs(Key.of(key));
     }
 
-    public ProvideableBeanConfiguration<T> exportAs(Key<? super T> key) {
-        instanceHandle().serviceExportAs(key);
+    public ServiceableBeanConfiguration<T> exportAs(Key<? super T> key) {
+        instanceHandle().exportAs(key);
         return this;
     }
 
-//    /** {@inheritDoc} */
-//    @Override
-//    public <K> ProvideableBeanConfiguration<T> initializeWithInstance(Class<K> key, K instance) {
-//        super.initializeWithInstance(key, instance);
-//        return this;
-//    }
-//
-//    /** {@inheritDoc} */
-//    @Override
-//    public <K> ProvideableBeanConfiguration<T> initializeWithInstance(Key<K> key, K instance) {
-//        super.initializeWithInstance(key, instance);
-//        return this;
-//    }
-
     /** {@inheritDoc} */
     @Override
-    public ProvideableBeanConfiguration<T> named(String name) {
+    public ServiceableBeanConfiguration<T> named(String name) {
         super.named(name);
         return this;
     }
 
-    public ProvideableBeanConfiguration<T> provide() {
-        instanceHandle().serviceProvideAs(defaultKey());
-        return this;
+    public ServiceableBeanConfiguration<T> provide() {
+        return provideAs(defaultKey());
     }
 
     /**
@@ -92,9 +73,8 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      * @return this configuration
      * @see #provideAs(Key)
      */
-    public ProvideableBeanConfiguration<T> provideAs(Class<? super T> key) {
-        instanceHandle().serviceProvideAs(Key.of(key));
-        return this;
+    public ServiceableBeanConfiguration<T> provideAs(Class<? super T> key) {
+        return provideAs(Key.of(key));
     }
 
     /**
@@ -106,8 +86,8 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      * @return this configuration
      * @see #provideAs(Class)
      */
-    public ProvideableBeanConfiguration<T> provideAs(Key<? super T> key) {
-        instanceHandle().serviceProvideAs(key);
+    public ServiceableBeanConfiguration<T> provideAs(Key<? super T> key) {
+        instanceHandle().provideAs(key);
         return this;
     }
 }

@@ -165,4 +165,9 @@ public final class ServiceManager {
             e.verify();
         }
     }
+
+    /**
+     * @param result
+     */
+    public void provideAll(Map<Key<?>, MethodHandle> result) {}
 }
