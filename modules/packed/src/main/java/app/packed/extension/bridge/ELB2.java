@@ -20,7 +20,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.extension.Extension;
-import app.packed.service.sandbox.ServiceTransformer;
+import app.packed.service.sandbox.ServiceExportsTransformer;
 
 /**
  *
@@ -28,7 +28,7 @@ import app.packed.service.sandbox.ServiceTransformer;
 public final class ELB2 {
 
     // Hmmmmmm, fraekt
-    public ExtensionLifetimeBridge transformServices(@SuppressWarnings("exports") Consumer<ServiceTransformer> transformer) {
+    public ExtensionLifetimeBridge transformServices(@SuppressWarnings("exports") Consumer<ServiceExportsTransformer> transformer) {
         throw new UnsupportedOperationException();
     }
 

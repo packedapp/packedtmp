@@ -29,7 +29,7 @@ import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.service.ServiceLocator;
-import app.packed.service.sandbox.ServiceTransformer;
+import app.packed.service.sandbox.ServiceExportsTransformer;
 import internal.app.packed.lifetime.zbridge.PackedBridge;
 import internal.app.packed.service.PackedServiceLocator;
 
@@ -81,7 +81,7 @@ public final class ExtensionLifetimeBridge {
     }
 
     // Hmmmmmm, fraekt
-    public ExtensionLifetimeBridge transformServices(@SuppressWarnings("exports") Consumer<ServiceTransformer> transformer) {
+    public ExtensionLifetimeBridge transformServices(@SuppressWarnings("exports") Consumer<ServiceExportsTransformer> transformer) {
         throw new UnsupportedOperationException();
     }
 

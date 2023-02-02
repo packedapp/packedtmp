@@ -68,7 +68,7 @@ import app.packed.service.ServiceContract;
 // Nested class paa ServiceWirelets if that is the only place it is going to be used
 
 // Naeste gang vi implementere den. Bygger vi den langsom...
-public interface ServiceTransformer {
+public interface ServiceExportsTransformer {
 
    default ServiceContract contract() {
        throw new UnsupportedOperationException();

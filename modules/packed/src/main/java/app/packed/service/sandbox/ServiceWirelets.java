@@ -17,6 +17,7 @@ package app.packed.service.sandbox;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -49,12 +50,13 @@ public final class ServiceWirelets {
     // Fordi der laver jo bare filtrering paa de services vi ikke
     // skal bruge
 
-    public static Wirelet anchor(Class<?>/* ...?? why not */ key) {
-        return anchor(Key.of(key));
+    public static Wirelet anchor(Class<?> ... keys) {
+        return anchor(Key.ofAll(keys));
     }
 
-    public static Wirelet anchor(Key<?> key) {
-        return anchorIf(s -> s.equals(key));
+    public static Wirelet anchor(Key<?>... keys) {
+        Set<Key<?>> ks = Set.of(keys);
+        return anchorIf(s -> ks.contains(s));
     }
 
     /**
@@ -122,7 +124,7 @@ public final class ServiceWirelets {
     public static <T> Wirelet provideInstance(Key<T> key, T instance) {
         requireNonNull(key, "key is null");
         requireNonNull(instance, "instance is null");
-        return transformOut(t -> t.provideInstance(key, instance));
+        return transformRequirements(t -> t.provideInstance(key, instance));
     }
 
 //    public static Wirelet provideInstance(Object instance) {
@@ -144,12 +146,12 @@ public final class ServiceWirelets {
      *            the transformation to perform
      * @return the transforming wirelet
      */
-    public static Wirelet transformIn(Consumer<? super ServiceTransformer> transformation) {
+    public static Wirelet transformExports(Consumer<? super ServiceExportsTransformer> transformation) {
         requireNonNull(transformation, "transformation is null");
         throw new UnsupportedOperationException();
     }
 
-    public static Wirelet transformOut(Consumer<? super ServiceTransformer> transformation) {
+    public static Wirelet transformRequirements(Consumer<? super ServiceRequirementsTransformer> transformation) {
         requireNonNull(transformation, "transformation is null");
         throw new UnsupportedOperationException();
 //        return new Service2ndPassWirelet() {

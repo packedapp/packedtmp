@@ -26,6 +26,7 @@ import app.packed.bean.OnStop;
 import app.packed.bindings.BindableVariable;
 import app.packed.bindings.BindableWrappedVariable;
 import app.packed.bindings.Key;
+import app.packed.bindings.Provider;
 import app.packed.bindings.Variable;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerGuest;
@@ -36,6 +37,7 @@ import app.packed.extension.BaseExtensionPoint.ContainerInstaller;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
+import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.InvocationArgument;
@@ -44,6 +46,7 @@ import app.packed.service.Provide;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceableBeanConfiguration;
+import app.packed.service.sandbox.ServiceExportsTransformer;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanLocal;
@@ -75,6 +78,7 @@ import internal.app.packed.util.MethodHandleUtil;
 
 // Bean
 //// install
+//// multiInstall
 
 // Container
 //// link
@@ -83,6 +87,7 @@ import internal.app.packed.util.MethodHandleUtil;
 //// export
 //// require
 //// provide
+
 public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     static final PackedBeanLocal<Map<Key<?>, BindableVariable>> CODEGEN = PackedBeanLocal.of();
@@ -284,6 +289,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return new ServiceableBeanConfiguration<>(handle); // Providable???
     }
 
+    // add multiInstall prototype
+
     BeanInstaller newBeanInstaller(BeanKind kind) {
         return new PackedBeanInstaller(extension, kind, null);
     }
@@ -467,6 +474,20 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         }
     }
 
+    <T> OperationConfiguration provideConstant(Class<T> key, T constant) {
+        // Nah skaber den forvirring? Nej det syntes det er rart
+        // at have muligheden for ikke at scanne
+        throw new UnsupportedOperationException();
+    }
+
+    <T> OperationConfiguration provide(Class<T> key, Provider<? extends T> provider) {
+        return provide(Key.of(key), provider);
+    }
+
+    <T> OperationConfiguration provide(Key<T> key, Provider<? extends T> provider) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Provides every service from the specified locator.
      *
@@ -497,11 +518,10 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     // providePerRequest <-- every time the service is requested
     // Also these beans, can typically just be composites??? Nah
 
-
     // requires bliver automatisk anchoret...
     // anchorAllChildExports-> requireAllChildExports();
-    public void serviceRequire(Class<?>... keys) {
-        serviceRequire(Key.ofAll(keys));
+    public void require(Class<?>... keys) {
+        require(Key.ofAll(keys));
     }
 
     /**
@@ -521,7 +541,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @param keys
      *            the key(s) to add
      */
-    public void serviceRequire(Key<?>... keys) {
+    public void require(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
         checkIsConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
@@ -532,8 +552,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         }
     }
 
-    public void serviceRequireOptionally(Class<?>... keys) {
-        serviceRequireOptionally(Key.ofAll(keys));
+    public void requireOptionally(Class<?>... keys) {
+        requireOptionally(Key.ofAll(keys));
     }
 
     /**
@@ -548,7 +568,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      */
     // How does this work with child services...
     // They will be consumed
-    public void serviceRequireOptionally(Key<?>... keys) {
+    public void requireOptionally(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
         checkIsConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
@@ -605,6 +625,10 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
 
 class ZServiceSandbox {
+
+    public void exportsTransform(Consumer<? super ServiceExportsTransformer> s) {
+
+    }
 
     // Validates the outward facing contract
     public void checkContract(Consumer<? super ServiceContract> validator) {}
