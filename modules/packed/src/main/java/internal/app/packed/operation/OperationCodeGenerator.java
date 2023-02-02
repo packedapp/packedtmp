@@ -89,7 +89,7 @@ class OperationCodeGenerator {
             tmp = tmp.asType(tmp.type().changeReturnType(fla.type()));
             return MethodHandles.collectArguments(mh, 0, tmp);
         } else {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("" + p);
         }
     }
 }

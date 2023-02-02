@@ -32,7 +32,7 @@ public final class ServiceBindingSetup extends BindingSetup {
     /** The service manager entry entry corresponding to the key. */
     public final ServiceSetup entry;
 
-    /** A binding in the same container for the same key */
+    /** A binding in the same service manager for the same key. */
     @Nullable
     ServiceBindingSetup nextBinding;
 

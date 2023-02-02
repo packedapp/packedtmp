@@ -76,7 +76,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
             child.close();
         }
 
-        sm.resolve(this);
+        sm.verify();
     }
 
     /** {@inheritDoc} */
@@ -154,7 +154,8 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         // Hvad hvis en extension linker en af deres egne assemblies.
         // If the extension is added in the root container of an assembly. We need to add it there
 
-        boolean isAssemblyRoot = container.assembly.container == null;
+        boolean isAssemblyRoot = container.treeParent == null || container.assembly.container == container;
+
         if (isAssemblyRoot) {
             container.assembly.extensions.add(extension);
         }

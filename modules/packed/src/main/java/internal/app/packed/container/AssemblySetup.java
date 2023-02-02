@@ -201,6 +201,7 @@ public final class AssemblySetup extends RealmSetup {
         // the assembly defines the root container of application. In which case we need to call Extension#onApplicationClose
         // in addition to calling Extension#onAssemblyClose
 
+        // TODO fix Problemet er den assembly sammenligning i ExtensionSetup.of
         if (container.treeParent == null) {
             // Root container
             // We must also close all extension trees.

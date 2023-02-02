@@ -18,10 +18,12 @@ package internal.app.packed.bean;
 import java.lang.annotation.Annotation;
 
 import app.packed.bindings.Variable;
+import app.packed.extension.Extension;
 import internal.app.packed.bean.BeanHookModel.AnnotatedParameterType;
 import internal.app.packed.bean.BeanHookModel.ParameterType;
 import internal.app.packed.binding.InternalDependency;
 import internal.app.packed.binding.PackedBindableVariable;
+import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -56,10 +58,17 @@ final class BeanScannerBindingResolver {
         // Finally, we resolve it as a service
         InternalDependency ia = InternalDependency.fromVariable(v);
 
-        if (operation.bean.ownedBy == null) {
+        Class<? extends Extension<?>> e = operation.bean.ownedBy == null ? null : operation.bean.ownedBy.extensionType;// .operator.extensionType;//
+                                                                                                                       // operation.bean.ownedBy.extensionType;
+        if (operation.parent != null) {
+            e = operation.operator.extensionType;
+        }
+
+        if (e == null) {
             operation.bindings[index] = iBean.bean.container.sm.bind(ia.key(), !ia.isOptional(), operation, index);
         } else {
-            operation.bindings[index] = operation.bean.ownedBy.sm.bind(ia.key(), !ia.isOptional(), operation, index);
+            ExtensionSetup es = operation.bean.container.extensions.get(e);
+            operation.bindings[index] = es.sm.bind(ia.key(), !ia.isOptional(), operation, index);
 //
 //            ExtensionServiceBindingSetup b = new ExtensionServiceBindingSetup(operation, index, v.getRawType());
 //            operation.bindings[index] = b;
