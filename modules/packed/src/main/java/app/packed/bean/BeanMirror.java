@@ -117,7 +117,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
     // Saa supportere vi ogsaa flere factory metodes hvis vi har brug for det en gang
     public Optional<OperationMirror> factoryOperation() {
         BeanSetup bean = bean();
-        if (bean.beanKind.hasInstances() && bean.beanSourceKind != BeanSourceKind.INSTANCE) {
+        if (bean.beanKind != BeanKind.STATIC && bean.beanSourceKind != BeanSourceKind.INSTANCE) {
             return Optional.of(bean.operations.get(0).mirror());
         }
         return Optional.empty();

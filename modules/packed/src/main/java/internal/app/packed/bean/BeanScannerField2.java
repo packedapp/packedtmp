@@ -35,7 +35,7 @@ import app.packed.bindings.Variable;
 import app.packed.extension.Extension;
 import app.packed.framework.AnnotationList;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
+import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanHookModel.AnnotatedField;
 import internal.app.packed.bean.BeanHookModel.AnnotatedFieldKind;
@@ -129,7 +129,7 @@ public final class BeanScannerField2 {
 
     /** {@inheritDoc} */
 
-    public OperationHandle newGetOperation(OperationTemplate template) {
+    public OperationHandle newGetOperation(BeanOperationTemplate template) {
         checkConfigurable();
 
         Lookup lookup = scanner.oc.lookup(field);
@@ -147,7 +147,7 @@ public final class BeanScannerField2 {
 
     /** {@inheritDoc} */
 
-    public OperationHandle newOperation(OperationTemplate template, AccessMode accessMode) {
+    public OperationHandle newOperation(BeanOperationTemplate template, AccessMode accessMode) {
         checkConfigurable();
         Lookup lookup = scanner.oc.lookup(field);
 
@@ -162,7 +162,7 @@ public final class BeanScannerField2 {
         return newOperation(template, mh, accessMode);
     }
 
-    private OperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
+    private OperationHandle newOperation(BeanOperationTemplate template, MethodHandle mh, AccessMode accessMode) {
         template = template.withReturnType(field.getType());
         OperationSetup operation = new MemberOperationSetup(ce.extension, scanner.bean, OperationType.ofField(field, accessMode), template,
                 new OperationFieldTarget(field, accessMode), mh);
@@ -174,7 +174,7 @@ public final class BeanScannerField2 {
 
     /** {@inheritDoc} */
 
-    public OperationHandle newSetOperation(OperationTemplate template) {
+    public OperationHandle newSetOperation(BeanOperationTemplate template) {
         checkConfigurable();
         Lookup lookup = scanner.oc.lookup(field);
 

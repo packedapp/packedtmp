@@ -33,11 +33,12 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
-import app.packed.operation.OperationTemplate;
+import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -151,9 +152,9 @@ public final class BeanScanner {
             throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
         }
 
-        OperationTemplate ot;
+        BeanOperationTemplate ot;
         if (bean.lifetime.lifetimes().isEmpty()) {
-            ot = OperationTemplate.defaults();
+            ot = BeanOperationTemplate.defaults();
         } else {
             ot = bean.lifetime.lifetimes().get(0).template;
         }
@@ -184,7 +185,7 @@ public final class BeanScanner {
         if (!bean.beanClass.isInterface()) {
 
             // If a we have a (instantiating) class source, we need to find a constructor we can use
-            if (bean.beanSourceKind == BeanSourceKind.CLASS && bean.beanKind.hasInstances()) {
+            if (bean.beanSourceKind == BeanSourceKind.CLASS && bean.beanKind != BeanKind.STATIC) {
                 findConstructor();
             }
 

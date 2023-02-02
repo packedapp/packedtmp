@@ -23,24 +23,24 @@ import java.util.List;
 
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
+import app.packed.operation.BeanOperationTemplate;
 
 /**
  *
  */
 public final class FuseableOperation {
 
-    public final OperationTemplate template;
+    public final BeanOperationTemplate template;
 
     public final ArrayDeque<OperationHandle> operations = new ArrayDeque<>();
 
     public final ArrayDeque<MethodHandle> methodHandles = new ArrayDeque<>();
 
-    public FuseableOperation(OperationTemplate template) {
+    public FuseableOperation(BeanOperationTemplate template) {
         this.template = requireNonNull(template);
     }
 
-    static List<FuseableOperation> of(@Nullable List<OperationTemplate> templates) {
+    static List<FuseableOperation> of(@Nullable List<BeanOperationTemplate> templates) {
         if (templates == null) {
             return List.of();
         }

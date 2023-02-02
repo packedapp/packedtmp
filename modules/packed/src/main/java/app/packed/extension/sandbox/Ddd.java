@@ -22,11 +22,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.application.App;
+import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.LifecycleOrder;
+import app.packed.bean.DependencyOrder;
 import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
+import app.packed.container.ContainerHandle;
+import app.packed.container.installer.ContainerLifetimeTemplate;
 import app.packed.extension.Extension;
 
 /**
@@ -38,11 +41,13 @@ public class Ddd extends BaseAssembly {
     @Override
     protected void build() {
         install(Oi.class);
-
+        use(MyE.class).foo();
     }
 
     public static void main(String[] args) {
         App.run(new Ddd());
+        ApplicationMirror m = App.mirrorOf(new Ddd());
+        m.print();
     }
 
     public static class Oi {
@@ -58,8 +63,18 @@ public class Ddd extends BaseAssembly {
         }
     }
 
+    public static class Foo {
+        Foo() {
+            System.out.println("New foo");
+        }
+    }
     public static class MyE extends Extension<MyE> {
         MyE() {}
+
+        void foo() {
+            ContainerHandle h = base().containerInstaller(ContainerLifetimeTemplate.PARENT).named("EntityBeans").useThisExtension().newContainer();
+            fromHandle(h);
+        }
 
         @Override
         protected BeanIntrospector newBeanIntrospector() {
@@ -83,6 +98,6 @@ public class Ddd extends BaseAssembly {
          * @return whether or not the annotated method should be run before or after dependencies in the same lifetime are
          *         initialized.
          */
-        LifecycleOrder ordering() default LifecycleOrder.BEFORE_DEPENDENCIES;
+        DependencyOrder ordering() default DependencyOrder.BEFORE_DEPENDENCIES;
     }
 }

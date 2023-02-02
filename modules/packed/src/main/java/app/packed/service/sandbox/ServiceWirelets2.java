@@ -15,6 +15,13 @@
  */
 package app.packed.service.sandbox;
 
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import app.packed.bindings.Key;
 import app.packed.bindings.Qualifier;
 import app.packed.container.Assembly;
@@ -36,7 +43,9 @@ public class ServiceWirelets2 {
     // Hmm gider vi gemme de assemblys paa runtime?
     // Maaske hellere noget incremental???
 
-    // Smid dem paa Qualifier?
+    @Target(ANNOTATION_TYPE)
+    @Retention(RUNTIME)
+    @Documented
     @Qualifier
     @interface LinkedAssemblyQualifier {
         Class<? extends Assembly> value();

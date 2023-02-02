@@ -39,6 +39,7 @@ class OperationCodeGenerator {
 
     MethodHandle generate(OperationSetup operation, MethodHandle initial) {
         MethodHandle mh = initial;
+      //  debug("%s %s", operation.bean.path(), initial.type());
 
         // instance fields and methods, needs a bean instance
         boolean requiresBeanInstance = operation instanceof MemberOperationSetup s && s.needsBeanInstance();

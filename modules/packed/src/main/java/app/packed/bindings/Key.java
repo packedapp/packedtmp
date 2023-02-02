@@ -520,7 +520,7 @@ public abstract class Key<T> {
 
             Type[] args = pt.getActualTypeArguments();
             for (int i = 0; i < args.length; i++) {
-                args[i] = convertType0(source, originalType, args[0]);
+                args[i] = convertType0(source, originalType, args[i]);
             }
             return Types.createNewParameterizedType(rawType, args);
 //            throw new UnsupportedOperationException();

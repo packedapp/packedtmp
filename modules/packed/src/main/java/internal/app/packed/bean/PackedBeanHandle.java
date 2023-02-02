@@ -22,12 +22,10 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import app.packed.application.ApplicationPath;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.bindings.Key;
@@ -51,7 +49,7 @@ import internal.app.packed.service.InternalServiceUtil;
 public final /* primitive */ class PackedBeanHandle<T> implements BeanHandle<T> {
 
     /** The bean we are wrapping. */
-    final BeanSetup bean;
+    public final BeanSetup bean;
 
     /**
      * Creates a new BeanHandle.
@@ -108,7 +106,7 @@ public final /* primitive */ class PackedBeanHandle<T> implements BeanHandle<T> 
     /** {@inheritDoc} */
     @Override
     public List<OperationHandle> lifetimeOperations() {
-        if (beanKind().hasInstances() && beanSourceKind() != BeanSourceKind.NONE) {
+        if (beanKind() != BeanKind.STATIC && beanSourceKind() != BeanSourceKind.NONE) {
             return List.of(bean.operations.get(0).toHandle());
         }
         return List.of();
@@ -181,14 +179,6 @@ public final /* primitive */ class PackedBeanHandle<T> implements BeanHandle<T> 
     /** {@inheritDoc} */
     @Override
     public void setErrorHandler(ErrorHandler errorHandler) {}
-
-    /** {@inheritDoc} */
-    @Override
-    public void specializeMirror(Supplier<? extends BeanMirror> supplier) {
-        requireNonNull(supplier, "supplier is null");
-        checkIsConfigurable();
-        bean.mirrorSupplier = supplier;
-    }
 
     /** {@inheritDoc} */
     @Override

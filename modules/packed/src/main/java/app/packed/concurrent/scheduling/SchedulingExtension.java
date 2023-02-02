@@ -33,7 +33,7 @@ import app.packed.extension.ExtensionContext;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionPoint;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
+import app.packed.operation.BeanOperationTemplate;
 
 /**
  *
@@ -49,6 +49,7 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
     @Override
     protected BeanIntrospector newBeanIntrospector() {
         return new BeanIntrospector() {
+            static final BeanOperationTemplate BOT = BeanOperationTemplate.defaults().withArg(SchedulingContext.class).withIgnoreReturn();
 
             @Override
             public void hookOnProvidedVariableType(Class<?> hook, BindableWrappedVariable v) {
@@ -62,7 +63,7 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
             @Override
             public void hookOnAnnotatedMethod(Annotation hook, OperationalMethod on) {
                 if (hook instanceof ScheduleRecurrent sr) {
-                    OperationHandle oh = on.newOperation(OperationTemplate.defaults().withArg(SchedulingContext.class));
+                    OperationHandle oh = on.newOperation(BOT);
                     oh.specializeMirror(() -> new ScheduledOperationMirror());
                     ops.add(new ScheduledOperationConfiguration(new Schedule(Duration.ofMillis(sr.millies())), oh));
                 } else {
@@ -89,7 +90,7 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
             // TODO run through all ops and make sure they are scheduled
 
             // Install a scheduling bean that will handle the actual scheduling
-            BeanConfiguration b = base().install(SchedulingBean.class);
+            BeanConfiguration b = provide(SchedulingBean.class);
 
             // Gene
             base().addCodeGenerated(b, FinalSchedule[].class, () -> {

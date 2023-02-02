@@ -18,6 +18,7 @@ package internal.app.packed.application;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -33,6 +34,7 @@ import app.packed.framework.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
+import internal.app.packed.lifetime.zbridge.PackedBridge;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The internal representation of a bootstrap app. */
@@ -53,7 +55,10 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
     @Nullable
     public final Wirelet wirelet;
 
-    public BootstrapAppSetup(OldLifetimeKind lifetimeKind, Supplier<? extends ApplicationMirror> mirrorSupplier, MethodHandle mh, Wirelet wirelet) {
+    public final List<PackedBridge<?>> bridges;
+
+    public BootstrapAppSetup(OldLifetimeKind lifetimeKind, Supplier<? extends ApplicationMirror> mirrorSupplier, List<PackedBridge<?>> bridges, MethodHandle mh,
+            Wirelet wirelet) {
         this.wirelet = wirelet;
 
         // newInstance wants Object return
@@ -63,6 +68,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
         this.mirrorSupplier = requireNonNull(mirrorSupplier);
         this.lifetimeKind = requireNonNull(lifetimeKind);
         this.extensionDenyList = Set.of();
+        this.bridges = List.copyOf(bridges);
     }
 
     /**
@@ -79,6 +85,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
         this.lifetimeKind = existing.lifetimeKind;
         this.mhConstructor = existing.mhConstructor;
         this.extensionDenyList = existing.extensionDenyList;
+        this.bridges = existing.bridges;
     }
 
     /**
@@ -362,5 +369,11 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
             Function<? super F, ? extends E> andThen = this.mapper.andThen(mapper);
             return new MappedApplicationImage<>(image, andThen);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<PackedBridge<?>> bridges() {
+        return bridges;
     }
 }

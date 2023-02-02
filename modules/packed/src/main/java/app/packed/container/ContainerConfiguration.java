@@ -9,6 +9,7 @@ import app.packed.application.ApplicationPath;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.container.PackedContainerHandle;
 
 /**
  * The configuration of a container.
@@ -26,7 +27,7 @@ public final class ContainerConfiguration {
 
     /** The component we are configuring. Is only null for {@link #USED}. */
     @Nullable
-    final ContainerHandle handle;
+    final PackedContainerHandle handle;
 
     /** Used by {@link #USED}. */
     private ContainerConfiguration() {
@@ -40,7 +41,11 @@ public final class ContainerConfiguration {
      *            the container handle
      */
     public ContainerConfiguration(ContainerHandle handle) {
-        this.handle = requireNonNull(handle, "handle is null");
+        this.handle = (PackedContainerHandle) requireNonNull(handle, "handle is null");
+    }
+
+    public ContainerConfiguration addContainer(Wirelet... wirelets) {
+        return new ContainerConfiguration(handle.addContainer(wirelets));
     }
 
     /**
@@ -56,7 +61,7 @@ public final class ContainerConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public final boolean equals(Object obj) {
+    public boolean equals(Object obj) {
         return obj instanceof ContainerConfiguration bc && handle == bc.handle;
     }
 
@@ -67,13 +72,13 @@ public final class ContainerConfiguration {
      * @see BaseAssembly#extensionsTypes()
      * @see ContainerMirror#extensionsTypes()
      */
-    public final Set<Class<? extends Extension<?>>> extensionTypes() {
-        return handle.container.extensionTypes();
+    public Set<Class<? extends Extension<?>>> extensionTypes() {
+        return handle.container().extensionTypes();
     }
 
     /** {@inheritDoc} */
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         return handle.hashCode();
     }
 
@@ -87,8 +92,8 @@ public final class ContainerConfiguration {
      * @implNote Packed does not perform detailed tracking on which extensions use other extensions. As a consequence it
      *           cannot give a more detailed answer about who is using a particular extension
      */
-    public final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-        return handle.container.isExtensionUsed(extensionType);
+    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
+        return handle.container().isExtensionUsed(extensionType);
     }
 
 //    /**
@@ -147,7 +152,7 @@ public final class ContainerConfiguration {
      *            the action to invoke
      */
     // Skal vi have en version der tager en [Runnable alternative] hvis den ikke bliver installeret?
-    public final <E extends Extension<E>> void onFirstUse(Class<E> extensionType, Consumer<? super E> action) {
+    public <E extends Extension<E>> void onFirstUse(Class<E> extensionType, Consumer<? super E> action) {
         // bruger assignable
         // onFirstUse(Extension.class, ()-> Extension isUsed);
         // Taenker jeg kunne vaere brugbart i rooten....
@@ -169,13 +174,13 @@ public final class ContainerConfiguration {
      *
      * @return the path of this configuration.
      */
-    public final ApplicationPath path() {
-        return handle.container.path();
+    public ApplicationPath path() {
+        return handle.container().path();
     }
 
     // never selects extension wirelets...
-    public final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
-        return handle.container.selectWirelets(wireletClass);
+    public <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
+        return handle.container().selectWirelets(wireletClass);
     }
 
     /** {@inheritDoc} */
@@ -202,8 +207,8 @@ public final class ContainerConfiguration {
      * @see #extensionsTypes()
      * @see BaseAssembly#use(Class)
      */
-    public final <E extends Extension<?>> E use(Class<E> extensionClass) {
-        ExtensionSetup extension = handle.container.useExtension(extensionClass, null);
+    public <E extends Extension<?>> E use(Class<E> extensionClass) {
+        ExtensionSetup extension = handle.container().useExtension(extensionClass, null);
         return extensionClass.cast(extension.instance());
     }
 }

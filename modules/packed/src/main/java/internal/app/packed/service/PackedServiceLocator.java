@@ -33,7 +33,7 @@ import internal.app.packed.util.ThrowableUtil;
 /**
  *
  */
-public record PackedServiceLocator(ExtensionContext context, @CodeGenerated Map<Key<?>, MethodHandle> map) implements ServiceLocator {
+public record PackedServiceLocator(ExtensionContext context, @CodeGenerated Map<Key<?>, MethodHandle> entries) implements ServiceLocator {
 
     /** {@inheritDoc} */
     @Override
@@ -44,14 +44,14 @@ public record PackedServiceLocator(ExtensionContext context, @CodeGenerated Map<
     /** {@inheritDoc} */
     @Override
     public boolean contains(Key<?> key) {
-        return map.containsKey(key);
+        return entries.containsKey(key);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> Optional<T> findInstance(Key<T> key) {
         requireNonNull(key, "key is null");
-        MethodHandle provider = map.get(key);
+        MethodHandle provider = entries.get(key);
         if (provider == null) {
             return Optional.empty();
         }
@@ -67,20 +67,20 @@ public record PackedServiceLocator(ExtensionContext context, @CodeGenerated Map<
     /** {@inheritDoc} */
     @Override
     public boolean isEmpty() {
-        return map.isEmpty();
+        return entries.isEmpty();
     }
 
     /** {@inheritDoc} */
     @Override
     public int size() {
-        return map.size();
+        return entries.size();
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> Optional<Provider<T>> findProvider(Key<T> key) {
         requireNonNull(key, "key is null");
-        MethodHandle provider = map.get(key);
+        MethodHandle provider = entries.get(key);
         if (provider == null) {
             return Optional.empty();
         }
@@ -101,7 +101,7 @@ public record PackedServiceLocator(ExtensionContext context, @CodeGenerated Map<
     /** {@inheritDoc} */
     @Override
     public Set<Key<?>> keys() {
-        return map.keySet();
+        return entries.keySet();
     }
 
     /** {@inheritDoc} */

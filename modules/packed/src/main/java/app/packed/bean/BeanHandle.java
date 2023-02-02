@@ -17,7 +17,6 @@ package app.packed.bean;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import app.packed.application.ApplicationPath;
 import app.packed.bindings.Key;
@@ -163,15 +162,4 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
     void provideAs(Key<? super T> key);
 
     void setErrorHandler(ErrorHandler errorHandler);
-
-    /**
-     * Sets a supplier that creates a special bean mirror instead of the generic {@code BeanMirror} when requested.
-     *
-     * @param supplier
-     *            the supplier used to create the bean mirror
-     * @apiNote the specified supplier may be called multiple times for the same bean. In which case an equivalent mirror
-     *          must be returned
-     */
-    // I think move it to the installer. Why wait?
-    void specializeMirror(Supplier<? extends BeanMirror> supplier);
 }

@@ -33,7 +33,7 @@ import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
-import app.packed.operation.OperationTemplate;
+import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.binding.PackedBindableVariable;
 
@@ -346,7 +346,7 @@ interface ZandboxOH {
 
     // If immutable... IDK
     // Fx fra mirrors. Har composite operations ogsaa templates???
-    OperationTemplate template();
+    BeanOperationTemplate template();
 
     //
 //  private static <K, U, V> Map<K, U> copyOf(Map<K, V> map, Function<V, U> valueMapper) {

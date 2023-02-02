@@ -27,7 +27,7 @@ import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bindings.Key;
 import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
+import app.packed.operation.BeanOperationTemplate;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.OperationSetup;
@@ -71,7 +71,7 @@ public final class PackedOperationalMethod extends PackedOperationalExecutable<M
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(OperationTemplate template) {
+    public OperationHandle newOperation(BeanOperationTemplate template) {
         requireNonNull(template);
         checkConfigurable();
 

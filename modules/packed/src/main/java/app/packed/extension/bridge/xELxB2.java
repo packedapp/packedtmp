@@ -20,23 +20,24 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.extension.Extension;
-import app.packed.service.sandbox.ServiceExportsTransformer;
+import app.packed.extension.ExtensionLifetimeBridge;
+import app.packed.service.sandbox.transform.ServiceExportsTransformer;
 
 /**
  *
  */
-public final class ELB2 {
+public final class xELxB2 {
 
     // Hmmmmmm, fraekt
     public ExtensionLifetimeBridge transformServices(@SuppressWarnings("exports") Consumer<ServiceExportsTransformer> transformer) {
         throw new UnsupportedOperationException();
     }
 
-    public static <E extends Extension<E>> ELB2 of(MethodHandles.Lookup lookup, Class<E> extensionType, BiConsumer<? super E, ? super Context> consumer) {
+    public static <E extends Extension<E>> xELxB2 of(MethodHandles.Lookup lookup, Class<E> extensionType, BiConsumer<? super E, ? super Context> consumer) {
         throw new UnsupportedOperationException();
     }
 
-    public static <E extends Extension<E>> ELB2 of(MethodHandles.Lookup lookup, Class<E> extensionType, BiConsumer<? super E, ? super Context> consumer,
+    public static <E extends Extension<E>> xELxB2 of(MethodHandles.Lookup lookup, Class<E> extensionType, BiConsumer<? super E, ? super Context> consumer,
             Runnable onNotInstalled) {
         throw new UnsupportedOperationException();
     }

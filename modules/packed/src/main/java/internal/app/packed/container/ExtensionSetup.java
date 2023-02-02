@@ -6,11 +6,12 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.HashMap;
+import java.util.function.Consumer;
 
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.framework.Nullable;
-import internal.app.packed.service.ExtensionServiceManager;
+import internal.app.packed.service.ServiceManager;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -44,7 +45,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     public final ExtensionModel model;
 
     /** The extension's injection manager. */
-    public final ExtensionServiceManager sm;
+    public final ServiceManager sm;
 
     /**
      * Creates a new extension setup.
@@ -62,10 +63,10 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         this.extensionType = requireNonNull(extensionType);
         if (parent == null) {
             this.extensionTree = new ExtensionTreeSetup(this, extensionType);
-            this.sm = new ExtensionServiceManager(null);
+            this.sm = new ServiceManager(null, null);
         } else {
             this.extensionTree = parent.extensionTree;
-            this.sm = new ExtensionServiceManager(parent.sm);
+            this.sm = new ServiceManager(parent.sm, null);
         }
         this.model = requireNonNull(extensionTree.model);
     }
@@ -144,6 +145,8 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         // The extension must be recursively installed into all ancestors (if not already installed)
         ExtensionSetup extensionParent = container.treeParent == null ? null : container.treeParent.useExtension(extensionType, requestedByExtension);
 
+        ExtensionPreLoad p = container.preLoad.get(extensionType);
+
         ExtensionSetup extension = new ExtensionSetup(extensionParent, container, extensionType);
 
         Extension<?> instance = extension.instance = extension.model.newInstance(extension);
@@ -158,6 +161,13 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
         if (isAssemblyRoot) {
             container.assembly.extensions.add(extension);
+        }
+
+        if (p != null) {
+            Consumer<? super ExtensionSetup> c = p.onUse;
+            if (c != null) {
+                c.accept(extension);
+            }
         }
 
         // Invoke Extension#onNew() before returning the extension/extension-point

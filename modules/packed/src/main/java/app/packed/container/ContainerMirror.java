@@ -13,6 +13,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationPath;
 import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.GuestBeanMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
@@ -74,6 +75,10 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     /** {@return the application this container is a part of.} */
     public ApplicationMirror application() {
         return container().application.mirror();
+    }
+
+    public Optional<GuestBeanMirror> guest() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@return the assembly wherein this container was defined.} */

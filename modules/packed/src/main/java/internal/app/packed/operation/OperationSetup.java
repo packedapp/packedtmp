@@ -32,7 +32,7 @@ import app.packed.framework.Nullable;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
-import app.packed.operation.OperationTemplate;
+import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution.FromOperation;
@@ -84,7 +84,7 @@ public sealed abstract class OperationSetup {
     /** The name of the operation */
     public String zName; // name = operator.simpleName + "Operation"
 
-    private OperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type, OperationTemplate template, @Nullable NestedOperationParent parent) {
+    private OperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type, BeanOperationTemplate template, @Nullable NestedOperationParent parent) {
         this.operator = requireNonNull(operator);
         this.bean = requireNonNull(bean);
         this.type = requireNonNull(type);
@@ -177,7 +177,7 @@ public sealed abstract class OperationSetup {
          * @param operator
          * @param site
          */
-        public BeanAccessOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template) {
+        public BeanAccessOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, BeanOperationTemplate template) {
             super(operator, bean, operationType, template, null);
             zName = "InstantAccess";
         }
@@ -192,17 +192,19 @@ public sealed abstract class OperationSetup {
     /** An operation that invokes the abstract method on a {@link FunctionalInterface}. */
     public static final class FunctionOperationSetup extends OperationSetup implements OperationTarget.OfFunction {
 
+        /** The method that implements the single abstract method. */
         private final Method implementationMethod;
 
         private final MethodHandle methodHandle;
 
+        /** A description of SAM type. */
         private final SamType samType;
 
         /**
          * @param operator
          * @param site
          */
-        public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
+        public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, BeanOperationTemplate template,
                 @Nullable NestedOperationParent nestedParent, MethodHandle methodHandle, SamType samType, Method implementationMethod) {
             super(operator, bean, operationType, template, nestedParent);
             this.methodHandle = requireNonNull(methodHandle);
@@ -240,13 +242,13 @@ public sealed abstract class OperationSetup {
 
         private final MethodHandle methodHandle;
 
-        /** The {@link Member member}. */
+        /** The {@link Member target member}. */
         public final OperationMemberTarget<?> target;
 
         // MH -> mirror - no gen
         // MH -> Gen - With caching (writethrough to whereever the bean cache it)
         // MH -> LazyGen - With caching
-        public MemberOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
+        public MemberOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, BeanOperationTemplate template,
                 OperationMemberTarget<?> member, MethodHandle methodHandle) {
             super(operator, bean, operationType, template, null);
             this.target = requireNonNull(member);
@@ -282,7 +284,7 @@ public sealed abstract class OperationSetup {
          * @param operator
          * @param site
          */
-        public MethodHandleOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
+        public MethodHandleOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, BeanOperationTemplate template,
                 @Nullable NestedOperationParent nestedParent, MethodHandle methodHandle) {
             super(operator, bean, operationType, template, nestedParent);
             this.methodHandle = requireNonNull(methodHandle);

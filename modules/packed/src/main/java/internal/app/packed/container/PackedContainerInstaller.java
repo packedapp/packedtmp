@@ -17,24 +17,15 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-
 import app.packed.container.Assembly;
 import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
-import app.packed.extension.BaseExtensionPoint.ContainerInstaller;
-import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.ThrowableUtil;
+import app.packed.extension.BaseExtensionPoint.OldContainerInstaller;
 
 /**
  *
  */
-public final class PackedContainerInstaller implements ContainerInstaller {
-
-    /** A handle that can invoke {@link ComposerAssembly#doBuild(AssemblyModel, ContainerSetup)}. */
-    private static final MethodHandle MH_NEW_CONTAINER_HANDLE = LookupUtil.findConstructor(MethodHandles.lookup(), ContainerHandle.class,
-            ContainerSetup.class);
+public final class PackedContainerInstaller implements OldContainerInstaller {
 
     final ContainerSetup parent;
 
@@ -43,16 +34,8 @@ public final class PackedContainerInstaller implements ContainerInstaller {
     }
 
     @Override
-    public ContainerInstaller allowRuntimeWirelets() {
+    public OldContainerInstaller allowRuntimeWirelets() {
         throw new UnsupportedOperationException();
-    }
-
-    private ContainerHandle from(ContainerSetup bs) {
-        try {
-            return (ContainerHandle) MH_NEW_CONTAINER_HANDLE.invokeExact(bs);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
     }
 
     @Override
@@ -66,7 +49,7 @@ public final class PackedContainerInstaller implements ContainerInstaller {
         // Build the assembly
         as.build();
 
-        return from(as.container);
+        return new PackedContainerHandle(as.container);
     }
 
     @Override
@@ -75,7 +58,7 @@ public final class PackedContainerInstaller implements ContainerInstaller {
     }
 
     @Override
-    public ContainerInstaller newLifetime() {
+    public OldContainerInstaller newLifetime() {
         throw new UnsupportedOperationException();
     }
 }

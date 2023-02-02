@@ -13,21 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime.zbridge;
+package internal.app.packed.service;
 
-import app.packed.extension.Extension;
-import app.packed.service.ServiceLocator;
+import app.packed.container.BaseAssembly;
+import internal.app.packed.lifetime.sandbox.Program;
 
 /**
  *
  */
-public class MyE extends Extension<MyE> {
-    String foo;
+public class Ptest extends BaseAssembly {
 
-    static class RuntimeBean {
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {
+        installInstance("fofo").export();
+    }
 
-        ServiceLocator calc() {
-            throw new UnsupportedOperationException();
-        }
+    public static void main(String[] args) {
+        Program.start(new Ptest());
     }
 }

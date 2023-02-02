@@ -64,11 +64,9 @@ import internal.app.packed.operation.PackedOperationTemplate;
 // OT.forNewApplication()
 // OT.forNewContainer
 
-public sealed interface OperationTemplate permits PackedOperationTemplate {
+public sealed interface BeanOperationTemplate permits PackedOperationTemplate {
 
     int beanInstanceIndex();
-
-    boolean isIgnoreReturn();
 
     default /* Ordered */ Map<Class<? extends Context<?>>, List<Class<?>>> contexts() {
         throw new UnsupportedOperationException();
@@ -77,7 +75,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     int extensionContextIndex();
 
     // All but noErrorHandling will install an outward interceptor
-    default OperationTemplate handleErrors(ErrorHandler errorHandler) {
+    default BeanOperationTemplate handleErrors(ErrorHandler errorHandler) {
         throw new UnsupportedOperationException();
     }
 
@@ -87,47 +85,50 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
      */
     MethodType invocationType();
 
+    boolean isIgnoreReturn();
+
     /**
      * @param type
      * @return
      *
      * @see BindableVariable#provideFromInvocationArgument(int)
      */
-    OperationTemplate withArg(Class<?> type);
+    BeanOperationTemplate withArg(Class<?> type);
 
-    default OperationTemplate withBeanInstance() {
+    default BeanOperationTemplate withBeanInstance() {
         return withBeanInstance(Object.class);
     }
 
-    OperationTemplate withBeanInstance(Class<?> beanClass);
+    BeanOperationTemplate withBeanInstance(Class<?> beanClass);
 
-    default OperationTemplate withClassifier(Class<?> type) {
+    default BeanOperationTemplate withContext(ContextTemplate context) {
         throw new UnsupportedOperationException();
     }
 
-    default OperationTemplate withContext(ContextTemplate context) {
-        throw new UnsupportedOperationException();
-    }
+    BeanOperationTemplate withIgnoreReturn();
 
-    OperationTemplate withIgnoreReturn();
-
-    OperationTemplate withReturnType(Class<?> type);
+    BeanOperationTemplate withReturnType(Class<?> type);
 
     // 3 choices?
     // No ErrorHandling (Exception will propagate directly)
     // ParentHandling
     // This errorHandler
 
-    default OperationTemplate withReturnTypeObject() {
+    default BeanOperationTemplate withReturnTypeObject() {
         return withReturnType(Object.class);
     }
 
     // Takes EBC returns void
-    static OperationTemplate defaults() {
+    static BeanOperationTemplate defaults() {
         return PackedOperationTemplate.DEFAULTS;
     }
 
-    static OperationTemplate raw() {
+    //
+//  default OperationTemplate withClassifier(Class<?> type) {
+//      throw new UnsupportedOperationException();
+//  }
+
+    static BeanOperationTemplate raw() {
         return new PackedOperationTemplate(-1, -1, MethodType.methodType(void.class), false);
     }
 //

@@ -15,8 +15,12 @@
  */
 package internal.app.packed.lifetime.zbridge;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -24,7 +28,12 @@ import java.util.function.Function;
 
 import app.packed.bindings.Key;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionLifetimeBridge;
 import app.packed.operation.Op;
+import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.ExtensionPreLoad;
+import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.util.LookupUtil;
 
 /**
  *
@@ -36,10 +45,19 @@ import app.packed.operation.Op;
 
 public final class PackedBridge<E extends Extension<E>> {
 
+    /** A handle that can access BeanConfiguration#handle. */
+    private static final VarHandle VH_BRIGE = LookupUtil.findVarHandle(MethodHandles.lookup(), ExtensionLifetimeBridge.class, "bridge", PackedBridge.class);
+
     public final Class<? extends Extension<E>> extensionClass;
 
-    PackedBridge(Class<? extends Extension<E>> extensionClass) {
+    public final Set<Key<?>> keys;
+
+    public final Consumer<? super ExtensionSetup> onUse;
+
+    PackedBridge(Class<? extends Extension<E>> extensionClass, Consumer<? super ExtensionSetup> onUse, Set<Key<?>> keys) {
         this.extensionClass = extensionClass;
+        this.onUse = onUse;
+        this.keys = Set.copyOf(keys);
     }
 
     /**
@@ -50,6 +68,16 @@ public final class PackedBridge<E extends Extension<E>> {
         return null;
     }
 
+    /**
+     * @param containerSetup
+     */
+    public void install(ContainerSetup container) {
+        if (onUse != null) {
+            ExtensionPreLoad epl = container.preLoad.computeIfAbsent(extensionClass, k -> new ExtensionPreLoad());
+            epl.add(this);
+        }
+    }
+
     public List<Class<?>> invocationArguments() {
         return List.of();
     }
@@ -58,19 +86,28 @@ public final class PackedBridge<E extends Extension<E>> {
         return Set.of();
     }
 
+    public PackedBridge<E> addKeys(Set<Key<?>> keys) {
+        HashSet<Key<?>> s = new HashSet<>(keys);
+        s.addAll(keys);
+        return new PackedBridge<>(extensionClass, onUse, s);
+
+    }
+
     /**
      * @param action
      * @return
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public PackedBridge<E> onUse(Consumer<? super E> action) {
-        return null;
+        requireNonNull(action, "action is null");
+        Consumer<? super ExtensionSetup> c = e -> action.accept((E) e.instance());
+        return new PackedBridge<>(extensionClass, onUse == null ? c : onUse.andThen((Consumer) c), keys);
     }
 
     public PackedBridge<E> provide(Class<?> extensionBean, Op<?> op) {
         // Adds synthetic operation to extensionBean
         return null;
     }
-
 
     public <K> PackedBridge<E> provideGeneratedConstant(Class<K> key, Function<? super E, ? extends K> provider) {
         return provideGeneratedConstant(Key.of(key), provider);
@@ -81,8 +118,17 @@ public final class PackedBridge<E extends Extension<E>> {
         return null;
     }
 
-    public static <E extends Extension<E>> PackedBridge<E> builder(MethodHandles.Lookup lookup, Class<E> extensionType) {
-        return new PackedBridge<>(extensionType);
+    public static <E extends Extension<E>> PackedBridge<E> builder(MethodHandles.Lookup caller, Class<E> extensionType) {
+        if (!caller.hasFullPrivilegeAccess()) {
+            throw new IllegalArgumentException("caller must have full privilege access");
+        } else if (caller.lookupClass().getModule() != extensionType.getModule()) {
+            throw new IllegalArgumentException("extension type must be in the same module as the caller");
+        }
+        return new PackedBridge<>(extensionType, null, Set.of());
+    }
+
+    public static PackedBridge<?> crack(ExtensionLifetimeBridge bridge) {
+        return (PackedBridge<?>) VH_BRIGE.get(bridge);
     }
 
     // ExtensionBean -> T

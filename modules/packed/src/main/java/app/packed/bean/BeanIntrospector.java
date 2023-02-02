@@ -34,7 +34,7 @@ import app.packed.framework.AnnotationList;
 import app.packed.framework.Nullable;
 import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
+import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.OperationalExtension;
@@ -319,7 +319,7 @@ public abstract class BeanIntrospector {
          */
         int modifiers();
 
-        OperationHandle newOperation(OperationTemplate template);
+        OperationHandle newOperation(BeanOperationTemplate template);
 
         /** {@return a factory type for this method.} */
         OperationType operationType();
@@ -372,7 +372,7 @@ public abstract class BeanIntrospector {
          * @return an operation handle
          * @see Lookup#unreflectGetter(Field)
          */
-        OperationHandle newGetOperation(OperationTemplate template);
+        OperationHandle newGetOperation(BeanOperationTemplate template);
 
         /**
          * Creates a new operation that can read or/and write a field as specified by the provided access mode.
@@ -393,7 +393,7 @@ public abstract class BeanIntrospector {
          *          and one for writing a field). You must create an operation per access mode instead. It is also currently not
          *          possible to get a VarHandle for the field
          */
-        OperationHandle newOperation(OperationTemplate template, VarHandle.AccessMode accessMode);
+        OperationHandle newOperation(BeanOperationTemplate template, VarHandle.AccessMode accessMode);
 
         /**
          * Creates a new operation that can write to a field.
@@ -407,7 +407,7 @@ public abstract class BeanIntrospector {
          *
          * @see Lookup#unreflectSetter(Field)
          */
-        OperationHandle newSetOperation(OperationTemplate template);
+        OperationHandle newSetOperation(BeanOperationTemplate template);
 
         /**
          * Attempts to convert field to a {@link Key} or fails by throwing {@link KeyExceptio} if the field does not represent a
@@ -482,7 +482,7 @@ public abstract class BeanIntrospector {
          * @see BeanMethodHook#allowInvoke()
          * @see BeanClassHook#allowFullPrivilegeAccess()
          */
-        OperationHandle newOperation(OperationTemplate template);
+        OperationHandle newOperation(BeanOperationTemplate template);
 
         DelegatingOperationHandle newDelegatingOperation();
 

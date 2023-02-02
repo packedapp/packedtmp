@@ -24,7 +24,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.container.Realm;
 import app.packed.framework.Nullable;
-import app.packed.operation.OperationTemplate;
+import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetupClassMapContainer.MuInst;
 import internal.app.packed.binding.BindingResolution;
@@ -136,7 +136,7 @@ public final class BeanSetup {
 
         // Set the lifetime of the bean
         ContainerLifetimeSetup cls = container.lifetime;
-        if (beanKind == BeanKind.CONTAINER || beanKind == BeanKind.FUNCTIONAL || beanKind == BeanKind.STATIC) {
+        if (beanKind == BeanKind.CONTAINER || beanKind == BeanKind.STATIC) {
             this.lifetime = cls;
             this.lifetimeStoreIndex = container.lifetime.addBean(this);
         } else {
@@ -168,7 +168,7 @@ public final class BeanSetup {
 
     // Relative to x
     public OperationSetup instanceAccessOperation() {
-        OperationTemplate template = OperationTemplate.defaults().withReturnType(beanClass);
+        BeanOperationTemplate template = BeanOperationTemplate.defaults().withReturnType(beanClass);
         return new BeanAccessOperationSetup(installedBy, this, OperationType.of(beanClass), template);
     }
 
@@ -252,10 +252,10 @@ public final class BeanSetup {
         return ((PackedOperationalMethod) m).extension.scanner.bean;
     }
 
-    static BeanSetup install(PackedBeanInstaller installer, BeanKind beanKind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
+    static BeanSetup install(PackedBeanInstaller installer, PackedBeanLifetimeTemplate template, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
             @Nullable BeanIntrospector introspector, @Nullable Map<Class<?>, Object> attachments, @Nullable String namePrefix, boolean multiInstall,
             boolean synthetic) {
-        BeanSetup bean = new BeanSetup(installer, beanKind, beanClass, sourceKind, source);
+        BeanSetup bean = new BeanSetup(installer, template.kind, beanClass, sourceKind, source);
 
         ContainerSetup container = bean.container;
 
@@ -322,9 +322,9 @@ public final class BeanSetup {
 
         if (sourceKind == BeanSourceKind.OP) {
             PackedOp<?> op = (PackedOp<?>) bean.beanSource;
-            OperationTemplate ot;
+            BeanOperationTemplate ot;
             if (bean.lifetime.lifetimes().isEmpty()) {
-                ot = OperationTemplate.defaults();
+                ot = BeanOperationTemplate.defaults();
             } else {
                 ot = bean.lifetime.lifetimes().get(0).template;
             }

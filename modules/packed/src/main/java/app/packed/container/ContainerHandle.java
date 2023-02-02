@@ -1,7 +1,5 @@
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -9,22 +7,15 @@ import java.util.function.Supplier;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
-import internal.app.packed.container.ContainerSetup;
 
 /**
  * A container handle is a reference to an installed container, private to the extension that installed the container.
  */
 // Vi skal vel have de samme genererings metoder som OperationSetup
 // Taenker ikke man skal have adgang direkte til handled
-public final class ContainerHandle {
+public interface ContainerHandle {
 
-    /** The container that can be configured. */
-    final ContainerSetup container;
-
-    ContainerHandle(ContainerSetup container) {
-        this.container = requireNonNull(container);
-    }
-
+    ContainerHandle addContainer(Wirelet... wirelets);
     /**
      * Returns an immutable set containing any extensions that are disabled for containers created by this driver.
      * <p>
@@ -33,41 +24,23 @@ public final class ContainerHandle {
      *
      * @return a set of disabled extensions
      */
-    public Set<Class<? extends Extension<?>>> bannedExtensions() {
-        throw new UnsupportedOperationException();
-    }
+    Set<Class<? extends Extension<?>>> bannedExtensions();
 
     /**
      *
      * @throws IllegalStateException
      *             if the container is no longer configurable
      */
-    public void checkIsConfigurable() {
-        if (!isConfigurable()) {
-            throw new IllegalStateException("This container is no longer configurable");
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof ContainerHandle h && container == h.container;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return container.hashCode();
-    }
+    void checkIsConfigurable();
 
     /**
      * Returns whether or not the bean is still configurable.
+     * <p>
+     * If an assembly was used to create the container. The handle is never configurable.
      *
      * @return {@code true} if the bean is still configurable
      */
-    public boolean isConfigurable() {
-        return !container.assembly.isDone();
-    }
+    boolean isConfigurable();
 
     // Hmm, skal vi have selve handles'ene?
     // Jo det skal vi faktisk nok...
@@ -78,20 +51,12 @@ public final class ContainerHandle {
      *
      * @return a list of lifetime operations if the container has its own lifetime
      */
-    public List<OperationHandle> lifetimeOperations() {
-        return List.of();
-    }
+    List<OperationHandle> lifetimeOperations();
 
-    public void named(String name) {
-        container.named(name);
-    }
+    void named(String name);
 
-    public void setErrorHandler(ErrorHandler errorHandler) {
-        checkIsConfigurable();
-    }
+    void setErrorHandler(ErrorHandler errorHandler);
 
     // Hvis vi linker skal vi jo saette det inde...
-    public void specializeMirror(Supplier<? extends ContainerMirror> supplier) {
-        checkIsConfigurable();
-    }
+    void specializeMirror(Supplier<? extends ContainerMirror> supplier);
 }

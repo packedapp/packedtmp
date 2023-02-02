@@ -32,7 +32,7 @@ import app.packed.concurrent.scheduling.SchedulingExtensionPoint;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
-import app.packed.operation.OperationTemplate;
+import app.packed.operation.BeanOperationTemplate;
 
 /**
  *
@@ -69,7 +69,7 @@ public class ScTestOtherE extends BaseAssembly {
                 public void hookOnAnnotatedMethod(Annotation hook, OperationalMethod on) {
                     ScheduleOther so = (ScheduleOther) hook;
                     ScheduledOperationConfiguration soc = use(SchedulingExtensionPoint.class)
-                            .schedule(on.newOperation(OperationTemplate.defaults().withArg(SchedulingContext.class)));
+                            .schedule(on.newOperation(BeanOperationTemplate.defaults().withArg(SchedulingContext.class)));
                     Duration p = Duration.parse(so.value());
                     soc.setMillies((int) p.toMillis());
                 }

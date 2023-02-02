@@ -27,7 +27,7 @@ import app.packed.bindings.Variable;
 import app.packed.framework.Nullable;
 import app.packed.operation.CapturingOp;
 import app.packed.operation.Op;
-import app.packed.operation.OperationTemplate;
+import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -92,7 +92,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
         return bind(0, argument);
     }
 
-    public abstract OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template, @Nullable NestedOperationParent nestedParent);
+    public abstract OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, BeanOperationTemplate template, @Nullable NestedOperationParent nestedParent);
 
     /** {@inheritDoc} */
     @Override

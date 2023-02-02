@@ -15,19 +15,19 @@ public enum BeanKind {
      *
      */
     CONTAINER,
-
-    /**
-     * A functional bean is a stateless (cannot be instantiated) bean that is that defined with a {@code void} bean class.
-     * It is typically used by extensions to group 1 or more functions that have been configured by users.
-     * <p>
-     * Functional beans are always bound to the lifetime of the container in which they are registered.
-     * <p>
-     * While not required, functional beans are typically named starting with lowercase 'f' followed by a single word with
-     * an uppercase first character.
-     * <p>
-     * Is is currently not possible to create these explicit by end-users.
-     */
-    FUNCTIONAL,
+//
+//    /**
+//     * A functional bean is a stateless (cannot be instantiated) bean that is that defined with a {@code void} bean class.
+//     * It is typically used by extensions to group 1 or more functions that have been configured by users.
+//     * <p>
+//     * Functional beans are always bound to the lifetime of the container in which they are registered.
+//     * <p>
+//     * While not required, functional beans are typically named starting with lowercase 'f' followed by a single word with
+//     * an uppercase first character.
+//     * <p>
+//     * Is is currently not possible to create these explicit by end-users.
+//     */
+//    FUNCTIONAL,
 
     /**
      * A lazy bean is a special type of container bean that is lazily created if needed.
@@ -63,13 +63,13 @@ public enum BeanKind {
     }
 
     public boolean hasContainerLifetime() {
-        return this == FUNCTIONAL || this == STATIC || this == CONTAINER;
+        return this == STATIC || this == CONTAINER;
     }
-
-    /** @return whether or not the bean will have 1 or more instance. */
-    public boolean hasInstances() {
-        return this != FUNCTIONAL && this != STATIC;
-    }
+//
+//    /** @return whether or not the bean will have 1 or more instance. */
+//    public boolean hasInstances() {
+//        return this != FUNCTIONAL && this != STATIC;
+//    }
 
     /** @return whether or not the bean will have 1 or more instance. */
     public boolean hasSingleInstance() {

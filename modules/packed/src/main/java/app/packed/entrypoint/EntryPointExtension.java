@@ -16,7 +16,7 @@ import app.packed.framework.Nullable;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
+import app.packed.operation.BeanOperationTemplate;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
@@ -74,7 +74,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
 
                 MainThreadOfControl mc = container.lifetime.entryPoint.mainThread();
 
-                OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
+                BeanOperationTemplate temp = BeanOperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
                 OperationHandle os = method.newOperation(temp);
                 os.specializeMirror(() -> new EntryPointMirror(index));
 
@@ -142,7 +142,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
                 throw new IllegalStateException();
             }
             this.dispatcher = takeOver;
-            ebc = base().install(EntryPointDispatcher.class);
+            ebc = provide(EntryPointDispatcher.class);
         }
     }
 

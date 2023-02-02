@@ -19,15 +19,14 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.application.App;
 import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanKind;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
+import app.packed.lifetime.BeanLifetimeTemplate;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
 
 /**
  *
@@ -71,7 +70,7 @@ public class MhExt extends BaseAssembly {
         BeanHandle<?> h;
 
         public void ownL(Class<?> cl) {
-            h = base().beanInstaller(BeanKind.MANYTON).lifetimes(OperationTemplate.raw()).install(cl);
+            h = base().beanInstaller(BeanLifetimeTemplate.builderManyton().build()).install(cl);
         }
 
         @Override

@@ -33,26 +33,28 @@ import app.packed.container.ContainerGuest;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
-import app.packed.extension.BaseExtensionPoint.ContainerInstaller;
+import app.packed.extension.BaseExtensionPoint.OldContainerInstaller;
+import app.packed.lifetime.BeanLifetimeTemplate;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
+import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.BeanOperationTemplate.InvocationArgument;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
-import app.packed.operation.OperationTemplate.InvocationArgument;
 import app.packed.service.Export;
 import app.packed.service.Provide;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceableBeanConfiguration;
-import app.packed.service.sandbox.ServiceExportsTransformer;
+import app.packed.service.sandbox.transform.ServiceExportsTransformer;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.container.PackedContainerInstaller;
+import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.PackedServiceLocator;
@@ -87,6 +89,7 @@ import internal.app.packed.util.MethodHandleUtil;
 //// export
 //// require
 //// provide
+//// transformServices??? depends on 1 or two interfaces
 
 public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
@@ -178,7 +181,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).install(implementation);
+        BeanHandle<T> handle = newBeanInstaller(BeanLifetimeTemplate.CONTAINER).install(implementation);
         return new ServiceableBeanConfiguration<>(handle);
     }
 
@@ -191,7 +194,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @see CommonContainerAssembly#install(Op)
      */
     public <T> ServiceableBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).install(op);
+        BeanHandle<T> handle = newBeanInstaller(BeanLifetimeTemplate.CONTAINER).install(op);
         return new ServiceableBeanConfiguration<>(handle);
     }
 
@@ -207,27 +210,27 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return this configuration
      */
     public <T> ServiceableBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).installInstance(instance);
+        BeanHandle<T> handle = newBeanInstaller(BeanLifetimeTemplate.CONTAINER).installInstance(instance);
         return new ServiceableBeanConfiguration<>(handle);
     }
 
     public <T> ServiceableBeanConfiguration<T> installLazy(Class<T> implementation) {
-        BeanHandle<T> handle = newBeanInstaller(BeanKind.LAZY).install(implementation);
+        BeanHandle<T> handle = newBeanInstaller(BeanLifetimeTemplate.LAZY).install(implementation);
         return new ServiceableBeanConfiguration<>(handle); // Providable???
     }
 
     public <T> ServiceableBeanConfiguration<T> installLazy(Op<T> op) {
-        BeanHandle<T> handle = newBeanInstaller(BeanKind.LAZY).install(op);
+        BeanHandle<T> handle = newBeanInstaller(BeanLifetimeTemplate.LAZY).install(op);
         return new ServiceableBeanConfiguration<>(handle); // Providable???
     }
 
     public <T> ServiceableBeanConfiguration<T> installPrototype(Class<T> implementation) {
-        BeanHandle<T> handle = newBeanInstaller(BeanKind.MANYTON).lifetimes(OperationTemplate.defaults()).install(implementation);
+        BeanHandle<T> handle = newBeanInstaller(BeanLifetimeTemplate.builderManyton().build()).install(implementation);
         return new ServiceableBeanConfiguration<>(handle);
     }
 
     public <T> ServiceableBeanConfiguration<T> installPrototype(Op<T> op) {
-        BeanHandle<T> handle = newBeanInstaller(BeanKind.MANYTON).lifetimes(OperationTemplate.defaults()).install(op);
+        BeanHandle<T> handle = newBeanInstaller(BeanLifetimeTemplate.builderManyton().build()).install(op);
         return new ServiceableBeanConfiguration<>(handle);
     }
 
@@ -242,7 +245,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @see BeanSourceKind#CLASS
      */
     public BeanConfiguration installStatic(Class<?> implementation) {
-        BeanHandle<?> handle = newBeanInstaller(BeanKind.STATIC).install(implementation);
+        BeanHandle<?> handle = newBeanInstaller(BeanLifetimeTemplate.STATIC).install(implementation);
         return new BeanConfiguration(handle);
     }
 
@@ -264,34 +267,45 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @see BeanHandle.InstallOption#multi()
      */
     public <T> ServiceableBeanConfiguration<T> multiInstall(Class<T> implementation) {
-        BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).multi().install(implementation);
+        BeanHandle<T> handle = newBeanInstaller(BeanLifetimeTemplate.CONTAINER).multi().install(implementation);
         return new ServiceableBeanConfiguration<>(handle);
     }
 
     public <T> ServiceableBeanConfiguration<T> multiInstall(Op<T> op) {
-        BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).multi().install(op);
+        BeanHandle<T> handle = newBeanInstaller(BeanLifetimeTemplate.CONTAINER).multi().install(op);
         return new ServiceableBeanConfiguration<>(handle);
     }
 
     public <T> ServiceableBeanConfiguration<T> multiInstallInstance(T instance) {
-        BeanHandle<T> handle = newBeanInstaller(BeanKind.CONTAINER).multi().installInstance(instance);
+        BeanHandle<T> handle = newBeanInstaller(BeanLifetimeTemplate.CONTAINER).multi().installInstance(instance);
         return new ServiceableBeanConfiguration<>(handle);
     }
 
     // Skriv usecases naeste gang. Taenker over det hver gang
     public <T> ServiceableBeanConfiguration<T> multiInstallLazy(Class<T> implementation) {
-        BeanHandle<T> handle = newBeanInstaller(BeanKind.LAZY).multi().install(implementation);
+        BeanHandle<T> handle = newBeanInstaller(BeanLifetimeTemplate.LAZY).multi().install(implementation);
         return new ServiceableBeanConfiguration<>(handle); // Providable???
     }
 
     public <T> ServiceableBeanConfiguration<T> multiInstallLazy(Op<T> op) {
-        BeanHandle<T> handle = newBeanInstaller(BeanKind.LAZY).multi().install(op);
+        BeanHandle<T> handle = newBeanInstaller(BeanLifetimeTemplate.LAZY).multi().install(op);
         return new ServiceableBeanConfiguration<>(handle); // Providable???
+    }
+
+    /**
+     * Returns a special bean installer that can install beans with BaseExtension as both the owner and installer.
+     *
+     * @param kind
+     *            the kind of bean install
+     * @return a bean installer
+     */
+    BeanInstaller ownBeanInstaller(BeanLifetimeTemplate kind) {
+        return new PackedBeanInstaller(extension, kind, new PackedExtensionPointContext(extension, extension));
     }
 
     // add multiInstall prototype
 
-    BeanInstaller newBeanInstaller(BeanKind kind) {
+    private BeanInstaller newBeanInstaller(BeanLifetimeTemplate kind) {
         return new PackedBeanInstaller(extension, kind, null);
     }
 
@@ -325,7 +339,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                         }
                     }
 
-                    OperationSetup operation = OperationSetup.crack(field.newGetOperation(OperationTemplate.defaults()));
+                    OperationSetup operation = OperationSetup.crack(field.newGetOperation(BeanOperationTemplate.defaults()));
                     extension.container.sm.provide(key, operation, new FromOperation(operation));
                 } else {
                     super.hookOnAnnotatedField(hook, field);
@@ -336,26 +350,26 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             @Override
             public void hookOnAnnotatedMethod(Annotation annotation, OperationalMethod method) {
                 BeanSetup bean = BeanSetup.crack(method);
-                OperationTemplate temp = OperationTemplate.defaults().withIgnoreReturn();
+                BeanOperationTemplate temp = BeanOperationTemplate.defaults().withIgnoreReturn();
 
                 if (annotation instanceof Inject) {
                     OperationHandle handle = method.newOperation(temp);
                     bean.lifecycle.addInitialize(handle, null);
                 } else if (annotation instanceof OnInitialize oi) {
                     OperationHandle handle = method.newOperation(temp);
-                    bean.lifecycle.addInitialize(handle, oi.ordering());
+                    bean.lifecycle.addInitialize(handle, oi.order());
                 } else if (annotation instanceof OnStart oi) {
                     OperationHandle handle = method.newOperation(temp);
-                    bean.lifecycle.addStart(handle, oi.ordering());
+                    bean.lifecycle.addStart(handle, oi.order());
                 } else if (annotation instanceof OnStop oi) {
                     OperationHandle handle = method.newOperation(temp);
-                    bean.lifecycle.addStop(handle, oi.ordering());
+                    bean.lifecycle.addStop(handle, oi.order());
                 } else if ((annotation instanceof Provide) || (annotation instanceof Export)) {
                     Key<?> key = method.toKey();
                     boolean isProviding = method.annotations().containsType(Provide.class);
                     boolean isExporting = method.annotations().containsType(Export.class);
 
-                    OperationTemplate temp2 = OperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
+                    BeanOperationTemplate temp2 = BeanOperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
 
                     if (!Modifier.isStatic(method.modifiers())) {
                         if (beanKind() != BeanKind.CONTAINER) {
@@ -382,6 +396,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             public void hookOnProvidedAnnotatedVariable(Annotation hook, BindableVariable v) {
                 if (hook instanceof ContainerGuest) {
                     Variable va = v.variable();
+//                    debug(v.availableInvocationArguments());
                     if (va.getRawType().equals(String.class)) {
                         v.bindOp(new Op1<@InvocationArgument ApplicationInitializationContext, String>(a -> a.name()) {});
                     } else if (va.getRawType().equals(ManagedLifetimeController.class)) {
@@ -434,7 +449,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         };
     }
 
-    ContainerInstaller newContainerInstaller() {
+    private OldContainerInstaller newContainerInstaller() {
         return new PackedContainerInstaller(extension.container);
     }
 
@@ -450,6 +465,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return new BaseExtensionPoint();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * BaseExtension is always the last extension to be closed. As it is the only extension that has
+     * {@link internal.app.packed.container.ExtensionModel#orderingDepth()} 0.
+     */
     @Override
     protected void onAssemblyClose() {
         // 3 ways to form trees
@@ -460,24 +481,18 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             // navigator().forEachInAssembly()->
         }
 
-        // process child extensions first
+        // close child extensions first
         super.onAssemblyClose();
 
         for (Entry<CodeGeneratorKey, BindableVariable> e : codegenVariables.entrySet()) {
             if (!e.getValue().isBound()) {
-                throw new InternalExtensionException(e.getKey().key() + " not bound for bean " + e.getKey().bean());
+                throw new InternalExtensionException(e.getKey().key() + " not bound for bean " + e.getKey().bean().path());
             }
         }
         // A lifetime root lets order some dependencies
         if (isLifetimeRoot()) {
             extension.container.lifetime.orderDependencies();
         }
-    }
-
-    <T> OperationConfiguration provideConstant(Class<T> key, T constant) {
-        // Nah skaber den forvirring? Nej det syntes det er rart
-        // at have muligheden for ikke at scanne
-        throw new UnsupportedOperationException();
     }
 
     <T> OperationConfiguration provide(Class<T> key, Provider<? extends T> provider) {
@@ -501,7 +516,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         checkIsConfigurable();
         Map<Key<?>, MethodHandle> result = new HashMap<>();
         if (locator instanceof PackedServiceLocator psl) {
-            result = CollectionUtil.copyOf(psl.map(), e -> e.bindTo(psl.context()));
+            result = CollectionUtil.copyOf(psl.entries(), e -> e.bindTo(psl.context()));
         } else {
             result = CollectionUtil.copyOf(locator.toProviderMap(), p -> MethodHandleUtil.PROVIDER_GET.bindTo(p));
         }
@@ -510,6 +525,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return result.keySet(); // can probably return something more clever?
         // Map<Key, OperationConfiguration>
         //
+    }
+
+    <T> OperationConfiguration provideConstant(Class<T> key, T constant) {
+        // Nah skaber den forvirring? Nej det syntes det er rart
+        // at have muligheden for ikke at scanne
+        throw new UnsupportedOperationException();
     }
 
     // Think we need installPrototype (Which will fail if not provided or exported)
@@ -626,16 +647,16 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
 class ZServiceSandbox {
 
-    public void exportsTransform(Consumer<? super ServiceExportsTransformer> s) {
-
-    }
-
     // Validates the outward facing contract
     public void checkContract(Consumer<? super ServiceContract> validator) {}
 
     // Det der er ved validator ServiceContractChecker er at man kan faa lidt mere context med
     // checkContract(Service(c->c.checkExact(sc));// ContractChecker.exact(sc));
     public void checkContractExact(ServiceContract sc) {}
+
+    public void exportsTransform(Consumer<? super ServiceExportsTransformer> s) {
+
+    }
 
     /**
      * Performs a final transformation of any exported service.

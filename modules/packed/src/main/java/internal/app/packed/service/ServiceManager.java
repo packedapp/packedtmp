@@ -30,6 +30,7 @@ import app.packed.framework.Nullable;
 import app.packed.service.ExportedServiceMirror;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
@@ -53,39 +54,67 @@ public final class ServiceManager {
     /** Exported services from the container. */
     public final LinkedHashMap<Key<?>, ExportedService> exports = new LinkedHashMap<>();
 
-    public ServiceManager(ContainerSetup container) {
+    @Nullable
+    public final ServiceManager parent;
+
+    public ServiceManager(@Nullable ServiceManager parent, ContainerSetup container) {
         // For now we a ServiceLocator as the root of the application.
         // Bridges
+        this.parent = parent;
 
-        if (container.treeParent == null) {
-            container.application.addCodeGenerator(() -> {
-                this.exportedServices = CollectionUtil.copyOf(exports, n -> {
-                    MethodHandle mh;
-                    OperationSetup o = n.operation;
-
-                    int accessor = -1;
-                    if (o instanceof OperationSetup.BeanAccessOperationSetup) {
-                        accessor = o.bean.lifetimeStoreIndex;
-                        // test if prototype bean
-                        if (accessor == -1 && o.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
-                            o = o.bean.operations.get(0);
-                        }
-                    }
-                    if (!(o instanceof MemberOperationSetup) && o.bean.beanSourceKind == BeanSourceKind.INSTANCE) {
-                        // It is a a constant
-                        mh = MethodHandles.constant(Object.class, o.bean.beanSource);
-                        mh = MethodHandles.dropArguments(mh, 0, ExtensionContext.class);
-                    } else if (accessor >= 0) {
-                        mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, accessor);
-                    } else {
-                        mh = o.generateMethodHandle();
-                    }
-                    mh = mh.asType(mh.type().changeReturnType(Object.class));
-                    assert (mh.type().equals(MethodType.methodType(Object.class, ExtensionContext.class)));
-                    return mh;
-                });
-            });
+        if (container != null && container.treeParent == null) {
+            container.application.addCodeGenerator(() -> exportedServices = exportedServices());
         }
+    }
+
+    public ServiceBindingSetup bind(Key<?> key, boolean isRequired, OperationSetup operation, int operationBindingIndex) {
+        ServiceSetup e = entries.computeIfAbsent(key, ServiceSetup::new);
+        return e.bind(isRequired, operation, operationBindingIndex);
+    }
+
+    // 3 Muligheder -> Field, Method, BeanInstance
+    public ExportedService export(Key<?> key, OperationSetup operation) {
+        ExportedService es = new ExportedService(operation, key);
+        ExportedService existing = exports.putIfAbsent(es.key, es);
+        if (existing != null) {
+            // A service with the key has already been exported
+            throw new KeyAlreadyInUseException("Jmm " + es.key);
+        }
+        es.operation.mirrorSupplier = () -> new ExportedServiceMirror(es);
+        return es;
+    }
+
+    public void addBean(BeanSetup bean) {
+        provide(Key.of(bean.beanClass), bean.instanceAccessOperation(), bean.beanInstanceBindingProvider());
+    }
+
+    public Map<Key<?>, MethodHandle> exportedServices() {
+        Map<Key<?>, MethodHandle> result = CollectionUtil.copyOf(exports, n -> {
+            MethodHandle mh;
+            OperationSetup o = n.operation;
+
+            int accessor = -1;
+            if (o instanceof OperationSetup.BeanAccessOperationSetup) {
+                accessor = o.bean.lifetimeStoreIndex;
+                // test if prototype bean
+                if (accessor == -1 && o.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
+                    o = o.bean.operations.get(0);
+                }
+            }
+            if (!(o instanceof MemberOperationSetup) && o.bean.beanSourceKind == BeanSourceKind.INSTANCE) {
+                // It is a a constant
+                mh = MethodHandles.constant(Object.class, o.bean.beanSource);
+                mh = MethodHandles.dropArguments(mh, 0, ExtensionContext.class);
+            } else if (accessor >= 0) {
+                mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, accessor);
+            } else {
+                mh = o.generateMethodHandle();
+            }
+            mh = mh.asType(mh.type().changeReturnType(Object.class));
+            assert (mh.type().equals(MethodType.methodType(Object.class, ExtensionContext.class)));
+            return mh;
+        });
+        return result;
     }
 
     public ServiceContract newContract() {
@@ -107,23 +136,6 @@ public final class ServiceManager {
         }
 
         return builder.build();
-    }
-
-    public ServiceBindingSetup bind(Key<?> key, boolean isRequired, OperationSetup operation, int operationBindingIndex) {
-        ServiceSetup e = entries.computeIfAbsent(key, ServiceSetup::new);
-        return e.bind(isRequired, operation, operationBindingIndex);
-    }
-
-    // 3 Muligheder -> Field, Method, BeanInstance
-    public ExportedService export(Key<?> key, OperationSetup operation) {
-        ExportedService es = new ExportedService(operation, key);
-        ExportedService existing = exports.putIfAbsent(es.key, es);
-        if (existing != null) {
-            // A service with the key has already been exported
-            throw new KeyAlreadyInUseException("Jmm");
-        }
-        es.operation.mirrorSupplier = () -> new ExportedServiceMirror(es);
-        return es;
     }
 
     public ServiceLocator newExportedServiceLocator(ExtensionContext context) {
@@ -160,14 +172,14 @@ public final class ServiceManager {
         return provider;
     }
 
+    /**
+     * @param result
+     */
+    public void provideAll(Map<Key<?>, MethodHandle> result) {}
+
     public void verify() {
         for (ServiceSetup e : entries.values()) {
             e.verify();
         }
     }
-
-    /**
-     * @param result
-     */
-    public void provideAll(Map<Key<?>, MethodHandle> result) {}
 }

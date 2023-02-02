@@ -26,6 +26,7 @@ import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.AssemblyModel;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.util.LookupUtil;
 
 /**
@@ -98,7 +99,7 @@ public abstract class AbstractComposer {
      */
     public final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
-        configuration().handle.container.assembly.lookup(lookup);
+        configuration().handle.container().assembly.lookup(lookup);
     }
 
     protected void preCompose() {}
@@ -146,7 +147,7 @@ public abstract class AbstractComposer {
          *            the configuration to use for the assembling process
          */
         void doBuild(AssemblyModel assemblyModel, ContainerSetup container) {
-            ContainerConfiguration configuration = new ContainerConfiguration(new ContainerHandle(container));
+            ContainerConfiguration configuration = new ContainerConfiguration(new PackedContainerHandle(container));
             // Do we really need to guard against concurrent usage of an assembly?
             Object existing = VH_CONFIGURATION.compareAndExchange(composer, null, configuration);
             if (existing == null) {

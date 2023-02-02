@@ -31,8 +31,8 @@ import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.framework.AnnotationList;
 import app.packed.framework.Nullable;
+import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.Op;
-import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.PackedAnnotationList;
 import internal.app.packed.binding.BindingResolution.FromCodeGenerated;
@@ -154,7 +154,7 @@ public final class PackedBindableVariable implements BindableVariable {
     public void bindInvocationArgument(int argumentIndex) {
         checkBeforeBind();
         if (operation.operator != bindingExtension) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("For binding " + variable);
         }
         checkIndex(argumentIndex, operation.template.invocationType().parameterCount());
         // TODO check type
@@ -169,7 +169,7 @@ public final class PackedBindableVariable implements BindableVariable {
         PackedOp<?> pop = PackedOp.crack(op);
 
         // Nested operation get the same arguments as this operation, but with op return type
-        OperationTemplate template = operation.template.withReturnType(pop.type().returnRawType());
+        BeanOperationTemplate template = operation.template.withReturnType(pop.type().returnRawType());
 
         // Create the nested operation
         OperationSetup os = pop.newOperationSetup(operation.bean, bindingExtension, template, new NestedOperationParent(operation, index));

@@ -26,11 +26,13 @@ import java.util.Optional;
 
 import app.packed.application.ApplicationPath;
 import app.packed.application.BuildGoal;
-import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
+import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
+import app.packed.service.ServiceableBeanConfiguration;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
@@ -84,10 +86,6 @@ public abstract class Extension<E extends Extension<E>> {
      */
     protected Extension() {}
 
-    protected final BeanHandle<?> crack(BeanConfiguration configuration) {
-
-        throw new UnsupportedOperationException();
-    }
     /**
      * {@return an instance of this extension that is used in the application's root container. Will return this if this
      * extension is the root extension}
@@ -97,6 +95,18 @@ public abstract class Extension<E extends Extension<E>> {
         ExtensionSetup s = extension;
         while (s.treeParent != null) {
             s = s.treeParent;
+        }
+        return (E) s.instance();
+    }
+
+    /** {@return instance of this extension that is used in the lifetimes root container.} */
+    @SuppressWarnings("unchecked")
+    protected final E assemblyRoot() {
+        ExtensionSetup s = extension;
+        while (s.treeParent != null) {
+            if (s.container.assembly != s.treeParent.container.assembly) {
+                s = s.treeParent;
+            }
         }
         return (E) s.instance();
     }
@@ -125,13 +135,64 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /** {@return the path of the container that this extension belongs to.} */
+    /**
+     *
+     * <p>
+     * When creating a new container the assembly. The handle returned is always closed
+     *
+     * @return
+     * @throws UnsupportedOperationException
+     *             if the extension this not install the container
+     */
+    protected final ContainerHandle containerHandle() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@return the path of the container that this extension belongs to.} */
     protected final ApplicationPath containerPath() {
         return extension.container.path();
     }
 
+    protected final BeanHandle<?> crack(BeanConfiguration configuration) {
+
+        throw new UnsupportedOperationException();
+    }
+
+    // If this has been created with an assembly, it will fail
+    // because the
+    /**
+     * @param handle
+     *            represent the container for which the child should be extracted
+     * @return this
+     * @throws IllegalArgumentException
+     *             if the container (represented by the specified handle) was not created by this extension instance
+     */
+    // Alternativt have en ContainerInstaller.installThisExtension();
+    // Og saa have en fromChild(ContainerHandle)
+    protected final Optional<E> fromHandle(ContainerHandle handle) {
+        requireNonNull(handle, "handle is null");
+        throw new UnsupportedOperationException();
+    }
+//
+//    @SuppressWarnings("unchecked")
+//    protected final E addContainerAndUse(Wirelet... wirelets) {
+//
+//        // Must be created by this container and configurable
+//        // Probably useThis(ContainerHandle handle) instead
+//        // Because we need the installer
+//
+//        ContainerSetup container = extension.container;
+//        ContainerSetup newContainer = new ContainerSetup(container.application, container.assembly, container, wirelets);
+//        return (E) newContainer.useExtension(extension.extensionType, null).instance();
+//    }
+
     /** {@return whether or not the container is the root container in the application.} */
     protected final boolean isApplicationRoot() {
         return extension.treeParent == null;
+    }
+
+    protected final boolean isAssemblyRoot() {
+        return isApplicationRoot() || extension.container.assembly != extension.container.treeParent.assembly;
     }
 
     /**
@@ -150,12 +211,18 @@ public abstract class Extension<E extends Extension<E>> {
         return extension.container.isExtensionUsed(extensionType);
     }
 
+    /** {@return whether or not this container is the root of its lifetime.} */
     protected final boolean isLifetimeRoot() {
         ContainerSetup container = extension.container;
         return container == container.lifetime.container;
     }
 
-    /** {@return instance of this extension that is used in the lifetimes root container.} */
+    /**
+     * Returns the instance of this extension that is root of this container's lifetime. If this container is the root
+     * returns this.
+     *
+     * @return the instance of this extension that is root of this container's lifetime
+     */
     @SuppressWarnings("unchecked")
     protected final E lifetimeRoot() {
         ExtensionSetup s = extension;
@@ -301,6 +368,10 @@ public abstract class Extension<E extends Extension<E>> {
         return parent == null ? Optional.empty() : Optional.of((E) parent.instance());
     }
 
+    protected final <T> ServiceableBeanConfiguration<T> provide(Class<T> implementation) {
+        return base().install(implementation).provide();
+    }
+
     /**
      * Registers a action to run doing the code generation phase of the application.
      * <p>
@@ -412,7 +483,21 @@ public abstract class Extension<E extends Extension<E>> {
         return (P) newExtensionPoint;
     }
 
-    protected final <D extends Extension<D>> D useDependent(Class<D> extensionClass) {
+    /**
+     * Uses an dependent extension.
+     * <p>
+     * The dependent extension must have declared this extension as a dependency using {@link DependsOn}. Otherwise this
+     * method will throw an {@link InternalExtensionException}.
+     *
+     * @param <D>
+     *            the type of dependent extension
+     * @param dependentExtension
+     * @return the dependent extension
+     * @throws InternalExtensionException
+     *             if the dependent extension does not have a direct dependency on this extension. Or if the dependent
+     *             extension is not in the same module as this extension
+     */
+    protected final <D extends Extension<D>> D useDependent(Class<D> dependentExtension) {
         // Ideen er at vi kan slaa nogen der er dependant paa os op.
         // Same module
         // Tror alligevel det er extension point vi skal returnere... IDK

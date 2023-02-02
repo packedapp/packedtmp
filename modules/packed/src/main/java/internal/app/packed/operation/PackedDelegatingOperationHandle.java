@@ -25,7 +25,7 @@ import app.packed.framework.Nullable;
 import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTarget;
-import app.packed.operation.OperationTemplate;
+import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -69,7 +69,7 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
         return operation != null;
     }
 
-    public OperationHandle newOperation(ExtensionSetup extension, OperationTemplate template) {
+    public OperationHandle newOperation(ExtensionSetup extension, BeanOperationTemplate template) {
         // checkConfigurable
         OperationSetup os = this.operation = new MemberOperationSetup(extension, bean, operationType, template, target, methodHandle);
         bean.operations.add(os);
@@ -79,7 +79,7 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(OperationTemplate template, UseSite context) {
+    public OperationHandle newOperation(BeanOperationTemplate template, UseSite context) {
         PackedExtensionPointContext c = (PackedExtensionPointContext) context;
         return newOperation(c.usedBy(), template);
     }

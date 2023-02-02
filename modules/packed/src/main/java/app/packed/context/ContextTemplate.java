@@ -35,7 +35,7 @@ public interface ContextTemplate {
     /** {@return the context this template is a part of.} */
     Class<? extends Context<?>> contextClass();
 
-    /** {@return the extension this template is a part of.} */
+    /** {@return the extension the context is a part of.} */
     Class<? extends Extension<?>> extensionClass();
 
     /** {@return the type of arguments that must be provided.} */
@@ -50,8 +50,10 @@ public interface ContextTemplate {
      */
     ContextTemplate withArgument(Class<?> argument);
 
-    static ContextTemplate of(MethodHandles.Lookup lookup, Class<? extends Context<?>> contextClass, Class<?>... invocationArguments) {
-        throw new UnsupportedOperationException();
+    static ContextTemplate of(MethodHandles.Lookup caller, Class<? extends Context<?>> contextClass, Class<?>... invocationArguments) {
+        Class<? extends Extension<?>> c = PackedContextClass.TYPE_VARIABLE_EXTRACTOR.get(contextClass);
+        // check module
+        return new PackedContextClass(c, contextClass, List.of(invocationArguments));
     }
 
     /**

@@ -15,17 +15,22 @@
  */
 package app.packed.bean;
 
+import java.util.Collection;
+
+import app.packed.container.ContainerMirror;
+import app.packed.extension.BaseExtension;
+import app.packed.extension.Extension;
+
 /**
- *
- * @see OnInitialize
- * @see OnStart
- * @see OnStop
+ * Don't know if we want a separate bean mirror for this.
  */
-// LifecycleOrder
-public enum LifecycleOrder {
+public class GuestBeanMirror extends BeanMirror {
 
-    /** The operation must be executed before any dependencies in the same lifetime with the similar lifecycle phase. */
-    BEFORE_DEPENDENCIES,
+    public Class<? extends Extension<?>> extensionType() {
+        return BaseExtension.class;
+    }
 
-    AFTER_DEPENDENCIES;
+    public Collection<ContainerMirror> containers() {
+        throw new UnsupportedOperationException();
+    }
 }

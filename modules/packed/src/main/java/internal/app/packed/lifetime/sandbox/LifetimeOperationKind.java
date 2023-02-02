@@ -26,13 +26,17 @@ package internal.app.packed.lifetime.sandbox;
 
 
 public enum LifetimeOperationKind {
-    INITIALIZE, // Unmanaged
+    INITIALIZE_ONLY(1), // Unmanaged
 
-    INITIALIZE_AND_START, //Managed_async
+    INITIALIZE_START_STOP(3), //Managed_async
 
-    STOP,  // Managed_async
+    INITIALIZE_AND_START_STOP(2), //Managed_async
 
-    EXECUTE; // Managed_sync
+    EXECUTE(1); // Managed_sync
+
+    LifetimeOperationKind (int count) {
+
+    }
 }
 
 // initialize = always singlethreaded, Bare en liste af operationer der bliver kaldt efter hinanden

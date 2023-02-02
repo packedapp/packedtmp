@@ -20,6 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.application.BootstrapApp.Composer.BootstrapAppAssembly;
@@ -27,6 +29,7 @@ import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.extension.ExtensionLifetimeBridge;
 import app.packed.framework.Nullable;
 import app.packed.operation.Op;
 import internal.app.packed.application.ApplicationDriver;
@@ -34,6 +37,7 @@ import internal.app.packed.application.BootstrapAppSetup;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
+import internal.app.packed.lifetime.zbridge.PackedBridge;
 
 /**
  * A bootstrap app is a special type of applications that can be used to create other (non-bootstrap) application.
@@ -188,7 +192,7 @@ public final class BootstrapApp<A> {
             mh = comp.ahe.mh;
         }
 
-        BootstrapAppSetup<A> a = new BootstrapAppSetup<>(comp.lifetimeKind, comp.mirrorSupplier, mh, null);
+        BootstrapAppSetup<A> a = new BootstrapAppSetup<>(comp.lifetimeKind, comp.mirrorSupplier, comp.bridges, mh, null);
         return new BootstrapApp<>(a);
     }
 
@@ -203,6 +207,7 @@ public final class BootstrapApp<A> {
     // Bridge types
     // Compiler -> Deployable<ApplicationWrapper>
     public static final class Composer extends AbstractComposer {
+
         ApplicationHostExtension ahe;
 
         private OldLifetimeKind lifetimeKind = OldLifetimeKind.UNMANAGED;
@@ -210,10 +215,17 @@ public final class BootstrapApp<A> {
         /** Supplies a mirror for the application. */
         private Supplier<? extends ApplicationMirror> mirrorSupplier = ApplicationMirror::new;
 
+        private ArrayList<PackedBridge<?>> bridges = new ArrayList<>();
+
         final Object o;
 
         private Composer(Object o) {
             this.o = o;
+        }
+
+        public Composer addBridge(ExtensionLifetimeBridge... bridges) {
+            this.bridges.addAll(List.of(bridges).stream().map(PackedBridge::crack).toList());
+            return this;
         }
 
         /**
@@ -277,6 +289,12 @@ public final class BootstrapApp<A> {
         @Nullable
         public Wirelet wirelet() {
             return null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public List<PackedBridge<?>> bridges() {
+            return List.of();
         }
     }
 }

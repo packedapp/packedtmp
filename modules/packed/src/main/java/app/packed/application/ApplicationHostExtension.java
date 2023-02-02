@@ -18,12 +18,12 @@ package app.packed.application;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanKind;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
+import app.packed.lifetime.BeanLifetimeTemplate;
 import app.packed.extension.FrameworkExtension;
+import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 
 /**
@@ -37,20 +37,23 @@ import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 // Men vil man deploye at runtime jo need this host/deployer extension
 public class ApplicationHostExtension extends FrameworkExtension<ApplicationHostExtension> {
 
-    static final OperationTemplate ot = OperationTemplate.raw().withArg(ApplicationInitializationContext.class).withReturnTypeObject();
+    static final BeanOperationTemplate ot = BeanOperationTemplate.raw().withArg(ApplicationInitializationContext.class).withReturnTypeObject();
+
+    static final BeanLifetimeTemplate BLT = BeanLifetimeTemplate.builderManyton().withLifetime(ot).build();
 
     MethodHandle mh;
+
     ApplicationHostExtension() {}
 
     public <T> ApplicationHostConfiguration<T> newApplication(Class<T> guestBean) {
         // We need the attachment, because ContainerGuest is on
-        BeanInstaller bi = base().beanInstaller(BeanKind.MANYTON).attach(InstallingAppHost.class, new InstallingAppHost()).lifetimes(ot);
+        BeanInstaller bi = base().beanInstaller(BLT).attach(InstallingAppHost.class, new InstallingAppHost());
         return newApplication(bi.install(guestBean));
     }
 
     public <T> ApplicationHostConfiguration<T> newApplication(Op<T> guestBean) {
         // We need the attachment, because ContainerGuest is on
-        BeanInstaller bi = base().beanInstaller(BeanKind.MANYTON).attach(InstallingAppHost.class, new InstallingAppHost()).lifetimes(ot);
+        BeanInstaller bi = base().beanInstaller(BLT).attach(InstallingAppHost.class, new InstallingAppHost());
         return newApplication(bi.install(guestBean));
     }
 
@@ -63,16 +66,13 @@ public class ApplicationHostExtension extends FrameworkExtension<ApplicationHost
 
     }
 
-
     static class BootstrapBean {
 
     }
 
     static class InstallingAppHost {
 
-
-        public InstallingAppHost() {
-        }
+        public InstallingAppHost() {}
     }
 
 }

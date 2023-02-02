@@ -15,12 +15,14 @@
  */
 package internal.app.packed.application;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.container.Wirelet;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
+import internal.app.packed.lifetime.zbridge.PackedBridge;
 
 /**
  *
@@ -33,6 +35,7 @@ public abstract class ApplicationDriver<A> {
 
     public abstract Wirelet wirelet();
 
+    public abstract List<PackedBridge<?>> bridges();
     /**
      * @return
      */

@@ -18,15 +18,16 @@ package internal.app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bindings.Key;
 import app.packed.bindings.Provider;
@@ -34,8 +35,8 @@ import app.packed.extension.BaseExtensionPoint;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.extension.InternalExtensionException;
 import app.packed.framework.Nullable;
+import app.packed.lifetime.BeanLifetimeTemplate;
 import app.packed.operation.Op;
-import app.packed.operation.OperationTemplate;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.PackedOp;
@@ -53,11 +54,8 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
 
     private BeanIntrospector introspector;
 
-    /** The kind of bean being installed. */
-    private final BeanKind kind;
-
-    @Nullable
-    public List<OperationTemplate> lifetimes;
+    /** The lifetime of the bean. */
+    public final PackedBeanLifetimeTemplate template;
 
     private boolean multiInstall;
 
@@ -68,9 +66,9 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
     @Nullable
     final PackedExtensionPointContext useSite;
 
-    public PackedBeanInstaller(ExtensionSetup baseExtension, BeanKind kind, @Nullable PackedExtensionPointContext useSite) {
+    public PackedBeanInstaller(ExtensionSetup baseExtension, BeanLifetimeTemplate template, @Nullable PackedExtensionPointContext useSite) {
         this.baseExtension = requireNonNull(baseExtension);
-        this.kind = requireNonNull(kind, "kind is null");
+        this.template = (PackedBeanLifetimeTemplate) requireNonNull(template, "template is null");
         this.useSite = useSite;
     }
 
@@ -107,7 +105,7 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
         }
 //        assert (!lifetimes.isEmpty() || bean.beanClass == void.class); // should be replaced by a check in the bean installer
 
-        BeanSetup bs = BeanSetup.install(this, kind, beanClass, sourceKind, source, introspector, attachments, namePrefix, multiInstall, synthetic);
+        BeanSetup bs = BeanSetup.install(this, template, beanClass, sourceKind, source, introspector, attachments, namePrefix, multiInstall, synthetic);
         return from(bs);
     }
 
@@ -153,8 +151,8 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
     /** {@inheritDoc} */
     @Override
     public BeanHandle<Void> installWithoutSource() {
-        if (kind != BeanKind.FUNCTIONAL) {
-            throw new InternalExtensionException("Only functional beans can be source less");
+        if (template.kind != BeanKind.STATIC) {
+            throw new InternalExtensionException("Only static beans can be source less");
         }
         return install(void.class, BeanSourceKind.NONE, null);
     }
@@ -162,28 +160,15 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
     /** {@inheritDoc} */
     @Override
     public BeanInstaller introspectWith(BeanIntrospector introspector) {
-        if (!kind.hasInstances()) {
-            throw new InternalExtensionException("Cannot set a introspector for functional beans");
-        }
         this.introspector = requireNonNull(introspector, "introspector is null");
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public BeanInstaller lifetimes(OperationTemplate... templates) {
-        if (this.lifetimes != null) {
-            throw new IllegalStateException("Lifetimes can only be set once");
-        }
-        this.lifetimes = List.of(templates);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public BeanInstaller multi() {
-        if (!kind.hasInstances()) {
-            throw new InternalExtensionException("multiInstall is not supported for functional or static beans");
+        if (template.kind == BeanKind.STATIC) {
+            throw new InternalExtensionException("multiInstall is not supported for static beans");
         }
         multiInstall = true;
         return this;
@@ -201,5 +186,13 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
     public BeanInstaller synthetic() {
         synthetic = true;
         return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanInstaller specializeMirror(Supplier<? extends BeanMirror> supplier) {
+        requireNonNull(supplier, "supplier is null");
+        return this;
+//        bean.mirrorSupplier = supplier;
     }
 }

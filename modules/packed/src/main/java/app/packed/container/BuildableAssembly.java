@@ -24,6 +24,7 @@ import java.lang.invoke.VarHandle;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.AssemblyModel;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.util.LookupUtil;
 
 /**
@@ -129,7 +130,7 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
      */
     @SuppressWarnings("unused")
     private void doBuild(AssemblyModel assemblyModel, ContainerSetup container) {
-        ContainerConfiguration configuration = new ContainerConfiguration(new ContainerHandle(container));
+        ContainerConfiguration configuration = new ContainerConfiguration(new PackedContainerHandle(container));
         // Do we really need to guard against concurrent usage of an assembly?
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
@@ -187,6 +188,6 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
-        container().handle.container.assembly.lookup(lookup);
+        container().handle.container().assembly.lookup(lookup);
     }
 }

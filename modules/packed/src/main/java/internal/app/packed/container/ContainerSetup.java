@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -36,6 +37,7 @@ import app.packed.framework.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
+import internal.app.packed.lifetime.zbridge.PackedBridge;
 import internal.app.packed.service.ServiceManager;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
@@ -76,6 +78,8 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     /** Extensions used by this container. We keep them in a LinkedHashMap so that we can return a deterministic view. */
     // Or maybe extension types are always sorted??
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
+
+    public final IdentityHashMap<Class<? extends Extension<?>>, ExtensionPreLoad> preLoad = new IdentityHashMap<>();
 
     /**
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
@@ -119,11 +123,14 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         requireNonNull(wirelets, "wirelets is null");
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
-        this.sm = new ServiceManager(this);
+        this.sm = new ServiceManager(null, this);
 
         if (parent == null) {
             this.depth = 0;
             this.lifetime = new ContainerLifetimeSetup(this, null);
+            for (PackedBridge<?> b : application.driver.bridges()) {
+                b.install(this);
+            }
         } else {
             this.depth = parent.depth + 1;
             this.lifetime = parent.lifetime;

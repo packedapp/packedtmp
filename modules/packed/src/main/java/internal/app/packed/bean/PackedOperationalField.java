@@ -29,7 +29,7 @@ import app.packed.bindings.Key;
 import app.packed.bindings.Variable;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
+import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanHookModel.AnnotatedField;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
@@ -92,7 +92,7 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newGetOperation(OperationTemplate template) {
+    public OperationHandle newGetOperation(BeanOperationTemplate template) {
         checkConfigurable();
 
         Lookup lookup = extension.scanner.oc.lookup(member);
@@ -110,7 +110,7 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(OperationTemplate template, AccessMode accessMode) {
+    public OperationHandle newOperation(BeanOperationTemplate template, AccessMode accessMode) {
         checkConfigurable();
         Lookup lookup = extension.scanner.oc.lookup(member);
 
@@ -125,7 +125,7 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
         return newOperation(template, mh, accessMode);
     }
 
-    private PackedOperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
+    private PackedOperationHandle newOperation(BeanOperationTemplate template, MethodHandle mh, AccessMode accessMode) {
         template = template.withReturnType(member.getType());
         OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, OperationType.ofField(member, accessMode), template,
                 new OperationFieldTarget(member, accessMode), mh);
@@ -137,7 +137,7 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newSetOperation(OperationTemplate template) {
+    public OperationHandle newSetOperation(BeanOperationTemplate template) {
         checkConfigurable();
         Lookup lookup = extension.scanner.oc.lookup(member);
 

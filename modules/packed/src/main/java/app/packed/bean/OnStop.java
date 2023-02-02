@@ -44,14 +44,15 @@ public @interface OnStop {
 
     /**
      * <p>
-     * Notice that the default ordering is the opposite of the ordering from {@link OnInitialize} and {@link OnStart}.
+     * Notice that the default ordering is the opposite of the ordering from {@link OnInitialize} and {@link OnStart}. By
+     * default {@code OnStop} operations will be executed after on stop operations on dependencies.
      *
      * @return
      */
-    LifecycleOrder ordering() default LifecycleOrder.AFTER_DEPENDENCIES;
+    DependencyOrder order() default DependencyOrder.AFTER_DEPENDENCIES;
 
     // Timeout?
     public enum ForkPolicy {
-        NO_FORK, FORK, FORK_AWAIT_AFTER_DEPENDENCIES;
+        FORK, FORK_AWAIT_AFTER_DEPENDENCIES, NO_FORK;
     }
 }

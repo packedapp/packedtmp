@@ -13,20 +13,24 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanKind;
+import app.packed.bean.BeanMirror;
+import app.packed.bean.DependencyOrder;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.bean.LifecycleOrder;
 import app.packed.bindings.Key;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
+import app.packed.container.installer.ContainerInstaller;
+import app.packed.container.installer.ContainerLifetimeTemplate;
 import app.packed.extension.bridge.ContainerGuestBeanConfiguration;
-import app.packed.extension.bridge.ExtensionLifetimeBridge;
+import app.packed.lifetime.BeanLifetimeTemplate;
+import app.packed.lifetime.RunState;
+import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
+import app.packed.service.ServiceableBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.PackedExtensionPointContext;
@@ -88,39 +92,35 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     /**
-     * Creates a new bean installer for the application.
+     * Creates a new application bean installer.
      *
-     * @param kind
-     *            the kind of bean to installer
+     * @param template
+     *            a template for the bean's lifetime
      * @return the installer
      */
-    public BeanInstaller beanInstaller(BeanKind kind) {
-        return new PackedBeanInstaller(extension().extension, kind, (PackedExtensionPointContext) context());
+    public BeanInstaller beanInstaller(BeanLifetimeTemplate template) {
+        return new PackedBeanInstaller(extension().extension, template, (PackedExtensionPointContext) context());
     }
 
     /**
-     * Creates a new bean installer for an extension.
+     * Creates a new extension bean installer.
      *
-     * @param kind
-     *            the kind of bean to installer
+     * @param template
+     *            a template for the bean's lifetime
      * @return the installer
      */
-    public BeanInstaller beanInstallerForExtension(BeanKind kind, UseSite forExtension) {
+    public BeanInstaller beanInstallerForExtension(BeanLifetimeTemplate template, UseSite forExtension) {
         requireNonNull(forExtension, "forExtension is null");
-        return new PackedBeanInstaller(extension().extension, kind, (PackedExtensionPointContext) forExtension);
+        return new PackedBeanInstaller(extension().extension, template, (PackedExtensionPointContext) forExtension);
     }
 
-    public ContainerInstaller containerInstaller() {
+    public ContainerInstaller containerInstaller(ContainerLifetimeTemplate<?> template) {
         throw new UnsupportedOperationException();
     }
 
-    public ContainerInstaller containerInstaller(InstanceBeanConfiguration<?> guestBean) {
-        throw new UnsupportedOperationException();
-    }
-
-    public <T> InstanceBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = beanInstallerForExtension(BeanKind.CONTAINER, context()).install(implementation);
-        return new InstanceBeanConfiguration<>(handle);
+    public <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
+        BeanHandle<T> handle = beanInstallerForExtension(BeanLifetimeTemplate.CONTAINER, context()).install(implementation);
+        return new ServiceableBeanConfiguration<>(handle);
     }
 
     /**
@@ -131,7 +131,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public <T> InstanceBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<T> handle = beanInstallerForExtension(BeanKind.CONTAINER, context()).install(op);
+        BeanHandle<T> handle = beanInstallerForExtension(BeanLifetimeTemplate.CONTAINER, context()).install(op);
         return new InstanceBeanConfiguration<>(handle);
     }
 
@@ -153,13 +153,13 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
-        BeanHandle<T> handle = beanInstallerForExtension(BeanKind.CONTAINER, context()).installIfAbsent(clazz,
+        BeanHandle<T> handle = beanInstallerForExtension(BeanLifetimeTemplate.CONTAINER, context()).installIfAbsent(clazz,
                 h -> action.accept(new InstanceBeanConfiguration<>(h)));
         return new InstanceBeanConfiguration<>(handle);
     }
 
     public <T> InstanceBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = beanInstallerForExtension(BeanKind.CONTAINER, context()).installInstance(instance);
+        BeanHandle<T> handle = beanInstallerForExtension(BeanLifetimeTemplate.CONTAINER, context()).installInstance(instance);
         return new InstanceBeanConfiguration<>(handle);
     }
 
@@ -171,20 +171,51 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public BeanConfiguration installStatic(Class<?> beanClass) {
-        BeanHandle<?> handle = beanInstallerForExtension(BeanKind.STATIC, context()).install(beanClass);
+        BeanHandle<?> handle = beanInstallerForExtension(BeanLifetimeTemplate.STATIC, context()).install(beanClass);
         return new BeanConfiguration(handle);
+    }
+
+    // onExtension E newContainer(Wirelet wirelets); // adds this to the container and returns it
+
+    public ContainerHandle newContainer(Assembly assembly, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    public ContainerHandle newContainer(ContainerLifetimeTemplate<?> template, Assembly assembly, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    public ContainerHandle newContainer(ContainerLifetimeTemplate<?> template, Wirelet... wirelets) {
+        // Maybe have
+        throw new UnsupportedOperationException();
+    }
+
+    public ContainerHandle newContainer(Wirelet... wirelets) {
+        // What is the usecase here without
+        // Okay I want to a create a container in the container.
+        // And then add myself
+
+        // Let's say entity beans are always in their own container
+        // newContainer().useMyself().
+
+        throw new UnsupportedOperationException();
     }
 
     public <T> ContainerGuestBeanConfiguration<T> newContainerGuest(Class<T> containerGuest, ExtensionLifetimeBridge... bridges) {
         throw new UnsupportedOperationException();
     }
 
-    public OperationConfiguration runOnBeanInitialization(DelegatingOperationHandle h, LifecycleOrder ordering) {
+    public OperationConfiguration runOnBean(RunState state, DelegatingOperationHandle h, DependencyOrder ordering) {
+        throw new UnsupportedOperationException();
+    }
+
+    public OperationConfiguration runOnBeanInitialization(DelegatingOperationHandle h, DependencyOrder ordering) {
         requireNonNull(ordering, "ordering is null");
-        OperationHandle handle = h.newOperation(OperationTemplate.defaults(), context());
+        OperationHandle handle = h.newOperation(BeanOperationTemplate.defaults(), context());
         ((PackedOperationHandle) handle).operation().bean.lifecycle.addInitialize(handle, ordering);
         return new OperationConfiguration(handle);
     }
+
     /**
      * Creates a new inject operation from the specified delegating operation handle.
      *
@@ -194,19 +225,19 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @see Inject
      */
     public OperationConfiguration runOnBeanInject(DelegatingOperationHandle h) {
-        PackedOperationHandle handle = (PackedOperationHandle) h.newOperation(OperationTemplate.defaults(), context());
+        PackedOperationHandle handle = (PackedOperationHandle) h.newOperation(BeanOperationTemplate.defaults(), context());
         handle.operation().bean.lifecycle.addInitialize(handle, null);
         return new OperationConfiguration(handle);
     }
 
-    public OperationConfiguration runOnBeanStart(DelegatingOperationHandle h, LifecycleOrder ordering) {
+    public OperationConfiguration runOnBeanStart(DelegatingOperationHandle h, DependencyOrder ordering) {
         // What if I want to fork it??? on OC??
         // Or do I need to call it immediately
         // runOnLifecycle(RunState runstate, LifecycleOrder ordering)
         throw new UnsupportedOperationException();
     }
 
-    public OperationConfiguration runOnBeanStop(DelegatingOperationHandle h, LifecycleOrder ordering) {
+    public OperationConfiguration runOnBeanStop(DelegatingOperationHandle h, DependencyOrder ordering) {
         throw new UnsupportedOperationException();
     }
 
@@ -270,12 +301,6 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
         // MANYTONE -> Controlled
 
-        default BeanInstaller lifetimeFromOperations() {
-            return this;
-        }
-
-        BeanInstaller lifetimes(OperationTemplate... templates);
-
         /**
          * Allows multiple beans of the same type in a container.
          * <p>
@@ -289,7 +314,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
         BeanInstaller namePrefix(String prefix);
 
-        default BeanInstaller spawnNew() {
+
             // A bean that is created per operation.
             // Obvious manyton, but should we have own kind?
             // I actually think so because, because for now it always requires manyton
@@ -308,8 +333,15 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
             // Maybe bean is always single threaded.
             // And container is always multi threaded
 
-            throw new UnsupportedOperationException();
-        }
+        /**
+         * Sets a supplier that creates a special bean mirror instead of the generic {@code BeanMirror} when requested.
+         *
+         * @param supplier
+         *            the supplier used to create the bean mirror
+         * @apiNote the specified supplier may be called multiple times for the same bean. In which case an equivalent mirror
+         *          must be returned
+         */
+        BeanInstaller specializeMirror(Supplier<? extends BeanMirror> supplier);
 
         /**
          * Marks the bean as synthetic.
@@ -354,9 +386,9 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     // Lifetime -> In Operation, Start/Stop, stateless?
 
-    public interface ContainerInstaller {
+    public interface OldContainerInstaller {
 
-        ContainerInstaller allowRuntimeWirelets();
+        OldContainerInstaller allowRuntimeWirelets();
 
         /**
          * <p>
@@ -372,10 +404,10 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
         ContainerHandle newContainer(Wirelet... wirelets);
 
-        ContainerInstaller newLifetime();
+        OldContainerInstaller newLifetime();
 
         // Only Managed-Operation does not require a wrapper
-        default ContainerInstaller wrapIn(InstanceBeanConfiguration<?> wrapperBeanConfiguration) {
+        default OldContainerInstaller wrapIn(InstanceBeanConfiguration<?> wrapperBeanConfiguration) {
             // Gaar udfra vi maa definere wrapper beanen alene...Eller som minimum supportere det
             // Hvis vi vil dele den...
 

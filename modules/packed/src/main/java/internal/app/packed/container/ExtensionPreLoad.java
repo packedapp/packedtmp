@@ -13,21 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime.zbridge;
+package internal.app.packed.container;
 
-import app.packed.extension.Extension;
-import app.packed.service.ServiceLocator;
+import java.util.function.Consumer;
+
+import internal.app.packed.lifetime.zbridge.PackedBridge;
 
 /**
  *
  */
-public class MyE extends Extension<MyE> {
-    String foo;
+public class ExtensionPreLoad {
 
-    static class RuntimeBean {
+    Consumer<? super ExtensionSetup> onUse;
 
-        ServiceLocator calc() {
-            throw new UnsupportedOperationException();
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void add(PackedBridge<?> bridge) {
+        Consumer<? super ExtensionSetup> c = bridge.onUse;
+        if (c != null) {
+            onUse = onUse == null ? c : onUse.andThen((Consumer) c);
         }
     }
 }

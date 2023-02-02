@@ -29,7 +29,7 @@ import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.RunState;
 import app.packed.lifetime.sandbox.ManagedLifetime;
-import app.packed.operation.OperationTemplate;
+import app.packed.operation.BeanOperationTemplate;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.entrypoint.EntryPointSetup;
@@ -84,10 +84,10 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
      */
     public ContainerLifetimeSetup(ContainerSetup container, @Nullable ContainerLifetimeSetup parent) {
         super(parent);
-        this.lifetimes = FuseableOperation.of(List.of(OperationTemplate.defaults())); // obviously wrong
-        this.initialization = new FuseableOperation(OperationTemplate.defaults());
-        this.startup = new FuseableOperation(OperationTemplate.defaults());
-        this.shutdown = new FuseableOperation(OperationTemplate.defaults());
+        this.lifetimes = FuseableOperation.of(List.of(BeanOperationTemplate.defaults())); // obviously wrong
+        this.initialization = new FuseableOperation(BeanOperationTemplate.defaults());
+        this.startup = new FuseableOperation(BeanOperationTemplate.defaults());
+        this.shutdown = new FuseableOperation(BeanOperationTemplate.defaults());
 
         this.container = container;
         if (container.treeParent == null) {

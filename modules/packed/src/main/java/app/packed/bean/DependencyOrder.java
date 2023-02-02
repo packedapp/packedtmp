@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime.zbridge;
-
-import app.packed.extension.Extension;
-import app.packed.service.ServiceLocator;
+package app.packed.bean;
 
 /**
  *
+ * @see OnInitialize
+ * @see OnStart
+ * @see OnStop
  */
-public class MyE extends Extension<MyE> {
-    String foo;
+// LifetimeLifecycleOrder, LifecycleLifetimeOrder
 
-    static class RuntimeBean {
+public enum DependencyOrder {
 
-        ServiceLocator calc() {
-            throw new UnsupportedOperationException();
-        }
-    }
+    /** The operation will be executed before any dependencies. */
+    BEFORE_DEPENDENCIES,
+
+    /** The operation will be executed after any dependencies. */
+    AFTER_DEPENDENCIES;
 }

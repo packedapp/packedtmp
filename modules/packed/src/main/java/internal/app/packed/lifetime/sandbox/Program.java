@@ -16,11 +16,13 @@
 package internal.app.packed.lifetime.sandbox;
 
 import app.packed.application.ApplicationLauncher;
+import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.bindings.Key;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerGuest;
 import app.packed.container.Wirelet;
+import app.packed.extension.ExtensionLifetimeBridge;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
 
@@ -124,6 +126,10 @@ public interface Program extends AutoCloseable {
         return driver().newLauncher(assembly, wirelets).map(e -> e);
     }
 
+    static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
+        return driver().mirrorOf(assembly, wirelets);
+    }
+
     /**
      * Build and start a new application using the specified assembly. The state of the returned application is running
      * <p>
@@ -147,15 +153,18 @@ public interface Program extends AutoCloseable {
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementation(@ContainerGuest String name, @ContainerGuest ServiceLocator services,
-        @ContainerGuest ManagedLifetimeController runtime) implements Program {
+record ProgramImplementation(@ContainerGuest String name, @ContainerGuest ServiceLocator services, @ContainerGuest ManagedLifetimeController runtime)
+        implements Program {
 
     ProgramImplementation {
-        //System.out.println(services.keys());
+        // System.out.println(services.keys());
     }
 
     /** An driver for creating App instances. */
-    static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ProgramImplementation.class, c -> c.managedLifetime());
+    static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ProgramImplementation.class, c -> {
+        c.managedLifetime();
+        c.addBridge(ExtensionLifetimeBridge.EXPORTED_SERVICE_LOCATOR);
+    });
 
     /** {@inheritDoc} */
     @Override
