@@ -106,14 +106,10 @@ public final class BeanSetup {
     /** Operations declared by the bean. */
     public final ArrayList<OperationSetup> operations = new ArrayList<>();
 
-    /** Non-null if the bean is owned by an extension. */
-    @Nullable
-    public final ExtensionSetup ownedBy;
-
     public boolean providingOperationsVisited;
 
-    /** The assembly or extension used to install this component. */
-    public final RealmSetup realm;
+    /** The owner of the bean. */
+    public final RealmSetup owner;
 
     /** A list of services provided by the bean, used for circular dependency checks. */
     public final List<ServiceProviderSetup> serviceProviders = new ArrayList<>();
@@ -132,22 +128,12 @@ public final class BeanSetup {
         this.beanSourceKind = requireNonNull(beanSourceKind);
 
         ExtensionSetup installedBy = installer.useSite == null ? installer.baseExtension : installer.useSite.usedBy();
-
-        RealmSetup realm = installer.useSite == null ? installer.baseExtension.container.assembly : installedBy.extensionTree;
-
         this.installedBy = requireNonNull(installedBy);
         this.container = requireNonNull(installedBy.container);
 
-        // I think we want to have a single field for these 2
-        // I think this was made like this, when I was unsure if we could
-        // have containers managed by extensions
-        this.realm = requireNonNull(realm);
-        if (realm instanceof ExtensionTreeSetup s) {
-            // System.out.println(installer.useSite.usedBy().extensionType);
-            this.ownedBy = installer.useSite.usedBy();
-        } else {
-            this.ownedBy = null;
-        }
+        RealmSetup realm = installer.useSite == null ? installer.baseExtension.container.assembly : installedBy.extensionTree;
+        this.owner = requireNonNull(realm);
+
 
         // Set the lifetime of the bean
         ContainerLifetimeSetup cls = container.lifetime;
@@ -344,8 +330,8 @@ public final class BeanSetup {
             bean.operations.add(os);
         }
 
-        if (bean.realm instanceof ExtensionTreeSetup e && bean.beanKind == BeanKind.CONTAINER) {
-            bean.ownedBy.sm.addBean(bean);
+        if (bean.owner instanceof ExtensionTreeSetup e && bean.beanKind == BeanKind.CONTAINER) {
+            bean.container.useExtension(e.realmType(), null).sm.addBean(bean);
         }
 
         // Scan the bean class for annotations unless the bean class is void

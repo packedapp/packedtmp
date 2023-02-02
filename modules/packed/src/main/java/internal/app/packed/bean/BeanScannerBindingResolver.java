@@ -18,6 +18,7 @@ package internal.app.packed.bean;
 import java.lang.annotation.Annotation;
 
 import app.packed.bindings.Variable;
+import app.packed.container.Realm;
 import app.packed.extension.Extension;
 import internal.app.packed.bean.BeanHookModel.AnnotatedParameterType;
 import internal.app.packed.bean.BeanHookModel.ParameterType;
@@ -58,7 +59,8 @@ final class BeanScannerBindingResolver {
         // Finally, we resolve it as a service
         InternalDependency ia = InternalDependency.fromVariable(v);
 
-        Class<? extends Extension<?>> e = operation.bean.ownedBy == null ? null : operation.bean.ownedBy.extensionType;// .operator.extensionType;//
+        Realm realm = operation.bean.owner.realm();
+        Class<? extends Extension<?>> e = realm.isApplication() ? null : realm.extension();
                                                                                                                        // operation.bean.ownedBy.extensionType;
         if (operation.parent != null) {
             e = operation.operator.extensionType;

@@ -109,7 +109,7 @@ public abstract class BeanIntrospector {
 
     /** {@return the owner of the bean.} */
     public final Realm beanOwner() {
-        return bean().realm.realm();
+        return bean().owner.realm();
     }
 
     /** {@return the bean source kind.} */

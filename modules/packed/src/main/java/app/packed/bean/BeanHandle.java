@@ -130,7 +130,7 @@ public final /* primitive */ class BeanHandle<T> {
      * @return {@code true} if the bean is still configurable
      */
     public boolean isConfigurable() {
-        return !bean.realm.isDone();
+        return !bean.owner.isDone();
     }
 
     /**
@@ -191,7 +191,7 @@ public final /* primitive */ class BeanHandle<T> {
      * @return
      */
     public Realm owner() {
-        return bean.ownedBy == null ? Realm.application() : Realm.extension(bean.ownedBy.extensionType);
+        return bean.owner.realm();
     }
 
     /** {@return the path of the bean.} */
