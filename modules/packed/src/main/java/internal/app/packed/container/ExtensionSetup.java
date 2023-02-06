@@ -99,7 +99,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         }
 
         // Same canonical name, sort in order of use
-        return extensionTree.usageOrderId - o.extensionTree.usageOrderId;
+        return extensionTree.applicationExtensionId - o.extensionTree.applicationExtensionId;
     }
 
     /**

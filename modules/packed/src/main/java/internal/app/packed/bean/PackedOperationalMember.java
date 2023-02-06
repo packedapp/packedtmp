@@ -46,7 +46,7 @@ abstract sealed class PackedOperationalMember<M extends Member> permits PackedOp
 
     /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */
     final void checkConfigurable() {
-        if (extension.extension.container.assembly.isDone()) {
+        if (!extension.extension.container.assembly.isConfigurable()) {
             throw new IllegalStateException("This method must be called before the assembly is closed");
         }
     }

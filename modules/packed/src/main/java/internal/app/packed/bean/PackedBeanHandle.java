@@ -73,7 +73,7 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
     /** {@inheritDoc} */
     @Override
     public boolean isConfigurable() {
-        return !bean.owner.isDone();
+        return bean.owner.isConfigurable();
     }
 
     /** {@inheritDoc} */

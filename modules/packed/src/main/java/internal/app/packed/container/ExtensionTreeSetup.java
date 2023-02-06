@@ -21,17 +21,20 @@ import app.packed.extension.Extension;
 /** A single instance of this class exists per extension per application. */
 public final class ExtensionTreeSetup extends RealmSetup {
 
+    /**
+     * The extension id, this id may be used when ordering extensions. If there are multiple extensions with the same
+     * canonically name and extension depth.
+     */
+    final int applicationExtensionId;
+
     /** Whether or not this type of extension is still configurable. */
-    private boolean isDone;
+    private boolean isConfigurable = true;
 
     /** A model of the extension. */
     final ExtensionModel model;
 
     /** The root extension. */
     private final ExtensionSetup root;
-
-    /** The extension id. */
-    final int usageOrderId;
 
     /**
      * Creates a new realm.
@@ -46,18 +49,18 @@ public final class ExtensionTreeSetup extends RealmSetup {
     ExtensionTreeSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
         this.model = ExtensionModel.of(extensionType);
         this.root = root;
-        this.usageOrderId = root.container.application.extensionId++;
+        this.applicationExtensionId = root.container.application.extensionId++;
     }
 
     void close() {
-        this.isDone = true;
+        this.isConfigurable = false;
         root.close();
     }
 
     /** {@return whether or not the realm is closed.} */
     @Override
-    public boolean isDone() {
-        return isDone;
+    public boolean isConfigurable() {
+        return isConfigurable;
     }
 
     /** {@inheritDoc} */

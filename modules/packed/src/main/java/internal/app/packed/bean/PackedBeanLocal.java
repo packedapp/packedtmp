@@ -37,7 +37,7 @@ public final class PackedBeanLocal<T> {
     }
 
     public T get(PackedBeanHandle<?> handle) {
-        return get(BeanSetup.crack(handle));
+        return get(handle.bean());
     }
 
     public T get(BeanIntrospector bi) {

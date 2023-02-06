@@ -85,7 +85,7 @@ public final class ApplicationSetup {
         this.driver = requireNonNull(driver);
         this.goal = requireNonNull(goal);
         this.codegenActions = goal.isCodeGenerating() ? new ArrayList<>() : null;
-        this.container = new PackedContainerInstaller(PackedContainerLifetimeTemplate.ROOT, BaseExtension.class, this, null).containerInstall(assembly, wirelets);
+        this.container = new PackedContainerInstaller(PackedContainerLifetimeTemplate.ROOT, BaseExtension.class, this, null).newContainer(assembly, wirelets);
     }
 
     /**

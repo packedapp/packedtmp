@@ -50,7 +50,9 @@ public interface ContainerInstaller {
      *            the assembly to link
      * @param wirelets
      *            optional wirelets
-     * @return a container handle representing the linked container
+     * @return a container handle representing the new container
+     *
+     * @see #install(Wirelet...)
      */
     ContainerHandle install(Assembly assembly, Wirelet... wirelets);
 
@@ -59,7 +61,9 @@ public interface ContainerInstaller {
      *
      * @param wirelets
      *            optional wirelets
-     * @return a container handle for the newly installed container
+     * @return a container handle representing the new container
+     *
+     * @see #install(Assembly, Wirelet...)
      */
     ContainerHandle install(Wirelet... wirelets);
 

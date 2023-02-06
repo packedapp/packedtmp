@@ -128,7 +128,7 @@ public abstract class Extension<E extends Extension<E>> {
      */
     protected final void checkIsConfigurable() {
         ExtensionTreeSetup realm = extension.extensionTree;
-        if (realm.isDone()) {
+        if (!realm.isConfigurable()) {
             throw new IllegalStateException(realm.realmType() + " is no longer configurable");
         }
     }

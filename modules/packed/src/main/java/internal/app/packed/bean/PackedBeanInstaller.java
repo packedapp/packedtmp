@@ -69,13 +69,13 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
 
     String namePrefix;
 
+    @Nullable
+    Supplier<? extends BeanMirror> supplier;
+
     boolean synthetic;
 
     /** The lifetime of the bean. */
     public final PackedBeanLifetimeTemplate template;
-
-    @Nullable
-    Supplier<? extends BeanMirror> supplier;
 
     @Nullable
     final PackedExtensionPointContext useSite;
@@ -102,14 +102,89 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
         return this;
     }
 
-    private <T> BeanHandle<T> beanInstall(Class<T> beanClass, BeanSourceKind sourceKind, Object source) {
+    /** {@inheritDoc} */
+    @Override
+    public <T> BeanHandle<T> install(Class<T> beanClass) {
+        requireNonNull(beanClass, "beanClass is null");
+        return newBean(beanClass, BeanSourceKind.CLASS, beanClass);
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> BeanHandle<T> install(Op<T> op) {
+        PackedOp<?> pop = PackedOp.crack(op);
+        Class<?> beanClass = pop.type.returnRawType();
+        return newBean((Class<T>) beanClass, BeanSourceKind.OP, pop);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> BeanHandle<T> installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle<T>> onInstall) {
+        requireNonNull(beanClass, "beanClass is null");
+        HashMap<Class<?>, Object> bcm = baseExtension.container.beanClassMap;
+        if (useSite != null) {
+            bcm = useSite.usedBy().beanClassMap;
+        }
+        Object object = bcm.get(beanClass);
+        if (object != null) {
+            if (object instanceof BeanSetup b) {
+                return new PackedBeanHandle<>(b);
+            } else {
+                throw new IllegalArgumentException("MultiInstall Bean");
+            }
+        }
+        BeanHandle<T> handle = newBean(beanClass, BeanSourceKind.CLASS, beanClass);
+        onInstall.accept(handle);
+        return handle;
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> BeanHandle<T> installInstance(T instance) {
+        requireNonNull(instance, "instance is null");
+        Class<?> beanClass = instance.getClass();
+        return newBean((Class<T>) beanClass, BeanSourceKind.INSTANCE, instance);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanHandle<Void> installWithoutSource() {
+        if (template.kind != BeanKind.STATIC) {
+            throw new InternalExtensionException("Only static beans can be source less");
+        }
+        return newBean(void.class, BeanSourceKind.NONE, null);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanInstaller introspectWith(BeanIntrospector introspector) {
+        this.introspector = requireNonNull(introspector, "introspector is null");
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanInstaller multi() {
+        if (template.kind == BeanKind.STATIC) {
+            throw new InternalExtensionException("multiInstall is not supported for static beans");
+        }
+        multiInstall = true;
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanInstaller namePrefix(String prefix) {
+        this.namePrefix = requireNonNull(prefix, "prefix is null");
+        return this;
+    }
+
+    private <T> BeanHandle<T> newBean(Class<T> beanClass, BeanSourceKind sourceKind, Object source) {
         if (sourceKind != BeanSourceKind.NONE && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
         }
-
-        BeanSetup bean = new BeanSetup(this, beanClass, sourceKind, source);
-
-        ContainerSetup container = bean.container;
 
         String prefix = namePrefix;
         if (prefix == null) {
@@ -129,7 +204,9 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
 
         }
 
-        // if (installer.useSite.extension())
+        BeanSetup bean = new BeanSetup(this, beanClass, sourceKind, source);
+
+        ContainerSetup container = bean.container;
 
         if (beanClass != void.class) {
             if (multiInstall) {
@@ -204,85 +281,6 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
         container.beanLast = bean;
 
         return new PackedBeanHandle<>(bean);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> BeanHandle<T> install(Class<T> beanClass) {
-        requireNonNull(beanClass, "beanClass is null");
-        return beanInstall(beanClass, BeanSourceKind.CLASS, beanClass);
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> BeanHandle<T> install(Op<T> op) {
-        PackedOp<?> pop = PackedOp.crack(op);
-        Class<?> beanClass = pop.type.returnRawType();
-        return beanInstall((Class<T>) beanClass, BeanSourceKind.OP, pop);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> BeanHandle<T> installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle<T>> onInstall) {
-        requireNonNull(beanClass, "beanClass is null");
-        HashMap<Class<?>, Object> bcm = baseExtension.container.beanClassMap;
-        if (useSite != null) {
-            bcm = useSite.usedBy().beanClassMap;
-        }
-        Object object = bcm.get(beanClass);
-        if (object != null) {
-            if (object instanceof BeanSetup b) {
-                return new PackedBeanHandle<>(b);
-            } else {
-                throw new IllegalArgumentException("MultiInstall Bean");
-            }
-        }
-        BeanHandle<T> handle = beanInstall(beanClass, BeanSourceKind.CLASS, beanClass);
-        onInstall.accept(handle);
-        return handle;
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> BeanHandle<T> installInstance(T instance) {
-        requireNonNull(instance, "instance is null");
-        Class<?> beanClass = instance.getClass();
-        return beanInstall((Class<T>) beanClass, BeanSourceKind.INSTANCE, instance);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanHandle<Void> installWithoutSource() {
-        if (template.kind != BeanKind.STATIC) {
-            throw new InternalExtensionException("Only static beans can be source less");
-        }
-        return beanInstall(void.class, BeanSourceKind.NONE, null);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanInstaller introspectWith(BeanIntrospector introspector) {
-        this.introspector = requireNonNull(introspector, "introspector is null");
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanInstaller multi() {
-        if (template.kind == BeanKind.STATIC) {
-            throw new InternalExtensionException("multiInstall is not supported for static beans");
-        }
-        multiInstall = true;
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanInstaller namePrefix(String prefix) {
-        this.namePrefix = requireNonNull(prefix, "prefix is null");
-        return this;
     }
 
     /** {@inheritDoc} */

@@ -62,7 +62,7 @@ public record PackedContainerHandle(ContainerSetup container) implements Contain
      */
     @Override
     public boolean isConfigurable() {
-        return !container.assembly.isDone();
+        return container.assembly.isConfigurable();
     }
 
     // Hmm, skal vi have selve handles'ene?

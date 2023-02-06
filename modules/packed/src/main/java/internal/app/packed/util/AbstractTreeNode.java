@@ -44,6 +44,14 @@ public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
     @Nullable
     public T treeNextSiebling;
 
+    public final int depth() {
+        int depth = 0;
+        for (AbstractTreeNode<T> node = this; node.treeParent != null; node = node.treeParent) {
+            depth++;
+        }
+        return depth;
+    }
+
     @SuppressWarnings("unchecked")
     protected AbstractTreeNode(@Nullable T treeParent) {
         this.treeParent = treeParent;

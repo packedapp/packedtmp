@@ -46,7 +46,7 @@ public abstract sealed class RealmSetup permits ExtensionTreeSetup, AssemblySetu
     /**
      * @return
      */
-    public abstract boolean isDone();
+    public abstract boolean isConfigurable();
 
     /**
      * @param lookup

@@ -208,7 +208,7 @@ public final class BeanSetup {
 
     /** {@return the path of this component} */
     public ApplicationPath path() {
-        int size = container.depth;
+        int size = container.depth();
         String[] paths = new String[size + 1];
         paths[size] = name;
         ContainerSetup c = container;
@@ -230,11 +230,7 @@ public final class BeanSetup {
     public static BeanSetup crack(BeanConfiguration configuration) {
         requireNonNull(configuration, "configuration is null");
         PackedBeanHandle<?> handle = (PackedBeanHandle<?>) VH_BEAN_CONFIGURATION_TO_HANDLE.get(configuration);
-        return crack(handle);
-    }
-
-    public static BeanSetup crack(OperationalMethod m) {
-        return ((PackedOperationalMethod) m).extension.scanner.bean;
+        return handle.bean();
     }
 
     /**
@@ -244,8 +240,7 @@ public final class BeanSetup {
      *            the handle to extract from
      * @return the bean setup
      */
-    public static BeanSetup crack(PackedBeanHandle<?> handle) {
-        requireNonNull(handle, "handle is null");
-        return handle.bean();
+    public static BeanSetup crack(OperationalMethod m) {
+        return ((PackedOperationalMethod) m).extension.scanner.bean;
     }
 }

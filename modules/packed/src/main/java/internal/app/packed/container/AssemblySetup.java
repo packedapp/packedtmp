@@ -88,7 +88,7 @@ public final class AssemblySetup extends RealmSetup {
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>();
 
     /** Whether or not assembly is open for configuration. */
-    private boolean isDone;
+    private boolean isConfigurable = true;
 
     /** A model of the assembly. */
     public final AssemblyModel model;
@@ -107,9 +107,8 @@ public final class AssemblySetup extends RealmSetup {
      * @param wirelets
      *            optional wirelets
      */
-    public AssemblySetup(@Nullable ApplicationDriver<?> applicationDriver, @Nullable BuildGoal goal,
-            @Nullable PackedContainerInstaller installer, Assembly assembly,
-            Wirelet[] wirelets) {
+    public AssemblySetup(@Nullable ApplicationDriver<?> applicationDriver, @Nullable BuildGoal goal, @Nullable PackedContainerInstaller installer,
+            Assembly assembly, Wirelet[] wirelets) {
         // We need to unpack any delegating assemblies
         Assembly a = requireNonNull(assembly, "assembly is null");
         if (a instanceof DelegatingAssembly) {
@@ -151,31 +150,9 @@ public final class AssemblySetup extends RealmSetup {
                         + BuildableAssembly.class.getSimpleName() + " instead");
             }
             this.application = installer.application;
-            this.container = installer.containerInstall(this, wirelets);
+            this.container = installer.newContainer(this, wirelets);
         }
     }
-
-    /**
-    *
-    * @throws IllegalStateException
-    *             if the container is no longer configurable
-    */
-   public void checkIsConfigurable() {
-       if (!isConfigurable()) {
-           throw new IllegalStateException("This assembly is no longer configurable");
-       }
-   }
-
-   /**
-    * Returns whether or not the bean is still configurable.
-    * <p>
-    * If an assembly was used to create the container. The handle is never configurable.
-    *
-    * @return {@code true} if the bean is still configurable
-    */
-   public boolean isConfigurable() {
-       return !isDone();
-   }
 
     public void build() {
         // Create a JFR build event if application root
@@ -234,7 +211,7 @@ public final class AssemblySetup extends RealmSetup {
                 onAssemblyClose(e.instance());
             }
 
-            isDone = true;
+            isConfigurable = false;
 
             // Hmm what about circular dependencies for extensions?
             CircularServiceDependencyChecker.dependencyCyclesFind(container);
@@ -261,13 +238,31 @@ public final class AssemblySetup extends RealmSetup {
                 onAssemblyClose(e.instance());
             }
 
-            isDone = true;
+            isConfigurable = false;
         }
     }
 
+    /**
+     *
+     * @throws IllegalStateException
+     *             if the container is no longer configurable
+     */
+    public void checkIsConfigurable() {
+        if (!isConfigurable()) {
+            throw new IllegalStateException("This assembly is no longer configurable");
+        }
+    }
+
+    /**
+     * Returns whether or not the bean is still configurable.
+     * <p>
+     * If an assembly was used to create the container. The handle is never configurable.
+     *
+     * @return {@code true} if the bean is still configurable
+     */
     @Override
-    public boolean isDone() {
-        return isDone;
+    public boolean isConfigurable() {
+        return isConfigurable;
     }
 
     /** {@return a mirror for this assembly.} */

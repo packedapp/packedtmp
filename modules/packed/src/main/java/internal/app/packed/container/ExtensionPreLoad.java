@@ -20,9 +20,9 @@ import java.util.function.Consumer;
 import internal.app.packed.lifetime.zbridge.PackedBridge;
 
 /**
- *
+ * The basic idea is that we can configure some stuff that must be done on first usage of the extension
  */
-public class ExtensionPreLoad {
+public final class ExtensionPreLoad {
 
     Consumer<? super ExtensionSetup> onUse;
 

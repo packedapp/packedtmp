@@ -17,6 +17,8 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.HashMap;
+
 import app.packed.container.Assembly;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerInstaller;
@@ -26,6 +28,7 @@ import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeTemplate;
 import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 
 /** Implementation of {@link ContainerInstaller}. */
 public final class PackedContainerInstaller implements ContainerInstaller {
@@ -40,6 +43,8 @@ public final class PackedContainerInstaller implements ContainerInstaller {
     /** The lifetime of the container being installed. */
     public final PackedContainerLifetimeTemplate lifetime;
 
+    String nameFromWirelet;
+
     /** The parent of container being installed. Or <code>null</code> if a root container. */
     @Nullable
     final ContainerSetup parent;
@@ -50,86 +55,6 @@ public final class PackedContainerInstaller implements ContainerInstaller {
         this.application = requireNonNull(application);
         this.parent = parent;
         this.installedBy = requireNonNull(installedBy);
-    }
-
-    public ContainerSetup containerInstall(AssemblySetup assembly, Wirelet[] wirelets) {
-        requireNonNull(wirelets, "wirelets is null");
-        ContainerSetup container = new ContainerSetup(this, assembly);
-
-        // BaseExtension is automatically used by every container
-        ExtensionSetup.install(BaseExtension.class, container, null);
-
-        // The rest of this method is just processing wirelets that have been specified by
-        // the user or extension when wiring the component. The wirelets have not been null checked.
-        // and may contain any number of CombinedWirelet instances.
-        Wirelet prefix = null;
-        if (application.container == null) {
-            prefix = application.driver.wirelet();
-        }
-
-        if (wirelets.length == 0 && prefix == null) {
-            container.wirelets = null;
-        } else {
-            // If it is the root
-            Wirelet[] ws;
-            if (prefix == null) {
-                ws = CompositeWirelet.flattenAll(wirelets);
-            } else {
-                ws = CompositeWirelet.flatten2(prefix, Wirelet.combine(wirelets));
-            }
-
-            container.wirelets = new WireletWrapper(ws);
-
-            // May initialize the component's name, onWire, ect
-            // Do we need to consume internal wirelets???
-            // Maybe that is what they are...
-            int unconsumed = 0;
-            for (Wirelet w : ws) {
-                if (w instanceof InternalWirelet bw) {
-                    // Maaske er alle internal wirelets first passe
-                    bw.onBuild(container);
-                } else {
-                    unconsumed++;
-                }
-            }
-            if (unconsumed > 0) {
-                container.wirelets.unconsumed = unconsumed;
-            }
-
-            if (container.isNameInitializedFromWirelet && container.treeParent != null) {
-                container.initializeNameWithPrefix(container.name);
-                // addChild(child, name);
-            }
-        }
-
-        // Set the name of the container if it was not set by a wirelet
-        if (container.name == null) {
-            // I think try and move some of this to ComponentNameWirelet
-            String n = null;
-
-            // TODO Should only be used on the root container in the assembly
-            Class<? extends Assembly> source = container.assembly.assembly.getClass();
-            if (Assembly.class.isAssignableFrom(source)) {
-                String nnn = source.getSimpleName();
-                if (nnn.length() > 8 && nnn.endsWith("Assembly")) {
-                    nnn = nnn.substring(0, nnn.length() - 8);
-                }
-                if (nnn.length() > 0) {
-                    // checkName, if not just App
-                    // TODO need prefix
-                    n = nnn;
-                }
-                if (nnn.length() == 0) {
-                    n = "Assembly";
-                }
-            } else {
-                n = "Unknown";
-            }
-            container.initializeNameWithPrefix(n);
-        }
-        assert container.name != null;
-
-        return container;
     }
 
     /** {@inheritDoc} */
@@ -150,7 +75,127 @@ public final class PackedContainerInstaller implements ContainerInstaller {
     @Override
     public ContainerHandle install(Wirelet... wirelets) {
         parent.assembly.checkIsConfigurable();
-        ContainerSetup container = containerInstall(parent.assembly, wirelets);
+        ContainerSetup container = newContainer(parent.assembly, wirelets);
         return new PackedContainerHandle(container);
+    }
+
+    public ContainerSetup newContainer(AssemblySetup assembly, Wirelet[] wirelets) {
+        requireNonNull(wirelets, "wirelets is null");
+
+        // The rest of this method is just processing wirelets that have been specified by
+        // the user or extension when wiring the component. The wirelets have not been null checked.
+        // and may contain any number of CombinedWirelet instances.
+        Wirelet prefix = application.driver.wirelet();
+
+        WireletWrapper ww = null;
+
+        String name = null;
+
+        if (wirelets.length > 0 || prefix != null) {
+            // If it is the root
+            Wirelet[] ws;
+            if (prefix == null) {
+                ws = CompositeWirelet.flattenAll(wirelets);
+            } else {
+                ws = CompositeWirelet.flatten2(prefix, Wirelet.combine(wirelets));
+            }
+
+            ww = new WireletWrapper(ws);
+
+            // May initialize the component's name, onWire, ect
+            // Do we need to consume internal wirelets???
+            // Maybe that is what they are...
+            int unconsumed = 0;
+            for (Wirelet w : ws) {
+                if (w instanceof InternalWirelet bw) {
+                    // Maaske er alle internal wirelets first passe
+                    bw.onInstall(this);
+                } else {
+                    unconsumed++;
+                }
+            }
+            if (unconsumed > 0) {
+                ww.unconsumed = unconsumed;
+            }
+        }
+
+        // Set the name of the container if it was not set by a wirelet
+        if (nameFromWirelet == null) {
+            // I think try and move some of this to ComponentNameWirelet
+            String n = null;
+
+            // TODO Should only be used on the root container in the assembly
+            Class<? extends Assembly> source = assembly.assembly.getClass();
+            if (Assembly.class.isAssignableFrom(source)) {
+                String nnn = source.getSimpleName();
+                if (nnn.length() > 8 && nnn.endsWith("Assembly")) {
+                    nnn = nnn.substring(0, nnn.length() - 8);
+                }
+                if (nnn.length() > 0) {
+                    // checkName, if not just App
+                    // TODO need prefix
+                    n = nnn;
+                }
+                if (nnn.length() == 0) {
+                    n = "Assembly";
+                }
+            } else {
+                n = "Unknown";
+            }
+            name = n;
+        } else {
+            name = nameFromWirelet;
+        }
+
+        String n = name;
+        if (parent != null) {
+            HashMap<String, Object> c = parent.children;
+            if (c.size() == 0) {
+                c.put(n, this);
+            } else {
+                int counter = 1;
+                while (c.putIfAbsent(n, this) != null) {
+                    n = n + counter++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test
+                                                     // adding 1
+                    // million of the same component type
+                }
+            }
+        }
+
+        ContainerSetup container = new ContainerSetup(this, assembly, n);
+
+        // BaseExtension is automatically used by every container
+        ExtensionSetup.install(BaseExtension.class, container, null);
+
+        return container;
+    }
+
+    /** A wirelet that will set the name of the component. Used by {@link Wirelet#named(String)}. */
+    public static final class OverrideNameWirelet extends InternalWirelet {
+
+        /** The (validated) name to override with. */
+        private final String name;
+
+        /**
+         * Creates a new name wirelet
+         *
+         * @param name
+         *            the name to override any existing container name with
+         */
+        public OverrideNameWirelet(String name) {
+            this.name = NameCheck.checkComponentName(name); // throws IAE
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void onImageInstantiation(ContainerSetup c, ApplicationInitializationContext ic) {
+            ic.name = name;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void onInstall(PackedContainerInstaller installer) {
+            installer.nameFromWirelet = name;// has already been validated
+        }
     }
 }

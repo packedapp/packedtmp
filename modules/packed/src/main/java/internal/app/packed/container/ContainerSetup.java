@@ -70,9 +70,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     /** Maintains unique names for beans and child containers. */
     public final HashMap<String, Object> children = new HashMap<>();
 
-    /** The depth of the component in the application tree. */
-    public final int depth; // maintain in InsertionTree?
-
     /** Extensions used by this container. We keep them in a LinkedHashMap so that we can return a deterministic view. */
     // Or maybe extension types are always sorted??
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
@@ -81,19 +78,17 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
      * ignored.
      */
-    boolean isNameInitializedFromWirelet;
+    final boolean ignoreRename;
 
     /** The lifetime the container is a part of. */
     public final ContainerLifetimeSetup lifetime;
 
     /** The name of the container. */
-    @Nullable
     public String name;
 
     public final IdentityHashMap<Class<? extends Extension<?>>, ExtensionPreLoad> preLoad = new IdentityHashMap<>();
 
     /** The container's service manager. */
-    @Nullable
     public final ServiceManager sm;
 
     /** Supplies a mirror for the container. */
@@ -112,13 +107,14 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      * @param assembly
      *            the assembly the container is defined in
      */
-    ContainerSetup(PackedContainerInstaller installer, AssemblySetup assembly) {
+    ContainerSetup(PackedContainerInstaller installer, AssemblySetup assembly, String name) {
         super(installer.parent);
         this.application = requireNonNull(installer.application);
         this.assembly = requireNonNull(assembly);
         this.sm = new ServiceManager(null, this);
-        this.depth = treeParent == null ? 0 : treeParent.depth + 1;
+        this.name = name;
 
+        // Figure out the lifetime of this new container
         if (installer.lifetime.kind == ContainerKind.PARENT) {
             this.lifetime = treeParent.lifetime;
         } else {
@@ -127,28 +123,12 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
                 b.install(this);
             }
         }
+        this.ignoreRename = installer.nameFromWirelet != null;
     }
 
     /** {@return a unmodifiable view of all extension types that are in used in no particular order.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
-    }
-
-    void initializeNameWithPrefix(String name) {
-        String n = name;
-        if (treeParent != null) {
-            HashMap<String, Object> c = treeParent.children;
-            if (c.size() == 0) {
-                c.put(name, this);
-            } else {
-                int counter = 1;
-                while (c.putIfAbsent(n, this) != null) {
-                    n = name + counter++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test adding 1
-                                          // million of the same component type
-                }
-            }
-        }
-        this.name = n;
     }
 
     /**
@@ -178,6 +158,12 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         return mirror;
     }
 
+    /**
+     * Sets the name of the container
+     *
+     * @param newName
+     *            the new name of the container
+     */
     public void named(String newName) {
         // We start by validating the new name of the component
         NameCheck.checkComponentName(newName);
@@ -188,22 +174,23 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
 
         // If the name of the component (container) has been set using a wirelet.
         // Any attempt to override will be ignored
-        if (newName.equals(currentName) || isNameInitializedFromWirelet) {
+        if (newName.equals(currentName) || ignoreRename) {
             return;
         }
 
-        // Unless we are the root container. We need to insert this component in the parent container
+        // Unless we are the root container. We need to insert or update this container in the parent container
         if (treeParent != null) {
             if (treeParent.children.putIfAbsent(newName, this) != null) {
-                throw new IllegalArgumentException("A component with the specified name '" + newName + "' already exists");
+                throw new IllegalArgumentException("A bean or container with the specified name '" + newName + "' already exists");
             }
             treeParent.children.remove(currentName);
         }
         name = newName;
     }
 
-    /** {@return the path of this component} */
+    /** {@return the path of this container} */
     public ApplicationPath path() {
+        int depth = depth();
         return switch (depth) {
         case 0 -> ApplicationPath.ROOT;
         case 1 -> new PackedNamespacePath(name);
@@ -249,7 +236,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             if (requestedByExtension == null) {
                 // Ny extensions skal installeres indefor Assembly::build
 
-                if (assembly.isDone()) {
+                if (!assembly.isConfigurable()) {
                     throw new IllegalStateException("Extensions cannot be installed outside of Assembly::build");
                 }
                 // Checks that container is still configurable
@@ -265,7 +252,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
                 // TODO check that the extensionClass is not banned for users
 
                 // TODO Check that the extension user model has not been closed
-                if (requestedByExtension.extensionTree.isDone()) {
+                if (!requestedByExtension.extensionTree.isConfigurable()) {
                     throw new IllegalStateException();
                 }
             }
