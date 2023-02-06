@@ -36,11 +36,9 @@ public interface ContainerLifetimeTemplate {
      * The container will have the same lifetime as its parent container.
      * <p>
      */
-    ContainerLifetimeTemplate PARENT = new PackedContainerLifetimeTemplate(ContainerKind.PARENT) ; // no lifetime operations
+    ContainerLifetimeTemplate PARENT = new PackedContainerLifetimeTemplate(ContainerKind.PARENT);
 
-    ContainerLifetimeTemplate LAZY = new PackedContainerLifetimeTemplate(ContainerKind.LAZY); // no lifetime operations
-
-    ContainerLifetimeTemplate ROOT = new PackedContainerLifetimeTemplate(ContainerKind.ROOT); // no lifetime operations
+    ContainerLifetimeTemplate LAZY = new PackedContainerLifetimeTemplate(ContainerKind.LAZY);
 
     // The container exists within the operation that creates it
     // Needs a builder. Because of Context, args

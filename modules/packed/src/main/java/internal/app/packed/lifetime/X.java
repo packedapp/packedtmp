@@ -39,7 +39,6 @@ public class X extends BaseAssembly {
 
     public static void main(String[] args) {
         Program p = Program.start(new X());
-
         System.out.println(p.runtime().state());
     }
 
@@ -73,7 +72,6 @@ public class X extends BaseAssembly {
         public void ff() {
             System.out.println("MAIN");
         }
-
     }
 
     public static class NeedsF {
@@ -95,7 +93,5 @@ public class X extends BaseAssembly {
         public static void stop() {
             System.out.println("stop NeedsF");
         }
-
     }
-
 }

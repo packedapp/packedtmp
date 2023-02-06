@@ -151,7 +151,7 @@ public final class AssemblySetup extends RealmSetup {
                         + BuildableAssembly.class.getSimpleName() + " instead");
             }
             this.application = installer.application;
-            this.container = installer.install(this, wirelets);
+            this.container = installer.containerInstall(this, wirelets);
         }
     }
 

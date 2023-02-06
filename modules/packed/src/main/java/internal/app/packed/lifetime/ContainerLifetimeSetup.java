@@ -69,15 +69,18 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     public final FuseableOperation initialization;
 
-    public final FuseableOperation startup;
-
-    public final FuseableOperation shutdown;
-
     public final List<FuseableOperation> lifetimes;
 
     public final LifetimeLifecycleSetup lls = new LifetimeLifecycleSetup();
 
     LinkedHashSet<BeanSetup> orderedBeans = new LinkedHashSet<>();
+
+    public final FuseableOperation shutdown;
+
+    /** The size of the pool. */
+    int size;
+
+    public final FuseableOperation startup;
 
     /**
      * @param origin
@@ -96,10 +99,6 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         }
     }
 
-    public ExtensionContext newRuntimePool() {
-        return PackedExtensionContext.create(size);
-    }
-
     public int addBean(BeanSetup bean) {
         beans.add(bean);
         if (bean.beanKind == BeanKind.CONTAINER && bean.beanSourceKind != BeanSourceKind.INSTANCE) {
@@ -108,31 +107,12 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         return -1;
     }
 
-    /** The size of the pool. */
-    int size;
-
-    /**
-     * Reserves room for a single object.
-     *
-     * @return the index to store the object in at runtime
-     */
-    private int reserve(Class<?> cls) {
-        return size++;
-    }
-
     public BeanLifetimeSetup addDetachedChildBean(BeanLifetimeSetup lifetime) {
         if (beanLifetimes == null) {
             beanLifetimes = new ArrayList<>(1);
         }
         beanLifetimes.add(lifetime);
         return lifetime;
-    }
-
-    public void orderDependencies() {
-        for (BeanSetup bs : beans) {
-            orderBeans(bs);
-        }
-        // generate MH
     }
 
     /** {@inheritDoc} */
@@ -155,6 +135,10 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         return mirror;
     }
 
+    public ExtensionContext newRuntimePool() {
+        return PackedExtensionContext.create(size);
+    }
+
     private void orderBeans(BeanSetup bean) {
         Set<BeanSetup> dependsOn = bean.dependsOn();
         for (BeanSetup b : dependsOn) {
@@ -166,6 +150,13 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
             // addFactory, that installs the bean into Object[]
             // then all initiali
         }
+    }
+
+    public void orderDependencies() {
+        for (BeanSetup bs : beans) {
+            orderBeans(bs);
+        }
+        // generate MH
     }
 
     /** {@inheritDoc} */
@@ -220,6 +211,15 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
                 throw new Error();
             }
         }
+    }
+
+    /**
+     * Reserves room for a single object.
+     *
+     * @return the index to store the object in at runtime
+     */
+    private int reserve(Class<?> cls) {
+        return size++;
     }
 
     public static void invokeInitializer(BeanSetup bean, MethodHandle mh, ExtensionContext ec) {

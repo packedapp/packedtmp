@@ -21,6 +21,4 @@ import app.packed.operation.OperationHandle;
 /**
  *
  */
-public record LifetimeOperation(RunState state, OperationHandle os) {
-
-}
+public record LifetimeOperation(RunState state, OperationHandle os) {}

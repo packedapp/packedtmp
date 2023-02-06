@@ -19,23 +19,14 @@ import java.util.List;
 import java.util.Set;
 
 import app.packed.container.ContainerHandle;
-import app.packed.container.Wirelet;
 import app.packed.errorhandling.ErrorHandler;
-import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.lifetime.ContainerLifetimeTemplate;
 import app.packed.operation.OperationHandle;
 
 /**
  *
  */
 public record PackedContainerHandle(ContainerSetup container) implements ContainerHandle {
-
-    public ContainerHandle addContainer(Wirelet... wirelets) {
-        ContainerSetup newContainer = new PackedContainerInstaller(ContainerLifetimeTemplate.PARENT, BaseExtension.class, container).install(container.assembly,
-                wirelets);
-        return new PackedContainerHandle(newContainer);
-    }
 
     /**
      * Returns an immutable set containing any extensions that are disabled for containers created by this driver.

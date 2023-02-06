@@ -33,6 +33,7 @@ import app.packed.operation.OperationHandle;
 import app.packed.service.ServiceableBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
+import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.PackedOperationHandle;
@@ -116,7 +117,8 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     public ContainerInstaller containerInstaller(ContainerLifetimeTemplate template) {
-        return new PackedContainerInstaller(template, extension().extension.extensionType, extension().extension.container);
+        ExtensionSetup s = extension().extension;
+        return new PackedContainerInstaller(template, s.extensionType, s.container.application, s.container);
     }
 
     public BeanHandle<?> crack(BeanConfiguration configuration) {

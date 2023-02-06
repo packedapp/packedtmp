@@ -13,10 +13,9 @@ import internal.app.packed.container.PackedContainerHandle;
 
 /**
  * The configuration of a container.
+ * <p>
+ * Unlike {@link app.packed.bean.BeanConfiguration} this class cannot be extended.
  */
-// We don't allow extension of ContainerConfiguration... It doesn't really work
-// assemblies, or composers. Works fine though when return newContainer().
-//
 public final class ContainerConfiguration {
 
     /**
@@ -42,10 +41,6 @@ public final class ContainerConfiguration {
      */
     public ContainerConfiguration(ContainerHandle handle) {
         this.handle = (PackedContainerHandle) requireNonNull(handle, "handle is null");
-    }
-
-    public ContainerConfiguration addContainer(Wirelet... wirelets) {
-        return new ContainerConfiguration(handle.addContainer(wirelets));
     }
 
     /**
@@ -95,30 +90,6 @@ public final class ContainerConfiguration {
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return handle.container().isExtensionUsed(extensionType);
     }
-
-//    /**
-//     * Links a new assembly.
-//     *
-//     * @param assembly
-//     *            the assembly to link
-//     * @param realm
-//     *            realm
-//     * @param wirelets
-//     *            optional wirelets
-//     * @return the component that was linked
-//     */
-//    public AssemblyMirror link(Assembly assembly, Wirelet... wirelets) {
-//        // Check that the assembly is still configurable
-//        checkIsConfigurable();
-//
-//        // Create a new assembly
-//        AssemblySetup as = new AssemblySetup(null, null, handle.container, assembly, wirelets);
-//
-//        // Build the assembly
-//        as.build();
-//
-//        return as.mirror();
-//    }
 
     /**
      * Sets the name of the component. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name

@@ -30,7 +30,12 @@ import internal.app.packed.application.ApplicationSetup;
 /** Implementation of {@link ContainerInstaller}. */
 public final class PackedContainerInstaller implements ContainerInstaller {
 
+    /** The application we are installing the container into. */
+    // I think once we get app-on-app this is Nullable
     final ApplicationSetup application;
+
+    /** The extension that is installing the container. */
+    final Class<? extends Extension<?>> installedBy;
 
     /** The lifetime of the container being installed. */
     public final PackedContainerLifetimeTemplate lifetime;
@@ -38,8 +43,6 @@ public final class PackedContainerInstaller implements ContainerInstaller {
     /** The parent of container being installed. Or <code>null</code> if a root container. */
     @Nullable
     final ContainerSetup parent;
-
-    final Class<? extends Extension<?>> installedBy;
 
     public PackedContainerInstaller(ContainerLifetimeTemplate lifetime, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
             @Nullable ContainerSetup parent) {
@@ -49,12 +52,11 @@ public final class PackedContainerInstaller implements ContainerInstaller {
         this.installedBy = requireNonNull(installedBy);
     }
 
-    public PackedContainerInstaller(ContainerLifetimeTemplate lifetime, Class<? extends Extension<?>> installedBy, ContainerSetup parent) {
-        this(lifetime, installedBy, parent.application, parent);
-    }
+    public ContainerSetup containerInstall(AssemblySetup assembly, Wirelet[] wirelets) {
+        requireNonNull(wirelets, "wirelets is null");
+        ContainerSetup container = new ContainerSetup(this, assembly);
 
-    private void cleanup(ContainerSetup container, Wirelet[] wirelets) {
-        // Install BaseExtension which is automatically used by every container
+        // BaseExtension is automatically used by every container
         ExtensionSetup.install(BaseExtension.class, container, null);
 
         // The rest of this method is just processing wirelets that have been specified by
@@ -126,6 +128,8 @@ public final class PackedContainerInstaller implements ContainerInstaller {
             container.initializeNameWithPrefix(n);
         }
         assert container.name != null;
+
+        return container;
     }
 
     /** {@inheritDoc} */
@@ -133,7 +137,7 @@ public final class PackedContainerInstaller implements ContainerInstaller {
     public ContainerHandle install(Assembly assembly, Wirelet... wirelets) {
         parent.assembly.checkIsConfigurable();
 
-        // Create a new assembly
+        // Create a new assembly, which call into #containerInstall
         AssemblySetup as = new AssemblySetup(null, null, this, assembly, wirelets);
 
         // Build the assembly
@@ -142,16 +146,11 @@ public final class PackedContainerInstaller implements ContainerInstaller {
         return new PackedContainerHandle(as.container);
     }
 
-    public ContainerSetup install(AssemblySetup assembly, Wirelet[] wirelets) {
-        requireNonNull(wirelets, "wirelets is null");
-        ContainerSetup cs = new ContainerSetup(this, assembly);
-        cleanup(cs, wirelets);
-        return cs;
-    }
-
     /** {@inheritDoc} */
     @Override
     public ContainerHandle install(Wirelet... wirelets) {
-        return new PackedContainerHandle(install(parent.assembly, wirelets));
+        parent.assembly.checkIsConfigurable();
+        ContainerSetup container = containerInstall(parent.assembly, wirelets);
+        return new PackedContainerHandle(container);
     }
 }

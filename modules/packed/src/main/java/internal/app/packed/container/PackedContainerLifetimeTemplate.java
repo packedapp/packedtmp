@@ -28,6 +28,9 @@ public class PackedContainerLifetimeTemplate implements ContainerLifetimeTemplat
 
     public final ContainerKind kind;
 
+    // Can only be used internally
+    public static final ContainerLifetimeTemplate ROOT = new PackedContainerLifetimeTemplate(ContainerKind.ROOT);
+
     public PackedContainerLifetimeTemplate(ContainerKind kind) {
         this.kind = requireNonNull(kind);
     }

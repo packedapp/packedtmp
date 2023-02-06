@@ -29,6 +29,7 @@ import app.packed.bindings.Key;
 import app.packed.bindings.Provider;
 import app.packed.bindings.Variable;
 import app.packed.container.Assembly;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerGuest;
 import app.packed.container.ContainerInstaller;
 import app.packed.container.Wirelet;
@@ -116,6 +117,10 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         }
 
         var.bindGeneratedConstant(supplier);
+    }
+
+    public ContainerConfiguration addContainer(Wirelet... wirelets) {
+        return new ContainerConfiguration(containerInstaller().install(wirelets));
     }
 
 //    public void provideAll(ServiceLocator locator, Consumer<ServiceTransformer> transformer) {
@@ -259,7 +264,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      *            optional wirelets
      */
     public void link(Assembly assembly, Wirelet... wirelets) {
-        newContainerInstaller().install(assembly, wirelets);
+        containerInstaller().install(assembly, wirelets);
     }
 
     /**
@@ -293,22 +298,11 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return new ServiceableBeanConfiguration<>(handle); // Providable???
     }
 
-    /**
-     * Returns a special bean installer that can install beans with BaseExtension as both the owner and installer.
-     *
-     * @param kind
-     *            the kind of bean install
-     * @return a bean installer
-     */
-    BeanInstaller ownBeanInstaller(BeanLifetimeTemplate kind) {
-        return new PackedBeanInstaller(extension, kind, new PackedExtensionPointContext(extension, extension));
-    }
-
-    // add multiInstall prototype
-
     private BeanInstaller newBeanInstaller(BeanLifetimeTemplate kind) {
         return new PackedBeanInstaller(extension, kind, null);
     }
+
+    // add multiInstall prototype
 
     /**
      * Creates a new BeanIntrospector for handling annotations managed by BeanExtension.
@@ -450,7 +444,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         };
     }
 
-    private ContainerInstaller newContainerInstaller() {
+    private ContainerInstaller containerInstaller() {
         return new PackedContainerInstaller(ContainerLifetimeTemplate.PARENT, BaseExtension.class, extension.container.application, extension.container);
     }
 
@@ -494,6 +488,17 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         if (isLifetimeRoot()) {
             extension.container.lifetime.orderDependencies();
         }
+    }
+
+    /**
+     * Returns a special bean installer that can install beans with BaseExtension as both the owner and installer.
+     *
+     * @param kind
+     *            the kind of bean install
+     * @return a bean installer
+     */
+    BeanInstaller ownBeanInstaller(BeanLifetimeTemplate kind) {
+        return new PackedBeanInstaller(extension, kind, new PackedExtensionPointContext(extension, extension));
     }
 
     <T> OperationConfiguration provide(Class<T> key, Provider<? extends T> provider) {
