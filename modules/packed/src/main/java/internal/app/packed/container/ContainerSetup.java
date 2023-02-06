@@ -114,7 +114,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         this.sm = new ServiceManager(null, this);
         this.name = name;
 
-        // Figure out the lifetime of this new container
+        // Figure out the lifetime of this container
         if (installer.lifetime.kind == ContainerKind.PARENT) {
             this.lifetime = treeParent.lifetime;
         } else {
@@ -123,12 +123,22 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
                 b.install(this);
             }
         }
+        // If a name has been set using a wirelet, we ignore calls to #named(String)
         this.ignoreRename = installer.nameFromWirelet != null;
     }
 
     /** {@return a unmodifiable view of all extension types that are in used in no particular order.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
+    }
+
+    /** {@return whether or not the container is the root container in the application.} */
+    public boolean isApplicationRoot() {
+        return treeParent == null;
+    }
+
+    public boolean isAssemblyRoot() {
+        return this == assembly.container;
     }
 
     /**
@@ -145,19 +155,9 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         return extensions.containsKey(extensionClass);
     }
 
-    /** {@return whether or not the container is the root container in the application.} */
-    public boolean isApplicationRoot() {
-        return treeParent == null;
-    }
-
     /** {@return whether or not this container is the root of its lifetime.} */
     public boolean isLifetimeRoot() {
         return this == lifetime.container;
-    }
-
-    public boolean isAssemblyRoot() {
-        return this == assembly.container;
-
     }
 
     /** {@return a new container mirror.} */
@@ -245,9 +245,10 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         requireNonNull(extensionClass, "extensionClass is null");
         ExtensionSetup extension = extensions.get(extensionClass);
 
-        // We do not use #computeIfAbsent, because extensions might install other extensions when initializing.
+        // We do not use #computeIfAbsent, because extensions might install other extensions while initializing.
         // Which would then fail with ConcurrentModificationException (see ExtensionDependenciesTest)
         if (extension == null) {
+            // is null if requested by user
             if (requestedByExtension == null) {
                 // Ny extensions skal installeres indefor Assembly::build
 
@@ -271,7 +272,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
                     throw new IllegalStateException();
                 }
             }
-
             extension = ExtensionSetup.install(extensionClass, this, requestedByExtension);
         }
         return extension;
