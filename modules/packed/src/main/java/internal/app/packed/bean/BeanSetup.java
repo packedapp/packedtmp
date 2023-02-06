@@ -29,7 +29,6 @@ import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NameCheck;
-import internal.app.packed.container.RealmSetup;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
@@ -59,6 +58,10 @@ public final class BeanSetup {
 
     /** The kind of bean. */
     public final BeanKind beanKind;
+
+    /** All beans in a container are maintained in a linked list. */
+    @Nullable
+    public BeanSetup beanSiblingNext;
 
     /** The source ({@code null}, {@link Class}, {@link PackedOp}, otherwise an instance) */
     @Nullable
@@ -93,43 +96,31 @@ public final class BeanSetup {
     private Supplier<? extends BeanMirror> mirrorSupplier;
 
     /** The name of this bean. Should only be updated through {@link #named(String)} */
-    public String name;
+    String name;
 
     /** Operations declared by the bean. */
     public final ArrayList<OperationSetup> operations = new ArrayList<>();
 
     /** The owner of the bean. */
-    public final RealmSetup owner;
+    public final BeanOwner owner;
 
     public boolean providingOperationsVisited;
 
     /** A list of services provided by the bean, used for circular dependency checks. */
     public final List<ServiceProviderSetup> serviceProviders = new ArrayList<>();
 
-    /** All beans in a container are maintained in a linked list. */
-    @Nullable
-    public BeanSetup siblingNext;
-
-    /**
-     * Create a new bean.
-     */
+    /** Create a new bean. */
     BeanSetup(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
         this.beanKind = requireNonNull(installer.template.kind);
         this.beanClass = requireNonNull(beanClass);
         this.beanSource = beanSource;
         this.beanSourceKind = requireNonNull(beanSourceKind);
 
-        this.mirrorSupplier = installer.supplier;
+        this.container = requireNonNull(installer.container);
+        this.installedBy = requireNonNull(installer.installingExtension);
+        this.owner = requireNonNull(installer.owner);
 
-        // Sets the owner, installer, and the container in which the bean is installed
-        if (installer.useSite == null) {
-            this.installedBy = installer.baseExtension;
-            this.owner = installer.baseExtension.container.assembly;
-        } else {
-            this.installedBy = installer.useSite.usedBy();
-            this.owner = installedBy.extensionTree;
-        }
-        this.container = requireNonNull(installedBy.container);
+        this.mirrorSupplier = installer.supplier;
 
         // Set the lifetime of the bean
         ContainerLifetimeSetup containerLifetime = container.lifetime;
@@ -180,6 +171,10 @@ public final class BeanSetup {
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
+    }
+
+    public String name() {
+        return name;
     }
 
     public void named(String newName) {

@@ -42,8 +42,6 @@ import app.packed.operation.Op;
 import internal.app.packed.bean.BeanSetupClassMapContainer.MuInst;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.ExtensionTreeSetup;
-import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
 
@@ -60,7 +58,11 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
     @Nullable
     Map<Class<?>, Object> attachments;
 
-    final ExtensionSetup baseExtension;
+    /** The container the bean is being installed into. */
+    final ContainerSetup container;
+
+    /** The extension that is installing the bean */
+    final ExtensionSetup installingExtension;
 
     @Nullable
     BeanIntrospector introspector;
@@ -69,21 +71,33 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
 
     String namePrefix;
 
+    /** The owner of the bean. */
+    final BeanOwner owner;
+
+    /** A bean mirror supplier */
     @Nullable
     Supplier<? extends BeanMirror> supplier;
 
     boolean synthetic;
 
-    /** The lifetime of the bean. */
+    /** A template for the lifetime of the bean. */
     public final PackedBeanLifetimeTemplate template;
 
-    @Nullable
-    final PackedExtensionPointContext useSite;
-
-    public PackedBeanInstaller(ExtensionSetup baseExtension, BeanLifetimeTemplate template, @Nullable PackedExtensionPointContext useSite) {
-        this.baseExtension = requireNonNull(baseExtension);
+    /**
+     * Create a new installer.
+     *
+     * @param installingExtension
+     *            the extension who has created the installer
+     * @param owner
+     *            the owner of the new bean
+     * @param template
+     *            a lifetime template for the new bean
+     */
+    public PackedBeanInstaller(ExtensionSetup installingExtension, BeanOwner owner, BeanLifetimeTemplate template) {
+        this.container = installingExtension.container;
+        this.installingExtension = requireNonNull(installingExtension);
+        this.owner = requireNonNull(owner);
         this.template = (PackedBeanLifetimeTemplate) requireNonNull(template, "template is null");
-        this.useSite = useSite;
     }
 
     /** {@inheritDoc} */
@@ -122,9 +136,9 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
     @Override
     public <T> BeanHandle<T> installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle<T>> onInstall) {
         requireNonNull(beanClass, "beanClass is null");
-        HashMap<Class<?>, Object> bcm = baseExtension.container.beanClassMap;
-        if (useSite != null) {
-            bcm = useSite.usedBy().beanClassMap;
+        HashMap<Class<?>, Object> bcm = container.beanClassMap;
+        if (owner instanceof ExtensionSetup e) {
+            bcm = e.beanClassMap;
         }
         Object object = bcm.get(beanClass);
         if (object != null) {
@@ -181,6 +195,19 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
         return this;
     }
 
+    /**
+     * Creates a new bean using the configured installer.
+     *
+     * @param <T>
+     *            the type of bean to install
+     * @param beanClass
+     *            the bean class
+     * @param sourceKind
+     *            the source of the bean
+     * @param source
+     *            the source of the bean
+     * @return a handle for the bean
+     */
     private <T> BeanHandle<T> newBean(Class<T> beanClass, BeanSourceKind sourceKind, Object source) {
         if (sourceKind != BeanSourceKind.NONE && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
@@ -198,9 +225,9 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
         // TODO virker ikke med functional beans og naming
         String n = prefix;
 
-        HashMap<Class<?>, Object> bcm = baseExtension.container.beanClassMap;
-        if (useSite != null) {
-            bcm = useSite.usedBy().beanClassMap;
+        HashMap<Class<?>, Object> bcm = container.beanClassMap;
+        if (owner instanceof ExtensionSetup e) {
+            bcm = e.beanClassMap;
 
         }
 
@@ -262,8 +289,8 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
             bean.operations.add(os);
         }
 
-        if (bean.owner instanceof ExtensionTreeSetup e && bean.beanKind == BeanKind.CONTAINER) {
-            bean.container.useExtension(e.realmType(), null).sm.addBean(bean);
+        if (bean.owner instanceof ExtensionSetup e && bean.beanKind == BeanKind.CONTAINER) {
+            e.sm.addBean(bean);
         }
 
         // Scan the bean class for annotations unless the bean class is void
@@ -276,7 +303,7 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
         if (siebling == null) {
             container.beanFirst = bean;
         } else {
-            siebling.siblingNext = bean;
+            siebling.beanSiblingNext = bean;
         }
         container.beanLast = bean;
 

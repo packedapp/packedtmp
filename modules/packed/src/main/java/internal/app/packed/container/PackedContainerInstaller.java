@@ -82,11 +82,10 @@ public final class PackedContainerInstaller implements ContainerInstaller {
     public ContainerSetup newContainer(AssemblySetup assembly, Wirelet[] wirelets) {
         requireNonNull(wirelets, "wirelets is null");
 
-        // The rest of this method is just processing wirelets that have been specified by
-        // the user or extension when wiring the component. The wirelets have not been null checked.
-        // and may contain any number of CombinedWirelet instances.
+        // Most of this method is just processing wirelets
         Wirelet prefix = application.driver.wirelet();
 
+        // We do not current set Container.WW
         WireletWrapper ww = null;
 
         String name = null;
@@ -156,12 +155,13 @@ public final class PackedContainerInstaller implements ContainerInstaller {
                 int counter = 1;
                 while (c.putIfAbsent(n, this) != null) {
                     n = n + counter++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test
-                                                     // adding 1
+                                       // adding 1
                     // million of the same component type
                 }
             }
         }
 
+        // Create the new extension
         ContainerSetup container = new ContainerSetup(this, assembly, n);
 
         // BaseExtension is automatically used by every container

@@ -67,6 +67,7 @@ public interface ContainerInstaller {
      */
     ContainerHandle install(Wirelet... wirelets);
 
+    // ignore if has wirelet
     default ContainerInstaller named(String name) {
         throw new UnsupportedOperationException();
     }

@@ -4,7 +4,6 @@ import app.packed.container.Realm;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
@@ -88,9 +87,9 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
         // We only check the extension that uses the extension point.
         // Because the extension the extension points belongs to, is always a direct
         // dependency and will be closed before the extension that provides the extension point.
-        ExtensionTreeSetup extensionTree = contextUse().usedBy().extensionTree;
-        if (!extensionTree.isConfigurable()) {
-            throw new IllegalStateException(extensionTree.realmType() + " is no longer configurable");
+        ExtensionSetup extension = contextUse().usedBy();
+        if (!extension.isConfigurable()) {
+            throw new IllegalStateException(extension.extensionType + " is no longer configurable");
         }
     }
 

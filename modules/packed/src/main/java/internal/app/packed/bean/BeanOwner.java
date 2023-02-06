@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package internal.app.packed.bean;
 
 import app.packed.container.Realm;
-import app.packed.extension.ExtensionPoint.UseSite;
+import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.container.ExtensionSetup;
 
 /**
- *
+ * The owner of a bean. Either the application (via an assembly) or an extension instance.
  */
-public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UseSite {
+public sealed interface BeanOwner permits AssemblySetup, ExtensionSetup {
 
-    /** {@inheritDoc} */
-    @Override
-    public Realm realm() {
-        return extension.realm();
-    }
+    /**
+     * Checks if the bean is still configurable. A bean is configurable if its owner is configurable.
+     *
+     * @return
+     */
+    boolean isConfigurable();
+
+    Realm realm();
 }

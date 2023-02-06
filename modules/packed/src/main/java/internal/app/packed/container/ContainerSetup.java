@@ -145,6 +145,21 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         return extensions.containsKey(extensionClass);
     }
 
+    /** {@return whether or not the container is the root container in the application.} */
+    public boolean isApplicationRoot() {
+        return treeParent == null;
+    }
+
+    /** {@return whether or not this container is the root of its lifetime.} */
+    public boolean isLifetimeRoot() {
+        return this == lifetime.container;
+    }
+
+    public boolean isAssemblyRoot() {
+        return this == assembly.container;
+
+    }
+
     /** {@return a new container mirror.} */
     public ContainerMirror mirror() {
         ContainerMirror mirror = ClassUtil.mirrorHelper(ContainerMirror.class, ContainerMirror::new, specializedMirror);
@@ -252,7 +267,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
                 // TODO check that the extensionClass is not banned for users
 
                 // TODO Check that the extension user model has not been closed
-                if (!requestedByExtension.extensionTree.isConfigurable()) {
+                if (!requestedByExtension.isConfigurable()) {
                     throw new IllegalStateException();
                 }
             }

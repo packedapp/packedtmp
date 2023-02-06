@@ -101,7 +101,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return the installer
      */
     public BeanInstaller beanInstaller(BeanLifetimeTemplate template) {
-        return new PackedBeanInstaller(extension().extension, template, (PackedExtensionPointContext) context());
+        return new PackedBeanInstaller(extension().extension, extension().extension.container.assembly, template);
     }
 
     /**
@@ -113,7 +113,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public BeanInstaller beanInstallerForExtension(BeanLifetimeTemplate template, UseSite forExtension) {
         requireNonNull(forExtension, "forExtension is null");
-        return new PackedBeanInstaller(extension().extension, template, (PackedExtensionPointContext) forExtension);
+        return new PackedBeanInstaller(extension().extension, ((PackedExtensionPointContext) forExtension).usedBy(), template);
     }
 
     public ContainerInstaller containerInstaller(ContainerLifetimeTemplate template) {

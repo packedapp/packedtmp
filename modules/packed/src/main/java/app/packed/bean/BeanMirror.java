@@ -169,7 +169,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
      * @return the name of this bean
      */
     public String name() {
-        return bean().name;
+        return bean().name();
     }
 
     /** {@return a stream of all of the operations declared by the bean.} */

@@ -62,10 +62,6 @@ public final class BeanScanner {
     private static final MethodHandle MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class,
             "initialize", void.class, OperationalExtension.class);
 
-    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class,
-            "newBeanIntrospector", BeanIntrospector.class);
-
     /** An internal lookup object. */
     private static final MethodHandles.Lookup PACKED = MethodHandles.lookup();
 
@@ -117,12 +113,9 @@ public final class BeanScanner {
             if (beanIntrospector != null && bean.installedBy.extensionType == extensionType) {
                 introspector = beanIntrospector;
             } else {
-                try {
-                    introspector = (BeanIntrospector) MH_EXTENSION_NEW_BEAN_INTROSPECTOR.invokeExact(extension.instance());
-                } catch (Throwable t) {
-                    throw ThrowableUtil.orUndeclared(t);
-                }
+                introspector = extension.newBeanIntrospector();
             }
+
             OperationalExtension ce = new OperationalExtension(this, extension, introspector);
 
             // Call BeanIntrospector#initialize

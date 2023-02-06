@@ -23,9 +23,7 @@ import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
 
-/**
- *
- */
+/** Implementation of {@link ContainerHandle}. */
 public record PackedContainerHandle(ContainerSetup container) implements ContainerHandle {
 
     /**
@@ -39,18 +37,6 @@ public record PackedContainerHandle(ContainerSetup container) implements Contain
     @Override
     public Set<Class<? extends Extension<?>>> bannedExtensions() {
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     *
-     * @throws IllegalStateException
-     *             if the container is no longer configurable
-     */
-    @Override
-    public void checkIsConfigurable() {
-        if (!isConfigurable()) {
-            throw new IllegalStateException("This container is no longer configurable");
-        }
     }
 
     /**
@@ -79,11 +65,13 @@ public record PackedContainerHandle(ContainerSetup container) implements Contain
         return List.of();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void named(String name) {
         container.named(name);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setErrorHandler(ErrorHandler errorHandler) {
         checkIsConfigurable();

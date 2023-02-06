@@ -27,7 +27,11 @@ public interface ContainerHandle {
      * @throws IllegalStateException
      *             if the container is no longer configurable
      */
-    void checkIsConfigurable();
+    default void checkIsConfigurable() {
+        if (!isConfigurable()) {
+            throw new IllegalStateException("This container is no longer configurable");
+        }
+    }
 
     /**
      * Returns whether or not the bean is still configurable.

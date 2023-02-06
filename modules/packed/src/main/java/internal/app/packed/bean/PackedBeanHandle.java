@@ -36,14 +36,7 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import internal.app.packed.service.InternalServiceUtil;
 
-/**
- * A bean handle is a reference to an installed bean, private to the extension that installed the bean. Created by
- * {@link BeanInstaller}
- * <p>
- * Instances of {@code BeanHandle} should never be exposed directly to end-users or other extensions. Instead they
- * should be returned wrapped in {@link BeanConfiguration} (or subclasses hereof).
- *
- */
+/** Implementation of {@link BeanHandle}. */
 public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
 
     /** {@inheritDoc} */
@@ -160,7 +153,7 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
     }
 }
 
-class BeanHandleSandbox<T> {
+class ZBeanHandleSandbox<T> {
 
     public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation) {
         throw new UnsupportedOperationException();

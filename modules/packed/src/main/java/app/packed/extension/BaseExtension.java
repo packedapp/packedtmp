@@ -56,7 +56,6 @@ import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.container.PackedContainerInstaller;
-import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.PackedServiceLocator;
@@ -126,6 +125,10 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 //    public void provideAll(ServiceLocator locator, Consumer<ServiceTransformer> transformer) {
 //        // ST.contract throws UOE
 //    }
+
+    private ContainerInstaller containerInstaller() {
+        return new PackedContainerInstaller(ContainerLifetimeTemplate.PARENT, BaseExtension.class, extension.container.application, extension.container);
+    }
 
     final void embed(Assembly assembly) {
         /// MHT til hooks. Saa tror jeg faktisk at man tager de bean hooks
@@ -298,11 +301,11 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return new ServiceableBeanConfiguration<>(handle); // Providable???
     }
 
-    private BeanInstaller newBeanInstaller(BeanLifetimeTemplate kind) {
-        return new PackedBeanInstaller(extension, kind, null);
-    }
-
     // add multiInstall prototype
+
+    private BeanInstaller newBeanInstaller(BeanLifetimeTemplate kind) {
+        return new PackedBeanInstaller(extension, extension.container.assembly, kind);
+    }
 
     /**
      * Creates a new BeanIntrospector for handling annotations managed by BeanExtension.
@@ -444,10 +447,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         };
     }
 
-    private ContainerInstaller containerInstaller() {
-        return new PackedContainerInstaller(ContainerLifetimeTemplate.PARENT, BaseExtension.class, extension.container.application, extension.container);
-    }
-
     /** {@return a mirror for this extension.} */
     @Override
     protected BaseExtensionMirror newExtensionMirror() {
@@ -498,7 +497,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return a bean installer
      */
     BeanInstaller ownBeanInstaller(BeanLifetimeTemplate kind) {
-        return new PackedBeanInstaller(extension, kind, new PackedExtensionPointContext(extension, extension));
+        return new PackedBeanInstaller(extension, extension, kind);
     }
 
     <T> OperationConfiguration provide(Class<T> key, Provider<? extends T> provider) {

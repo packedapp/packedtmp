@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
@@ -32,10 +33,11 @@ import app.packed.container.BuildableAssembly;
 import app.packed.container.DelegatingAssembly;
 import app.packed.container.Realm;
 import app.packed.container.Wirelet;
-import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import internal.app.packed.application.ApplicationDriver;
 import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.bean.BeanMemberAccessor;
+import internal.app.packed.bean.BeanOwner;
 import internal.app.packed.jfr.BuildApplicationEvent;
 import internal.app.packed.service.CircularServiceDependencyChecker;
 import internal.app.packed.util.LookupUtil;
@@ -43,7 +45,7 @@ import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
 
 /** The internal configuration of an assembly. */
-public final class AssemblySetup extends RealmSetup {
+public final class AssemblySetup implements BeanOwner {
 
     /** A MethodHandle for invoking {@link AssemblyMirror#initialize(AssemblySetup)}. */
     private static final MethodHandle MH_ASSEMBLY_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), AssemblyMirror.class, "initialize",
@@ -61,13 +63,9 @@ public final class AssemblySetup extends RealmSetup {
     private static final MethodHandle MH_DELEGATING_ASSEMBLY_DELEGATE_TO = LookupUtil.findVirtual(MethodHandles.lookup(), DelegatingAssembly.class,
             "delegateTo", Assembly.class);
 
-    /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
-    private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "onApplicationClose",
-            void.class);
-
-    /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
-    private static final MethodHandle MH_EXTENSION_ON_ASSEMBLY_CLOSE = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "onAssemblyClose",
-            void.class);
+    /** The current module accessor, updated via {@link #lookup(Lookup)} */
+    @Nullable
+    private BeanMemberAccessor accessor;
 
     /** The application that is being the assembly is used to built. */
     public final ApplicationSetup application;
@@ -154,21 +152,32 @@ public final class AssemblySetup extends RealmSetup {
         }
     }
 
+    // Maaske vi flytter vi den til ContainerRealmSetup
+    // Hvis man har brug for Lookup i en extension... Saa maa man bruge Factory.of(Class).lookup());
+    // Jaaa, men det klare jo ogsaa @JavaBaseSupport
+    public BeanMemberAccessor beanAccessor() {
+        BeanMemberAccessor r = accessor;
+        if (r == null) {
+            this.accessor = r = BeanMemberAccessor.defaultFor(assembly.getClass());
+        }
+        return r;
+    }
+
     public void build() {
         // Create a JFR build event if application root
-        BuildApplicationEvent abe = null;
+        BuildApplicationEvent buildEvent = null;
         if (container.treeParent == null) {
-            abe = new BuildApplicationEvent();
-            abe.assemblyClass = assembly.getClass();
-            abe.begin();
+            buildEvent = new BuildApplicationEvent();
+            buildEvent.assemblyClass = assembly.getClass();
+            buildEvent.begin();
         }
 
-        // Call into the user provided build code
-        // We need to call two different handles, depending on the type of the assembly
-        if (assembly instanceof BuildableAssembly ca) {
+        // Call into the assembly provided by the user
+        // We have two different paths depending on the type of assembly
+        if (assembly instanceof BuildableAssembly ba) {
             // Invoke Assembly::doBuild, which in turn will invoke Assembly::build
             try {
-                MH_BUILDABLE_ASSEMBLY_DO_BUILD.invokeExact(ca, model, container);
+                MH_BUILDABLE_ASSEMBLY_DO_BUILD.invokeExact(ba, model, container);
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
@@ -182,62 +191,40 @@ public final class AssemblySetup extends RealmSetup {
             }
         }
 
-        // call Extension.onUserClose on the root container in the assembly.
-        // This is turn calls recursively down Extension.onUserClose on all
-        // ancestor extensions in the same realm.
-
-        // We use .pollFirst because extensions might add new extensions while being closed
-        // In which case an Iterator might throw ConcurrentModificationException
-
-        // Test and see if we are closing the root container of the application
-
-        // Problemet er jo vi kan tilfoeje nye extensions mens vi lukker ned
-
-        // ExtensionSetup[] exts = container.extensions.values().toArray(new ExtensionSetup[container.extensions.size()]);
-        // Arrays.sort(exts);
-
-        // We now need to close the assembly. This is done in two different ways depending on weather or not
-        // the assembly defines the root container of application. In which case we need to call Extension#onApplicationClose
-        // in addition to calling Extension#onAssemblyClose
-
-        // TODO fix Problemet er den assembly sammenligning i ExtensionSetup.of
+        // Cleanup after the assembly.
+        // We have two paths depending on weather or not the container is the root in an application
         if (container.treeParent == null) {
-            // Root container
-            // We must also close all extension trees.
+            // We maintain an (ordered) list of extensions in the order they where closed.
+            // Extensions might install other extensions while closing which is why we keep
+            // polling
             ArrayList<ExtensionSetup> list = new ArrayList<>(extensions.size());
 
             for (ExtensionSetup e = extensions.pollLast(); e != null; e = extensions.pollLast()) {
                 list.add(e);
-                onAssemblyClose(e.instance());
+                e.closeAssembly();
             }
 
             isConfigurable = false;
 
-            // Hmm what about circular dependencies for extensions?
-            CircularServiceDependencyChecker.dependencyCyclesFind(container);
-
-            // Close every extension tree
+            // Close extension for the application
             for (ExtensionSetup extension : list) {
-                try {
-                    MH_EXTENSION_ON_APPLICATION_CLOSE.invokeExact(extension.instance());
-                } catch (Throwable t) {
-                    throw ThrowableUtil.orUndeclared(t);
-                }
-                extension.extensionTree.close();
+                extension.closeApplication();
             }
 
-            // The application has been built successfully.
-            // Now generate code for it if needed
+            // Check application dependency cycles. Or wait???
+            CircularServiceDependencyChecker.dependencyCyclesFind(container);
+
+
+            // The application has been built successfully, generate code if needed
             application.close();
 
-            abe.applicationName = container.name;
-            abe.commit();
+            buildEvent.applicationName = container.name;
+            buildEvent.commit();
         } else {
             // Similar to above, except we do not call Extension#onApplicationClose
             for (ExtensionSetup e = extensions.pollLast(); e != null; e = extensions.pollLast()) {
-                onAssemblyClose(e.instance());
+                e.closeAssembly();
             }
-
             isConfigurable = false;
         }
     }
@@ -265,6 +252,17 @@ public final class AssemblySetup extends RealmSetup {
         return isConfigurable;
     }
 
+    /**
+     * @param lookup
+     *            the lookup to use
+     * @see Assembly#lookup(Lookup)
+     * @see AbstractComposer#lookup(Lookup)
+     */
+    public void lookup(Lookup lookup) {
+        requireNonNull(lookup, "lookup is null");
+        this.accessor = beanAccessor().withLookup(lookup);
+    }
+
     /** {@return a mirror for this assembly.} */
     public AssemblyMirror mirror() {
         AssemblyMirror mirror = ClassUtil.mirrorHelper(AssemblyMirror.class, AssemblyMirror::new, null);
@@ -278,23 +276,9 @@ public final class AssemblySetup extends RealmSetup {
         return mirror;
     }
 
-    private void onAssemblyClose(Extension<?> instance) {
-        try {
-            MH_EXTENSION_ON_ASSEMBLY_CLOSE.invokeExact(instance);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-    }
-
     /** {@inheritDoc} */
     @Override
     public Realm realm() {
         return Realm.application();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<?> realmType() {
-        return assembly.getClass();
     }
 }

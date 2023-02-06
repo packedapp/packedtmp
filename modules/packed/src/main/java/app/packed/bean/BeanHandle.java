@@ -28,7 +28,11 @@ import app.packed.operation.OperationType;
 import internal.app.packed.bean.PackedBeanHandle;
 
 /**
- *
+ * A bean handle is a reference to an installed bean, private to the extension that installed the bean. Created by
+ * {@link BeanInstaller}
+ * <p>
+ * Instances of {@code BeanHandle} should never be exposed directly to end-users or other extensions. Instead they
+ * should be returned wrapped in {@link BeanConfiguration} (or subclasses hereof).
  */
 @SuppressWarnings("rawtypes")
 public sealed interface BeanHandle<T> permits PackedBeanHandle {

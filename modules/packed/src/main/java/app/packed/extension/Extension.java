@@ -31,9 +31,7 @@ import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.service.ServiceableBeanConfiguration;
-import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.container.PackedWireletSelection;
 import internal.app.packed.container.WireletWrapper;
@@ -98,8 +96,9 @@ public abstract class Extension<E extends Extension<E>> {
         return (E) s.instance();
     }
 
-    /** {@return instance of this extension that is used in the lifetimes root container.} */
+    /** {@return instance of this extension that is used in the lifetimes assembly container.} */
     @SuppressWarnings("unchecked")
+    // I don't know if we need this for anything...
     protected final E assemblyRoot() {
         ExtensionSetup s = extension;
         while (s.treeParent != null) {
@@ -127,9 +126,8 @@ public abstract class Extension<E extends Extension<E>> {
      *             if the extension is no longer configurable.
      */
     protected final void checkIsConfigurable() {
-        ExtensionTreeSetup realm = extension.extensionTree;
-        if (!realm.isConfigurable()) {
-            throw new IllegalStateException(realm.realmType() + " is no longer configurable");
+        if (!extension.isConfigurable()) {
+            throw new IllegalStateException(extension.extensionType + " is no longer configurable");
         }
     }
 
@@ -168,11 +166,7 @@ public abstract class Extension<E extends Extension<E>> {
 
     /** {@return whether or not the container is the root container in the application.} */
     protected final boolean isApplicationRoot() {
-        return extension.treeParent == null;
-    }
-
-    protected final boolean isAssemblyRoot() {
-        return isApplicationRoot() || extension.container.assembly != extension.container.treeParent.assembly;
+        return extension.container.isApplicationRoot();
     }
 
     /**
@@ -193,8 +187,7 @@ public abstract class Extension<E extends Extension<E>> {
 
     /** {@return whether or not this container is the root of its lifetime.} */
     protected final boolean isLifetimeRoot() {
-        ContainerSetup container = extension.container;
-        return container == container.lifetime.container;
+        return extension.container.isLifetimeRoot();
     }
 
     /**

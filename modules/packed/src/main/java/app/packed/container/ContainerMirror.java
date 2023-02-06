@@ -17,7 +17,6 @@ import app.packed.bean.GuestBeanMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
-import app.packed.extension.InternalExtensionException;
 import app.packed.extension.MirrorExtension;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
@@ -55,12 +54,8 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     };
 
     /** A MethodHandle for invoking {@link ExtensionMirror#initialize(ExtensionSetup)}. */
-    private static final MethodHandle MH_EXTENSION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ExtensionMirror.class,
-            "initialize", void.class, ExtensionSetup.class);
-
-    /** A MethodHandle for invoking {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_NEW_EXTENSION_MIRROR = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "newExtensionMirror",
-            ExtensionMirror.class);
+    private static final MethodHandle MH_EXTENSION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ExtensionMirror.class, "initialize",
+            void.class, ExtensionSetup.class);
 
     /**
      * The internal configuration of the container we are mirroring. Is initially null but populated via
@@ -77,10 +72,6 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
         return container().application.mirror();
     }
 
-    public Optional<GuestBeanMirror> guest() {
-        throw new UnsupportedOperationException();
-    }
-
     /** {@return the assembly wherein this container was defined.} */
     public AssemblyMirror assembly() {
         return container().assembly.mirror();
@@ -94,7 +85,7 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     public Stream<BeanMirror> beans() {
         // not technically a view but will do for now
         ArrayList<BeanMirror> beans = new ArrayList<>();
-        for (var b = container().beanFirst; b != null; b = b.siblingNext) {
+        for (var b = container().beanFirst; b != null; b = b.beanSiblingNext) {
             beans.add(b.mirror());
         }
         return List.copyOf(beans).stream();
@@ -152,13 +143,17 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
      *
      * @param <T>
      *            the type of mirror
-     * @param extensionMirrorType
+     * @param mirrorType
      *            the mirror type
      * @return a mirror of the specified type, or empty if the extension the mirror represents is not used in the container
      */
     public <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> mirrorType) {
         ClassUtil.checkProperSubclass(ExtensionMirror.class, mirrorType, "mirrorType");
         return Optional.ofNullable(newMirrorOrNull(container(), mirrorType));
+    }
+
+    public Optional<GuestBeanMirror> guest() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -180,9 +175,14 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
         this.container = container;
     }
 
-    /** {@return whether or not the container is the root container in the application.} */
+    /** {@return whether or not this container is the root container in the application.} */
     public boolean isApplicationRoot() {
-        return container().treeParent == null;
+        return container().isApplicationRoot();
+    }
+
+    /** {@return whether or not this container is the root container in this container's lifetime.} */
+    public boolean isLifetimeRoot() {
+        return container().isLifetimeRoot();
     }
 
     /**
@@ -198,7 +198,6 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     }
 
     /** {@return the containers's lifetime.} */
-    // Do we need isApplicationRoot, isLifetimeRoot
     public ContainerLifetimeMirror lifetime() {
         return container().lifetime.mirror();
     }
@@ -266,59 +265,25 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
      */
     @Nullable
     static <T extends ExtensionMirror<?>> T newMirrorOrNull(ContainerSetup container, Class<T> mirrorClass) {
-        // First find what extension the mirror belongs to by extracting <E> from ExtensionMirror<E extends Extension>
-        Class<? extends Extension<?>> extensionClass = EXTENSION_TYPES.get(mirrorClass);
+        // Extract <E> from ExtensionMirror<E extends Extension>
+        Class<? extends Extension<?>> extensionType = EXTENSION_TYPES.get(mirrorClass);
 
-        // See if the container uses the extension.
-        ExtensionSetup extension = container.extensions.get(extensionClass);
+        ExtensionMirror<?> mirror = null;
 
-        if (extension == null) {
-            return null;
-        }
+        // See if the extension is in use.
+        ExtensionSetup extension = container.extensions.get(extensionType);
+        if (extension != null) {
+            // Call Extension#newExtensionMirror
+            mirror = extension.newExtensionMirror(mirrorClass);
 
-        Extension<?> instance = extension.instance();
-
-        ExtensionMirror<?> mirror;
-        try {
-            mirror = (ExtensionMirror<?>) MH_NEW_EXTENSION_MIRROR.invokeExact(instance);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-
-        // Cannot return a null mirror
-        if (mirror == null) {
-            throw new InternalExtensionException(
-                    "Extension " + extension.model.fullName() + " returned null from " + extension.model.name() + ".newExtensionMirror()");
-        }
-
-        // If we expect a mirror of a particular type, check it
-     //   if (mirrorClass != null) {
-            // Fail if the type of mirror returned by the extension does not match the specified mirror type
-            if (!mirrorClass.isInstance(mirror)) {
-                throw new InternalExtensionException(extension.extensionType.getSimpleName() + ".newExtensionMirror() was expected to return an instance of "
-                        + mirrorClass + ", but returned an instance of " + mirror.getClass());
+            // Call ExtensionMirror#initialize(ExtensionSetup)
+            try {
+                MH_EXTENSION_MIRROR_INITIALIZE.invokeExact(mirror, extension);
+            } catch (Throwable t) {
+                throw ThrowableUtil.orUndeclared(t);
             }
-       // }
-//        else if (mirror.getClass() != ExtensionMirror.class) {
-//            // Extensions are are allowed to return ExtensionMirror from newExtensionMirror in which case we have no additional
-//            // checks
-//
-//            // If expectedMirrorClass == null we don't know what type of mirror to expect. Other than it must be parameterized with
-//            // the right extension
-//
-//            // Must return a mirror for the same extension
-//            Class<? extends Extension<?>> mirrorExtensionType = EXTENSION_TYPES.get(mirror.getClass());
-//            if (mirrorExtensionType != extension.extensionType) {
-//                throw new InternalExtensionException(
-//                        "Extension " + extension.model.fullName() + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
-//            }
-//        }
-
-        try {
-            MH_EXTENSION_MIRROR_INITIALIZE.invokeExact(mirror, extension);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
         }
+
         return mirrorClass.cast(mirror);
     }
 }

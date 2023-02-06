@@ -28,6 +28,7 @@ import app.packed.bean.BeanIntrospector;
 
 // Maybe have a BeanLocalMap as well
 public final class PackedBeanLocal<T> {
+
     private PackedBeanLocal() {
 
     }

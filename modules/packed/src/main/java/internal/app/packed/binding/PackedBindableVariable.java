@@ -102,7 +102,7 @@ public final class PackedBindableVariable implements BindableVariable {
 
     private void bind(BindingResolution provider) {
         assert (operation.bindings[index] == null);
-        operation.bindings[index] = new HookBindingSetup(operation, index, bindingExtension.extensionTree.realm(), provider);
+        operation.bindings[index] = new HookBindingSetup(operation, index, bindingExtension.realm(), provider);
     }
 
     /** {@inheritDoc} */
