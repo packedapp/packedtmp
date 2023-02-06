@@ -31,7 +31,6 @@ import internal.app.packed.container.ExtensionModel;
  * Unlike {@link ExtensionMirror} which contains information about a particular <strong>usage</strong> of an extension.
  * The information provided by this descriptor are static information about the extension itself.
  */
-// I don't think we exposes comparable
 public sealed interface ExtensionDescriptor permits ExtensionModel {
 
     /** {@return an immutable unordered set containing every dependency the extension declares.} */
@@ -104,17 +103,6 @@ public sealed interface ExtensionDescriptor permits ExtensionModel {
      * @see #fullName()
      */
     String name();
-
-    /**
-     * Returns the depth of the extension in the extension dependency graph.
-     * <p>
-     * Extensions without any dependencies always have depth 0. Otherwise the depth of an extension it is the maximum depth
-     * of any of its direct dependencies plus 1. This has the nice property, that any dependencies (including transitive
-     * dependencies) of an extension will always have a depth that is less than the depth of the extension itself.
-     *
-     * @return the depth of the extension
-     */
-    int orderingDepth();
 
     /** {@return the type of extension this descriptor describes.} */
     Class<? extends Extension<?>> type();

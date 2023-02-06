@@ -23,13 +23,14 @@ import java.util.Map;
 import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
+import app.packed.bean.GuestBeanMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 
 /**
- * This mirror represents a container lifetime.
+ * This mirror represents the lifetime of a container.
  */
 public final class ContainerLifetimeMirror extends LifetimeMirror {
 
@@ -47,12 +48,16 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
      */
     public ContainerLifetimeMirror() {}
 
+    public /*Ordered */ Collection<BeanMirror> beans() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return the container that is the root of the lifetime.} */
     public ContainerMirror container() {
         return lifetime().container.mirror();
     }
 
-    public Map<ContainerMirror, Collection<BeanMirror>> elements() {
+    public Map<ContainerMirror, /* Ordered */ Collection<BeanMirror>> elements() {
         // beanKind.isInContainerLifetime()
         // alternative BiStream
         throw new UnsupportedOperationException();
@@ -60,13 +65,13 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
 
     /** {@inheritDoc} */
     @Override
-    public final boolean equals(Object other) {
+    public boolean equals(Object other) {
         return this == other || other instanceof ContainerLifetimeMirror m && lifetime() == m.lifetime();
     }
 
     /** {@inheritDoc} */
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         return lifetime().hashCode();
     }
 
@@ -78,7 +83,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
      *
      * @return
      */
-    public Optional<BeanMirror> holderBean() { // Do we need a ContainerWrapperBeanMirror?
+    public Optional<GuestBeanMirror> guest() { // Do we need a ContainerWrapperBeanMirror?
         return Optional.empty();
     }
 
@@ -88,7 +93,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
      * @param owner
      *            the internal configuration of the extension to mirror
      */
-    final void initialize(ContainerLifetimeSetup lifetime) {
+    void initialize(ContainerLifetimeSetup lifetime) {
         if (this.lifetime != null) {
             throw new IllegalStateException("This mirror has already been initialized.");
         }

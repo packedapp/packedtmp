@@ -28,9 +28,7 @@ import internal.app.packed.container.PackedContainerLifetimeTemplate;
 // Det er jo ikke noget man aendrer. Omvendt kan vi ikke goere saa meget ved den
 
 // Maaske installere templaten guest'en
-public interface ContainerLifetimeTemplate {
-
-    // Same lifetime as its parent container.
+public sealed interface ContainerLifetimeTemplate permits PackedContainerLifetimeTemplate {
 
     /**
      * The container will have the same lifetime as its parent container.

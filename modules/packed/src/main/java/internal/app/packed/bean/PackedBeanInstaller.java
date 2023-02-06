@@ -64,6 +64,7 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
     /** The extension that is installing the bean */
     final ExtensionSetup installingExtension;
 
+    /** An introspector that is specifically configured for this bean instance. */
     @Nullable
     BeanIntrospector introspector;
 

@@ -13,7 +13,6 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationPath;
 import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.GuestBeanMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
@@ -150,10 +149,6 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     public <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> mirrorType) {
         ClassUtil.checkProperSubclass(ExtensionMirror.class, mirrorType, "mirrorType");
         return Optional.ofNullable(newMirrorOrNull(container(), mirrorType));
-    }
-
-    public Optional<GuestBeanMirror> guest() {
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */

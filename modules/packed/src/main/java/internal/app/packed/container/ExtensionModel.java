@@ -225,8 +225,15 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Returns the depth of the extension in the extension dependency graph.
+     * <p>
+     * Extensions without any dependencies always have depth 0. Otherwise the depth of an extension it is the maximum depth
+     * of any of its direct dependencies plus 1. This has the nice property, that any dependencies (including transitive
+     * dependencies) of an extension will always have a depth that is less than the depth of the extension itself.
+     *
+     * @return the depth of the extension
+     */
     public int orderingDepth() {
         return ordringDepth;
     }

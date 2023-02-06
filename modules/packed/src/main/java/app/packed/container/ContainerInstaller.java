@@ -35,7 +35,6 @@ public interface ContainerInstaller {
      *            optional wirelets
      * @return a container handle representing the linked container
      */
-
     default ContainerInstaller errorHandle(ErrorHandler h) {
         return this;
     }

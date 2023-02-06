@@ -24,7 +24,7 @@ import app.packed.lifetime.ContainerLifetimeTemplate;
 /**
  *
  */
-public class PackedContainerLifetimeTemplate implements ContainerLifetimeTemplate {
+public final class PackedContainerLifetimeTemplate implements ContainerLifetimeTemplate {
 
     public final ContainerKind kind;
 

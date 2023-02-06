@@ -41,7 +41,7 @@ public final class PackedContainerInstaller implements ContainerInstaller {
     final Class<? extends Extension<?>> installedBy;
 
     /** The lifetime of the container being installed. */
-    public final PackedContainerLifetimeTemplate lifetime;
+    final PackedContainerLifetimeTemplate lifetime;
 
     String nameFromWirelet;
 
@@ -51,7 +51,7 @@ public final class PackedContainerInstaller implements ContainerInstaller {
 
     public PackedContainerInstaller(ContainerLifetimeTemplate lifetime, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
             @Nullable ContainerSetup parent) {
-        this.lifetime = (PackedContainerLifetimeTemplate) requireNonNull(lifetime);
+        this.lifetime = (PackedContainerLifetimeTemplate) requireNonNull(lifetime, "lifetime is null");
         this.application = requireNonNull(application);
         this.parent = parent;
         this.installedBy = requireNonNull(installedBy);
