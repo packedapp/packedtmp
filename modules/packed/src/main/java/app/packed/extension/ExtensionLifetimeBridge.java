@@ -52,7 +52,7 @@ public final class ExtensionLifetimeBridge {
     public static final ExtensionLifetimeBridge EXPORTED_SERVICE_LOCATOR = baseBuilder().onUse(e -> {
         e.ownBeanInstaller(BeanLifetimeTemplate.CONTAINER).installIfAbsent(PackedServiceLocator.class, h -> {
             h.exportAs(Key.of(ServiceLocator.class));
-            e.addCodeGenerated(((PackedBeanHandle<?>) h).bean, new Key<Map<Key<?>, MethodHandle>>() {}, () -> e.extension.container.sm.exportedServices());
+            e.addCodeGenerated(((PackedBeanHandle<?>) h).bean(), new Key<Map<Key<?>, MethodHandle>>() {}, () -> e.extension.container.sm.exportedServices());
         });
     }).keys(ServiceLocator.class).build();
 

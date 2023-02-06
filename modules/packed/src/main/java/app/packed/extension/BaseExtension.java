@@ -30,11 +30,12 @@ import app.packed.bindings.Provider;
 import app.packed.bindings.Variable;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerGuest;
+import app.packed.container.ContainerInstaller;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
-import app.packed.extension.BaseExtensionPoint.OldContainerInstaller;
 import app.packed.lifetime.BeanLifetimeTemplate;
+import app.packed.lifetime.ContainerLifetimeTemplate;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.BeanOperationTemplate.InvocationArgument;
@@ -49,11 +50,11 @@ import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.service.sandbox.transform.ServiceExportsTransformer;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.PackedBeanInstaller;
+import internal.app.packed.bean.BeanSetupInstaller;
 import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.PackedBindableVariable;
-import internal.app.packed.container.PackedContainerInstaller;
+import internal.app.packed.container.ContainerSetupInstaller;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.operation.OperationSetup;
@@ -258,7 +259,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      *            optional wirelets
      */
     public void link(Assembly assembly, Wirelet... wirelets) {
-        newContainerInstaller().link(assembly, wirelets);
+        newContainerInstaller().install(assembly, wirelets);
     }
 
     /**
@@ -300,13 +301,13 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return a bean installer
      */
     BeanInstaller ownBeanInstaller(BeanLifetimeTemplate kind) {
-        return new PackedBeanInstaller(extension, kind, new PackedExtensionPointContext(extension, extension));
+        return new BeanSetupInstaller(extension, kind, new PackedExtensionPointContext(extension, extension));
     }
 
     // add multiInstall prototype
 
     private BeanInstaller newBeanInstaller(BeanLifetimeTemplate kind) {
-        return new PackedBeanInstaller(extension, kind, null);
+        return new BeanSetupInstaller(extension, kind, null);
     }
 
     /**
@@ -449,8 +450,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         };
     }
 
-    private OldContainerInstaller newContainerInstaller() {
-        return new PackedContainerInstaller(extension.container);
+    private ContainerInstaller newContainerInstaller() {
+        return new ContainerSetupInstaller(ContainerLifetimeTemplate.PARENT, extension.container.application, extension.container);
     }
 
     /** {@return a mirror for this extension.} */

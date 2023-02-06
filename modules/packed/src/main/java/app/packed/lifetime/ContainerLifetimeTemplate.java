@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.installer;
+package app.packed.lifetime;
 
 import java.lang.invoke.MethodType;
+
+import internal.app.packed.container.ContainerKind;
+import internal.app.packed.container.PackedContainerLifetimeTemplate;
 
 /**
  *
@@ -25,7 +28,7 @@ import java.lang.invoke.MethodType;
 // Det er jo ikke noget man aendrer. Omvendt kan vi ikke goere saa meget ved den
 
 // Maaske installere templaten guest'en
-public interface ContainerLifetimeTemplate<G> {
+public interface ContainerLifetimeTemplate {
 
     // Same lifetime as its parent container.
 
@@ -33,20 +36,21 @@ public interface ContainerLifetimeTemplate<G> {
      * The container will have the same lifetime as its parent container.
      * <p>
      */
-    ContainerLifetimeTemplate<Void> PARENT = null; // no lifetime operations
+    ContainerLifetimeTemplate PARENT = new PackedContainerLifetimeTemplate(ContainerKind.PARENT) ; // no lifetime operations
 
-    ContainerLifetimeTemplate<Void> LAZY = null; // no lifetime operations
+    ContainerLifetimeTemplate LAZY = new PackedContainerLifetimeTemplate(ContainerKind.LAZY); // no lifetime operations
+
+    ContainerLifetimeTemplate ROOT = new PackedContainerLifetimeTemplate(ContainerKind.ROOT); // no lifetime operations
 
     // The container exists within the operation that creates it
     // Needs a builder. Because of Context, args
     // Men kan vel godt have statiske context
-    ContainerLifetimeTemplate<Void> OPERATION = null;
+    ContainerLifetimeTemplate OPERATION = null;
 
     interface Builder {
 
         // No seperet MH for starting, part of init
         Builder autoStart(boolean fork);
-
     }
 
     /**

@@ -119,7 +119,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         return size++;
     }
 
-    public BeanLifetimeSetup addChildBean(BeanLifetimeSetup lifetime) {
+    public BeanLifetimeSetup addDetachedChildBean(BeanLifetimeSetup lifetime) {
         if (beanLifetimes == null) {
             beanLifetimes = new ArrayList<>(1);
         }

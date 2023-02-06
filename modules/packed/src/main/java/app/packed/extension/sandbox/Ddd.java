@@ -29,8 +29,8 @@ import app.packed.bean.DependencyOrder;
 import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerHandle;
-import app.packed.container.installer.ContainerLifetimeTemplate;
 import app.packed.extension.Extension;
+import app.packed.lifetime.ContainerLifetimeTemplate;
 
 /**
  *
@@ -72,7 +72,7 @@ public class Ddd extends BaseAssembly {
         MyE() {}
 
         void foo() {
-            ContainerHandle h = base().containerInstaller(ContainerLifetimeTemplate.PARENT).named("EntityBeans").useThisExtension().newContainer();
+            ContainerHandle h = base().containerInstaller(ContainerLifetimeTemplate.PARENT).named("EntityBeans").useThisExtension().install();
             fromHandle(h);
         }
 

@@ -107,7 +107,8 @@ public final class AssemblySetup extends RealmSetup {
      * @param wirelets
      *            optional wirelets
      */
-    public AssemblySetup(@Nullable ApplicationDriver<?> applicationDriver, @Nullable BuildGoal goal, @Nullable ContainerSetup linkTo, Assembly assembly,
+    public AssemblySetup(@Nullable ApplicationDriver<?> applicationDriver, @Nullable BuildGoal goal,
+            @Nullable ContainerSetupInstaller installer, Assembly assembly,
             Wirelet[] wirelets) {
         // We need to unpack any delegating assemblies
         Assembly a = requireNonNull(assembly, "assembly is null");
@@ -141,8 +142,7 @@ public final class AssemblySetup extends RealmSetup {
 
         this.assembly = a;
 
-        // Set rest of fields depending on weather it is the root assembly of an application, or we are linking
-        if (linkTo == null) {
+        if (installer == null) {
             this.application = new ApplicationSetup(applicationDriver, goal, this, wirelets);
             this.container = application.container;
         } else {
@@ -150,10 +150,32 @@ public final class AssemblySetup extends RealmSetup {
                 throw new IllegalArgumentException("Cannot link an instance of " + ComposerAssembly.class + ", assembly must extend "
                         + BuildableAssembly.class.getSimpleName() + " instead");
             }
-            this.application = linkTo.application;
-            this.container = new ContainerSetup(application, this, linkTo, wirelets);
+            this.application = installer.application;
+            this.container = installer.install(this, wirelets);
         }
     }
+
+    /**
+    *
+    * @throws IllegalStateException
+    *             if the container is no longer configurable
+    */
+   public void checkIsConfigurable() {
+       if (!isConfigurable()) {
+           throw new IllegalStateException("This assembly is no longer configurable");
+       }
+   }
+
+   /**
+    * Returns whether or not the bean is still configurable.
+    * <p>
+    * If an assembly was used to create the container. The handle is never configurable.
+    *
+    * @return {@code true} if the bean is still configurable
+    */
+   public boolean isConfigurable() {
+       return !isDone();
+   }
 
     public void build() {
         // Create a JFR build event if application root

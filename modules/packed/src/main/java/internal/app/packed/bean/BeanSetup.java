@@ -6,18 +6,14 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationPath;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanInstallationException;
-import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.OperationalMethod;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
@@ -26,14 +22,12 @@ import app.packed.container.Realm;
 import app.packed.framework.Nullable;
 import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.OperationType;
-import internal.app.packed.bean.BeanSetupClassMapContainer.MuInst;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.NameCheck;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.context.ContextSetup;
@@ -43,7 +37,6 @@ import internal.app.packed.lifetime.LifetimeLifecycleSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.BeanAccessOperationSetup;
-import internal.app.packed.operation.PackedOp;
 import internal.app.packed.service.ServiceProviderSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.PackedNamespacePath;
@@ -96,7 +89,8 @@ public final class BeanSetup {
     public final int lifetimeStoreIndex;
 
     /** Supplies a mirror for the operation */
-    public Supplier<? extends BeanMirror> mirrorSupplier;
+    @Nullable
+    private Supplier<? extends BeanMirror> mirrorSupplier;
 
     /** The name of this bean. Should only be updated through {@link #named(String)} */
     public String name;
@@ -104,10 +98,10 @@ public final class BeanSetup {
     /** Operations declared by the bean. */
     public final ArrayList<OperationSetup> operations = new ArrayList<>();
 
-    public boolean providingOperationsVisited;
-
     /** The owner of the bean. */
     public final RealmSetup owner;
+
+    public boolean providingOperationsVisited;
 
     /** A list of services provided by the bean, used for circular dependency checks. */
     public final List<ServiceProviderSetup> serviceProviders = new ArrayList<>();
@@ -119,12 +113,15 @@ public final class BeanSetup {
     /**
      * Create a new bean.
      */
-    private BeanSetup(PackedBeanInstaller installer, BeanKind beanKind, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
+    BeanSetup(BeanSetupInstaller installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
+        this.beanKind = requireNonNull(installer.template.kind);
         this.beanClass = requireNonNull(beanClass);
-        this.beanKind = requireNonNull(beanKind);
         this.beanSource = beanSource;
         this.beanSourceKind = requireNonNull(beanSourceKind);
 
+        this.mirrorSupplier = installer.supplier;
+
+        // Sets the owner, installer, and the container in which the bean is installed
         if (installer.useSite == null) {
             this.installedBy = installer.baseExtension;
             this.owner = installer.baseExtension.container.assembly;
@@ -135,15 +132,15 @@ public final class BeanSetup {
         this.container = requireNonNull(installedBy.container);
 
         // Set the lifetime of the bean
-        ContainerLifetimeSetup cls = container.lifetime;
+        ContainerLifetimeSetup containerLifetime = container.lifetime;
         if (beanKind == BeanKind.CONTAINER || beanKind == BeanKind.STATIC) {
-            this.lifetime = cls;
+            this.lifetime = containerLifetime;
             this.lifetimeStoreIndex = container.lifetime.addBean(this);
         } else {
             BeanLifetimeSetup bls = new BeanLifetimeSetup(this, installer);
             this.lifetime = bls;
             this.lifetimeStoreIndex = -1;
-            cls.addChildBean(bls);
+            containerLifetime.addDetachedChildBean(bls);
         }
     }
 
@@ -236,6 +233,10 @@ public final class BeanSetup {
         return crack(handle);
     }
 
+    public static BeanSetup crack(OperationalMethod m) {
+        return ((PackedOperationalMethod) m).extension.scanner.bean;
+    }
+
     /**
      * Extracts a bean setup from a bean handle.
      *
@@ -245,112 +246,6 @@ public final class BeanSetup {
      */
     public static BeanSetup crack(PackedBeanHandle<?> handle) {
         requireNonNull(handle, "handle is null");
-        return handle.bean;
-    }
-
-    public static BeanSetup crack(OperationalMethod m) {
-        return ((PackedOperationalMethod) m).extension.scanner.bean;
-    }
-
-    static BeanSetup install(PackedBeanInstaller installer, PackedBeanLifetimeTemplate template, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
-            @Nullable BeanIntrospector introspector, @Nullable Map<Class<?>, Object> attachments, @Nullable String namePrefix, boolean multiInstall,
-            boolean synthetic) {
-        BeanSetup bean = new BeanSetup(installer, template.kind, beanClass, sourceKind, source);
-
-        ContainerSetup container = bean.container;
-
-        String prefix = namePrefix;
-        if (prefix == null) {
-            prefix = "Functional";
-            BeanModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanModel(beanClass);
-
-            if (beanModel != null) {
-                prefix = beanModel.simpleName();
-            }
-        }
-        // TODO virker ikke med functional beans og naming
-        String n = prefix;
-
-        HashMap<Class<?>, Object> bcm = installer.baseExtension.container.beanClassMap;
-        if (installer.useSite != null) {
-            bcm = installer.useSite.usedBy().beanClassMap;
-
-        }
-
-        // if (installer.useSite.extension())
-
-        if (beanClass != void.class) {
-            if (multiInstall) {
-                MuInst i = (MuInst) bcm.compute(beanClass, (c, o) -> {
-                    if (o == null) {
-                        return new MuInst();
-                    } else if (o instanceof BeanSetup) {
-                        throw new BeanInstallationException("Oops");
-                    } else {
-                        ((MuInst) o).counter += 1;
-                        return o;
-                    }
-                });
-                int next = i.counter;
-                if (next > 0) {
-                    n = prefix + next;
-                }
-                while (container.children.putIfAbsent(n, bean) != null) {
-                    n = prefix + ++next;
-                    i.counter = next;
-                }
-            } else {
-                bcm.compute(beanClass, (c, o) -> {
-                    if (o == null) {
-                        return bean;
-                    } else if (o instanceof BeanSetup) {
-                        // singular???
-                        throw new BeanInstallationException("A non-multi bean has already been defined for " + bean.beanClass);
-                    } else {
-                        // We already have some multiple beans installed
-                        throw new BeanInstallationException("Oops");
-                    }
-                });
-                // Not multi install, so should be able to add it first time
-                int size = 0;
-                while (container.children.putIfAbsent(n, bean) != null) {
-                    n = prefix + ++size;
-                }
-            }
-        }
-        bean.name = n;
-
-        if (sourceKind == BeanSourceKind.OP) {
-            PackedOp<?> op = (PackedOp<?>) bean.beanSource;
-            BeanOperationTemplate ot;
-            if (bean.lifetime.lifetimes().isEmpty()) {
-                ot = BeanOperationTemplate.defaults();
-            } else {
-                ot = bean.lifetime.lifetimes().get(0).template;
-            }
-
-            OperationSetup os = op.newOperationSetup(bean, bean.installedBy, ot, null);
-            bean.operations.add(os);
-        }
-
-        if (bean.owner instanceof ExtensionTreeSetup e && bean.beanKind == BeanKind.CONTAINER) {
-            bean.container.useExtension(e.realmType(), null).sm.addBean(bean);
-        }
-
-        // Scan the bean class for annotations unless the bean class is void
-        if (sourceKind != BeanSourceKind.NONE) {
-            new BeanScanner(bean, introspector, attachments).introspect();
-        }
-
-        // Bean was successfully created, add it to the container
-        BeanSetup siebling = container.beanLast;
-        if (siebling == null) {
-            container.beanFirst = bean;
-        } else {
-            siebling.siblingNext = bean;
-        }
-        container.beanLast = bean;
-
-        return bean;
+        return handle.bean();
     }
 }

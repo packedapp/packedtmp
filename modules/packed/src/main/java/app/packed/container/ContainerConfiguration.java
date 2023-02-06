@@ -54,7 +54,7 @@ public final class ContainerConfiguration {
      *             if the container is no longer configurable
      */
     protected void checkIsConfigurable() {
-        if (!handle.isConfigurable()) {
+        if (!handle.container().assembly.isConfigurable()) {
             throw new IllegalStateException("This container is no longer configurable");
         }
     }

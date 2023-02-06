@@ -20,7 +20,6 @@ module app.packed {
     exports app.packed.bindings.mirror;
     exports app.packed.lifetime.sandbox;
     exports app.packed.extension.bridge;
-    exports app.packed.container.installer;
 
     /* Special support for packed-devtoolks */
     uses internal.app.packed.framework.devtools.PackedDevToolsIntegration;

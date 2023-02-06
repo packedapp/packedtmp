@@ -25,8 +25,10 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.framework.Nullable;
+import app.packed.lifetime.ContainerLifetimeTemplate;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.ContainerSetupInstaller;
 import internal.app.packed.jfr.CodegenEvent;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -49,6 +51,13 @@ public final class ApplicationSetup {
     /** The driver used to create the application. */
     public final ApplicationDriver<?> driver;
 
+    /**
+     * All extensions used in an application has a unique instance id attached. This is used in case we have multiple
+     * extension with the same canonical name but from different class loaders. Where we then compare the extension id of
+     * the extensions as a last resort.
+     */
+    public int extensionId;
+
     /** The application launcher that is being built. */
     @Nullable
     public RuntimeApplicationLauncher generatedLauncher;
@@ -58,13 +67,6 @@ public final class ApplicationSetup {
 
     /** The current phase of the application's build process. */
     private ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
-
-    /**
-     * All extensions used in an application has a unique instance id attached. This is used in case we have multiple
-     * extension with the same canonical name but from different class loaders. Where we then compare the extension id of
-     * the extensions as a last resort.
-     */
-    public int extensionId;
 
     /**
      * Create a new application.
@@ -82,7 +84,7 @@ public final class ApplicationSetup {
         this.driver = requireNonNull(driver);
         this.goal = requireNonNull(goal);
         this.codegenActions = goal.isCodeGenerating() ? new ArrayList<>() : null;
-        this.container = new ContainerSetup(this, assembly, null, wirelets);
+        this.container = new ContainerSetupInstaller(ContainerLifetimeTemplate.ROOT, this, null).install(assembly, wirelets);
     }
 
     /**

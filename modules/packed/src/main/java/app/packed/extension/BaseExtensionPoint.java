@@ -19,11 +19,11 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.bindings.Key;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerHandle;
+import app.packed.container.ContainerInstaller;
 import app.packed.container.Wirelet;
-import app.packed.container.installer.ContainerInstaller;
-import app.packed.container.installer.ContainerLifetimeTemplate;
 import app.packed.extension.bridge.ContainerGuestBeanConfiguration;
 import app.packed.lifetime.BeanLifetimeTemplate;
+import app.packed.lifetime.ContainerLifetimeTemplate;
 import app.packed.lifetime.RunState;
 import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.DelegatingOperationHandle;
@@ -32,7 +32,7 @@ import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 import app.packed.service.ServiceableBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.PackedBeanInstaller;
+import internal.app.packed.bean.BeanSetupInstaller;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.PackedOperationHandle;
 
@@ -99,7 +99,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return the installer
      */
     public BeanInstaller beanInstaller(BeanLifetimeTemplate template) {
-        return new PackedBeanInstaller(extension().extension, template, (PackedExtensionPointContext) context());
+        return new BeanSetupInstaller(extension().extension, template, (PackedExtensionPointContext) context());
     }
 
     /**
@@ -111,10 +111,10 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public BeanInstaller beanInstallerForExtension(BeanLifetimeTemplate template, UseSite forExtension) {
         requireNonNull(forExtension, "forExtension is null");
-        return new PackedBeanInstaller(extension().extension, template, (PackedExtensionPointContext) forExtension);
+        return new BeanSetupInstaller(extension().extension, template, (PackedExtensionPointContext) forExtension);
     }
 
-    public ContainerInstaller containerInstaller(ContainerLifetimeTemplate<?> template) {
+    public ContainerInstaller containerInstaller(ContainerLifetimeTemplate template) {
         throw new UnsupportedOperationException();
     }
 
@@ -181,11 +181,11 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         throw new UnsupportedOperationException();
     }
 
-    public ContainerHandle newContainer(ContainerLifetimeTemplate<?> template, Assembly assembly, Wirelet... wirelets) {
+    public ContainerHandle newContainer(ContainerLifetimeTemplate template, Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    public ContainerHandle newContainer(ContainerLifetimeTemplate<?> template, Wirelet... wirelets) {
+    public ContainerHandle newContainer(ContainerLifetimeTemplate template, Wirelet... wirelets) {
         // Maybe have
         throw new UnsupportedOperationException();
     }
@@ -252,7 +252,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
 // Maybe put it back on handle. If we get OperationInstaller
 // Maybe Builder after all... Alle ved hvad en builder er
-    public sealed interface BeanInstaller permits PackedBeanInstaller {
+    public sealed interface BeanInstaller permits BeanSetupInstaller {
 
         // can be used for inter
         // Maybe use ScopedValues instead???
@@ -314,24 +314,23 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
         BeanInstaller namePrefix(String prefix);
 
+        // A bean that is created per operation.
+        // Obvious manyton, but should we have own kind?
+        // I actually think so because, because for now it always requires manyton
 
-            // A bean that is created per operation.
-            // Obvious manyton, but should we have own kind?
-            // I actually think so because, because for now it always requires manyton
+        // Some questions, do we support @Schedule? Or anything like it?
+        // I don't think we need to set up the support for it by default. Only if used
+        // So overhead is not needed
 
-            // Some questions, do we support @Schedule? Or anything like it?
-            // I don't think we need to set up the support for it by default. Only if used
-            // So overhead is not needed
+        // But I think those annotations that make sense are always "callback" extensions
+        // From other threads
+        // Single threaded vs multi-threaded
+        // If we are single threaded it is obviously always only the request method
+        // If we are multi threaded we create own little "world"
+        // I think that is the difference, between the two
 
-            // But I think those annotations that make sense are always "callback" extensions
-            // From other threads
-            // Single threaded vs multi-threaded
-            // If we are single threaded it is obviously always only the request method
-            // If we are multi threaded we create own little "world"
-            // I think that is the difference, between the two
-
-            // Maybe bean is always single threaded.
-            // And container is always multi threaded
+        // Maybe bean is always single threaded.
+        // And container is always multi threaded
 
         /**
          * Sets a supplier that creates a special bean mirror instead of the generic {@code BeanMirror} when requested.
@@ -370,58 +369,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     @AnnotatedBindingHook(extension = BaseExtension.class)
     public @interface CodeGenerated {}
 
-    // Vi har brug ContainerInstaller fordi, man ikke konfigure noget efter man har linket
-    // Saa alt skal goeres inde
-
-    // Bliver noedt til at lave et Handle. Da kalderen som minim har brug for
-    // OperationHandles for lifetimen...
-
-    // Ejer
-
-    // Support enten linkage(Assembly) or lav en ny XContetainerConfiguration
-    // Eager, Lazy, ManyTone
-    // ContainerCompanions (extension configuration)
-    // Bean <- er taet knyttet til ContainerCompanions
-    // Hosting (Long term)
-
-    // Lifetime -> In Operation, Start/Stop, stateless?
-
-    public interface OldContainerInstaller {
-
-        OldContainerInstaller allowRuntimeWirelets();
-
-        /**
-         * <p>
-         * The container handle returned by this method is no longer {@link ContainerHandle#isConfigurable() configurable}
-         *
-         * @param assembly
-         *            the assembly to link
-         * @param wirelets
-         *            optional wirelets
-         * @return a container handle representing the linked container
-         */
-        ContainerHandle link(Assembly assembly, Wirelet... wirelets);
-
-        ContainerHandle newContainer(Wirelet... wirelets);
-
-        OldContainerInstaller newLifetime();
-
-        // Only Managed-Operation does not require a wrapper
-        default OldContainerInstaller wrapIn(InstanceBeanConfiguration<?> wrapperBeanConfiguration) {
-            // Gaar udfra vi maa definere wrapper beanen alene...Eller som minimum supportere det
-            // Hvis vi vil dele den...
-
-            // Det betyder ogsaa vi skal lave en wrapper bean alene
-            return null;
-        }
-    }
 }
-
-//BeanHandle<?> unwrap(BeanConfiguration configuration) {
-//  // Can only call this on bean configurations that have been created by the extension itself.
-//  // But then could people just store it in a map...
-//  throw new UnsupportedOperationException();
-//}
 
 //// Ideen er at man fx kan have en handle.onInitialize(MyEBC, BeanHandle<Driver>, (b,p)->b.drivers[i]=p);
 

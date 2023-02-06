@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.bridge.sandbox;
-
-import app.packed.bean.BeanMirror;
+package internal.app.packed.container;
 
 /**
  *
  */
-// What if we are also to get BeanGuests
+public enum ContainerKind {
+    ROOT,
 
-// BeanGuest... Could be an actor...
-public class ContainerGuestMirror extends BeanMirror {
+    PARENT,
 
+    LAZY,
+
+    MANY;
 }

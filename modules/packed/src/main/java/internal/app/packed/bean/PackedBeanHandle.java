@@ -15,8 +15,6 @@
  */
 package internal.app.packed.bean;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -46,20 +44,7 @@ import internal.app.packed.service.InternalServiceUtil;
  * should be returned wrapped in {@link BeanConfiguration} (or subclasses hereof).
  *
  */
-public final /* primitive */ class PackedBeanHandle<T> implements BeanHandle<T> {
-
-    /** The bean we are wrapping. */
-    public final BeanSetup bean;
-
-    /**
-     * Creates a new BeanHandle.
-     *
-     * @param bean
-     *            the bean to wrap
-     */
-    PackedBeanHandle(BeanSetup bean) {
-        this.bean = requireNonNull(bean);
-    }
+public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
 
     /** {@inheritDoc} */
     @Override
@@ -83,18 +68,6 @@ public final /* primitive */ class PackedBeanHandle<T> implements BeanHandle<T> 
     @Override
     public Set<Class<? extends Context<?>>> contexts() {
         throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof PackedBeanHandle<?> h && bean == h.bean;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return bean.hashCode();
     }
 
     /** {@inheritDoc} */

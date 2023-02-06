@@ -27,11 +27,9 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationPath;
-import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
-import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import internal.app.packed.application.ApplicationSetup;
@@ -79,8 +77,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     // Or maybe extension types are always sorted??
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
-    public final IdentityHashMap<Class<? extends Extension<?>>, ExtensionPreLoad> preLoad = new IdentityHashMap<>();
-
     /**
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
      * ignored.
@@ -93,6 +89,8 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     /** The name of the container. */
     public String name;
 
+    public final IdentityHashMap<Class<? extends Extension<?>>, ExtensionPreLoad> preLoad = new IdentityHashMap<>();
+
     /** The container's service manager. */
     public final ServiceManager sm;
 
@@ -102,112 +100,34 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     /** Wirelets that were specified when creating the component. */
     // As an alternative non-final, and then nulled out whenever the last wirelet is consumed
     @Nullable
-    public final WireletWrapper wirelets;
+    public WireletWrapper wirelets;
 
     /**
      * Create a new container.
      *
-     * @param application
-     *            the application this container is a part of
+     * @param installer
+     *            the container installer
      * @param assembly
      *            the assembly the container is defined in
-     * @param parent
-     *            any parent container, or null if root
      * @param wirelets
      *            optional wirelets
      */
-    // Probably need to take an installer?
-    public ContainerSetup(ApplicationSetup application, AssemblySetup assembly, @Nullable ContainerSetup parent, Wirelet[] wirelets) {
-        super(parent);
-
-        requireNonNull(wirelets, "wirelets is null");
-        this.application = requireNonNull(application);
+    ContainerSetup(ContainerSetupInstaller installer, AssemblySetup assembly) {
+        super(installer.parent);
+        this.application = requireNonNull(installer.application);
         this.assembly = requireNonNull(assembly);
         this.sm = new ServiceManager(null, this);
+        this.depth = treeParent == null ? 0 : treeParent.depth + 1;
 
-        if (parent == null) {
-            this.depth = 0;
+        if (installer.template.kind == ContainerKind.PARENT) {
+            this.lifetime = treeParent.lifetime;
+        } else {
             this.lifetime = new ContainerLifetimeSetup(this, null);
             for (PackedBridge<?> b : application.driver.bridges()) {
                 b.install(this);
             }
-        } else {
-            this.depth = parent.depth + 1;
-            this.lifetime = parent.lifetime;
         }
 
-        // Install BaseExtension which is automatically used by every container
-        ExtensionSetup.install(BaseExtension.class, this, null);
-
-        // The rest of the constructor is just processing wirelets that have been specified by
-        // the user or extension when wiring the component. The wirelets have not been null checked.
-        // and may contain any number of CombinedWirelet instances.
-        Wirelet prefix = null;
-        if (application.container == null) {
-            prefix = application.driver.wirelet();
-        }
-
-        if (wirelets.length == 0 && prefix == null) {
-            this.wirelets = null;
-        } else {
-            // If it is the root
-            Wirelet[] ws;
-            if (prefix == null) {
-                ws = CompositeWirelet.flattenAll(wirelets);
-            } else {
-                ws = CompositeWirelet.flatten2(prefix, Wirelet.combine(wirelets));
-            }
-
-            this.wirelets = new WireletWrapper(ws);
-
-            // May initialize the component's name, onWire, ect
-            // Do we need to consume internal wirelets???
-            // Maybe that is what they are...
-            int unconsumed = 0;
-            for (Wirelet w : ws) {
-                if (w instanceof InternalWirelet bw) {
-                    // Maaske er alle internal wirelets first passe
-                    bw.onBuild(this);
-                } else {
-                    unconsumed++;
-                }
-            }
-            if (unconsumed > 0) {
-                this.wirelets.unconsumed = unconsumed;
-            }
-
-            if (isNameInitializedFromWirelet && parent != null) {
-                initializeNameWithPrefix(name);
-                // addChild(child, name);
-            }
-        }
-
-        // Set the name of the container if it was not set by a wirelet
-        if (name == null) {
-            // I think try and move some of this to ComponentNameWirelet
-            String n = null;
-
-            // TODO Should only be used on the root container in the assembly
-            Class<? extends Assembly> source = assembly.assembly.getClass();
-            if (Assembly.class.isAssignableFrom(source)) {
-                String nnn = source.getSimpleName();
-                if (nnn.length() > 8 && nnn.endsWith("Assembly")) {
-                    nnn = nnn.substring(0, nnn.length() - 8);
-                }
-                if (nnn.length() > 0) {
-                    // checkName, if not just App
-                    // TODO need prefix
-                    n = nnn;
-                }
-                if (nnn.length() == 0) {
-                    n = "Assembly";
-                }
-            } else {
-                n = "Unknown";
-            }
-            initializeNameWithPrefix(n);
-        }
-        assert name != null;
     }
 
     /** {@return a unmodifiable view of all extension types that are in used in no particular order.} */
@@ -215,7 +135,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
-    private void initializeNameWithPrefix(String name) {
+    void initializeNameWithPrefix(String name) {
         String n = name;
         if (treeParent != null) {
             HashMap<String, Object> c = treeParent.children;

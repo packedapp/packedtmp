@@ -2,7 +2,6 @@ package app.packed.container;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.Extension;
@@ -11,11 +10,8 @@ import app.packed.operation.OperationHandle;
 /**
  * A container handle is a reference to an installed container, private to the extension that installed the container.
  */
-// Vi skal vel have de samme genererings metoder som OperationSetup
-// Taenker ikke man skal have adgang direkte til handled
 public interface ContainerHandle {
 
-    ContainerHandle addContainer(Wirelet... wirelets);
     /**
      * Returns an immutable set containing any extensions that are disabled for containers created by this driver.
      * <p>
@@ -53,10 +49,27 @@ public interface ContainerHandle {
      */
     List<OperationHandle> lifetimeOperations();
 
+    /**
+     * Sets the name of the container.
+     *
+     * @param name
+     *
+     * @throws IllegalStateException
+     *             if the container is no long configurable
+     *
+     * @see ContainerConfiguration#named(String)
+     * @see ContainerInstaller#named(String)
+     */
     void named(String name);
 
+    /**
+     * @param errorHandler
+     *
+     * @see ContainerInstaller#errorHandle(ErrorHandler)
+     *
+     * @throws IllegalStateException
+     *             if the container is no long configurable
+     */
+    // Det er udelukkende hvis fx usereren skal have lov at besteem error handleren
     void setErrorHandler(ErrorHandler errorHandler);
-
-    // Hvis vi linker skal vi jo saette det inde...
-    void specializeMirror(Supplier<? extends ContainerMirror> supplier);
 }

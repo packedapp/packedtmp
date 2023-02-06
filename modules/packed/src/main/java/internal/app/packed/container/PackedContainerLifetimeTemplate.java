@@ -13,16 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.bridge.sandbox;
+package internal.app.packed.container;
 
-import app.packed.bean.BeanMirror;
+import static java.util.Objects.requireNonNull;
+
+import java.lang.invoke.MethodType;
+
+import app.packed.lifetime.ContainerLifetimeTemplate;
 
 /**
  *
  */
-// What if we are also to get BeanGuests
+public class PackedContainerLifetimeTemplate implements ContainerLifetimeTemplate {
 
-// BeanGuest... Could be an actor...
-public class ContainerGuestMirror extends BeanMirror {
+    public final ContainerKind kind;
 
+    public PackedContainerLifetimeTemplate(ContainerKind kind) {
+        this.kind = requireNonNull(kind);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodType invocationType() {
+        return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Mode mode() {
+        return null;
+    }
 }

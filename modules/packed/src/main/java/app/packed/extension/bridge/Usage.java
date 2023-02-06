@@ -38,7 +38,7 @@ class MyE extends Extension<MyE> {
     public void installSession(Assembly a) {
         ContainerGuestBeanConfiguration<String> b = base().newContainerGuest(String.class);
 
-        ContainerHandle h = b.newInstaller(ContainerLifetimeMode.INITIALIZATION_AND_START_STOP).link(a);
+        ContainerHandle h = b.newInstaller(ContainerLifetimeMode.INITIALIZATION_AND_START_STOP).install(a);
 
         // Det giver basalt set ingen mening ikke at have disse i et map?
         // Men maaske det map ikke er synligt????

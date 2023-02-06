@@ -17,7 +17,7 @@ package app.packed.extension.bridge;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.extension.BaseExtensionPoint.OldContainerInstaller;
+import app.packed.container.ContainerInstaller;
 
 /**
  *
@@ -40,7 +40,7 @@ public class ContainerGuestBeanConfiguration<T> extends InstanceBeanConfiguratio
 
     // Alternativ skal man tage CGB som parameter
 
-    OldContainerInstaller newInstaller(ContainerLifetimeMode mode) {
+    ContainerInstaller newInstaller(ContainerLifetimeMode mode) {
         throw new UnsupportedOperationException();
     }
 

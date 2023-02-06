@@ -17,13 +17,12 @@ package internal.app.packed.container;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import app.packed.container.ContainerHandle;
-import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.Extension;
+import app.packed.lifetime.ContainerLifetimeTemplate;
 import app.packed.operation.OperationHandle;
 
 /**
@@ -31,9 +30,8 @@ import app.packed.operation.OperationHandle;
  */
 public record PackedContainerHandle(ContainerSetup container) implements ContainerHandle {
 
-    @Override
     public ContainerHandle addContainer(Wirelet... wirelets) {
-        ContainerSetup newContainer = new ContainerSetup(container.application, container.assembly, container, wirelets);
+        ContainerSetup newContainer = new ContainerSetupInstaller(ContainerLifetimeTemplate.PARENT, container).install(container.assembly, wirelets);
         return new PackedContainerHandle(newContainer);
     }
 
@@ -95,12 +93,6 @@ public record PackedContainerHandle(ContainerSetup container) implements Contain
 
     @Override
     public void setErrorHandler(ErrorHandler errorHandler) {
-        checkIsConfigurable();
-    }
-
-    // Hvis vi linker skal vi jo saette det inde...
-    @Override
-    public void specializeMirror(Supplier<? extends ContainerMirror> supplier) {
         checkIsConfigurable();
     }
 }
