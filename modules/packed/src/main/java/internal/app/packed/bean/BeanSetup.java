@@ -113,7 +113,7 @@ public final class BeanSetup {
     /**
      * Create a new bean.
      */
-    BeanSetup(BeanSetupInstaller installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
+    BeanSetup(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
         this.beanKind = requireNonNull(installer.template.kind);
         this.beanClass = requireNonNull(beanClass);
         this.beanSource = beanSource;

@@ -32,7 +32,8 @@ import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 import app.packed.service.ServiceableBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.BeanSetupInstaller;
+import internal.app.packed.bean.PackedBeanInstaller;
+import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.PackedOperationHandle;
 
@@ -99,7 +100,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return the installer
      */
     public BeanInstaller beanInstaller(BeanLifetimeTemplate template) {
-        return new BeanSetupInstaller(extension().extension, template, (PackedExtensionPointContext) context());
+        return new PackedBeanInstaller(extension().extension, template, (PackedExtensionPointContext) context());
     }
 
     /**
@@ -111,10 +112,14 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public BeanInstaller beanInstallerForExtension(BeanLifetimeTemplate template, UseSite forExtension) {
         requireNonNull(forExtension, "forExtension is null");
-        return new BeanSetupInstaller(extension().extension, template, (PackedExtensionPointContext) forExtension);
+        return new PackedBeanInstaller(extension().extension, template, (PackedExtensionPointContext) forExtension);
     }
 
     public ContainerInstaller containerInstaller(ContainerLifetimeTemplate template) {
+        return new PackedContainerInstaller(template, extension().extension.extensionType, extension().extension.container);
+    }
+
+    public BeanHandle<?> crack(BeanConfiguration configuration) {
         throw new UnsupportedOperationException();
     }
 
@@ -252,7 +257,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
 // Maybe put it back on handle. If we get OperationInstaller
 // Maybe Builder after all... Alle ved hvad en builder er
-    public sealed interface BeanInstaller permits BeanSetupInstaller {
+    public sealed interface BeanInstaller permits PackedBeanInstaller {
 
         // can be used for inter
         // Maybe use ScopedValues instead???

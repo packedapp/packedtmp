@@ -20,21 +20,9 @@ import java.util.function.Supplier;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.errorhandling.ErrorHandler;
 
-// Vi har brug ContainerInstaller fordi, man ikke konfigure noget efter man har linket
-// Saa alt skal goeres inde
-
-// Bliver noedt til at lave et Handle. Da kalderen som minim har brug for
-// OperationHandles for lifetimen...
-
-// Ejer
-
-// Support enten linkage(Assembly) or lav en ny XContetainerConfiguration
-// Eager, Lazy, ManyTone
-// ContainerCompanions (extension configuration)
-// Bean <- er taet knyttet til ContainerCompanions
-// Hosting (Long term)
-
-// Lifetime -> In Operation, Start/Stop, stateless?
+/**
+ *
+ */
 public interface ContainerInstaller {
 
     /**

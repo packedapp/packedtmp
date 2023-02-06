@@ -24,11 +24,12 @@ import java.util.ArrayList;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
 import app.packed.container.Wirelet;
+import app.packed.extension.BaseExtension;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeTemplate;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.ContainerSetupInstaller;
+import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.jfr.CodegenEvent;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -84,7 +85,7 @@ public final class ApplicationSetup {
         this.driver = requireNonNull(driver);
         this.goal = requireNonNull(goal);
         this.codegenActions = goal.isCodeGenerating() ? new ArrayList<>() : null;
-        this.container = new ContainerSetupInstaller(ContainerLifetimeTemplate.ROOT, this, null).install(assembly, wirelets);
+        this.container = new PackedContainerInstaller(ContainerLifetimeTemplate.ROOT, BaseExtension.class, this, null).install(assembly, wirelets);
     }
 
     /**

@@ -50,11 +50,11 @@ import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.service.sandbox.transform.ServiceExportsTransformer;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.BeanSetupInstaller;
+import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.PackedBindableVariable;
-import internal.app.packed.container.ContainerSetupInstaller;
+import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.operation.OperationSetup;
@@ -301,13 +301,13 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return a bean installer
      */
     BeanInstaller ownBeanInstaller(BeanLifetimeTemplate kind) {
-        return new BeanSetupInstaller(extension, kind, new PackedExtensionPointContext(extension, extension));
+        return new PackedBeanInstaller(extension, kind, new PackedExtensionPointContext(extension, extension));
     }
 
     // add multiInstall prototype
 
     private BeanInstaller newBeanInstaller(BeanLifetimeTemplate kind) {
-        return new BeanSetupInstaller(extension, kind, null);
+        return new PackedBeanInstaller(extension, kind, null);
     }
 
     /**
@@ -451,7 +451,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     private ContainerInstaller newContainerInstaller() {
-        return new ContainerSetupInstaller(ContainerLifetimeTemplate.PARENT, extension.container.application, extension.container);
+        return new PackedContainerInstaller(ContainerLifetimeTemplate.PARENT, BaseExtension.class, extension.container.application, extension.container);
     }
 
     /** {@return a mirror for this extension.} */

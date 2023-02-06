@@ -51,7 +51,7 @@ import internal.app.packed.operation.PackedOp;
  * This class is responsible for installing new beans.
  */
 // Tror den bliver en nested classe paa BeanSetup
-public final class BeanSetupInstaller implements BaseExtensionPoint.BeanInstaller {
+public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstaller {
 
     /** A list ofIllegal bean classes. Void is technically allowed but {@link #installWithoutSource()} needs to used. */
     // Allign with Key
@@ -80,7 +80,7 @@ public final class BeanSetupInstaller implements BaseExtensionPoint.BeanInstalle
     @Nullable
     final PackedExtensionPointContext useSite;
 
-    public BeanSetupInstaller(ExtensionSetup baseExtension, BeanLifetimeTemplate template, @Nullable PackedExtensionPointContext useSite) {
+    public PackedBeanInstaller(ExtensionSetup baseExtension, BeanLifetimeTemplate template, @Nullable PackedExtensionPointContext useSite) {
         this.baseExtension = requireNonNull(baseExtension);
         this.template = (PackedBeanLifetimeTemplate) requireNonNull(template, "template is null");
         this.useSite = useSite;

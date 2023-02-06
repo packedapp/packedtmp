@@ -26,8 +26,6 @@ import java.util.Optional;
 
 import app.packed.application.ApplicationPath;
 import app.packed.application.BuildGoal;
-import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
@@ -36,6 +34,7 @@ import app.packed.service.ServiceableBeanConfiguration;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
+import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.container.PackedWireletSelection;
 import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.util.StringFormatter;
@@ -134,9 +133,8 @@ public abstract class Extension<E extends Extension<E>> {
         }
     }
 
-    /** {@return the path of the container that this extension belongs to.} */
     /**
-     *
+     * Returns a container handle for the extension's container. If this extension installed the container.
      * <p>
      * When creating a new container the assembly. The handle returned is always closed
      *
@@ -153,38 +151,20 @@ public abstract class Extension<E extends Extension<E>> {
         return extension.container.path();
     }
 
-    protected final BeanHandle<?> crack(BeanConfiguration configuration) {
-
-        throw new UnsupportedOperationException();
-    }
-
-    // If this has been created with an assembly, it will fail
-    // because the
     /**
+     * <p>
+     * This method is mainly used for getting
+     *
      * @param handle
      *            represent the container for which the child should be extracted
      * @return this
-     * @throws IllegalArgumentException
-     *             if the container (represented by the specified handle) was not created by this extension instance
      */
-    // Alternativt have en ContainerInstaller.installThisExtension();
-    // Og saa have en fromChild(ContainerHandle)
+    @SuppressWarnings("unchecked")
     protected final Optional<E> fromHandle(ContainerHandle handle) {
         requireNonNull(handle, "handle is null");
-        throw new UnsupportedOperationException();
+        ExtensionSetup s = ((PackedContainerHandle) handle).container().extensions.get(extension.extensionType);
+        return Optional.ofNullable((E) s.instance());
     }
-//
-//    @SuppressWarnings("unchecked")
-//    protected final E addContainerAndUse(Wirelet... wirelets) {
-//
-//        // Must be created by this container and configurable
-//        // Probably useThis(ContainerHandle handle) instead
-//        // Because we need the installer
-//
-//        ContainerSetup container = extension.container;
-//        ContainerSetup newContainer = new ContainerSetup(container.application, container.assembly, container, wirelets);
-//        return (E) newContainer.useExtension(extension.extensionType, null).instance();
-//    }
 
     /** {@return whether or not the container is the root container in the application.} */
     protected final boolean isApplicationRoot() {
@@ -309,6 +289,7 @@ public abstract class Extension<E extends Extension<E>> {
      */
     // Hmm InternalExtensionException hvis det er brugerens skyld??
     protected void onApplicationClose() {
+        // childCursor
         for (ExtensionSetup e = extension.treeFirstChild; e != null; e = e.treeNextSiebling) {
             e.instance().onApplicationClose();
         }

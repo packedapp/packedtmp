@@ -23,7 +23,7 @@ import java.util.List;
 
 import app.packed.lifetime.BeanLifetimeMirror;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.BeanSetupInstaller;
+import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -40,7 +40,7 @@ public final class BeanLifetimeSetup implements LifetimeSetup {
     /** */
     public final List<FuseableOperation> lifetimes;
 
-    public BeanLifetimeSetup(BeanSetup bean, BeanSetupInstaller installer) {
+    public BeanLifetimeSetup(BeanSetup bean, PackedBeanInstaller installer) {
         this.lifetimes = FuseableOperation.of(List.of(installer.template.bot));
         this.bean = requireNonNull(bean);
     }

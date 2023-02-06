@@ -22,39 +22,42 @@ import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerInstaller;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
+import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeTemplate;
 import internal.app.packed.application.ApplicationSetup;
 
-/**
- *
- */
-public final class ContainerSetupInstaller implements ContainerInstaller {
+/** Implementation of {@link ContainerInstaller}. */
+public final class PackedContainerInstaller implements ContainerInstaller {
 
     final ApplicationSetup application;
+
+    /** The lifetime of the container being installed. */
+    public final PackedContainerLifetimeTemplate lifetime;
 
     /** The parent of container being installed. Or <code>null</code> if a root container. */
     @Nullable
     final ContainerSetup parent;
 
-    public final PackedContainerLifetimeTemplate template;
+    final Class<? extends Extension<?>> installedBy;
 
-    public ContainerSetupInstaller(ContainerLifetimeTemplate lifetime, ApplicationSetup application, @Nullable ContainerSetup parent) {
-        this.template = (PackedContainerLifetimeTemplate) requireNonNull(lifetime);
+    public PackedContainerInstaller(ContainerLifetimeTemplate lifetime, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
+            @Nullable ContainerSetup parent) {
+        this.lifetime = (PackedContainerLifetimeTemplate) requireNonNull(lifetime);
         this.application = requireNonNull(application);
         this.parent = parent;
+        this.installedBy = requireNonNull(installedBy);
     }
 
-    public ContainerSetupInstaller(ContainerLifetimeTemplate lifetime, ContainerSetup parent) {
-        this(lifetime, parent.application, parent);
+    public PackedContainerInstaller(ContainerLifetimeTemplate lifetime, Class<? extends Extension<?>> installedBy, ContainerSetup parent) {
+        this(lifetime, installedBy, parent.application, parent);
     }
 
     private void cleanup(ContainerSetup container, Wirelet[] wirelets) {
-
         // Install BaseExtension which is automatically used by every container
         ExtensionSetup.install(BaseExtension.class, container, null);
 
-        // The rest of the constructor is just processing wirelets that have been specified by
+        // The rest of this method is just processing wirelets that have been specified by
         // the user or extension when wiring the component. The wirelets have not been null checked.
         // and may contain any number of CombinedWirelet instances.
         Wirelet prefix = null;
@@ -131,8 +134,7 @@ public final class ContainerSetupInstaller implements ContainerInstaller {
         parent.assembly.checkIsConfigurable();
 
         // Create a new assembly
-        ContainerSetupInstaller pci = new ContainerSetupInstaller(ContainerLifetimeTemplate.PARENT, application, parent);
-        AssemblySetup as = new AssemblySetup(null, null, pci, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(null, null, this, assembly, wirelets);
 
         // Build the assembly
         as.build();

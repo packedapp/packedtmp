@@ -87,11 +87,13 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     public final ContainerLifetimeSetup lifetime;
 
     /** The name of the container. */
+    @Nullable
     public String name;
 
     public final IdentityHashMap<Class<? extends Extension<?>>, ExtensionPreLoad> preLoad = new IdentityHashMap<>();
 
     /** The container's service manager. */
+    @Nullable
     public final ServiceManager sm;
 
     /** Supplies a mirror for the container. */
@@ -106,28 +108,25 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      * Create a new container.
      *
      * @param installer
-     *            the container installer
+     *            the container's installer
      * @param assembly
      *            the assembly the container is defined in
-     * @param wirelets
-     *            optional wirelets
      */
-    ContainerSetup(ContainerSetupInstaller installer, AssemblySetup assembly) {
+    ContainerSetup(PackedContainerInstaller installer, AssemblySetup assembly) {
         super(installer.parent);
         this.application = requireNonNull(installer.application);
         this.assembly = requireNonNull(assembly);
         this.sm = new ServiceManager(null, this);
         this.depth = treeParent == null ? 0 : treeParent.depth + 1;
 
-        if (installer.template.kind == ContainerKind.PARENT) {
+        if (installer.lifetime.kind == ContainerKind.PARENT) {
             this.lifetime = treeParent.lifetime;
         } else {
-            this.lifetime = new ContainerLifetimeSetup(this, null);
+            this.lifetime = new ContainerLifetimeSetup(installer, this, null);
             for (PackedBridge<?> b : application.driver.bridges()) {
                 b.install(this);
             }
         }
-
     }
 
     /** {@return a unmodifiable view of all extension types that are in used in no particular order.} */

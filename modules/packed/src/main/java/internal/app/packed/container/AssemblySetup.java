@@ -108,7 +108,7 @@ public final class AssemblySetup extends RealmSetup {
      *            optional wirelets
      */
     public AssemblySetup(@Nullable ApplicationDriver<?> applicationDriver, @Nullable BuildGoal goal,
-            @Nullable ContainerSetupInstaller installer, Assembly assembly,
+            @Nullable PackedContainerInstaller installer, Assembly assembly,
             Wirelet[] wirelets) {
         // We need to unpack any delegating assemblies
         Assembly a = requireNonNull(assembly, "assembly is null");
