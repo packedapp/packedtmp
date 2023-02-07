@@ -154,9 +154,9 @@ sealed interface PackedVariableType {
         }
     }
 
-    record OfConstructor(Constructor<?> constructor) implements PackedVariableType {
+    record OfConstructorReturnType(Constructor<?> constructor) implements PackedVariableType {
 
-        public OfConstructor {
+        public OfConstructorReturnType {
             requireNonNull(constructor, "constructor is null");
         }
 

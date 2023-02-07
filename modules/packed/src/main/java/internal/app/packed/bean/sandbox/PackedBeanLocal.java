@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.bean.sandbox;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanIntrospector;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.PackedBeanHandle;
 
 /**
  *

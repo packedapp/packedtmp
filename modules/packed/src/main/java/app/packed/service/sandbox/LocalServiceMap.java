@@ -16,7 +16,7 @@
 package app.packed.service.sandbox;
 
 import app.packed.bean.BeanHandle;
-import app.packed.bindings.BindableVariable;
+import app.packed.bindings.BeanVariable;
 import app.packed.bindings.Key;
 import app.packed.operation.OperationHandle;
 
@@ -44,7 +44,7 @@ public class LocalServiceMap<V> {
     // Vi har fundet en binding som vi gerne vil binde til en service
 
     // Must be resolvable to a key
-    public void consume(BindableVariable variable) {}
+    public void consume(BeanVariable variable) {}
 
     // Producing multiple services with the same key is not supported
 

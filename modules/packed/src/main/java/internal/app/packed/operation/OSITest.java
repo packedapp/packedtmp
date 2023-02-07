@@ -24,7 +24,7 @@ import app.packed.application.App;
 import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.OnInitialize;
-import app.packed.bindings.BindableVariable;
+import app.packed.bindings.BeanVariable;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.operation.Op0;
@@ -73,7 +73,7 @@ public class OSITest extends BaseAssembly {
         protected BeanIntrospector newBeanIntrospector() {
             return new BeanIntrospector() {
                 @Override
-                public void hookOnProvidedAnnotatedVariable(Annotation hook, BindableVariable d) {
+                public void hookOnProvidedAnnotatedVariable(Annotation hook, BeanVariable d) {
                     if (hook instanceof BuildTime) {
                         d.checkAssignableTo(LocalDateTime.class);
                         // d.bindConstant(LocalDateTime.now());

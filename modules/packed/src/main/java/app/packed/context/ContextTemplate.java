@@ -15,22 +15,19 @@
  */
 package app.packed.context;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
-import app.packed.bean.BeanHook.AnnotatedBindingHook;
-import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
+import internal.app.packed.context.PackedContextClass;
 
 /**
  *
  */
-public interface ContextTemplate {
+public sealed interface ContextTemplate permits PackedContextClass {
+
+    /** {@return the type of arguments that must be provided.} */
+    List<Class<?>> contextArguments();
 
     /** {@return the context this template is a part of.} */
     Class<? extends Context<?>> contextClass();
@@ -38,34 +35,13 @@ public interface ContextTemplate {
     /** {@return the extension the context is a part of.} */
     Class<? extends Extension<?>> extensionClass();
 
-    /** {@return the type of arguments that must be provided.} */
-    List<Class<?>> invocationArguments();
-
-    /**
-     * Creates a new context template, adding the specified argument type to the list of invocation arguments.
-     *
-     * @param argument
-     *            the argument type to add
-     * @return the new context template
-     */
-    ContextTemplate withArgument(Class<?> argument);
+    boolean isHidden();
 
     static ContextTemplate of(MethodHandles.Lookup caller, Class<? extends Context<?>> contextClass, Class<?>... invocationArguments) {
-        Class<? extends Extension<?>> c = PackedContextClass.TYPE_VARIABLE_EXTRACTOR.get(contextClass);
-        // check module
-        return new PackedContextClass(c, contextClass, List.of(invocationArguments));
+        return PackedContextClass.of(caller, false, contextClass, invocationArguments);
     }
 
-    /**
-     * Move to operation template?
-     */
-    @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.PARAMETER })
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    @AnnotatedBindingHook(extension = BaseExtension.class)
-    public @interface InvocationContextArgument {
-        Class<? extends Context<?>> context();
-
-        int index() default 0;
+    static ContextTemplate ofHidden(MethodHandles.Lookup caller, Class<? extends Context<?>> contextClass, Class<?>... invocationArguments) {
+        return PackedContextClass.of(caller, true, contextClass, invocationArguments);
     }
 }

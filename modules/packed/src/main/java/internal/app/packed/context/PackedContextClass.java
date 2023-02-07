@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.context;
+package internal.app.packed.context;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.packed.context.Context;
+import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension;
 import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.util.types.TypeVariableExtractor;
@@ -27,11 +30,11 @@ import internal.app.packed.util.types.TypeVariableExtractor;
 /**
  *
  */
-public record PackedContextClass(Class<? extends Extension<?>> extensionClass, Class<? extends Context<?>> contextClass, List<Class<?>> invocationArguments)
-        implements ContextTemplate {
+public record PackedContextClass(Class<? extends Extension<?>> extensionClass, Class<? extends Context<?>> contextClass, List<Class<?>> contextArguments,
+        boolean isHidden) implements ContextTemplate {
 
     /** A ContextTemplate class to Extension class mapping. */
-    final static ClassValue<Class<? extends Extension<?>>> TYPE_VARIABLE_EXTRACTOR = new ClassValue<>() {
+    private final static ClassValue<Class<? extends Extension<?>>> TYPE_VARIABLE_EXTRACTOR = new ClassValue<>() {
 
         /** A type variable extractor. */
         private static final TypeVariableExtractor EXTRACTOR = TypeVariableExtractor.of(ContextTemplate.class);
@@ -43,12 +46,22 @@ public record PackedContextClass(Class<? extends Extension<?>> extensionClass, C
         }
     };
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Creates a new context template, adding the specified argument type to the list of invocation arguments.
+     *
+     * @param argument
+     *            the argument type to add
+     * @return the new context template
+     */
     public ContextTemplate withArgument(Class<?> argument) {
         requireNonNull(argument, "argument is null");
-        ArrayList<Class<?>> l = new ArrayList<>(invocationArguments);
+        ArrayList<Class<?>> l = new ArrayList<>(contextArguments);
         l.add(argument);
-        return new PackedContextClass(extensionClass, contextClass, List.copyOf(l));
+        return new PackedContextClass(extensionClass, contextClass, List.copyOf(l), isHidden);
+    }
+
+    public static ContextTemplate of(MethodHandles.Lookup caller, boolean isHidden, Class<? extends Context<?>> contextClass, Class<?>... invocationArguments) {
+        Class<? extends Extension<?>> c = PackedContextClass.TYPE_VARIABLE_EXTRACTOR.get(contextClass); // checks same module
+        return new PackedContextClass(c, contextClass, List.of(invocationArguments), isHidden);
     }
 }

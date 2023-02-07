@@ -17,23 +17,26 @@ package app.packed.concurrent.scheduling;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bindings.BindableWrappedVariable;
+import app.packed.bindings.BeanWrappedVariable;
 import app.packed.concurrent.ThreadExtension;
 import app.packed.concurrent.scheduling.ScheduledOperationConfiguration.Schedule;
+import app.packed.context.ContextTemplate;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionPoint;
-import app.packed.operation.OperationHandle;
 import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationHandle;
 
 /**
  *
@@ -49,10 +52,11 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
     @Override
     protected BeanIntrospector newBeanIntrospector() {
         return new BeanIntrospector() {
-            static final BeanOperationTemplate BOT = BeanOperationTemplate.defaults().withArg(SchedulingContext.class).withIgnoreReturn();
+            static final ContextTemplate TEMP = ContextTemplate.of(MethodHandles.lookup(), SchedulingContext.class, SchedulingContext.class);
+            static final BeanOperationTemplate BOT = BeanOperationTemplate.defaults().withContext(TEMP).withReturnIgnore();
 
             @Override
-            public void hookOnProvidedVariableType(Class<?> hook, BindableWrappedVariable v) {
+            public void hookOnProvidedVariableType(Class<?> hook, BeanWrappedVariable v) {
                 if (hook == SchedulingContext.class) {
                     v.bindInvocationArgument(1);
                 } else {
@@ -61,7 +65,7 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
             }
 
             @Override
-            public void hookOnAnnotatedMethod(Annotation hook, OperationalMethod on) {
+            public void hookOnAnnotatedMethod(Annotation hook, BeanMethod on) {
                 if (hook instanceof ScheduleRecurrent sr) {
                     OperationHandle oh = on.newOperation(BOT);
                     oh.specializeMirror(() -> new ScheduledOperationMirror());

@@ -22,8 +22,8 @@ import java.util.ArrayDeque;
 import java.util.List;
 
 import app.packed.framework.Nullable;
-import app.packed.operation.OperationHandle;
 import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationHandle;
 
 /**
  *

@@ -15,67 +15,9 @@
  */
 package internal.app.packed.lifetime;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
-
-import app.packed.bean.BeanLifecycleOperationMirror;
-import app.packed.bean.DependencyOrder;
-import app.packed.framework.Nullable;
-import app.packed.lifetime.RunState;
-import app.packed.operation.OperationHandle;
-
 /**
  *
  */
 // Create it lazily for beans? Not all beans need it
 public final class LifetimeLifecycleSetup {
-
-    public void addInitialize(OperationHandle operation, @Nullable DependencyOrder ordering) {
-        if (ordering == null) { // inject
-            initializors.add(operation);
-        } else if (ordering == DependencyOrder.BEFORE_DEPENDENCIES) {
-            initializors.add(operation);
-        } else {
-            initializorsReverse.add(operation);
-        }
-        operationsLifetime.add(new LifetimeOperation(RunState.INITIALIZING, operation));
-        operation.specializeMirror(() -> new BeanLifecycleOperationMirror());
-    }
-
-    public void addStart(OperationHandle operation, DependencyOrder ordering) {
-        if (ordering == DependencyOrder.BEFORE_DEPENDENCIES) {
-            start.add(operation);
-        } else {
-            startReverse.add(operation);
-        }
-        operationsLifetime.add(new LifetimeOperation(RunState.STARTING, operation));
-        operation.specializeMirror(() -> new BeanLifecycleOperationMirror());
-
-    }
-
-    public void addStop(OperationHandle operation, DependencyOrder ordering) {
-        if (ordering == DependencyOrder.AFTER_DEPENDENCIES) {
-            start.add(operation);
-        } else {
-            startReverse.add(operation);
-        }
-        operationsLifetime.add(new LifetimeOperation(RunState.STOPPING, operation));
-        operation.specializeMirror(() -> new BeanLifecycleOperationMirror());
-    }
-
-    /** The beans lifetime operations. */
-    public final List<LifetimeOperation> operationsLifetime = new ArrayList<>();
-
-    public final ArrayList<OperationHandle> initializors = new ArrayList<>();
-
-    public final ArrayDeque<OperationHandle> initializorsReverse = new ArrayDeque<>();
-
-    public final ArrayList<OperationHandle> start = new ArrayList<>();
-
-    public final ArrayDeque<OperationHandle> startReverse = new ArrayDeque<>();
-
-    public final ArrayList<OperationHandle> stop = new ArrayList<>();
-
-    public final ArrayDeque<OperationHandle> stopReverse = new ArrayDeque<>();
 }

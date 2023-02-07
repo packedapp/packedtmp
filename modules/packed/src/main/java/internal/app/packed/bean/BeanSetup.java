@@ -13,14 +13,16 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationPath;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanIntrospector.OperationalMethod;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLifecycleOperationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.container.Realm;
 import app.packed.framework.Nullable;
 import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromConstant;
@@ -32,7 +34,7 @@ import internal.app.packed.container.NameCheck;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.lifetime.LifetimeLifecycleSetup;
+import internal.app.packed.lifetime.LifecycleOrder;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.BeanAccessOperationSetup;
@@ -82,8 +84,13 @@ public final class BeanSetup {
     @Nullable
     public BeanScanner introspecting;
 
-    /** The lifecycle of the bean. */
-    public final LifetimeLifecycleSetup lifecycle = new LifetimeLifecycleSetup();
+
+    public final ArrayList<BeanLifecycleOperation> lifecycleOperations = new ArrayList<>();
+
+    public void addLifecycleOperation(LifecycleOrder runOrder, OperationHandle operation) {
+        lifecycleOperations.add(new BeanLifecycleOperation(runOrder, operation));
+        operation.specializeMirror(() -> new BeanLifecycleOperationMirror());
+    }
 
     /** The lifetime the component is a part of. */
     public final LifetimeSetup lifetime;
@@ -235,7 +242,7 @@ public final class BeanSetup {
      *            the handle to extract from
      * @return the bean setup
      */
-    public static BeanSetup crack(OperationalMethod m) {
-        return ((PackedOperationalMethod) m).extension.scanner.bean;
+    public static BeanSetup crack(BeanMethod m) {
+        return ((PackedBeanMethod) m).extension.scanner.bean;
     }
 }

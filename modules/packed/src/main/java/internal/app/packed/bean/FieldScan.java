@@ -176,15 +176,15 @@ class FieldScan {
                 // Get the matching extension, installing it if needed.
 
                 // Create the wrapped field that is exposed to the extension
-                PackedOperationalField f = new PackedOperationalField(scanner, e.extensionType(), field, e.isGettable(), e.isSettable(), annotations);
+                PackedBeanField f = new PackedBeanField(scanner, e.extensionType(), field, e.isGettable(), e.isSettable(), annotations);
                 f.matchy();
             } else {
                 // TODO we should sort by extension order when we have more than 1 match
                 for (MultiMatch mf : multiMatches.values()) {
-                    OperationalExtension contributor = scanner.computeContributor(mf.extensionClass);
+                    BeanScannerExtension contributor = scanner.computeContributor(mf.extensionClass);
 
                     // Create the wrapped field that is exposed to the extension
-                    PackedOperationalField f = new PackedOperationalField(scanner, e.extensionType(), field, mf.allowGet, mf.allowSet, annotations);
+                    PackedBeanField f = new PackedBeanField(scanner, e.extensionType(), field, mf.allowGet, mf.allowSet, annotations);
                     f.matchy();
                 }
             }
@@ -194,7 +194,7 @@ class FieldScan {
     static void match(AnnotatedFieldKind kind, BeanScanner scanner, Field f, Annotation[] annotations, Class<? extends Extension<?>> extensionType,
             boolean isGettable, boolean isSettable, Annotation[] hooks) {
         if (kind == AnnotatedFieldKind.FIELD) {
-            PackedOperationalField of = new PackedOperationalField(scanner, extensionType, f, isGettable, isSettable, annotations);
+            PackedBeanField of = new PackedBeanField(scanner, extensionType, f, isGettable, isSettable, annotations);
             of.extension.introspector.hookOnAnnotatedField(PackedAnnotationList.of(hooks[0]), of);
         } else {
 
@@ -228,7 +228,7 @@ class FieldScan {
         if (af0.extensionType() == af1.extensionType()) {
             match(null, scanner, f, annotations, null, false, false, annotations);
             // Create the wrapped field that is exposed to the extension
-            PackedOperationalField of = new PackedOperationalField(scanner, af0.extensionType(), f, af0.isGettable() || af1.isGettable(),
+            PackedBeanField of = new PackedBeanField(scanner, af0.extensionType(), f, af0.isGettable() || af1.isGettable(),
                     af0.isSettable() || af1.isSettable(), annotations);
 
             of.extension.introspector.hookOnAnnotatedField(PackedAnnotationList.of(a0, a1), of);
@@ -240,7 +240,7 @@ class FieldScan {
     }
 
     private static void matchAnnotatedField(BeanScanner scanner, Field field, Annotation[] annotations, Annotation[] hooks, AnnotatedField... annotatedFields) {
-        PackedOperationalField of = new PackedOperationalField(scanner, field, annotations, annotatedFields);
+        PackedBeanField of = new PackedBeanField(scanner, field, annotations, annotatedFields);
         of.extension.introspector.hookOnAnnotatedField(PackedAnnotationList.of(hooks), of);
     }
 

@@ -35,10 +35,10 @@ import app.packed.operation.Op;
  *
  * Default
  */
-public interface BindableWrappedVariable extends BindableVariable {
+public interface BeanWrappedVariable extends BeanVariable {
 
     @Override
-    BindableWrappedVariable allowStaticFieldBinding();
+    BeanWrappedVariable allowStaticFieldBinding();
 
     /**
      * Binds to {@link Nullable}, {@link Optional}, Default value.

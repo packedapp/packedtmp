@@ -13,13 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package app.packed.lifetime;
 
-import app.packed.bean.BeanIntrospector.OperationalClass;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import app.packed.bean.BeanHook.AnnotatedBindingHook;
+import app.packed.extension.BaseExtension;
 
 /**
  *
  */
-public abstract class PackedOperationalClass implements OperationalClass {
+@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.TYPE_USE })
+@Retention(RetentionPolicy.RUNTIME)
+@AnnotatedBindingHook(extension = BaseExtension.class)
+public @interface FromGuest {}
 
-}
+// Alternativt en Qualifier og saa local services...
+// Og evt ingen context...

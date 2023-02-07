@@ -18,6 +18,7 @@ package internal.app.packed.lifetime;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +31,7 @@ import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.RunState;
 import app.packed.lifetime.sandbox.ManagedLifetime;
 import app.packed.operation.BeanOperationTemplate;
+import internal.app.packed.bean.BeanLifecycleOperation;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
@@ -70,8 +72,6 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     public final FuseableOperation initialization;
 
     public final List<FuseableOperation> lifetimes;
-
-    public final LifetimeLifecycleSetup lls = new LifetimeLifecycleSetup();
 
     LinkedHashSet<BeanSetup> orderedBeans = new LinkedHashSet<>();
 
@@ -144,6 +144,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         for (BeanSetup b : dependsOn) {
             orderBeans(b);
         }
+
         if (orderedBeans.add(bean)) {
             // System.out.println("Codegen " + bean.path());
             processBean(bean);
@@ -153,6 +154,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     }
 
     public void orderDependencies() {
+
         for (BeanSetup bs : beans) {
             orderBeans(bs);
         }
@@ -167,6 +169,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     // Should be fully resolved now
     public void processBean(BeanSetup bean) {
+        Collections.sort(bean.lifecycleOperations); // stable sort
         if (bean.beanKind == BeanKind.CONTAINER || bean.beanKind == BeanKind.LAZY) {
             if (bean.beanSourceKind != BeanSourceKind.INSTANCE) {
 
@@ -182,29 +185,28 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
                     mha = mha.asType(mha.type().changeReturnType(Object.class));
 
                     mha = MH_INVOKE_INITIALIZER.bindTo(bean).bindTo(mha);
-
                     initialization.methodHandles.add(mha);
                 });
             }
         }
 
-        for (LifetimeOperation lop : bean.lifecycle.operationsLifetime) {
-            if (lop.state() == RunState.INITIALIZING) {
-                initialization.operations.add(lop.os());
+        for (BeanLifecycleOperation lop : bean.lifecycleOperations) {
+            if (lop.runOrder().runState == RunState.INITIALIZING) {
+                initialization.operations.add(lop.handle());
                 bean.container.application.addCodeGenerator(() -> {
-                    MethodHandle mh = lop.os().generateMethodHandle();
+                    MethodHandle mh = lop.handle().generateMethodHandle();
                     initialization.methodHandles.add(mh);
                 });
-            } else if (lop.state() == RunState.STARTING) {
-                startup.operations.add(lop.os());
+            } else if (lop.runOrder().runState == RunState.STARTING) {
+                startup.operations.add(lop.handle());
                 bean.container.application.addCodeGenerator(() -> {
-                    MethodHandle mh = lop.os().generateMethodHandle();
+                    MethodHandle mh = lop.handle().generateMethodHandle();
                     startup.methodHandles.add(mh);
                 });
-            } else if (lop.state() == RunState.STOPPING) {
-                shutdown.operations.addFirst(lop.os());
+            } else if (lop.runOrder().runState == RunState.STOPPING) {
+                shutdown.operations.addFirst(lop.handle());
                 bean.container.application.addCodeGenerator(() -> {
-                    MethodHandle mh = lop.os().generateMethodHandle();
+                    MethodHandle mh = lop.handle().generateMethodHandle();
                     shutdown.methodHandles.addFirst(mh);
                 });
             } else {

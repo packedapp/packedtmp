@@ -17,11 +17,10 @@ package app.packed.operation;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
-import java.util.Set;
 import java.util.function.Supplier;
 
-import app.packed.bindings.BindableVariable;
-import app.packed.context.Context;
+import app.packed.bindings.BeanVariable;
+import app.packed.extension.Extension;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /**
@@ -30,7 +29,9 @@ import internal.app.packed.operation.PackedOperationHandle;
 public sealed interface OperationHandle permits PackedOperationHandle {
 
     /** {@return any contexts this operation operates within.} */
-    Set<Class<? extends Context<?>>> contexts();
+    // Hmm there is a difference between operating within contexts./
+    // And invocation argument contexts
+    // Set<Class<? extends Context<?>>> contexts();
 
     /**
      * Generates a method handle that can be used to invoke the underlying operation.
@@ -45,10 +46,6 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      *             if called outside of the code generating phase of the application. Or if called more than once
      */
     MethodHandle generateMethodHandle();
-
-    // Tror ikke det noget med extensionen at goere, snare lifetimen...
-    // IDK
-    MethodHandle generateMethodHandle(Object lifetimeHandle);
 
     /**
      * {@return the invocation type of this operation.}
@@ -87,10 +84,13 @@ public sealed interface OperationHandle permits PackedOperationHandle {
     // parameter virker kun som navn hvis man ikke "reservere" binding.
     // Men binder med det samme
     // reserve
-    BindableVariable manuallyBindable(int parameterIndex);
+    BeanVariable manuallyBindable(int parameterIndex);
 
     // Ogsaa en template ting taenker jeg? IDK
     void named(String name);
+
+    /** {@return the operator of the operation.} */
+    Class<? extends Extension<?>> operator();
 
     /**
      * Specializes the mirror that is returned for the operation.

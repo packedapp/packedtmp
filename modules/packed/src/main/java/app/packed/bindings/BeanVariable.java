@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import app.packed.bean.BeanElement;
 import app.packed.bean.BeanInstallationException;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
-import app.packed.framework.AnnotationList;
 import app.packed.framework.Nullable;
 import app.packed.operation.Op;
 import internal.app.packed.service.KeyHelper;
@@ -33,7 +33,7 @@ import internal.app.packed.service.KeyHelper;
 /**
  * A bindable variable
  */
-public interface BindableVariable {
+public non-sealed interface BeanVariable extends BeanElement {
 
     /**
      * By default binding to static fields is not allowed and will
@@ -44,10 +44,7 @@ public interface BindableVariable {
      * @throws IllegalStateException
      *             if called after the variable has been bound
      */
-    BindableVariable allowStaticFieldBinding();
-
-    /** {@return annotations on the variable.} */
-    AnnotationList annotations();
+    BeanVariable allowStaticFieldBinding();
 
     default Map<Class<? extends Context<?>>, List<Class<?>>> availableContexts() {
         return Map.of();
@@ -158,17 +155,6 @@ public interface BindableVariable {
         throw new BeanInstallationException(variable() + ", Must be assignable to one of " + Arrays.toString(classes));
     }
 
-    /**
-     * @param postFix
-     *            the message to include in the final message
-     *
-     * @throws BeanInstallationException
-     *             always thrown
-     */
-    default void failWith(String postFix) {
-        throw new BeanInstallationException("OOPS " + postFix);
-    }
-
     /** {@return the extension that is responsible for invoking the underlying operation.} */
     Class<? extends Extension<?>> invokedBy();
 
@@ -188,7 +174,7 @@ public interface BindableVariable {
      * @param supplier
      * @return
      */
-    BindableVariable specializeMirror(Supplier<? extends BindingMirror> supplier);
+    BeanVariable specializeMirror(Supplier<? extends BindingMirror> supplier);
 
     /**
      * Parses the variable to a key.
@@ -198,11 +184,12 @@ public interface BindableVariable {
      * @throws InvalidKeyException
      *             if the variable does not represent a valid key
      */
+    @Override
     default Key<?> toKey() {
         return KeyHelper.convert(variable().getType(), variable().getAnnotations(), this);
     }
 
-    default BindableWrappedVariable unwrap() {
+    default BeanWrappedVariable unwrap() {
         // peel ->
 
         // peel, unwrap
@@ -219,7 +206,7 @@ public interface BindableVariable {
     }
 }
 
-interface Sanfbox extends BindableVariable {
+interface Sanfbox extends BeanVariable {
 
     /**
      *

@@ -15,6 +15,8 @@ import java.util.function.Supplier;
 
 import app.packed.application.BuildException;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanElement.BeanField;
+import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanIntrospector;
@@ -23,23 +25,23 @@ import app.packed.bean.Inject;
 import app.packed.bean.OnInitialize;
 import app.packed.bean.OnStart;
 import app.packed.bean.OnStop;
-import app.packed.bindings.BindableVariable;
-import app.packed.bindings.BindableWrappedVariable;
+import app.packed.bindings.BeanVariable;
+import app.packed.bindings.BeanWrappedVariable;
 import app.packed.bindings.Key;
 import app.packed.bindings.Provider;
 import app.packed.bindings.Variable;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerGuest;
 import app.packed.container.ContainerInstaller;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.lifetime.BeanLifetimeTemplate;
 import app.packed.lifetime.ContainerLifetimeTemplate;
+import app.packed.lifetime.FromGuest;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.operation.BeanOperationTemplate;
-import app.packed.operation.BeanOperationTemplate.InvocationArgument;
+import app.packed.operation.BeanOperationTemplate.FromInvocationArgument;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.operation.OperationConfiguration;
@@ -52,10 +54,11 @@ import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.service.sandbox.transform.ServiceExportsTransformer;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
-import internal.app.packed.bean.PackedBeanLocal;
+import internal.app.packed.bean.sandbox.PackedBeanLocal;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.container.PackedContainerInstaller;
+import internal.app.packed.lifetime.LifecycleOrder;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.PackedServiceLocator;
@@ -94,12 +97,10 @@ import internal.app.packed.util.MethodHandleUtil;
 
 public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
-    static final PackedBeanLocal<Map<Key<?>, BindableVariable>> CODEGEN = PackedBeanLocal.of();
+    static final PackedBeanLocal<Map<Key<?>, BeanVariable>> CODEGEN = PackedBeanLocal.of();
 
     /** Variables that used together with {@link CodeGenerated}. */
-    private final Map<CodeGeneratorKey, BindableVariable> codegenVariables = new HashMap<>();
-
-    boolean isLinking;
+    private final Map<CodeGeneratorKey, BeanVariable> codegenVariables = new HashMap<>();
 
     /** Create a new base extension. */
     BaseExtension() {}
@@ -107,7 +108,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     <K> void addCodeGenerated(BeanSetup bean, Key<K> key, Supplier<? extends K> supplier) {
         // BindableVariable bv = CODEGEN.get(bean).get(key);
 
-        BindableVariable var = codegenVariables.get(new CodeGeneratorKey(bean, key));
+        BeanVariable var = codegenVariables.get(new CodeGeneratorKey(bean, key));
 
         if (var == null) {
             throw new IllegalArgumentException("The specified bean must have an injection site that uses @" + CodeGenerated.class.getSimpleName() + " " + key);
@@ -319,10 +320,14 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     protected BeanIntrospector newBeanIntrospector() {
         return new BeanIntrospector() {
 
+            /** A template for bean lifecycle operations. */
+            private static final BeanOperationTemplate BEAN_LIFECYCLE_TEMPLATE = BeanOperationTemplate.defaults().withReturnIgnore();
+
             /** Handles {@link Inject}. */
             @Override
-            public void hookOnAnnotatedField(Annotation hook, OperationalField field) {
+            public void hookOnAnnotatedField(Annotation hook, BeanField field) {
                 if (hook instanceof Inject) {
+                    // checkNotStatic
                     // Det er jo inject service!???
                     field.newInjectOperation().unwrap();
                     // OperationHandle handle = field.newSetOperation(null) .newOperation(temp);
@@ -344,46 +349,50 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                 }
             }
 
+            private OperationHandle checkNotStaticBean(Class<? extends Annotation> annotationType, BeanMethod method) {
+                if (beanKind() == BeanKind.STATIC) {
+                    throw new BeanInstallationException(annotationType + " is not supported for static beans");
+                }
+                // Maybe lifecycle members cannot be static at all
+                return method.newOperation(BEAN_LIFECYCLE_TEMPLATE);
+            }
+
             /** Handles {@link Inject}, {@link OnInitialize}, {@link OnStart} and {@link OnStop}. */
             @Override
-            public void hookOnAnnotatedMethod(Annotation annotation, OperationalMethod method) {
+            public void hookOnAnnotatedMethod(Annotation annotation, BeanMethod method) {
                 BeanSetup bean = BeanSetup.crack(method);
-                BeanOperationTemplate temp = BeanOperationTemplate.defaults().withIgnoreReturn();
 
                 if (annotation instanceof Inject) {
-                    OperationHandle handle = method.newOperation(temp);
-                    bean.lifecycle.addInitialize(handle, null);
+                    OperationHandle handle = checkNotStaticBean(Inject.class, method);
+                    bean.addLifecycleOperation(LifecycleOrder.INJECT, handle);
                 } else if (annotation instanceof OnInitialize oi) {
-                    OperationHandle handle = method.newOperation(temp);
-                    bean.lifecycle.addInitialize(handle, oi.order());
+                    OperationHandle handle = checkNotStaticBean(OnInitialize.class, method);
+                    bean.addLifecycleOperation(LifecycleOrder.fromInitialize(oi.order()), handle);
                 } else if (annotation instanceof OnStart oi) {
-                    OperationHandle handle = method.newOperation(temp);
-                    bean.lifecycle.addStart(handle, oi.order());
+                    OperationHandle handle = checkNotStaticBean(OnStart.class, method);
+                    bean.addLifecycleOperation(LifecycleOrder.fromStarting(oi.order()), handle);
                 } else if (annotation instanceof OnStop oi) {
-                    OperationHandle handle = method.newOperation(temp);
-                    bean.lifecycle.addStop(handle, oi.order());
-                } else if ((annotation instanceof Provide) || (annotation instanceof Export)) {
-                    Key<?> key = method.toKey();
-                    boolean isProviding = method.annotations().containsType(Provide.class);
-                    boolean isExporting = method.annotations().containsType(Export.class);
-
+                    OperationHandle handle = checkNotStaticBean(OnStop.class, method);
+                    bean.addLifecycleOperation(LifecycleOrder.fromStopping(oi.order()), handle);
+                } else if (annotation instanceof Provide) {
+                    BeanOperationTemplate temp2 = BeanOperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
+                    if (!Modifier.isStatic(method.modifiers())) {
+                        if (beanKind() != BeanKind.CONTAINER) {
+                            throw new BeanInstallationException("Not okay)");
+                        }
+                    }
+                    OperationSetup operation = OperationSetup.crack(method.newOperation(temp2));
+                    bean.container.sm.provide(method.toKey(), operation, new FromOperation(operation));
+                } else if (annotation instanceof Export) {
                     BeanOperationTemplate temp2 = BeanOperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
 
                     if (!Modifier.isStatic(method.modifiers())) {
                         if (beanKind() != BeanKind.CONTAINER) {
-                            throw new BuildException("Not okay)");
+                            throw new BeanInstallationException("Not okay)");
                         }
                     }
-
-                    if (isProviding) {
-                        OperationSetup operation = OperationSetup.crack(method.newOperation(temp2));
-                        extension.container.sm.provide(key, operation, new FromOperation(operation));
-                    }
-
-                    if (isExporting) {
-                        OperationSetup operation = OperationSetup.crack(method.newOperation(temp2));
-                        extension.container.sm.export(key, operation);
-                    }
+                    OperationSetup operation = OperationSetup.crack(method.newOperation(temp2));
+                    bean.container.sm.export(method.toKey(), operation);
                 } else {
                     super.hookOnAnnotatedMethod(annotation, method);
                 }
@@ -391,29 +400,42 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             /** Handles {@link ContainerGuest}, {@link InvocationArgument} and {@link CodeGenerated}. */
             @Override
-            public void hookOnProvidedAnnotatedVariable(Annotation hook, BindableVariable v) {
-                if (hook instanceof ContainerGuest) {
+            public void hookOnProvidedAnnotatedVariable(Annotation annotation, BeanVariable v) {
+                if (annotation instanceof FromGuest) {
                     Variable va = v.variable();
 //                    debug(v.availableInvocationArguments());
                     if (va.getRawType().equals(String.class)) {
-                        v.bindOp(new Op1<@InvocationArgument ApplicationInitializationContext, String>(a -> a.name()) {});
+                        v.bindOp(new Op1<@FromInvocationArgument ApplicationInitializationContext, String>(a -> a.name()) {});
                     } else if (va.getRawType().equals(ManagedLifetimeController.class)) {
-                        v.bindOp(new Op1<@InvocationArgument ApplicationInitializationContext, ManagedLifetimeController>(a -> a.cr.runtime) {});
+                        v.bindOp(new Op1<@FromInvocationArgument ApplicationInitializationContext, ManagedLifetimeController>(a -> a.cr.runtime) {});
                     } else if (va.getRawType().equals(ServiceLocator.class)) {
-                        v.bindOp(new Op1<@InvocationArgument ApplicationInitializationContext, ServiceLocator>(a -> a.serviceLocator()) {});
+                        v.bindOp(new Op1<@FromInvocationArgument ApplicationInitializationContext, ServiceLocator>(a -> a.serviceLocator()) {});
                     } else {
                         throw new UnsupportedOperationException("va " + va.getRawType());
                     }
-                } else if (hook instanceof InvocationArgument ia) {
-                    int index = ia.index();
+                } else if (annotation instanceof FromInvocationArgument ia) {
+                    int index = ia.exactIndex();
                     Class<?> cl = v.variable().getRawType();
                     List<Class<?>> l = v.availableInvocationArguments();
-                    if (cl != l.get(index)) {
-                        throw new UnsupportedOperationException();
+                    if (index == -1) {
+                        for (int i = 0; i < l.size(); i++) {
+                            if (l.get(i) == cl) {
+                                if (index != -1) {
+                                    // found more than one
+                                }
+                                index = i;
+                            }
+                        }
+                        if (index == -1) {
+                            throw new UnsupportedOperationException();
+                        }
+                    } else {
+                        if (cl != l.get(index)) {
+                            throw new UnsupportedOperationException();
+                        }
                     }
-
                     v.bindInvocationArgument(index);
-                } else if (hook instanceof CodeGenerated cg) {
+                } else if (annotation instanceof CodeGenerated cg) {
                     BeanSetup bean = ((PackedBindableVariable) v).operation.bean;
                     if (beanOwner().isApplication()) {
                         throw new BeanInstallationException("@" + CodeGenerated.class.getSimpleName() + " can only be used by extensions");
@@ -422,18 +444,17 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     Key<?> key = v.toKey();
 
                     // CODEGEN.get(this).putIfAbsent(key, v);
-                    BindableVariable bv = codegenVariables.putIfAbsent(new CodeGeneratorKey(bean, key), v);
+                    BeanVariable bv = codegenVariables.putIfAbsent(new CodeGeneratorKey(bean, key), v);
                     if (bv != null) {
                         failWith(key + " Can only be injected once for bean ");
                     }
-
                 } else {
-                    super.hookOnProvidedAnnotatedVariable(hook, v);
+                    super.hookOnProvidedAnnotatedVariable(annotation, v);
                 }
             }
 
             @Override
-            public void hookOnProvidedVariableType(Class<?> hook, BindableWrappedVariable v) {
+            public void hookOnProvidedVariableType(Class<?> hook, BeanWrappedVariable v) {
                 if (hook == ExtensionContext.class) {
                     if (v.availableInvocationArguments().isEmpty() || v.availableInvocationArguments().get(0) != ExtensionContext.class) {
                         // throw new Error(v.availableInvocationArguments().toString());
@@ -467,22 +488,15 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      */
     @Override
     protected void onAssemblyClose() {
-        // 3 ways to form trees
-        // Application, Assembly, Lifetime
-
-        boolean isLinking = parent().map(e -> e.isLinking).orElse(false);
-        if (isLinking) {
-            // navigator().forEachInAssembly()->
-        }
-
         // close child extensions first
         super.onAssemblyClose();
 
-        for (Entry<CodeGeneratorKey, BindableVariable> e : codegenVariables.entrySet()) {
+        for (Entry<CodeGeneratorKey, BeanVariable> e : codegenVariables.entrySet()) {
             if (!e.getValue().isBound()) {
                 throw new InternalExtensionException(e.getKey().key() + " not bound for bean " + e.getKey().bean().path());
             }
         }
+
         // A lifetime root lets order some dependencies
         if (isLifetimeRoot()) {
             extension.container.lifetime.orderDependencies();

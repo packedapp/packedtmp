@@ -16,35 +16,40 @@
 package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 
-import app.packed.bean.BeanIntrospector.OperationalConstructor;
-import app.packed.operation.OperationHandle;
-import app.packed.operation.BeanOperationTemplate;
+import app.packed.framework.Nullable;
+import app.packed.operation.OperationType;
 
 /**
  *
  */
-public final class PackedOperationalConstructor extends PackedOperationalExecutable<Constructor<?>> implements OperationalConstructor {
+sealed abstract class PackedBeanExecutable<E extends Executable>
+        extends PackedBeanMember<E> permits PackedBeanConstructor, PackedBeanMethod {
+
+    /** The operation type (lazily created). */
+    @Nullable
+    OperationType type;
 
     /**
      * @param ce
      * @param member
      * @param annotations
      */
-    PackedOperationalConstructor(OperationalExtension ce, Constructor<?> member, Annotation[] annotations) {
+    PackedBeanExecutable(BeanScannerExtension ce, E member, Annotation[] annotations) {
         super(ce, member, annotations);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Constructor<?> constructor() {
-        return member;
+    public boolean hasInvokeAccess() {
+        return false;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public OperationHandle newOperation(BeanOperationTemplate template) {
-        throw new UnsupportedOperationException();
+    public OperationType operationType() {
+        OperationType t = type;
+        if (t == null) {
+            t = type = OperationType.ofExecutable(member);
+        }
+        return t;
     }
 }

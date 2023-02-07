@@ -60,7 +60,7 @@ public final class BeanScanner {
 
     /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
     private static final MethodHandle MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class,
-            "initialize", void.class, OperationalExtension.class);
+            "initialize", void.class, BeanScannerExtension.class);
 
     /** An internal lookup object. */
     private static final MethodHandles.Lookup PACKED = MethodHandles.lookup();
@@ -77,7 +77,7 @@ public final class BeanScanner {
 
     /** Every extension that is activated by a hook. */
     // We sort it in the end
-    private final IdentityHashMap<Class<? extends Extension<?>>, OperationalExtension> extensions = new IdentityHashMap<>();
+    private final IdentityHashMap<Class<? extends Extension<?>>, BeanScannerExtension> extensions = new IdentityHashMap<>();
 
     final BeanHookModel hookModel;
 
@@ -101,7 +101,7 @@ public final class BeanScanner {
      * @param fullAccess
      * @return the contributor
      */
-    OperationalExtension computeContributor(Class<? extends Extension<?>> extensionType) {
+    BeanScannerExtension computeContributor(Class<? extends Extension<?>> extensionType) {
         return extensions.computeIfAbsent(extensionType, c -> {
             // Get the extension (installing it if necessary)
             ExtensionSetup extension = bean.container.useExtension(extensionType, null);
@@ -116,7 +116,7 @@ public final class BeanScanner {
                 introspector = extension.newBeanIntrospector();
             }
 
-            OperationalExtension ce = new OperationalExtension(this, extension, introspector);
+            BeanScannerExtension ce = new BeanScannerExtension(this, extension, introspector);
 
             // Call BeanIntrospector#initialize
             try {
@@ -222,7 +222,7 @@ public final class BeanScanner {
                 // TODO add check for
                 if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
                     types.put(new MethodHelper(m), packages);
-                    PackedOperationalMethod.introspectMethodForAnnotations(this, m);
+                    PackedBeanMethod.introspectMethodForAnnotations(this, m);
                 }
             }
 
@@ -241,7 +241,7 @@ public final class BeanScanner {
                             // static methods on any interfaces this class implements.
                             // But it would also be strange to include static methods on sub classes
                             // but not include static methods on interfaces.
-                            PackedOperationalMethod.introspectMethodForAnnotations(this, m);
+                            PackedBeanMethod.introspectMethodForAnnotations(this, m);
                         }
                     } else if (!m.isBridge() && !m.isSynthetic()) { // TODO should we include synthetic methods??
                         switch (mod & (Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE)) {
@@ -262,7 +262,7 @@ public final class BeanScanner {
                         case Modifier.PRIVATE:
                             // Private methods are never overridden
                         }
-                        PackedOperationalMethod.introspectMethodForAnnotations(this, m);
+                        PackedBeanMethod.introspectMethodForAnnotations(this, m);
                     }
                 }
             }
@@ -273,7 +273,7 @@ public final class BeanScanner {
         bean.introspecting = null; // move up down?
 
         // Call into every BeanIntrospector and tell them it is all over
-        for (OperationalExtension e : extensions.values()) {
+        for (BeanScannerExtension e : extensions.values()) {
             e.introspector.afterHooks();
         }
     }

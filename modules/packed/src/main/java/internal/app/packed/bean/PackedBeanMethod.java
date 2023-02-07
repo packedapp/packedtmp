@@ -22,12 +22,12 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
-import app.packed.bean.BeanIntrospector.OperationalMethod;
+import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bindings.Key;
+import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.BeanOperationTemplate;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.OperationSetup;
@@ -36,9 +36,9 @@ import internal.app.packed.operation.PackedDelegatingOperationHandle;
 import internal.app.packed.service.KeyHelper;
 
 /** Internal implementation of BeanMethod. Discard after use. */
-public final class PackedOperationalMethod extends PackedOperationalExecutable<Method> implements OperationalMethod {
+public final class PackedBeanMethod extends PackedBeanExecutable<Method> implements BeanMethod {
 
-    PackedOperationalMethod(OperationalExtension contributor, Method method, Annotation[] annotations, boolean allowInvoke) {
+    PackedBeanMethod(BeanScannerExtension contributor, Method method, Annotation[] annotations, boolean allowInvoke) {
         super(contributor, method, annotations);
     }
 
@@ -112,9 +112,9 @@ public final class PackedOperationalMethod extends PackedOperationalExecutable<M
             Class<? extends Annotation> a1Type = a1.annotationType();
             AnnotatedMethod fh = iBean.hookModel.testMethodAnnotation(a1Type);
             if (fh != null) {
-                OperationalExtension contributor = iBean.computeContributor(fh.extensionType());
+                BeanScannerExtension contributor = iBean.computeContributor(fh.extensionType());
 
-                PackedOperationalMethod pbm = new PackedOperationalMethod(contributor, method, annotations, fh.isInvokable());
+                PackedBeanMethod pbm = new PackedBeanMethod(contributor, method, annotations, fh.isInvokable());
                 PackedAnnotationList pac = new PackedAnnotationList(new Annotation[] { a1 });
                 contributor.introspector.hookOnAnnotatedMethod(pac, pbm);
             }

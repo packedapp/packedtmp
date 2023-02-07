@@ -45,10 +45,15 @@ import internal.app.packed.operation.PackedOperationTemplate;
 //// ExtensionContext  (Or InvocationContext??? IDK bliver jo brugt across multi usage)
 //// BeanInstance
 //// Wirelet[] (For containers)
-//// Contexts
 //// Other arguments
+//// Contexts
 
-//// ErrorHandling
+
+// Reserved arguments: ExtensionContext | Wirelet[] | BeanInstance
+// Free arguments available for hooks with the same extension type
+// Context
+
+//// ErrorHandling <- er paa Operationen ikke lifetimen
 
 // InvocationSite, InvocationType, Invocation contexts
 
@@ -64,7 +69,7 @@ import internal.app.packed.operation.PackedOperationTemplate;
 // OT.forNewApplication()
 // OT.forNewContainer
 
-public sealed interface BeanOperationTemplate permits PackedOperationTemplate {
+public sealed interface BeanOperationTemplate extends OperationTemplate permits PackedOperationTemplate {
 
     int beanInstanceIndex();
 
@@ -73,6 +78,12 @@ public sealed interface BeanOperationTemplate permits PackedOperationTemplate {
     }
 
     int extensionContextIndex();
+
+
+    // 3 choices?
+    // No ErrorHandling (Exception will propagate directly)
+    // ParentHandling
+    // This errorHandler
 
     // All but noErrorHandling will install an outward interceptor
     default BeanOperationTemplate handleErrors(ErrorHandler errorHandler) {
@@ -102,17 +113,13 @@ public sealed interface BeanOperationTemplate permits PackedOperationTemplate {
     BeanOperationTemplate withBeanInstance(Class<?> beanClass);
 
     default BeanOperationTemplate withContext(ContextTemplate context) {
+        // Context.extensions og operation handler skal
         throw new UnsupportedOperationException();
     }
 
-    BeanOperationTemplate withIgnoreReturn();
+    BeanOperationTemplate withReturnIgnore();
 
     BeanOperationTemplate withReturnType(Class<?> type);
-
-    // 3 choices?
-    // No ErrorHandling (Exception will propagate directly)
-    // ParentHandling
-    // This errorHandler
 
     default BeanOperationTemplate withReturnTypeObject() {
         return withReturnType(Object.class);
@@ -151,7 +158,30 @@ public sealed interface BeanOperationTemplate permits PackedOperationTemplate {
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @AnnotatedBindingHook(extension = BaseExtension.class)
-    public @interface InvocationArgument {
-        int index() default 0;
+    public @interface FromContextArgument {
+        Class<? extends Context<?>> context();
+
+        int exactIndex() default -1;
+    }
+
+    /**
+     *
+     * <p>
+     * This annotation can only be used by {@link OperationHandle#operator()} of the underlying operation.
+     */
+    @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.PARAMETER })
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @AnnotatedBindingHook(extension = BaseExtension.class)
+    public @interface FromInvocationArgument {
+
+        /**
+         * If there are more than 1 invocation argument of the annotated target type. The exact index of the argument must be
+         * specified.
+         * <p>
+         *
+         * @return
+         */
+        int exactIndex() default -1;
     }
 }

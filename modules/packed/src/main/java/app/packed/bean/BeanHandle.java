@@ -17,6 +17,7 @@ package app.packed.bean;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 import app.packed.application.ApplicationPath;
 import app.packed.bindings.Key;
@@ -45,6 +46,14 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
     /** {@return the bean source kind.} */
     BeanSourceKind beanSourceKind();
+
+    default <B> void afterInitialize(InstanceBeanConfiguration<B> extensionBean, BiConsumer<? super B, ? super T> consumer) {
+        //// Ideen er at man fx kan have en BeanHandle<Driver>.onInitialize(MyEBC, (b,p)->b.drivers[i]=p);
+        //// Skal godt nok passe paa med capturing her... Ellers faar man hele application setup med i lambdaen
+
+        // state = Initialized? eller Initializing
+        // Take runState???
+    }
 
     /**
      * Checks that the bean is still configurable or throws an {@link IllegalStateException} if not

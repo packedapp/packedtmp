@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanInstallationException;
-import app.packed.bindings.BindableVariable;
+import app.packed.bindings.BeanVariable;
 import app.packed.bindings.BindingMirror;
 import app.packed.bindings.Variable;
 import app.packed.extension.Extension;
@@ -48,7 +48,7 @@ import internal.app.packed.operation.OperationSetup.NestedOperationParent;
 import internal.app.packed.operation.PackedOp;
 
 /** Implementation of {@link BindableVariable}. */
-public final class PackedBindableVariable implements BindableVariable {
+public final class PackedBindableVariable implements BeanVariable {
 
     /** Whether or not allow binding of static fields. */
     private boolean allowStaticFieldBinding;
@@ -82,7 +82,7 @@ public final class PackedBindableVariable implements BindableVariable {
 
     /** {@inheritDoc} */
     @Override
-    public BindableVariable allowStaticFieldBinding() {
+    public BeanVariable allowStaticFieldBinding() {
         checkNotBound();
         allowStaticFieldBinding = true;
         return this;
@@ -207,7 +207,7 @@ public final class PackedBindableVariable implements BindableVariable {
 
     /** {@inheritDoc} */
     @Override
-    public BindableVariable specializeMirror(Supplier<? extends BindingMirror> supplier) {
+    public BeanVariable specializeMirror(Supplier<? extends BindingMirror> supplier) {
         checkNotBound();
         this.mirrorSupplier = requireNonNull(supplier);
         return this;
@@ -217,5 +217,11 @@ public final class PackedBindableVariable implements BindableVariable {
     @Override
     public Variable variable() {
         return variable;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int modifiers() {
+        throw new UnsupportedOperationException();
     }
 }

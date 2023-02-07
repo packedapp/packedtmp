@@ -67,6 +67,10 @@ public final class ServiceManager {
         }
     }
 
+    public void addBean(BeanSetup bean) {
+        provide(Key.of(bean.beanClass), bean.instanceAccessOperation(), bean.beanInstanceBindingProvider());
+    }
+
     public ServiceBindingSetup bind(Key<?> key, boolean isRequired, OperationSetup operation, int operationBindingIndex) {
         ServiceSetup e = entries.computeIfAbsent(key, ServiceSetup::new);
         return e.bind(isRequired, operation, operationBindingIndex);
@@ -82,10 +86,6 @@ public final class ServiceManager {
         }
         es.operation.mirrorSupplier = () -> new ExportedServiceMirror(es);
         return es;
-    }
-
-    public void addBean(BeanSetup bean) {
-        provide(Key.of(bean.beanClass), bean.instanceAccessOperation(), bean.beanInstanceBindingProvider());
     }
 
     public Map<Key<?>, MethodHandle> exportedServices() {

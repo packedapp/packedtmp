@@ -30,6 +30,12 @@ import internal.app.packed.bean.PackedAnnotationList;
  */
 public sealed interface AnnotationList extends Iterable<Annotation> permits PackedAnnotationList {
 
+    /**
+     * {@return {@code true} if this list contains the specified annotation}
+     *
+     * @param annotation
+     *            annotation whose presence is to be tested
+     */
     boolean contains(Annotation annotation);
 
     boolean containsType(Class<? extends Annotation> annotationClass);
@@ -71,6 +77,7 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
 
     List<Annotation> toList();
 
+    /** {@return an empty annotation list.} */
     static AnnotationList of() {
         return PackedAnnotationList.EMPTY;
     }
@@ -81,7 +88,9 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
     }
 
     static AnnotationList of(Annotation... annotations) {
-        return new PackedAnnotationList(annotations.clone());
+        Annotation[] a = annotations.clone();
+        // check for null
+        return new PackedAnnotationList(a);
     }
 
     static AnnotationList of(Annotation annotation1, Annotation annotation2) {
@@ -89,12 +98,12 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
         requireNonNull(annotation2, "annotation2 is null");
         return new PackedAnnotationList(new Annotation[] { annotation1, annotation2 });
     }
-    // Q) Skal vi bruge den udefra beans???
-    // A) Nej vil ikke mene vi beskaeftiger os med andre ting hvor vi laeser det.
-    // Altsaa hvad med @Composite??? Det er jo ikke en bean, det bliver noedt til at vaere fake metoder...
-    // Paa hver bean som bruger den...
-    // Vi exponere den jo ikke, saa kan jo ogsaa bare bruge den...
-
-    // I think the only we reason we call it BeanAnnotationReader is because
-    // if we called AnnotationReader is should really be located in a utility package
 }
+// Q) Skal vi bruge den udefra beans???
+// A) Nej vil ikke mene vi beskaeftiger os med andre ting hvor vi laeser det.
+// Altsaa hvad med @Composite??? Det er jo ikke en bean, det bliver noedt til at vaere fake metoder...
+// Paa hver bean som bruger den...
+// Vi exponere den jo ikke, saa kan jo ogsaa bare bruge den...
+
+// I think the only we reason we call it BeanAnnotationReader is because
+// if we called AnnotationReader is should really be located in a utility package

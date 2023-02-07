@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import app.packed.bindings.BindableVariable;
-import app.packed.bindings.BindableWrappedVariable;
+import app.packed.bindings.BeanVariable;
+import app.packed.bindings.BeanWrappedVariable;
 import app.packed.bindings.BindingMirror;
 import app.packed.bindings.Key;
 import app.packed.bindings.Variable;
@@ -34,7 +34,8 @@ import internal.app.packed.binding.PackedBindableVariable;
 /**
  *
  */
-public class PackedBindableBaseVariable implements BindableWrappedVariable {
+public final class PackedBindableBaseVariable implements BeanWrappedVariable {
+
     public final PackedBindableVariable v;
 
     PackedBindableBaseVariable(PackedBindableVariable v) {
@@ -112,7 +113,7 @@ public class PackedBindableBaseVariable implements BindableWrappedVariable {
     }
 
     @Override
-    public BindableVariable specializeMirror(Supplier<? extends BindingMirror> supplier) {
+    public BeanVariable specializeMirror(Supplier<? extends BindingMirror> supplier) {
         return v.specializeMirror(supplier);
     }
 
@@ -132,7 +133,7 @@ public class PackedBindableBaseVariable implements BindableWrappedVariable {
     }
 
     @Override
-    public BindableWrappedVariable unwrap() {
+    public BeanWrappedVariable unwrap() {
         return v.unwrap();
     }
 
@@ -210,8 +211,14 @@ public class PackedBindableBaseVariable implements BindableWrappedVariable {
 
     /** {@inheritDoc} */
     @Override
-    public BindableWrappedVariable allowStaticFieldBinding() {
+    public BeanWrappedVariable allowStaticFieldBinding() {
         v.allowStaticFieldBinding();
         return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int modifiers() {
+        throw new UnsupportedOperationException();
     }
 }

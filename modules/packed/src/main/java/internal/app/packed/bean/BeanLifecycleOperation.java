@@ -15,22 +15,14 @@
  */
 package internal.app.packed.bean;
 
-import app.packed.container.Realm;
-import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.ExtensionSetup;
+import app.packed.operation.OperationHandle;
+import internal.app.packed.lifetime.LifecycleOrder;
 
-/**
- * The owner of a bean. Either the application (via an assembly) or an extension instance.
- */
-public sealed interface BeanOwner permits AssemblySetup, ExtensionSetup {
+public record BeanLifecycleOperation(LifecycleOrder runOrder, OperationHandle handle) implements Comparable<BeanLifecycleOperation> {
 
-    /**
-     * Checks if the bean is still configurable. A bean is configurable if its owner is configurable.
-     *
-     * @return
-     */
-    boolean isConfigurable();
-
-    /** {@return a realm representing the owner.} */
-    Realm realm();
+    /** {@inheritDoc} */
+    @Override
+    public int compareTo(BeanLifecycleOperation entry) {
+        return runOrder.ordinal() - entry.runOrder.ordinal();
+    }
 }

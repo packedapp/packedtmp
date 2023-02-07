@@ -45,4 +45,15 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target( ElementType.TYPE_USE)
 @Documented
+// Maaske kraeve denne hvis man ikke har
+// Tror det er fint
+
+// Tror planning er at Unspecified = Non-nullable.
+// Og saa maa man bruge Optional
+
+// Saa missable = Optional or explicit null
+
+
+
+
 public @interface Nullable {}

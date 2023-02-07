@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
+import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.DependencyOrder;
@@ -81,7 +82,7 @@ public class Ddd extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void hookOnAnnotatedMethod(Annotation hooks, OperationalMethod on) {
+                public void hookOnAnnotatedMethod(Annotation hooks, BeanMethod on) {
                     base().runOnBeanInject(on.newDelegatingOperation());
                 }
             };

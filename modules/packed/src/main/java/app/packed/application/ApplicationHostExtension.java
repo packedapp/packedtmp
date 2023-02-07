@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.bean.BeanHandle;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
-import app.packed.lifetime.BeanLifetimeTemplate;
 import app.packed.extension.FrameworkExtension;
+import app.packed.lifetime.BeanLifetimeTemplate;
 import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;

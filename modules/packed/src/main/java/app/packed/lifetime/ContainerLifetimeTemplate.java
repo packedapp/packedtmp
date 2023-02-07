@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.bindings.Key;
 import app.packed.operation.Op;
+import app.packed.operation.OperationTemplate;
 import internal.app.packed.container.ContainerKind;
 import internal.app.packed.container.PackedContainerLifetimeTemplate;
 
@@ -34,7 +35,7 @@ import internal.app.packed.container.PackedContainerLifetimeTemplate;
 //// Extension Bridges
 //// Args
 //// Contexts
-public sealed interface ContainerLifetimeTemplate permits PackedContainerLifetimeTemplate {
+public sealed interface ContainerLifetimeTemplate extends OperationTemplate permits PackedContainerLifetimeTemplate {
 
     ContainerLifetimeTemplate LAZY = new PackedContainerLifetimeTemplate(ContainerKind.LAZY);
 
@@ -50,12 +51,17 @@ public sealed interface ContainerLifetimeTemplate permits PackedContainerLifetim
     ContainerLifetimeTemplate PARENT = new PackedContainerLifetimeTemplate(ContainerKind.PARENT);
 
     // services available
+    /**
+     * @return
+     *
+     * @see From
+     */
     default Set<Key<?>> keys(){
         return Set.of();
     }
 
-    default boolean hasGuest() {
-        return mode() == Mode.INITIALIZATION_START_STOP;
+    default Class<?> guestClass() {
+        return void.class;
     }
 
 

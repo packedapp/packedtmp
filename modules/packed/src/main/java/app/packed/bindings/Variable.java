@@ -53,8 +53,6 @@ import java.lang.reflect.TypeVariable;
 // Maaske supportere vi capture...
 public sealed interface Variable extends AnnotatedElement permits PackedVariable {
 
-    Type getType();
-
     /**
      * Returns the raw type (Class) of the variable.
      *
@@ -67,12 +65,14 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
      */
     Class<?> getRawType();
 
+    Type getType();
+
     static Variable of(Class<?> clazz) {
         return new PackedVariable(Variable.class, new PackedVariableType.OfClass(clazz));
     }
 
-    static Variable ofConstructor(Constructor<?> constructor) {
-        return new PackedVariable(constructor, new PackedVariableType.OfConstructor(constructor));
+    static Variable ofConstructorReturnType(Constructor<?> constructor) {
+        return new PackedVariable(constructor, new PackedVariableType.OfConstructorReturnType(constructor));
     }
 
     /**
@@ -108,13 +108,13 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
         return new PackedVariable(parameter, new PackedVariableType.OfParameter(parameter));
     }
 
+    static Variable ofTypeAndAnnotations(Type type, AnnotatedElement element) {
+        return new PackedVariable(element, new PackedVariableType.OfType(type));
+    }
+
     // Do we really want to support type variables??? I don't think so
     // I think we want
     static Variable ofTypeVariable(TypeVariable<?> typeVariable) {
         return new PackedVariable(typeVariable, new PackedVariableType.OfTypeVariable(typeVariable));
-    }
-
-    static Variable ofTypeAndAnnotations(Type type, AnnotatedElement element) {
-        return new PackedVariable(element, new PackedVariableType.OfType(type));
     }
 }

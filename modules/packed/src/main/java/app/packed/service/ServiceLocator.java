@@ -34,9 +34,9 @@ import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.AbstractComposer.ComposerAssembly;
 import app.packed.container.Assembly;
-import app.packed.container.ContainerGuest;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
+import app.packed.lifetime.FromGuest;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
@@ -324,7 +324,7 @@ public interface ServiceLocator {
      */
     private static BootstrapApp<ServiceLocator> driver() {
         class ServiceLocatorAssembly {
-            private static final BootstrapApp<ServiceLocator> DRIVER = BootstrapApp.of(new Op1<@ContainerGuest ServiceLocator, ServiceLocator>(e -> e) {},
+            private static final BootstrapApp<ServiceLocator> DRIVER = BootstrapApp.of(new Op1<@FromGuest ServiceLocator, ServiceLocator>(e -> e) {},
                     c -> {});
         }
         return ServiceLocatorAssembly.DRIVER;

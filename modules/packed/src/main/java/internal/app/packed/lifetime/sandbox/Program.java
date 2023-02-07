@@ -20,9 +20,9 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.bindings.Key;
 import app.packed.container.Assembly;
-import app.packed.container.ContainerGuest;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint;
+import app.packed.lifetime.FromGuest;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
 
@@ -153,7 +153,7 @@ public interface Program extends AutoCloseable {
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementation(@ContainerGuest String name, @ContainerGuest ServiceLocator services, @ContainerGuest ManagedLifetimeController runtime)
+record ProgramImplementation(@FromGuest String name, @FromGuest ServiceLocator services, @FromGuest ManagedLifetimeController runtime)
         implements Program {
 
     ProgramImplementation {

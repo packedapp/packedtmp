@@ -29,10 +29,10 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanFactoryMirror;
 import app.packed.framework.Nullable;
+import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
-import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution.FromOperation;

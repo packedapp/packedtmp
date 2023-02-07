@@ -67,7 +67,7 @@ public final class PackedOperationTemplate implements BeanOperationTemplate {
 
     /** {@inheritDoc} */
     @Override
-    public BeanOperationTemplate withIgnoreReturn() {
+    public BeanOperationTemplate withReturnIgnore() {
         MethodType mt = methodType.changeReturnType(void.class);
         return new PackedOperationTemplate(extensionContext, beanInstanceIndex, mt, true);
     }

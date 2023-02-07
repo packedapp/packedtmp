@@ -27,7 +27,7 @@ import internal.app.packed.container.ExtensionSetup;
  * An instance of this class is created per extension that participates in the introspection. The main purpose of the
  * class is to make sure that the extension points to the same bean introspector for the whole of the introspection.
  */
-public final class OperationalExtension {
+public final class BeanScannerExtension {
 
     /** The actual extension. */
     public final ExtensionSetup extension;
@@ -38,7 +38,7 @@ public final class OperationalExtension {
 
     public final BeanScanner scanner;
 
-    OperationalExtension(BeanScanner scanner, ExtensionSetup extension, BeanIntrospector introspector) {
+    BeanScannerExtension(BeanScanner scanner, ExtensionSetup extension, BeanIntrospector introspector) {
         this.extension = extension;
         this.introspector = introspector;
         this.scanner = scanner;
@@ -49,7 +49,7 @@ public final class OperationalExtension {
     }
 
     void matchAnnotatedField(Field field, Annotation[] annotations, Annotation[] hooks, AnnotatedField... annotatedFields) {
-        PackedOperationalField of = new PackedOperationalField(this, field, annotations, annotatedFields);
+        PackedBeanField of = new PackedBeanField(this, field, annotations, annotatedFields);
         PackedAnnotationList pac = new PackedAnnotationList(hooks);
         introspector.hookOnAnnotatedField(pac, of);
     }

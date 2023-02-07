@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package app.packed.service;
 
-import java.util.HashMap;
+import java.util.Set;
+
+import app.packed.bindings.Key;
+import app.packed.container.Realm;
 
 /**
  *
  */
-final class BeanSetupClassMapContainer {
-
-    /** A map of all non-void bean classes. Used for controlling non-multi-install beans. */
-    final HashMap<Class<?>, Object> beanClassMap = new HashMap<>();
-
-    static class MuInst {
-        int counter;
-    }
+interface ServiceDomainMirror {
+    Realm realm();
+    Set<Key<?>> keys();
 }

@@ -26,7 +26,7 @@ import app.packed.application.App;
 import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
-import app.packed.bindings.BindableVariable;
+import app.packed.bindings.BeanVariable;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.service.Provide;
@@ -93,7 +93,7 @@ public class TestNew extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void hookOnProvidedAnnotatedVariable(Annotation hook, BindableVariable h) {
+                public void hookOnProvidedAnnotatedVariable(Annotation hook, BeanVariable h) {
                     if (hook.annotationType() == XX.class) {
                         String str = h.annotations().readRequired(XX.class).value();
                         h.bindConstant(str.toUpperCase());

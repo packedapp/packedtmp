@@ -79,17 +79,7 @@ public class Letters {
     public static class L {}
 
     /** A test stub. */
-    public static class NeedsA {
-        private final A a;
-
-        public NeedsA(A a) {
-            this.a = requireNonNull(a, "a");
-        }
-
-        public A getA() {
-            return a;
-        }
-    }
+    public record NeedsA(A a) {}
 
     /** A test stub. */
     public static class NeedsAOptional {

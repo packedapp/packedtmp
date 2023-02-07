@@ -13,26 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.context;
-
-import app.packed.application.BuildException;
+package app.packed.concurrent;
 
 /**
  *
  */
-// Hmm StaticContextUnavilable?
-// TransactionContext.get()
+public class BeanThreadModel {
 
-// ProvisionException
-
-public class OutOfContextException extends BuildException {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * @param message
-     */
-    public OutOfContextException(String message) {
-        super(message);
-    }
+    // String -> ContainerInstance|BeanInstance
+    // Long->BeanInstance
 }

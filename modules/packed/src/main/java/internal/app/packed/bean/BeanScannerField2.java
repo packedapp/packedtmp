@@ -34,8 +34,8 @@ import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bindings.Variable;
 import app.packed.extension.Extension;
 import app.packed.framework.AnnotationList;
-import app.packed.operation.OperationHandle;
 import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanHookModel.AnnotatedField;
 import internal.app.packed.bean.BeanHookModel.AnnotatedFieldKind;
@@ -56,7 +56,7 @@ public final class BeanScannerField2 {
     private final Annotation[] annotations;
 
     /** The extension that can create operations from the field. */
-    private final OperationalExtension ce;
+    private final BeanScannerExtension ce;
 
     /** The field. */
     private final Field field;
@@ -354,7 +354,7 @@ public final class BeanScannerField2 {
             } else {
                 // TODO we should sort by extension order when we have more than 1 match
                 for (MultiMatch mf : multiMatches.values()) {
-                    OperationalExtension contributor = scanner.computeContributor(mf.extensionClass);
+                    BeanScannerExtension contributor = scanner.computeContributor(mf.extensionClass);
 
                     // Create the wrapped field that is exposed to the extension
                     BeanScannerField2 f = new BeanScannerField2(scanner, e.extensionType(), field, mf.allowGet, mf.allowSet, annotations);

@@ -20,20 +20,18 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.bindings.BindableVariable;
-import app.packed.context.Context;
+import app.packed.bindings.BeanVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
+import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
-import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.binding.PackedBindableVariable;
 
@@ -105,7 +103,7 @@ public final record PackedOperationHandle(OperationSetup operation) implements O
     // bind(index).toConstant("Foo");
     // Maybe take an consumer to make sure it is "executed"
     @Override
-    public BindableVariable manuallyBindable(int index) {
+    public BeanVariable manuallyBindable(int index) {
 
         // This method does not throw IllegalStateExtension, but OnBinding may.
         // custom invocationContext must have been set before calling this method
@@ -125,24 +123,8 @@ public final record PackedOperationHandle(OperationSetup operation) implements O
 
     /** {@inheritDoc} */
     @Override
-    public Set<Class<? extends Context<?>>> contexts() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public MethodHandle generateMethodHandle() {
         return operation.generateMethodHandle();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle generateMethodHandle(Object lifetimeHandle) {
-        // Fx
-        // Eller hvad tager vi praecis som parameter????
-
-        // Hmm er jo lettere sagt end gjort, vi
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -177,6 +159,12 @@ public final record PackedOperationHandle(OperationSetup operation) implements O
     @Override
     public OperationType type() {
         return operation.type;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<? extends Extension<?>> operator() {
+        return operation.operator.extensionType;
     }
 }
 

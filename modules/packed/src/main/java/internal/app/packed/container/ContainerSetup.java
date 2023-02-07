@@ -58,7 +58,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     public final AssemblySetup assembly;
 
     /** A map of all non-void bean classes. Used for controlling non-multi-install beans. */
-    public final HashMap<ClassEntry, Object> beanClassMap = new HashMap<>();
+    public final HashMap<BeanClassKey, Object> beanClassMap = new HashMap<>();
 
     /** All beans installed in a container is maintained in a linked list, this field pointing to the first bean. */
     @Nullable
@@ -278,5 +278,5 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         return extension;
     }
 
-    public /* primitive */ record ClassEntry(Realm realm, Class<?> beanClass) {}
+    public /* primitive */ record BeanClassKey(Realm realm, Class<?> beanClass) {}
 }

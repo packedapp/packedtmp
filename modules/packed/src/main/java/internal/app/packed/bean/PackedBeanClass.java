@@ -15,10 +15,11 @@
  */
 package internal.app.packed.bean;
 
+import app.packed.bean.BeanElement.BeanClass;
+
 /**
  *
  */
-public class BeanLocalKeyMap<T> {
+public abstract class PackedBeanClass implements BeanClass {
 
-    // IDK kender vi altid tyden?
 }

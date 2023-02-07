@@ -23,13 +23,13 @@ import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import app.packed.bean.BeanIntrospector.OperationalField;
+import app.packed.bean.BeanElement.BeanField;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bindings.Key;
 import app.packed.bindings.Variable;
 import app.packed.extension.Extension;
-import app.packed.operation.OperationHandle;
 import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanHookModel.AnnotatedField;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
@@ -39,7 +39,7 @@ import internal.app.packed.operation.PackedOperationHandle;
 import internal.app.packed.service.KeyHelper;
 
 /** Responsible for scanning fields on a bean. */
-public final class PackedOperationalField extends PackedOperationalMember<Field> implements OperationalField {
+public final class PackedBeanField extends PackedBeanMember<Field> implements BeanField {
 
     /** Whether or not operations that read from the field can be created. */
     final boolean allowGet;
@@ -47,14 +47,14 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
     /** Whether or not operations that write to the field can be created. */
     final boolean allowSet;
 
-    PackedOperationalField(BeanScanner scanner, Class<? extends Extension<?>> extensionType, Field field, boolean allowGet, boolean allowSet,
+    PackedBeanField(BeanScanner scanner, Class<? extends Extension<?>> extensionType, Field field, boolean allowGet, boolean allowSet,
             Annotation[] annotations, AnnotatedField... annotatedFields) {
         super(scanner.computeContributor(extensionType), field, annotations);
         this.allowGet = allowGet || extension.hasFullAccess();
         this.allowSet = allowSet || extension.hasFullAccess();
     }
 
-    PackedOperationalField(BeanScanner scanner, Field field, Annotation[] annotations, AnnotatedField... annotatedFields) {
+    PackedBeanField(BeanScanner scanner, Field field, Annotation[] annotations, AnnotatedField... annotatedFields) {
         super(scanner.computeContributor(annotatedFields[0].extensionType()), field, annotations);
         boolean allowGet = extension.hasFullAccess();
         boolean allowSet = extension.hasFullAccess();
@@ -66,7 +66,7 @@ public final class PackedOperationalField extends PackedOperationalMember<Field>
         this.allowSet = allowSet;
     }
 
-    PackedOperationalField(OperationalExtension scanner, Field field, Annotation[] annotations, AnnotatedField... annotatedFields) {
+    PackedBeanField(BeanScannerExtension scanner, Field field, Annotation[] annotations, AnnotatedField... annotatedFields) {
         super(scanner, field, annotations);
         boolean allowGet = extension.hasFullAccess();
         boolean allowSet = extension.hasFullAccess();

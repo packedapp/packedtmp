@@ -23,9 +23,9 @@ import java.lang.annotation.Target;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanIntrospector.OperationalMethod;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.framework.AnnotationList;
@@ -36,7 +36,7 @@ import app.packed.service.ServiceLocator;
  */
 public class AnnotatedMethodHookTester {
 
-    static <T> T process(Consumer<OperationalMethod> c, Class<T> type, Class<?>... additionalTypes) {
+    static <T> T process(Consumer<BeanMethod> c, Class<T> type, Class<?>... additionalTypes) {
         BaseAssembly ba = new BaseAssembly() {
 
             @Override
@@ -52,14 +52,14 @@ public class AnnotatedMethodHookTester {
     }
 
     static class MyExt extends Extension<MyExt> {
-        BiConsumer<AnnotationList, OperationalMethod> onm;
+        BiConsumer<AnnotationList, BeanMethod> onm;
 
         MyExt() {}
 
         /**
          * @param c
          */
-        void addOM(BiConsumer<AnnotationList, OperationalMethod> c) {
+        void addOM(BiConsumer<AnnotationList, BeanMethod> c) {
             onm = onm == null ? c : onm.andThen(c);
         }
 
@@ -68,7 +68,7 @@ public class AnnotatedMethodHookTester {
             return new BeanIntrospector() {
 
                 @Override
-                public void hookOnAnnotatedMethod(AnnotationList hooks, OperationalMethod on) {
+                public void hookOnAnnotatedMethod(AnnotationList hooks, BeanMethod on) {
                     onm.accept(hooks, on);
                 }
             };

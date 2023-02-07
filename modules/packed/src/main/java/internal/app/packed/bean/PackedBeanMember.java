@@ -23,23 +23,24 @@ import app.packed.framework.AnnotationList;
 
 /** The super class of operational members. The inheritance hierarchy follows that of {@link Member}. */
 @SuppressWarnings("rawtypes")
-abstract sealed class PackedOperationalMember<M extends Member> permits PackedOperationalField, PackedOperationalExecutable {
+abstract sealed class PackedBeanMember<M extends Member> permits PackedBeanField, PackedBeanExecutable {
 
     /** Annotations on the member. */
     private final Annotation[] annotations;
 
     /** The extension that can create new operations from the member. */
-    final OperationalExtension extension;
+    final BeanScannerExtension extension;
 
     /** The member. */
     final M member;
 
-    PackedOperationalMember(OperationalExtension ce, M member, Annotation[] annotations) {
-        this.extension = ce;
+    PackedBeanMember(BeanScannerExtension extension, M member, Annotation[] annotations) {
+        this.extension = extension;
         this.member = member;
         this.annotations = annotations;
     }
 
+    /** {@return a list of annotations on the member.} */
     public final AnnotationList annotations() {
         return new PackedAnnotationList(annotations);
     }
@@ -55,6 +56,7 @@ abstract sealed class PackedOperationalMember<M extends Member> permits PackedOp
         throw new BeanInstallationException("Field " + member + ": " + postFix);
     }
 
+    /** {@return the modifiers of the member.} */
     public final int modifiers() {
         return member.getModifiers();
     }

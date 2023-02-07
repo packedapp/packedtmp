@@ -36,7 +36,7 @@ import app.packed.bindings.Variable;
  * An operation type represents the arguments and return variable for an operation.
  *
  * @apiNote This class is modelled after {@link MethodType}. But uses {@link Variable} instead of {@link Class} as the
- *          base element type. This means that both detailed {@link Type} an annotations may be available.
+ *          element type. This means that both detailed {@link Type} information and annotations are available.
  */
 public final /* primitive */ class OperationType {
 
@@ -229,7 +229,7 @@ public final /* primitive */ class OperationType {
      */
     public static OperationType ofExecutable(Executable executable) {
         requireNonNull(executable, "executable is null");
-        Variable returnVariable = executable instanceof Method m ? Variable.ofMethodReturnType(m) : Variable.ofConstructor((Constructor<?>) executable);
+        Variable returnVariable = executable instanceof Method m ? Variable.ofMethodReturnType(m) : Variable.ofConstructorReturnType((Constructor<?>) executable);
         Parameter[] parameters = executable.getParameters();
         if (parameters.length == 0) {
             return new OperationType(returnVariable, NO_PARAMETERS);

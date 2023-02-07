@@ -39,17 +39,16 @@ import app.packed.framework.Nullable;
 import app.packed.lifetime.BeanLifetimeTemplate;
 import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.Op;
-import internal.app.packed.bean.BeanSetupClassMapContainer.MuInst;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.ContainerSetup.ClassEntry;
+import internal.app.packed.container.ContainerSetup.BeanClassKey;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.lifetime.PackedBeanLifetimeTemplate;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
 
 /**
  * This class is responsible for installing new beans.
  */
-// Tror den bliver en nested classe paa BeanSetup
 public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstaller {
 
     /** A list ofIllegal bean classes. Void is technically allowed but {@link #installWithoutSource()} needs to used. */
@@ -139,7 +138,7 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
     public <T> BeanHandle<T> installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle<T>> onInstall) {
         requireNonNull(beanClass, "beanClass is null");
 
-        ClassEntry e = new ClassEntry(owner.realm(), beanClass);
+        BeanClassKey e = new BeanClassKey(owner.realm(), beanClass);
         Object object = container.beanClassMap.get(e);
         if (object != null) {
             if (object instanceof BeanSetup b) {
@@ -224,15 +223,13 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
         }
         // TODO virker ikke med functional beans og naming
         String n = prefix;
-        ClassEntry e = new ClassEntry(owner.realm(), beanClass);
 
         BeanSetup bean = new BeanSetup(this, beanClass, sourceKind, source);
 
-        ContainerSetup container = bean.container;
-
+        BeanClassKey key = new BeanClassKey(owner.realm(), beanClass);
         if (beanClass != void.class) {
             if (multiInstall) {
-                MuInst i = (MuInst) container.beanClassMap.compute(e, (c, o) -> {
+                MuInst i = (MuInst) container.beanClassMap.compute(key, (c, o) -> {
                     if (o == null) {
                         return new MuInst();
                     } else if (o instanceof BeanSetup) {
@@ -251,7 +248,7 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
                     i.counter = next;
                 }
             } else {
-                container.beanClassMap.compute(e, (c, o) -> {
+                container.beanClassMap.compute(key, (c, o) -> {
                     if (o == null) {
                         return bean;
                     } else if (o instanceof BeanSetup) {
@@ -318,5 +315,9 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
     public BeanInstaller synthetic() {
         synthetic = true;
         return this;
+    }
+
+    static class MuInst {
+        int counter;
     }
 }

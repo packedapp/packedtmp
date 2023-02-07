@@ -39,6 +39,7 @@ import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedExtensionPointContext;
+import internal.app.packed.lifetime.LifecycleOrder;
 import internal.app.packed.operation.PackedOperationHandle;
 import internal.app.packed.service.PackedServiceLocator;
 
@@ -55,23 +56,34 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     /**
      * A bridge that a container's exported services available as a {@link app.packed.service.ServiceLocator} in the guest.
      */
+    public static final ExtensionLifetimeBridge EXPORTED_SERVICE_LOCATO0R = baseBuilder().onUse(baseExt -> {
+        BeanHandle<PackedServiceLocator> h = baseExt.ownBeanInstaller(BeanLifetimeTemplate.CONTAINER).install(PackedServiceLocator.class);
+        baseExt.addCodeGenerated(((PackedBeanHandle<?>) h).bean(), new Key<Map<Key<?>, MethodHandle>>() {},
+                () -> baseExt.extension.container.sm.exportedServices());
+        h.exportAs(Key.of(ServiceLocator.class)); // @Export(as = ServiceLocator.class) on PSL, I mean if Qualifier will work on class
+    }).includeExport(ServiceLocator.class).build();
+
     public static final ExtensionLifetimeBridge EXPORTED_SERVICE_LOCATOR = baseBuilder().onUse(e -> {
         e.ownBeanInstaller(BeanLifetimeTemplate.CONTAINER).installIfAbsent(PackedServiceLocator.class, h -> {
             h.exportAs(Key.of(ServiceLocator.class));
             e.addCodeGenerated(((PackedBeanHandle<?>) h).bean(), new Key<Map<Key<?>, MethodHandle>>() {}, () -> e.extension.container.sm.exportedServices());
         });
-    }).keys(ServiceLocator.class).build();
+    }).includeExport(ServiceLocator.class).build();
 
     // Teanker vi altid exportere den
     public static final ExtensionLifetimeBridge MANAGED_LIFETIME_CONTROLLER = baseBuilder().onUse(e -> {
-        // check that we have a lifetime
-    }).keys(ManagedLifetimeController.class).build();
+        // check that we have a managed lifetime. Maybe PackedManagedBeanController is already installed
+        // baseExtension.managedLifetimeBean.export(); // maybe it is already exported
+    }).includeExport(ManagedLifetimeController.class).build();
 
     /** Creates a new base extension point. */
     BaseExtensionPoint() {}
 
     // Alternativt tager vi ikke en bean. Men en container som er implicit
-
+    // Det betyder nu ogsaa at CodeGenerated er for hele containeren og ikke bare en bean.
+    // Maaske supportere begge ting?
+    // Det eneste jeg kunne forstille mig at man ikke ville container wide var hvis man havde en bean
+    // per X. Men taenker men saa har et arrays
     public <K> void addCodeGenerated(BeanConfiguration bean, Class<K> key, Supplier<? extends K> supplier) {
         addCodeGenerated(bean, Key.of(key), supplier);
     }
@@ -236,7 +248,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     public OperationConfiguration runOnBeanInitialization(DelegatingOperationHandle h, DependencyOrder ordering) {
         requireNonNull(ordering, "ordering is null");
         OperationHandle handle = h.newOperation(BeanOperationTemplate.defaults(), context());
-        ((PackedOperationHandle) handle).operation().bean.lifecycle.addInitialize(handle, ordering);
+        ((PackedOperationHandle) handle).operation().bean.addLifecycleOperation(LifecycleOrder.fromInitialize(ordering), handle);
         return new OperationConfiguration(handle);
     }
 
@@ -250,7 +262,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public OperationConfiguration runOnBeanInject(DelegatingOperationHandle h) {
         PackedOperationHandle handle = (PackedOperationHandle) h.newOperation(BeanOperationTemplate.defaults(), context());
-        handle.operation().bean.lifecycle.addInitialize(handle, null);
+        handle.operation().bean.addLifecycleOperation(LifecycleOrder.INJECT, handle);
         return new OperationConfiguration(handle);
     }
 
@@ -381,7 +393,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * Man kan selvfoelgelig kun bruge den paa
      *
      * <p>
-     * This annotation can only used by extension beans.
+     * This annotation can only used by beans owned by an extension.
      *
      * @see BindableVariable#bindGeneratedConstant(java.util.function.Supplier)
      * @see BaseExtensionPoint#addCodeGenerated(app.packed.bean.BeanConfiguration, Class, java.util.function.Supplier)
@@ -392,38 +404,4 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     @Retention(RetentionPolicy.RUNTIME)
     @AnnotatedBindingHook(extension = BaseExtension.class)
     public @interface CodeGenerated {}
-
 }
-
-//// Ideen er at man fx kan have en handle.onInitialize(MyEBC, BeanHandle<Driver>, (b,p)->b.drivers[i]=p);
-
-//// Ryger paa BeanHandle istedet for
-//<B, P> void callbackOnInitialize(InstanceBeanConfiguration<B> extensionBean, BeanHandle<P> beanToInitialize, BiConsumer<? super B, ? super P> consumer) {
-//    // ideen er at efter P er initialiseret saa kalder vi consumeren
-//
-//    // Smid den paa BeanHandle???
-//    // <B> onInitialize(InstanceBeanConfiguration<B> extensionBean, BiConsumer<? super B, ? super P> consumer)
-//    // <B> onInitialize(Class<B> extensionBeanClass, BiConsumer<? super B, ? super P> consumer)
-//}
-//
-//// Same container I think0-=
-//// Could we have it on initialize? Nahh, fungere vel egentligt kun med container beans
-//<B, P> void callbackOnInitialize(InstanceBeanConfiguration<B> extensionBean, InstanceBeanConfiguration<P> beanToInitialize,
-//        BiConsumer<? super B, ? super P> consumer) {
-//    // Skal vi checke at consumerBean bliver initialiseret foerend provider bean???
-//    // Ja det syntes jeg...
-//    // Skal de vaere samme container??
-//
-//    // Packed will call consumer(T, P) once provideBean has been initialized
-//    // Skal vi checke provideBean depends on consumerBean
-//    // framework will call
-//    // consumer(T, P) at initialization time
-//
-//}
-// Idea was to return the same IBC always. But equals, hashcode is fixed on BeanConfiguration, so can use as key in maps
-//class Tmp {
-//  InstanceBeanConfiguration<T> conf;
-//}
-//Tmp tmp = new Tmp();
-//BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER, useSite()).InstallIfAbsent(clazz, h -> action.accept(tmp.conf = new InstanceBeanConfiguration<>(h)));
-//return tmp.conf == null ? new InstanceBeanConfiguration<>(handle) : tmp.conf;

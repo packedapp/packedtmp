@@ -13,12 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime;
+package app.packed.context;
 
-import app.packed.lifetime.RunState;
-import app.packed.operation.OperationHandle;
+import app.packed.application.BuildException;
 
 /**
  *
  */
-public record LifetimeOperation(RunState state, OperationHandle os) {}
+// Hmm StaticContextUnavilable?
+// TransactionContext.get()
+
+// ProvisionException
+
+public class NotInContextException extends BuildException {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * @param message
+     */
+    public NotInContextException(String message) {
+        super(message);
+    }
+}

@@ -17,13 +17,14 @@ package app.packed.lifetime;
 
 import app.packed.bean.BeanKind;
 import app.packed.operation.BeanOperationTemplate;
-import internal.app.packed.bean.PackedBeanLifetimeTemplate;
+import app.packed.operation.OperationTemplate;
+import internal.app.packed.lifetime.PackedBeanLifetimeTemplate;
 
 /**
  *
  */
 // Contexts, Args
-public sealed interface BeanLifetimeTemplate permits PackedBeanLifetimeTemplate {
+public sealed interface BeanLifetimeTemplate extends OperationTemplate permits PackedBeanLifetimeTemplate {
 
     /**
      * The lifetime of the bean is identical to that of its container.

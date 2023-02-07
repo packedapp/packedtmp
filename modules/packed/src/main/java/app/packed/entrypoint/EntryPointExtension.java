@@ -7,16 +7,17 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.FrameworkExtension;
 import app.packed.framework.Nullable;
+import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.BeanOperationTemplate;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
@@ -29,10 +30,6 @@ import internal.app.packed.entrypoint.EntryPointSetup.MainThreadOfControl;
  */
 // Entrypoint er maaske daarligt. Giver ikke rigtig at sige en applikationer ikke
 // har entry points
-
-// ExecutionModel
-
-
 public class EntryPointExtension extends FrameworkExtension<EntryPointExtension> {
 
     /** The configuration of the application. */
@@ -65,7 +62,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
              * {@inheritDoc}
              */
             @Override
-            public void hookOnAnnotatedMethod(Annotation hook, OperationalMethod method) {
+            public void hookOnAnnotatedMethod(Annotation hook, BeanMethod method) {
                 int index = registerEntryPoint(null, true);
 
                 ContainerSetup container = BeanSetup.crack(method).container;

@@ -253,7 +253,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         // The extension must be recursively installed into all ancestors (if not already installed)
         ExtensionSetup extensionParent = container.treeParent == null ? null : container.treeParent.useExtension(extensionType, requestedByExtension);
 
-        ExtensionPreLoad p = container.preLoad.get(extensionType);
+        ExtensionPreLoad preLoader = container.preLoad.get(extensionType);
 
         ExtensionSetup extension = new ExtensionSetup(extensionParent, container, extensionType);
 
@@ -271,14 +271,14 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
             container.assembly.extensions.add(extension);
         }
 
-        if (p != null) {
-            Consumer<? super ExtensionSetup> c = p.onUse;
+        if (preLoader != null) {
+            Consumer<? super ExtensionSetup> c = preLoader.onUse;
             if (c != null) {
                 c.accept(extension);
             }
         }
 
-        // Invoke Extension#onNew() before returning the extension/extension-point
+        // Invoke Extension#onNew() before returning the extension
         try {
             MH_EXTENSION_ON_NEW.invokeExact(instance);
         } catch (Throwable t) {

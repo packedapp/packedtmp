@@ -18,8 +18,8 @@ package app.packed.lifetime;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.bindings.Key;
@@ -35,6 +35,8 @@ import internal.app.packed.lifetime.zbridge.PackedBridge;
 //// Kan expose services that can be used together ContainerGuest
 //// Kan
 
+////Args
+////Contexts???
 public final class ExtensionLifetimeBridge {
 
     /** The internal lifetime bridge. */
@@ -49,10 +51,13 @@ public final class ExtensionLifetimeBridge {
         return bridge.extensionClass;
     }
 
-    // Context injection???
-    public List<Class<?>> invocationArguments() {
-        return bridge.invocationArguments();
-    }
+//    // Context injection???
+//    // Hvordan faar vi dem hen til en bean???
+//    // Vi kender jo ikke positionen.
+//    // Non-context invocation args
+//    public List<Class<?>> invocationArguments() {
+//        return bridge.invocationArguments();
+//    }
 
     /**
      * Guests must use the {@link ContainerGuest} annotation
@@ -66,7 +71,7 @@ public final class ExtensionLifetimeBridge {
     }
 
     // Hmmmmmm, fraekt
-    public ExtensionLifetimeBridge transformServices(@SuppressWarnings("exports") Consumer<ServiceExportsTransformer> transformer) {
+    ExtensionLifetimeBridge transformServices(Consumer<ServiceExportsTransformer> transformer) {
         throw new UnsupportedOperationException();
     }
 
@@ -91,17 +96,24 @@ public final class ExtensionLifetimeBridge {
         public ExtensionLifetimeBridge build() {
             return new ExtensionLifetimeBridge(bridge);
         }
+
         // If arguments are needed from the lifetime start, must use a context.
+        // Taenker den er til raadighed i hele extension lifetimen?
+        // @InvocationArgs kan kun bruges af ejeren af en Lifetime
         public Builder<E> inContext(ContextTemplate template) {
+            requireNonNull(template, "template is null");
+            if (bridge.extensionClass != template.extensionClass()) {
+                throw new IllegalArgumentException();
+            }
             return this;
         }
 
-        public Builder<E> keys(Class<?>... keys) {
-            return keys(Key.ofAll(keys));
+        public Builder<E> includeExport(Class<?>... keys) {
+            return includeExport(Key.ofAll(keys));
         }
 
         // Must be exported by the extension
-        public Builder<E> keys(Key<?>... keys) {
+        public Builder<E> includeExport(Key<?>... keys) {
             Set.of(keys);
             return this;
         }
@@ -110,6 +122,12 @@ public final class ExtensionLifetimeBridge {
         public Builder<E> onUse(Consumer<? super E> action) {
             bridge = bridge.onUse(action);
             return this;
+        }
+
+        // containerBuilder(SomeLifetime, "asdasd");
+        // I don't know if we will ever need it
+        public <A> Builder<E> onUseWithBuildArg(Class<A> argType, BiConsumer<? super E, ? super A> action) {
+            throw new UnsupportedOperationException();
         }
     }
 }
@@ -122,8 +140,6 @@ public final class ExtensionLifetimeBridge {
 //// extractService(Key k) <
 //
 //// Hvad hvis extensionen ikke er installeret....
-
-
 
 // Ideen er at installere beans der kan be exposed to guest objektet.
 // Fx ServiceLocator

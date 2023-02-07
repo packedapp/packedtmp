@@ -13,23 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.operation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import app.packed.bean.BeanHook.AnnotatedBindingHook;
-import app.packed.extension.BaseExtension;
+import app.packed.lifetime.BeanLifetimeTemplate;
+import app.packed.lifetime.ContainerLifetimeTemplate;
 
 /**
  *
  */
-@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.TYPE_USE })
-@Retention(RetentionPolicy.RUNTIME)
-@AnnotatedBindingHook(extension = BaseExtension.class)
-public @interface ContainerGuest {}
-
-// Alternativt en Qualifier og saa local services...
-// Og evt ingen context...
+// has Fixed (ExtensoinContext, BeanInstance, Wirelet[])
+// Has invocation arguments
+// Has contexts
+// Problemet er ContainerLifetimeTemplate.parent og lazy. Foeler maaske ikke rigtig den fungere
+public sealed interface OperationTemplate permits BeanOperationTemplate, BeanLifetimeTemplate, ContainerLifetimeTemplate {}

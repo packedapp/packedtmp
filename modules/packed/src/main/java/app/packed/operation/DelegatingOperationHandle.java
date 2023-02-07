@@ -21,7 +21,7 @@ import internal.app.packed.operation.PackedDelegatingOperationHandle;
 
 /**
  * A special type of operation handle that allows an extension to delegate the execution of an operation to another
- * operation.
+ * extension.
  *
  * @see app.packed.bean.BeanIntrospector.OperationalMethod#newDelegatingOperation()
  */

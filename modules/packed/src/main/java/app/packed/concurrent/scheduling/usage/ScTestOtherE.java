@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 import java.time.Duration;
 
 import app.packed.application.App;
+import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.bean.BeanIntrospector;
 import app.packed.concurrent.scheduling.ScheduledOperationConfiguration;
@@ -66,7 +67,7 @@ public class ScTestOtherE extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void hookOnAnnotatedMethod(Annotation hook, OperationalMethod on) {
+                public void hookOnAnnotatedMethod(Annotation hook, BeanMethod on) {
                     ScheduleOther so = (ScheduleOther) hook;
                     ScheduledOperationConfiguration soc = use(SchedulingExtensionPoint.class)
                             .schedule(on.newOperation(BeanOperationTemplate.defaults().withArg(SchedulingContext.class)));

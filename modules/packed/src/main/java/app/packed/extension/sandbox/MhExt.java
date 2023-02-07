@@ -23,9 +23,9 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
-import app.packed.lifetime.BeanLifetimeTemplate;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
+import app.packed.lifetime.BeanLifetimeTemplate;
 import app.packed.operation.OperationHandle;
 
 /**
