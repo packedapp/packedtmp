@@ -17,8 +17,6 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodType;
-
 import app.packed.lifetime.ContainerLifetimeTemplate;
 
 /**
@@ -33,12 +31,6 @@ public final class PackedContainerLifetimeTemplate implements ContainerLifetimeT
 
     public PackedContainerLifetimeTemplate(ContainerKind kind) {
         this.kind = requireNonNull(kind);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodType invocationType() {
-        return null;
     }
 
     /** {@inheritDoc} */

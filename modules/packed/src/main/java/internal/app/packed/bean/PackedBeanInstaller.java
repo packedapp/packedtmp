@@ -41,6 +41,7 @@ import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.Op;
 import internal.app.packed.bean.BeanSetupClassMapContainer.MuInst;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.ContainerSetup.ClassEntry;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
@@ -137,11 +138,9 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
     @Override
     public <T> BeanHandle<T> installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle<T>> onInstall) {
         requireNonNull(beanClass, "beanClass is null");
-        HashMap<Class<?>, Object> bcm = container.beanClassMap;
-        if (owner instanceof ExtensionSetup e) {
-            bcm = e.beanClassMap;
-        }
-        Object object = bcm.get(beanClass);
+
+        ClassEntry e = new ClassEntry(owner.realm(), beanClass);
+        Object object = container.beanClassMap.get(e);
         if (object != null) {
             if (object instanceof BeanSetup b) {
                 return new PackedBeanHandle<>(b);
@@ -225,12 +224,7 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
         }
         // TODO virker ikke med functional beans og naming
         String n = prefix;
-
-        HashMap<Class<?>, Object> bcm = container.beanClassMap;
-        if (owner instanceof ExtensionSetup e) {
-            bcm = e.beanClassMap;
-
-        }
+        ClassEntry e = new ClassEntry(owner.realm(), beanClass);
 
         BeanSetup bean = new BeanSetup(this, beanClass, sourceKind, source);
 
@@ -238,7 +232,7 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
 
         if (beanClass != void.class) {
             if (multiInstall) {
-                MuInst i = (MuInst) bcm.compute(beanClass, (c, o) -> {
+                MuInst i = (MuInst) container.beanClassMap.compute(e, (c, o) -> {
                     if (o == null) {
                         return new MuInst();
                     } else if (o instanceof BeanSetup) {
@@ -257,7 +251,7 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
                     i.counter = next;
                 }
             } else {
-                bcm.compute(beanClass, (c, o) -> {
+                container.beanClassMap.compute(e, (c, o) -> {
                     if (o == null) {
                         return bean;
                     } else if (o instanceof BeanSetup) {
@@ -290,8 +284,8 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
             bean.operations.add(os);
         }
 
-        if (bean.owner instanceof ExtensionSetup e && bean.beanKind == BeanKind.CONTAINER) {
-            e.sm.addBean(bean);
+        if (bean.owner instanceof ExtensionSetup es && bean.beanKind == BeanKind.CONTAINER) {
+            es.sm.addBean(bean);
         }
 
         // Scan the bean class for annotations unless the bean class is void

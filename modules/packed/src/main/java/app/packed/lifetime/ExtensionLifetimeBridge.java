@@ -13,26 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.lifetime;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.bindings.Key;
 import app.packed.context.ContextTemplate;
-import app.packed.lifetime.BeanLifetimeTemplate;
-import app.packed.lifetime.sandbox.ManagedLifetimeController;
-import app.packed.service.ServiceLocator;
+import app.packed.extension.Extension;
 import app.packed.service.sandbox.transform.ServiceExportsTransformer;
-import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.lifetime.zbridge.PackedBridge;
-import internal.app.packed.service.PackedServiceLocator;
 
 /**
  *
@@ -42,24 +36,6 @@ import internal.app.packed.service.PackedServiceLocator;
 //// Kan
 
 public final class ExtensionLifetimeBridge {
-
-    /** A bridge that makes the name of the container available. */
-    public static final ExtensionLifetimeBridge CONTAINER_NAME = null;
-
-    /**
-     * A bridge that a container's exported services available as a {@link app.packed.service.ServiceLocator} in the guest.
-     */
-    public static final ExtensionLifetimeBridge EXPORTED_SERVICE_LOCATOR = baseBuilder().onUse(e -> {
-        e.ownBeanInstaller(BeanLifetimeTemplate.CONTAINER).installIfAbsent(PackedServiceLocator.class, h -> {
-            h.exportAs(Key.of(ServiceLocator.class));
-            e.addCodeGenerated(((PackedBeanHandle<?>) h).bean(), new Key<Map<Key<?>, MethodHandle>>() {}, () -> e.extension.container.sm.exportedServices());
-        });
-    }).keys(ServiceLocator.class).build();
-
-    // Teanker vi altid exportere den
-    public static final ExtensionLifetimeBridge MANAGED_LIFETIME_CONTROLLER = baseBuilder().onUse(e -> {
-        // check that we have a lifetime
-    }).keys(ManagedLifetimeController.class).build();
 
     /** The internal lifetime bridge. */
     private final PackedBridge<?> bridge;
@@ -94,10 +70,6 @@ public final class ExtensionLifetimeBridge {
         throw new UnsupportedOperationException();
     }
 
-    private static ExtensionLifetimeBridge.Builder<BaseExtension> baseBuilder() {
-        return ExtensionLifetimeBridge.builder(MethodHandles.lookup(), BaseExtension.class);
-    }
-
     public static <E extends Extension<E>> ExtensionLifetimeBridge.Builder<E> builder(MethodHandles.Lookup caller, Class<E> extensionType) {
         return new Builder<>(PackedBridge.builder(caller, extensionType));
     }
@@ -112,7 +84,7 @@ public final class ExtensionLifetimeBridge {
         }
 
         /**
-         * Builds and returns the new bridge.
+         * Builds and returns a new bridge.
          *
          * @return the new bridge
          */
@@ -141,6 +113,17 @@ public final class ExtensionLifetimeBridge {
         }
     }
 }
+//ServiceLocator
+//
+//ExtractSingleExportedService (not the whole ServiceLocator)
+//ServiceLocator
+//ManagedLifetimeController
+//JobResult
+//// extractService(Key k) <
+//
+//// Hvad hvis extensionen ikke er installeret....
+
+
 
 // Ideen er at installere beans der kan be exposed to guest objektet.
 // Fx ServiceLocator

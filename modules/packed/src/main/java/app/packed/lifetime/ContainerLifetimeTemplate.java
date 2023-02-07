@@ -16,25 +16,25 @@
 package app.packed.lifetime;
 
 import java.lang.invoke.MethodType;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
 
+import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.bindings.Key;
+import app.packed.operation.Op;
 import internal.app.packed.container.ContainerKind;
 import internal.app.packed.container.PackedContainerLifetimeTemplate;
 
 /**
  *
  */
-
-// Giver ikke mening ikke at have en guest here.
-// Det er jo ikke noget man aendrer. Omvendt kan vi ikke goere saa meget ved den
-
-// Maaske installere templaten guest'en
+// Features
+//// Guest
+//// Extension Bridges
+//// Args
+//// Contexts
 public sealed interface ContainerLifetimeTemplate permits PackedContainerLifetimeTemplate {
-
-    /**
-     * The container will have the same lifetime as its parent container.
-     * <p>
-     */
-    ContainerLifetimeTemplate PARENT = new PackedContainerLifetimeTemplate(ContainerKind.PARENT);
 
     ContainerLifetimeTemplate LAZY = new PackedContainerLifetimeTemplate(ContainerKind.LAZY);
 
@@ -43,28 +43,64 @@ public sealed interface ContainerLifetimeTemplate permits PackedContainerLifetim
     // Men kan vel godt have statiske context
     ContainerLifetimeTemplate OPERATION = null;
 
-    interface Builder {
-
-        // No seperet MH for starting, part of init
-        Builder autoStart(boolean fork);
-    }
-
     /**
-     * {@return the
+     * The container will have the same lifetime as its parent container.
+     * <p>
      */
-    MethodType invocationType();
+    ContainerLifetimeTemplate PARENT = new PackedContainerLifetimeTemplate(ContainerKind.PARENT);
+
+    // services available
+    default Set<Key<?>> keys(){
+        return Set.of();
+    }
 
     default boolean hasGuest() {
         return mode() == Mode.INITIALIZATION_START_STOP;
     }
 
+
+    // Parent, Lazy har ikke en invocation type.
+    // Vi har aldrig mere end en. Da man lukker via at faa noget injected i en guest.
+    /**
+     * {@return the
+     */
+    default Optional<MethodType> invocationType() {
+        throw new UnsupportedOperationException();
+    }
+
     Mode mode();
 
-    public enum Mode {
-        INITIALIZATION, // Will initialize
-        INITIALIZATION_START_STOP, // Needs a Guest
-        FULL_MONTY // May support guests, for example, for a result
+    static Builder builder() {
+        throw new UnsupportedOperationException();
     }
+
+    interface Builder {
+
+        Builder addBridge(ExtensionLifetimeBridge bridge);
+
+        Builder guest(Class<?> guest);
+
+        Builder guest(Op<?> guest);
+
+        // No seperet MH for starting, part of init
+        Builder autoStart(boolean fork);
+
+        ContainerLifetimeTemplate build();
+    }
+
+    public enum Mode {
+        FULL_MONTY, // May support guests, for example, for a result, // Will initialize
+        INITIALIZATION, // Needs a Guest
+        INITIALIZATION_START_STOP
+    }
+}
+
+interface ZBuilder2 {
+
+    <T> ZBuilder2 guest(Class<T> guest, Consumer<? super InstanceBeanConfiguration<T>> onInstaller);
+
+    <T> ZBuilder2 guest(Op<T> guest, Consumer<? super InstanceBeanConfiguration<T>> onInstaller);
+
 }
 // Bootstrap <- Initialization only
 

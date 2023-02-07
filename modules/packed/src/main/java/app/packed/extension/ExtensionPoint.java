@@ -109,7 +109,11 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     /** {@return the extension instance that this extension point is a part of.} */
     @SuppressWarnings("unchecked")
     protected final E extension() {
-        return (E) contextUse().extension().instance();
+        return (E) extensionSetup().instance();
+    }
+
+    protected final ExtensionSetup extensionSetup() {
+        return contextUse().extension();
     }
 
     /**

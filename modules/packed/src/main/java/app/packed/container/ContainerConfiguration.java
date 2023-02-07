@@ -57,7 +57,7 @@ public final class ContainerConfiguration {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof ContainerConfiguration bc && handle == bc.handle;
+        return obj == this || obj instanceof ContainerConfiguration bc && handle.equals(bc.handle);
     }
 
     /**

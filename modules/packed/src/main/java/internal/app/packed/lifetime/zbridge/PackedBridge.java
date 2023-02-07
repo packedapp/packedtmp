@@ -28,7 +28,7 @@ import java.util.function.Function;
 
 import app.packed.bindings.Key;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionLifetimeBridge;
+import app.packed.lifetime.ExtensionLifetimeBridge;
 import app.packed.operation.Op;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionPreLoad;

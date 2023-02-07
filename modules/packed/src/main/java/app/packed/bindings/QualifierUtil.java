@@ -34,13 +34,14 @@ public final class QualifierUtil {
         throw new UnsupportedOperationException();
     }
 
+    public static <E, F, T extends Annotation> BiFunction<E, F, T> syntheticBiFunction(MethodHandles.Lookup caller, Class<? extends Annotation> annotationType,
+            Class<E> attributeType1, String attributeName1, Class<E> attributeType2, String attributeName2) {
+        throw new UnsupportedOperationException();
+    }
+
     public static <E, T extends Annotation> Function<E, T> syntheticFunction(MethodHandles.Lookup caller, Class<? extends Annotation> annotationType,
             Class<E> attributeType) {
         return syntheticFunction(caller, annotationType, attributeType, "value");
-    }
-
-    public static <T extends Annotation> Function<Map<String, ?>, T> syntheticMapper(MethodHandles.Lookup caller, Class<? extends Annotation> annotationType) {
-        throw new UnsupportedOperationException();
     }
 
     public static <E, T extends Annotation> Function<E, T> syntheticFunction(MethodHandles.Lookup caller, Class<? extends Annotation> annotationType,
@@ -48,8 +49,7 @@ public final class QualifierUtil {
         throw new UnsupportedOperationException();
     }
 
-    public static <E, F, T extends Annotation> BiFunction<E, F, T> syntheticBiFunction(MethodHandles.Lookup caller, Class<? extends Annotation> annotationType,
-            Class<E> attributeType1, String attributeName1, Class<E> attributeType2, String attributeName2) {
+    public static <T extends Annotation> Function<Map<String, ?>, T> syntheticMapper(MethodHandles.Lookup caller, Class<? extends Annotation> annotationType) {
         throw new UnsupportedOperationException();
     }
 }

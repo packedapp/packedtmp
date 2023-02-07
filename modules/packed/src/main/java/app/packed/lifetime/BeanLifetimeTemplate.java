@@ -22,13 +22,14 @@ import internal.app.packed.bean.PackedBeanLifetimeTemplate;
 /**
  *
  */
+// Contexts, Args
 public sealed interface BeanLifetimeTemplate permits PackedBeanLifetimeTemplate {
 
     /**
-     * The lifetime of the bean is identical to to that of its container.
+     * The lifetime of the bean is identical to that of its container.
      * <p>
      * A single instance of the bean will be created (if the instance was not already provided when installing the bean)
-     * when the container is instantiated. Where after it's lifecycle will follow that of its parent.
+     * when the container is instantiated. Where after its lifecycle will follow that of its parent.
      * <p>
      * Beans that are part of the container's lifecycle
      */
@@ -76,6 +77,11 @@ public sealed interface BeanLifetimeTemplate permits PackedBeanLifetimeTemplate 
 
     sealed interface Builder permits PackedBeanLifetimeTemplate.PackedBuilder {
 
+        /**
+         * Creates and returns a new template.
+         *
+         * @return the new template
+         */
         BeanLifetimeTemplate build();
 
         Builder withLifetime(BeanOperationTemplate bot);

@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
-import java.util.HashMap;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanIntrospector;
@@ -51,9 +50,6 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
     /** A handle for setting the private field Extension#setup. */
     private static final VarHandle VH_EXTENSION_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), Extension.class, "extension", ExtensionSetup.class);
-
-    /** A map of all non-void bean classes. Used for controlling non-multi-install beans. */
-    public final HashMap<Class<?>, Object> beanClassMap = new HashMap<>();
 
     /** The container where the extension is used. */
     public final ContainerSetup container;

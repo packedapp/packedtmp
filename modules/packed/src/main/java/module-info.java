@@ -3,23 +3,24 @@ module app.packed {
 
     exports app.packed.application;
     exports app.packed.bean;
-    exports app.packed.bindings;
     exports app.packed.context;
     exports app.packed.container;
-    exports app.packed.extension;
     exports app.packed.errorhandling;
     exports app.packed.framework;
     exports app.packed.operation;
     exports app.packed.lifetime;
+    exports app.packed.service;
+
+    // Taenker de her ryger paa et tidspunkt
+    exports app.packed.bindings;
+    exports app.packed.extension;
 
     // Essential extensions
     exports app.packed.entrypoint;
-    exports app.packed.service;
 
     // temporary sandbox thingies
     exports app.packed.bindings.mirror;
     exports app.packed.lifetime.sandbox;
-    exports app.packed.extension.bridge;
 
     /* Special support for packed-devtoolks */
     uses internal.app.packed.framework.devtools.PackedDevToolsIntegration;

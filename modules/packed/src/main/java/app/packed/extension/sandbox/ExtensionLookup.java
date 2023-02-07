@@ -13,16 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.bridge.sandbox;
+package app.packed.extension.sandbox;
 
-import app.packed.bean.BeanMirror;
+import app.packed.extension.Extension;
 
 /**
- *
+ * <p>
+ * If you have an instance of ExtensionLookup<E> you can do anything you want for that particular extension
  */
-// What if we are also to get BeanGuests
+// Hvor skal vi bruges
 
-// BeanGuest... Could be an actor...
-public class ContainerGuestMirror extends BeanMirror {
 
+/// Indtil videre har vi de her 2 use cases
+// ContainerLifetimeBridge
+// Context
+class ExtensionLookup<E extends Extension<E>> {
+
+    static <E extends Extension<E>> ExtensionLookup<E> of(Class<E> extensionClass) {
+        return new ExtensionLookup<>();
+    }
 }

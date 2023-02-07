@@ -6,6 +6,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -17,29 +20,52 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.DependencyOrder;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.bindings.Key;
-import app.packed.container.Assembly;
-import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerInstaller;
-import app.packed.container.Wirelet;
-import app.packed.extension.bridge.ContainerGuestBeanConfiguration;
 import app.packed.lifetime.BeanLifetimeTemplate;
 import app.packed.lifetime.ContainerLifetimeTemplate;
+import app.packed.lifetime.ExtensionLifetimeBridge;
 import app.packed.lifetime.RunState;
+import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
+import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceableBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.PackedOperationHandle;
+import internal.app.packed.service.PackedServiceLocator;
 
 /** An {@link ExtensionPoint extension point} for {@link BaseExtension}. */
 public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
+
+    private static ExtensionLifetimeBridge.Builder<BaseExtension> baseBuilder() {
+        return ExtensionLifetimeBridge.builder(MethodHandles.lookup(), BaseExtension.class);
+    }
+
+    /** A bridge that makes the name of the container available. */
+    public static final ExtensionLifetimeBridge CONTAINER_NAME = null;
+
+    /**
+     * A bridge that a container's exported services available as a {@link app.packed.service.ServiceLocator} in the guest.
+     */
+    public static final ExtensionLifetimeBridge EXPORTED_SERVICE_LOCATOR = baseBuilder().onUse(e -> {
+        e.ownBeanInstaller(BeanLifetimeTemplate.CONTAINER).installIfAbsent(PackedServiceLocator.class, h -> {
+            h.exportAs(Key.of(ServiceLocator.class));
+            e.addCodeGenerated(((PackedBeanHandle<?>) h).bean(), new Key<Map<Key<?>, MethodHandle>>() {}, () -> e.extension.container.sm.exportedServices());
+        });
+    }).keys(ServiceLocator.class).build();
+
+    // Teanker vi altid exportere den
+    public static final ExtensionLifetimeBridge MANAGED_LIFETIME_CONTROLLER = baseBuilder().onUse(e -> {
+        // check that we have a lifetime
+    }).keys(ManagedLifetimeController.class).build();
 
     /** Creates a new base extension point. */
     BaseExtensionPoint() {}
@@ -182,35 +208,26 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         return new BeanConfiguration(handle);
     }
 
-    // onExtension E newContainer(Wirelet wirelets); // adds this to the container and returns it
-
-    public ContainerHandle newContainer(Assembly assembly, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    public ContainerHandle newContainer(ContainerLifetimeTemplate template, Assembly assembly, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    public ContainerHandle newContainer(ContainerLifetimeTemplate template, Wirelet... wirelets) {
-        // Maybe have
-        throw new UnsupportedOperationException();
-    }
-
-    public ContainerHandle newContainer(Wirelet... wirelets) {
-        // What is the usecase here without
-        // Okay I want to a create a container in the container.
-        // And then add myself
-
-        // Let's say entity beans are always in their own container
-        // newContainer().useMyself().
-
-        throw new UnsupportedOperationException();
-    }
-
-    public <T> ContainerGuestBeanConfiguration<T> newContainerGuest(Class<T> containerGuest, ExtensionLifetimeBridge... bridges) {
-        throw new UnsupportedOperationException();
-    }
+//    // onExtension E newContainer(Wirelet wirelets); // adds this to the container and returns it
+//
+//    public ContainerHandle newContainer(Assembly assembly, Wirelet... wirelets) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public ContainerHandle newContainer(Wirelet... wirelets) {
+//        // What is the usecase here without
+//        // Okay I want to a create a container in the container.
+//        // And then add myself
+//
+//        // Let's say entity beans are always in their own container
+//        // newContainer().useMyself().
+//
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public <T> ContainerGuestBeanConfiguration<T> newContainerGuest(Class<T> containerGuest, ExtensionLifetimeBridge... bridges) {
+//        throw new UnsupportedOperationException();
+//    }
 
     public OperationConfiguration runOnBean(RunState state, DelegatingOperationHandle h, DependencyOrder ordering) {
         throw new UnsupportedOperationException();

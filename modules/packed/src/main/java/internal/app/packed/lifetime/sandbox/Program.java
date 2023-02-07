@@ -22,7 +22,7 @@ import app.packed.bindings.Key;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerGuest;
 import app.packed.container.Wirelet;
-import app.packed.extension.ExtensionLifetimeBridge;
+import app.packed.extension.BaseExtensionPoint;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
 
@@ -163,7 +163,7 @@ record ProgramImplementation(@ContainerGuest String name, @ContainerGuest Servic
     /** An driver for creating App instances. */
     static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ProgramImplementation.class, c -> {
         c.managedLifetime();
-        c.addBridge(ExtensionLifetimeBridge.EXPORTED_SERVICE_LOCATOR);
+        c.addBridge(BaseExtensionPoint.EXPORTED_SERVICE_LOCATOR);
     });
 
     /** {@inheritDoc} */

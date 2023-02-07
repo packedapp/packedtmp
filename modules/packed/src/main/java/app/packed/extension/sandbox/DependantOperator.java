@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.bridge;
+package app.packed.extension.sandbox;
+
+import app.packed.extension.Extension;
 
 /**
- *
+ * An annotation that must be comsumed by a hook somewhere
  */
-public enum ContainerLifetimeMode {
-    INITIALIZATION_ONLY,
-    INITIALIZATION_START_STOP,
-    INITIALIZATION_AND_START_STOP,
-    ALL
+// Annotation must be used somewhere where someone consumes it
+// fx @InterruptOnStop.
+// Hvis den bare er placeret tilfaeldigt fejler vi
+public @interface DependantOperator {
+    Class<? extends Extension<?>> extension();
 }

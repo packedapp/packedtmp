@@ -57,6 +57,8 @@ public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
     @Override
     protected BeanIntrospector newBeanIntrospector() {
         return new BeanIntrospector() {
+
+            /** {@inheritDoc} */
             @Override
             public void hookOnProvidedVariableType(Class<?> hook, BindableWrappedVariable binding) {
                 OperationSetup operation = ((PackedBindableBaseVariable) binding).v.operation;
