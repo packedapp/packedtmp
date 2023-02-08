@@ -15,30 +15,26 @@
  */
 package internal.app.packed.bean;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-
 import app.packed.bean.BeanIntrospector;
-import internal.app.packed.bean.BeanHookModel.AnnotatedField;
-import internal.app.packed.bean.BeanScannerFieldHelper.FieldPair;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
  * An instance of this class is created per extension that participates in the introspection. The main purpose of the
  * class is to make sure that the extension points to the same bean introspector for the whole of the introspection.
  */
-public final class BeanScannerExtension {
+public final class BeanScannerExtension implements Comparable<BeanScannerExtension> {
 
     /** The actual extension. */
     public final ExtensionSetup extension;
 
     boolean hasFullAccess;
 
+    /** A bean introspector provided by the extension via {@link Extension#newBeanIntrospector} */
     final BeanIntrospector introspector;
 
-    public final BeanScanner scanner;
+    public final BeanReflector scanner;
 
-    BeanScannerExtension(BeanScanner scanner, ExtensionSetup extension, BeanIntrospector introspector) {
+    BeanScannerExtension(BeanReflector scanner, ExtensionSetup extension, BeanIntrospector introspector) {
         this.extension = extension;
         this.introspector = introspector;
         this.scanner = scanner;
@@ -48,38 +44,9 @@ public final class BeanScannerExtension {
         return hasFullAccess;
     }
 
-    void matchAnnotatedField(Field field, Annotation[] annotations, Annotation[] hooks, AnnotatedField... annotatedFields) {
-        PackedBeanField of = new PackedBeanField(this, field, annotations, annotatedFields);
-        PackedAnnotationList pac = new PackedAnnotationList(hooks);
-        introspector.hookOnAnnotatedField(pac, of);
-    }
-
-    public void onAnnotatedField(Field f, Annotation a1, Annotation a2) {
-        // Validating annotations
-    }
-
-    @SuppressWarnings("unused")
-    public void onAnnotatedField(Field f, Annotation[] fieldAnnotations, Annotation[] hooks, AnnotatedField[] afs) {
-        boolean isGetable = false;
-        boolean isSetable = false;
-        for (AnnotatedField af : afs) {
-            isGetable |= af.isGettable();
-            isSetable |= af.isSettable();
-        }
-    }
-
-    // I think we need to already have checked that we only have 1 providing annotation
-    public void onAnnotatedField(Field f, Annotation[] fieldAnnotations, FieldPair pair) {
-
-    }
-
-    public void onAnnotatedField(Field f, Annotation[] fieldAnnotations, FieldPair... pair) {
-
-    }
-
-    static class OnField {
-        Annotation[] annotations;
-        Field f;
-        FieldPair[] pairs;
+    /** {@inheritDoc} */
+    @Override
+    public int compareTo(BeanScannerExtension o) {
+        return extension.compareTo(o.extension);
     }
 }

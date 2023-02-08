@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.framework;
+package app.packed.util;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,7 +21,7 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.function.Consumer;
 
-import internal.app.packed.bean.PackedAnnotationList;
+import internal.app.packed.util.PackedAnnotationList;
 
 /**
  * An annotation reader can be used to process annotations on bean elements.

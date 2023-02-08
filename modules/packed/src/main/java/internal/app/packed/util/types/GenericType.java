@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Type;
 
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
 import internal.app.packed.util.StringFormatter;
 
 /**

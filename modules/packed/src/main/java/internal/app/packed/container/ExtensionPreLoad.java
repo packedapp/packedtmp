@@ -17,7 +17,7 @@ package internal.app.packed.container;
 
 import java.util.function.Consumer;
 
-import internal.app.packed.lifetime.zbridge.PackedBridge;
+import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
 
 /**
  * The basic idea is that we can configure some stuff that must be done on first usage of the extension
@@ -27,8 +27,8 @@ public final class ExtensionPreLoad {
     Consumer<? super ExtensionSetup> onUse;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void add(PackedBridge<?> bridge) {
-        Consumer<? super ExtensionSetup> c = bridge.onUse;
+    public void add(PackedContainerLifetimeChannel<?> bridge) {
+        Consumer<? super ExtensionSetup> c = bridge.onUse();
         if (c != null) {
             onUse = onUse == null ? c : onUse.andThen((Consumer) c);
         }

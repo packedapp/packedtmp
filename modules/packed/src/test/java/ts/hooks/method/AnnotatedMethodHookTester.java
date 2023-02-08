@@ -28,8 +28,8 @@ import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.bean.BeanIntrospector;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
-import app.packed.framework.AnnotationList;
 import app.packed.service.ServiceLocator;
+import app.packed.util.AnnotationList;
 
 /**
  *

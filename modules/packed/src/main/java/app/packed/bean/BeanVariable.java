@@ -22,11 +22,11 @@ import java.util.function.Supplier;
 
 import app.packed.bindings.BindingMirror;
 import app.packed.bindings.Key;
-import app.packed.bindings.Variable;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
-import app.packed.framework.Nullable;
 import app.packed.operation.Op;
+import app.packed.util.Nullable;
+import app.packed.util.Variable;
 import internal.app.packed.service.KeyHelper;
 
 /**
@@ -140,6 +140,7 @@ public non-sealed interface BeanVariable extends BeanElement {
      * @return the first class in the specified array that the variable is assignable to
      * @see Class#isAssignableFrom(Class)
      */
+    // maybe replace it with notAssignableTo
     default Class<?> checkAssignableTo(Class<?>... classes) {
         if (classes.length == 0) {
             throw new IllegalArgumentException("Cannot specify an empty array");
@@ -184,7 +185,7 @@ public non-sealed interface BeanVariable extends BeanElement {
      */
     @Override
     default Key<?> toKey() {
-        return KeyHelper.convert(variable().getType(), variable().getAnnotations(), this);
+        return KeyHelper.convert(variable().getType(), variable().annotations().toArray(), this);
     }
 
     default BeanWrappedVariable unwrap() {
@@ -205,7 +206,7 @@ public non-sealed interface BeanVariable extends BeanElement {
     }
 }
 
-interface Sanfbox extends BeanVariable {
+interface Sanfbox {
 
     /**
      *
@@ -219,7 +220,7 @@ interface Sanfbox extends BeanVariable {
         if (classes.length == 0) {
             throw new IllegalArgumentException("Cannot specify an empty array of classes");
         }
-        Class<?> rawType = variable().getRawType();
+        Class<?> rawType = Class.class; //variable().getRawType();
         for (Class<?> c : classes) {
             if (c.isAssignableFrom(rawType)) {
                 return true;

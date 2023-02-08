@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.BeanHook;
-import app.packed.framework.FrameworkNames;
+import app.packed.util.FrameworkNames;
 
 /**
  *
@@ -76,6 +76,7 @@ public @interface CustomBeanHook {
      *
      * @see AnnotatedFieldHook
      */
+    // Like AnnotatedFieldHook, but also has an annotationClass
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.ANNOTATION_TYPE)
     @Documented

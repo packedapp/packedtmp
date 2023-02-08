@@ -17,8 +17,8 @@ package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.bindings.Variable;
 import app.packed.extension.Extension;
+import app.packed.util.Variable;
 import internal.app.packed.bean.BeanHookModel.AnnotatedParameterType;
 import internal.app.packed.bean.BeanHookModel.ParameterType;
 import internal.app.packed.binding.InternalDependency;
@@ -31,7 +31,7 @@ import internal.app.packed.operation.OperationSetup;
  */
 final class BeanScannerBindingResolver {
 
-    static void resolveBinding(BeanScanner iBean, OperationSetup operation, int index) {
+    static void resolveBinding(BeanReflector iBean, OperationSetup operation, int index) {
 
         // Extracts the variable we want to resolve
         Variable v = operation.type.parameter(index);
@@ -49,7 +49,7 @@ final class BeanScannerBindingResolver {
             BeanScannerExtension contributor = iBean.computeContributor(hook.extensionType());
             PackedBindableVariable h = new PackedBindableVariable(iBean, operation, index, contributor.extension, v);
 
-            contributor.introspector.hookOnProvidedVariableType(v.getRawType(), new PackedBindableBaseVariable(h));
+            contributor.introspector.hookOnVariableType(v.getRawType(), new PackedBeanWrappedVariable(h));
             if (operation.bindings[index] != null) {
                 return;
             }
@@ -62,7 +62,7 @@ final class BeanScannerBindingResolver {
         BeanOwner owner = operation.bean.owner;
 
         Class<? extends Extension<?>> e = owner instanceof ExtensionSetup es ? es.extensionType : null;
-        if (operation.parent != null) {
+        if (operation.embeddedInto != null) {
             e = operation.operator.extensionType;
         }
 
@@ -81,8 +81,8 @@ final class BeanScannerBindingResolver {
      *            the method to look for annotations on
      * @return
      */
-    private static boolean tryResolveWithBindingAnnotation(BeanScanner introspector, Variable var, OperationSetup os, int index) {
-        Annotation[] annotations = var.getAnnotations();
+    private static boolean tryResolveWithBindingAnnotation(BeanReflector introspector, Variable var, OperationSetup os, int index) {
+        Annotation[] annotations = var.annotations().toArray();
 
         for (Annotation a1 : annotations) {
             Class<? extends Annotation> a1Type = a1.annotationType();
@@ -91,7 +91,7 @@ final class BeanScannerBindingResolver {
                 BeanScannerExtension ei = introspector.computeContributor(hook.extensionType());
 
                 PackedBindableVariable h = new PackedBindableVariable(introspector, os, index, ei.extension, var);
-                ei.introspector.hookOnProvidedAnnotatedVariable(a1, h);
+                ei.introspector.hookOnAnnotatedVariable(a1, h);
                 return true;
             }
         }

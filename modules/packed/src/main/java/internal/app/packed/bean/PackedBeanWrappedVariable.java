@@ -23,22 +23,22 @@ import app.packed.bean.BeanVariable;
 import app.packed.bean.BeanWrappedVariable;
 import app.packed.bindings.BindingMirror;
 import app.packed.bindings.Key;
-import app.packed.bindings.Variable;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
-import app.packed.framework.AnnotationList;
-import app.packed.framework.Nullable;
 import app.packed.operation.Op;
+import app.packed.util.AnnotationList;
+import app.packed.util.Nullable;
+import app.packed.util.Variable;
 import internal.app.packed.binding.PackedBindableVariable;
 
 /**
  *
  */
-public final class PackedBindableBaseVariable implements BeanWrappedVariable {
+public final class PackedBeanWrappedVariable implements BeanWrappedVariable {
 
     public final PackedBindableVariable v;
 
-    PackedBindableBaseVariable(PackedBindableVariable v) {
+    PackedBeanWrappedVariable(PackedBindableVariable v) {
         this.v = v;
     }
 

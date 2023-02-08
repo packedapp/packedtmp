@@ -30,10 +30,10 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 
-import app.packed.framework.AnnotationList;
-import app.packed.framework.Nullable;
-import internal.app.packed.bean.PackedAnnotationList;
+import app.packed.util.AnnotationList;
+import app.packed.util.Variable;
 import internal.app.packed.util.AnnotationUtil;
+import internal.app.packed.util.PackedAnnotationList;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeUtil;
@@ -137,7 +137,7 @@ public abstract class Key<T> {
             Variable v = EXTRACTOR.extractVariable(implementation, e -> new InvalidKeyException(e));
 
             Type type = convertType(v.getType(), this);
-            PackedAnnotationList annotations = qualifiersConvertExplicit(v.getAnnotations(), this);
+            PackedAnnotationList annotations = qualifiersConvertExplicit(v.annotations().toArray(), this);
             return new CanonicalizedKey<>(type, annotations);
         }
     };
@@ -213,7 +213,7 @@ public abstract class Key<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final boolean equals(@Nullable Object obj) {
+    public final boolean equals(Object obj) {
         return obj == this || obj instanceof Key<?> key && type.equals(key.type) && qualifiers.equals(key.qualifiers);
     }
 

@@ -30,15 +30,17 @@ import app.packed.application.BuildGoal;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
-import internal.app.packed.lifetime.zbridge.PackedBridge;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The internal representation of a bootstrap app. */
 public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
+
+    public final List<PackedContainerLifetimeChannel<?>> channels;
 
     final Set<Class<? extends Extension<?>>> extensionDenyList;
 
@@ -55,37 +57,14 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
     @Nullable
     public final Wirelet wirelet;
 
-    public final List<PackedBridge<?>> bridges;
-
-    public BootstrapAppSetup(OldLifetimeKind lifetimeKind, Supplier<? extends ApplicationMirror> mirrorSupplier, List<PackedBridge<?>> bridges, MethodHandle mh,
+    public BootstrapAppSetup(OldLifetimeKind lifetimeKind, Supplier<? extends ApplicationMirror> mirrorSupplier, List<PackedContainerLifetimeChannel<?>> channels, MethodHandle mh,
             Wirelet wirelet) {
         this.wirelet = wirelet;
-
-        // newInstance wants Object return
-        mh = mh.asType(mh.type().changeReturnType(Object.class));
-
         this.mhConstructor = requireNonNull(mh);
         this.mirrorSupplier = requireNonNull(mirrorSupplier);
         this.lifetimeKind = requireNonNull(lifetimeKind);
         this.extensionDenyList = Set.of();
-        this.bridges = List.copyOf(bridges);
-    }
-
-    /**
-     * Update an application driver with a new wirelet.
-     *
-     * @param existing
-     *            the existing driver
-     * @param wirelet
-     *            the new wirelet
-     */
-    private BootstrapAppSetup(BootstrapAppSetup<A> existing, Wirelet wirelet) {
-        this.wirelet = existing.wirelet;
-        this.mirrorSupplier = existing.mirrorSupplier;
-        this.lifetimeKind = existing.lifetimeKind;
-        this.mhConstructor = existing.mhConstructor;
-        this.extensionDenyList = existing.extensionDenyList;
-        this.bridges = existing.bridges;
+        this.channels = List.copyOf(channels);
     }
 
     /**
@@ -98,6 +77,12 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
      */
     public Set<Class<? extends Extension<?>>> bannedExtensions() {
         return extensionDenyList;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<PackedContainerLifetimeChannel<?>> channels() {
+        return channels;
     }
 
     /** {@inheritDoc} */
@@ -129,7 +114,6 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
         return mirrorSupplier;
     }
 
-    /** {@inheritDoc} */
     public ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets) {
         // Build the application
         AssemblySetup as = new AssemblySetup(this, BuildGoal.LAUNCH_REPEATABLE, null, assembly, wirelets);
@@ -185,12 +169,6 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
         as.build();
     }
 
-//    @SuppressWarnings("unchecked")
-//    public PackedApplicationDriver<A> withDisabledExtensions(Class<? extends Extension<?>>... extensionTypes) {
-//        // Ideen var lidt ikke at lave disse public... Men tvinge folk til bare at bruge extensions...
-//        throw new UnsupportedOperationException();
-//    }
-
     /** {@inheritDoc} */
     @Override
     public Wirelet wirelet() {
@@ -201,111 +179,8 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
     public BootstrapAppSetup<A> with(Wirelet... wirelets) {
         // Skal vi checke noget med components
         Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
-        return new BootstrapAppSetup<>(this, w);
+        return new BootstrapAppSetup<>(lifetimeKind, mirrorSupplier, channels, mhConstructor, w);
     }
-
-    /**
-     * A builder for an application driver. An instance of this interface is acquired by calling
-     * {@link OldBootstrapApp#builder()}.
-     */
-    // /* sealed */ interface IBuilder /* permits PackedApplicationDriver.Builder */ {
-    // Environment + Application Interface + Result
-
-    // Refactoring
-    //// En build(Wirelet... wirelets) metode
-    //// Companion objects must be added in order of the recieving MethodHandle
-
-    // Maaske konfigure man dem direkte paa extension support klassen
-    //// Det jeg taener er at man maaske har mulighed for at konfigure dem. F.eks.
-    // ServiceApplicationController.alwaysWrap();
-
-    // Problemet her er at vi gerne maaske fx vil angive LaunchState for Lifetime.
-    // Hvilket ikke er muligt
-
-    // noget optional??? ellers
-    /**
-     * @param companions
-     * @return this builder
-     * @throws UnsupportedOperationException
-     *             if this builder does not have a wrapper
-     */
-//        default Builder addCompanion(ExtensionBridge... companions) {
-//            return this;
-//        }
-
-//        /**
-//         * Disables 1 or more extensions. Attempting to use a disabled extension will result in an RestrictedExtensionException
-//         * being thrown
-//         *
-//         * @param extensionTypes
-//         *            the types of extension to disable
-//         * @return
-//         */
-//        Builder<A> disableExtension(Class<? extends Extension<?>> extensionType);
-
-//        @SuppressWarnings("unchecked")
-//        default Builder<A> requireExtension(Class<? extends Extension>... extensionTypes) {
-//
-//            return this;
-//        }
-//
-//        default Builder<A> restartable() {
-//            return this;
-//        }
-//
-//        // Det er jo ogsaa en companion
-//        default Builder<A> resultType(Class<?> resultType) {
-//            throw new UnsupportedOperationException();
-//        }
-//
-//        // overrideMirror???
-//        default Builder<A> specializeMirror(Supplier<? extends ApplicationMirror> supplier) {
-//            throw new UnsupportedOperationException();
-//        }
-
-    // Maaske kan man have et form for accept filter...
-
-    // Vi skal soerge for vi ikke klasse initialisere... Det er det
-
-    // Bliver de arvet??? Vil mene ja...
-    // Naa men vi laver bare en host/app der saa kan goere det...
-
-    // Kan ogsaa lave noget BiPredicate der tager
-    // <Requesting extension, extension that was requested>
-
-    // Spies
-
-    // Kan jo altsaa ogsaa vaere en Wirelet...
-    // WireletScope...
-
-    /**
-     * Indicates that the any application create by this driver is not runnable.
-     *
-     * @return this builder
-     */
-    // https://en.wikipedia.org/wiki/Runtime_system
-    // noRuntimeEnvironment appénwerwer wer
-
-    // Add ApplicationRuntimeExtension to list of unsupported extensions
-    // noApplicationRuntime
-//        Builder disableApplicationRuntime(); // or notRunnable() (it was this originally)
-
-    // Application can only take an assembly of this type...
-
-    // fx disallow(BytecodeGenExtension.class);
-    // fx disallow(ThreadExtension.class);
-    // fx disallow(FileExtension.class);
-    // fx disallow(NetExtension.class); -> you want to use network.. to bad for you...
-
-//        default Builder linkExtensionBean(Class<? extends Extension> extensionType, Class<?> extensionBean) {
-//
-//            // Taenker lidt den bliver erstattet af ApplicationController?
-//
-//            // extension must be available...
-//            // An extensionBean of the specified type must be installed by the extension in the root container
-//            return this;
-//        }
-    // }
 
     /**
      * Implementation of {@link ApplicationLauncher} used by {@link BootstrapApp#newImage(Assembly, Wirelet...)}.
@@ -318,15 +193,6 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
             this.ref = new AtomicReference<>(new ReusableApplicationImage<>(driver, application));
         }
 
-        @SuppressWarnings("unused")
-        private RuntimeApplicationLauncher launcher() {
-            ReusableApplicationImage<A> img = ref.getAndSet(null);
-            if (img == null) {
-                throw new IllegalStateException("This image has already been used");
-            }
-            return img.application.generatedLauncher;
-        }
-
         /** {@inheritDoc} */
         @Override
         public A launch(Wirelet... wirelets) {
@@ -337,6 +203,15 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
             // Not sure we can GC anything here
             // Think we need to extract a launcher and call it
             return img.launch(wirelets);
+        }
+
+        @SuppressWarnings("unused")
+        private RuntimeApplicationLauncher launcher() {
+            ReusableApplicationImage<A> img = ref.getAndSet(null);
+            if (img == null) {
+                throw new IllegalStateException("This image has already been used");
+            }
+            return img.application.generatedLauncher;
         }
     }
 
@@ -353,7 +228,8 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
     }
 
     /** A application launcher that maps the result of the launch. */
-    public record MappedApplicationImage<A, F>(ApplicationLauncher<F> image, Function<? super F, ? extends A> mapper) implements ApplicationLauncher<A> {
+    public /* primitive */ record MappedApplicationImage<A, F>(ApplicationLauncher<F> image, Function<? super F, ? extends A> mapper)
+            implements ApplicationLauncher<A> {
 
         /** {@inheritDoc} */
         @Override
@@ -370,10 +246,113 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
             return new MappedApplicationImage<>(image, andThen);
         }
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<PackedBridge<?>> bridges() {
-        return bridges;
-    }
 }
+
+//@SuppressWarnings("unchecked")
+//public PackedApplicationDriver<A> withDisabledExtensions(Class<? extends Extension<?>>... extensionTypes) {
+//  // Ideen var lidt ikke at lave disse public... Men tvinge folk til bare at bruge extensions...
+//  throw new UnsupportedOperationException();
+//}
+
+/**
+ * A builder for an application driver. An instance of this interface is acquired by calling
+ * {@link OldBootstrapApp#builder()}.
+ */
+// /* sealed */ interface IBuilder /* permits PackedApplicationDriver.Builder */ {
+// Environment + Application Interface + Result
+
+// Refactoring
+//// En build(Wirelet... wirelets) metode
+//// Companion objects must be added in order of the recieving MethodHandle
+
+// Maaske konfigure man dem direkte paa extension support klassen
+//// Det jeg taener er at man maaske har mulighed for at konfigure dem. F.eks.
+// ServiceApplicationController.alwaysWrap();
+
+// Problemet her er at vi gerne maaske fx vil angive LaunchState for Lifetime.
+// Hvilket ikke er muligt
+
+// noget optional??? ellers
+/**
+ * @param companions
+ * @return this builder
+ * @throws UnsupportedOperationException
+ *             if this builder does not have a wrapper
+ */
+//    default Builder addCompanion(ExtensionBridge... companions) {
+//        return this;
+//    }
+
+//    /**
+//     * Disables 1 or more extensions. Attempting to use a disabled extension will result in an RestrictedExtensionException
+//     * being thrown
+//     *
+//     * @param extensionTypes
+//     *            the types of extension to disable
+//     * @return
+//     */
+//    Builder<A> disableExtension(Class<? extends Extension<?>> extensionType);
+
+//    @SuppressWarnings("unchecked")
+//    default Builder<A> requireExtension(Class<? extends Extension>... extensionTypes) {
+//
+//        return this;
+//    }
+//
+//    default Builder<A> restartable() {
+//        return this;
+//    }
+//
+//    // Det er jo ogsaa en companion
+//    default Builder<A> resultType(Class<?> resultType) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    // overrideMirror???
+//    default Builder<A> specializeMirror(Supplier<? extends ApplicationMirror> supplier) {
+//        throw new UnsupportedOperationException();
+//    }
+
+// Maaske kan man have et form for accept filter...
+
+// Vi skal soerge for vi ikke klasse initialisere... Det er det
+
+// Bliver de arvet??? Vil mene ja...
+// Naa men vi laver bare en host/app der saa kan goere det...
+
+// Kan ogsaa lave noget BiPredicate der tager
+// <Requesting extension, extension that was requested>
+
+// Spies
+
+// Kan jo altsaa ogsaa vaere en Wirelet...
+// WireletScope...
+
+/**
+ * Indicates that the any application create by this driver is not runnable.
+ *
+ * @return this builder
+ */
+// https://en.wikipedia.org/wiki/Runtime_system
+// noRuntimeEnvironment appénwerwer wer
+
+// Add ApplicationRuntimeExtension to list of unsupported extensions
+// noApplicationRuntime
+//    Builder disableApplicationRuntime(); // or notRunnable() (it was this originally)
+
+// Application can only take an assembly of this type...
+
+// fx disallow(BytecodeGenExtension.class);
+// fx disallow(ThreadExtension.class);
+// fx disallow(FileExtension.class);
+// fx disallow(NetExtension.class); -> you want to use network.. to bad for you...
+
+//    default Builder linkExtensionBean(Class<? extends Extension> extensionType, Class<?> extensionBean) {
+//
+//        // Taenker lidt den bliver erstattet af ApplicationController?
+//
+//        // extension must be available...
+//        // An extensionBean of the specified type must be installed by the extension in the root container
+//        return this;
+//    }
+// }

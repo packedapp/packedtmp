@@ -11,7 +11,7 @@ import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
 import java.util.stream.Stream;
 
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
 

@@ -29,15 +29,15 @@ import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.framework.Nullable;
-import app.packed.lifetime.ExtensionLifetimeBridge;
+import app.packed.lifetime.ContainerLifetimeChannel;
 import app.packed.operation.Op;
+import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationDriver;
 import internal.app.packed.application.BootstrapAppSetup;
 import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
-import internal.app.packed.lifetime.zbridge.PackedBridge;
 
 /**
  * A bootstrap app is a special type of applications that can be used to create other (non-bootstrap) application.
@@ -191,8 +191,9 @@ public final class BootstrapApp<A> {
         if (o != null) {
             mh = comp.ahe.mh;
         }
+        mh = mh.asType(mh.type().changeReturnType(Object.class));
 
-        BootstrapAppSetup<A> a = new BootstrapAppSetup<>(comp.lifetimeKind, comp.mirrorSupplier, comp.bridges, mh, null);
+        BootstrapAppSetup<A> a = new BootstrapAppSetup<>(comp.lifetimeKind, comp.mirrorSupplier, comp.channels, mh, null);
         return new BootstrapApp<>(a);
     }
 
@@ -210,21 +211,30 @@ public final class BootstrapApp<A> {
 
         ApplicationHostExtension ahe;
 
+        /** Lifetime channels for the. */
+        private final ArrayList<PackedContainerLifetimeChannel<?>> channels = new ArrayList<>();
+
         private OldLifetimeKind lifetimeKind = OldLifetimeKind.UNMANAGED;
 
         /** Supplies a mirror for the application. */
         private Supplier<? extends ApplicationMirror> mirrorSupplier = ApplicationMirror::new;
 
-        private ArrayList<PackedBridge<?>> bridges = new ArrayList<>();
-
+        @Nullable
         final Object o;
 
-        private Composer(Object o) {
+        private Composer(@Nullable Object o) {
             this.o = o;
         }
 
-        public Composer addBridge(ExtensionLifetimeBridge... bridges) {
-            this.bridges.addAll(List.of(bridges).stream().map(PackedBridge::crack).toList());
+        /**
+         * Adds 1 or more container lifetime channels.
+         *
+         * @param channels
+         *            the channel(s) to add
+         * @return this composer
+         */
+        public Composer addChannel(ContainerLifetimeChannel... channels) {
+            this.channels.addAll(List.of(channels).stream().map(PackedContainerLifetimeChannel::crack).toList());
             return this;
         }
 
@@ -256,6 +266,7 @@ public final class BootstrapApp<A> {
             return this;
         }
 
+        /** An composer wrapping Assembly. */
         static class BootstrapAppAssembly<A> extends ComposerAssembly<Composer> {
 
             BootstrapAppAssembly(Composer c, ComposerAction<? super Composer> action) {
@@ -265,6 +276,12 @@ public final class BootstrapApp<A> {
     }
 
     private static final class PremordialApplicationDriver<A> extends ApplicationDriver<BootstrapApp<A>> {
+
+        /** {@inheritDoc} */
+        @Override
+        public List<PackedContainerLifetimeChannel<?>> channels() {
+            return List.of();
+        }
 
         /** {@inheritDoc} */
         @Override
@@ -289,12 +306,6 @@ public final class BootstrapApp<A> {
         @Nullable
         public Wirelet wirelet() {
             return null;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public List<PackedBridge<?>> bridges() {
-            return List.of();
         }
     }
 }

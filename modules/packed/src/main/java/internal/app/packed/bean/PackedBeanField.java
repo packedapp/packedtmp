@@ -15,31 +15,30 @@
  */
 package internal.app.packed.bean;
 
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import app.packed.bean.BeanElement.BeanField;
-import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bindings.Key;
-import app.packed.bindings.Variable;
-import app.packed.extension.Extension;
-import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationType;
-import internal.app.packed.bean.BeanHookModel.AnnotatedField;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.FunctionType;
+import app.packed.util.Variable;
+import internal.app.packed.bean.hooks.HookOnFieldAnnotation;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.operation.PackedOperationHandle;
 import internal.app.packed.service.KeyHelper;
+import internal.app.packed.util.PackedVariable;
+import internal.app.packed.util.PackedAnnotationList;
 
-/** Responsible for scanning fields on a bean. */
-public final class PackedBeanField extends PackedBeanMember<Field> implements BeanField {
+/** Implementation of {@link BeanField}. */
+public final class PackedBeanField extends PackedBeanMember<Field> implements BeanField , Comparable<PackedBeanField> {
 
     /** Whether or not operations that read from the field can be created. */
     final boolean allowGet;
@@ -47,35 +46,30 @@ public final class PackedBeanField extends PackedBeanMember<Field> implements Be
     /** Whether or not operations that write to the field can be created. */
     final boolean allowSet;
 
-    PackedBeanField(BeanScanner scanner, Class<? extends Extension<?>> extensionType, Field field, boolean allowGet, boolean allowSet,
-            Annotation[] annotations, AnnotatedField... annotatedFields) {
-        super(scanner.computeContributor(extensionType), field, annotations);
-        this.allowGet = allowGet || extension.hasFullAccess();
-        this.allowSet = allowSet || extension.hasFullAccess();
-    }
+    /** Hooks on the field */
+    private final PackedAnnotationList hooks;
 
-    PackedBeanField(BeanScanner scanner, Field field, Annotation[] annotations, AnnotatedField... annotatedFields) {
+    private final AnnotatedType annotatedType;
+
+    PackedBeanField(BeanReflector scanner, Field field, PackedAnnotationList annotations, PackedAnnotationList hooks,
+            HookOnFieldAnnotation... annotatedFields) {
         super(scanner.computeContributor(annotatedFields[0].extensionType()), field, annotations);
         boolean allowGet = extension.hasFullAccess();
         boolean allowSet = extension.hasFullAccess();
-        for (AnnotatedField annotatedField : annotatedFields) {
+        for (HookOnFieldAnnotation annotatedField : annotatedFields) {
             allowGet |= annotatedField.isGettable();
             allowSet |= annotatedField.isSettable();
         }
         this.allowGet = allowGet;
         this.allowSet = allowSet;
+        this.hooks = hooks;
+        this.annotatedType = member.getAnnotatedType(); // TODO take as parameter
     }
 
-    PackedBeanField(BeanScannerExtension scanner, Field field, Annotation[] annotations, AnnotatedField... annotatedFields) {
-        super(scanner, field, annotations);
-        boolean allowGet = extension.hasFullAccess();
-        boolean allowSet = extension.hasFullAccess();
-        for (AnnotatedField annotatedField : annotatedFields) {
-            allowGet |= annotatedField.isGettable();
-            allowSet |= annotatedField.isSettable();
-        }
-        this.allowGet = allowGet;
-        this.allowSet = allowSet;
+    /** {@inheritDoc} */
+    @Override
+    public int compareTo(PackedBeanField o) {
+        return member.getName().compareTo(o.member.getName());
     }
 
     /** {@inheritDoc} */
@@ -84,52 +78,28 @@ public final class PackedBeanField extends PackedBeanMember<Field> implements Be
         return member;
     }
 
-    /** Callback into an extension's {@link BeanIntrospector#hookOnAnnotatedField(OperationalField)} method. */
-    void matchy() {
-        extension.introspector.hookOnAnnotatedField(PackedAnnotationList.of(), this);
-        extension.scanner.resolveOperations(); // resolve bindings for any operation(s) that have been created
-    }
-
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newGetOperation(BeanOperationTemplate template) {
+    public OperationHandle newGetOperation(OperationTemplate template) {
         checkConfigurable();
-
-        Lookup lookup = extension.scanner.oc.lookup(member);
-
-        MethodHandle methodHandle;
-        try {
-            methodHandle = lookup.unreflectGetter(member);
-        } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
-        }
-
+        MethodHandle mh = extension.scanner.unreflectGetter(member);
         AccessMode accessMode = Modifier.isVolatile(member.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
-        return newOperation(template, methodHandle, accessMode);
+        return newOperation(template, mh, accessMode);
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(BeanOperationTemplate template, AccessMode accessMode) {
+    public OperationHandle newOperation(OperationTemplate template, AccessMode accessMode) {
         checkConfigurable();
-        Lookup lookup = extension.scanner.oc.lookup(member);
-
-        VarHandle varHandle;
-        try {
-            varHandle = lookup.unreflectVarHandle(member);
-        } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("Could not create a VarHandle", e);
-        }
-
+        VarHandle varHandle = extension.scanner.unreflectVarHandle(member);
         MethodHandle mh = varHandle.toMethodHandle(accessMode);
         return newOperation(template, mh, accessMode);
     }
 
-    private PackedOperationHandle newOperation(BeanOperationTemplate template, MethodHandle mh, AccessMode accessMode) {
+    private PackedOperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
         template = template.withReturnType(member.getType());
-        OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, OperationType.ofField(member, accessMode), template,
+        OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, FunctionType.ofField(member, accessMode), template,
                 new OperationFieldTarget(member, accessMode), mh);
-
         extension.scanner.unBoundOperations.add(operation);
         extension.scanner.bean.operations.add(operation);
         return operation.toHandle();
@@ -137,32 +107,26 @@ public final class PackedBeanField extends PackedBeanMember<Field> implements Be
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newSetOperation(BeanOperationTemplate template) {
+    public OperationHandle newSetOperation(OperationTemplate template) {
         checkConfigurable();
-        Lookup lookup = extension.scanner.oc.lookup(member);
-
-        // Create a method handle by unreflecting the field.
-        // Will fail if the framework does not have access to the member
-        MethodHandle methodHandle;
-        try {
-            methodHandle = lookup.unreflectSetter(member);
-        } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
-        }
-
+        MethodHandle mh = extension.scanner.unreflectSetter(member);
         AccessMode accessMode = Modifier.isVolatile(member.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
-        return newOperation(template, methodHandle, accessMode);
+        return newOperation(template, mh, accessMode);
+    }
+
+    void onHook() {
+        extension.introspector.hookOnAnnotatedField(hooks, this);
     }
 
     /** {@inheritDoc} */
     @Override
     public Key<?> toKey() {
-        return KeyHelper.convert(member.getGenericType(), member.getAnnotations(), this);
+        return KeyHelper.convert(member, annotatedType);
     }
 
     /** {@inheritDoc} */
     @Override
     public Variable variable() {
-        return Variable.ofField(member);
+        return PackedVariable.of(annotatedType);
     }
 }

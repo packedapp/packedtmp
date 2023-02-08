@@ -27,12 +27,12 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
-import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.FunctionType;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
-import app.packed.operation.OperationType;
 import internal.app.packed.binding.PackedBindableVariable;
 
 /**
@@ -157,7 +157,7 @@ public final record PackedOperationHandle(OperationSetup operation) implements O
 
     /** {@inheritDoc} */
     @Override
-    public OperationType type() {
+    public FunctionType type() {
         return operation.type;
     }
 
@@ -334,7 +334,7 @@ interface ZandboxOH {
 
     // If immutable... IDK
     // Fx fra mirrors. Har composite operations ogsaa templates???
-    BeanOperationTemplate template();
+    OperationTemplate template();
 
     //
 //  private static <K, U, V> Map<K, U> copyOf(Map<K, V> map, Function<V, U> valueMapper) {

@@ -13,8 +13,8 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.FrameworkExtension;
-import app.packed.framework.Nullable;
-import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.Nullable;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
@@ -71,7 +71,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
 
                 MainThreadOfControl mc = container.lifetime.entryPoint.mainThread();
 
-                BeanOperationTemplate temp = BeanOperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
+                OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
                 OperationHandle os = method.newOperation(temp);
                 os.specializeMirror(() -> new EntryPointMirror(index));
 

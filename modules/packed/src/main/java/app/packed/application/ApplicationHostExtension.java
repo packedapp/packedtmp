@@ -21,7 +21,7 @@ import app.packed.bean.BeanHandle;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.extension.FrameworkExtension;
 import app.packed.lifetime.BeanLifetimeTemplate;
-import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
@@ -37,7 +37,7 @@ import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 // Men vil man deploye at runtime jo need this host/deployer extension
 public class ApplicationHostExtension extends FrameworkExtension<ApplicationHostExtension> {
 
-    static final BeanOperationTemplate ot = BeanOperationTemplate.raw().withArg(ApplicationInitializationContext.class).withReturnTypeObject();
+    static final OperationTemplate ot = OperationTemplate.raw().withArg(ApplicationInitializationContext.class).withReturnTypeObject();
 
     static final BeanLifetimeTemplate BLT = BeanLifetimeTemplate.builderManyton().withLifetime(ot).build();
 

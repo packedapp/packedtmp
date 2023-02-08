@@ -20,7 +20,7 @@ import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
 import app.packed.bean.Inject;
-import app.packed.operation.OperationType;
+import app.packed.util.FunctionType;
 import internal.app.packed.util.StringFormatter;
 
 /**
@@ -49,7 +49,7 @@ import internal.app.packed.util.StringFormatter;
  *            the implementation type
  * @return a factory for the specified type
  */
-final record BeanScannerConstructor(Constructor<?> constructor, OperationType operationType) {
+final record BeanScannerConstructor(Constructor<?> constructor, FunctionType operationType) {
 
     /** A cache of constructor. */
     static final ClassValue<BeanScannerConstructor> CACHE = new ClassValue<>() {
@@ -57,7 +57,7 @@ final record BeanScannerConstructor(Constructor<?> constructor, OperationType op
         /** {@inheritDoc} */
         protected BeanScannerConstructor computeValue(Class<?> implementation) {
             Constructor<?> executable = BeanScannerConstructor.getConstructor(implementation, true, e -> new IllegalArgumentException(e));
-            return new BeanScannerConstructor(executable, OperationType.ofExecutable(executable));
+            return new BeanScannerConstructor(executable, FunctionType.ofExecutable(executable));
         }
     };
 

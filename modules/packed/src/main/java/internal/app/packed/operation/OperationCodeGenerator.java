@@ -58,7 +58,7 @@ class OperationCodeGenerator {
         MethodType mt = operation.template.invocationType();
 
         // Nested operations normally needs to return a value
-        if (operation.parent != null) {
+        if (operation.embeddedInto != null) {
             mt = mt.changeReturnType(operation.type.returnRawType());
         }
         mh = MethodHandles.permuteArguments(mh, mt, result);

@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 /** A {@link Qualifier} that holds a generic string. */
 @Retention(RetentionPolicy.RUNTIME)
 @Qualifier
-@Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
+@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
 // vil maaske gerne omnavngive den... Saa folk ikke tror man navngiver componenter...
 // Classifier??? Labelled
 

@@ -17,7 +17,8 @@ package app.packed.operation;
 
 import java.util.function.Consumer;
 
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
+import app.packed.util.FunctionType;
 import internal.app.packed.operation.CapturingOpHelper;
 import internal.app.packed.operation.PackedOp;
 
@@ -76,7 +77,7 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
 
     /** {@inheritDoc} */
     @Override
-    public final OperationType type() {
+    public final FunctionType type() {
         return op.type();
     }
 }

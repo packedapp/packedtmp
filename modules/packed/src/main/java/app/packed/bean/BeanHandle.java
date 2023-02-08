@@ -24,8 +24,9 @@ import app.packed.bindings.Key;
 import app.packed.container.Realm;
 import app.packed.context.Context;
 import app.packed.errorhandling.ErrorHandler;
+import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationType;
+import app.packed.util.FunctionType;
 import internal.app.packed.bean.PackedBeanHandle;
 
 /**
@@ -114,6 +115,9 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
      */
     boolean isConfigurable();
 
+    default void runOnInitialized(Op<?> op) {
+        // First parameter must be assignable to the created instance, IDK
+    }
     /**
      * If the bean is registered with its own lifetime. This method returns a list of the lifetime operations of the bean.
      * <p>
@@ -143,7 +147,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
     // Maaske bare stripper annoteringer...
     // Men okay vi kan stadig fx bruge Logger som jo stadig skulle
     // supplies uden et hook
-    OperationHandle newFunctionalOperation(InstanceBeanConfiguration<?> operator, Class<?> functionalInterface, OperationType type, Object functionInstance);
+    OperationHandle newFunctionalOperation(InstanceBeanConfiguration<?> operator, Class<?> functionalInterface, FunctionType type, Object functionInstance);
 
     /**
      * @return

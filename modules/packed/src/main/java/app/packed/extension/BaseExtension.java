@@ -29,7 +29,6 @@ import app.packed.bean.OnStart;
 import app.packed.bean.OnStop;
 import app.packed.bindings.Key;
 import app.packed.bindings.Provider;
-import app.packed.bindings.Variable;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerInstaller;
@@ -38,27 +37,29 @@ import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.lifetime.BeanLifetimeTemplate;
 import app.packed.lifetime.ContainerLifetimeTemplate;
-import app.packed.lifetime.FromGuest;
+import app.packed.lifetime.FromLifetimeChannel;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
-import app.packed.operation.BeanOperationTemplate;
-import app.packed.operation.BeanOperationTemplate.FromInvocationArgument;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationTemplate;
+import app.packed.operation.OperationTemplate.FromInvocationArgument;
 import app.packed.service.Export;
 import app.packed.service.Provide;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.service.sandbox.transform.ServiceExportsTransformer;
+import app.packed.util.Variable;
+import internal.app.packed.bean.BeanLifecycleOrder;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.sandbox.PackedBeanLocal;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.container.PackedContainerInstaller;
-import internal.app.packed.lifetime.LifecycleOrder;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.PackedServiceLocator;
@@ -260,6 +261,23 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     /**
+     * Installs an exported service locator.
+     *
+     * @see BaseExtensionPoint#EXPORTED_SERVICE_LOCATOR
+     */
+    void lifetimeExportServiceLocator() {
+        // Create a new bean that holds the ServiceLocator to export
+        // will fail if installed multiple times
+        BeanHandle<PackedServiceLocator> h = ownBeanInstaller(BeanLifetimeTemplate.CONTAINER).install(PackedServiceLocator.class);
+
+        // Add a supplier that generates the MHs for the exported service locator
+        addCodeGenerated(((PackedBeanHandle<?>) h).bean(), new Key<Map<Key<?>, MethodHandle>>() {}, () -> extension.container.sm.exportedServices());
+
+        // Exports the bean so it can be picked up by the lifetime channel
+        h.exportAs(Key.of(ServiceLocator.class)); // @Export(as = ServiceLocator.class) on PSL, I mean if Qualifier will work on class
+    }
+
+    /**
      * Creates a new child container by linking the specified assembly.
      *
      * @param assembly
@@ -297,12 +315,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return new ServiceableBeanConfiguration<>(handle); // Providable???
     }
 
+    // add multiInstall prototype
+
     public <T> ServiceableBeanConfiguration<T> multiInstallLazy(Op<T> op) {
         BeanHandle<T> handle = newBeanInstaller(BeanLifetimeTemplate.LAZY).multi().install(op);
         return new ServiceableBeanConfiguration<>(handle); // Providable???
     }
-
-    // add multiInstall prototype
 
     private BeanInstaller newBeanInstaller(BeanLifetimeTemplate kind) {
         return new PackedBeanInstaller(extension, extension.container.assembly, kind);
@@ -321,7 +339,15 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return new BeanIntrospector() {
 
             /** A template for bean lifecycle operations. */
-            private static final BeanOperationTemplate BEAN_LIFECYCLE_TEMPLATE = BeanOperationTemplate.defaults().withReturnIgnore();
+            private static final OperationTemplate BEAN_LIFECYCLE_TEMPLATE = OperationTemplate.defaults().withReturnIgnore();
+
+            private OperationHandle checkNotStaticBean(Class<? extends Annotation> annotationType, BeanMethod method) {
+                if (beanKind() == BeanKind.STATIC) {
+                    throw new BeanInstallationException(annotationType + " is not supported for static beans");
+                }
+                // Maybe lifecycle members cannot be static at all
+                return method.newOperation(BEAN_LIFECYCLE_TEMPLATE);
+            }
 
             /** Handles {@link Inject}. */
             @Override
@@ -342,19 +368,11 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                         }
                     }
 
-                    OperationSetup operation = OperationSetup.crack(field.newGetOperation(BeanOperationTemplate.defaults()));
+                    OperationSetup operation = OperationSetup.crack(field.newGetOperation(OperationTemplate.defaults()));
                     extension.container.sm.provide(key, operation, new FromOperation(operation));
                 } else {
                     super.hookOnAnnotatedField(hook, field);
                 }
-            }
-
-            private OperationHandle checkNotStaticBean(Class<? extends Annotation> annotationType, BeanMethod method) {
-                if (beanKind() == BeanKind.STATIC) {
-                    throw new BeanInstallationException(annotationType + " is not supported for static beans");
-                }
-                // Maybe lifecycle members cannot be static at all
-                return method.newOperation(BEAN_LIFECYCLE_TEMPLATE);
             }
 
             /** Handles {@link Inject}, {@link OnInitialize}, {@link OnStart} and {@link OnStop}. */
@@ -364,18 +382,18 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
                 if (annotation instanceof Inject) {
                     OperationHandle handle = checkNotStaticBean(Inject.class, method);
-                    bean.addLifecycleOperation(LifecycleOrder.INJECT, handle);
+                    bean.addLifecycleOperation(BeanLifecycleOrder.INJECT, handle);
                 } else if (annotation instanceof OnInitialize oi) {
                     OperationHandle handle = checkNotStaticBean(OnInitialize.class, method);
-                    bean.addLifecycleOperation(LifecycleOrder.fromInitialize(oi.order()), handle);
+                    bean.addLifecycleOperation(BeanLifecycleOrder.fromInitialize(oi.order()), handle);
                 } else if (annotation instanceof OnStart oi) {
                     OperationHandle handle = checkNotStaticBean(OnStart.class, method);
-                    bean.addLifecycleOperation(LifecycleOrder.fromStarting(oi.order()), handle);
+                    bean.addLifecycleOperation(BeanLifecycleOrder.fromStarting(oi.order()), handle);
                 } else if (annotation instanceof OnStop oi) {
                     OperationHandle handle = checkNotStaticBean(OnStop.class, method);
-                    bean.addLifecycleOperation(LifecycleOrder.fromStopping(oi.order()), handle);
+                    bean.addLifecycleOperation(BeanLifecycleOrder.fromStopping(oi.order()), handle);
                 } else if (annotation instanceof Provide) {
-                    BeanOperationTemplate temp2 = BeanOperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
+                    OperationTemplate temp2 = OperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
                     if (!Modifier.isStatic(method.modifiers())) {
                         if (beanKind() != BeanKind.CONTAINER) {
                             throw new BeanInstallationException("Not okay)");
@@ -384,7 +402,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     OperationSetup operation = OperationSetup.crack(method.newOperation(temp2));
                     bean.container.sm.provide(method.toKey(), operation, new FromOperation(operation));
                 } else if (annotation instanceof Export) {
-                    BeanOperationTemplate temp2 = BeanOperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
+                    OperationTemplate temp2 = OperationTemplate.defaults().withReturnType(method.operationType().returnRawType());
 
                     if (!Modifier.isStatic(method.modifiers())) {
                         if (beanKind() != BeanKind.CONTAINER) {
@@ -400,10 +418,9 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             /** Handles {@link ContainerGuest}, {@link InvocationArgument} and {@link CodeGenerated}. */
             @Override
-            public void hookOnProvidedAnnotatedVariable(Annotation annotation, BeanVariable v) {
-                if (annotation instanceof FromGuest) {
+            public void hookOnAnnotatedVariable(Annotation annotation, BeanVariable v) {
+                if (annotation instanceof FromLifetimeChannel) {
                     Variable va = v.variable();
-//                    debug(v.availableInvocationArguments());
                     if (va.getRawType().equals(String.class)) {
                         v.bindOp(new Op1<@FromInvocationArgument ApplicationInitializationContext, String>(a -> a.name()) {});
                     } else if (va.getRawType().equals(ManagedLifetimeController.class)) {
@@ -449,12 +466,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                         failWith(key + " Can only be injected once for bean ");
                     }
                 } else {
-                    super.hookOnProvidedAnnotatedVariable(annotation, v);
+                    super.hookOnAnnotatedVariable(annotation, v);
                 }
             }
 
             @Override
-            public void hookOnProvidedVariableType(Class<?> hook, BeanWrappedVariable v) {
+            public void hookOnVariableType(Class<?> hook, BeanWrappedVariable v) {
                 if (hook == ExtensionContext.class) {
                     if (v.availableInvocationArguments().isEmpty() || v.availableInvocationArguments().get(0) != ExtensionContext.class) {
                         // throw new Error(v.availableInvocationArguments().toString());
@@ -506,8 +523,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     /**
      * Returns a special bean installer that can install beans with BaseExtension as both the owner and installer.
      *
-     * @param kind
-     *            the kind of bean install
+     * @param template
+     *            a template for the bean
      * @return a bean installer
      */
     BeanInstaller ownBeanInstaller(BeanLifetimeTemplate kind) {
@@ -546,22 +563,22 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         //
     }
 
-    <T> OperationConfiguration provideConstant(Class<T> key, T constant) {
-        // Nah skaber den forvirring? Nej det syntes det er rart
-        // at have muligheden for ikke at scanne
-        throw new UnsupportedOperationException();
-    }
-
     // Think we need installPrototype (Which will fail if not provided or exported)
     // providePrototype would then be installPrototype().provide() // not ideal
     // Men taenker vi internt typisk arbejde op i mod implementering. Dog ikke altid
     // providePerRequest <-- every time the service is requested
     // Also these beans, can typically just be composites??? Nah
 
+    <T> OperationConfiguration provideConstant(Class<T> key, T constant) {
+        // Nah skaber den forvirring? Nej det syntes det er rart
+        // at have muligheden for ikke at scanne
+        throw new UnsupportedOperationException();
+    }
+
     // requires bliver automatisk anchoret...
     // anchorAllChildExports-> requireAllChildExports();
-    public void require(Class<?>... keys) {
-        require(Key.ofAll(keys));
+    public void requires(Class<?>... keys) {
+        requires(Key.ofAll(keys));
     }
 
     /**
@@ -581,19 +598,14 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @param keys
      *            the key(s) to add
      */
-    public void require(Key<?>... keys) {
+    public void requires(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
         checkIsConfigurable();
-        // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
-        for (@SuppressWarnings("unused")
-        Key<?> key : keys) {
-            // delegate.ios.requirementsOrCreate().require(key, false /* , cs */);
-            throw new UnsupportedOperationException();
-        }
+        throw new UnsupportedOperationException();
     }
 
-    public void requireOptionally(Class<?>... keys) {
-        requireOptionally(Key.ofAll(keys));
+    public void requiresOptionally(Class<?>... keys) {
+        requiresOptionally(Key.ofAll(keys));
     }
 
     /**
@@ -608,15 +620,10 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      */
     // How does this work with child services...
     // They will be consumed
-    public void requireOptionally(Key<?>... keys) {
+    public void requiresOptionally(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
         checkIsConfigurable();
-        // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
-        for (@SuppressWarnings("unused")
-        Key<?> key : keys) {
-            throw new UnsupportedOperationException();
-//            delegate.ios.requirementsOrCreate().require(key, true /* , cs */);
-        }
+        throw new UnsupportedOperationException();
     }
 
     private record CodeGeneratorKey(BeanSetup bean, Key<?> key) {}

@@ -24,11 +24,11 @@ import app.packed.container.Realm;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
-import app.packed.framework.AnnotationList;
-import app.packed.framework.Nullable;
+import app.packed.util.AnnotationList;
+import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanScannerExtension;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.PackedAnnotationList;
+import internal.app.packed.util.PackedAnnotationList;
 import internal.app.packed.util.StringFormatter;
 
 /**
@@ -153,8 +153,8 @@ public abstract class BeanIntrospector {
         }
     }
 
-    public void hookOnAnnotatedField(Annotation annotation, BeanField of) {
-        throw new BeanInstallationException(extension().fullName() + " does not know how to handle " + annotation.annotationType() + " on " + of);
+    public void hookOnAnnotatedField(Annotation annotation, BeanField field) {
+        throw new BeanInstallationException(extension().fullName() + " does not know how to handle " + annotation.annotationType() + " on " + field);
     }
 
     /**
@@ -168,18 +168,17 @@ public abstract class BeanIntrospector {
      *
      * @param hooks
      *            a non-empty collection of hooks
-     * @param of
+     * @param field
      *            an operational field
      * @see AnnotatedFieldHook
      */
-    // onFieldHook(Set<Class<? extends Annotation<>> hooks, BeanField));
-    public void hookOnAnnotatedField(AnnotationList hooks, BeanField of) {
+    public void hookOnAnnotatedField(AnnotationList hooks, BeanField field) {
         for (Annotation a : hooks) {
-            hookOnAnnotatedField(a, of);
+            hookOnAnnotatedField(a, field);
         }
     }
 
-    public void hookOnAnnotatedMethod(Annotation hook, BeanMethod on) {
+    public void hookOnAnnotatedMethod(Annotation hook, BeanMethod method) {
         // Test if getClass()==BeanScanner forgot to implement
         // Not we want to return generic bean scanner from newBeanScanner
         throw new InternalExtensionException(extension().fullName() + " failed to handle method annotation(s) " + hook);
@@ -190,9 +189,9 @@ public abstract class BeanIntrospector {
      *
      * @see AnnotatedMethodHook
      */
-    public void hookOnAnnotatedMethod(AnnotationList hooks, BeanMethod on) {
+    public void hookOnAnnotatedMethod(AnnotationList hooks, BeanMethod method) {
         for (Annotation a : hooks) {
-            hookOnAnnotatedMethod(a, on);
+            hookOnAnnotatedMethod(a, method);
         }
     }
 
@@ -202,7 +201,7 @@ public abstract class BeanIntrospector {
      *
      * @see AnnotatedBindingHook
      */
-    public void hookOnProvidedAnnotatedVariable(Annotation hook, BeanVariable var) {
+    public void hookOnAnnotatedVariable(Annotation hook, BeanVariable variable) {
         throw new BeanInstallationException(extension().fullName() + " failed to handle parameter hook annotation(s) " + hook);
     }
 
@@ -211,7 +210,7 @@ public abstract class BeanIntrospector {
      *
      * @see BindingTypeHook
      */
-    public void hookOnProvidedVariableType(Class<?> hook, BeanWrappedVariable v) {
+    public void hookOnVariableType(Class<?> hook, BeanWrappedVariable variable) {
         throw new BeanInstallationException(extension().fullName() + " cannot handle type hook " + StringFormatter.format(hook));
     }
 

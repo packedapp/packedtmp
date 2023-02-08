@@ -28,7 +28,7 @@ import app.packed.bindings.Qualifier;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Qualifier
-@Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
+@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
 public @interface StringQualifier {
     String value() default "";
 }

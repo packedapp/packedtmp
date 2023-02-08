@@ -20,12 +20,12 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import app.packed.operation.OperationType;
+import app.packed.util.FunctionType;
 
 /**
  *
  */
-record SamType(Class<?> functionInterface, Method saMethod, MethodHandle methodHandle, OperationType type) {
+record SamType(Class<?> functionInterface, Method saMethod, MethodHandle methodHandle, FunctionType type) {
 
     static SamType of(Class<?> functionInterface) {
         if (!functionInterface.isInterface()) {
@@ -54,7 +54,7 @@ record SamType(Class<?> functionInterface, Method saMethod, MethodHandle methodH
             throw new Error(samMethod + " must be accessible via MethodHandles.publicLookup()", e);
         }
 
-        OperationType ot = OperationType.ofExecutable(samMethod);
+        FunctionType ot = FunctionType.ofExecutable(samMethod);
         return new SamType(functionInterface, samMethod, mh, ot);
     }
 }

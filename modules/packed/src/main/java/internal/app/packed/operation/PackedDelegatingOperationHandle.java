@@ -21,12 +21,11 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint.UseSite;
-import app.packed.framework.Nullable;
-import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTarget;
-import app.packed.operation.OperationType;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.FunctionType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
@@ -37,18 +36,20 @@ import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
  */
 public final class PackedDelegatingOperationHandle implements DelegatingOperationHandle {
 
+    /** The bean the operation is created on. */
     public final BeanSetup bean;
 
     public final ExtensionSetup delegatedFrom;
+
     public final MethodHandle methodHandle;
-    @Nullable
-    OperationSetup operation;
 
-    public final OperationType operationType;
+    /** The type of the operation */
+    public final FunctionType operationType;
 
+    /** The target of the operation. */
     public final OperationMemberTarget<?> target;
 
-    public PackedDelegatingOperationHandle(ExtensionSetup delegatedFrom, BeanSetup bean, OperationMemberTarget<?> target, OperationType operationType,
+    public PackedDelegatingOperationHandle(ExtensionSetup delegatedFrom, BeanSetup bean, OperationMemberTarget<?> target, FunctionType operationType,
             MethodHandle methodHandle) {
         this.target = requireNonNull(target);
         this.delegatedFrom = requireNonNull(delegatedFrom);
@@ -63,15 +64,9 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
         return delegatedFrom.extensionType;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean isDelegated() {
-        return operation != null;
-    }
-
-    public OperationHandle newOperation(ExtensionSetup extension, BeanOperationTemplate template) {
+    public OperationHandle newOperation(ExtensionSetup extension, OperationTemplate template) {
         // checkConfigurable
-        OperationSetup os = this.operation = new MemberOperationSetup(extension, bean, operationType, template, target, methodHandle);
+        OperationSetup os = new MemberOperationSetup(extension, bean, operationType, template, target, methodHandle);
         bean.operations.add(os);
         bean.introspecting.unBoundOperations.add(os);
         return os.toHandle();
@@ -79,7 +74,7 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(BeanOperationTemplate template, UseSite context) {
+    public OperationHandle newOperation(OperationTemplate template, UseSite context) {
         PackedExtensionPointContext c = (PackedExtensionPointContext) context;
         return newOperation(c.usedBy(), template);
     }
@@ -92,7 +87,7 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
 
     /** {@inheritDoc} */
     @Override
-    public OperationType type() {
+    public FunctionType type() {
         return operationType;
     }
 }

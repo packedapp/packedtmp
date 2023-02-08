@@ -35,9 +35,9 @@ import app.packed.bindings.Provider;
 import app.packed.extension.BaseExtensionPoint;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.extension.InternalExtensionException;
-import app.packed.framework.Nullable;
 import app.packed.lifetime.BeanLifetimeTemplate;
-import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.Nullable;
 import app.packed.operation.Op;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ContainerSetup.BeanClassKey;
@@ -270,9 +270,9 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
 
         if (sourceKind == BeanSourceKind.OP) {
             PackedOp<?> op = (PackedOp<?>) bean.beanSource;
-            BeanOperationTemplate ot;
+            OperationTemplate ot;
             if (bean.lifetime.lifetimes().isEmpty()) {
-                ot = BeanOperationTemplate.defaults();
+                ot = OperationTemplate.defaults();
             } else {
                 ot = bean.lifetime.lifetimes().get(0).template;
             }
@@ -287,7 +287,7 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
 
         // Scan the bean class for annotations unless the bean class is void
         if (sourceKind != BeanSourceKind.NONE) {
-            new BeanScanner(bean, introspector, attachments).introspect();
+            new BeanReflector(bean, introspector, attachments).introspect();
         }
 
         // Bean was successfully created, add it to the container

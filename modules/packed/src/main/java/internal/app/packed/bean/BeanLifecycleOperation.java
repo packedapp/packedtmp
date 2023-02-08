@@ -16,9 +16,8 @@
 package internal.app.packed.bean;
 
 import app.packed.operation.OperationHandle;
-import internal.app.packed.lifetime.LifecycleOrder;
 
-public record BeanLifecycleOperation(LifecycleOrder runOrder, OperationHandle handle) implements Comparable<BeanLifecycleOperation> {
+public record BeanLifecycleOperation(BeanLifecycleOrder runOrder, OperationHandle handle) implements Comparable<BeanLifecycleOperation> {
 
     /** {@inheritDoc} */
     @Override

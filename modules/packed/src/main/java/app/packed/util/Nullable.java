@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.framework;
+package app.packed.util;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -43,7 +43,7 @@ import java.lang.annotation.Target;
 // * as optional. The same behavior can be observed by the dependencies on {@link Factory1} and {@link Factory2}.
 // https://github.com/uber/NullAway
 @Retention(RetentionPolicy.RUNTIME)
-@Target( ElementType.TYPE_USE)
+@Target(ElementType.TYPE_USE)
 @Documented
 // Maaske kraeve denne hvis man ikke har
 // Tror det er fint
@@ -52,8 +52,5 @@ import java.lang.annotation.Target;
 // Og saa maa man bruge Optional
 
 // Saa missable = Optional or explicit null
-
-
-
 
 public @interface Nullable {}

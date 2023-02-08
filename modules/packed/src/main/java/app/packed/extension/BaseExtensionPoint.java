@@ -6,9 +6,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -22,59 +20,43 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.bindings.Key;
 import app.packed.container.ContainerInstaller;
 import app.packed.lifetime.BeanLifetimeTemplate;
+import app.packed.lifetime.ContainerLifetimeChannel;
 import app.packed.lifetime.ContainerLifetimeTemplate;
-import app.packed.lifetime.ExtensionLifetimeBridge;
 import app.packed.lifetime.RunState;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
-import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationTemplate;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceableBeanConfiguration;
+import internal.app.packed.bean.BeanLifecycleOrder;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedExtensionPointContext;
-import internal.app.packed.lifetime.LifecycleOrder;
 import internal.app.packed.operation.PackedOperationHandle;
-import internal.app.packed.service.PackedServiceLocator;
 
 /** An {@link ExtensionPoint extension point} for {@link BaseExtension}. */
 public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
-    private static ExtensionLifetimeBridge.Builder<BaseExtension> baseBuilder() {
-        return ExtensionLifetimeBridge.builder(MethodHandles.lookup(), BaseExtension.class);
-    }
-
     /** A bridge that makes the name of the container available. */
-    public static final ExtensionLifetimeBridge CONTAINER_NAME = null;
+    public static final ContainerLifetimeChannel CONTAINER_NAME = null;
 
     /**
-     * A bridge that a container's exported services available as a {@link app.packed.service.ServiceLocator} in the guest.
+     * A container lifetime channel that makes the container's exported services available as
+     * {@link app.packed.service.ServiceLocator}.
      */
-    public static final ExtensionLifetimeBridge EXPORTED_SERVICE_LOCATO0R = baseBuilder().onUse(baseExt -> {
-        BeanHandle<PackedServiceLocator> h = baseExt.ownBeanInstaller(BeanLifetimeTemplate.CONTAINER).install(PackedServiceLocator.class);
-        baseExt.addCodeGenerated(((PackedBeanHandle<?>) h).bean(), new Key<Map<Key<?>, MethodHandle>>() {},
-                () -> baseExt.extension.container.sm.exportedServices());
-        h.exportAs(Key.of(ServiceLocator.class)); // @Export(as = ServiceLocator.class) on PSL, I mean if Qualifier will work on class
-    }).includeExport(ServiceLocator.class).build();
-
-    public static final ExtensionLifetimeBridge EXPORTED_SERVICE_LOCATOR = baseBuilder().onUse(e -> {
-        e.ownBeanInstaller(BeanLifetimeTemplate.CONTAINER).installIfAbsent(PackedServiceLocator.class, h -> {
-            h.exportAs(Key.of(ServiceLocator.class));
-            e.addCodeGenerated(((PackedBeanHandle<?>) h).bean(), new Key<Map<Key<?>, MethodHandle>>() {}, () -> e.extension.container.sm.exportedServices());
-        });
-    }).includeExport(ServiceLocator.class).build();
+    public static final ContainerLifetimeChannel EXPORTED_SERVICE_LOCATOR = baseBuilder("ExportedServiceLocator")
+            .onUse(BaseExtension::lifetimeExportServiceLocator).expose(ServiceLocator.class).build();
 
     // Teanker vi altid exportere den
-    public static final ExtensionLifetimeBridge MANAGED_LIFETIME_CONTROLLER = baseBuilder().onUse(e -> {
+    public static final ContainerLifetimeChannel MANAGED_LIFETIME_CONTROLLER = baseBuilder("ManagedLifetimeController").onUse(e -> {
         // check that we have a managed lifetime. Maybe PackedManagedBeanController is already installed
         // baseExtension.managedLifetimeBean.export(); // maybe it is already exported
-    }).includeExport(ManagedLifetimeController.class).build();
+    }).expose(ManagedLifetimeController.class).build();
 
     /** Creates a new base extension point. */
     BaseExtensionPoint() {}
@@ -155,8 +137,20 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     public ContainerInstaller containerInstaller(ContainerLifetimeTemplate template) {
+        // Kan only use channels that are direct dependencies of the usage extension
         ExtensionSetup s = extension().extension;
         return new PackedContainerInstaller(template, s.extensionType, s.container.application, s.container);
+    }
+
+    // Contexts
+    public ContainerInstaller containerInstallerExistingLifetime(boolean isLazy) {
+        // Kan only use channels that are direct dependencies of the usage extension
+        ExtensionSetup s = extension().extension;
+        return new PackedContainerInstaller(ContainerLifetimeTemplate.PARENT, s.extensionType, s.container.application, s.container);
+    }
+
+    public <T> InstanceBeanConfiguration<T> containerInstallHost(Class<T> hostClass) {
+        throw new UnsupportedOperationException();
     }
 
     public BeanHandle<?> crack(BeanConfiguration configuration) {
@@ -220,6 +214,10 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         return new BeanConfiguration(handle);
     }
 
+    public OperationConfiguration runOnBean(RunState state, DelegatingOperationHandle h, DependencyOrder ordering) {
+        throw new UnsupportedOperationException();
+    }
+
 //    // onExtension E newContainer(Wirelet wirelets); // adds this to the container and returns it
 //
 //    public ContainerHandle newContainer(Assembly assembly, Wirelet... wirelets) {
@@ -241,14 +239,10 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 //        throw new UnsupportedOperationException();
 //    }
 
-    public OperationConfiguration runOnBean(RunState state, DelegatingOperationHandle h, DependencyOrder ordering) {
-        throw new UnsupportedOperationException();
-    }
-
     public OperationConfiguration runOnBeanInitialization(DelegatingOperationHandle h, DependencyOrder ordering) {
         requireNonNull(ordering, "ordering is null");
-        OperationHandle handle = h.newOperation(BeanOperationTemplate.defaults(), context());
-        ((PackedOperationHandle) handle).operation().bean.addLifecycleOperation(LifecycleOrder.fromInitialize(ordering), handle);
+        OperationHandle handle = h.newOperation(OperationTemplate.defaults(), context());
+        ((PackedOperationHandle) handle).operation().bean.addLifecycleOperation(BeanLifecycleOrder.fromInitialize(ordering), handle);
         return new OperationConfiguration(handle);
     }
 
@@ -261,8 +255,8 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @see Inject
      */
     public OperationConfiguration runOnBeanInject(DelegatingOperationHandle h) {
-        PackedOperationHandle handle = (PackedOperationHandle) h.newOperation(BeanOperationTemplate.defaults(), context());
-        handle.operation().bean.addLifecycleOperation(LifecycleOrder.INJECT, handle);
+        PackedOperationHandle handle = (PackedOperationHandle) h.newOperation(OperationTemplate.defaults(), context());
+        handle.operation().bean.addLifecycleOperation(BeanLifecycleOrder.INJECT, handle);
         return new OperationConfiguration(handle);
     }
 
@@ -275,6 +269,10 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     public OperationConfiguration runOnBeanStop(DelegatingOperationHandle h, DependencyOrder ordering) {
         throw new UnsupportedOperationException();
+    }
+
+    private static ContainerLifetimeChannel.Builder<BaseExtension> baseBuilder(String name) {
+        return ContainerLifetimeChannel.builder(MethodHandles.lookup(), BaseExtension.class, name);
     }
 
     /**
@@ -400,7 +398,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @see BaseExtensionPoint#addCodeGenerated(app.packed.bean.BeanConfiguration, app.packed.bindings.Key,
      *      java.util.function.Supplier)
      */
-    @Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.TYPE_USE })
+    @Target({ ElementType.PARAMETER, ElementType.TYPE_USE })
     @Retention(RetentionPolicy.RUNTIME)
     @AnnotatedBindingHook(extension = BaseExtension.class)
     public @interface CodeGenerated {}

@@ -24,7 +24,8 @@ import app.packed.application.BuildException;
 // TransactionContext.get()
 
 // ProvisionException
-
+// ContextUnavailable
+// OutOfContextException
 public class NotInContextException extends BuildException {
 
     private static final long serialVersionUID = 1L;

@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings;
+package app.packed.util;
 
-import java.lang.reflect.AnnotatedElement;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
+
+import internal.app.packed.util.PackedVariable;
+import internal.app.packed.util.types.TypeUtil;
 
 /**
  * In Packed a variable (this interface) represents an annotated type of some kind This interface represents a variable of some kind, for example, a {@link Field}, Pa
@@ -48,10 +50,9 @@ import java.lang.reflect.TypeVariable;
  * @apiNote this interface retains the naming where possible from {@link Field}, {@link Parameter} and
  *          {@link TypeVariable}
  */
-// extends AnnotatedType???? It is more or less AnnotatedType...
-// VariableType, VarType?
-// Maaske supportere vi capture...
-public sealed interface Variable extends AnnotatedElement permits PackedVariable {
+public sealed interface Variable permits PackedVariable {
+
+    AnnotationList annotations();
 
     /**
      * Returns the raw type (Class) of the variable.
@@ -63,27 +64,35 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
      * @see Method#getReturnType()
      * @see ParameterizedType#getRawType()
      */
-    Class<?> getRawType();
+    default Class<?> getRawType() {
+        return TypeUtil.rawTypeOf(getType());
+    }
 
     Type getType();
 
+    default boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
+        return annotations().containsType(annotationType);
+    }
+
     static Variable of(Class<?> clazz) {
-        return new PackedVariable(Variable.class, new PackedVariableType.OfClass(clazz));
+        return PackedVariable.ofRaw(clazz);
     }
 
     static Variable ofConstructorReturnType(Constructor<?> constructor) {
-        return new PackedVariable(constructor, new PackedVariableType.OfConstructorReturnType(constructor));
+        return PackedVariable.of(constructor.getAnnotatedReturnType());
     }
 
     /**
-     * Returns a variable representing the type of the specified field as well as any annotations present on the field.
+     * Returns a variable representing the annotated type of the specified field.
+     * <p>
+     * Annotations on the returned variable
      *
      * @param field
      *            the field to return a variable from
      * @return the variable
      */
     static Variable ofField(Field field) {
-        return new PackedVariable(field, new PackedVariableType.OfField(field));
+        return PackedVariable.of(field.getAnnotatedType());
     }
 
     /**
@@ -94,7 +103,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
      * @return the variable
      */
     static Variable ofMethodReturnType(Method method) {
-        return new PackedVariable(method, new PackedVariableType.OfMethodReturnType(method));
+        return PackedVariable.of(method.getAnnotatedReturnType());
     }
 
     /**
@@ -105,16 +114,13 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
      * @return the variable
      */
     static Variable ofParameter(Parameter parameter) {
-        return new PackedVariable(parameter, new PackedVariableType.OfParameter(parameter));
+        return PackedVariable.of(parameter.getAnnotatedType());
     }
 
-    static Variable ofTypeAndAnnotations(Type type, AnnotatedElement element) {
-        return new PackedVariable(element, new PackedVariableType.OfType(type));
-    }
-
-    // Do we really want to support type variables??? I don't think so
-    // I think we want
-    static Variable ofTypeVariable(TypeVariable<?> typeVariable) {
-        return new PackedVariable(typeVariable, new PackedVariableType.OfTypeVariable(typeVariable));
-    }
+//    // Do we really want to support type variables??? I don't think so
+//    // I think we want to
+//    // Just have a generic one that take type
+//    static Variable ofTypeVariable(TypeVariable<?> typeVariable) {
+//        return new PackedVariable(typeVariable, new PackedVariableType.OfTypeVariable(typeVariable));
+//    }
 }

@@ -26,7 +26,7 @@ import internal.app.packed.util.SpecFix;
  * The configuration of a bean that deals with beans that are instantiated.
  *
  * @param <T>
- *            the type of bean instances
+ *            the type of the bean instances
  */
 public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 

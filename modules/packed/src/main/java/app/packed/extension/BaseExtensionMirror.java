@@ -7,10 +7,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import app.packed.bindings.Key;
-import app.packed.framework.Nullable;
 import app.packed.service.ExportedServiceMirror;
 import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.ServiceContract;
+import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.service.ExportedService;
 import internal.app.packed.service.ServiceProviderSetup;

@@ -20,7 +20,6 @@ import static internal.app.packed.util.StringFormatter.formatSimple;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.AnnotatedParameterizedType;
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -29,10 +28,11 @@ import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.stream.IntStream;
 
-import app.packed.bindings.Variable;
-import app.packed.framework.Nullable;
 import app.packed.operation.Op1;
+import app.packed.util.Nullable;
+import app.packed.util.Variable;
 import internal.app.packed.errorhandling.ErrorProcessor;
+import internal.app.packed.util.PackedVariable;
 import internal.app.packed.util.StringFormatter;
 
 /**
@@ -73,17 +73,12 @@ public final class TypeVariableExtractor {
 
     public <T extends Throwable> Variable[] extractAllVariables(Class<?> from, ErrorProcessor<T> ep) throws T {
         Type[] types = extractAllTypes(from, ep);
+        AnnotatedParameterizedType pta = (AnnotatedParameterizedType) from.getAnnotatedSuperclass();
+
         Variable[] variables = new Variable[types.length];
-
         for (int i = 0; i < variables.length; i++) {
-            Type t = types[i];
-            AnnotatedParameterizedType pta = (AnnotatedParameterizedType) from.getAnnotatedSuperclass();
-
-            AnnotatedType aa = pta.getAnnotatedActualTypeArguments()[i];
-
-            variables[i] = Variable.ofTypeAndAnnotations(t, aa);
+            variables[i] = PackedVariable.of(pta.getAnnotatedActualTypeArguments()[i]);
         }
-
         return variables;
     }
 

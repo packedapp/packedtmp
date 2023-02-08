@@ -32,13 +32,14 @@ import internal.app.packed.util.AbstractTreeNode;
  */
 public final /* primitive */ class ExtensionNavigator<E extends Extension<E>> implements Iterable<E> {
 
-    /** We save the extension type mainly for casting. */
+    /** We use the extension type mainly for casting. */
     private final Class<E> extensionType;
 
-    private final ExtensionSetup originExtension;
+    /** The origin of the navigator. */
+    private final ExtensionSetup origin;
 
-    ExtensionNavigator(ExtensionSetup originExtension, Class<E> extensionType) {
-        this.originExtension = requireNonNull(originExtension);
+    ExtensionNavigator(ExtensionSetup origin, Class<E> extensionType) {
+        this.origin = requireNonNull(origin);
         this.extensionType = requireNonNull(extensionType);
     }
 
@@ -52,18 +53,20 @@ public final /* primitive */ class ExtensionNavigator<E extends Extension<E>> im
         return size;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof ExtensionNavigator<?> en && (originExtension == en.originExtension);
+        return obj instanceof ExtensionNavigator<?> en && (origin == en.origin);
     }
 
     ExtensionDescriptor extensionDescriptor() {
-        return originExtension.model;
+        return origin.model;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return originExtension.hashCode();
+        return origin.hashCode();
     }
 
     /**
@@ -71,27 +74,27 @@ public final /* primitive */ class ExtensionNavigator<E extends Extension<E>> im
      * of an application does not have a parent extension.
      */
     boolean isRoot() {
-        return originExtension.treeParent == null;
+        return origin.treeParent == null;
     }
 
     /** {@inheritDoc} */
     @Override
     public Iterator<E> iterator() {
-        return new AbstractTreeNode.MappedPreOrderIterator<>(originExtension, e -> extensionType.cast(e.instance()));
+        return new AbstractTreeNode.MappedPreOrderIterator<>(origin, e -> extensionType.cast(e.instance()));
     }
 
 //    /** {@return the root of the tree.} */
 //    public root();
 
     public E origin() {
-        return extensionType.cast(originExtension.instance());
+        return extensionType.cast(origin.instance());
     }
 
     /**
      * @return
      */
     public E root() {
-        ExtensionSetup s = originExtension;
+        ExtensionSetup s = origin;
         while (s.treeParent != null) {
             s = s.treeParent;
         }
@@ -127,5 +130,4 @@ public final /* primitive */ class ExtensionNavigator<E extends Extension<E>> im
     // sieblings
     // forEachChild
     // int index.... from [0 to size-1] In order of usage????
-
 }

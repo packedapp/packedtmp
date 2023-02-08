@@ -28,7 +28,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.bean.InaccessibleBeanMemberException;
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
+import app.packed.util.FunctionType;
 import internal.app.packed.operation.PackedOp;
 
 /**
@@ -110,7 +111,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
     Op<R> peek(Consumer<? super R> action);
 
     /** {@return the type of this operation.} */
-    OperationType type();
+    FunctionType type();
 
     /**
      * Creates a new operation that will invoke the specified constructor.
@@ -119,7 +120,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
      *            the constructor that will be called when operation is invoked
      * @return the new operation
      */
-    public static <T> Op<T> ofConstructor(Lookup lookup, Constructor<T> constructor) {
+    static <T> Op<T> ofConstructor(Lookup lookup, Constructor<T> constructor) {
         requireNonNull(constructor, "constructor is null");
         throw new UnsupportedOperationException();
     }
@@ -134,6 +135,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
             }
             handle = lookup.unreflectGetter(field);
         } catch (IllegalAccessException e) {
+            // I think we are going to throw another exception here
             throw new InaccessibleBeanMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
         System.out.println(handle);
@@ -153,13 +155,13 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
      *            the type of value returned by the method
      * @return a factory that wraps the specified method
      */
-    public static Op<?> ofMethod(Lookup lookup, Method method) {
+    static Op<?> ofMethod(Lookup lookup, Method method) {
         requireNonNull(method, "method is null");
 
         throw new UnsupportedOperationException();
     }
 
-    public static Op<?> ofMethodHandle(MethodHandle methodHandle) {
+    static Op<?> ofMethodHandle(MethodHandle methodHandle) {
         throw new UnsupportedOperationException();
     }
 }

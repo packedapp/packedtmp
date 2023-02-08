@@ -27,16 +27,15 @@ import java.util.TreeSet;
 import app.packed.application.BuildException;
 import app.packed.application.BuildGoal;
 import app.packed.container.AbstractComposer.ComposerAssembly;
+import app.packed.util.Nullable;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.BuildableAssembly;
 import app.packed.container.DelegatingAssembly;
 import app.packed.container.Realm;
 import app.packed.container.Wirelet;
-import app.packed.framework.Nullable;
 import internal.app.packed.application.ApplicationDriver;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.bean.BeanMemberAccessor;
 import internal.app.packed.bean.BeanOwner;
 import internal.app.packed.jfr.BuildApplicationEvent;
 import internal.app.packed.service.CircularServiceDependencyChecker;
@@ -63,9 +62,9 @@ public final class AssemblySetup implements BeanOwner {
     private static final MethodHandle MH_DELEGATING_ASSEMBLY_DELEGATE_TO = LookupUtil.findVirtual(MethodHandles.lookup(), DelegatingAssembly.class,
             "delegateTo", Assembly.class);
 
-    /** The current module accessor, updated via {@link #lookup(Lookup)} */
+    /** A custom lookup object set via {@link #lookup(Lookup)} */
     @Nullable
-    private BeanMemberAccessor accessor;
+    public Lookup customLookup;
 
     /** The application that is being the assembly is used to built. */
     public final ApplicationSetup application;
@@ -152,17 +151,6 @@ public final class AssemblySetup implements BeanOwner {
         }
     }
 
-    // Maaske vi flytter vi den til ContainerRealmSetup
-    // Hvis man har brug for Lookup i en extension... Saa maa man bruge Factory.of(Class).lookup());
-    // Jaaa, men det klare jo ogsaa @JavaBaseSupport
-    public BeanMemberAccessor beanAccessor() {
-        BeanMemberAccessor r = accessor;
-        if (r == null) {
-            this.accessor = r = BeanMemberAccessor.defaultFor(assembly.getClass());
-        }
-        return r;
-    }
-
     public void build() {
         // Create a JFR build event if application root
         BuildApplicationEvent buildEvent = null;
@@ -214,7 +202,6 @@ public final class AssemblySetup implements BeanOwner {
             // Check application dependency cycles. Or wait???
             CircularServiceDependencyChecker.dependencyCyclesFind(container);
 
-
             // The application has been built successfully, generate code if needed
             application.close();
 
@@ -259,8 +246,7 @@ public final class AssemblySetup implements BeanOwner {
      * @see AbstractComposer#lookup(Lookup)
      */
     public void lookup(Lookup lookup) {
-        requireNonNull(lookup, "lookup is null");
-        this.accessor = beanAccessor().withLookup(lookup);
+        this.customLookup = requireNonNull(lookup, "lookup is null");
     }
 
     /** {@return a mirror for this assembly.} */

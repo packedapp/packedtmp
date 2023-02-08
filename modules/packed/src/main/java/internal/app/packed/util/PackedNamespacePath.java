@@ -22,7 +22,7 @@ import java.util.StringJoiner;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationPath;
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
 
 /** The default implementation of {@link ApplicationPath}. */
 public final class PackedNamespacePath implements ApplicationPath {

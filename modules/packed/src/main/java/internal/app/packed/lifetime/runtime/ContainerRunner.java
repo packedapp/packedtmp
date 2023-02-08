@@ -18,7 +18,7 @@ package internal.app.packed.lifetime.runtime;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.extension.ExtensionContext;
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.util.ThrowableUtil;

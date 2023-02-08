@@ -18,9 +18,9 @@ package internal.app.packed.lifetime;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.bean.BeanKind;
-import app.packed.framework.Nullable;
 import app.packed.lifetime.BeanLifetimeTemplate;
-import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.Nullable;
 
 /**
  *
@@ -28,7 +28,7 @@ import app.packed.operation.BeanOperationTemplate;
 public final class PackedBeanLifetimeTemplate implements BeanLifetimeTemplate {
 
     @Nullable
-    public final BeanOperationTemplate bot;
+    public final OperationTemplate bot;
 
     public final BeanKind kind;
 
@@ -37,7 +37,7 @@ public final class PackedBeanLifetimeTemplate implements BeanLifetimeTemplate {
         this.bot = null;
     }
 
-    PackedBeanLifetimeTemplate(BeanKind kind, BeanOperationTemplate bot) {
+    PackedBeanLifetimeTemplate(BeanKind kind, OperationTemplate bot) {
         this.kind = requireNonNull(kind);
         this.bot = bot;
     }
@@ -45,7 +45,7 @@ public final class PackedBeanLifetimeTemplate implements BeanLifetimeTemplate {
     public static final class PackedBuilder implements BeanLifetimeTemplate.Builder {
 
         @Nullable
-        BeanOperationTemplate bot = BeanOperationTemplate.defaults();
+        OperationTemplate bot = OperationTemplate.defaults();
 
         /** {@inheritDoc} */
         @Override
@@ -67,7 +67,7 @@ public final class PackedBeanLifetimeTemplate implements BeanLifetimeTemplate {
 
         /** {@inheritDoc} */
         @Override
-        public Builder withLifetime(BeanOperationTemplate bot) {
+        public Builder withLifetime(OperationTemplate bot) {
             this.bot = bot;
             return this;
         }

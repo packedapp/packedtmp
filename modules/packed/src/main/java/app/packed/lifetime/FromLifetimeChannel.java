@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.lifetime;
 
-import java.util.Collection;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import app.packed.container.ContainerMirror;
+import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.Extension;
 
 /**
- * Don't know if we want a separate bean mirror for this.
+ *
  */
-public class GuestBeanMirror extends BeanMirror {
+@Target({ ElementType.PARAMETER, ElementType.ANNOTATION_TYPE, ElementType.TYPE_USE })
+@Retention(RetentionPolicy.RUNTIME)
+@AnnotatedBindingHook(extension = BaseExtension.class)
+public @interface FromLifetimeChannel {}
 
-    public Class<? extends Extension<?>> extensionType() {
-        return BaseExtension.class;
-    }
-
-    public Collection<ContainerMirror> containers() {
-        throw new UnsupportedOperationException();
-    }
-}
+// Alternativt en Qualifier og saa local services... Og evt ingen context...

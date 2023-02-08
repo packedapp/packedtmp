@@ -102,6 +102,7 @@ public @interface BeanHook {
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @BeanHook
+    // I don't think we are going to support meta annotations that have both type use and field use
     public @interface AnnotatedFieldHook {
 
         /** Whether or not the owning extension is allow to get the contents of the field. */

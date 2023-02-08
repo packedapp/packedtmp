@@ -18,7 +18,7 @@ package app.packed.lifetime;
 import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 
 /**
@@ -47,19 +47,20 @@ public final class BeanLifetimeMirror extends LifetimeMirror {
         return lifetime().bean.mirror();
     }
 
-    public ContainerLifetimeMirror container() {
+    /** {@return the container lifetime this bean is contained within.} */
+    public ContainerLifetimeMirror containerLifetime() {
         return lifetime().parent().mirror();
     }
 
     /** {@inheritDoc} */
     @Override
-    public final boolean equals(Object other) {
+    public boolean equals(Object other) {
         return this == other || other instanceof BeanLifetimeMirror m && lifetime() == m.lifetime();
     }
 
     /** {@inheritDoc} */
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         return lifetime().hashCode();
     }
 
@@ -69,7 +70,7 @@ public final class BeanLifetimeMirror extends LifetimeMirror {
      * @param owner
      *            the internal configuration of the extension to mirror
      */
-    final void initialize(BeanLifetimeSetup operation) {
+    void initialize(BeanLifetimeSetup operation) {
         if (this.lifetime != null) {
             throw new IllegalStateException("This mirror has already been initialized.");
         }
@@ -94,6 +95,6 @@ public final class BeanLifetimeMirror extends LifetimeMirror {
     /** {@inheritDoc} */
     @Override
     public Optional<ContainerLifetimeMirror> parent() {
-        return Optional.of(container());
+        return Optional.of(containerLifetime());
     }
 }

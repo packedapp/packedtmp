@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 
 import app.packed.application.ApplicationPath;
 import app.packed.extension.Extension;
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedContainerHandle;
 

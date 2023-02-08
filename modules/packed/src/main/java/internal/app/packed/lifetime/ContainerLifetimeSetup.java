@@ -26,11 +26,11 @@ import java.util.Set;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.extension.ExtensionContext;
-import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.RunState;
 import app.packed.lifetime.sandbox.ManagedLifetime;
-import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanLifecycleOperation;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
@@ -88,10 +88,10 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
      */
     public ContainerLifetimeSetup(PackedContainerInstaller installer, ContainerSetup newContainer, @Nullable ContainerLifetimeSetup parent) {
         super(parent);
-        this.lifetimes = FuseableOperation.of(List.of(BeanOperationTemplate.defaults())); // obviously wrong
-        this.initialization = new FuseableOperation(BeanOperationTemplate.defaults());
-        this.startup = new FuseableOperation(BeanOperationTemplate.defaults());
-        this.shutdown = new FuseableOperation(BeanOperationTemplate.defaults());
+        this.lifetimes = FuseableOperation.of(List.of(OperationTemplate.defaults())); // obviously wrong
+        this.initialization = new FuseableOperation(OperationTemplate.defaults());
+        this.startup = new FuseableOperation(OperationTemplate.defaults());
+        this.shutdown = new FuseableOperation(OperationTemplate.defaults());
 
         this.container = newContainer;
         if (newContainer.treeParent == null) {

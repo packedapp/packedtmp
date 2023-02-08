@@ -20,6 +20,8 @@ import app.packed.application.BuildException;
 /**
  * An exception thrown at build time to indicate a dependency cycle between multiple service providers.
  */
+// Findes der andet end service dependencies cirkler?
+// Hvis man ikke kan bruge sine egne annoteringer
 public class CircularDependencyException extends BuildException {
 
     private static final long serialVersionUID = 1L;

@@ -32,6 +32,8 @@ import internal.app.packed.container.Mirror;
 // En operation kan lave en Bean/Container/Application lifetime der kun eksistere saa laenge operationen koere...
 // En Bean, Container kan vaere i en context. (Hvad med en application?)
 
+// Extendable?
+
 // Fx BeanInitializationContext er aabenlyst OperationSpan (per bean). Fordi vi kan injecte forskellige ting...
 
 // Scheduling
@@ -44,7 +46,8 @@ public interface ContextMirror extends Mirror {
     /** {@return the context.} */
     Class<? extends Context<?>> contextClass();
 
-    ContextualizedElementMirror element();
+    /** {@return the root element of the context. */
+    ContextualizedElementMirror root();
 
     /** {@return the extension that defines the context.} */
     Class<? extends Extension<?>> extensionClass();
@@ -58,5 +61,3 @@ public interface ContextMirror extends Mirror {
 
     ContextSpan span();
 }
-// Tror ikke vi supporter Tree downward
-// ContextSpan -> Operation, Bean, Container, (RestOfTree), Application

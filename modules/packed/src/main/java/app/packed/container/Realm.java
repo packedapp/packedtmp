@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.NoSuchElementException;
 
 import app.packed.extension.Extension;
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
 import internal.app.packed.util.types.ClassUtil;
 
 // Registrant

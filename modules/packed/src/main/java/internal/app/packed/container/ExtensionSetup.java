@@ -12,7 +12,7 @@ import app.packed.container.Realm;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanOwner;
 import internal.app.packed.service.ServiceManager;
 import internal.app.packed.util.AbstractTreeNode;

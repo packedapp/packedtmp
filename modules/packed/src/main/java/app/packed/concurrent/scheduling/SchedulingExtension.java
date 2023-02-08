@@ -35,7 +35,7 @@ import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionPoint;
-import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationHandle;
 
 /**
@@ -53,14 +53,14 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
     protected BeanIntrospector newBeanIntrospector() {
         return new BeanIntrospector() {
             static final ContextTemplate TEMP = ContextTemplate.of(MethodHandles.lookup(), SchedulingContext.class, SchedulingContext.class);
-            static final BeanOperationTemplate BOT = BeanOperationTemplate.defaults().withContext(TEMP).withReturnIgnore();
+            static final OperationTemplate BOT = OperationTemplate.defaults().withContext(TEMP).withReturnIgnore();
 
             @Override
-            public void hookOnProvidedVariableType(Class<?> hook, BeanWrappedVariable v) {
+            public void hookOnVariableType(Class<?> hook, BeanWrappedVariable v) {
                 if (hook == SchedulingContext.class) {
                     v.bindInvocationArgument(1);
                 } else {
-                    super.hookOnProvidedVariableType(hook, v);
+                    super.hookOnVariableType(hook, v);
                 }
             }
 

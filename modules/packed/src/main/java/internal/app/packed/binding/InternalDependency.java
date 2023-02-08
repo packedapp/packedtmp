@@ -28,9 +28,9 @@ import java.util.OptionalLong;
 
 import app.packed.application.BuildException;
 import app.packed.bindings.Key;
-import app.packed.bindings.Variable;
-import app.packed.framework.Nullable;
-import app.packed.operation.OperationType;
+import app.packed.util.FunctionType;
+import app.packed.util.Nullable;
+import app.packed.util.Variable;
 import internal.app.packed.errorhandling.ErrorMessageBuilder;
 import internal.app.packed.service.KeyHelper;
 import internal.app.packed.util.types.ClassUtil;
@@ -213,7 +213,7 @@ public final class InternalDependency {
         return optionality.wrapIfOptional(requireNonNull(object, "object is null"));
     }
 
-    public static List<InternalDependency> fromOperationType(OperationType t) {
+    public static List<InternalDependency> fromOperationType(FunctionType t) {
         Variable[] parameters = t.parameterArray();
         return switch (parameters.length) {
         case 0 -> List.of();
@@ -271,10 +271,7 @@ public final class InternalDependency {
         }
         // TL is free from Optional
 
-        Key<?> key = KeyHelper.convert(t, v.getAnnotations(), v);
-
-
-
+        Key<?> key = KeyHelper.convert(t, v.annotations().toArray(), v);
         return new InternalDependency(v.getRawType(), key, optionallaity);
     }
 

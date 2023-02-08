@@ -18,8 +18,9 @@ package internal.app.packed.bean;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Executable;
 
-import app.packed.framework.Nullable;
-import app.packed.operation.OperationType;
+import app.packed.util.FunctionType;
+import app.packed.util.Nullable;
+import internal.app.packed.util.PackedAnnotationList;
 
 /**
  *
@@ -28,8 +29,10 @@ sealed abstract class PackedBeanExecutable<E extends Executable>
         extends PackedBeanMember<E> permits PackedBeanConstructor, PackedBeanMethod {
 
     /** The operation type (lazily created). */
+    // Do we really want to create it lazily?
+    //
     @Nullable
-    OperationType type;
+    final FunctionType type;
 
     /**
      * @param ce
@@ -37,7 +40,8 @@ sealed abstract class PackedBeanExecutable<E extends Executable>
      * @param annotations
      */
     PackedBeanExecutable(BeanScannerExtension ce, E member, Annotation[] annotations) {
-        super(ce, member, annotations);
+        super(ce, member, new PackedAnnotationList(annotations));
+        this.type = FunctionType.ofExecutable(member);
     }
 
     /** {@inheritDoc} */
@@ -45,11 +49,7 @@ sealed abstract class PackedBeanExecutable<E extends Executable>
         return false;
     }
 
-    public OperationType operationType() {
-        OperationType t = type;
-        if (t == null) {
-            t = type = OperationType.ofExecutable(member);
-        }
-        return t;
+    public FunctionType operationType() {
+        return type;
     }
 }

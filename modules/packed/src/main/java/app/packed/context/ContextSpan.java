@@ -20,10 +20,22 @@ package app.packed.context;
  */
 // Alternativt ContextScope
 public enum ContextSpan {
-    CONTAINER, BEAN,
+    CONTAINER_TREE,
 
-    /** The contexts are available only for the particular operation.
-     * This doesn't mean that other operations on the same bean can define the same context */
+    CONTAINER_LIFETIME,
+
+    CONTAINER,
+
+    /**
+     * The context is available from all operation within a single bean.
+     */
+    BEAN,
+
+    /**
+     * The context is available from within a single operation.
+     * <p>
+     * This doesn't mean that other operations on the same bean can define the same context
+     */
     OPERATION;
 }
 
@@ -32,7 +44,6 @@ public enum ContextSpan {
 // Men man kan ContextWirelets.removeContexts(SessionContext.class);
 
 // alternativt ContextWirelets.propagateContexts(SessionContext.class);
-
 
 // Hmm hvis vi propagater contexts bryder vi jo lidt i en container...
 // Just saying... Det er mest det med at resolve keys Hvor man lige pludselig kan injecte ting...

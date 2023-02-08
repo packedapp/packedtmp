@@ -23,9 +23,6 @@ import app.packed.operation.OperationMirror;
  * An operation that is invoked doing lifecycle events on the bean.
  */
 
-// Mit eneste problem er om vi fx har operationer der baade kan kalde paa flere tidspunkter??
-// OnInitialize, OnStart (Hvor tit sker det... Laver vi ikke bare flere operationer saa)
-
 // Is a factory a lifecycle operation? I don't think so
 public class BeanLifecycleOperationMirror extends OperationMirror {
 
@@ -38,12 +35,11 @@ public class BeanLifecycleOperationMirror extends OperationMirror {
         return bean().lifetime();
     }
 
-    public boolean isNaturalOrder() {
+    public DependencyOrder isNaturalOrder() {
        throw new UnsupportedOperationException();
     }
 
     /** {@return the lifetime operation this operation is a part of.} */
-
     // IDK, supportere vi Lifecycle events there ikke har en Lifetime operation???
     // Saa er det ikke en lifetime. Fx restart
     public OperationMirror lifetimeOperation() {

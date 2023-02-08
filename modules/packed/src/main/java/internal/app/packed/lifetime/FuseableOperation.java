@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandle;
 import java.util.ArrayDeque;
 import java.util.List;
 
-import app.packed.framework.Nullable;
-import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.Nullable;
 import app.packed.operation.OperationHandle;
 
 /**
@@ -30,17 +30,17 @@ import app.packed.operation.OperationHandle;
  */
 public final class FuseableOperation {
 
-    public final BeanOperationTemplate template;
+    public final OperationTemplate template;
 
     public final ArrayDeque<OperationHandle> operations = new ArrayDeque<>();
 
     public final ArrayDeque<MethodHandle> methodHandles = new ArrayDeque<>();
 
-    public FuseableOperation(BeanOperationTemplate template) {
+    public FuseableOperation(OperationTemplate template) {
         this.template = requireNonNull(template);
     }
 
-    static List<FuseableOperation> of(@Nullable List<BeanOperationTemplate> templates) {
+    static List<FuseableOperation> of(@Nullable List<OperationTemplate> templates) {
         if (templates == null) {
             return List.of();
         }

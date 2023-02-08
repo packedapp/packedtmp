@@ -25,7 +25,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
@@ -54,8 +54,8 @@ public final class ApplicationSetup {
 
     /**
      * All extensions used in an application has a unique instance id attached. This is used in case we have multiple
-     * extension with the same canonical name but from different class loaders. Where we then compare the extension id of
-     * the extensions as a last resort.
+     * extension with the same canonical name (from different class loaders). We then compare the extension id of
+     * the extensions as a last resort when sorting them.
      */
     public int extensionId;
 

@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime.zbridge;
+package app.packed.lifetime.sandbox;
 
+import java.util.Collection;
+
+import app.packed.bean.BeanMirror;
+import app.packed.container.ContainerMirror;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.service.ServiceLocator;
 
 /**
- *
+ * Don't know if we want a separate bean mirror for this.
  */
-public class MyE extends Extension<MyE> {
-    String foo;
+public class ContainerLifetimeHostBeanMirror extends BeanMirror {
 
-    static class RuntimeBean {
+    public Class<? extends Extension<?>> extensionType() {
+        return BaseExtension.class;
+    }
 
-        ServiceLocator calc() {
-            throw new UnsupportedOperationException();
-        }
+    public Collection<ContainerMirror> containers() {
+        throw new UnsupportedOperationException();
     }
 }

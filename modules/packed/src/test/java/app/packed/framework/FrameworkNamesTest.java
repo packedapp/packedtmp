@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import app.packed.extension.BaseExtension;
+import app.packed.util.FrameworkNames;
 
 /**
  *

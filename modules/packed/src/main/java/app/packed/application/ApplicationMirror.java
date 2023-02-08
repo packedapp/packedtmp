@@ -6,12 +6,11 @@ import java.util.function.Consumer;
 import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.MirrorExtension;
-import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
+import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.Mirror;
@@ -28,7 +27,7 @@ import internal.app.packed.operation.OperationSetup;
  * Like many other mirrors this class is exte extendable via {@link BootstrapApp.Composer#}
  */
 @BindingTypeHook(extension = MirrorExtension.class)
-public non-sealed class ApplicationMirror implements Mirror , ContextualizedElementMirror {
+public class ApplicationMirror implements Mirror {
 
     /** The configuration of the application. Is initially null but populated via {@link #initialize(ApplicationSetup)}. */
     @Nullable

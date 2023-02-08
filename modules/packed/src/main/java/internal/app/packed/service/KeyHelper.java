@@ -18,6 +18,7 @@ package internal.app.packed.service;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -28,6 +29,10 @@ import app.packed.bindings.Key;
  *
  */
 public class KeyHelper {
+
+    public static Key<?> convert(Object source, AnnotatedType type) {
+        return Key.convert(type.getType(), type.getAnnotations(), true, source);
+    }
 
     public static Key<?> convert(Type type, Annotation[] annotations, Object source) {
         return Key.convert(type, annotations, true, source);

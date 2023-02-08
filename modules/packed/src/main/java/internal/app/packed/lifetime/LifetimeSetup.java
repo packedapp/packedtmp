@@ -2,8 +2,8 @@ package internal.app.packed.lifetime;
 
 import java.util.List;
 
-import app.packed.framework.Nullable;
 import app.packed.lifetime.LifetimeMirror;
+import app.packed.util.Nullable;
 
 /** The internal configuration of a Lifetime. */
 

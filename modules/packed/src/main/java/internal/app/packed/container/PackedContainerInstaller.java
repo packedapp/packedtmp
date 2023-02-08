@@ -25,8 +25,8 @@ import app.packed.container.ContainerInstaller;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeTemplate;
+import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 

@@ -16,7 +16,7 @@
 package app.packed.lifetime;
 
 import app.packed.bean.BeanKind;
-import app.packed.operation.BeanOperationTemplate;
+import app.packed.context.ContextTemplate;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.lifetime.PackedBeanLifetimeTemplate;
 
@@ -24,7 +24,7 @@ import internal.app.packed.lifetime.PackedBeanLifetimeTemplate;
  *
  */
 // Contexts, Args
-public sealed interface BeanLifetimeTemplate extends OperationTemplate permits PackedBeanLifetimeTemplate {
+public sealed interface BeanLifetimeTemplate extends LifetimeTemplate permits PackedBeanLifetimeTemplate {
 
     /**
      * The lifetime of the bean is identical to that of its container.
@@ -85,7 +85,14 @@ public sealed interface BeanLifetimeTemplate extends OperationTemplate permits P
          */
         BeanLifetimeTemplate build();
 
-        Builder withLifetime(BeanOperationTemplate bot);
+        default Builder inContext(ContextTemplate template) {
+            // This means Context args are added to all operations.
+
+            // builderManyton().inContext(WebContext.template).builder();
+            return this;
+        }
+
+        Builder withLifetime(OperationTemplate bot);
 
         // No seperet MH for starting, part of init
         Builder autoStart();

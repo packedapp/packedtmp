@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -37,9 +38,9 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.extension.Extension;
-import app.packed.framework.Nullable;
-import app.packed.operation.BeanOperationTemplate;
-import app.packed.operation.OperationType;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.FunctionType;
+import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.framework.devtools.PackedDevToolsIntegration;
@@ -53,45 +54,55 @@ import internal.app.packed.util.ThrowableUtil;
 /**
  * This class represents a single bean being introspected.
  */
-public final class BeanScanner {
+// BeanAnalyzer
+public final class BeanReflector {
 
-    /** We never process classes that are located in the {@code java.base} module. */
-    static final Module JAVA_BASE_MODULE = Object.class.getModule();
+    /** The app.packed.base module. */
+    private static final Module APP_PACKED_BASE_MODULE = OpenClass.class.getModule();
+
+    /** We {@code java.base} module, which we never process classes from. */
+    private static final Module JAVA_BASE_MODULE = Object.class.getModule();
 
     /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
     private static final MethodHandle MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class,
             "initialize", void.class, BeanScannerExtension.class);
 
-    /** An internal lookup object. */
-    private static final MethodHandles.Lookup PACKED = MethodHandles.lookup();
+    private final OpenClass accessor;
 
     @Nullable
     public Map<Class<?>, Object> attachments;
 
-    /** The bean that is being introspected. */
+    /** The bean that is being reflected upon. */
     public final BeanSetup bean;
 
-    /** Non-null if a introspector was set via {@link BeanHandle.BeanInstaller#introspectWith(BeanIntrospector)}. */
+    /** The bean class. */
+    public final Class<?> beanClass;
+
+    /**
+     * A special bean introspector for bean's owner Non-null if a introspector was set via
+     * {@link BeanHandle.BeanInstaller#introspectWith(BeanIntrospector)}.
+     */
     @Nullable
     private final BeanIntrospector beanIntrospector;
 
-    /** Every extension that is activated by a hook. */
+    final Lookup customLookup;
+
+    /** The various extensions that are part of the reflection process. */
     // We sort it in the end
     private final IdentityHashMap<Class<? extends Extension<?>>, BeanScannerExtension> extensions = new IdentityHashMap<>();
 
+    /** The hook model for the bean. */
     final BeanHookModel hookModel;
-
-    // Should be made lazily??? I think
-    // I think we embed once we gotten rid of use cases outside of this introspector
-    final OpenClass oc;
 
     public final ArrayDeque<OperationSetup> unBoundOperations = new ArrayDeque<>();
 
-    BeanScanner(BeanSetup bean, @Nullable BeanIntrospector beanIntrospector, @Nullable Map<Class<?>, Object> attachments) {
+    BeanReflector(BeanSetup bean, @Nullable BeanIntrospector beanIntrospector, @Nullable Map<Class<?>, Object> attachments) {
         this.bean = bean;
+        this.beanClass = bean.beanClass;
+        this.customLookup = bean.container.assembly.customLookup;
         this.hookModel = bean.container.assembly.model.hookModel;
         this.beanIntrospector = beanIntrospector;
-        this.oc = new OpenClass(PACKED, bean.beanClass);
+        this.accessor = new OpenClass(MethodHandles.lookup());
         // We need to make a copy of attachments, as the the map may be updated in the BeanInstaller
         this.attachments = attachments == null ? null : new HashMap<>(attachments);
     }
@@ -106,54 +117,43 @@ public final class BeanScanner {
             // Get the extension (installing it if necessary)
             ExtensionSetup extension = bean.container.useExtension(extensionType, null);
 
-            final BeanIntrospector introspector;
-
             // if a special bean introspected has been set from the extension that is installing the bean
             // Use this bean introspector, otherwise create a new one
-            if (beanIntrospector != null && bean.installedBy.extensionType == extensionType) {
-                introspector = beanIntrospector;
-            } else {
-                introspector = extension.newBeanIntrospector();
-            }
+            boolean useCustom = bean.installedBy.extensionType == extensionType && beanIntrospector != null;
+            BeanIntrospector introspector = useCustom ? beanIntrospector : extension.newBeanIntrospector();
 
-            BeanScannerExtension ce = new BeanScannerExtension(this, extension, introspector);
+            BeanScannerExtension bse = new BeanScannerExtension(this, extension, introspector);
 
-            // Call BeanIntrospector#initialize
+            // Call BeanIntrospector#initialize(BeanScannerExtension)
             try {
-                MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, ce);
+                MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, bse);
             } catch (Throwable t) {
                 throw ThrowableUtil.orUndeclared(t);
             }
 
             // Notify the bean introspector that it is being used
             introspector.beforeHooks();
-            return ce;
+            return bse;
         });
     }
 
     /** Find a constructor on the bean and create an operation for it. */
     private void findConstructor() {
-        BeanScannerConstructor constructor = BeanScannerConstructor.CACHE.get(bean.beanClass);
+        BeanScannerConstructor constructor = BeanScannerConstructor.CACHE.get(beanClass);
 
         Constructor<?> con = constructor.constructor();
 
-        Lookup lookup = oc.lookup(con);
-        MethodHandle mh;
-        try {
-            mh = lookup.unreflectConstructor(constructor.constructor());
-        } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
-        }
+        MethodHandle mh = unreflectConstructor(con);
 
-        BeanOperationTemplate ot;
+        OperationTemplate ot;
         if (bean.lifetime.lifetimes().isEmpty()) {
-            ot = BeanOperationTemplate.defaults();
+            ot = OperationTemplate.defaults();
         } else {
             ot = bean.lifetime.lifetimes().get(0).template;
         }
-        ot = ot.withReturnType(bean.beanClass);
+        ot = ot.withReturnType(beanClass);
 
-        OperationSetup os = new MemberOperationSetup(bean.installedBy, bean, OperationType.ofExecutable(con), ot,
+        OperationSetup os = new MemberOperationSetup(bean.installedBy, bean, FunctionType.ofExecutable(con), ot,
                 new OperationConstructorTarget(constructor.constructor()), mh);
         bean.operations.add(os);
         resolveNow(os);
@@ -175,7 +175,7 @@ public final class BeanScanner {
             resolveNow(bean.operations.get(0));
         }
 
-        if (!bean.beanClass.isInterface()) {
+        if (!beanClass.isInterface()) {
 
             // If a we have a (instantiating) class source, we need to find a constructor we can use
             if (bean.beanSourceKind == BeanSourceKind.CLASS && bean.beanKind != BeanKind.STATIC) {
@@ -185,7 +185,7 @@ public final class BeanScanner {
             // See also java.lang.PublicMethods
 
             // Introspect all fields on the bean and its super classes
-            introspectFields(this, bean.beanClass);
+            introspectFields(this, beanClass);
 
             // Process all methods on the bean
             record MethodHelper(int hash, String name, Class<?>[] parameterTypes) {
@@ -213,7 +213,6 @@ public final class BeanScanner {
 
             HashSet<Package> packages = new HashSet<>();
             HashMap<MethodHelper, HashSet<Package>> types = new HashMap<>();
-            Class<?> beanClass = bean.beanClass;
 
             // Step 1, .getMethods() is the easiest way to find all default methods. Even if we also have to call
             // getDeclaredMethods() later.
@@ -298,32 +297,80 @@ public final class BeanScanner {
         }
     }
 
-    private static void introspectFields(BeanScanner introspector, Class<?> clazz) {
+    MethodHandle unreflectConstructor(Constructor<?> constructor) {
+        Lookup lookup = accessor.lookup(constructor);
+        try {
+            return lookup.unreflectConstructor(constructor);
+        } catch (IllegalAccessException e) {
+            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+        }
+    }
+
+    /**
+     * <p>
+     *
+     * @param field
+     *            the field to unreflect
+     * @see Lookup#unreflectGetter(Field)
+     */
+    MethodHandle unreflectGetter(Field field) {
+        Lookup lookup = accessor.lookup(field);
+        try {
+            return lookup.unreflectGetter(field);
+        } catch (IllegalAccessException e) {
+            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+        }
+    }
+
+    MethodHandle unreflectMethod(Method method) {
+        Lookup lookup = accessor.lookup(method);
+        try {
+            return lookup.unreflect(method);
+        } catch (IllegalAccessException e) {
+            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+        }
+    }
+
+    MethodHandle unreflectSetter(Field field) {
+        Lookup lookup = accessor.lookup(field);
+        try {
+            return lookup.unreflectSetter(field);
+        } catch (IllegalAccessException e) {
+            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+        }
+    }
+
+    VarHandle unreflectVarHandle(Field field) {
+        Lookup lookup = accessor.lookup(field);
+        try {
+            return lookup.unreflectVarHandle(field);
+        } catch (IllegalAccessException e) {
+            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+        }
+    }
+
+    private static void introspectFields(BeanReflector introspector, Class<?> clazz) {
         // We never process classes in the "java.base" module.
-        if (clazz.getModule() != BeanScanner.JAVA_BASE_MODULE) {
+        if (clazz.getModule() != BeanReflector.JAVA_BASE_MODULE) {
             // Recursively call into superclass, before processing own fields
             introspectFields(introspector, clazz.getSuperclass());
 
-            // PackedDevToolsIntegration.INSTANCE.reflectMembers(c, fields);
+            // We are never going to sort here. It only makes sense
+            // to sort fields that have hooks
 
             // Iterate over all declared fields
             for (Field field : clazz.getDeclaredFields()) {
-                FieldScan.introspectFieldForAnnotations(introspector, field);
+                FieldScan.introspectField(introspector, field);
             }
+
+            // Maybe store things directly in BeanScannerExtension
         }
     }
 
     /**
      * An open class is a thin wrapper for a single class and a {@link Lookup} object.
-     * <p>
-     * This class is not safe for use with multiple threads.
      */
-    // TODO should we know whether or the lookup is Packed one or a user supplied??
-    // lookup.getClass().getModule==OpenClass.getModule...? nah virker ikke paa classpath
-    static final class OpenClass {
-
-        /** The app.packed.base module. */
-        private static final Module APP_PACKED_BASE_MODULE = OpenClass.class.getModule();
+    private final class OpenClass {
 
         /** A lookup object that can be used to access {@link #type}. */
         @SuppressWarnings("unused")
@@ -332,22 +379,15 @@ public final class BeanScanner {
         /** A lookup that can be used on non-public members. */
         private MethodHandles.Lookup privateLookup;
 
-        /** Whether or not the private lookup has been initialized. */
-        private boolean privateLookupInitialized;
-
-        /** The class that is wrapped. */
-        private final Class<?> type;
-
-        OpenClass(MethodHandles.Lookup lookup, Class<?> clazz) {
+        OpenClass(MethodHandles.Lookup lookup) {
             this.lookup = requireNonNull(lookup);
-            this.type = requireNonNull(clazz);
         }
 
         Lookup lookup(Member member) {
-            // If we already have made a private lookup object, lets just use it. Even if could do with Public lookup
-            MethodHandles.Lookup p = privateLookup;
-            if (p != null) {
-                return p;
+            // If we already have a private lookup for the bean return it
+            MethodHandles.Lookup lookup = privateLookup;
+            if (lookup != null) {
+                return lookup;
             }
 
             // See if we need private access, otherwise just return ordinary lookup.
@@ -363,28 +403,27 @@ public final class BeanScanner {
                 // return lookup;
             }
 
-            if (!privateLookupInitialized) {
-                String pckName = type.getPackageName();
-                if (!type.getModule().isOpen(pckName, APP_PACKED_BASE_MODULE)) {
-                    String otherModule = type.getModule().getName();
-                    String m = APP_PACKED_BASE_MODULE.getName();
-                    throw new InaccessibleBeanMemberException("In order to access '" + StringFormatter.format(type) + "', the module '" + otherModule
-                            + "' must be open to '" + m + "'. This can be done, for example, by adding 'opens " + pckName + " to " + m
-                            + ";' to the module-info.java file of " + otherModule);
-                }
-                // Should we use lookup.getdeclaringClass???
-                if (!APP_PACKED_BASE_MODULE.canRead(type.getModule())) {
-                    APP_PACKED_BASE_MODULE.addReads(type.getModule());
-                }
-                privateLookupInitialized = true;
+            String pckName = beanClass.getPackageName();
+            Module beanModule = beanClass.getModule();
+
+            // See if the bean's package is open to app.packed.base
+            if (!beanModule.isOpen(pckName, APP_PACKED_BASE_MODULE)) {
+                String otherModule = beanModule.getName();
+                String thisModule = APP_PACKED_BASE_MODULE.getName();
+                throw new InaccessibleBeanMemberException("In order to access '" + StringFormatter.format(beanClass) + "', the module '" + otherModule
+                        + "' must be open to '" + thisModule + "'. This can be done, for example, by adding 'opens " + pckName + " to " + thisModule
+                        + ";' to the module-info.java file for " + otherModule);
             }
+
+            // Should we use lookup.getdeclaringClass???
+            APP_PACKED_BASE_MODULE.addReads(beanModule);
 
             // Create and cache a private lookup.
             try {
                 // Fjernede lookup... Skal vitterligt have samlet det i en klasse
-                return privateLookup = MethodHandles.privateLookupIn(type, MethodHandles.lookup() /* lookup */);
+                return privateLookup = MethodHandles.privateLookupIn(beanClass, MethodHandles.lookup() /* lookup */);
             } catch (IllegalAccessException e) {
-                throw new InaccessibleBeanMemberException("Could not create private lookup [type=" + type + ", Member = " + member + "]", e);
+                throw new InaccessibleBeanMemberException("Could not create private lookup [type=" + beanClass + ", Member = " + member + "]", e);
             }
         }
 

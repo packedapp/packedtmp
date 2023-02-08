@@ -23,7 +23,7 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblyModel;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerHandle;

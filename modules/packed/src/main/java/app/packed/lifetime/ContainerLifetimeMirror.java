@@ -15,18 +15,14 @@
  */
 package app.packed.lifetime;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
-import app.packed.bean.GuestBeanMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.framework.Nullable;
-import app.packed.operation.OperationMirror;
+import app.packed.lifetime.sandbox.ContainerLifetimeHostBeanMirror;
+import app.packed.util.Nullable;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 
 /**
@@ -83,7 +79,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
      *
      * @return
      */
-    public Optional<GuestBeanMirror> guest() { // Do we need a ContainerWrapperBeanMirror?
+    public Optional<ContainerLifetimeHostBeanMirror> guest() { // Do we need a ContainerWrapperBeanMirror?
         return Optional.empty();
     }
 
@@ -119,29 +115,16 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
         return a;
     }
 
-    /**
-     * @return
-     *
-     */
-    public List<OperationMirror> operations2() {
-        ArrayList<OperationMirror> operations = new ArrayList<>();
-//        for (ComponentMirror cm : this) {
-//            if (cm instanceof BeanMirror m) {
-//                operations.addAll(m.operations());
-//            }
-//        }
-        return Collections.unmodifiableList(operations);
-    }
-
     /** {@return any parent lifetime this lifetime is contained within.} */
     @Override
     public Optional<ContainerLifetimeMirror> parent() {
         return Optional.ofNullable(lifetime().treeParent).map(e -> e.mirror());
     }
-
-    /** {@return the root of the tree.} */
-    // LifetimeOriginMirror root(); // Optional<CM> if we have empty trees. Which we probably have with filtering
 }
+///** {@return the root of the tree.} */
+// LifetimeOriginMirror root(); // Optional<CM> if we have empty trees. Which we probably have with filtering
+
+
 //Do we ever return empty trees? Det tror jeg ikke.
 
 //Fx en Lifetime er jo altid et component tree...

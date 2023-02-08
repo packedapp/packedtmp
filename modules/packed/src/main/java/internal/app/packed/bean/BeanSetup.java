@@ -20,10 +20,10 @@ import app.packed.bean.BeanLifecycleOperationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.container.Realm;
-import app.packed.framework.Nullable;
-import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationType;
+import app.packed.util.Nullable;
+import app.packed.util.FunctionType;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
@@ -34,7 +34,6 @@ import internal.app.packed.container.NameCheck;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.lifetime.LifecycleOrder;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.BeanAccessOperationSetup;
@@ -82,12 +81,12 @@ public final class BeanSetup {
 
     /** Non-null while a bean is being introspected. */
     @Nullable
-    public BeanScanner introspecting;
+    public BeanReflector introspecting;
 
 
     public final ArrayList<BeanLifecycleOperation> lifecycleOperations = new ArrayList<>();
 
-    public void addLifecycleOperation(LifecycleOrder runOrder, OperationHandle operation) {
+    public void addLifecycleOperation(BeanLifecycleOrder runOrder, OperationHandle operation) {
         lifecycleOperations.add(new BeanLifecycleOperation(runOrder, operation));
         operation.specializeMirror(() -> new BeanLifecycleOperationMirror());
     }
@@ -163,8 +162,8 @@ public final class BeanSetup {
 
     // Relative to x
     public OperationSetup instanceAccessOperation() {
-        BeanOperationTemplate template = BeanOperationTemplate.defaults().withReturnType(beanClass);
-        return new BeanAccessOperationSetup(installedBy, this, OperationType.of(beanClass), template);
+        OperationTemplate template = OperationTemplate.defaults().withReturnType(beanClass);
+        return new BeanAccessOperationSetup(installedBy, this, FunctionType.of(beanClass), template);
     }
 
     /** {@return a new mirror.} */

@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanVariable;
 import app.packed.extension.Extension;
+import app.packed.util.FunctionType;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /**
@@ -110,5 +111,5 @@ public sealed interface OperationHandle permits PackedOperationHandle {
     OperationTarget target();
 
     /** {@return the type of this operation.} */
-    OperationType type();
+    FunctionType type();
 }

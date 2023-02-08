@@ -13,30 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime;
+package internal.app.packed.bean;
 
 import app.packed.bean.DependencyOrder;
 import app.packed.lifetime.RunState;
 
-public enum LifecycleOrder {
+public enum BeanLifecycleOrder {
     INJECT(RunState.INITIALIZING), INITIALIZE_PRE_ORDER(RunState.INITIALIZING), INITIALIZE_POST_ORDER(RunState.INITIALIZING),
     START_PRE_ORDER(RunState.STARTING), START_POST_ORDER(RunState.STARTING), STOP_PRE_ORDER(RunState.STOPPING), STOP_POST_ORDER(RunState.STOPPING);
 
-    final RunState runState;
+    public final RunState runState;
 
-    LifecycleOrder(RunState runState) {
+    BeanLifecycleOrder(RunState runState) {
         this.runState = runState;
     }
 
-    public static LifecycleOrder fromInitialize(DependencyOrder ordering) {
-        return ordering == DependencyOrder.BEFORE_DEPENDENCIES ? INITIALIZE_PRE_ORDER : LifecycleOrder.INITIALIZE_POST_ORDER;
+    public static BeanLifecycleOrder fromInitialize(DependencyOrder ordering) {
+        return ordering == DependencyOrder.BEFORE_DEPENDENCIES ? INITIALIZE_PRE_ORDER : BeanLifecycleOrder.INITIALIZE_POST_ORDER;
     }
 
-    public static LifecycleOrder fromStarting(DependencyOrder ordering) {
-        return ordering == DependencyOrder.BEFORE_DEPENDENCIES ? START_PRE_ORDER : LifecycleOrder.START_POST_ORDER;
+    public static BeanLifecycleOrder fromStarting(DependencyOrder ordering) {
+        return ordering == DependencyOrder.BEFORE_DEPENDENCIES ? START_PRE_ORDER : BeanLifecycleOrder.START_POST_ORDER;
     }
 
-    public static LifecycleOrder fromStopping(DependencyOrder ordering) {
-        return ordering == DependencyOrder.BEFORE_DEPENDENCIES ? STOP_PRE_ORDER : LifecycleOrder.STOP_POST_ORDER;
+    public static BeanLifecycleOrder fromStopping(DependencyOrder ordering) {
+        return ordering == DependencyOrder.BEFORE_DEPENDENCIES ? STOP_PRE_ORDER : BeanLifecycleOrder.STOP_POST_ORDER;
     }
 }

@@ -17,7 +17,6 @@ package app.packed.context;
 
 import java.util.Map;
 
-import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.operation.OperationMirror;
@@ -30,7 +29,7 @@ import app.packed.operation.OperationMirror;
  * By static we mean that it can be determined at build time to always be present. It may be possible that contexts are
  * added dynamically at runtime. For example, by starting a transaction in raw code.
  */
-public sealed interface ContextualizedElementMirror permits ApplicationMirror, ContainerMirror, BeanMirror, OperationMirror {
+public sealed interface ContextualizedElementMirror permits ContainerMirror, BeanMirror, OperationMirror {
 
     /** {@return an immutable set of all the contexts that the element operates within.} */
     default Map<Class<? extends Context<?>>, ContextMirror> contexts() {

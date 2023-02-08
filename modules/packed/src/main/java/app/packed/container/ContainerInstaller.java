@@ -18,11 +18,17 @@ package app.packed.container;
 import java.util.function.Supplier;
 
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.context.ContextSpan;
+import app.packed.context.ContextTemplate;
 import app.packed.errorhandling.ErrorHandler;
 
 /**
  *
  */
+
+// New lifetime - vs - Existing lifetime
+// FromAssembly vs ContainerContainer
+
 public interface ContainerInstaller {
 
     /**
@@ -76,6 +82,13 @@ public interface ContainerInstaller {
     default ContainerInstaller requireUseOfExtension() {
         throw new UnsupportedOperationException();
     }
+
+
+    // ditch beanBlass, and just make sure there is a bean that can do it
+    default ContainerInstaller contextFromBean(Class<?> beanClass, ContextTemplate template, ContextSpan span) {
+        throw new UnsupportedOperationException();
+    }
+
 
     default ContainerInstaller requireUseOfExtension(String errorMessage) {
         throw new UnsupportedOperationException();

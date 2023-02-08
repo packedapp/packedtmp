@@ -20,7 +20,7 @@ import java.lang.reflect.Constructor;
 
 import app.packed.bean.BeanElement.BeanConstructor;
 import app.packed.bindings.Key;
-import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationHandle;
 
 /**
@@ -45,7 +45,7 @@ public final class PackedBeanConstructor extends PackedBeanExecutable<Constructo
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(BeanOperationTemplate template) {
+    public OperationHandle newOperation(OperationTemplate template) {
         throw new UnsupportedOperationException();
     }
 

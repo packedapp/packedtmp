@@ -13,23 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import app.packed.bean.BeanHook.AnnotatedBindingHook;
-import app.packed.extension.BaseExtension;
+package app.packed.operation;
 
 /**
  *
  */
-@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.TYPE_USE })
-@Retention(RetentionPolicy.RUNTIME)
-@AnnotatedBindingHook(extension = BaseExtension.class)
-public @interface FromGuest {}
+// Hmm, syntes hvad med den her og Bean.operations???
+public class NestedOperationMirror extends OperationMirror {
 
-// Alternativt en Qualifier og saa local services...
-// Og evt ingen context...
+}

@@ -18,9 +18,11 @@ package internal.app.packed.lifetime.runtime;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.container.Wirelet;
-import app.packed.framework.Nullable;
+import app.packed.context.Context;
+import app.packed.extension.BaseExtension;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
+import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationDriver;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.InternalWirelet;
@@ -30,7 +32,7 @@ import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
 /**
  * A temporary context object that is created whenever we launch an application.
  */
-public final class ApplicationInitializationContext {
+public final class ApplicationInitializationContext implements Context<BaseExtension>{
 
     /** The configuration of the application we are launching. */
     public final ApplicationSetup application;

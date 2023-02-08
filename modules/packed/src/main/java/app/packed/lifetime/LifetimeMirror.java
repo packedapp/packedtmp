@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.bean.BeanMirror;
+import app.packed.operation.NestedOperationMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.container.Mirror;
 
@@ -27,16 +28,6 @@ import internal.app.packed.container.Mirror;
 public abstract sealed class LifetimeMirror implements Mirror permits BeanLifetimeMirror, ContainerLifetimeMirror {
 
     /**
-     * If this lifetime is not stateless returns the bean that controls creation and destruction of the lifetime.
-     *
-     * @return
-     */
-    public Optional<BeanMirror> managedBy() {
-        List<OperationMirror> operations = operations();
-        return operations.isEmpty() ? Optional.empty() : Optional.of(operations.get(0).bean());
-    }
-
-    /**
      * empty for statelss (or BootstrapApps)
      *
      * 1 for unmananged
@@ -49,7 +40,7 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
      *
      * @return a list of this lifetime's lifetime operations
      */
-    public List<OperationMirror> operations() {
+    public List<NestedOperationMirror> operations() {
         throw new UnsupportedOperationException();
     }
 
@@ -78,8 +69,6 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
 
     /** {@return any parent lifetime this lifetime is contained within.} */
     public abstract Optional<ContainerLifetimeMirror> parent();
-
-
 }
 ///** {@return the type of lifetime.} */
 //// Tror vi dropper den her. Og saa er application.container bare en container
@@ -104,6 +93,16 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
 
 //Er lidt i tvivl om det her er 2 ting vi dealer med
 interface LifetimeSandbox {
+
+//  /**
+//  * If this lifetime is not stateless returns the bean that controls creation and destruction of the lifetime.
+//  *
+//  * @return
+//  */
+    default Optional<BeanMirror> managedBy() {
+        List<OperationMirror> operations = List.of();// operations();
+        return operations.isEmpty() ? Optional.empty() : Optional.of(operations.get(0).bean());
+    }
 
     //// Vi dropper den her fordi vi simpelthen bare siger de ikke har nogen lifecycle
     // UNMANAGED (or Epheral)

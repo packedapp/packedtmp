@@ -32,7 +32,13 @@ import internal.app.packed.operation.OperationSetup.MethodHandleOperationSetup;
  *
  * @see OperationMirror#target()
  */
+// Hvad har at lave en ny container/bean som target???
 public sealed interface OperationTarget {
+
+    /** Represents an operation that invokes other operations. */
+    non-sealed interface OfNested extends OperationTarget {
+
+    }
 
     /** Represents an operation that invokes a {@link Constructor constructor}. */
     sealed interface OfConstructor extends OperationTarget permits OperationConstructorTarget {

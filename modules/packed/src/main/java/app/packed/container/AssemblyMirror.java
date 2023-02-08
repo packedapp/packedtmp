@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.extension.MirrorExtension;
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.Mirror;

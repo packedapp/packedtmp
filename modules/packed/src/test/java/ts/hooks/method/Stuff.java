@@ -18,7 +18,7 @@ package ts.hooks.method;
 import org.junit.jupiter.api.Test;
 
 import app.packed.operation.OperationHandle;
-import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationTemplate;
 import ts.hooks.method.AnnotatedMethodHookTester.OnM;
 
 /**
@@ -35,7 +35,7 @@ public class Stuff {
         }
         AnnotatedMethodHookTester.process(c -> {
             System.out.println(c.operationType());
-            OperationHandle oh = c.newOperation(BeanOperationTemplate.defaults());
+            OperationHandle oh = c.newOperation(OperationTemplate.defaults());
             System.out.println(oh);
       //      oh.generateMethodHandle();
         }, R.class);

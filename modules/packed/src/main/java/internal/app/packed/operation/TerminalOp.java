@@ -20,12 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
-import app.packed.framework.Nullable;
-import app.packed.operation.BeanOperationTemplate;
-import app.packed.operation.OperationType;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.Nullable;
+import app.packed.util.FunctionType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.OperationSetup.NestedOperationParent;
+import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
 
 /** A terminal op. */
 abstract sealed class TerminalOp<R> extends PackedOp<R> {
@@ -34,7 +34,7 @@ abstract sealed class TerminalOp<R> extends PackedOp<R> {
      * @param type
      * @param operation
      */
-    private TerminalOp(OperationType type, MethodHandle operation) {
+    private TerminalOp(FunctionType type, MethodHandle operation) {
         super(type, operation);
     }
 
@@ -47,7 +47,7 @@ abstract sealed class TerminalOp<R> extends PackedOp<R> {
         /** The single abstract method type of the function. */
         private final SamType samType;
 
-        FunctionInvocationOp(OperationType type, MethodHandle methodHandle, SamType samType, Method implementationMethod) {
+        FunctionInvocationOp(FunctionType type, MethodHandle methodHandle, SamType samType, Method implementationMethod) {
             super(type, methodHandle);
             this.samType = requireNonNull(samType);
             this.implementationMethod = requireNonNull(implementationMethod);
@@ -55,7 +55,7 @@ abstract sealed class TerminalOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, BeanOperationTemplate template, @Nullable NestedOperationParent nestedParent) {
+        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template, @Nullable EmbeddedIntoOperation nestedParent) {
             template = template.withReturnType(type.returnRawType());
             OperationSetup os = new OperationSetup.FunctionOperationSetup(operator, bean, type, template, nestedParent, mhOperation, samType,
                     implementationMethod);
@@ -67,12 +67,12 @@ abstract sealed class TerminalOp<R> extends PackedOp<R> {
     static final class MethodHandleInvoke<R> extends TerminalOp<R> {
 
         MethodHandleInvoke(MethodHandle methodHandle) {
-            super(OperationType.ofMethodType(methodHandle.type()), methodHandle);
+            super(FunctionType.ofMethodType(methodHandle.type()), methodHandle);
         }
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, BeanOperationTemplate template, @Nullable NestedOperationParent nestedParent) {
+        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template, @Nullable EmbeddedIntoOperation nestedParent) {
             return new OperationSetup.MethodHandleOperationSetup(operator, bean, type, template, nestedParent, mhOperation);
         }
     }

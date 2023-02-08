@@ -75,6 +75,7 @@ public abstract class Extension<E extends Extension<E>> {
     /** The internal configuration of the extension. */
     final ExtensionSetup extension = ExtensionSetup.initalizeExtension(this);
 
+
     /**
      * Creates a new extension. Subclasses should have a single package-private constructor.
      *
@@ -418,7 +419,6 @@ public abstract class Extension<E extends Extension<E>> {
      *             If the extension which the extension point is a part of has not explicitly been declared as a dependency
      *             of this extension
      */
-    @SuppressWarnings("unchecked")
     protected final <P extends ExtensionPoint<?>> P use(Class<P> extensionPointClass) {
         requireNonNull(extensionPointClass, "extensionPointClass is null");
 
@@ -454,7 +454,7 @@ public abstract class Extension<E extends Extension<E>> {
         // Initializes the extension point
         newExtensionPoint.initialize(otherExtension, extension);
 
-        return (P) newExtensionPoint;
+        return extensionPointClass.cast(newExtensionPoint);
     }
 
     /**

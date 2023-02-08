@@ -19,14 +19,15 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import app.packed.extension.Extension;
-import internal.app.packed.context.PackedContextClass;
+import internal.app.packed.context.PackedContextTemplate;
 
 /**
  *
  */
-public sealed interface ContextTemplate permits PackedContextClass {
+public sealed interface ContextTemplate permits PackedContextTemplate {
 
     /** {@return the type of arguments that must be provided.} */
+    // Arguments, (not anything to do with invocation) because it might be stored in ExtensionContext
     List<Class<?>> contextArguments();
 
     /** {@return the context this template is a part of.} */
@@ -37,11 +38,11 @@ public sealed interface ContextTemplate permits PackedContextClass {
 
     boolean isHidden();
 
-    static ContextTemplate of(MethodHandles.Lookup caller, Class<? extends Context<?>> contextClass, Class<?>... invocationArguments) {
-        return PackedContextClass.of(caller, false, contextClass, invocationArguments);
+    static ContextTemplate of(MethodHandles.Lookup caller, Class<? extends Context<?>> contextClass, Class<?>... arguments) {
+        return PackedContextTemplate.of(caller, false, contextClass, arguments);
     }
 
-    static ContextTemplate ofHidden(MethodHandles.Lookup caller, Class<? extends Context<?>> contextClass, Class<?>... invocationArguments) {
-        return PackedContextClass.of(caller, true, contextClass, invocationArguments);
+    static ContextTemplate ofHidden(MethodHandles.Lookup caller, Class<? extends Context<?>> contextClass, Class<?>... arguments) {
+        return PackedContextTemplate.of(caller, true, contextClass, arguments);
     }
 }

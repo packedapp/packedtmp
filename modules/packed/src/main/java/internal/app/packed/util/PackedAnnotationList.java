@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.util;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,23 +23,29 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
-import app.packed.framework.AnnotationList;
+import app.packed.util.AnnotationList;
 
 /** Implementation of {@link AnnotationList}. */
-public record PackedAnnotationList(Annotation[] annotations) implements AnnotationList {
+public record PackedAnnotationList(Annotation... annotations) implements AnnotationList {
 
     public static final PackedAnnotationList EMPTY = new PackedAnnotationList(new Annotation[0]);
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof PackedAnnotationList pal && Arrays.equals(annotations, pal.annotations);
+        return obj instanceof PackedAnnotationList other && Arrays.equals(annotations, other.annotations);
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return Arrays.hashCode(annotations);
     }
 
+    /**
+     * @param annotations
+     * @return
+     */
     public static PackedAnnotationList of(Annotation... annotations) {
         return new PackedAnnotationList(annotations);
     }
@@ -65,6 +71,7 @@ public record PackedAnnotationList(Annotation[] annotations) implements Annotati
         }
         return false;
     }
+
     /** {@inheritDoc} */
     @Override
     public Annotation[] readAnyOf(Class<?>... annotationTypes) {

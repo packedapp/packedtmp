@@ -15,15 +15,15 @@
  */
 package app.packed.lifetime;
 
-import java.lang.invoke.MethodType;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.bindings.Key;
+import app.packed.context.ContextSpan;
+import app.packed.context.ContextTemplate;
 import app.packed.operation.Op;
-import app.packed.operation.OperationTemplate;
+import app.packed.operation.Op1;
 import internal.app.packed.container.ContainerKind;
 import internal.app.packed.container.PackedContainerLifetimeTemplate;
 
@@ -35,13 +35,19 @@ import internal.app.packed.container.PackedContainerLifetimeTemplate;
 //// Extension Bridges
 //// Args
 //// Contexts
-public sealed interface ContainerLifetimeTemplate extends OperationTemplate permits PackedContainerLifetimeTemplate {
+public sealed interface ContainerLifetimeTemplate extends LifetimeTemplate permits PackedContainerLifetimeTemplate {
 
-    ContainerLifetimeTemplate LAZY = new PackedContainerLifetimeTemplate(ContainerKind.LAZY);
+    // HostClass, ManagedHostBean
+    ContainerLifetimeTemplate HOSTED = null;
 
     // The container exists within the operation that creates it
     // Needs a builder. Because of Context, args
     // Men kan vel godt have statiske context
+
+    // Er jo en slags new lifetime. Man kunne jo godt sige koer den her operation
+    ContainerLifetimeTemplate LAZY = new PackedContainerLifetimeTemplate(ContainerKind.LAZY);
+
+    // Har vel FullLifetime, HalfLifetime
     ContainerLifetimeTemplate OPERATION = null;
 
     /**
@@ -50,50 +56,129 @@ public sealed interface ContainerLifetimeTemplate extends OperationTemplate perm
      */
     ContainerLifetimeTemplate PARENT = new PackedContainerLifetimeTemplate(ContainerKind.PARENT);
 
-    // services available
-    /**
-     * @return
-     *
-     * @see From
-     */
-    default Set<Key<?>> keys(){
-        return Set.of();
-    }
-
     default Class<?> guestClass() {
         return void.class;
     }
 
-
-    // Parent, Lazy har ikke en invocation type.
-    // Vi har aldrig mere end en. Da man lukker via at faa noget injected i en guest.
     /**
-     * {@return the
+     * The set of keys that are available for injection into a host using {@link FromLifetimeChannel}.
+     *
+     * @return the set of keys available for injection
+     *
+     * @see From
      */
-    default Optional<MethodType> invocationType() {
-        throw new UnsupportedOperationException();
+    default Set<Key<?>> keys() {
+        return Set.of();
     }
 
     Mode mode();
 
+    default <T> ContainerLifetimeChannel withConstant(Class<T> key, T arg) {
+        return withConstant(Key.of(key), arg);
+    }
+
+    default <T> ContainerLifetimeChannel withConstant(Key<T> key, T arg) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Maybe skip the builder and just have with'ers
     static Builder builder() {
         throw new UnsupportedOperationException();
     }
 
     interface Builder {
 
-        Builder addBridge(ExtensionLifetimeBridge bridge);
+        Builder addChannel(ContainerLifetimeChannel channel);
 
-        Builder guest(Class<?> guest);
+        // BeanSpan not supported
+        // OperationSpan I will have to think about that
 
-        Builder guest(Op<?> guest);
+        // LifetimeOperation
+        // What about PARENT thing
+        // I can't see how this can work without it being extract from some beans???
+        // a.la provideContext(ContextClass, index)
+        // Nej maa vaere en form for Container Context pan
+        Builder addContext(ContextTemplate template, ContextSpan containerSpan);
+
+        @SuppressWarnings("unchecked")
+        // We have a trivial usecases where the bean is the same parameter
+        // Take a record? that matches the parameters?
+        <T> Builder addContextInParent(ContextTemplate template, ContextSpan span, Class<?> extensionBean, Op1<T, ?>... op);
+
+        Builder allowRuntimeWirelets();
 
         // No seperet MH for starting, part of init
-        Builder autoStart(boolean fork);
+        Builder autoStart(boolean forkOnStart);
 
+        /**
+         * Creates a returns the new lifetime template.
+         *
+         * @return the new lifetime template
+         */
         ContainerLifetimeTemplate build();
+
+        /**
+         * @param guest
+         * @return
+         * @throws IllegalStateException
+         *             if a host bean has already been registered
+         */
+        // Hvis der allerede eksistere en guest med den exact type saa bruger vi den
+        // Ellers creater vi den lazily
+
+        // Tror det er den letteste maade at supportere configuration af beanen
+        // hvis man har behov for det
+        Builder hostAs(Class<?> guest);
     }
 
+    // Features
+////Kan expose services that can be used together ContainerGuest
+////Kan
+
+////Args
+////Contexts???
+
+//Ideen er at installere beans der kan be exposed to guest objektet.
+//Fx ServiceLocator
+//Hvorfor er det ikke bare extensions der installere den og ikke bridgen
+
+//(e-> installGuest(F.class).dasd);
+
+//OperationTemplate???
+
+//123 paa runtime som argument.
+//Hvordan faar jeg det ind i en bean
+//Anden end via ContextInjection???
+
+//InvocationContextArgument
+
+//Create an internalContext???
+
+//Bliver noedt til at vaere unik. Kan ikke add
+
+//
+//public Builder<E> provide(Class<?> extensionBean, Op<?> op) {
+// // Adds synthetic operation to extensionBean
+// return this;
+//}
+//
+//public <T> Builder<E> provide(Class<T> extensionBean, Class<T> key) {
+// return this;
+//}
+//
+//public <T> Builder<E> provide(Class<T> extensionBean, Key<T> key) {
+// return this;
+//}
+
+//public <T> Builder<E> provide(Key<T> key, Class<T> type) {
+// bridge = bridge.addInvocationArgument(type);
+// return this;
+//}
+//
+//public <T> Builder<E> provide(Class<T> type, Key<?> ) {
+// bridge = bridge.addInvocationArgument(type);
+// return this;
+//}
     public enum Mode {
         FULL_MONTY, // May support guests, for example, for a result, // Will initialize
         INITIALIZATION, // Needs a Guest

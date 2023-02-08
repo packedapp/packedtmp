@@ -24,11 +24,7 @@ import internal.app.packed.container.ExtensionSetup;
  */
 public sealed interface BeanOwner permits AssemblySetup, ExtensionSetup {
 
-    /**
-     * Checks if the bean is still configurable. A bean is configurable if its owner is configurable.
-     *
-     * @return
-     */
+    /** {@return whether or not the bean is still configurable.} */
     boolean isConfigurable();
 
     /** {@return a realm representing the owner.} */

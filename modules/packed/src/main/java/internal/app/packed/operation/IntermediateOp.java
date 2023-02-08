@@ -22,14 +22,14 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
 import app.packed.container.Realm;
-import app.packed.framework.Nullable;
-import app.packed.operation.BeanOperationTemplate;
-import app.packed.operation.OperationType;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.Nullable;
+import app.packed.util.FunctionType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.OperationSetup.NestedOperationParent;
+import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
 import internal.app.packed.util.LookupUtil;
 
 /** An intermediate (non-terminal) op. */
@@ -44,15 +44,15 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
      * @param type
      * @param operation
      */
-    private IntermediateOp(PackedOp<?> nextOp, OperationType type, MethodHandle operation) {
+    private IntermediateOp(PackedOp<?> nextOp, FunctionType type, MethodHandle operation) {
         super(type, operation);
         this.nextOp = requireNonNull(nextOp);
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, BeanOperationTemplate template, @Nullable NestedOperationParent nestedParent) {
-        return nextOp.newOperationSetup(bean, operator, template, nestedParent);
+    public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template, @Nullable EmbeddedIntoOperation embeddedIn) {
+        return nextOp.newOperationSetup(bean, operator, template, embeddedIn);
     }
 
     /** A op that binds 1 or more constants. */
@@ -66,7 +66,7 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
 
         final int[] indexes = new int[0];
 
-        BoundOp(OperationType type, MethodHandle methodHandle, PackedOp<R> delegate, int index, Object[] arguments) {
+        BoundOp(FunctionType type, MethodHandle methodHandle, PackedOp<R> delegate, int index, Object[] arguments) {
             super(delegate, type, methodHandle);
             this.index = index;
             this.arguments = arguments;
@@ -74,7 +74,7 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, BeanOperationTemplate template, @Nullable NestedOperationParent nestedParent) {
+        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template, @Nullable EmbeddedIntoOperation nestedParent) {
             OperationSetup os = super.newOperationSetup(bean, operator, template, nestedParent);
             for (int i = 0; i < indexes.length; i++) {
                 int index = indexes[i];

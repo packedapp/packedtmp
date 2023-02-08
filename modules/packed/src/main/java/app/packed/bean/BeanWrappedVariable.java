@@ -18,8 +18,8 @@ package app.packed.bean;
 import java.util.List;
 import java.util.Optional;
 
-import app.packed.bindings.Variable;
 import app.packed.operation.Op;
+import app.packed.util.Variable;
 
 /**
  * Opts into
@@ -36,6 +36,7 @@ import app.packed.operation.Op;
  *
  * Default
  */
+// BeanInjectableVariablw
 public interface BeanWrappedVariable extends BeanVariable {
 
     @Override

@@ -17,6 +17,7 @@ package app.packed.operation;
 
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
+import app.packed.util.FunctionType;
 import internal.app.packed.operation.PackedDelegatingOperationHandle;
 
 /**
@@ -30,16 +31,16 @@ public sealed interface DelegatingOperationHandle permits PackedDelegatingOperat
     /** {@return the extension that created this handle.} */
     Class<? extends Extension<?>> delegatedFrom();
 
-    /**
-     * {@return @{code true} if an operation has been created from this handle, otherwise false.}
-     */
-    boolean isDelegated();
+//    /**
+//     * {@return @{code true} if an operation has been created from this handle, otherwise false.}
+//     */
+//    boolean isDelegated();
 
-    OperationHandle newOperation(BeanOperationTemplate template, ExtensionPoint.UseSite useSite);
+    OperationHandle newOperation(OperationTemplate template, ExtensionPoint.UseSite useSite);
 
     /** {@return the target of this operation.} */
     OperationTarget target();
 
-    /** {@return the type of this operation.} */
-    OperationType type();
+    /** {@return the type of the operation.} */
+    FunctionType type();
 }

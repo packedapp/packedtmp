@@ -23,17 +23,17 @@ import java.lang.invoke.MethodType;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import app.packed.bindings.Variable;
-import app.packed.framework.Nullable;
-import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.CapturingOp;
 import app.packed.operation.Op;
-import app.packed.operation.OperationType;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.Nullable;
+import app.packed.util.FunctionType;
+import app.packed.util.Variable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.IntermediateOp.BoundOp;
 import internal.app.packed.operation.IntermediateOp.PeekingOp;
-import internal.app.packed.operation.OperationSetup.NestedOperationParent;
+import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
 
 /** The internal implementation of Op. */
 @SuppressWarnings("rawtypes")
@@ -43,9 +43,9 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
     public final MethodHandle mhOperation;
 
     /** The type of this op. */
-    public final OperationType type;
+    public final FunctionType type;
 
-    PackedOp(OperationType type, MethodHandle operation) {
+    PackedOp(FunctionType type, MethodHandle operation) {
         this.type = requireNonNull(type, "type is null");
         this.mhOperation = requireNonNull(operation);
     }
@@ -71,7 +71,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
         for (int i = position; i < vars.length; i++) {
             vars[i] = type.parameter(i + len);
         }
-        OperationType newType = OperationType.of(type.returnVariable(), vars);
+        FunctionType newType = FunctionType.of(type.returnVariable(), vars);
 
         // Populate argument array
         Object[] args = new Object[len];
@@ -92,7 +92,8 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
         return bind(0, argument);
     }
 
-    public abstract OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, BeanOperationTemplate template, @Nullable NestedOperationParent nestedParent);
+    public abstract OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template,
+            @Nullable EmbeddedIntoOperation embeddedIn);
 
     /** {@inheritDoc} */
     @Override
@@ -114,7 +115,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
 
     /** {@inheritDoc} */
     @Override
-    public final OperationType type() {
+    public final FunctionType type() {
         return type;
     }
 

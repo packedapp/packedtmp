@@ -23,6 +23,7 @@ package app.packed.bean;
  */
 // LifetimeLifecycleOrder, LifecycleLifetimeOrder
 
+//LifecycleOrder
 public enum DependencyOrder {
 
     /** The operation will be executed before any dependencies. */

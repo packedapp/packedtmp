@@ -33,7 +33,7 @@ import app.packed.errorhandling.ErrorHandler;
 import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationType;
+import app.packed.util.FunctionType;
 import internal.app.packed.service.InternalServiceUtil;
 
 /** Implementation of {@link BeanHandle}. */
@@ -85,12 +85,12 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
         bean.named(name);
     }
 
-    protected DelegatingOperationHandle newDelegationFunctionalOperation(Class<?> functionalInterface, Object function, OperationType operationType) {
+    protected DelegatingOperationHandle newDelegationFunctionalOperation(Class<?> functionalInterface, Object function, FunctionType operationType) {
         // We only take public exported types
         throw new UnsupportedOperationException();
     }
 
-    protected OperationHandle newFunctionalOperation(Class<?> functionalInterface, Object function, OperationType operationType) {
+    protected OperationHandle newFunctionalOperation(Class<?> functionalInterface, Object function, FunctionType operationType) {
         throw new UnsupportedOperationException();
     }
 
@@ -101,7 +101,7 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
     // Men okay vi kan stadig fx bruge Logger som jo stadig skulle
     // supplies uden et hook
     @Override
-    public OperationHandle newFunctionalOperation(InstanceBeanConfiguration<?> operator, Class<?> functionalInterface, OperationType type,
+    public OperationHandle newFunctionalOperation(InstanceBeanConfiguration<?> operator, Class<?> functionalInterface, FunctionType type,
             Object functionInstance) {
         // I think we can ignore the operator now.
 

@@ -26,15 +26,14 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanVariable;
 import app.packed.bindings.BindingMirror;
-import app.packed.bindings.Variable;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
-import app.packed.framework.AnnotationList;
-import app.packed.framework.Nullable;
-import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.Op;
-import internal.app.packed.bean.BeanScanner;
-import internal.app.packed.bean.PackedAnnotationList;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.AnnotationList;
+import app.packed.util.Nullable;
+import app.packed.util.Variable;
+import internal.app.packed.bean.BeanReflector;
 import internal.app.packed.binding.BindingResolution.FromCodeGenerated;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromInvocationArgument;
@@ -43,8 +42,8 @@ import internal.app.packed.binding.BindingSetup.HookBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
-import internal.app.packed.operation.OperationSetup.NestedOperationParent;
 import internal.app.packed.operation.PackedOp;
 
 /** Implementation of {@link BindableVariable}. */
@@ -67,12 +66,12 @@ public final class PackedBindableVariable implements BeanVariable {
     public final OperationSetup operation;
 
     /** The bean scanner, used for resolving more nested operations. */
-    private final BeanScanner scanner;
+    private final BeanReflector scanner;
 
     /** The variable to bind. */
     private final Variable variable;
 
-    public PackedBindableVariable(BeanScanner scanner, OperationSetup operation, int index, ExtensionSetup bindingExtension, Variable variable) {
+    public PackedBindableVariable(BeanReflector scanner, OperationSetup operation, int index, ExtensionSetup bindingExtension, Variable variable) {
         this.operation = requireNonNull(operation);
         this.scanner = requireNonNull(scanner);
         this.index = index;
@@ -91,7 +90,7 @@ public final class PackedBindableVariable implements BeanVariable {
     /** {@inheritDoc} */
     @Override
     public AnnotationList annotations() {
-        return new PackedAnnotationList(variable().getAnnotations());
+        return variable().annotations();
     }
 
     /** {@inheritDoc} */
@@ -169,10 +168,10 @@ public final class PackedBindableVariable implements BeanVariable {
         PackedOp<?> pop = PackedOp.crack(op);
 
         // Nested operation get the same arguments as this operation, but with op return type
-        BeanOperationTemplate template = operation.template.withReturnType(pop.type().returnRawType());
+        OperationTemplate template = operation.template.withReturnType(pop.type().returnRawType());
 
         // Create the nested operation
-        OperationSetup os = pop.newOperationSetup(operation.bean, bindingExtension, template, new NestedOperationParent(operation, index));
+        OperationSetup os = pop.newOperationSetup(operation.bean, bindingExtension, template, new EmbeddedIntoOperation(operation, index));
         bind(new FromOperation(os));
 
         // Resolve the new operation immediately

@@ -21,6 +21,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.util.Framework;
+
 /** Tests {@link Framework}. */
 public class FrameworkTest {
 

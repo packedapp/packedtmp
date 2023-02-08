@@ -28,12 +28,12 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanFactoryMirror;
-import app.packed.framework.Nullable;
-import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
-import app.packed.operation.OperationType;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.Nullable;
+import app.packed.util.FunctionType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.BindingSetup;
@@ -61,6 +61,10 @@ public sealed abstract class OperationSetup {
     /** Bindings for this operation. */
     public final BindingSetup[] bindings;
 
+    /** Any operation this operation is embedded into. */
+    @Nullable
+    public final EmbeddedIntoOperation embeddedInto;
+
     /** The generated method handle. */
     @Nullable
     private MethodHandle generatedMethodHandle;
@@ -71,24 +75,20 @@ public sealed abstract class OperationSetup {
     /** The operator of the operation. */
     public final ExtensionSetup operator;
 
-    /** Any parent this operation might have. */
-    @Nullable
-    public final NestedOperationParent parent;
-
     /** The operation's template. */
     public final PackedOperationTemplate template;
 
     /** The type of this operation. */
-    public final OperationType type;
+    public final FunctionType type;
 
     /** The name of the operation */
     public String zName; // name = operator.simpleName + "Operation"
 
-    private OperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type, BeanOperationTemplate template, @Nullable NestedOperationParent parent) {
+    private OperationSetup(ExtensionSetup operator, BeanSetup bean, FunctionType type, OperationTemplate template, @Nullable EmbeddedIntoOperation parent) {
         this.operator = requireNonNull(operator);
         this.bean = requireNonNull(bean);
         this.type = requireNonNull(type);
-        this.parent = parent;
+        this.embeddedInto = parent;
         this.bindings = type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[type.parameterCount()];
         this.template = requireNonNull((PackedOperationTemplate) template);
     }
@@ -155,7 +155,7 @@ public sealed abstract class OperationSetup {
     }
 
     /** {@return the type of operation.} */
-    public final OperationType type() {
+    public final FunctionType type() {
         return type;
     }
 
@@ -177,7 +177,7 @@ public sealed abstract class OperationSetup {
          * @param operator
          * @param site
          */
-        public BeanAccessOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, BeanOperationTemplate template) {
+        public BeanAccessOperationSetup(ExtensionSetup operator, BeanSetup bean, FunctionType operationType, OperationTemplate template) {
             super(operator, bean, operationType, template, null);
             zName = "InstantAccess";
         }
@@ -204,8 +204,8 @@ public sealed abstract class OperationSetup {
          * @param operator
          * @param site
          */
-        public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, BeanOperationTemplate template,
-                @Nullable NestedOperationParent nestedParent, MethodHandle methodHandle, SamType samType, Method implementationMethod) {
+        public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, FunctionType operationType, OperationTemplate template,
+                @Nullable EmbeddedIntoOperation nestedParent, MethodHandle methodHandle, SamType samType, Method implementationMethod) {
             super(operator, bean, operationType, template, nestedParent);
             this.methodHandle = requireNonNull(methodHandle);
             this.samType = requireNonNull(samType);
@@ -248,7 +248,7 @@ public sealed abstract class OperationSetup {
         // MH -> mirror - no gen
         // MH -> Gen - With caching (writethrough to whereever the bean cache it)
         // MH -> LazyGen - With caching
-        public MemberOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, BeanOperationTemplate template,
+        public MemberOperationSetup(ExtensionSetup operator, BeanSetup bean, FunctionType operationType, OperationTemplate template,
                 OperationMemberTarget<?> member, MethodHandle methodHandle) {
             super(operator, bean, operationType, template, null);
             this.target = requireNonNull(member);
@@ -284,9 +284,9 @@ public sealed abstract class OperationSetup {
          * @param operator
          * @param site
          */
-        public MethodHandleOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, BeanOperationTemplate template,
-                @Nullable NestedOperationParent nestedParent, MethodHandle methodHandle) {
-            super(operator, bean, operationType, template, nestedParent);
+        public MethodHandleOperationSetup(ExtensionSetup operator, BeanSetup bean, FunctionType operationType, OperationTemplate template,
+                @Nullable EmbeddedIntoOperation embeddedInto, MethodHandle methodHandle) {
+            super(operator, bean, operationType, template, embeddedInto);
             this.methodHandle = requireNonNull(methodHandle);
         }
 
@@ -304,5 +304,5 @@ public sealed abstract class OperationSetup {
     }
 
     /** The parent of a nested operation. */
-    public record NestedOperationParent(OperationSetup operation, int bindingIndex) {}
+    public /* primitive */ record EmbeddedIntoOperation(OperationSetup operation, int bindingIndex) {}
 }

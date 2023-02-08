@@ -31,6 +31,7 @@ import app.packed.extension.Extension;
 //// ContextSpan (Variable)
 
 public interface Context<E extends Extension<E>> {}
+
 // Protected typeClass for configuration...
 
 

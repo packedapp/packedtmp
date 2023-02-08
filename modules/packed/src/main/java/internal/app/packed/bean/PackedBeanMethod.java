@@ -19,13 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
 import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bindings.Key;
-import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
@@ -34,6 +32,7 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.operation.PackedDelegatingOperationHandle;
 import internal.app.packed.service.KeyHelper;
+import internal.app.packed.util.PackedAnnotationList;
 
 /** Internal implementation of BeanMethod. Discard after use. */
 public final class PackedBeanMethod extends PackedBeanExecutable<Method> implements BeanMethod {
@@ -55,14 +54,7 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
 
         // We should be able to create this lazily
         // Probably need to store the lookup mechanism on the bean...
-        BeanScanner scanner = extension.scanner;
-        MethodHandle methodHandle;
-        Lookup lookup = scanner.oc.lookup(member);
-        try {
-            methodHandle = lookup.unreflect(member);
-        } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("stuff", e);
-        }
+        MethodHandle methodHandle = extension.scanner.unreflectMethod(member);
 
         PackedDelegatingOperationHandle h = new PackedDelegatingOperationHandle(extension.extension, extension.scanner.bean, new OperationMethodTarget(member),
                 operationType(), methodHandle);
@@ -71,25 +63,17 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(BeanOperationTemplate template) {
+    public OperationHandle newOperation(OperationTemplate template) {
         requireNonNull(template);
         checkConfigurable();
 
         // We should be able to create this lazily
-        // Probably need to store the lookup mechanism on the bean...
-        BeanScanner scanner = extension.scanner;
-        MethodHandle methodHandle;
-        Lookup lookup = scanner.oc.lookup(member);
-        try {
-            methodHandle = lookup.unreflect(member);
-        } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("stuff", e);
-        }
+        MethodHandle methodHandle = extension.scanner.unreflectMethod(member);
 
-        OperationSetup operation = new MemberOperationSetup(extension.extension, scanner.bean, operationType(), template, new OperationMethodTarget(member),
-                methodHandle);
-        scanner.bean.operations.add(operation);
-        scanner.unBoundOperations.add(operation);
+        OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, operationType(), template,
+                new OperationMethodTarget(member), methodHandle);
+        extension.scanner.bean.operations.add(operation);
+        extension.scanner.unBoundOperations.add(operation);
         return operation.toHandle();
     }
 
@@ -105,7 +89,7 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
      * @param method
      *            the method to look for annotations on
      */
-    static void introspectMethodForAnnotations(BeanScanner iBean, Method method) {
+    static void introspectMethodForAnnotations(BeanReflector iBean, Method method) {
         Annotation[] annotations = method.getAnnotations();
         for (int i = 0; i < annotations.length; i++) {
             Annotation a1 = annotations[i];

@@ -6,7 +6,7 @@ module app.packed {
     exports app.packed.context;
     exports app.packed.container;
     exports app.packed.errorhandling;
-    exports app.packed.framework;
+    exports app.packed.util;
     exports app.packed.operation;
     exports app.packed.lifetime;
     exports app.packed.service;

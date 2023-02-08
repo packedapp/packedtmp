@@ -26,13 +26,13 @@ import app.packed.bean.BeanElement.BeanConstructor;
 import app.packed.bean.BeanElement.BeanField;
 import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bindings.Key;
-import app.packed.bindings.Variable;
-import app.packed.framework.AnnotationList;
 import app.packed.lifetime.BeanLifetimeTemplate;
-import app.packed.operation.BeanOperationTemplate;
 import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationType;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.AnnotationList;
+import app.packed.util.FunctionType;
+import app.packed.util.Variable;
 import internal.app.packed.bean.PackedBeanConstructor;
 import internal.app.packed.bean.PackedBeanField;
 import internal.app.packed.bean.PackedBeanMethod;
@@ -134,17 +134,18 @@ public sealed interface BeanElement permits BeanClass, BeanField, BeanConstructo
         Constructor<?> constructor();
 
         // LifetimeTemplate??? Also available for on Method????
-        OperationHandle newOperation(BeanOperationTemplate template);
+        OperationHandle newOperation(OperationTemplate template);
 
         /** {@return a factory type for this method.} */
-        OperationType operationType();
+        FunctionType operationType();
     }
 
     /**
      * This class represents a {@link Field} on a bean.
      *
      * @see BaseExtensionPoint.AnnotatedFieldHook
-     * @see BeanIntrospector#hookOnAnnotatedField(BeanProcessor$BeanField)
+     * @see BeanIntrospector#hookOnAnnotatedField(AnnotationList, BeanField)
+     * @see BeanIntrospector#hookOnAnnotatedField(java.lang.annotation.Annotation, BeanField)
      *
      * @apiNote There are currently no support for obtaining a {@link VarHandle} for a field.
      */
@@ -164,7 +165,7 @@ public sealed interface BeanElement permits BeanClass, BeanField, BeanConstructo
          * @return an operation handle
          * @see Lookup#unreflectGetter(Field)
          */
-        OperationHandle newGetOperation(BeanOperationTemplate template);
+        OperationHandle newGetOperation(OperationTemplate template);
 
         // Unwrapped instaed???
         default BeanVariable newInjectOperation() {
@@ -190,7 +191,7 @@ public sealed interface BeanElement permits BeanClass, BeanField, BeanConstructo
          *          and one for writing a field). You must create an operation per access mode instead. Also, there is currently
          *          no way to obtain a VarHandle for the underlying field
          */
-        OperationHandle newOperation(BeanOperationTemplate template, VarHandle.AccessMode accessMode);
+        OperationHandle newOperation(OperationTemplate template, VarHandle.AccessMode accessMode);
 
         /**
          * Creates a new operation that can write to a field.
@@ -204,7 +205,7 @@ public sealed interface BeanElement permits BeanClass, BeanField, BeanConstructo
          *
          * @see Lookup#unreflectSetter(Field)
          */
-        OperationHandle newSetOperation(BeanOperationTemplate template);
+        OperationHandle newSetOperation(OperationTemplate template);
 
         /**
          * {@return the underlying field represented as a {@code Variable}.}
@@ -258,9 +259,9 @@ public sealed interface BeanElement permits BeanClass, BeanField, BeanConstructo
          * @see BeanMethodHook#allowInvoke()
          * @see BeanClassHook#allowFullPrivilegeAccess()
          */
-        OperationHandle newOperation(BeanOperationTemplate template);
+        OperationHandle newOperation(OperationTemplate template);
 
         /** {@return the default type of operation that will be created.} */
-        OperationType operationType();
+        FunctionType operationType();
     }
 }

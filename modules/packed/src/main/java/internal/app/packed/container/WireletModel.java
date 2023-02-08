@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import app.packed.container.Wirelet;
 import app.packed.extension.InternalExtensionException;
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
 import internal.app.packed.util.types.ClassUtil;
 
 /** A model of a {@link Wirelet}. */

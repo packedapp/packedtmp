@@ -29,7 +29,7 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.extension.Extension;
-import app.packed.framework.AnnotationList;
+import app.packed.util.AnnotationList;
 
 /**
  *

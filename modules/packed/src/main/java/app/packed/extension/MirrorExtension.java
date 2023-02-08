@@ -22,7 +22,7 @@ import app.packed.bean.BeanWrappedVariable;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.bean.PackedBindableBaseVariable;
+import internal.app.packed.bean.PackedBeanWrappedVariable;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -60,8 +60,8 @@ public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
 
             /** {@inheritDoc} */
             @Override
-            public void hookOnProvidedVariableType(Class<?> hook, BeanWrappedVariable binding) {
-                OperationSetup operation = ((PackedBindableBaseVariable) binding).v.operation;
+            public void hookOnVariableType(Class<?> hook, BeanWrappedVariable binding) {
+                OperationSetup operation = ((PackedBeanWrappedVariable) binding).v.operation;
 
                 if (hook == ApplicationMirror.class) {
                     binding.bindConstant(operation.bean.container.application.mirror());

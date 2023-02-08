@@ -18,6 +18,7 @@ package app.packed.lifetime.sandbox;
 import java.util.List;
 
 import app.packed.lifetime.LifetimeMirror;
+import app.packed.operation.NestedOperationMirror;
 import app.packed.operation.OperationMirror;
 
 /**
@@ -40,7 +41,7 @@ import app.packed.operation.OperationMirror;
 // Men App.run() med kun en operations
 
 
-public final class LifetimeOperationMirror extends /* Nested */ OperationMirror {
+public final class LifetimeOperationMirror extends NestedOperationMirror {
 
     // Wehether or not this lifetime operation concerns the bean that defines it.
     // Or a container

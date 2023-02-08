@@ -23,9 +23,9 @@ import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
 
-import app.packed.bindings.Variable;
 import app.packed.operation.CapturingOp;
-import app.packed.operation.OperationType;
+import app.packed.util.FunctionType;
+import app.packed.util.Variable;
 import internal.app.packed.binding.InternalDependency;
 import internal.app.packed.operation.TerminalOp.FunctionInvocationOp;
 import internal.app.packed.util.types.TypeVariableExtractor;
@@ -73,7 +73,7 @@ public class CapturingOpHelper {
 
             Variable last = types[types.length - 1];
 
-            OperationType ot = OperationType.of(last, Arrays.copyOf(types, types.length - 1));
+            FunctionType ot = FunctionType.of(last, Arrays.copyOf(types, types.length - 1));
 
             return new Top(b, ot);
         }
@@ -104,9 +104,9 @@ public class CapturingOpHelper {
         @SuppressWarnings("unused")
         final List<InternalDependency> deps;
 
-        final OperationType ot;
+        final FunctionType ot;
 
-        Top(Base base, OperationType ot) {
+        Top(Base base, FunctionType ot) {
             this.base = base;
             this.ot = ot;
             this.deps = InternalDependency.fromOperationType(ot);

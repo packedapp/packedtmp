@@ -18,8 +18,8 @@ package app.packed.lifetime.sandbox;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import app.packed.framework.Nullable;
 import app.packed.lifetime.RunState;
+import app.packed.util.Nullable;
 
 // This is basically something thats wraps a state that is 100 Linear
 // It is not 100 % clean because of restarting... IDK about that

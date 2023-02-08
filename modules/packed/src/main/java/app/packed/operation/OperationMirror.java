@@ -34,8 +34,9 @@ import app.packed.context.ContextMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.MirrorExtension;
-import app.packed.framework.Nullable;
 import app.packed.lifetime.LifetimeMirror;
+import app.packed.util.Nullable;
+import app.packed.util.FunctionType;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup;
@@ -157,7 +158,7 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
      * @return the binding this operation is used by if a nested operation, otherwise {@code empty}
      */
     public Optional<BindingMirror> nestedIn() {
-        return Optional.ofNullable(operation().parent).map(b -> b.operation().bindings[b.bindingIndex()].mirror());
+        return Optional.ofNullable(operation().embeddedInto).map(b -> b.operation().bindings[b.bindingIndex()].mirror());
     }
 
     /**
@@ -181,7 +182,7 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
     }
 
     /** {@return the type of the operation.} */
-    public OperationType type() {
+    public FunctionType type() {
         return operation().type;
     }
 }

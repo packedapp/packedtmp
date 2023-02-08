@@ -30,7 +30,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
 /**
  *
  */
-public record PackedContextClass(Class<? extends Extension<?>> extensionClass, Class<? extends Context<?>> contextClass, List<Class<?>> contextArguments,
+public record PackedContextTemplate(Class<? extends Extension<?>> extensionClass, Class<? extends Context<?>> contextClass, List<Class<?>> contextArguments,
         boolean isHidden) implements ContextTemplate {
 
     /** A ContextTemplate class to Extension class mapping. */
@@ -57,11 +57,11 @@ public record PackedContextClass(Class<? extends Extension<?>> extensionClass, C
         requireNonNull(argument, "argument is null");
         ArrayList<Class<?>> l = new ArrayList<>(contextArguments);
         l.add(argument);
-        return new PackedContextClass(extensionClass, contextClass, List.copyOf(l), isHidden);
+        return new PackedContextTemplate(extensionClass, contextClass, List.copyOf(l), isHidden);
     }
 
     public static ContextTemplate of(MethodHandles.Lookup caller, boolean isHidden, Class<? extends Context<?>> contextClass, Class<?>... invocationArguments) {
-        Class<? extends Extension<?>> c = PackedContextClass.TYPE_VARIABLE_EXTRACTOR.get(contextClass); // checks same module
-        return new PackedContextClass(c, contextClass, List.of(invocationArguments), isHidden);
+        Class<? extends Extension<?>> c = PackedContextTemplate.TYPE_VARIABLE_EXTRACTOR.get(contextClass); // checks same module
+        return new PackedContextTemplate(c, contextClass, List.of(invocationArguments), isHidden);
     }
 }

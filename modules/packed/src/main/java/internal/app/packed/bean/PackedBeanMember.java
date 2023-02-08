@@ -15,18 +15,18 @@
  */
 package internal.app.packed.bean;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 
 import app.packed.bean.BeanInstallationException;
-import app.packed.framework.AnnotationList;
+import app.packed.util.AnnotationList;
+import internal.app.packed.util.PackedAnnotationList;
 
 /** The super class of operational members. The inheritance hierarchy follows that of {@link Member}. */
 @SuppressWarnings("rawtypes")
 abstract sealed class PackedBeanMember<M extends Member> permits PackedBeanField, PackedBeanExecutable {
 
     /** Annotations on the member. */
-    private final Annotation[] annotations;
+    private final PackedAnnotationList annotations;
 
     /** The extension that can create new operations from the member. */
     final BeanScannerExtension extension;
@@ -34,7 +34,7 @@ abstract sealed class PackedBeanMember<M extends Member> permits PackedBeanField
     /** The member. */
     final M member;
 
-    PackedBeanMember(BeanScannerExtension extension, M member, Annotation[] annotations) {
+    PackedBeanMember(BeanScannerExtension extension, M member, PackedAnnotationList annotations) {
         this.extension = extension;
         this.member = member;
         this.annotations = annotations;
@@ -42,7 +42,7 @@ abstract sealed class PackedBeanMember<M extends Member> permits PackedBeanField
 
     /** {@return a list of annotations on the member.} */
     public final AnnotationList annotations() {
-        return new PackedAnnotationList(annotations);
+        return annotations;
     }
 
     /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */

@@ -32,11 +32,11 @@ import app.packed.container.Realm;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.Extension;
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.lifetime.zbridge.PackedBridge;
+import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
 import internal.app.packed.service.ServiceManager;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
@@ -120,7 +120,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             this.lifetime = treeParent.lifetime;
         } else {
             this.lifetime = new ContainerLifetimeSetup(installer, this, null);
-            for (PackedBridge<?> b : application.driver.bridges()) {
+            for (PackedContainerLifetimeChannel<?> b : application.driver.channels()) {
                 b.install(this);
             }
         }

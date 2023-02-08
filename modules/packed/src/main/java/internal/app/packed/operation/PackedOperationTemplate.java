@@ -5,9 +5,9 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodType;
 
 import app.packed.extension.ExtensionContext;
-import app.packed.operation.BeanOperationTemplate;
+import app.packed.operation.OperationTemplate;
 
-public final class PackedOperationTemplate implements BeanOperationTemplate {
+public final class PackedOperationTemplate implements OperationTemplate {
 
     public static PackedOperationTemplate DEFAULTS = new PackedOperationTemplate(0, -1, MethodType.methodType(void.class, ExtensionContext.class), false);
     final int beanInstanceIndex;
@@ -40,7 +40,7 @@ public final class PackedOperationTemplate implements BeanOperationTemplate {
 
     /** {@inheritDoc} */
     @Override
-    public BeanOperationTemplate withArg(Class<?> type) {
+    public OperationTemplate withArg(Class<?> type) {
         requireNonNull(type, "type is null");
         MethodType mt = methodType.appendParameterTypes(type);
         return new PackedOperationTemplate(extensionContext, beanInstanceIndex, mt, ignoreReturn);
@@ -48,7 +48,7 @@ public final class PackedOperationTemplate implements BeanOperationTemplate {
 
     /** {@inheritDoc} */
     @Override
-    public BeanOperationTemplate withBeanInstance(Class<?> beanClass) {
+    public OperationTemplate withBeanInstance(Class<?> beanClass) {
         requireNonNull(beanClass, "beanClass is null");
         if (beanInstanceIndex != -1) {
             throw new UnsupportedOperationException("Already has a bean instance at index " + beanInstanceIndex);
@@ -59,7 +59,7 @@ public final class PackedOperationTemplate implements BeanOperationTemplate {
 
     /** {@inheritDoc} */
     @Override
-    public BeanOperationTemplate withReturnType(Class<?> returnType) {
+    public OperationTemplate withReturnType(Class<?> returnType) {
         requireNonNull(returnType, "returnType is null");
         MethodType mt = methodType.changeReturnType(returnType);
         return new PackedOperationTemplate(extensionContext, beanInstanceIndex, mt, ignoreReturn);
@@ -67,7 +67,7 @@ public final class PackedOperationTemplate implements BeanOperationTemplate {
 
     /** {@inheritDoc} */
     @Override
-    public BeanOperationTemplate withReturnIgnore() {
+    public OperationTemplate withReturnIgnore() {
         MethodType mt = methodType.changeReturnType(void.class);
         return new PackedOperationTemplate(extensionContext, beanInstanceIndex, mt, true);
     }

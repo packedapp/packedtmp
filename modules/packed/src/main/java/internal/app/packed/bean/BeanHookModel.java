@@ -18,6 +18,8 @@ package internal.app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +32,7 @@ import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.extension.CustomBeanHook;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
 import internal.app.packed.util.types.ClassUtil;
 
 /**
@@ -86,6 +88,18 @@ public final class BeanHookModel {
             AnnotatedFieldHook fieldHook = type.getAnnotation(AnnotatedFieldHook.class);
             if (fieldHook != null) {
                 checkExtensionClass(type, fieldHook.extension());
+                Target target = type.getAnnotation(Target.class);
+                if (target == null) {
+                    throw new InternalExtensionException("");
+                }
+
+                List<ElementType> of = List.of(target.value());
+                if (!of.contains(ElementType.FIELD)) {
+                    throw new InternalExtensionException("");
+                }
+                if (of.contains(ElementType.TYPE_USE) || of.contains(ElementType.PARAMETER)) {
+                    throw new InternalExtensionException("");
+                }
                 result = new AnnotatedField(AnnotatedFieldKind.FIELD, fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet());
             }
 

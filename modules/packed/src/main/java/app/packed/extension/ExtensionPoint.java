@@ -1,7 +1,7 @@
 package app.packed.extension;
 
 import app.packed.container.Realm;
-import app.packed.framework.Nullable;
+import app.packed.util.Nullable;
 import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
