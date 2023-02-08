@@ -16,7 +16,7 @@
 package app.packed.service.sandbox;
 
 import app.packed.bean.BeanHandle;
-import app.packed.bindings.BeanVariable;
+import app.packed.bean.BeanVariable;
 import app.packed.bindings.Key;
 import app.packed.operation.OperationHandle;
 

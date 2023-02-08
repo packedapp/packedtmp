@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.util.function.Supplier;
 
-import app.packed.bindings.BeanVariable;
+import app.packed.bean.BeanVariable;
 import app.packed.extension.Extension;
 import internal.app.packed.operation.PackedOperationHandle;
 

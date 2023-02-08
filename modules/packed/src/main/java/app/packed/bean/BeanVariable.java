@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings;
-
-import static java.util.Objects.requireNonNull;
+package app.packed.bean;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanElement;
-import app.packed.bean.BeanInstallationException;
+import app.packed.bindings.BindingMirror;
+import app.packed.bindings.Key;
+import app.packed.bindings.Variable;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.framework.Nullable;
@@ -151,7 +150,6 @@ public non-sealed interface BeanVariable extends BeanElement {
                 return c;
             }
         }
-
         throw new BeanInstallationException(variable() + ", Must be assignable to one of " + Arrays.toString(classes));
     }
 
@@ -201,6 +199,7 @@ public non-sealed interface BeanVariable extends BeanElement {
     Variable variable();
 
     // The target of a binding
+    // What about Variable in an OP??
     enum Target {
         FIELD, PARAMETER, TYPE_PARAMETER;
     }
@@ -215,15 +214,6 @@ interface Sanfbox extends BeanVariable {
      */
     void bindCompositeRecord(); // bindComposite?
     // Har saa mange metoder i forvejen
-
-    default void checkAssignableTo(Class<?> clazz) {
-        requireNonNull(clazz, "clazz is null");
-        Class<?> rawType = variable().getRawType();
-        if (clazz.isAssignableFrom(rawType)) {
-            return;
-        }
-        throw new BeanInstallationException(variable() + ", Must be assignable to " + clazz);
-    }
 
     default boolean isAssignableTo(Class<?>... classes) {
         if (classes.length == 0) {

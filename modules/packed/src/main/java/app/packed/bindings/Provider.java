@@ -40,6 +40,7 @@ public interface Provider<T> {
      *
      * @return an infinite stream of instances
      */
+    // Cannot come up with a single use case for this method
     default Stream<T> stream() {
         return Stream.generate(() -> provide());
     }
@@ -55,24 +56,10 @@ public interface Provider<T> {
      */
     // or ofConstant? or just of?
     static <T> Provider<T> ofInstance(T instance) {
+        requireNonNull(instance, "instance is null");
+
+        record InstanceProvider<T>(T provide) implements Provider<T> {}
         return new InstanceProvider<>(instance);
-    }
-}
-
-/** An implementation of {@link Provider} that returns the instance on every invocation. */
-/* primitive */ final class InstanceProvider<T> implements Provider<T> {
-
-    /** The constant to provide on every invocation. */
-    private final T constant;
-
-    InstanceProvider(T constant) {
-        this.constant = requireNonNull(constant, "constant is null");
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public T provide() {
-        return constant;
     }
 }
 

@@ -18,7 +18,7 @@ package app.packed.extension;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
-import app.packed.bindings.BeanWrappedVariable;
+import app.packed.bean.BeanWrappedVariable;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.operation.OperationMirror;

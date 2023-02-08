@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import app.packed.bindings.BeanVariable;
-import app.packed.bindings.BeanWrappedVariable;
+import app.packed.bean.BeanVariable;
+import app.packed.bean.BeanWrappedVariable;
 import app.packed.bindings.BindingMirror;
 import app.packed.bindings.Key;
 import app.packed.bindings.Variable;

@@ -25,7 +25,7 @@ import java.util.List;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bindings.BeanWrappedVariable;
+import app.packed.bean.BeanWrappedVariable;
 import app.packed.concurrent.ThreadExtension;
 import app.packed.concurrent.scheduling.ScheduledOperationConfiguration.Schedule;
 import app.packed.context.ContextTemplate;

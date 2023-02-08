@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanInstallationException;
-import app.packed.bindings.BeanVariable;
+import app.packed.bean.BeanVariable;
 import app.packed.bindings.BindingMirror;
 import app.packed.bindings.Variable;
 import app.packed.extension.Extension;

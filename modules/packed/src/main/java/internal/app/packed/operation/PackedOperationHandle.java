@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.bindings.BeanVariable;
+import app.packed.bean.BeanVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.operation.BeanOperationTemplate;

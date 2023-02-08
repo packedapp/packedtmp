@@ -20,8 +20,6 @@ import java.lang.annotation.Annotation;
 import app.packed.bean.BeanElement.BeanClass;
 import app.packed.bean.BeanElement.BeanField;
 import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.bindings.BeanVariable;
-import app.packed.bindings.BeanWrappedVariable;
 import app.packed.container.Realm;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;

@@ -26,7 +26,7 @@ import app.packed.application.App;
 import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
-import app.packed.bindings.BeanVariable;
+import app.packed.bean.BeanVariable;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.service.Provide;

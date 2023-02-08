@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings;
+package app.packed.bean;
 
 import java.util.List;
 import java.util.Optional;
 
+import app.packed.bindings.Variable;
 import app.packed.operation.Op;
 
 /**

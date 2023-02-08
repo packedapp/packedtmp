@@ -25,7 +25,6 @@ import app.packed.bean.BeanElement.BeanClass;
 import app.packed.bean.BeanElement.BeanConstructor;
 import app.packed.bean.BeanElement.BeanField;
 import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.bindings.BeanVariable;
 import app.packed.bindings.Key;
 import app.packed.bindings.Variable;
 import app.packed.framework.AnnotationList;
@@ -41,6 +40,10 @@ import internal.app.packed.bean.PackedBeanMethod;
 /**
  *
  */
+// Checks Static non static bean
+// Checks container lifetime
+// Checks own extension or container lifetime
+// service.provide -> isContainerLifetime or prot
 public sealed interface BeanElement permits BeanClass, BeanField, BeanConstructor, BeanMethod, BeanVariable {
 
     /** {@return an annotation reader for the element.} */
@@ -90,7 +93,7 @@ public sealed interface BeanElement permits BeanClass, BeanField, BeanConstructo
     /**
      *
      * <p>
-     * Members from the {@code java.lang.Object} class are never returned.
+     * Members from {@code java.lang.Object} are never returned.
      */
     public non-sealed interface BeanClass extends BeanElement {
 
@@ -101,6 +104,8 @@ public sealed interface BeanElement permits BeanClass, BeanField, BeanConstructo
         void forEachMethod(Consumer<? super BeanMethod> action);
 
         boolean hasFullAccess();
+
+        // void includeJavaBaseMembers();
 
         // Fields first, include subclasses, ... blabla
         // Maybe on top of full access have boolean custom processing on ClassHook
@@ -182,8 +187,8 @@ public sealed interface BeanElement permits BeanClass, BeanField, BeanConstructo
          * @see VarHandle#toMethodHandle(java.lang.invoke.VarHandle.AccessMode)
          *
          * @apiNote There are currently no way to create more than one MethodHandle per operation (for example one for reading
-         *          and one for writing a field). You must create an operation per access mode instead. It is also currently not
-         *          possible to get a VarHandle for the field
+         *          and one for writing a field). You must create an operation per access mode instead. Also, there is currently
+         *          no way to obtain a VarHandle for the underlying field
          */
         OperationHandle newOperation(BeanOperationTemplate template, VarHandle.AccessMode accessMode);
 
