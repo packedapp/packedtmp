@@ -36,15 +36,15 @@ public class VariableTest {
             public int foo;
         }
         for (Field f : XX.class.getDeclaredFields()) {
-            Variable v = Variable.ofField(f);
-            assertThat(v.getRawType()).isEqualTo(f.getType());
-            assertThat(v.getRawType()).isEqualTo(f.getGenericType());
+            Variable v = Variable.fromField(f);
+            assertThat(v.rawType()).isEqualTo(f.getType());
+            assertThat(v.rawType()).isEqualTo(f.getGenericType());
         }
 
     }
 
     public void assertFieldEquals(Field field) {
-        Variable v = Variable.ofField(field);
+        Variable v = Variable.fromField(field);
     }
 
     public void assertAnnotatedElementEquals(AnnotatedElement expected, AnnotatedElement actual) {

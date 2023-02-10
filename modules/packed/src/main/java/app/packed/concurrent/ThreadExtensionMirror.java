@@ -18,9 +18,9 @@ package app.packed.concurrent;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
-import app.packed.bindings.QualifierUtil;
-import app.packed.bindings.Tag;
 import app.packed.extension.ExtensionMirror;
+import app.packed.util.Tag;
+import internal.app.packed.util.QualifierUtil;
 
 /**
  *

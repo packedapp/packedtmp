@@ -22,14 +22,13 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanVariable;
 import app.packed.bean.BeanWrappedVariable;
 import app.packed.bindings.BindingMirror;
-import app.packed.bindings.Key;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.util.AnnotationList;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
-import internal.app.packed.binding.PackedBindableVariable;
 
 /**
  *

@@ -16,9 +16,8 @@
 package app.packed.util;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
@@ -52,6 +51,7 @@ import internal.app.packed.util.types.TypeUtil;
  */
 public sealed interface Variable permits PackedVariable {
 
+    /** {@return a list of annotations on the variable. */
     AnnotationList annotations();
 
     /**
@@ -64,11 +64,11 @@ public sealed interface Variable permits PackedVariable {
      * @see Method#getReturnType()
      * @see ParameterizedType#getRawType()
      */
-    default Class<?> getRawType() {
-        return TypeUtil.rawTypeOf(getType());
+    default Class<?> rawType() {
+        return TypeUtil.rawTypeOf(type());
     }
 
-    Type getType();
+    Type type();
 
     default boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
         return annotations().containsType(annotationType);
@@ -76,10 +76,6 @@ public sealed interface Variable permits PackedVariable {
 
     static Variable of(Class<?> clazz) {
         return PackedVariable.ofRaw(clazz);
-    }
-
-    static Variable ofConstructorReturnType(Constructor<?> constructor) {
-        return PackedVariable.of(constructor.getAnnotatedReturnType());
     }
 
     /**
@@ -91,19 +87,21 @@ public sealed interface Variable permits PackedVariable {
      *            the field to return a variable from
      * @return the variable
      */
-    static Variable ofField(Field field) {
+    static Variable fromField(Field field) {
         return PackedVariable.of(field.getAnnotatedType());
     }
 
     /**
-     * Returns a variable from the return type of the specified method.
+     * Returns a variable from the return type of the specified executable.
      *
-     * @param method
-     *            the method to return a variable from
+     * @param executable
+     *            the executable to return a variable from
      * @return the variable
+     *
+     * @see Executable#getAnnotatedReturnType()
      */
-    static Variable ofMethodReturnType(Method method) {
-        return PackedVariable.of(method.getAnnotatedReturnType());
+    static Variable fromExecutableReturnType(Executable executable) {
+        return PackedVariable.of(executable.getAnnotatedReturnType());
     }
 
     /**
@@ -113,7 +111,7 @@ public sealed interface Variable permits PackedVariable {
      *            the parameter to return a variable from
      * @return the variable
      */
-    static Variable ofParameter(Parameter parameter) {
+    static Variable fromParameter(Parameter parameter) {
         return PackedVariable.of(parameter.getAnnotatedType());
     }
 

@@ -21,10 +21,10 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import app.packed.bindings.BindingMirror;
-import app.packed.bindings.Key;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
 import internal.app.packed.service.KeyHelper;
@@ -145,7 +145,7 @@ public non-sealed interface BeanVariable extends BeanElement {
         if (classes.length == 0) {
             throw new IllegalArgumentException("Cannot specify an empty array");
         }
-        Class<?> rawType = variable().getRawType();
+        Class<?> rawType = variable().rawType();
         for (Class<?> c : classes) {
             if (c.isAssignableFrom(rawType)) {
                 return c;
@@ -162,7 +162,7 @@ public non-sealed interface BeanVariable extends BeanElement {
 
     /** {@return the raw type of the variable.} */
     default Class<?> rawType() {
-        return variable().getRawType();
+        return variable().rawType();
     }
 
     /**
@@ -185,7 +185,7 @@ public non-sealed interface BeanVariable extends BeanElement {
      */
     @Override
     default Key<?> toKey() {
-        return KeyHelper.convert(variable().getType(), variable().annotations().toArray(), this);
+        return KeyHelper.convert(variable().type(), variable().annotations().toArray(), this);
     }
 
     default BeanWrappedVariable unwrap() {

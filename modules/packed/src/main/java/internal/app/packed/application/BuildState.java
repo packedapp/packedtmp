@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package internal.app.packed.application;
 
 /**
  *
  */
+// Ved ikke lige hvad den skal bruges til
 enum BuildState {
     ASSEMBLING, CODE_GENERATING, COMPLETED;
 }

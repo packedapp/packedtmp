@@ -17,8 +17,8 @@ package app.packed.service.sandbox;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanVariable;
-import app.packed.bindings.Key;
 import app.packed.operation.OperationHandle;
+import app.packed.util.Key;
 
 // ServiceDomain? Something where keys are unique
 

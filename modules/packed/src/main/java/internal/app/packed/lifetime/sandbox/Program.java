@@ -18,13 +18,13 @@ package internal.app.packed.lifetime.sandbox;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
-import app.packed.bindings.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint;
 import app.packed.lifetime.FromLifetimeChannel;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
+import app.packed.util.Key;
 
 /**
  * An App (application) is a type of artifact provided by Packed.

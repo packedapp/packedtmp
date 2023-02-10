@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings;
+package app.packed.util;
 
 import static java.util.Objects.requireNonNull;
 
@@ -30,8 +30,7 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 
-import app.packed.util.AnnotationList;
-import app.packed.util.Variable;
+import app.packed.bindings.Provider;
 import internal.app.packed.util.AnnotationUtil;
 import internal.app.packed.util.PackedAnnotationList;
 import internal.app.packed.util.StringFormatter;
@@ -136,7 +135,7 @@ public abstract class Key<T> {
             // We first convert it to a variable, as it contains both the type and any annotations
             Variable v = EXTRACTOR.extractVariable(implementation, e -> new InvalidKeyException(e));
 
-            Type type = convertType(v.getType(), this);
+            Type type = convertType(v.type(), this);
             PackedAnnotationList annotations = qualifiersConvertExplicit(v.annotations().toArray(), this);
             return new CanonicalizedKey<>(type, annotations);
         }

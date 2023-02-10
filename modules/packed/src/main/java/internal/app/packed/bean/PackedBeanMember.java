@@ -17,13 +17,12 @@ package internal.app.packed.bean;
 
 import java.lang.reflect.Member;
 
-import app.packed.bean.BeanInstallationException;
 import app.packed.util.AnnotationList;
 import internal.app.packed.util.PackedAnnotationList;
 
 /** The super class of operational members. The inheritance hierarchy follows that of {@link Member}. */
 @SuppressWarnings("rawtypes")
-abstract sealed class PackedBeanMember<M extends Member> permits PackedBeanField, PackedBeanExecutable {
+abstract sealed class PackedBeanMember<M extends Member> permits PackedBeanExecutable {
 
     /** Annotations on the member. */
     private final PackedAnnotationList annotations;
@@ -50,10 +49,6 @@ abstract sealed class PackedBeanMember<M extends Member> permits PackedBeanField
         if (!extension.extension.container.assembly.isConfigurable()) {
             throw new IllegalStateException("This method must be called before the assembly is closed");
         }
-    }
-
-    public void failWith(String postFix) {
-        throw new BeanInstallationException("Field " + member + ": " + postFix);
     }
 
     /** {@return the modifiers of the member.} */

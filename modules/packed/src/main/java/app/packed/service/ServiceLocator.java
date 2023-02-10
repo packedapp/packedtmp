@@ -28,7 +28,6 @@ import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.bean.BeanHook.BindingTypeHook;
-import app.packed.bindings.Key;
 import app.packed.bindings.Provider;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
@@ -39,6 +38,7 @@ import app.packed.extension.BaseExtension;
 import app.packed.lifetime.FromLifetimeChannel;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
+import app.packed.util.Key;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.service.PackedServiceLocator;
 

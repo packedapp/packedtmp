@@ -19,14 +19,15 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle.AccessMode;
-import java.lang.reflect.Constructor;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
+
+import internal.app.packed.util.PackedAnnotationList;
+import internal.app.packed.util.PackedVariable;
 
 /**
  * An function type represents the arguments and return variable for an operation.
@@ -34,7 +35,6 @@ import java.util.StringJoiner;
  * @apiNote This class is modelled after {@link MethodType}. But uses {@link Variable} instead of {@link Class} as the
  *          element type. This means that both detailed {@link Type} information and annotations are available.
  */
-// FunctionType?
 public final /* primitive */ class FunctionType {
 
     /** May be used for operation types without parameter variables. */
@@ -46,14 +46,22 @@ public final /* primitive */ class FunctionType {
     /** The return variable. */
     private final Variable returnVar;
 
+    /** Annotations on the function. */
+    private final AnnotationList annotations;
+
     private FunctionType(Variable returnVar, Variable... variables) {
+        this(PackedAnnotationList.EMPTY, returnVar, variables);
+    }
+
+    private FunctionType(AnnotationList annotations, Variable returnVar, Variable... variables) {
+        this.annotations = requireNonNull(annotations);
         this.returnVar = requireNonNull(returnVar);
         this.parameterVars = requireNonNull(variables);
     }
 
     /** {@return a list of annotations on the function.} */
     public AnnotationList annotations() {
-        throw new UnsupportedOperationException();
+        return annotations;
     }
 
     /**
@@ -79,7 +87,7 @@ public final /* primitive */ class FunctionType {
      */
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof FunctionType t && (this == obj || returnVar.equals(t.returnVar) && Arrays.deepEquals(parameterVars, t.parameterVars));
+        return this == obj || obj instanceof FunctionType t && (returnVar.equals(t.returnVar) && Arrays.deepEquals(parameterVars, t.parameterVars));
     }
 
     /**
@@ -95,7 +103,8 @@ public final /* primitive */ class FunctionType {
      */
     @Override
     public int hashCode() {
-        int h = 31 + returnVar.hashCode();
+        int h = 31 + annotations.hashCode();
+        h = 31 * + returnVar.hashCode();
         for (Variable v : parameterVars) {
             h = 31 * h + v.hashCode();
         }
@@ -129,14 +138,14 @@ public final /* primitive */ class FunctionType {
     private Class<?>[] rawParameterTypeArray() {
         Class<?>[] params = new Class<?>[parameterVars.length];
         for (int i = 0; i < params.length; i++) {
-            params[i] = parameterVars[i].getRawType();
+            params[i] = parameterVars[i].rawType();
         }
         return params;
     }
 
     /** {@return the return variable.} */
     public Class<?> returnRawType() {
-        return returnVar.getRawType();
+        return returnVar.rawType();
     }
 
     /** {@return the return variable.} */
@@ -149,9 +158,9 @@ public final /* primitive */ class FunctionType {
      */
     public MethodType toMethodType() {
         return switch (parameterVars.length) {
-        case 0 -> MethodType.methodType(returnVar.getRawType());
-        case 1 -> MethodType.methodType(returnVar.getRawType(), parameterVars[0].getRawType());
-        default -> MethodType.methodType(returnVar.getRawType(), rawParameterTypeArray());
+        case 0 -> MethodType.methodType(returnVar.rawType());
+        case 1 -> MethodType.methodType(returnVar.rawType(), parameterVars[0].rawType());
+        default -> MethodType.methodType(returnVar.rawType(), rawParameterTypeArray());
         };
     }
 
@@ -178,7 +187,7 @@ public final /* primitive */ class FunctionType {
     }
 
     public static FunctionType of(Class<?> returnVar, Class<?>... vars) {
-        return ofMethodType(MethodType.methodType(returnVar, vars));
+        return fromMethodType(MethodType.methodType(returnVar, vars));
     }
 
     /**
@@ -210,28 +219,24 @@ public final /* primitive */ class FunctionType {
     }
 
     /**
-     * {@return an operation type representing the invocation of specified executable.}
+     * {@return an function type representing the invocation of the specified executable.}
      *
      * @param executable
-     *            the executable to return an operation type for.
+     *            the executable to return an function type for.
      */
-    public static FunctionType ofExecutable(Executable executable) {
+    public static FunctionType fromExecutable(Executable executable) {
         requireNonNull(executable, "executable is null");
-        Variable returnVariable = executable instanceof Method m ? Variable.ofMethodReturnType(m)
-                : Variable.ofConstructorReturnType((Constructor<?>) executable);
-        Parameter[] parameters = executable.getParameters();
-        if (parameters.length == 0) {
-            return new FunctionType(returnVariable, NO_PARAMETERS);
-        } else {
-            Variable[] vars = new Variable[parameters.length];
+        Variable[] vars = NO_PARAMETERS;
+        AnnotatedType[] parameters = executable.getAnnotatedParameterTypes();
+        if (parameters.length > 0) {
+            vars = new Variable[parameters.length];
             for (int i = 0; i < vars.length; i++) {
-                vars[i] = Variable.ofParameter(parameters[i]);
+                vars[i] = PackedVariable.of(parameters[i]);
             }
-            return new FunctionType(returnVariable, vars);
         }
+        return new FunctionType(AnnotationList.fromExecutable(executable), Variable.fromExecutableReturnType(executable), vars);
     }
 
-    // I think we can move this internally
     /**
      * {@return an operation type representing the access of the specified fiel.}
      *
@@ -240,33 +245,34 @@ public final /* primitive */ class FunctionType {
      * @param accessMode
      *            how the field is access
      */
-    public static FunctionType ofField(Field field, AccessMode accessMode) {
+    public static FunctionType fromField(Field field, AccessMode accessMode) {
         requireNonNull(field, "field is null");
         requireNonNull(accessMode, "accessMode is null");
-        Variable fieldVar = Variable.ofField(field);
+        AnnotationList fieldAnnotations = AnnotationList.fromField(field);
+        Variable fieldVar = Variable.fromField(field);
         switch (accessMode) {
         case GET:
         case GET_VOLATILE:
         case GET_ACQUIRE:
         case GET_OPAQUE:
-            return of(fieldVar);
+            return new FunctionType(fieldAnnotations, fieldVar);
         case SET:
         case SET_VOLATILE:
         case SET_RELEASE:
         case SET_OPAQUE:
-            return of(Variable.of(void.class), fieldVar);
+            return new FunctionType(fieldAnnotations, Variable.of(void.class), fieldVar);
         case COMPARE_AND_SET:
         case WEAK_COMPARE_AND_SET:
         case WEAK_COMPARE_AND_SET_ACQUIRE:
         case WEAK_COMPARE_AND_SET_PLAIN:
         case WEAK_COMPARE_AND_SET_RELEASE:
-            return of(Variable.of(boolean.class), fieldVar);
+            return new FunctionType(fieldAnnotations, Variable.of(boolean.class), fieldVar);
         case COMPARE_AND_EXCHANGE:
         case COMPARE_AND_EXCHANGE_ACQUIRE:
         case COMPARE_AND_EXCHANGE_RELEASE:
-            return of(fieldVar, fieldVar, fieldVar);
+            return new FunctionType(fieldAnnotations, fieldVar, fieldVar, fieldVar);
         default: // getAndUpdate
-            return of(fieldVar, fieldVar);
+            return new FunctionType(fieldAnnotations, fieldVar, fieldVar);
         }
     }
 
@@ -276,9 +282,8 @@ public final /* primitive */ class FunctionType {
      * @param field
      *            the field to read.
      */
-    public static FunctionType ofFieldGet(Field field) {
-        requireNonNull(field, "field is null");
-        return of(Variable.ofField(field));
+    public static FunctionType fromFieldGet(Field field) {
+        return fromField(field, AccessMode.GET);
     }
 
     /**
@@ -287,9 +292,8 @@ public final /* primitive */ class FunctionType {
      * @param field
      *            the field to write.
      */
-    public static FunctionType ofFieldSet(Field field) {
-        requireNonNull(field, "field is null");
-        return of(Variable.of(void.class), Variable.ofField(field));
+    public static FunctionType fromFieldSet(Field field) {
+        return fromField(field, AccessMode.SET);
     }
 
     /**
@@ -298,7 +302,7 @@ public final /* primitive */ class FunctionType {
      * @param methodType
      *            the method type to convert
      */
-    public static FunctionType ofMethodType(MethodType methodType) {
+    public static FunctionType fromMethodType(MethodType methodType) {
         requireNonNull(methodType, "methodType is null");
         Variable returnVar = Variable.of(methodType.returnType());
         int count = methodType.parameterCount();

@@ -24,11 +24,11 @@ import java.util.function.Consumer;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.bindings.Key;
-import app.packed.bindings.KeyAlreadyInUseException;
 import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceLocator.Composer;
+import app.packed.util.Key;
+import app.packed.util.KeyAlreadyInUseException;
 import testutil.stubs.annotation.StringQualifier;
 
 /**

@@ -57,7 +57,7 @@ final record BeanScannerConstructor(Constructor<?> constructor, FunctionType ope
         /** {@inheritDoc} */
         protected BeanScannerConstructor computeValue(Class<?> implementation) {
             Constructor<?> executable = BeanScannerConstructor.getConstructor(implementation, true, e -> new IllegalArgumentException(e));
-            return new BeanScannerConstructor(executable, FunctionType.ofExecutable(executable));
+            return new BeanScannerConstructor(executable, FunctionType.fromExecutable(executable));
         }
     };
 

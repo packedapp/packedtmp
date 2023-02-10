@@ -21,7 +21,7 @@ import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
 import app.packed.bindings.BindingMirror;
-import app.packed.bindings.Key;
+import app.packed.util.Key;
 import internal.app.packed.service.ServiceBindingSetup;
 
 /**

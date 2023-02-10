@@ -24,9 +24,9 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bean.BeanConfiguration;
-import app.packed.bindings.Key;
 import app.packed.operation.Op0;
 import app.packed.service.ServiceableBeanConfiguration;
+import app.packed.util.Key;
 import app.packed.service.ServiceLocator;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;

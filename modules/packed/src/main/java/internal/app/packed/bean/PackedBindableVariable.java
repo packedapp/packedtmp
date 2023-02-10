@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.binding;
+package internal.app.packed.bean;
 
 import static java.util.Objects.checkIndex;
 import static java.util.Objects.requireNonNull;
@@ -33,7 +33,7 @@ import app.packed.operation.OperationTemplate;
 import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
-import internal.app.packed.bean.BeanReflector;
+import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromCodeGenerated;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromInvocationArgument;
@@ -109,18 +109,18 @@ public final class PackedBindableVariable implements BeanVariable {
     public void bindConstant(@Nullable Object obj) {
         checkBeforeBind();
         if (obj == null) {
-            if (variable.getRawType().isPrimitive()) {
+            if (variable.rawType().isPrimitive()) {
                 throw new IllegalArgumentException(variable + " is a primitive type and cannot be bound to null");
             }
         } else {
             // I think we want to have the hook type
             // And throw a better error msg
 
-            if (!variable.getRawType().isAssignableFrom(obj.getClass())) {
+            if (!variable.rawType().isAssignableFrom(obj.getClass())) {
                 // Maybe throw an InternalExtensionException?
                 // As it is the responsibility of the extension
                 // to throw a more fitting exception
-                throw new ClassCastException("? of type " + variable.getRawType() + " cannot be bound to object of type " + obj.getClass());
+                throw new ClassCastException("? of type " + variable.rawType() + " cannot be bound to object of type " + obj.getClass());
             }
 
         }

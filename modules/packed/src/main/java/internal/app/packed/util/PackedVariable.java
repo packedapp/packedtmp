@@ -22,18 +22,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.util.Variable;
-import internal.app.packed.util.types.TypeUtil;
 
-/**
- *
- */
-public record PackedVariable(PackedAnnotationList annotations, Type getType) implements Variable {
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<?> getRawType() {
-        return TypeUtil.rawTypeOf(getType);
-    }
+/** Implementation of {@link Variable}. */
+public record PackedVariable(PackedAnnotationList annotations, Type type) implements Variable {
 
     public static PackedVariable of(AnnotatedType type) {
         return new PackedVariable(new PackedAnnotationList(type.getAnnotations()), type.getType());
@@ -43,15 +34,15 @@ public record PackedVariable(PackedAnnotationList annotations, Type getType) imp
         return new PackedVariable(PackedAnnotationList.EMPTY, clazz);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        Annotation[] annotations = annotations().toArray();
-        sb.append(Stream.of(annotations).map(Annotation::toString).collect(Collectors.joining(" ")));
-        if (annotations.length > 0) {
+        sb.append(Stream.of(annotations.annotations()).map(Annotation::toString).collect(Collectors.joining(" ")));
+        if (!annotations.isEmpty()) {
             sb.append(" ");
         }
-        sb.append(getType().toString());
+        sb.append(type.toString());
         return sb.toString();
     }
 }

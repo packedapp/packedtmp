@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
 import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.bindings.Key;
 import app.packed.operation.OperationTemplate;
+import app.packed.util.Key;
 import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;

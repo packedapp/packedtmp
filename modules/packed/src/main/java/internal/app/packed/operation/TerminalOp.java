@@ -67,7 +67,7 @@ abstract sealed class TerminalOp<R> extends PackedOp<R> {
     static final class MethodHandleInvoke<R> extends TerminalOp<R> {
 
         MethodHandleInvoke(MethodHandle methodHandle) {
-            super(FunctionType.ofMethodType(methodHandle.type()), methodHandle);
+            super(FunctionType.fromMethodType(methodHandle.type()), methodHandle);
         }
 
         /** {@inheritDoc} */

@@ -22,12 +22,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.bindings.Key;
 import app.packed.bindings.Provider;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.ExtensionContext;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceSelection;
+import app.packed.util.Key;
 import internal.app.packed.util.ThrowableUtil;
 
 /**

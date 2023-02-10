@@ -20,11 +20,11 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-import app.packed.bindings.Key;
-import app.packed.bindings.KeyAlreadyInUseException;
 import app.packed.bindings.UnsatisfiableDependencyException;
 import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.ServiceBindingMirror;
+import app.packed.util.Key;
+import app.packed.util.KeyAlreadyInUseException;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;

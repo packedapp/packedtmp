@@ -27,7 +27,6 @@ import app.packed.bean.Inject;
 import app.packed.bean.OnInitialize;
 import app.packed.bean.OnStart;
 import app.packed.bean.OnStop;
-import app.packed.bindings.Key;
 import app.packed.bindings.Provider;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
@@ -51,14 +50,15 @@ import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.service.sandbox.transform.ServiceExportsTransformer;
+import app.packed.util.Key;
 import app.packed.util.Variable;
 import internal.app.packed.bean.BeanLifecycleOrder;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanInstaller;
+import internal.app.packed.bean.PackedBindableVariable;
 import internal.app.packed.bean.sandbox.PackedBeanLocal;
 import internal.app.packed.binding.BindingResolution.FromOperation;
-import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.operation.OperationSetup;
@@ -421,18 +421,18 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             public void hookOnAnnotatedVariable(Annotation annotation, BeanVariable v) {
                 if (annotation instanceof FromLifetimeChannel) {
                     Variable va = v.variable();
-                    if (va.getRawType().equals(String.class)) {
+                    if (va.rawType().equals(String.class)) {
                         v.bindOp(new Op1<@FromInvocationArgument ApplicationInitializationContext, String>(a -> a.name()) {});
-                    } else if (va.getRawType().equals(ManagedLifetimeController.class)) {
+                    } else if (va.rawType().equals(ManagedLifetimeController.class)) {
                         v.bindOp(new Op1<@FromInvocationArgument ApplicationInitializationContext, ManagedLifetimeController>(a -> a.cr.runtime) {});
-                    } else if (va.getRawType().equals(ServiceLocator.class)) {
+                    } else if (va.rawType().equals(ServiceLocator.class)) {
                         v.bindOp(new Op1<@FromInvocationArgument ApplicationInitializationContext, ServiceLocator>(a -> a.serviceLocator()) {});
                     } else {
-                        throw new UnsupportedOperationException("va " + va.getRawType());
+                        throw new UnsupportedOperationException("va " + va.rawType());
                     }
                 } else if (annotation instanceof FromInvocationArgument ia) {
                     int index = ia.exactIndex();
-                    Class<?> cl = v.variable().getRawType();
+                    Class<?> cl = v.variable().rawType();
                     List<Class<?>> l = v.availableInvocationArguments();
                     if (index == -1) {
                         for (int i = 0; i < l.size(); i++) {

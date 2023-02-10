@@ -54,7 +54,7 @@ record SamType(Class<?> functionInterface, Method saMethod, MethodHandle methodH
             throw new Error(samMethod + " must be accessible via MethodHandles.publicLookup()", e);
         }
 
-        FunctionType ot = FunctionType.ofExecutable(samMethod);
+        FunctionType ot = FunctionType.fromExecutable(samMethod);
         return new SamType(functionInterface, samMethod, mh, ot);
     }
 }

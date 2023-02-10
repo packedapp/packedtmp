@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.stream.Stream;
 
-import app.packed.bindings.Key;
 import app.packed.operation.OperationMirror;
+import app.packed.util.Key;
 import internal.app.packed.service.ServiceProviderSetup;
 
 /**

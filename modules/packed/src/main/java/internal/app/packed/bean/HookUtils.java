@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean.hooks;
+package internal.app.packed.bean;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
@@ -26,10 +26,9 @@ import internal.app.packed.util.types.ClassUtil;
 /**
  *
  */
-class Utils {
+class HookUtils {
 
     static void checkMemberAnnotation(Class<?> clazz, ElementType elementType) {
-
         Target target = clazz.getAnnotation(Target.class);
         if (target == null) {
             throw new InternalExtensionException("@ "  + clazz.getSimpleName());

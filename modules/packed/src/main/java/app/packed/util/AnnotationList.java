@@ -18,6 +18,8 @@ package app.packed.util;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -80,6 +82,18 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
     /** {@return an empty annotation list.} */
     static AnnotationList of() {
         return PackedAnnotationList.EMPTY;
+    }
+
+    private static PackedAnnotationList maybeEmptySafe(Annotation[] annotations) {
+        return annotations.length == 0 ? PackedAnnotationList.EMPTY : new PackedAnnotationList(annotations);
+    }
+
+    static AnnotationList fromField(Field field) {
+        return maybeEmptySafe(field.getAnnotations());
+    }
+
+    static AnnotationList fromExecutable(Executable executable) {
+        return maybeEmptySafe(executable.getAnnotations());
     }
 
     static AnnotationList of(Annotation annotation) {

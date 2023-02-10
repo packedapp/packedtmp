@@ -20,7 +20,6 @@ import java.util.function.Function;
 
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
-import internal.app.packed.util.SpecFix;
 
 /**
  * The configuration of a bean that deals with beans that are instantiated.
@@ -62,8 +61,8 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 //addAnnotation
 //resolve();
 class InstanceBeanConfigurationSandbox<T> {
-    @SpecFix({ "Da vi altid laver alle bindings naar vi installere... Fungere det ikke super godt med initializeWith.",
-            " Det er jo ihvertfald ikke en service binding laengere" })
+ //   @SpecFix({ "Da vi altid laver alle bindings naar vi installere... Fungere det ikke super godt med initializeWith.",
+ //           " Det er jo ihvertfald ikke en service binding laengere" })
 // Hvad hvis man bruger servicen i baade constructoren og i @OnStop...
 // Saa fungere det her initialize jo ikke...
 

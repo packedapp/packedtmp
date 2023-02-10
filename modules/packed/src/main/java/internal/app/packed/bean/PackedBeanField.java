@@ -15,6 +15,8 @@
  */
 package internal.app.packed.bean;
 
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
@@ -23,22 +25,26 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import app.packed.bean.BeanElement.BeanField;
-import app.packed.bindings.Key;
+import app.packed.bean.BeanHook.AnnotatedFieldHook;
+import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
+import app.packed.util.AnnotationList;
 import app.packed.util.FunctionType;
+import app.packed.util.Key;
+import app.packed.util.Nullable;
 import app.packed.util.Variable;
-import internal.app.packed.bean.hooks.HookOnFieldAnnotation;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.operation.PackedOperationHandle;
 import internal.app.packed.service.KeyHelper;
-import internal.app.packed.util.PackedVariable;
 import internal.app.packed.util.PackedAnnotationList;
+import internal.app.packed.util.PackedVariable;
 
 /** Implementation of {@link BeanField}. */
-public final class PackedBeanField extends PackedBeanMember<Field> implements BeanField , Comparable<PackedBeanField> {
+// Previous we had a PackedBeanMember, but there are actually only 2-3 common operations.
+public final class PackedBeanField implements BeanField , Comparable<PackedBeanField> {
 
     /** Whether or not operations that read from the field can be created. */
     final boolean allowGet;
@@ -46,14 +52,26 @@ public final class PackedBeanField extends PackedBeanMember<Field> implements Be
     /** Whether or not operations that write to the field can be created. */
     final boolean allowSet;
 
+    /** The annotated type of the field. */
+    private final AnnotatedType annotatedType;
+
+    /** Annotations on the member. */
+    private final PackedAnnotationList annotations;
+
+    /** The extension that can create new operations from the member. */
+    private final BeanScannerExtension extension;
+
+    /** The member. */
+    private final Field field;
+
     /** Hooks on the field */
     private final PackedAnnotationList hooks;
 
-    private final AnnotatedType annotatedType;
-
     PackedBeanField(BeanReflector scanner, Field field, PackedAnnotationList annotations, PackedAnnotationList hooks,
             HookOnFieldAnnotation... annotatedFields) {
-        super(scanner.computeContributor(annotatedFields[0].extensionType()), field, annotations);
+        this.extension = scanner.computeContributor(annotatedFields[0].extensionType());
+        this.field = field;
+        this.annotations = annotations;
         boolean allowGet = extension.hasFullAccess();
         boolean allowSet = extension.hasFullAccess();
         for (HookOnFieldAnnotation annotatedField : annotatedFields) {
@@ -63,27 +81,46 @@ public final class PackedBeanField extends PackedBeanMember<Field> implements Be
         this.allowGet = allowGet;
         this.allowSet = allowSet;
         this.hooks = hooks;
-        this.annotatedType = member.getAnnotatedType(); // TODO take as parameter
+        this.annotatedType = field.getAnnotatedType(); // TODO take as parameter
+    }
+
+    /** {@return a list of annotations on the member.} */
+    @Override
+    public AnnotationList annotations() {
+        return annotations;
+    }
+
+    /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */
+    void checkConfigurable() {
+        if (!extension.extension.container.assembly.isConfigurable()) {
+            throw new IllegalStateException("This method must be called before the assembly is closed");
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public int compareTo(PackedBeanField o) {
-        return member.getName().compareTo(o.member.getName());
+        return field.getName().compareTo(o.field.getName());
     }
 
     /** {@inheritDoc} */
     @Override
     public Field field() {
-        return member;
+        return field;
+    }
+
+    /** {@return the modifiers of the member.} */
+    @Override
+    public int modifiers() {
+        return field.getModifiers();
     }
 
     /** {@inheritDoc} */
     @Override
     public OperationHandle newGetOperation(OperationTemplate template) {
         checkConfigurable();
-        MethodHandle mh = extension.scanner.unreflectGetter(member);
-        AccessMode accessMode = Modifier.isVolatile(member.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
+        MethodHandle mh = extension.scanner.unreflectGetter(field);
+        AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
         return newOperation(template, mh, accessMode);
     }
 
@@ -91,15 +128,15 @@ public final class PackedBeanField extends PackedBeanMember<Field> implements Be
     @Override
     public OperationHandle newOperation(OperationTemplate template, AccessMode accessMode) {
         checkConfigurable();
-        VarHandle varHandle = extension.scanner.unreflectVarHandle(member);
+        VarHandle varHandle = extension.scanner.unreflectVarHandle(field);
         MethodHandle mh = varHandle.toMethodHandle(accessMode);
         return newOperation(template, mh, accessMode);
     }
 
     private PackedOperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
-        template = template.withReturnType(member.getType());
-        OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, FunctionType.ofField(member, accessMode), template,
-                new OperationFieldTarget(member, accessMode), mh);
+        template = template.withReturnType(field.getType());
+        OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, FunctionType.fromField(field, accessMode), template,
+                new OperationFieldTarget(field, accessMode), mh);
         extension.scanner.unBoundOperations.add(operation);
         extension.scanner.bean.operations.add(operation);
         return operation.toHandle();
@@ -109,8 +146,8 @@ public final class PackedBeanField extends PackedBeanMember<Field> implements Be
     @Override
     public OperationHandle newSetOperation(OperationTemplate template) {
         checkConfigurable();
-        MethodHandle mh = extension.scanner.unreflectSetter(member);
-        AccessMode accessMode = Modifier.isVolatile(member.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
+        MethodHandle mh = extension.scanner.unreflectSetter(field);
+        AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
         return newOperation(template, mh, accessMode);
     }
 
@@ -121,12 +158,35 @@ public final class PackedBeanField extends PackedBeanMember<Field> implements Be
     /** {@inheritDoc} */
     @Override
     public Key<?> toKey() {
-        return KeyHelper.convert(member, annotatedType);
+        return KeyHelper.convert(field, annotatedType);
     }
 
     /** {@inheritDoc} */
     @Override
     public Variable variable() {
         return PackedVariable.of(annotatedType);
+    }
+
+    record HookOnFieldAnnotation(Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable) {
+
+        /** A cache of field annotations. */
+        private static final ClassValue<HookOnFieldAnnotation> CACHE = new ClassValue<>() {
+
+            @Override
+            protected HookOnFieldAnnotation computeValue(Class<?> type) {
+                AnnotatedFieldHook fieldHook = type.getAnnotation(AnnotatedFieldHook.class);
+                if (fieldHook == null) {
+                    return null;
+                }
+                HookUtils.checkExtensionClass(type, fieldHook.extension());
+                HookUtils.checkMemberAnnotation(type, ElementType.FIELD);
+                return new HookOnFieldAnnotation(fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet());
+            }
+        };
+
+        @Nullable
+        public static HookOnFieldAnnotation find(Class<? extends Annotation> annotationType) {
+            return CACHE.get(annotationType);
+        }
     }
 }

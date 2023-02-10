@@ -19,11 +19,11 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.bindings.Key;
 import app.packed.context.ContextSpan;
 import app.packed.context.ContextTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
+import app.packed.util.Key;
 import internal.app.packed.container.ContainerKind;
 import internal.app.packed.container.PackedContainerLifetimeTemplate;
 

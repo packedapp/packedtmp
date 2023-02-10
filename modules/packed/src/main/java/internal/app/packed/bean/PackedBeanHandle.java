@@ -26,7 +26,6 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.bindings.Key;
 import app.packed.container.Realm;
 import app.packed.context.Context;
 import app.packed.errorhandling.ErrorHandler;
@@ -34,6 +33,7 @@ import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.util.FunctionType;
+import app.packed.util.Key;
 import internal.app.packed.service.InternalServiceUtil;
 
 /** Implementation of {@link BeanHandle}. */

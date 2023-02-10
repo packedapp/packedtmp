@@ -23,12 +23,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import app.packed.bean.BeanSourceKind;
-import app.packed.bindings.Key;
-import app.packed.bindings.KeyAlreadyInUseException;
 import app.packed.extension.ExtensionContext;
 import app.packed.service.ExportedServiceMirror;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
+import app.packed.util.Key;
+import app.packed.util.KeyAlreadyInUseException;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution;

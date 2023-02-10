@@ -22,7 +22,6 @@ import app.packed.util.Variable;
 import internal.app.packed.bean.BeanHookModel.AnnotatedParameterType;
 import internal.app.packed.bean.BeanHookModel.ParameterType;
 import internal.app.packed.binding.InternalDependency;
-import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 
@@ -44,12 +43,12 @@ final class BeanScannerBindingResolver {
         // Peel it
 
         // Next, see if there are any VariableTypeHooks on the variable
-        ParameterType hook = iBean.hookModel.testParameterType(v.getRawType());
+        ParameterType hook = iBean.hookModel.testParameterType(v.rawType());
         if (hook != null) {
             BeanScannerExtension contributor = iBean.computeContributor(hook.extensionType());
             PackedBindableVariable h = new PackedBindableVariable(iBean, operation, index, contributor.extension, v);
 
-            contributor.introspector.hookOnVariableType(v.getRawType(), new PackedBeanWrappedVariable(h));
+            contributor.introspector.hookOnVariableType(v.rawType(), new PackedBeanWrappedVariable(h));
             if (operation.bindings[index] != null) {
                 return;
             }

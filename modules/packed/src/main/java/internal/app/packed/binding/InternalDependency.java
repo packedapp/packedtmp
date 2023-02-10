@@ -27,8 +27,8 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.application.BuildException;
-import app.packed.bindings.Key;
 import app.packed.util.FunctionType;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
 import internal.app.packed.errorhandling.ErrorMessageBuilder;
@@ -232,10 +232,10 @@ public final class InternalDependency {
     public static <T> InternalDependency fromVariable(Variable v) {
         requireNonNull(v, "variable is null");
 
-        Type t = v.getType();
+        Type t = v.type();
 
         Optionality optionallaity = null;
-        Class<?> rawType = v.getRawType();
+        Class<?> rawType = v.rawType();
 
         if (rawType.isPrimitive()) {
             throw new UnsupportedOperationException();
@@ -272,7 +272,7 @@ public final class InternalDependency {
         // TL is free from Optional
 
         Key<?> key = KeyHelper.convert(t, v.annotations().toArray(), v);
-        return new InternalDependency(v.getRawType(), key, optionallaity);
+        return new InternalDependency(v.rawType(), key, optionallaity);
     }
 
     /**

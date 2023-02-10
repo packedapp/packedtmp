@@ -20,13 +20,13 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 import app.packed.application.ApplicationPath;
-import app.packed.bindings.Key;
 import app.packed.container.Realm;
 import app.packed.context.Context;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.util.FunctionType;
+import app.packed.util.Key;
 import internal.app.packed.bean.PackedBeanHandle;
 
 /**

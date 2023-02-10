@@ -17,8 +17,6 @@ package app.packed.bindings;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.stream.Stream;
-
 /**
  * A provider of values.
  *
@@ -36,16 +34,6 @@ public interface Provider<T> {
     T provide();
 
     /**
-     * Returns an infinite stream of instances.
-     *
-     * @return an infinite stream of instances
-     */
-    // Cannot come up with a single use case for this method
-    default Stream<T> stream() {
-        return Stream.generate(() -> provide());
-    }
-
-    /**
      * Returns a provider that will be provide the specified instance for every invocation of {@link #provide()}.
      *
      * @param <T>
@@ -54,15 +42,21 @@ public interface Provider<T> {
      *            the instance
      * @return a new provider that provides the specified instance
      */
-    // or ofConstant? or just of?
-    static <T> Provider<T> ofInstance(T instance) {
-        requireNonNull(instance, "instance is null");
-
+    static <T> Provider<T> ofConstant(T constant) {
+        requireNonNull(constant, "instance is null");
         record InstanceProvider<T>(T provide) implements Provider<T> {}
-        return new InstanceProvider<>(instance);
+        return new InstanceProvider<>(constant);
     }
 }
-
+///**
+//* Returns an infinite stream of instances.
+//*
+//* @return an infinite stream of instances
+//*/
+//// Cannot come up with a single use case for this method
+//default Stream<T> stream() {
+// return Stream.generate(() -> provide());
+//}
 ///**
 // * Returns whether or not this provider is guaranteed to return the same instance on every invocation.
 // * <p>

@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.bindings.Key;
 import app.packed.service.ServiceLocator;
+import app.packed.util.Key;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.annotation.Left;

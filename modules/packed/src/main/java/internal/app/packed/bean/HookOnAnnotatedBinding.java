@@ -13,39 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean.hooks;
+package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
 
-import app.packed.bean.BeanHook.AnnotatedFieldHook;
+import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
 
 /**
  *
  */
-public record HookOnFieldAnnotation(Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable) {
+public record HookOnAnnotatedBinding(Class<? extends Extension<?>> extensionType) {
 
     /** A cache of field annotations. */
-    private static final ClassValue<HookOnFieldAnnotation> CACHE = new ClassValue<>() {
+    private static final ClassValue<HookOnAnnotatedBinding> CACHE = new ClassValue<>() {
 
         @Override
-        protected HookOnFieldAnnotation computeValue(Class<?> type) {
-            AnnotatedFieldHook fieldHook = type.getAnnotation(AnnotatedFieldHook.class);
+        protected HookOnAnnotatedBinding computeValue(Class<?> type) {
+            AnnotatedBindingHook fieldHook = type.getAnnotation(AnnotatedBindingHook.class);
             if (fieldHook == null) {
                 return null;
             }
 
-            Utils.checkExtensionClass(type, fieldHook.extension());
-            Utils.checkMemberAnnotation(type, ElementType.FIELD);
+            HookUtils.checkExtensionClass(type, fieldHook.extension());
 
-            return new HookOnFieldAnnotation(fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet());
+            return new HookOnAnnotatedBinding(fieldHook.extension());
         }
     };
 
     @Nullable
-    public static HookOnFieldAnnotation find(Class<? extends Annotation> annotationType) {
+    public static HookOnAnnotatedBinding find(Class<? extends Annotation> annotationType) {
         return CACHE.get(annotationType);
     }
 }

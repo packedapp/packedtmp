@@ -41,7 +41,7 @@ sealed abstract class PackedBeanExecutable<E extends Executable>
      */
     PackedBeanExecutable(BeanScannerExtension ce, E member, Annotation[] annotations) {
         super(ce, member, new PackedAnnotationList(annotations));
-        this.type = FunctionType.ofExecutable(member);
+        this.type = FunctionType.fromExecutable(member);
     }
 
     /** {@inheritDoc} */

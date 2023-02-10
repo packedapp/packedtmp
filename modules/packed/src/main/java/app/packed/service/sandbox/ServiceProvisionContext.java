@@ -17,10 +17,10 @@ package app.packed.service.sandbox;
 
 import java.util.Optional;
 
-import app.packed.bindings.Key;
 import app.packed.bindings.mirror.BindingTarget;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
+import app.packed.util.Key;
 
 /**
  *

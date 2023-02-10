@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.binding;
+package app.packed.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -31,8 +31,6 @@ import java.util.Optional;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.bindings.InvalidKeyException;
-import app.packed.bindings.Key;
 import internal.app.packed.service.KeyHelper;
 import internal.app.packed.util.types.GenericType;
 import testutil.stubs.annotation.AnnotationInstances;

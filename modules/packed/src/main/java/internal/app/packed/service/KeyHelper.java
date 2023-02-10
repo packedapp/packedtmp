@@ -23,7 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import app.packed.bindings.Key;
+import app.packed.util.Key;
 
 /**
  *

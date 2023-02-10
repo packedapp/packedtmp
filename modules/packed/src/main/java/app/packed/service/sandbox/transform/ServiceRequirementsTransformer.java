@@ -17,7 +17,7 @@ package app.packed.service.sandbox.transform;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.bindings.Key;
+import app.packed.util.Key;
 
 /**
  *

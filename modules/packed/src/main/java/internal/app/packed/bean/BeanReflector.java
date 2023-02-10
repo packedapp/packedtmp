@@ -153,7 +153,7 @@ public final class BeanReflector {
         }
         ot = ot.withReturnType(beanClass);
 
-        OperationSetup os = new MemberOperationSetup(bean.installedBy, bean, FunctionType.ofExecutable(con), ot,
+        OperationSetup os = new MemberOperationSetup(bean.installedBy, bean, FunctionType.fromExecutable(con), ot,
                 new OperationConstructorTarget(constructor.constructor()), mh);
         bean.operations.add(os);
         resolveNow(os);

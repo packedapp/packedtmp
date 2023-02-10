@@ -1,25 +1,16 @@
-/*
- * Copyright (c) 2008 Kasper Nielsen.
+package app.packed.util;
+
+/**
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * No Type variables
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * No forbidden types
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * No qualifiers of the same type or canonical name
  */
-package app.packed.bindings;
+public class InvalidKeyException extends RuntimeException {
 
-import app.packed.application.BuildException;
-
-/** An exception that is typically thrown when attempting to provide multiple services for the same key. */
-public class KeyAlreadyInUseException extends BuildException {
-
+    /** */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -30,7 +21,7 @@ public class KeyAlreadyInUseException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public KeyAlreadyInUseException(String message) {
+    public InvalidKeyException(String message) {
         super(message);
     }
 
@@ -44,7 +35,7 @@ public class KeyAlreadyInUseException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public KeyAlreadyInUseException(String message, Throwable cause) {
+    public InvalidKeyException(String message, Throwable cause) {
         super(message, cause);
     }
 }

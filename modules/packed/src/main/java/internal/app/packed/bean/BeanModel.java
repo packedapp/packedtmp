@@ -15,7 +15,7 @@
  */
 package internal.app.packed.bean;
 
-import app.packed.bindings.Key;
+import app.packed.util.Key;
 
 /**
  *

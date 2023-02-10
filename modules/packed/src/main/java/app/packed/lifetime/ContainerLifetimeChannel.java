@@ -23,11 +23,11 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import app.packed.bindings.Key;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.service.sandbox.transform.ServiceExportsTransformer;
+import app.packed.util.Key;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
 
