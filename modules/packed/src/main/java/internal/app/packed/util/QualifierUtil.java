@@ -25,6 +25,9 @@ import java.util.function.Function;
  *
  */
 // Common on static interface methods on annotations
+
+// Jeg ved ikke om vi vil validere de ting om qualifier?
+// Det record trick er jo ok fint
 public final class QualifierUtil {
 
     /** You are not qualified to call this constructor. */

@@ -15,7 +15,6 @@
  */
 package app.packed.bean;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -151,7 +150,8 @@ public non-sealed interface BeanVariable extends BeanElement {
                 return c;
             }
         }
-        throw new BeanInstallationException(variable() + ", Must be assignable to one of " + Arrays.toString(classes));
+        List<String> cls = List.of(classes).stream().map(c -> c.getSimpleName()).toList();
+        throw new BeanInstallationException(variable() + ", Must be assignable to one of " + cls);
     }
 
     /** {@return the extension that is responsible for invoking the underlying operation.} */
@@ -220,7 +220,7 @@ interface Sanfbox {
         if (classes.length == 0) {
             throw new IllegalArgumentException("Cannot specify an empty array of classes");
         }
-        Class<?> rawType = Class.class; //variable().getRawType();
+        Class<?> rawType = Class.class; // variable().getRawType();
         for (Class<?> c : classes) {
             if (c.isAssignableFrom(rawType)) {
                 return true;

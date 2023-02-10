@@ -34,9 +34,9 @@ import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.MirrorExtension;
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.util.Nullable;
 import app.packed.util.FunctionType;
 import app.packed.util.Key;
+import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup;
@@ -88,20 +88,6 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
         return List.of(hooks);
     }
 
-    /** {@return a set of any contexts initiated by invoking the operation.} */
-    public Set<ContextMirror> createsContexts() {
-        throw new UnsupportedOperationException();
-    }
-
-    public Optional<LifetimeMirror> createsLifetime() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@return the dependencies this operation introduces.} */
-    DependenciesMirror dependencies() {
-        throw new UnsupportedOperationException();
-    }
-
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
@@ -136,19 +122,6 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
         throw new UnsupportedOperationException();
     }
 
-//    // The returned set of keys may contains key that result in a cycle.
-//    // For example, if a bean is provided as a service. Calling this method on any of the
-//    // operations on the bean will include the key under which the bean is being provided.
-//    public Set<Key<?>> keys() {
-//        HashSet<Key<?>> result = new HashSet<>();
-//        for (ServiceManagerEntry e : operation().bean.container.sm.entries.values()) {
-//            if (e.provider() != null) {
-//                result.add(e.key);
-//            }
-//        }
-//        return Set.copyOf(result);
-//    }
-
     // Composites, What about services???
     // Services no, because one operation may be used multiple places
     /**
@@ -181,9 +154,36 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
         return operation().target();
     }
 
+//    // The returned set of keys may contains key that result in a cycle.
+//    // For example, if a bean is provided as a service. Calling this method on any of the
+//    // operations on the bean will include the key under which the bean is being provided.
+//    public Set<Key<?>> keys() {
+//        HashSet<Key<?>> result = new HashSet<>();
+//        for (ServiceManagerEntry e : operation().bean.container.sm.entries.values()) {
+//            if (e.provider() != null) {
+//                result.add(e.key);
+//            }
+//        }
+//        return Set.copyOf(result);
+//    }
+
     /** {@return the type of the operation.} */
     public FunctionType type() {
         return operation().type;
+    }
+
+    /** {@return a set of any contexts initiated by invoking the operation.} */
+    public Set<ContextMirror> zCreatesContexts() {
+        throw new UnsupportedOperationException();
+    }
+
+    public Optional<LifetimeMirror> zCreatesLifetime() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@return the dependencies this operation introduces.} */
+    DependenciesMirror zDependencies() {
+        throw new UnsupportedOperationException();
     }
 }
 

@@ -38,9 +38,9 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
      * @param annotation
      *            annotation whose presence is to be tested
      */
-    boolean contains(Annotation annotation);
+    boolean isPresent(Annotation annotation);
 
-    boolean containsType(Class<? extends Annotation> annotationClass);
+    boolean isPresent(Class<? extends Annotation> annotationClass);
 
     default <T extends Annotation> void ifPresent(Class<T> annotationClass, Consumer<T> consumer) {
         T t = readRequired(annotationClass);

@@ -17,11 +17,21 @@ package testutil.util;
 
 import java.lang.StackWalker.Option;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  *
  */
-public class TestMemberFinder {
+public class MemberFinder {
+
+    public static Method findMethod(String name, Class<?>... parameterTypes) {
+        Class<?> c = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).getCallerClass();
+        try {
+            return c.getDeclaredMethod(name, parameterTypes);
+        } catch (NoSuchMethodException e) {
+            throw new AssertionError(e);
+        }
+    }
 
     public static Field findField(String name) {
         Class<?> c = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).getCallerClass();

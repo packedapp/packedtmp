@@ -13,32 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ts.hooks.method;
+package mirrors;
 
-import org.junit.jupiter.api.Test;
-
-import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
-import ts.hooks.method.AnnotatedMethodHookTester.OnM;
+import app.packed.application.ApplicationMirror;
+import app.packed.bean.BeanMirror;
+import tools.AnnoOnField.InstanceField;
 
 /**
  *
  */
-public class Stuff {
+public class MirrorHelpers {
 
-    @Test
-    public void foo() {
-        record R() {
-
-            @OnM
-            void foo() {}
-        }
-        AnnotatedMethodHookTester.process(c -> {
-            System.out.println(c.operationType());
-            OperationHandle oh = c.newOperation(OperationTemplate.defaults());
-            System.out.println(oh);
-      //      oh.generateMethodHandle();
-        }, R.class);
+    public static BeanMirror beanMirror(ApplicationMirror a, Class<?> beanClass) {
+        return a.container().beans().filter(c -> c.beanClass() == InstanceField.class).findFirst().get();
     }
-
 }

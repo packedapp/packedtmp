@@ -26,6 +26,10 @@ import app.packed.util.Variable;
 /** Implementation of {@link Variable}. */
 public record PackedVariable(PackedAnnotationList annotations, Type type) implements Variable {
 
+    public static PackedVariable of(Annotation[] annotations, Type type) {
+        return new PackedVariable(new PackedAnnotationList(annotations), type);
+    }
+
     public static PackedVariable of(AnnotatedType type) {
         return new PackedVariable(new PackedAnnotationList(type.getAnnotations()), type.getType());
     }
@@ -44,5 +48,11 @@ public record PackedVariable(PackedAnnotationList annotations, Type type) implem
         }
         sb.append(type.toString());
         return sb.toString();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isAnnotated() {
+        return !annotations.isEmpty();
     }
 }

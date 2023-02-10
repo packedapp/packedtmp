@@ -63,7 +63,7 @@ public final class PackedContainerInstaller implements ContainerInstaller {
         parent.assembly.checkIsConfigurable();
 
         // Create a new assembly, which call into #containerInstall
-        AssemblySetup as = new AssemblySetup(null, null, this, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(null, application.goal, this, assembly, wirelets);
 
         // Build the assembly
         as.build();

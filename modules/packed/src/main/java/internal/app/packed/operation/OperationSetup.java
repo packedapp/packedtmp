@@ -32,8 +32,8 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationTemplate;
-import app.packed.util.Nullable;
 import app.packed.util.FunctionType;
+import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.BindingSetup;
@@ -119,6 +119,7 @@ public sealed abstract class OperationSetup {
     }
 
     public final MethodHandle generateMethodHandle() {
+        // Maybe have a check here instead, and specifically mention generateMethodHandle when calling
         bean.container.application.checkInCodegenPhase();
         MethodHandle mh = generatedMethodHandle;
         if (mh == null) {
@@ -133,6 +134,8 @@ public sealed abstract class OperationSetup {
 
     /** {@return a new mirror.} */
     public final OperationMirror mirror() {
+      //  debug();
+       // new Exception().printStackTrace();
         OperationMirror mirror = ClassUtil.mirrorHelper(OperationMirror.class, OperationMirror::new, mirrorSupplier);
 
         // Initialize OperationMirror by calling OperationMirror#initialize(OperationSetup)

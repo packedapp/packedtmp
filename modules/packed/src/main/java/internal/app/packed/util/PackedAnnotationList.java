@@ -52,7 +52,7 @@ public record PackedAnnotationList(Annotation... annotations) implements Annotat
 
     /** {@inheritDoc} */
     @Override
-    public boolean containsType(Class<? extends Annotation> annotationClass) {
+    public boolean isPresent(Class<? extends Annotation> annotationClass) {
         for (Annotation annotation : annotations) {
             if (annotation.annotationType() == annotationClass) {
                 return true;
@@ -62,7 +62,7 @@ public record PackedAnnotationList(Annotation... annotations) implements Annotat
     }
 
     @Override
-    public boolean contains(Annotation annotation) {
+    public boolean isPresent(Annotation annotation) {
         requireNonNull(annotation, "annotation is null");
         for (Annotation annotation2 : annotations) {
             if (annotation2.equals(annotation)) {

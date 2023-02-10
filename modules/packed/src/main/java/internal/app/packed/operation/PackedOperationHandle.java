@@ -27,13 +27,13 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
-import app.packed.operation.OperationTemplate;
-import app.packed.util.FunctionType;
-import internal.app.packed.bean.PackedBindableVariable;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.FunctionType;
+import internal.app.packed.bean.PackedBindableVariable;
 
 /**
  * An operation handle is direct reference to an underlying method, constructor, field, or similar low-level operation.
@@ -89,7 +89,7 @@ public final record PackedOperationHandle(OperationSetup operation) implements O
     /** {@inheritDoc} */
     @Override
     public OperationTarget target() {
-        return (OperationTarget) operation;
+        return operation.target();
     }
 
     /** {@inheritDoc} */

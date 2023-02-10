@@ -15,6 +15,8 @@
  */
 package internal.app.packed.operation;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -73,6 +75,7 @@ class OperationCodeGenerator {
     }
 
     private MethodHandle provide(MethodHandle mh, BindingResolution p) {
+        requireNonNull(p);
         if (p instanceof FromConstant c) {
             return MethodHandles.insertArguments(mh, permuters.size(), c.constant());
         } else if (p instanceof FromCodeGenerated g) {

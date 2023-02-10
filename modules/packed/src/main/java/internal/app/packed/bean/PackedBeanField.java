@@ -55,39 +55,41 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
     /** The annotated type of the field. */
     private final AnnotatedType annotatedType;
 
-    /** Annotations on the member. */
-    private final PackedAnnotationList annotations;
-
     /** The extension that can create new operations from the member. */
     private final BeanScannerExtension extension;
 
     /** The member. */
     private final Field field;
 
+    /** Annotations on the member. */
+    private final PackedAnnotationList fieldAnnotations;
+
     /** Hooks on the field */
     private final PackedAnnotationList hooks;
 
-    PackedBeanField(BeanReflector scanner, Field field, PackedAnnotationList annotations, PackedAnnotationList hooks,
-            HookOnFieldAnnotation... annotatedFields) {
-        this.extension = scanner.computeContributor(annotatedFields[0].extensionType());
+    // Field, FieldAnnotations, Type, TypeAnnotations
+    PackedBeanField(BeanReflector scanner, Field field, AnnotatedType annotatedType, PackedAnnotationList fieldAnnotations,
+            PackedAnnotationList hookAnnotations, HookOnFieldAnnotation... hooks) {
+        this.extension = scanner.computeContributor(hooks[0].extensionType());
         this.field = field;
-        this.annotations = annotations;
+        this.fieldAnnotations = fieldAnnotations;
+        this.annotatedType = annotatedType;
+
         boolean allowGet = extension.hasFullAccess();
         boolean allowSet = extension.hasFullAccess();
-        for (HookOnFieldAnnotation annotatedField : annotatedFields) {
+        for (HookOnFieldAnnotation annotatedField : hooks) {
             allowGet |= annotatedField.isGettable();
             allowSet |= annotatedField.isSettable();
         }
         this.allowGet = allowGet;
         this.allowSet = allowSet;
-        this.hooks = hooks;
-        this.annotatedType = field.getAnnotatedType(); // TODO take as parameter
+        this.hooks = hookAnnotations;
     }
 
     /** {@return a list of annotations on the member.} */
     @Override
     public AnnotationList annotations() {
-        return annotations;
+        return fieldAnnotations;
     }
 
     /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */
@@ -121,6 +123,7 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
         checkConfigurable();
         MethodHandle mh = extension.scanner.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
+        template = template.withReturnType(field.getType());
         return newOperation(template, mh, accessMode);
     }
 
@@ -134,8 +137,8 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
     }
 
     private PackedOperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
-        template = template.withReturnType(field.getType());
-        OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, FunctionType.fromField(field, accessMode), template,
+        FunctionType ft = FunctionType.fromField(field, accessMode);
+        OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, ft, template,
                 new OperationFieldTarget(field, accessMode), mh);
         extension.scanner.unBoundOperations.add(operation);
         extension.scanner.bean.operations.add(operation);

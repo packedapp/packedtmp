@@ -143,7 +143,7 @@ public sealed interface BeanElement permits BeanClass, BeanField, BeanConstructo
     /**
      * This class represents a {@link Field} on a bean.
      *
-     * @see BaseExtensionPoint.AnnotatedFieldHook
+     * @see app.packed.bean.BeanHook.AnnotatedFieldHook
      * @see BeanIntrospector#hookOnAnnotatedField(AnnotationList, BeanField)
      * @see BeanIntrospector#hookOnAnnotatedField(java.lang.annotation.Annotation, BeanField)
      *

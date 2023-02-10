@@ -18,7 +18,7 @@ package app.packed.util;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static testutil.assertj.Assertions.npe;
-import static testutil.util.TestMemberFinder.findField;
+import static testutil.util.MemberFinder.findField;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

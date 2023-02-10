@@ -24,7 +24,7 @@ import app.packed.util.Nullable;
 /**
  *
  */
-public record HookOnAnnotatedBinding(Class<? extends Extension<?>> extensionType) {
+record HookOnAnnotatedBinding(Class<? extends Extension<?>> extensionType) {
 
     /** A cache of field annotations. */
     private static final ClassValue<HookOnAnnotatedBinding> CACHE = new ClassValue<>() {

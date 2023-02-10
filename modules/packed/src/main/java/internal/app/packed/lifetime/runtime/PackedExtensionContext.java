@@ -22,6 +22,7 @@ import java.lang.invoke.MethodType;
 import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionContext;
+import app.packed.extension.InternalExtensionException;
 import internal.app.packed.util.LookupUtil;
 
 /**
@@ -66,10 +67,13 @@ public final /* primitive */ class PackedExtensionContext implements ExtensionCo
     }
 
     public Object read(int index) {
-//        Object value = store[index];
+        Object value = objects[index];
+        if (value == null) {
+            throw new InternalExtensionException("Bean with index " + index + " has not been initialized");
+        }
+        return value;
         // System.out.println("Reading index " + index + " value= " + value);
         // new Exception().printStackTrace();
-        return objects[index];
     }
 
     public void storeObject(int index, Object instance) {

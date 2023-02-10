@@ -237,7 +237,7 @@ public abstract class Key<T> {
      */
     public final boolean isQualifiedWith(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
-        return qualifiers.contains(qualifier);
+        return qualifiers.isPresent(qualifier);
     }
 
     /**
@@ -251,7 +251,7 @@ public abstract class Key<T> {
      */
     public final boolean isQualifiedWithType(Class<? extends Annotation> qualifierType) {
         requireNonNull(qualifierType, "qualifierType is null");
-        return qualifiers.containsType(qualifierType);
+        return qualifiers.isPresent(qualifierType);
     }
 
     /**
@@ -435,22 +435,8 @@ public abstract class Key<T> {
      */
     public final Key<T> withTag(String name) {
         requireNonNull(name, "name is null");
-
-        @SuppressWarnings("all")
-        class TaggedAnno implements Tag {
-
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return Tag.class;
-            }
-
-            @Override
-            public String value() {
-                return name;
-            }
-
-        }
-        return withQualifier(new TaggedAnno());
+        record TaggedAnno(Class<? extends Annotation> annotationType, String value) implements Tag {}
+        return withQualifier(new TaggedAnno(Tag.class, name));
     }
 
     public final <E> Key<E> withType(Class<E> type) {
@@ -606,7 +592,8 @@ public abstract class Key<T> {
         }
         // Har maaske nogle steder jeg hellere vil have IllegalArgumentException...
         // InjectExtension??? I think that's better...
-        throw new IllegalArgumentException("@" + StringFormatter.format(annotationType) + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
+        throw new IllegalArgumentException(
+                "@" + StringFormatter.format(annotationType) + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
     }
 
     private static PackedAnnotationList qualifiersConvert(Annotation[] annotations, Object source) {

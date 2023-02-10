@@ -36,14 +36,6 @@ import internal.app.packed.util.types.TypeUtil;
 
 // Vis ci skal supportere capture. Bliver vi noedt til at have <T> og en abstract klasse...
 
-// toKey(); <-- kunne bruges til fx wirelets
-// asKey();
-// Maybe just of(Variable v)
-
-// Concrete class extending TypeToken????
-// tror vi bliver noedt til at have specielle metoder for repeatable annotations
-// Syntes vi navngiver den som .
-
 /**
  *
  * @apiNote this interface retains the naming where possible from {@link Field}, {@link Parameter} and
@@ -54,28 +46,36 @@ public sealed interface Variable permits PackedVariable {
     /** {@return a list of annotations on the variable. */
     AnnotationList annotations();
 
+    /** {@return {@code true} if this variable has any annotations, otherwise false.} */
+    boolean isAnnotated();
+
+    default boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
+        return annotations().isPresent(annotationType);
+    }
+
     /**
-     * Returns the raw type (Class) of the variable.
+     * Returns the raw type (Class) of this variable.
      *
-     * @return the raw type of the variable
-     *
-     * @see Field#getType()
-     * @see Parameter#getType()
-     * @see Method#getReturnType()
-     * @see ParameterizedType#getRawType()
+     * @return the raw type of this variable
      */
     default Class<?> rawType() {
         return TypeUtil.rawTypeOf(type());
     }
 
+    /** {@return the type of this variable.} */
     Type type();
 
-    default boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
-        return annotations().containsType(annotationType);
-    }
-
-    static Variable of(Class<?> clazz) {
-        return PackedVariable.ofRaw(clazz);
+    /**
+     * Returns a variable from the return type of the specified executable.
+     *
+     * @param executable
+     *            the executable to return a variable from
+     * @return the variable
+     *
+     * @see Executable#getAnnotatedReturnType()
+     */
+    static Variable fromExecutableReturnType(Executable executable) {
+        return PackedVariable.of(executable.getAnnotatedReturnType());
     }
 
     /**
@@ -92,19 +92,6 @@ public sealed interface Variable permits PackedVariable {
     }
 
     /**
-     * Returns a variable from the return type of the specified executable.
-     *
-     * @param executable
-     *            the executable to return a variable from
-     * @return the variable
-     *
-     * @see Executable#getAnnotatedReturnType()
-     */
-    static Variable fromExecutableReturnType(Executable executable) {
-        return PackedVariable.of(executable.getAnnotatedReturnType());
-    }
-
-    /**
      * Returns a variable representing the specified parameter.
      *
      * @param parameter
@@ -113,6 +100,10 @@ public sealed interface Variable permits PackedVariable {
      */
     static Variable fromParameter(Parameter parameter) {
         return PackedVariable.of(parameter.getAnnotatedType());
+    }
+
+    static Variable of(Class<?> clazz) {
+        return PackedVariable.ofRaw(clazz);
     }
 
 //    // Do we really want to support type variables??? I don't think so

@@ -116,7 +116,7 @@ public final class ApplicationSetup {
      */
     public void checkInCodegenPhase() {
         if (phase != ApplicationBuildPhase.CODEGEN) {
-            throw new IllegalStateException("In state " + phase);
+            throw new IllegalStateException("This method can only called in the codegenerating phase, current state = " + phase);
         }
     }
 

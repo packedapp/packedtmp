@@ -18,7 +18,7 @@ package testutil.stubs;
 import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static testutil.util.TestMemberFinder.findField;
+import static testutil.util.MemberFinder.findField;
 
 import java.lang.reflect.Field;
 

@@ -16,6 +16,7 @@
 package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -45,6 +46,7 @@ class FieldScan {
 
     static void introspectField(BeanReflector scanner, Field field) {
         Annotation[] annotations = field.getAnnotations();
+        AnnotatedType at = field.getAnnotatedType();
         PackedAnnotationList annos = new PackedAnnotationList(annotations);
 
         switch (annotations.length) {
@@ -55,7 +57,7 @@ class FieldScan {
             HookOnFieldAnnotation hook = HookOnFieldAnnotation.find(a.annotationType());
             if (hook != null) {
                 bindingsCheckNoHooks(scanner, field, a);
-                new PackedBeanField(scanner, field, annos, annos, hook).onHook();
+                new PackedBeanField(scanner, field, at, annos, annos, hook).onHook();
                 return;
             }
         }
@@ -67,17 +69,18 @@ class FieldScan {
             if (hook0 != null) {
                 bindingsCheckNoHooks(scanner, field, a0);
                 if (hook1 == null) {
-                    match1(scanner, field, annos, hook0, new PackedAnnotationList(a0));
+                    new PackedBeanField(scanner, field, at, annos, new PackedAnnotationList(a0), hook0).onHook();
                 } else if (hook0.extensionType() == hook1.extensionType()) {
-                    new PackedBeanField(scanner, field, annos, new PackedAnnotationList(a0, a1), hook0, hook1).onHook();
+                    new PackedBeanField(scanner, field, at, annos, new PackedAnnotationList(a0, a1), hook0, hook1).onHook();
                 } else {
-                    match1(scanner, field, annos, hook0, new PackedAnnotationList(a0));
-                    match1(scanner, field, annos, hook1, new PackedAnnotationList(a1));
+                    // TODO sort
+                    new PackedBeanField(scanner, field, at, annos, new PackedAnnotationList(a0), hook0).onHook();
+                    new PackedBeanField(scanner, field, at, annos, new PackedAnnotationList(a1), hook1).onHook();
                 }
                 return;
             } else if (hook1 != null) {
                 bindingsCheckNoHooks(scanner, field, a1);
-                match1(scanner, field, annos, hook1, new PackedAnnotationList(a1));
+                new PackedBeanField(scanner, field, at, annos, new PackedAnnotationList(a1), hook1).onHook();
                 return;
             }
         }
@@ -86,6 +89,7 @@ class FieldScan {
             // I think we want deterministic order
             // But if we want that we need to look up the ExtensionSetup. Because we have speciel sort
             // for extensions with same canonical name from different class loaders
+            // But wait with the sort. Maybe we have queues and then sort somewhere else
             Annotation a = null;
             Map<Class<? extends Extension<?>>, List<Pair>> map = new IdentityHashMap<>();
             for (Annotation annotation : annotations) {
@@ -114,7 +118,7 @@ class FieldScan {
                     ha[i] = p.af;
                     hooks[i] = p.a;
                 }
-                new PackedBeanField(scanner, field, annos, new PackedAnnotationList(hooks), ha).onHook();
+                new PackedBeanField(scanner, field, at, annos, new PackedAnnotationList(hooks), ha).onHook();
             }
             return;
         }
@@ -122,20 +126,21 @@ class FieldScan {
 
         // There were no field hook annotations, let's see if we have any binding annotations.
         HookOnAnnotatedBinding b = null;
-        for (Annotation a : field.getAnnotatedType().getAnnotations()) {
+        for (Annotation a : at.getAnnotations()) {
             HookOnAnnotatedBinding bb = HookOnAnnotatedBinding.find(a.annotationType());
             if (b != null) {
-                throw new BeanInstallationException("sdsd");
+                throw new BeanInstallationException("Can only have 1 binding annotation");
             }
             b = bb;
         }
         if (b == null) {
         }
 
-        // Jeg tror bare vi skal lave en operation...
-    }
+        //BeanScannerExtension e = scanner.computeContributor(b.extensionType());
 
-    static void match1(BeanReflector scanner, Field field, PackedAnnotationList fieldAnnotations, HookOnFieldAnnotation hook, PackedAnnotationList hooks) {
-        new PackedBeanField(scanner, field, fieldAnnotations, hooks, hook).onHook();
+        // Skal vi lave operationen med det samme?
+        // Eller foerst naar vi binder?
+
+        // Jeg tror bare vi skal lave en operation...
     }
 }

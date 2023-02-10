@@ -66,11 +66,6 @@ public class BindingMirror implements Mirror {
         return binding().kind();
     }
 
-    /** {@return the dependencies this binding introduces.} */
-    DependenciesMirror dependencies() {
-        throw new UnsupportedOperationException();
-    }
-
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
@@ -124,6 +119,11 @@ public class BindingMirror implements Mirror {
     /** {@return the x who created binding.} */
     public final Realm zBoundBy() {
         return binding().boundBy;
+    }
+
+    /** {@return the dependencies this binding introduces.} */
+    DependenciesMirror zDependencies() {
+        throw new UnsupportedOperationException();
     }
 
     /**

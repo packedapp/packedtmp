@@ -27,13 +27,13 @@ import java.util.TreeSet;
 import app.packed.application.BuildException;
 import app.packed.application.BuildGoal;
 import app.packed.container.AbstractComposer.ComposerAssembly;
-import app.packed.util.Nullable;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.BuildableAssembly;
 import app.packed.container.DelegatingAssembly;
 import app.packed.container.Realm;
 import app.packed.container.Wirelet;
+import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationDriver;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanOwner;
@@ -104,9 +104,10 @@ public final class AssemblySetup implements BeanOwner {
      * @param wirelets
      *            optional wirelets
      */
-    public AssemblySetup(@Nullable ApplicationDriver<?> applicationDriver, @Nullable BuildGoal goal, @Nullable PackedContainerInstaller installer,
+    public AssemblySetup(@Nullable ApplicationDriver<?> applicationDriver, BuildGoal goal, @Nullable PackedContainerInstaller installer,
             Assembly assembly, Wirelet[] wirelets) {
         // We need to unpack any delegating assemblies
+        requireNonNull(goal);
         Assembly a = requireNonNull(assembly, "assembly is null");
         if (a instanceof DelegatingAssembly) {
             int attempts = 100;

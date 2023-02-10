@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static testutil.stubs.TypeStubs.LIST_STRING;
 import static testutil.stubs.TypeStubs.LIST_WILDCARD;
-import static testutil.util.TestMemberFinder.findField;
+import static testutil.util.MemberFinder.findField;
 
 import java.lang.reflect.Type;
 import java.util.List;

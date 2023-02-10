@@ -171,6 +171,10 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
          */
         int exactIndex() default -1;
     }
+
+    public enum FieldAccessKind {
+        GET, SET, COMPARE_AND_SET, COMPARE_AND_EXCHANGE, GET_AND_UPDATE;
+    }
 }
 //
 //// 3 choices?

@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.NoSuchElementException;
 
 import app.packed.extension.Extension;
-import app.packed.util.Nullable;
 import internal.app.packed.util.types.ClassUtil;
 
 // Registrant
@@ -29,13 +28,29 @@ public /* primitive */ final class Realm {
     /** The application realm. */
     private static final Realm APPLICATION = new Realm(Extension.class);
 
+    /** Interned realm. */
+    // Until we get primitives in which case it is always interned
+    static final ClassValue<Realm> INTERNED = new ClassValue<Realm>() {
+
+        @Override
+        protected Realm computeValue(Class<?> extensionClass) {
+            ClassUtil.checkProperSubclass(Extension.class, extensionClass, "extensionClass");
+            return new Realm(extensionClass);
+        }
+    };
+
     /** The extension the realms represents. Or {@code app.packed.extension.Extension} for the application realm. */
     @SuppressWarnings("rawtypes")
-    @Nullable
     private final Class extensionClass;
 
     private Realm(@SuppressWarnings("rawtypes") Class extensionClass) {
-        this.extensionClass = extensionClass;
+        this.extensionClass = requireNonNull(extensionClass);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        return obj == this;
     }
 
     @SuppressWarnings("unchecked")
@@ -44,6 +59,11 @@ public /* primitive */ final class Realm {
             throw new NoSuchElementException("Cannot call this method on the application realm");
         }
         return extensionClass;
+    }
+
+    @Override
+    public int hashCode() {
+        return extensionClass.hashCode();
     }
 
     /** {@return true if this realm represents the application realm, otherwise false.} */
@@ -81,7 +101,6 @@ public /* primitive */ final class Realm {
      *             if the specified class is not a proper subclass of Extension
      */
     public static Realm extension(Class<? extends Extension<?>> extensionClass) {
-        ClassUtil.checkProperSubclass(Extension.class, extensionClass, "extensionClass");
-        return new Realm(extensionClass);
+        return INTERNED.get(extensionClass);
     }
 }
