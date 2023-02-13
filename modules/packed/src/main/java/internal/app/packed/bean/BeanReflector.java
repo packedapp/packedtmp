@@ -31,16 +31,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
-import java.util.Map;
 
-import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InaccessibleBeanMemberException;
+import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
-import app.packed.operation.OperationTemplate;
+import app.packed.extension.OperationTemplate;
 import app.packed.util.FunctionType;
-import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.framework.devtools.PackedDevToolsIntegration;
@@ -69,21 +67,11 @@ public final class BeanReflector {
 
     private final OpenClass accessor;
 
-    @Nullable
-    public Map<Class<?>, Object> attachments;
-
     /** The bean that is being reflected upon. */
     public final BeanSetup bean;
 
     /** The bean class. */
     public final Class<?> beanClass;
-
-    /**
-     * A special bean introspector for bean's owner Non-null if a introspector was set via
-     * {@link BeanHandle.BeanInstaller#introspectWith(BeanIntrospector)}.
-     */
-    @Nullable
-    private final BeanIntrospector beanIntrospector;
 
     final Lookup customLookup;
 
@@ -96,15 +84,13 @@ public final class BeanReflector {
 
     public final ArrayDeque<OperationSetup> unBoundOperations = new ArrayDeque<>();
 
-    BeanReflector(BeanSetup bean, @Nullable BeanIntrospector beanIntrospector, @Nullable Map<Class<?>, Object> attachments) {
+    BeanReflector(BeanSetup bean) {
         this.bean = bean;
         this.beanClass = bean.beanClass;
         this.customLookup = bean.container.assembly.customLookup;
         this.hookModel = bean.container.assembly.model.hookModel;
-        this.beanIntrospector = beanIntrospector;
         this.accessor = new OpenClass(MethodHandles.lookup());
         // We need to make a copy of attachments, as the the map may be updated in the BeanInstaller
-        this.attachments = attachments == null ? null : new HashMap<>(attachments);
     }
 
     /**
@@ -117,10 +103,8 @@ public final class BeanReflector {
             // Get the extension (installing it if necessary)
             ExtensionSetup extension = bean.container.useExtension(extensionType, null);
 
-            // if a special bean introspected has been set from the extension that is installing the bean
-            // Use this bean introspector, otherwise create a new one
-            boolean useCustom = bean.installedBy.extensionType == extensionType && beanIntrospector != null;
-            BeanIntrospector introspector = useCustom ? beanIntrospector : extension.newBeanIntrospector();
+            // Create a new introspector
+            BeanIntrospector introspector = extension.newBeanIntrospector();
 
             BeanScannerExtension bse = new BeanScannerExtension(this, extension, introspector);
 

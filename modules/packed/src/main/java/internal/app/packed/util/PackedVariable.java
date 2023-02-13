@@ -34,6 +34,10 @@ public record PackedVariable(PackedAnnotationList annotations, Type type) implem
         return new PackedVariable(new PackedAnnotationList(type.getAnnotations()), type.getType());
     }
 
+    public static PackedVariable ofType(Type type) {
+        return new PackedVariable(PackedAnnotationList.EMPTY, type);
+    }
+
     public static PackedVariable ofRaw(Class<?> clazz) {
         return new PackedVariable(PackedAnnotationList.EMPTY, clazz);
     }

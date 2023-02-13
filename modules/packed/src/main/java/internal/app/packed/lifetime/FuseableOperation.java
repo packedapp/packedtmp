@@ -21,9 +21,9 @@ import java.lang.invoke.MethodHandle;
 import java.util.ArrayDeque;
 import java.util.List;
 
-import app.packed.operation.OperationTemplate;
+import app.packed.extension.OperationHandle;
+import app.packed.extension.OperationTemplate;
 import app.packed.util.Nullable;
-import app.packed.operation.OperationHandle;
 
 /**
  *

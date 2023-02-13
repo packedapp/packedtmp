@@ -15,8 +15,8 @@
  */
 package app.packed.concurrent;
 
-import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.context.Context;
+import app.packed.extension.BeanHook.BindingTypeHook;
 
 /**
  *

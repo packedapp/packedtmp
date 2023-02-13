@@ -29,6 +29,8 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
+import app.packed.extension.OperationHandle;
+import app.packed.extension.OperationTemplate;
 import app.packed.util.FunctionType;
 import tools.AnnoOnField.InstanceField;
 import tools.H;

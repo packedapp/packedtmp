@@ -15,13 +15,16 @@
  */
 package app.packed.concurrent.scheduling;
 
+import app.packed.extension.DelegatingOperationHandle;
 import app.packed.extension.ExtensionPoint;
-import app.packed.operation.OperationHandle;
+import app.packed.extension.OperationHandle;
 
 /**
  *
  */
 public class SchedulingExtensionPoint extends ExtensionPoint<SchedulingExtension> {
+
+    /** No s. */
     SchedulingExtensionPoint() {}
 
     /**
@@ -31,9 +34,9 @@ public class SchedulingExtensionPoint extends ExtensionPoint<SchedulingExtension
      *            the operation to schedule
      * @return a configuration object
      */
-    // Maybe it is initially empty schedule
-    public ScheduledOperationConfiguration schedule(OperationHandle operation) {
-        ScheduledOperationConfiguration p = new ScheduledOperationConfiguration(null, operation);
+    public ScheduledOperationConfiguration schedule(DelegatingOperationHandle handle) {
+        OperationHandle oh = handle.newOperation(SchedulingExtension.SOT, context());
+        ScheduledOperationConfiguration p = new ScheduledOperationConfiguration(null, oh);
         extension().ops.add(p);
         return p;
     }

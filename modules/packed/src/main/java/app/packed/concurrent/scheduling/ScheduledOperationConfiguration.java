@@ -18,8 +18,8 @@ package app.packed.concurrent.scheduling;
 import java.time.Duration;
 
 import app.packed.concurrent.scheduling.SchedulingExtension.FinalSchedule;
+import app.packed.extension.OperationHandle;
 import app.packed.operation.OperationConfiguration;
-import app.packed.operation.OperationHandle;
 import app.packed.util.Nullable;
 
 /**

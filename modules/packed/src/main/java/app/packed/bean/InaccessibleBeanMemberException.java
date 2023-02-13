@@ -20,8 +20,9 @@ package app.packed.bean;
  * or more members (constructor, field or method) of the bean.
  * <p>
  * In order to make the bean's member accessible, the right access must be provided to the framework. This can be done
- * either by opening the package in which the bean is located to {@code app.packed} using a module descriptor. Or by
- * specifying a lookup object using {@link BuildableAssembly#lookup(Lookup)} or {@link AbstractComposer#lookup(Lookup)}.
+ * either by opening the package in which the bean is located to {@value app.packed.util.FrameworkNames#BASE_MODULE}
+ * using a module descriptor. Or by specifying a lookup object using {@link BuildableAssembly#lookup(Lookup)} or
+ * {@link AbstractComposer#lookup(Lookup)}.
  * <p>
  * If an extension tries to install one of its own beans without sufficient access, {@link InternalExtensionException}
  * is thrown instead.

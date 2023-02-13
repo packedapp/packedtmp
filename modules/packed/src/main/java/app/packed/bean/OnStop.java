@@ -22,8 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.extension.BaseExtension;
+import app.packed.extension.BeanHook.AnnotatedMethodHook;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
@@ -38,6 +38,14 @@ import app.packed.extension.BaseExtension;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @AnnotatedMethodHook(allowInvoke = true, extension = BaseExtension.class)
+
+// Some examples:
+// https://stackoverflow.com/questions/26547532/how-to-shutdown-a-spring-boot-application-in-a-correct-way
+//https://www.smilecdr.com/our-blog/the-pros-and-cons-of-spring-smartlifecycle
+
+// Channels -> Notification: Notifiers friends and families about the pending shutdown
+// Do the actual shutdown
+// Notifaction again: Shit has been shutdown
 public @interface OnStop {
 
     boolean fork() default false;

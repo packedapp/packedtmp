@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.bean.BeanMirror;
 import app.packed.bindings.BindingMirror;
 import app.packed.bindings.mirror.DependenciesMirror;
@@ -33,6 +32,7 @@ import app.packed.context.ContextMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.MirrorExtension;
+import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.util.FunctionType;
 import app.packed.util.Key;

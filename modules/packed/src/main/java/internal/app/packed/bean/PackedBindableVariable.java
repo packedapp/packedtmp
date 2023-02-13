@@ -24,12 +24,12 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanInstallationException;
-import app.packed.bean.BeanVariable;
 import app.packed.bindings.BindingMirror;
+import app.packed.extension.BeanVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
+import app.packed.extension.OperationTemplate;
 import app.packed.operation.Op;
-import app.packed.operation.OperationTemplate;
 import app.packed.util.AnnotationList;
 import app.packed.util.Key;
 import app.packed.util.Nullable;

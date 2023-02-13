@@ -15,7 +15,7 @@
  */
 package internal.app.packed.bean;
 
-import app.packed.operation.OperationHandle;
+import app.packed.extension.OperationHandle;
 
 public record BeanLifecycleOperation(BeanLifecycleOrder runOrder, OperationHandle handle) implements Comparable<BeanLifecycleOperation> {
 

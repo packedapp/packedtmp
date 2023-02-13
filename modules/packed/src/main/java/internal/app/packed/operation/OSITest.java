@@ -21,12 +21,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.time.LocalDateTime;
 
 import app.packed.application.App;
-import app.packed.bean.BeanHook.AnnotatedBindingHook;
-import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanVariable;
 import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
+import app.packed.extension.BeanIntrospector;
+import app.packed.extension.BeanVariable;
 import app.packed.extension.Extension;
+import app.packed.extension.BeanHook.AnnotatedBindingHook;
 import app.packed.operation.Op0;
 import app.packed.operation.Op1;
 

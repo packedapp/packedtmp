@@ -17,28 +17,27 @@ package internal.app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.IdentityHashMap;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstallationException;
-import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bindings.Provider;
 import app.packed.extension.BaseExtensionPoint;
+import app.packed.extension.BeanHandle;
+import app.packed.extension.BeanLifetimeTemplate;
+import app.packed.extension.BeanLocal;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.extension.InternalExtensionException;
-import app.packed.lifetime.BeanLifetimeTemplate;
-import app.packed.operation.OperationTemplate;
+import app.packed.extension.OperationTemplate;
+import app.packed.operation.Op;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import app.packed.operation.Op;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ContainerSetup.BeanClassKey;
 import internal.app.packed.container.ExtensionSetup;
@@ -55,18 +54,13 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
     // Allign with Key
     static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
 
-    @Nullable
-    Map<Class<?>, Object> attachments;
+    final IdentityHashMap<PackedBeanLocal<?>, Object> locals = new IdentityHashMap<>();
 
     /** The container the bean is being installed into. */
     final ContainerSetup container;
 
     /** The extension that is installing the bean */
     final ExtensionSetup installingExtension;
-
-    /** An introspector that is specifically configured for this bean instance. */
-    @Nullable
-    BeanIntrospector introspector;
 
     boolean multiInstall;
 
@@ -99,22 +93,6 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
         this.installingExtension = requireNonNull(installingExtension);
         this.owner = requireNonNull(owner);
         this.template = (PackedBeanLifetimeTemplate) requireNonNull(template, "template is null");
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <A> BeanInstaller attach(Class<A> attachmentType, A attachment) {
-        requireNonNull(attachmentType, "attachmentType is null");
-        requireNonNull(attachment, "attachment is null");
-        if (!attachmentType.isInstance(attachment)) {
-            throw new IllegalArgumentException("The specified attachement is not an instance of " + attachmentType);
-        }
-        Map<Class<?>, Object> a = attachments;
-        if (a == null) {
-            a = attachments = HashMap.newHashMap(1);
-        }
-        a.put(attachmentType, attachment);
-        return this;
     }
 
     /** {@inheritDoc} */
@@ -168,13 +146,6 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
             throw new InternalExtensionException("Only static beans can be source less");
         }
         return newBean(void.class, BeanSourceKind.NONE, null);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanInstaller introspectWith(BeanIntrospector introspector) {
-        this.introspector = requireNonNull(introspector, "introspector is null");
-        return this;
     }
 
     /** {@inheritDoc} */
@@ -287,7 +258,7 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
 
         // Scan the bean class for annotations unless the bean class is void
         if (sourceKind != BeanSourceKind.NONE) {
-            new BeanReflector(bean, introspector, attachments).introspect();
+            new BeanReflector(bean).introspect();
         }
 
         // Bean was successfully created, add it to the container
@@ -319,5 +290,12 @@ public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstall
 
     static class MuInst {
         int counter;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> BeanInstaller setLocal(BeanLocal<T> local, T value) {
+        locals.put((PackedBeanLocal<?>) local, value);
+        return this;
     }
 }

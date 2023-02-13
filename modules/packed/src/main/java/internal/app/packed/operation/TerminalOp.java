@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
-import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
+import app.packed.extension.OperationTemplate;
 import app.packed.util.FunctionType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;

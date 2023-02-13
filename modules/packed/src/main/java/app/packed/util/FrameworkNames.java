@@ -38,6 +38,7 @@ public final class FrameworkNames {
     /** The name of the devtools module. */
     public static final String DEVTOOLS_MODULE = "app.packed.devtools";
 
+    /** The name of the framework. */
     static final String FRAMEWORK = "Packed";
 
     static final String WEB_MODULE = "app.packed.web";

@@ -24,11 +24,11 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import app.packed.bean.BeanElement.BeanField;
-import app.packed.bean.BeanHook.AnnotatedFieldHook;
 import app.packed.extension.Extension;
-import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
+import app.packed.extension.OperationHandle;
+import app.packed.extension.OperationTemplate;
+import app.packed.extension.BeanElement.BeanField;
+import app.packed.extension.BeanHook.AnnotatedFieldHook;
 import app.packed.util.AnnotationList;
 import app.packed.util.FunctionType;
 import app.packed.util.Nullable;

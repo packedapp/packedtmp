@@ -20,8 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.extension.BaseExtension;
+import app.packed.extension.BeanHook.AnnotatedMethodHook;
 
 /**
  * Indicates that the annotated method should be executed as part of the target bean's initialization.
@@ -32,17 +32,19 @@ import app.packed.extension.BaseExtension;
  * example, a method on a component instance can have the container in which it is registered injected:
  *
  * <pre>{@code  @OnInitialize
- * public void onInit(Container container) {
- *   System.out.println("This component is registered with " + container.getName());
+ * public void onInit() {
+ *   System.out.println("This bean is being initialized");
  * }}
  * </pre>
  * <p>
- * If a method annotated with {@code @OnInitialize} throws an exception. The initialization of the bean will fail.
- * Depending on the type of bean this might result in the bean's container being shutdown.
+ * If a method annotated with {@code @OnInitialize} throws an exception the bean will fail to be put into service.
+ * Depending on the type of bean this might result in the bean's container not being initializable.
  * <p>
  * Methods (or fields) annotated with {@link Inject} are always executed before methods annotated with
- * {@code OnInitialize}. And the two annotation should be placed on the same method. As this would mean the method would
- * be invoked twice, once in the bean's <b>injection</b> phase and once in the bean's <b>initialization</b> phase.
+ * {@code OnInitialize} (on the same bean).
+ * <p>
+ * If this annotation is used on bean that does not have a lifecycle {@link UnavailableLifecycleException} being thrown
+ * when installing the bean.
  *
  * @see Inject
  * @see OnStart

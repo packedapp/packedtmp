@@ -2,6 +2,7 @@ package internal.app.packed.lifetime;
 
 import java.util.List;
 
+import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.util.Nullable;
 
@@ -21,7 +22,9 @@ import app.packed.util.Nullable;
 //Application.Lazy -> launcher
 //Application.Many -> image
 
-public abstract sealed interface LifetimeSetup permits ContainerLifetimeSetup, BeanLifetimeSetup {
+public sealed interface LifetimeSetup permits ContainerLifetimeSetup, BeanLifetimeSetup {
+
+    LifetimeKind lifetimeKind();
 
     List<FuseableOperation> lifetimes();
 

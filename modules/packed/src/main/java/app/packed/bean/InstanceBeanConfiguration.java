@@ -18,6 +18,7 @@ package app.packed.bean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import app.packed.extension.BeanHandle;
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
 

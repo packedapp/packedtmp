@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -32,6 +33,14 @@ import internal.app.packed.util.PackedAnnotationList;
  */
 public sealed interface AnnotationList extends Iterable<Annotation> permits PackedAnnotationList {
 
+    default <T extends Annotation> void ifPresent(Class<T> annotationClass, Consumer<T> consumer) {
+        T t = readRequired(annotationClass);
+        consumer.accept(t);
+    }
+
+    /** {@return whether or not there are any annotations to read.} */
+    boolean isEmpty();
+
     /**
      * {@return {@code true} if this list contains the specified annotation}
      *
@@ -41,14 +50,6 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
     boolean isPresent(Annotation annotation);
 
     boolean isPresent(Class<? extends Annotation> annotationClass);
-
-    default <T extends Annotation> void ifPresent(Class<T> annotationClass, Consumer<T> consumer) {
-        T t = readRequired(annotationClass);
-        consumer.accept(t);
-    }
-
-    /** {@return whether or not there are any annotations to read.} */
-    boolean isEmpty();
 
     // Det er taenk
     Annotation[] readAnyOf(Class<?>... annotationTypes);
@@ -79,21 +80,70 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
 
     List<Annotation> toList();
 
+    /**
+     * Returns a list of annotations on the class.
+     *
+     * @param class
+     *            the class to return a list for
+     * @return a list of annotations on the class
+     * @see Class#getAnnotations()
+     */
+    static AnnotationList fromClass(Class<?> clazz) {
+        return fromSafe(clazz.getAnnotations());
+    }
+
+    /**
+     * Returns a list of annotations on the executable.
+     * <p>
+     * The returned list only includes annotations returned from {@link Executable#getAnnotations()}. Annotations that have
+     * only {@link java.lang.annotation.ElementType#TYPE_USE} in their target is not included.
+     *
+     * @param executable
+     *            the executable to return a list for
+     * @return a list of annotations on the executable
+     * @see Executable#getAnnotations()
+     */
+    static AnnotationList fromExecutable(Executable executable) {
+        return fromSafe(executable.getAnnotations());
+    }
+
+    /**
+     * Returns a list of annotations on the field.
+     * <p>
+     * The returned list only includes annotations returned from {@link Field#getAnnotations()}. Annotations that have only
+     * {@link java.lang.annotation.ElementType#TYPE_USE} in their target is not included.
+     *
+     * @param field
+     *            the field to return a list for
+     * @return a list of annotations on the field
+     * @see Field#getAnnotations()
+     */
+    static AnnotationList fromField(Field field) {
+        return fromSafe(field.getAnnotations());
+    }
+
+    /**
+     * Returns a list of annotations on the parameter.
+     * <p>
+     * The returned list only includes annotations returned from {@link Parameter#getAnnotations()}. Annotations that have
+     * only {@link java.lang.annotation.ElementType#TYPE_USE} in their target is not included.
+     *
+     * @param parameter
+     *            the parameter to return a list for
+     * @return a list of annotations on the parameter
+     * @see Parameter#getAnnotations()
+     */
+    static AnnotationList fromParameter(Parameter parameter) {
+        return fromSafe(parameter.getAnnotations());
+    }
+
+    private static AnnotationList fromSafe(Annotation[] annotations) {
+        return annotations.length == 0 ? of() : new PackedAnnotationList(annotations);
+    }
+
     /** {@return an empty annotation list.} */
     static AnnotationList of() {
         return PackedAnnotationList.EMPTY;
-    }
-
-    private static PackedAnnotationList maybeEmptySafe(Annotation[] annotations) {
-        return annotations.length == 0 ? PackedAnnotationList.EMPTY : new PackedAnnotationList(annotations);
-    }
-
-    static AnnotationList fromField(Field field) {
-        return maybeEmptySafe(field.getAnnotations());
-    }
-
-    static AnnotationList fromExecutable(Executable executable) {
-        return maybeEmptySafe(executable.getAnnotations());
     }
 
     static AnnotationList of(Annotation annotation) {

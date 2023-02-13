@@ -17,10 +17,10 @@ package app.packed.application;
 
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.extension.BeanHandle;
 import app.packed.service.ServiceContract;
 
 /**

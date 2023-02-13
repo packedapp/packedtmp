@@ -15,13 +15,14 @@
  */
 package internal.app.packed.bean;
 
-import app.packed.bean.BeanIntrospector;
+import app.packed.extension.BeanIntrospector;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
  * An instance of this class is created per extension that participates in the introspection. The main purpose of the
  * class is to make sure that the extension points to the same bean introspector for the whole of the introspection.
  */
+// Convert to Record
 public final class BeanScannerExtension implements Comparable<BeanScannerExtension> {
 
     /** The actual extension. */

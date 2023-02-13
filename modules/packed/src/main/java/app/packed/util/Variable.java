@@ -102,14 +102,11 @@ public sealed interface Variable permits PackedVariable {
         return PackedVariable.of(parameter.getAnnotatedType());
     }
 
-    static Variable of(Class<?> clazz) {
-        return PackedVariable.ofRaw(clazz);
+    static Variable of(Type type) {
+        return PackedVariable.ofType(type);
     }
 
-//    // Do we really want to support type variables??? I don't think so
-//    // I think we want to
-//    // Just have a generic one that take type
-//    static Variable ofTypeVariable(TypeVariable<?> typeVariable) {
-//        return new PackedVariable(typeVariable, new PackedVariableType.OfTypeVariable(typeVariable));
-//    }
+    static Variable of(Type type, Annotation... annotations) {
+        return PackedVariable.ofType(type);
+    }
 }

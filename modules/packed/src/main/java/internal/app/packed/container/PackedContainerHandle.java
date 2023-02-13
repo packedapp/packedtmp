@@ -18,10 +18,10 @@ package internal.app.packed.container;
 import java.util.List;
 import java.util.Set;
 
-import app.packed.container.ContainerHandle;
 import app.packed.errorhandling.ErrorHandler;
+import app.packed.extension.ContainerHandle;
 import app.packed.extension.Extension;
-import app.packed.operation.OperationHandle;
+import app.packed.extension.OperationHandle;
 
 /** Implementation of {@link ContainerHandle}. */
 public record PackedContainerHandle(ContainerSetup container) implements ContainerHandle {

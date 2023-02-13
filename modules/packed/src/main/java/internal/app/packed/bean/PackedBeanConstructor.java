@@ -18,10 +18,10 @@ package internal.app.packed.bean;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 
-import app.packed.bean.BeanElement.BeanConstructor;
-import app.packed.operation.OperationTemplate;
 import app.packed.util.Key;
-import app.packed.operation.OperationHandle;
+import app.packed.extension.OperationHandle;
+import app.packed.extension.OperationTemplate;
+import app.packed.extension.BeanElement.BeanConstructor;
 
 /**
  *

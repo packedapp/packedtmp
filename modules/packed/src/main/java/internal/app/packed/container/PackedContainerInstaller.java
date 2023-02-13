@@ -20,12 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.util.HashMap;
 
 import app.packed.container.Assembly;
-import app.packed.container.ContainerHandle;
-import app.packed.container.ContainerInstaller;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
+import app.packed.extension.ContainerHandle;
+import app.packed.extension.ContainerInstaller;
+import app.packed.extension.ContainerLifetimeTemplate;
 import app.packed.extension.Extension;
-import app.packed.lifetime.ContainerLifetimeTemplate;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;

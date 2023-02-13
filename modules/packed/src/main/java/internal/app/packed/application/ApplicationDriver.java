@@ -20,9 +20,9 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.container.Wirelet;
+import app.packed.lifetime.LifetimeKind;
 import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
-import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
 
 /**
  *
@@ -40,5 +40,5 @@ public abstract class ApplicationDriver<A> {
     /**
      * @return
      */
-    public abstract OldLifetimeKind lifetimeKind();
+    public abstract LifetimeKind lifetimeKind();
 }

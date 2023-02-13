@@ -33,11 +33,10 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 
-import app.packed.bean.BeanElement;
-import app.packed.bean.BeanElement.BeanField;
-import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.bean.BeanVariable;
 import app.packed.bindings.Provider;
+import app.packed.extension.BeanVariable;
+import app.packed.extension.BeanElement.BeanField;
+import app.packed.extension.BeanElement.BeanMethod;
 import internal.app.packed.bean.PackedBeanField;
 import internal.app.packed.bean.PackedBeanMethod;
 import internal.app.packed.bean.PackedBindableVariable;
@@ -82,14 +81,14 @@ import internal.app.packed.util.types.Types;
  * <li>Be an {@link Class#isAnnotation() annotation interface}.</li>
  * <li>Be one of the following types: {@link Provider}, {@link Void}, {@link Key}, {@link Optional},
  * {@link OptionalInt}, {@link OptionalLong} or {@link OptionalDouble} as they are reserved types.</li>
- * <li>Contain {@link TypeVariable type variable}</li>
+ * <li>Contain any {@link TypeVariable type variables}</li>
  * </ul>
  *
- * Furthermore, the qualifier part of the key must not:
+ * Furthermore, the qualifier part of the key cannot have:
  * <ul>
- * <li>Have multiple qualifiers with the same {@link Annotation#annotationType() annotation type}.
- * <li>Have multiple qualifiers with the same {@link Class#getCanonicalName() canonical} name. (This can only happen if
- * a key uses qualifiers from different class loaders)
+ * <li>Multiple qualifiers of the same {@link Annotation#annotationType() annotation type}.
+ * <li>Multiple qualifiers with the same {@link Class#getCanonicalName() canonical} name. (This can only happen if a key
+ * uses qualifiers from different class loaders)
  * </ul>
  * These last two rules are in place in order to allow a canonical representation of keys with multiple qualifiers.
  * <p>
@@ -104,8 +103,8 @@ import internal.app.packed.util.types.Types;
  * example, that {@code new Key<Map<? extends String, ? super Long>>} is equivalent to {@code Key<Map<String, Long>>}.
  * This is done in order to avoid various <a href= "https://github.com/google/guice/issues/1282">issues</a> when
  * integrating with other JVM languages.</li>
- * <li>If there are multiple qualifiers on the key. They will be ordered lexically, first accordingling to their
- * {@link Class#getSimpleName()} and secondaly to {@link Class#getCanonicalName()}.</li>
+ * <li>If there are multiple qualifiers on the key. They will be ordered lexically, first according to their
+ * {@link Class#getSimpleName()} and secondary to their {@link Class#getCanonicalName()}.</li>
  * </ul>
  *
  * <p>
@@ -279,17 +278,17 @@ public abstract class Key<T> {
         return type == c && !isQualified();
     }
 
-    /** {@return the number of qualifiers on the key} */
+    /** {@return the number of qualifiers on this key} */
     public final int qualifierCount() {
         return qualifiers.size();
     }
 
-    /** {@return an annotation list of any qualifiers that are part of this key.} */
+    /** {@return a list of any qualifiers that are part of this key.} */
     public final AnnotationList qualifiers() {
         return qualifiers;
     }
 
-    /** {@return the raw type of the type part of this key.} */
+    /** {@return the raw type of this key.} */
     public final Class<?> rawType() {
         return TypeUtil.rawTypeOf(type);
     }
@@ -466,7 +465,11 @@ public abstract class Key<T> {
         return new CanonicalizedKey<>(convertType(type, null), qualifiers);
     }
 
-    public static Key<?> convert(Type type, Annotation[] annotations, boolean ignoreNonQualifyingAnnotations, Object source) {
+    static Key<?> convert(Object source, AnnotatedType type) {
+        return Key.convert(type.getType(), type.getAnnotations(), true, source);
+    }
+
+    private static Key<?> convert(Type type, Annotation[] annotations, boolean ignoreNonQualifyingAnnotations, Object source) {
         Type t = convertType(type, source);
         PackedAnnotationList apl;
         if (!ignoreNonQualifyingAnnotations) {
@@ -475,6 +478,16 @@ public abstract class Key<T> {
             apl = qualifiersConvert(annotations, source);
         }
         return new CanonicalizedKey<>(t, apl);
+    }
+
+    // How do we support adding qualifiers?
+    // Maybe it is a separate method
+
+    // If source == null we are creating the key directly (new Key<>(), or Off);
+    // And we filter non-qualifyign annotations instead of failing on the them
+
+    public static Key<?> convert(Type type, Annotation[] annotations, Object source) {
+        return Key.convert(type, annotations, true, source);
     }
 
     private static Type convertType(Type t, Object source) {
@@ -498,12 +511,6 @@ public abstract class Key<T> {
 
         // return t;
     }
-
-    // How do we support adding qualifiers?
-    // Maybe it is a separate method
-
-    // If source == null we are creating the key directly (new Key<>(), or Off);
-    // And we filter non-qualifyign annotations instead of failing on the them
 
     static Type convertType0(Object source, Type originalType, Type type) {
         requireNonNull(type, "type is null");
@@ -552,6 +559,11 @@ public abstract class Key<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> Key<T> fromClass(Class<T> clazz) {
+        return (Key<T>) convert(clazz, clazz.getAnnotations(), true, clazz);
+    }
+
     /**
      * @param field
      * @return
@@ -562,6 +574,27 @@ public abstract class Key<T> {
         requireNonNull(field, "field is null");
         PackedBeanField pbf = (PackedBeanField) field;
         return convert(pbf, pbf.annotatedType);
+    }
+
+    /**
+     * Returns a key matching the type of the specified field and any qualifiers that may be present on the field.
+     *
+     * @param field
+     *            the field to return a key for
+     * @return a key representing the type of the field and any qualifiers that may be present on the field
+     * @throws InvalidKeyException
+     *             if the field does not represent a valid key. For example, if the field's type is an optional type such as
+     *             {@link Optional} or {@link OptionalInt}.
+     * @see Field#getAnnotatedType()
+     */
+    public static Key<?> fromField(Field field) {
+        requireNonNull(field, "field is null");
+        return convert(field, field.getAnnotatedType());
+    }
+
+    public static Key<?> fromMethodReturnType(BeanMethod method) {
+        PackedBeanMethod pbm = (PackedBeanMethod) method;
+        return convert(pbm, pbm.method().getAnnotatedReturnType());
     }
 
     /**
@@ -581,43 +614,13 @@ public abstract class Key<T> {
         return convert(method.getGenericReturnType(), method.getAnnotations(), method);
     }
 
-    public static Key<?> fromMethodReturnType(BeanMethod method) {
-        PackedBeanMethod pbm = (PackedBeanMethod) method;
-        return convert(pbm, pbm.method().getAnnotatedReturnType());
-    }
-
-    static Key<?> convert(BeanElement source, AnnotatedType type) {
-        return Key.convert(type.getType(), type.getAnnotations(), true, source);
-    }
-
-    /**
-     * Returns a key matching the type of the specified field and any qualifiers that may be present on the field.
-     *
-     * @param field
-     *            the field to return a key for
-     * @return a key representing the type of the field and any qualifiers that may be present on the field
-     * @throws InvalidKeyException
-     *             if the field does not represent a valid key. For example, if the field's type is an optional type such as
-     *             {@link Optional} or {@link OptionalInt}.
-     * @see Field#getAnnotatedType()
-     */
-    public static Key<?> fromField(Field field) {
-        requireNonNull(field, "field is null");
-        return convert(field.getGenericType(), field.getAnnotations(), field);
-    }
-
-    public static Key<?> fromVariable(Variable variable) {
-        return convert(variable.type(), variable.annotations().toArray(), variable);
-    }
-
     public static Key<?> fromVariable(BeanVariable variable) {
         PackedBindableVariable v = (PackedBindableVariable) variable;
         return convert(v.variable().type(), v.variable().annotations().toArray(), v);
     }
 
-
-    public static Key<?> convert(Type type, Annotation[] annotations, Object source) {
-        return Key.convert(type, annotations, true, source);
+    public static Key<?> fromVariable(Variable variable) {
+        return convert(variable.type(), variable.annotations().toArray(), variable);
     }
 
     /**

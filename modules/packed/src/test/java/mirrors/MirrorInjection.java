@@ -25,7 +25,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanMirror;
 import app.packed.bindings.BindingKind;
@@ -34,9 +33,10 @@ import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Realm;
 import app.packed.extension.MirrorExtension;
-import app.packed.operation.OperationHandle;
+import app.packed.extension.OperationHandle;
+import app.packed.extension.OperationTemplate;
+import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationTemplate;
 import tools.H;
 
 /**

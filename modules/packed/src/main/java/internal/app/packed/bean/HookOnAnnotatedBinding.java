@@ -17,8 +17,8 @@ package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.bean.BeanHook.AnnotatedBindingHook;
 import app.packed.extension.Extension;
+import app.packed.extension.BeanHook.AnnotatedBindingHook;
 import app.packed.util.Nullable;
 
 /**

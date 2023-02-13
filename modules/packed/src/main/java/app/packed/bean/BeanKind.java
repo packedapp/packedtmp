@@ -5,6 +5,9 @@ package app.packed.bean;
  */
 public enum BeanKind {
 
+    // A bean processed by packed but whose run-state is not tracked by any extensions.
+    FOREIGN,
+
     /**
      * A container bean is a stateful bean with a single instance in the container in which it is registered
      * <p>

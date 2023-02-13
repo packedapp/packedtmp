@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.context.Context;
-import app.packed.context.ContextTemplate;
+import app.packed.extension.ContextTemplate;
 import app.packed.extension.Extension;
 import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.util.types.TypeVariableExtractor;
@@ -37,7 +37,7 @@ public record PackedContextTemplate(Class<? extends Extension<?>> extensionClass
     private final static ClassValue<Class<? extends Extension<?>>> TYPE_VARIABLE_EXTRACTOR = new ClassValue<>() {
 
         /** A type variable extractor. */
-        private static final TypeVariableExtractor EXTRACTOR = TypeVariableExtractor.of(ContextTemplate.class);
+        private static final TypeVariableExtractor EXTRACTOR = TypeVariableExtractor.of(Context.class);
 
         /** {@inheritDoc} */
         @Override

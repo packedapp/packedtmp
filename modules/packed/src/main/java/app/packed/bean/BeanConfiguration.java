@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.application.ApplicationPath;
 import app.packed.container.Realm;
+import app.packed.extension.BeanHandle;
 
 /** The configuration of a bean, typically returned from the installation site of a bean. */
 public class BeanConfiguration {

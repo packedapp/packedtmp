@@ -23,26 +23,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanWrappedVariable;
 import app.packed.concurrent.ThreadExtension;
 import app.packed.concurrent.scheduling.ScheduledOperationConfiguration.Schedule;
-import app.packed.context.ContextTemplate;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
+import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
-import app.packed.extension.ExtensionContext;
+import app.packed.extension.BeanIntrospector;
+import app.packed.extension.BeanWrappedVariable;
+import app.packed.extension.ContainerState;
+import app.packed.extension.ContextTemplate;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionPoint;
-import app.packed.operation.OperationTemplate;
-import app.packed.operation.OperationHandle;
+import app.packed.extension.OperationHandle;
+import app.packed.extension.OperationTemplate;
 
 /**
  *
  */
 @DependsOn(extensions = ThreadExtension.class)
 public class SchedulingExtension extends Extension<SchedulingExtension> {
+
+    /** A context template. */
+    static final ContextTemplate SCT = ContextTemplate.of(MethodHandles.lookup(), SchedulingContext.class, SchedulingContext.class);
+
+    static final OperationTemplate SOT = OperationTemplate.defaults().withContext(SCT).withReturnIgnore();
 
     List<ScheduledOperationConfiguration> ops = new ArrayList<>();
 
@@ -52,8 +57,17 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
     @Override
     protected BeanIntrospector newBeanIntrospector() {
         return new BeanIntrospector() {
-            static final ContextTemplate TEMP = ContextTemplate.of(MethodHandles.lookup(), SchedulingContext.class, SchedulingContext.class);
-            static final OperationTemplate BOT = OperationTemplate.defaults().withContext(TEMP).withReturnIgnore();
+
+            @Override
+            public void hookOnAnnotatedMethod(Annotation hook, BeanMethod on) {
+                if (hook instanceof ScheduleRecurrent sr) {
+                    OperationHandle oh = on.newOperation(SOT);
+                    oh.specializeMirror(() -> new ScheduledOperationMirror());
+                    ops.add(new ScheduledOperationConfiguration(new Schedule(Duration.ofMillis(sr.millies())), oh));
+                } else {
+                    super.hookOnAnnotatedMethod(hook, on);
+                }
+            }
 
             @Override
             public void hookOnVariableType(Class<?> hook, BeanWrappedVariable v) {
@@ -61,17 +75,6 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
                     v.bindInvocationArgument(1);
                 } else {
                     super.hookOnVariableType(hook, v);
-                }
-            }
-
-            @Override
-            public void hookOnAnnotatedMethod(Annotation hook, BeanMethod on) {
-                if (hook instanceof ScheduleRecurrent sr) {
-                    OperationHandle oh = on.newOperation(BOT);
-                    oh.specializeMirror(() -> new ScheduledOperationMirror());
-                    ops.add(new ScheduledOperationConfiguration(new Schedule(Duration.ofMillis(sr.millies())), oh));
-                } else {
-                    super.hookOnAnnotatedMethod(hook, on);
                 }
             }
         };
@@ -108,8 +111,8 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
     */
     static final class FinalSchedule {
 
-        final Schedule s;
         final MethodHandle callMe;
+        final Schedule s;
 
         FinalSchedule(Schedule s, MethodHandle callMe) {
             this.s = s;
@@ -121,7 +124,7 @@ public class SchedulingExtension extends Extension<SchedulingExtension> {
 
         final PackedVirtualThreadScheduler vts;
 
-        SchedulingBean(@CodeGenerated FinalSchedule[] mhs, ExtensionContext pec) {
+        SchedulingBean(@CodeGenerated FinalSchedule[] mhs, ContainerState pec) {
             this.vts = new PackedVirtualThreadScheduler(pec);
 
             for (FinalSchedule p : mhs) {

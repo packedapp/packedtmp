@@ -17,8 +17,6 @@ package app.packed.extension;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.lifetime.ContainerLifetimeChannel;
-
 /**
  *
  */

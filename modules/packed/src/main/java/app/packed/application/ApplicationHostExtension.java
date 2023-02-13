@@ -16,14 +16,17 @@
 package app.packed.application;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 
-import app.packed.bean.BeanHandle;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
+import app.packed.extension.BeanHandle;
+import app.packed.extension.BeanLifetimeTemplate;
+import app.packed.extension.BeanLocal;
+import app.packed.extension.ContextTemplate;
 import app.packed.extension.FrameworkExtension;
-import app.packed.lifetime.BeanLifetimeTemplate;
-import app.packed.operation.OperationTemplate;
+import app.packed.extension.OperationHandle;
+import app.packed.extension.OperationTemplate;
 import app.packed.operation.Op;
-import app.packed.operation.OperationHandle;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 
 /**
@@ -37,7 +40,11 @@ import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 // Men vil man deploye at runtime jo need this host/deployer extension
 public class ApplicationHostExtension extends FrameworkExtension<ApplicationHostExtension> {
 
-    static final OperationTemplate ot = OperationTemplate.raw().withArg(ApplicationInitializationContext.class).withReturnTypeObject();
+    static final ContextTemplate CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationInitializationContext.class,
+            ApplicationInitializationContext.class);
+
+    static final BeanLocal<InstallingAppHost> L = BeanLocal.of();
+    static final OperationTemplate ot = OperationTemplate.raw().withContext(CIT).withReturnTypeObject();
 
     static final BeanLifetimeTemplate BLT = BeanLifetimeTemplate.builderManyton().withLifetime(ot).build();
 
@@ -47,13 +54,13 @@ public class ApplicationHostExtension extends FrameworkExtension<ApplicationHost
 
     public <T> ApplicationHostConfiguration<T> newApplication(Class<T> guestBean) {
         // We need the attachment, because ContainerGuest is on
-        BeanInstaller bi = base().beanInstaller(BLT).attach(InstallingAppHost.class, new InstallingAppHost());
+        BeanInstaller bi = base().beanInstaller(BLT).setLocal(L, new InstallingAppHost());
         return newApplication(bi.install(guestBean));
     }
 
     public <T> ApplicationHostConfiguration<T> newApplication(Op<T> guestBean) {
         // We need the attachment, because ContainerGuest is on
-        BeanInstaller bi = base().beanInstaller(BLT).attach(InstallingAppHost.class, new InstallingAppHost());
+        BeanInstaller bi = base().beanInstaller(BLT).setLocal(L, new InstallingAppHost());
         return newApplication(bi.install(guestBean));
     }
 

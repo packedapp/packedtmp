@@ -26,15 +26,15 @@ import org.junit.jupiter.api.Assertions;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
-import app.packed.bean.BeanElement.BeanField;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.AbstractComposer.ComposerAssembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BaseExtensionPoint;
-import app.packed.lifetime.FromLifetimeChannel;
-import app.packed.operation.OperationHandle;
+import app.packed.extension.FromLifetimeChannel;
+import app.packed.extension.OperationHandle;
+import app.packed.extension.BeanElement.BeanField;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.util.AnnotationList;

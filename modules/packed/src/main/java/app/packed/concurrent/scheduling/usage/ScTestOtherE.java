@@ -23,17 +23,16 @@ import java.lang.annotation.Target;
 import java.time.Duration;
 
 import app.packed.application.App;
-import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.bean.BeanHook.AnnotatedMethodHook;
-import app.packed.bean.BeanIntrospector;
 import app.packed.concurrent.scheduling.ScheduledOperationConfiguration;
 import app.packed.concurrent.scheduling.SchedulingContext;
 import app.packed.concurrent.scheduling.SchedulingExtension;
 import app.packed.concurrent.scheduling.SchedulingExtensionPoint;
 import app.packed.container.BaseAssembly;
+import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
+import app.packed.extension.BeanElement.BeanMethod;
+import app.packed.extension.BeanHook.AnnotatedMethodHook;
 import app.packed.extension.Extension.DependsOn;
-import app.packed.operation.OperationTemplate;
 
 /**
  *
@@ -60,6 +59,7 @@ public class ScTestOtherE extends BaseAssembly {
 
     @DependsOn(extensions = SchedulingExtension.class)
     public static class MyE extends Extension<MyE> {
+
         MyE() {}
 
         @Override
@@ -69,8 +69,7 @@ public class ScTestOtherE extends BaseAssembly {
                 @Override
                 public void hookOnAnnotatedMethod(Annotation hook, BeanMethod on) {
                     ScheduleOther so = (ScheduleOther) hook;
-                    ScheduledOperationConfiguration soc = use(SchedulingExtensionPoint.class)
-                            .schedule(on.newOperation(OperationTemplate.defaults().withArg(SchedulingContext.class)));
+                    ScheduledOperationConfiguration soc = use(SchedulingExtensionPoint.class).schedule(on.newDelegatingOperation());
                     Duration p = Duration.parse(so.value());
                     soc.setMillies((int) p.toMillis());
                 }

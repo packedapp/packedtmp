@@ -3,12 +3,12 @@ package app.packed.application;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.MirrorExtension;
+import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;

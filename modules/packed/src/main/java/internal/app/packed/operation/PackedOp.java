@@ -23,9 +23,9 @@ import java.lang.invoke.MethodType;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import app.packed.extension.OperationTemplate;
 import app.packed.operation.CapturingOp;
 import app.packed.operation.Op;
-import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import app.packed.util.FunctionType;
 import app.packed.util.Variable;

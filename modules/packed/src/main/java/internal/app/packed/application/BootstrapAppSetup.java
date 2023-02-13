@@ -30,11 +30,11 @@ import app.packed.application.BuildGoal;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
+import app.packed.lifetime.LifetimeKind;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
-import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The internal representation of a bootstrap app. */
@@ -44,7 +44,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
 
     final Set<Class<? extends Extension<?>>> extensionDenyList;
 
-    private final OldLifetimeKind lifetimeKind;
+    private final LifetimeKind lifetimeKind;
 
     /** The method handle used for creating new application instances. */
     // We need more info for bootstrap mirrors
@@ -57,7 +57,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
     @Nullable
     public final Wirelet wirelet;
 
-    public BootstrapAppSetup(OldLifetimeKind lifetimeKind, Supplier<? extends ApplicationMirror> mirrorSupplier, List<PackedContainerLifetimeChannel<?>> channels, MethodHandle mh,
+    public BootstrapAppSetup(LifetimeKind lifetimeKind, Supplier<? extends ApplicationMirror> mirrorSupplier, List<PackedContainerLifetimeChannel<?>> channels, MethodHandle mh,
             Wirelet wirelet) {
         this.wirelet = wirelet;
         this.mhConstructor = requireNonNull(mh);
@@ -104,7 +104,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
      * @return whether or not the applications produced by this driver are runnable
      */
     @Override
-    public OldLifetimeKind lifetimeKind() {
+    public LifetimeKind lifetimeKind() {
         return lifetimeKind;
     }
 

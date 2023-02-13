@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationPath;
+import app.packed.extension.ContainerHandle;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ExtensionSetup;

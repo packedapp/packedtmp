@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import app.packed.extension.ContainerLifetimeChannel;
 import app.packed.extension.Extension;
-import app.packed.lifetime.ContainerLifetimeChannel;
 import app.packed.util.Key;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionPreLoad;

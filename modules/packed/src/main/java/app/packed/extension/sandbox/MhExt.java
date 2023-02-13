@@ -18,15 +18,15 @@ package app.packed.extension.sandbox;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.application.App;
-import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionContext;
-import app.packed.lifetime.BeanLifetimeTemplate;
-import app.packed.operation.OperationHandle;
+import app.packed.extension.OperationHandle;
+import app.packed.extension.BeanHandle;
+import app.packed.extension.BeanLifetimeTemplate;
+import app.packed.extension.ContainerState;
 
 /**
  *
@@ -53,7 +53,7 @@ public class MhExt extends BaseAssembly {
     public static class EBean {
         final MethodHandle mh;
 
-        public EBean(ExtensionContext context, @CodeGenerated MethodHandle f) throws Throwable {
+        public EBean(ContainerState context, @CodeGenerated MethodHandle f) throws Throwable {
             this.mh = f;
         }
 

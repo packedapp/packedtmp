@@ -19,12 +19,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
+import app.packed.extension.DelegatingOperationHandle;
 import app.packed.extension.Extension;
+import app.packed.extension.OperationHandle;
+import app.packed.extension.OperationTemplate;
 import app.packed.extension.ExtensionPoint.UseSite;
-import app.packed.operation.DelegatingOperationHandle;
-import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTarget;
-import app.packed.operation.OperationTemplate;
 import app.packed.util.FunctionType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;

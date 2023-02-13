@@ -24,8 +24,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 
-import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.bean.BeanHook.AnnotatedMethodHook;
+import app.packed.extension.BeanElement.BeanMethod;
+import app.packed.extension.BeanHook.AnnotatedMethodHook;
 import app.packed.util.AnnotationList;
 import app.packed.util.Key;
 import testutil.util.MemberFinder;

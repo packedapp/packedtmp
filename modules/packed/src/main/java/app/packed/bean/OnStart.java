@@ -20,8 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.extension.BaseExtension;
+import app.packed.extension.BeanHook.AnnotatedMethodHook;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the

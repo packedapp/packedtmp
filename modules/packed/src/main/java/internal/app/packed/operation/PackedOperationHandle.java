@@ -24,14 +24,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanVariable;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionContext;
+import app.packed.extension.OperationHandle;
+import app.packed.extension.OperationTemplate;
+import app.packed.extension.BeanVariable;
+import app.packed.extension.ContainerState;
 import app.packed.operation.Op;
-import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
-import app.packed.operation.OperationTemplate;
 import app.packed.util.FunctionType;
 import internal.app.packed.bean.PackedBindableVariable;
 
@@ -83,7 +83,6 @@ import internal.app.packed.bean.PackedBindableVariable;
 
 // interceptor().add(...);
 // interceptor().peek(e->System.out.println(e));
-
 public final record PackedOperationHandle(OperationSetup operation) implements OperationHandle {
 
     /** {@inheritDoc} */
@@ -234,7 +233,7 @@ interface ZandboxOH {
     // Hmm, kan jo ikke bare tage en tilfaeldig...
     default void invokeFromAncestor(Extension<?> extension) {}
 
-    default void invokeFromAncestor(ExtensionContext context) {}
+    default void invokeFromAncestor(ContainerState context) {}
 
     // Can be used to optimize invocation...
     // Very advanced though

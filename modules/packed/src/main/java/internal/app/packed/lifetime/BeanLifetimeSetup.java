@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import app.packed.lifetime.BeanLifetimeMirror;
+import app.packed.lifetime.LifetimeKind;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.util.LookupUtil;
@@ -69,5 +70,11 @@ public final class BeanLifetimeSetup implements LifetimeSetup {
     @Override
     public ContainerLifetimeSetup parent() {
         return bean.container.lifetime;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public LifetimeKind lifetimeKind() {
+        throw new UnsupportedOperationException();
     }
 }

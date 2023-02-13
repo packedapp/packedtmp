@@ -17,7 +17,7 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.lifetime.ContainerLifetimeTemplate;
+import app.packed.extension.ContainerLifetimeTemplate;
 
 /**
  *

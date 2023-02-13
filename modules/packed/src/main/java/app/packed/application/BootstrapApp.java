@@ -27,9 +27,10 @@ import java.util.function.Supplier;
 import app.packed.application.BootstrapApp.Composer.BootstrapAppAssembly;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
+import app.packed.extension.ContainerLifetimeChannel;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.ContainerLifetimeChannel;
+import app.packed.lifetime.LifetimeKind;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationDriver;
@@ -37,7 +38,6 @@ import internal.app.packed.application.BootstrapAppSetup;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
-import internal.app.packed.lifetime.sandbox.OldLifetimeKind;
 
 /**
  * A bootstrap app is a special type of applications that can be used to create other (non-bootstrap) application.
@@ -214,7 +214,7 @@ public final class BootstrapApp<A> {
         /** Lifetime channels for the. */
         private final ArrayList<PackedContainerLifetimeChannel<?>> channels = new ArrayList<>();
 
-        private OldLifetimeKind lifetimeKind = OldLifetimeKind.UNMANAGED;
+        private LifetimeKind lifetimeKind = LifetimeKind.UNMANAGED;
 
         /** Supplies a mirror for the application. */
         private Supplier<? extends ApplicationMirror> mirrorSupplier = ApplicationMirror::new;
@@ -246,7 +246,7 @@ public final class BootstrapApp<A> {
          * @return this builder
          */
         public Composer managedLifetime() {
-            this.lifetimeKind = OldLifetimeKind.MANAGED;
+            this.lifetimeKind = LifetimeKind.MANAGED;
             return this;
         }
 
@@ -285,8 +285,8 @@ public final class BootstrapApp<A> {
 
         /** {@inheritDoc} */
         @Override
-        public OldLifetimeKind lifetimeKind() {
-            return OldLifetimeKind.UNMANAGED;
+        public LifetimeKind lifetimeKind() {
+            return LifetimeKind.UNMANAGED;
         }
 
         /** {@inheritDoc} */

@@ -7,8 +7,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.function.Consumer;
 
-import app.packed.bean.BeanIntrospector;
 import app.packed.container.Realm;
+import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;

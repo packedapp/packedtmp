@@ -37,6 +37,13 @@ public class X extends BaseAssembly {
         providePrototype(F.class);
     }
 
+    public static class Xa {
+        @Main
+        public void s() {
+            // System.out.println("New f");
+        }
+
+    }
     public static void main(String[] args) {
         Program p = Program.start(new X());
         System.out.println(p.runtime().state());

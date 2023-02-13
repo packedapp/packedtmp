@@ -35,7 +35,7 @@ import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 /**
  *
  */
-class OperationCodeGenerator {
+final class OperationCodeGenerator {
 
     private final ArrayList<Integer> permuters = new ArrayList<>();
 

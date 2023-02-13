@@ -7,23 +7,25 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationPath;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLifecycleOperationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.container.Realm;
-import app.packed.operation.OperationTemplate;
-import app.packed.operation.OperationHandle;
-import app.packed.util.Nullable;
+import app.packed.extension.BeanHandle;
+import app.packed.extension.BeanIntrospector;
+import app.packed.extension.OperationHandle;
+import app.packed.extension.OperationTemplate;
+import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.util.FunctionType;
+import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
@@ -54,6 +56,10 @@ public final class BeanSetup {
     private static final VarHandle VH_BEAN_CONFIGURATION_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanConfiguration.class, "handle",
             BeanHandle.class);
 
+    /** A handle that can access BeanConfiguration#handle. */
+    private static final VarHandle VH_BEAN_INTROSPECTOR_TO_THIS = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanIntrospector.class, "setup",
+            BeanScannerExtension.class);
+
     /** The bean class, is typical void.class for functional beans. */
     public final Class<?> beanClass;
 
@@ -82,7 +88,6 @@ public final class BeanSetup {
     /** Non-null while a bean is being introspected. */
     @Nullable
     public BeanReflector introspecting;
-
 
     public final ArrayList<BeanLifecycleOperation> lifecycleOperations = new ArrayList<>();
 
@@ -115,6 +120,8 @@ public final class BeanSetup {
     /** A list of services provided by the bean, used for circular dependency checks. */
     public final List<ServiceProviderSetup> serviceProviders = new ArrayList<>();
 
+    public IdentityHashMap<PackedBeanLocal<?>, Object> locals;
+
     /** Create a new bean. */
     BeanSetup(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
         this.beanKind = requireNonNull(installer.template.kind);
@@ -127,6 +134,8 @@ public final class BeanSetup {
         this.owner = requireNonNull(installer.owner);
 
         this.mirrorSupplier = installer.supplier;
+
+        this.locals = installer.locals;
 
         // Set the lifetime of the bean
         ContainerLifetimeSetup containerLifetime = container.lifetime;
@@ -221,6 +230,11 @@ public final class BeanSetup {
         return new PackedNamespacePath(paths);
     }
 
+    public static BeanSetup crack(BeanIntrospector introspector) {
+        requireNonNull(introspector, "introspector is null");
+        return ((BeanScannerExtension) VH_BEAN_INTROSPECTOR_TO_THIS.get(introspector)).scanner.bean;
+    }
+
     /**
      * Extracts a bean setup from a bean configuration.
      *
@@ -243,5 +257,9 @@ public final class BeanSetup {
      */
     public static BeanSetup crack(BeanMethod m) {
         return ((PackedBeanMethod) m).extension.scanner.bean;
+    }
+
+    public static BeanSetup crack(BeanHandle<?> handle) {
+        return ((PackedBeanHandle<?>) handle).bean();
     }
 }

@@ -25,11 +25,12 @@ import java.util.Set;
 
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
-import app.packed.extension.ExtensionContext;
+import app.packed.extension.ContainerState;
+import app.packed.extension.OperationTemplate;
 import app.packed.lifetime.ContainerLifetimeMirror;
+import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.RunState;
 import app.packed.lifetime.sandbox.ManagedLifetime;
-import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanLifecycleOperation;
 import internal.app.packed.bean.BeanSetup;
@@ -50,7 +51,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
     private static final MethodHandle MH_INVOKE_INITIALIZER = LookupUtil.findStaticOwn(MethodHandles.lookup(), "invokeInitializer", void.class, BeanSetup.class,
-            MethodHandle.class, ExtensionContext.class);
+            MethodHandle.class, ContainerState.class);
 
     /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
     private static final MethodHandle MH_LIFETIME_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ContainerLifetimeMirror.class,
@@ -135,7 +136,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         return mirror;
     }
 
-    public ExtensionContext newRuntimePool() {
+    public ContainerState newRuntimePool() {
         return PackedExtensionContext.create(size);
     }
 
@@ -224,7 +225,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         return size++;
     }
 
-    public static void invokeInitializer(BeanSetup bean, MethodHandle mh, ExtensionContext ec) {
+    public static void invokeInitializer(BeanSetup bean, MethodHandle mh, ContainerState ec) {
         Object instance;
         try {
             instance = mh.invokeExact(ec);
@@ -239,6 +240,12 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         }
         PackedExtensionContext pec = (PackedExtensionContext) ec;
         pec.storeObject(bean.lifetimeStoreIndex, instance);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public LifetimeKind lifetimeKind() {
+        throw new UnsupportedOperationException();
     }
 }
 

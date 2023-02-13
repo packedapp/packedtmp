@@ -24,8 +24,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 
-import app.packed.bean.BeanElement.BeanField;
-import app.packed.bean.BeanHook.AnnotatedFieldHook;
+import app.packed.extension.BeanElement.BeanField;
+import app.packed.extension.BeanHook.AnnotatedFieldHook;
 import app.packed.util.AnnotationList;
 import app.packed.util.Key;
 import app.packed.util.Variable;

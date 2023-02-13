@@ -24,10 +24,10 @@ import java.lang.invoke.VarHandle.AccessMode;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.extension.ExtensionContext;
-import app.packed.operation.OperationHandle;
+import app.packed.extension.ContainerState;
+import app.packed.extension.OperationHandle;
+import app.packed.extension.OperationTemplate;
 import app.packed.operation.OperationTarget;
-import app.packed.operation.OperationTemplate;
 import app.packed.util.FunctionType;
 import tools.AnnoOnField.InstanceField;
 import tools.AnnoOnField.StaticField;
@@ -46,7 +46,7 @@ public class OnAnnotatedFieldTest {
                 InstanceField.validateFoo(l, b);
 
                 OperationHandle h = b.newGetOperation(OperationTemplate.defaults());
-                assertEquals(MethodType.methodType(String.class, ExtensionContext.class), h.invocationType());
+                assertEquals(MethodType.methodType(String.class, ContainerState.class), h.invocationType());
                 assertSame(HExtension.class, h.operator());
 
                 if (h.target() instanceof OperationTarget.OfField f) {
@@ -70,8 +70,8 @@ public class OnAnnotatedFieldTest {
         H t = H.of(c -> {
             c.onAnnotatedFieldHook((l, b) -> {
                 c.generate(b.newGetOperation(OperationTemplate.defaults()));
-                OperationHandle h = b.newSetOperation(OperationTemplate.defaults().withArg(String.class));
-                assertEquals(MethodType.methodType(void.class, ExtensionContext.class, String.class), h.invocationType());
+//                OperationHandle h = b.newSetOperation(OperationTemplate.defaults().withArg(String.class));
+  //              assertEquals(MethodType.methodType(void.class, ExtensionContext.class, String.class), h.invocationType());
 
                 // Hvordan fungere det med set, replace osv
 

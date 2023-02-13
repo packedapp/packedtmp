@@ -28,10 +28,12 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanFactoryMirror;
-import app.packed.operation.OperationHandle;
+import app.packed.bean.BeanKind;
+import app.packed.bean.NonStaticMemberException;
+import app.packed.extension.OperationHandle;
+import app.packed.extension.OperationTemplate;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
-import app.packed.operation.OperationTemplate;
 import app.packed.util.FunctionType;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
@@ -134,8 +136,8 @@ public sealed abstract class OperationSetup {
 
     /** {@return a new mirror.} */
     public final OperationMirror mirror() {
-      //  debug();
-       // new Exception().printStackTrace();
+        // debug();
+        // new Exception().printStackTrace();
         OperationMirror mirror = ClassUtil.mirrorHelper(OperationMirror.class, OperationMirror::new, mirrorSupplier);
 
         // Initialize OperationMirror by calling OperationMirror#initialize(OperationSetup)
@@ -254,6 +256,9 @@ public sealed abstract class OperationSetup {
         public MemberOperationSetup(ExtensionSetup operator, BeanSetup bean, FunctionType operationType, OperationTemplate template,
                 OperationMemberTarget<?> member, MethodHandle methodHandle) {
             super(operator, bean, operationType, template, null);
+            if (bean.beanKind == BeanKind.STATIC && !Modifier.isStatic(member.modifiers())) {
+                throw new NonStaticMemberException("Cannot create operation for non-static member " + member);
+            }
             this.target = requireNonNull(member);
             this.methodHandle = requireNonNull(methodHandle);
             if (member instanceof OperationConstructorTarget) {

@@ -11,23 +11,14 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanHook.AnnotatedBindingHook;
-import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.DependencyOrder;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.container.ContainerInstaller;
-import app.packed.lifetime.BeanLifetimeTemplate;
-import app.packed.lifetime.ContainerLifetimeChannel;
-import app.packed.lifetime.ContainerLifetimeTemplate;
+import app.packed.extension.BeanHook.AnnotatedBindingHook;
 import app.packed.lifetime.RunState;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
-import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
-import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.util.Key;
@@ -288,10 +279,6 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 // Maybe Builder after all... Alle ved hvad en builder er
     public sealed interface BeanInstaller permits PackedBeanInstaller {
 
-        // can be used for inter
-        // Maybe use ScopedValues instead???
-        <A> BeanInstaller attach(Class<A> attachmentType, A attachment);
-
         /**
          * Installs the bean using the specified class as the bean source.
          *
@@ -320,7 +307,8 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
          * @return the option
          * @see Extension#newBeanIntrospector
          */
-        BeanInstaller introspectWith(BeanIntrospector introspector);
+        // Den er langt mindre brugbar end foerst antaget. Fordi vi bliver noedt til at processere alle
+        // annotering og give gode fejlmeddelse for hvorfor man ikke kan benytte dem
 
         // Hvad skal vi helt praecis goere her...
         // Vi bliver noedt til at vide hvilke kontekts der er...
@@ -347,6 +335,8 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         BeanInstaller multi();
 
         BeanInstaller namePrefix(String prefix);
+
+        <T> BeanInstaller setLocal(BeanLocal<T> local, T value);
 
         // A bean that is created per operation.
         // Obvious manyton, but should we have own kind?

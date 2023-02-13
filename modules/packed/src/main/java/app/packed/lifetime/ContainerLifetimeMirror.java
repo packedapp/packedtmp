@@ -48,6 +48,10 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
         throw new UnsupportedOperationException();
     }
 
+    public LifetimeKind kind() {
+        return LifetimeKind.MANAGED;
+    }
+
     /** {@return the container that is the root of the lifetime.} */
     public ContainerMirror container() {
         return lifetime().container.mirror();

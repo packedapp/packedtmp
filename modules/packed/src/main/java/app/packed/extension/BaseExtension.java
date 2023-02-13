@@ -5,45 +5,36 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.application.BuildException;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanElement.BeanField;
-import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstallationException;
-import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanVariable;
-import app.packed.bean.BeanWrappedVariable;
 import app.packed.bean.Inject;
 import app.packed.bean.OnInitialize;
 import app.packed.bean.OnStart;
 import app.packed.bean.OnStop;
+import app.packed.bean.UnavailableLifecycleException;
 import app.packed.bindings.Provider;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerInstaller;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
-import app.packed.lifetime.BeanLifetimeTemplate;
-import app.packed.lifetime.ContainerLifetimeTemplate;
-import app.packed.lifetime.FromLifetimeChannel;
+import app.packed.extension.BeanElement.BeanField;
+import app.packed.extension.BeanElement.BeanMethod;
+import app.packed.extension.OperationTemplate.FromInvocationArgument;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.operation.OperationConfiguration;
-import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
-import app.packed.operation.OperationTemplate.FromInvocationArgument;
 import app.packed.service.Export;
 import app.packed.service.Provide;
 import app.packed.service.ServiceContract;
@@ -56,8 +47,7 @@ import internal.app.packed.bean.BeanLifecycleOrder;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanInstaller;
-import internal.app.packed.bean.PackedBindableVariable;
-import internal.app.packed.bean.sandbox.PackedBeanLocal;
+import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
@@ -98,19 +88,15 @@ import internal.app.packed.util.MethodHandleUtil;
 
 public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
-    static final PackedBeanLocal<Map<Key<?>, BeanVariable>> CODEGEN = PackedBeanLocal.of();
+    static final PackedBeanLocal<Map<Key<?>, BeanVariable>> CODEGEN = PackedBeanLocal.of(() -> new HashMap<>());
 
-    /** Variables that used together with {@link CodeGenerated}. */
-    private final Map<CodeGeneratorKey, BeanVariable> codegenVariables = new HashMap<>();
+    final ArrayList<BeanVariable> varsToResolve = new ArrayList<>();
 
     /** Create a new base extension. */
     BaseExtension() {}
 
     <K> void addCodeGenerated(BeanSetup bean, Key<K> key, Supplier<? extends K> supplier) {
-        // BindableVariable bv = CODEGEN.get(bean).get(key);
-
-        BeanVariable var = codegenVariables.get(new CodeGeneratorKey(bean, key));
-
+        BeanVariable var = CODEGEN.get(bean).get(key);
         if (var == null) {
             throw new IllegalArgumentException("The specified bean must have an injection site that uses @" + CodeGenerated.class.getSimpleName() + " " + key);
         } else if (var.isBound()) {
@@ -343,7 +329,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             private OperationHandle checkNotStaticBean(Class<? extends Annotation> annotationType, BeanMethod method) {
                 if (beanKind() == BeanKind.STATIC) {
-                    throw new BeanInstallationException(annotationType + " is not supported for static beans");
+                    throw new UnavailableLifecycleException(annotationType + " is not supported for static beans");
                 }
                 // Maybe lifecycle members cannot be static at all
                 return method.newOperation(BEAN_LIFECYCLE_TEMPLATE);
@@ -453,18 +439,18 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     }
                     v.bindInvocationArgument(index);
                 } else if (annotation instanceof CodeGenerated cg) {
-                    BeanSetup bean = ((PackedBindableVariable) v).operation.bean;
                     if (beanOwner().isApplication()) {
                         throw new BeanInstallationException("@" + CodeGenerated.class.getSimpleName() + " can only be used by extensions");
                     }
                     // Create the key
                     Key<?> key = v.toKey();
 
-                    // CODEGEN.get(this).putIfAbsent(key, v);
-                    BeanVariable bv = codegenVariables.putIfAbsent(new CodeGeneratorKey(bean, key), v);
+                    BeanVariable bv = CODEGEN.get(this).putIfAbsent(key, v);
+                    // BeanVariable bv = codegenVariables.putIfAbsent(new CodeGeneratorKey(bean, key), v);
                     if (bv != null) {
                         failWith(key + " Can only be injected once for bean ");
                     }
+                    varsToResolve.add(v);
                 } else {
                     super.hookOnAnnotatedVariable(annotation, v);
                 }
@@ -472,13 +458,16 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             @Override
             public void hookOnVariableType(Class<?> hook, BeanWrappedVariable v) {
-                if (hook == ExtensionContext.class) {
-                    if (v.availableInvocationArguments().isEmpty() || v.availableInvocationArguments().get(0) != ExtensionContext.class) {
+                if (hook == ContainerState.class) {
+                    if (beanOwner().isApplication()) {
+                        v.failWith("ExtensionContext can only be injected into extensions");
+                    }
+                    if (v.availableInvocationArguments().isEmpty() || v.availableInvocationArguments().get(0) != ContainerState.class) {
                         // throw new Error(v.availableInvocationArguments().toString());
                     }
                     v.bindInvocationArgument(0);
                 } else {
-                    v.checkAssignableTo(ExtensionContext.class);
+                    v.checkAssignableTo(ContainerState.class);
                 }
             }
 
@@ -508,9 +497,9 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         // close child extensions first
         super.onAssemblyClose();
 
-        for (Entry<CodeGeneratorKey, BeanVariable> e : codegenVariables.entrySet()) {
-            if (!e.getValue().isBound()) {
-                throw new InternalExtensionException(e.getKey().key() + " not bound for bean " + e.getKey().bean().path());
+        for (BeanVariable v : varsToResolve) {
+            if (!v.isBound()) {
+                throw new InternalExtensionException(v.toKey() + " not bound for bean ");
             }
         }
 
@@ -625,8 +614,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         checkIsConfigurable();
         throw new UnsupportedOperationException();
     }
-
-    private record CodeGeneratorKey(BeanSetup bean, Key<?> key) {}
 }
 
 /**

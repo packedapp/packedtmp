@@ -18,8 +18,8 @@ package internal.app.packed.lifetime;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.bean.BeanKind;
-import app.packed.lifetime.BeanLifetimeTemplate;
-import app.packed.operation.OperationTemplate;
+import app.packed.extension.BeanLifetimeTemplate;
+import app.packed.extension.OperationTemplate;
 import app.packed.util.Nullable;
 
 /**

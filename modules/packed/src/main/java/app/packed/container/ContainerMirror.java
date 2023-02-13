@@ -11,12 +11,12 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationPath;
-import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.bean.BeanMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.MirrorExtension;
+import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerSetup;

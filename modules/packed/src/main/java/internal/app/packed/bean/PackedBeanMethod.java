@@ -21,10 +21,10 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
-import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.operation.DelegatingOperationHandle;
-import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate;
+import app.packed.extension.DelegatingOperationHandle;
+import app.packed.extension.OperationHandle;
+import app.packed.extension.OperationTemplate;
+import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.util.Key;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
