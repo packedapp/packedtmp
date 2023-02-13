@@ -172,6 +172,13 @@ public sealed interface BeanElement permits BeanClass, BeanField, BeanConstructo
             throw new UnsupportedOperationException();
         }
 
+        /** {@inheritDoc} */
+        @Override
+        default Key<?> toKey() {
+            return Key.fromField(this);
+        }
+
+
         /**
          * Creates a new operation that can read or/and write a field as specified by the provided access mode.
          * <p>
@@ -228,6 +235,12 @@ public sealed interface BeanElement permits BeanClass, BeanField, BeanConstructo
 
         /** {@return the underlying method.} */
         Method method();
+
+        /** {@inheritDoc} */
+        @Override
+        default Key<?> toKey() {
+            return Key.fromMethodReturnType(this);
+        }
 
         /**
          * Creates a new delegating operation handle that allows an extension to delegate the invocation of the method to

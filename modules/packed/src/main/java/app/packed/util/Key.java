@@ -18,7 +18,10 @@ package app.packed.util;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -30,7 +33,14 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 
+import app.packed.bean.BeanElement;
+import app.packed.bean.BeanElement.BeanField;
+import app.packed.bean.BeanElement.BeanMethod;
+import app.packed.bean.BeanVariable;
 import app.packed.bindings.Provider;
+import internal.app.packed.bean.PackedBeanField;
+import internal.app.packed.bean.PackedBeanMethod;
+import internal.app.packed.bean.PackedBindableVariable;
 import internal.app.packed.util.AnnotationUtil;
 import internal.app.packed.util.PackedAnnotationList;
 import internal.app.packed.util.StringFormatter;
@@ -111,9 +121,8 @@ import internal.app.packed.util.types.Types;
 // Key (Source)
 //// TypeCapture (Super class of Key)
 //// ofClass (null)
-//// fromField (Field)
-//// fromField (OperationalField)
-//// fromMethodReturnType (OperationalMethod)
+//// fromField (Field, BeanField)
+//// fromMethodReturnType (Method, BeanMethod)
 //// fromVariable (Variable)
 //// fromClass (OperationalClass or class?)
 
@@ -468,12 +477,6 @@ public abstract class Key<T> {
         return new CanonicalizedKey<>(t, apl);
     }
 
-    // How do we support adding qualifiers?
-    // Maybe it is a separate method
-
-    // If source == null we are creating the key directly (new Key<>(), or Off);
-    // And we filter non-qualifyign annotations instead of failing on the them
-
     private static Type convertType(Type t, Object source) {
         if (t instanceof Class<?> cl) {
             if (cl.isPrimitive()) {
@@ -495,6 +498,12 @@ public abstract class Key<T> {
 
         // return t;
     }
+
+    // How do we support adding qualifiers?
+    // Maybe it is a separate method
+
+    // If source == null we are creating the key directly (new Key<>(), or Off);
+    // And we filter non-qualifyign annotations instead of failing on the them
 
     static Type convertType0(Object source, Type originalType, Type type) {
         requireNonNull(type, "type is null");
@@ -541,6 +550,74 @@ public abstract class Key<T> {
         } else {
             throw new InvalidKeyException("Unknown type: " + type);
         }
+    }
+
+    /**
+     * @param field
+     * @return
+     * @see BeanField#toKey()
+     */
+    // Here for now, might move it somewhere else when we have finalized it
+    public static Key<?> fromField(BeanField field) {
+        requireNonNull(field, "field is null");
+        PackedBeanField pbf = (PackedBeanField) field;
+        return convert(pbf, pbf.annotatedType);
+    }
+
+    /**
+     * Returns a key matching the return type of the specified method and any qualifier that may be present on the method.
+     *
+     * @param method
+     *            the method for to return a key for
+     * @return the key matching the return type of the method and any qualifier that may be present on the method
+     * @throws RuntimeException
+     *             if the specified method has a void return type. Or returns an optional type such as {@link Optional} or
+     *             {@link OptionalInt}. Or if there are more than 1 qualifier present on the method
+     * @see Method#getReturnType()
+     * @see Method#getGenericReturnType()
+     */
+    public static Key<?> fromMethodReturnType(Method method) {
+        requireNonNull(method, "method is null");
+        return convert(method.getGenericReturnType(), method.getAnnotations(), method);
+    }
+
+    public static Key<?> fromMethodReturnType(BeanMethod method) {
+        PackedBeanMethod pbm = (PackedBeanMethod) method;
+        return convert(pbm, pbm.method().getAnnotatedReturnType());
+    }
+
+    static Key<?> convert(BeanElement source, AnnotatedType type) {
+        return Key.convert(type.getType(), type.getAnnotations(), true, source);
+    }
+
+    /**
+     * Returns a key matching the type of the specified field and any qualifiers that may be present on the field.
+     *
+     * @param field
+     *            the field to return a key for
+     * @return a key representing the type of the field and any qualifiers that may be present on the field
+     * @throws InvalidKeyException
+     *             if the field does not represent a valid key. For example, if the field's type is an optional type such as
+     *             {@link Optional} or {@link OptionalInt}.
+     * @see Field#getAnnotatedType()
+     */
+    public static Key<?> fromField(Field field) {
+        requireNonNull(field, "field is null");
+        return convert(field.getGenericType(), field.getAnnotations(), field);
+    }
+
+    public static Key<?> fromVariable(Variable variable) {
+        return convert(variable.type(), variable.annotations().toArray(), variable);
+    }
+
+    public static Key<?> fromVariable(BeanVariable variable) {
+        PackedBindableVariable v = (PackedBindableVariable) variable;
+        return convert(v.variable().type(), v.variable().annotations().toArray(), v);
+    }
+
+
+    public static Key<?> convert(Type type, Annotation[] annotations, Object source) {
+        return Key.convert(type, annotations, true, source);
     }
 
     /**

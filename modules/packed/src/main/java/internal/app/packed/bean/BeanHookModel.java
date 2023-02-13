@@ -18,15 +18,12 @@ package internal.app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import app.packed.bean.BeanHook.AnnotatedBindingHook;
-import app.packed.bean.BeanHook.AnnotatedFieldHook;
 import app.packed.bean.BeanHook.AnnotatedMethodHook;
 import app.packed.bean.BeanHook.BindingTypeHook;
 import app.packed.extension.CustomBeanHook;
@@ -73,61 +70,6 @@ public final class BeanHookModel {
 
     private final Map<String, Class<? extends Annotation>> bindings;
 
-    /** A cache of field annotations. */
-    private final ClassValue<AnnotatedField> FIELD_ANNOTATION_CACHE = new ClassValue<>() {
-
-        @Override
-        protected AnnotatedField computeValue(Class<?> type) {
-            @SuppressWarnings("unchecked")
-            Class<? extends Annotation> annotationType = (Class<? extends Annotation>) type;
-
-            // Er det her en RAW thingy???
-            // Der er ingen grund til vi laeser typen flere gange vel
-            AnnotatedField result = null;
-
-            AnnotatedFieldHook fieldHook = type.getAnnotation(AnnotatedFieldHook.class);
-            if (fieldHook != null) {
-                checkExtensionClass(type, fieldHook.extension());
-                Target target = type.getAnnotation(Target.class);
-                if (target == null) {
-                    throw new InternalExtensionException("");
-                }
-
-                List<ElementType> of = List.of(target.value());
-                if (!of.contains(ElementType.FIELD)) {
-                    throw new InternalExtensionException("");
-                }
-                if (of.contains(ElementType.TYPE_USE) || of.contains(ElementType.PARAMETER)) {
-                    throw new InternalExtensionException("");
-                }
-                result = new AnnotatedField(AnnotatedFieldKind.FIELD, fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet());
-            }
-
-            AnnotatedBindingHook bindingHook = type.getAnnotation(AnnotatedBindingHook.class);
-            if (bindingHook != null) {
-                if (result != null) {
-                    throw new InternalExtensionException(
-                            annotationType + " cannot both be annotated with " + AnnotatedFieldHook.class + " and " + AnnotatedBindingHook.class);
-                }
-                checkExtensionClass(type, bindingHook.extension());
-                result = new AnnotatedField(AnnotatedFieldKind.VARIABLE, bindingHook.extension(), false, true);
-            }
-
-            // See if we have a custom hook
-            CustomAnnotatedField customHook = fieldHooks.get(type.getName());
-
-            if (customHook != null) {
-                if (result != null) {
-                    throw new InternalExtensionException("POOPS");
-                }
-                result = new AnnotatedField(customHook.kind, extract(annotationType), customHook.allowGet, customHook.allowSet);
-            }
-
-            return result;
-        }
-    };
-
-    private final Map<String, CustomAnnotatedField> fieldHooks = Map.of();
 
     /** A cache of any extensions a particular annotation activates. */
     private final ClassValue<AnnotatedParameterType> PARAMETER_ANNOTATION_CACHE = new ClassValue<>() {
@@ -210,11 +152,6 @@ public final class BeanHookModel {
     }
 
     @Nullable
-    AnnotatedField testFieldAnnotation(Class<? extends Annotation> annotation) {
-        return FIELD_ANNOTATION_CACHE.get(annotation);
-    }
-
-    @Nullable
     AnnotatedMethod testMethodAnnotation(Class<? extends Annotation> annotation) {
         return METHOD_ANNOTATION_CACHE.get(annotation);
     }
@@ -237,45 +174,13 @@ public final class BeanHookModel {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private static Class<? extends Extension<?>> extract(Class<? extends Annotation> annotationtype) {
-        Class<?> declaringClass = annotationtype.getDeclaringClass();
-        if (!Extension.class.isAssignableFrom(declaringClass)) {
-            throw new InternalExtensionException("oops");
-        }
-        return (Class<? extends Extension<?>>) declaringClass;
-    }
-
     public static BeanHookModel of(Class<?> clazz) {
         return MODELS.get(clazz);
     }
-
-    private record CustomAnnotatedField(AnnotatedFieldKind kind, Class<? extends Annotation> annotationType, boolean allowGet, boolean allowSet) {}
 
     record AnnotatedMethod(Class<? extends Extension<?>> extensionType, boolean isInvokable) {}
 
     record AnnotatedParameterType(Class<? extends Extension<?>> extensionType) {}
 
     record ParameterType(Class<? extends Extension<?>> extensionType) {}
-
-    /**
-     * A hook annotation on a field, is either a plain {@link BindableVariable} hook or a {@link OperationalField} hook.
-     */
-    record AnnotatedField(AnnotatedFieldKind kind, Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable)
-            implements Comparable<AnnotatedField> {
-
-        /** {@inheritDoc} */
-        @Override
-        public int compareTo(AnnotatedField o) {
-            if (o == this) {
-                return 0;
-            }
-            return 0;
-        }
-
-    }
-
-    enum AnnotatedFieldKind {
-        FIELD, VARIABLE;
-    }
 }

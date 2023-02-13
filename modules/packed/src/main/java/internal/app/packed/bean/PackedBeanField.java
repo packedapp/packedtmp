@@ -31,14 +31,12 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.util.AnnotationList;
 import app.packed.util.FunctionType;
-import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.operation.PackedOperationHandle;
-import internal.app.packed.service.KeyHelper;
 import internal.app.packed.util.PackedAnnotationList;
 import internal.app.packed.util.PackedVariable;
 
@@ -53,13 +51,13 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
     final boolean allowSet;
 
     /** The annotated type of the field. */
-    private final AnnotatedType annotatedType;
+    public final AnnotatedType annotatedType;
 
     /** The extension that can create new operations from the member. */
     private final BeanScannerExtension extension;
 
     /** The member. */
-    private final Field field;
+    public final Field field;
 
     /** Annotations on the member. */
     private final PackedAnnotationList fieldAnnotations;
@@ -156,12 +154,6 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
 
     void onHook() {
         extension.introspector.hookOnAnnotatedField(hooks, this);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Key<?> toKey() {
-        return KeyHelper.convert(field, annotatedType);
     }
 
     /** {@inheritDoc} */

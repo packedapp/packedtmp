@@ -32,7 +32,6 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
 import internal.app.packed.errorhandling.ErrorMessageBuilder;
-import internal.app.packed.service.KeyHelper;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.Types;
 
@@ -271,7 +270,7 @@ public final class InternalDependency {
         }
         // TL is free from Optional
 
-        Key<?> key = KeyHelper.convert(t, v.annotations().toArray(), v);
+        Key<?> key = Key.convert(t, v.annotations().toArray(), rawType);
         return new InternalDependency(v.rawType(), key, optionallaity);
     }
 

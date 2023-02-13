@@ -22,16 +22,15 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
 import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.operation.OperationTemplate;
-import app.packed.util.Key;
 import app.packed.operation.DelegatingOperationHandle;
 import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.Key;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.operation.PackedDelegatingOperationHandle;
-import internal.app.packed.service.KeyHelper;
 import internal.app.packed.util.PackedAnnotationList;
 
 /** Internal implementation of BeanMethod. Discard after use. */
@@ -80,7 +79,7 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
     /** {@inheritDoc} */
     @Override
     public Key<?> toKey() {
-        return KeyHelper.convert(member.getGenericReturnType(), member.getAnnotations(), this);
+        return Key.fromMethodReturnType(this);
     }
 
     /**

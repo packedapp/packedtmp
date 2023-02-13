@@ -31,7 +31,6 @@ import java.util.Optional;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import internal.app.packed.service.KeyHelper;
 import internal.app.packed.util.types.GenericType;
 import testutil.stubs.annotation.AnnotationInstances;
 import testutil.stubs.annotation.CharQualifier;
@@ -115,37 +114,37 @@ public class KeyTest {
             int primitiveQualified;
         }
 
-        npe(() -> KeyHelper.convertField((Field) null), "field");
+        npe(() -> Key.fromField((Field) null), "field");
 
         Field f = findField(Tmpx.class, "ok");
-        assertThat(KeyHelper.convertField(f).type()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(KeyHelper.convertField(f).isQualified()).isFalse();
-        assertThat(KeyHelper.convertField(f).qualifiers()).isEmpty();
+        assertThat(Key.fromField(f).type()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(Key.fromField(f).isQualified()).isFalse();
+        assertThat(Key.fromField(f).qualifiers()).isEmpty();
 
         f = findField(Tmpx.class, "okQualified");
-        assertThat(KeyHelper.convertField(f).type()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(KeyHelper.convertField(f).isQualified()).isTrue();
-        assertThat(KeyHelper.convertField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
+        assertThat(Key.fromField(f).type()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(Key.fromField(f).isQualified()).isTrue();
+        assertThat(Key.fromField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         f = findField(Tmpx.class, "primitive");
-        assertThat(KeyHelper.convertField(f).type()).isEqualTo(TL_INTEGER);
-        assertThat(KeyHelper.convertField(f).isQualified()).isFalse();
-        assertThat(KeyHelper.convertField(f).qualifiers()).isEmpty();
+        assertThat(Key.fromField(f).type()).isEqualTo(TL_INTEGER);
+        assertThat(Key.fromField(f).isQualified()).isFalse();
+        assertThat(Key.fromField(f).qualifiers()).isEmpty();
 
         f = findField(Tmpx.class, "primitiveQualified");
-        assertThat(KeyHelper.convertField(f).type()).isEqualTo(TL_INTEGER);
-        assertThat(KeyHelper.convertField(f).isQualified()).isTrue();
-        assertThat(KeyHelper.convertField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
+        assertThat(Key.fromField(f).type()).isEqualTo(TL_INTEGER);
+        assertThat(Key.fromField(f).isQualified()).isTrue();
+        assertThat(Key.fromField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
-        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> KeyHelper.convertField(findField(Tmpx.class, "notTypeParameterFree")));
+        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> Key.fromField(findField(Tmpx.class, "notTypeParameterFree")));
         a.isExactlyInstanceOf(InvalidKeyException.class).hasNoCause();
         // TODO test msg
 
-        a = assertThatThrownBy(() -> KeyHelper.convertField(findField(Tmpx.class, "optional")));
+        a = assertThatThrownBy(() -> Key.fromField(findField(Tmpx.class, "optional")));
         a.isExactlyInstanceOf(InvalidKeyException.class).hasNoCause();
         // TODO test msg
 
-//        a = assertThatThrownBy(() -> KeyHelper.convertField(findField(Tmpx.class, "multipleQualifier")));
+//        a = assertThatThrownBy(() -> Key.fromField(findField(Tmpx.class, "multipleQualifier")));
 //        a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO test msg
     }
@@ -195,41 +194,41 @@ public class KeyTest {
             }
         }
 
-        npe(() -> KeyHelper.convertMethodReturnType((Method) null), "method");
+        npe(() -> Key.fromMethodReturnType((Method) null), "method");
 
         Method m = Tmpx.class.getDeclaredMethod("ok");
-        assertThat(KeyHelper.convertMethodReturnType(m).type()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(KeyHelper.convertMethodReturnType(m).isQualified()).isFalse();
-        assertThat(KeyHelper.convertMethodReturnType(m).qualifiers()).isEmpty();
+        assertThat(Key.fromMethodReturnType(m).type()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(Key.fromMethodReturnType(m).isQualified()).isFalse();
+        assertThat(Key.fromMethodReturnType(m).qualifiers()).isEmpty();
 
         m = Tmpx.class.getDeclaredMethod("okQualified");
-        assertThat(KeyHelper.convertMethodReturnType(m).type()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(KeyHelper.convertMethodReturnType(m).isQualified()).isTrue();
-        assertThat(KeyHelper.convertMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
+        assertThat(Key.fromMethodReturnType(m).type()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(Key.fromMethodReturnType(m).isQualified()).isTrue();
+        assertThat(Key.fromMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         m = Tmpx.class.getDeclaredMethod("primitive");
-        assertThat(KeyHelper.convertMethodReturnType(m).type()).isEqualTo(TL_INTEGER);
-        assertThat(KeyHelper.convertMethodReturnType(m).isQualified()).isFalse();
-        assertThat(KeyHelper.convertMethodReturnType(m).qualifiers()).isEmpty();
+        assertThat(Key.fromMethodReturnType(m).type()).isEqualTo(TL_INTEGER);
+        assertThat(Key.fromMethodReturnType(m).isQualified()).isFalse();
+        assertThat(Key.fromMethodReturnType(m).qualifiers()).isEmpty();
 
         m = Tmpx.class.getDeclaredMethod("primitiveQualified");
-        assertThat(KeyHelper.convertMethodReturnType(m).type()).isEqualTo(TL_INTEGER);
-        assertThat(KeyHelper.convertMethodReturnType(m).isQualified()).isTrue();
-        assertThat(KeyHelper.convertMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
+        assertThat(Key.fromMethodReturnType(m).type()).isEqualTo(TL_INTEGER);
+        assertThat(Key.fromMethodReturnType(m).isQualified()).isTrue();
+        assertThat(Key.fromMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(
-                () -> KeyHelper.convertMethodReturnType(Tmpx.class.getDeclaredMethod("voidReturnType")));
+                () -> Key.fromMethodReturnType(Tmpx.class.getDeclaredMethod("voidReturnType")));
         a.isExactlyInstanceOf(InvalidKeyException.class).hasNoCause();
 
-        a = assertThatThrownBy(() -> KeyHelper.convertMethodReturnType(Tmpx.class.getDeclaredMethod("notTypeParameterFree")));
-        a.isExactlyInstanceOf(InvalidKeyException.class).hasNoCause();
-        // TODO test msg
-
-        a = assertThatThrownBy(() -> KeyHelper.convertMethodReturnType(Tmpx.class.getDeclaredMethod("optional")));
+        a = assertThatThrownBy(() -> Key.fromMethodReturnType(Tmpx.class.getDeclaredMethod("notTypeParameterFree")));
         a.isExactlyInstanceOf(InvalidKeyException.class).hasNoCause();
         // TODO test msg
 
-//        a = assertThatThrownBy(() -> KeyHelper.convertMethodReturnType(Tmpx.class.getDeclaredMethod("multipleQualifier")));
+        a = assertThatThrownBy(() -> Key.fromMethodReturnType(Tmpx.class.getDeclaredMethod("optional")));
+        a.isExactlyInstanceOf(InvalidKeyException.class).hasNoCause();
+        // TODO test msg
+
+//        a = assertThatThrownBy(() -> convertMethodReturnType(Tmpx.class.getDeclaredMethod("multipleQualifier")));
 //        a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO test msg
     }
@@ -347,4 +346,5 @@ public class KeyTest {
         assertThat(KEY_LIST_WILDCARD.type()).isEqualTo(TL_LIST_WILDCARD);
         assertThat(KEY_LIST_WILDCARD_X.type()).isEqualTo(TL_LIST_WILDCARD);
     }
+
 }

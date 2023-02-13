@@ -26,7 +26,6 @@ import app.packed.operation.Op;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
-import internal.app.packed.service.KeyHelper;
 
 /**
  * A bindable variable
@@ -184,9 +183,7 @@ public non-sealed interface BeanVariable extends BeanElement {
      *             if the variable does not represent a valid key
      */
     @Override
-    default Key<?> toKey() {
-        return KeyHelper.convert(variable().type(), variable().annotations().toArray(), this);
-    }
+    Key<?> toKey();
 
     default BeanWrappedVariable unwrap() {
         // peel ->

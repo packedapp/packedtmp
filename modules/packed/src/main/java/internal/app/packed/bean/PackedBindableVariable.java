@@ -31,6 +31,7 @@ import app.packed.extension.InternalExtensionException;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import app.packed.util.AnnotationList;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
 import internal.app.packed.binding.BindingResolution;
@@ -222,5 +223,11 @@ public final class PackedBindableVariable implements BeanVariable {
     @Override
     public int modifiers() {
         throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Key<?> toKey() {
+        return Key.fromVariable(this);
     }
 }
