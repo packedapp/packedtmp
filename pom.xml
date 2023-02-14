@@ -33,7 +33,7 @@
     <version.plugin.assembly>3.4.2</version.plugin.assembly>
     <version.plugin.dependency>3.3.0</version.plugin.dependency>
     <version.plugin.help>3.2.0</version.plugin.help>
-    <version.plugin.surefire>3.0.0-M8</version.plugin.surefire>
+    <version.plugin.surefire>3.0.0-M9</version.plugin.surefire>
     <version.plugin.pitest>1.9.2</version.plugin.pitest>
     <version.plugin.animal-sniffer>1.21</version.plugin.animal-sniffer>
     <version.plugin.enforcer>3.1.0</version.plugin.enforcer>
