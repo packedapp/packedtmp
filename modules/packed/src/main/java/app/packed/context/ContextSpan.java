@@ -19,7 +19,12 @@ package app.packed.context;
  *
  */
 // Alternativt ContextScope
+
+// Tror baade vi skal have for hvem og span.
+// For hvem er jo kun interessant for containere
+
 public enum ContextSpan {
+
     CONTAINER_TREE,
 
     CONTAINER_LIFETIME,

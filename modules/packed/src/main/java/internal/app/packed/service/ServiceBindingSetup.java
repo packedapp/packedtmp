@@ -29,12 +29,8 @@ import internal.app.packed.operation.OperationSetup;
 /** Represents a binding to service (which may not exist.). */
 public final class ServiceBindingSetup extends BindingSetup {
 
-    /** The service manager entry entry corresponding to the key. */
+    /** The service manager entry corresponding to the key. */
     public final ServiceSetup entry;
-
-    /** A binding in the same service manager for the same key. */
-    @Nullable
-    ServiceBindingSetup nextBinding;
 
     /** Whether or not the binding is required. */
     public final boolean isRequired;

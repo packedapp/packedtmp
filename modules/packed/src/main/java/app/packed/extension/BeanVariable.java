@@ -30,6 +30,7 @@ import app.packed.util.Variable;
 /**
  * A bindable variable
  */
+
 public non-sealed interface BeanVariable extends BeanElement {
 
     /**

@@ -16,23 +16,23 @@
 package internal.app.packed.service;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 
 import app.packed.service.CircularDependencyException;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 
 /**
- * A service multi-composer is responsible for managing 1 or more {@link ServiceManager0 service composers}
- * that are directly connected and part of the same build.
+ * A service multi-composer is responsible for managing 1 or more {@link ServiceManager0 service composers} that are
+ * directly connected and part of the same build.
  * <p>
  * This class server two main purposes:
  *
  * Finds dependency circles either within the same container or across containers that are not in a parent-child
  * relationship.
  *
- * Responsible for invoking the callback for
- * every DependencyNode. We do this here, because we guarantee that all dependants of a dependant are always
- * invoked before the dependant itself.
+ * Responsible for invoking the callback for every DependencyNode. We do this here, because we guarantee that all
+ * dependants of a dependant are always invoked before the dependant itself.
  */
 public final class CircularServiceDependencyChecker {
 
@@ -70,15 +70,15 @@ public final class CircularServiceDependencyChecker {
      */
     private static void detectCycle(ServiceSetup entry, ArrayDeque<ServiceSetup> stack, ArrayDeque<ServiceSetup> dependencies) {
         ServiceProviderSetup ps = entry.provider();
-        ServiceBindingSetup binding = entry.bindings;
-        if (ps == null || binding == null) {
+        ArrayList<ServiceBindingSetup> bindings = entry.bindings;
+        if (ps == null || bindings.isEmpty()) {
             return; // leaf
         }
 
         // We have both bindings and provide
 
         stack.push(entry);
-        while (binding != null) {
+        for (ServiceBindingSetup binding : bindings) {
             BeanSetup bean = binding.operation.bean;
             for (ServiceProviderSetup psDep : bean.serviceProviders) {
                 ServiceSetup next = psDep.entry;
@@ -102,9 +102,9 @@ public final class CircularServiceDependencyChecker {
                 dependencies.pop();
             }
 
-            binding = binding.nextBinding;
         }
         stack.pop();
+
     }
 
     private static String createErrorMessage(ArrayDeque<ServiceSetup> dependencies) {

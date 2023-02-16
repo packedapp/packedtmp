@@ -4,13 +4,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodType;
 
-import app.packed.extension.ContainerState;
-import app.packed.extension.ContextTemplate;
-import app.packed.extension.OperationTemplate;
+import app.packed.extension.ExtensionHandle;
+import app.packed.extension.context.ContextTemplate;
+import app.packed.extension.operation.OperationTemplate;
 
 public final class PackedOperationTemplate implements OperationTemplate {
 
-    public static PackedOperationTemplate DEFAULTS = new PackedOperationTemplate(0, -1, MethodType.methodType(void.class, ContainerState.class), false);
+    public static PackedOperationTemplate DEFAULTS = new PackedOperationTemplate(0, -1, MethodType.methodType(void.class, ExtensionHandle.class), false);
     final int beanInstanceIndex;
     final int extensionContext;
 
@@ -86,10 +86,6 @@ public final class PackedOperationTemplate implements OperationTemplate {
     /** {@inheritDoc} */
     @Override
     public OperationTemplate withContext(ContextTemplate context) {
-        for (Class<?> cl : context.contextArguments()) {
-            return withArg(cl);
-        }
-        // Context.extensions og operation handler skal
-        return this;
+        return withArg(context.valueClass());
     }
 }

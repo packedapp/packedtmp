@@ -50,7 +50,7 @@ public abstract class InternalWirelet extends Wirelet {
      * @param installer
      *            an installer for the container
      */
-    public abstract void onInstall(PackedContainerInstaller installer);
+    public abstract void onInstall(PackedContainerBuilder installer);
 
     /** {@inheritDoc} */
     @Override

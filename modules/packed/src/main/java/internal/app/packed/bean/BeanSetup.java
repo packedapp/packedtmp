@@ -15,15 +15,15 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationPath;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
-import app.packed.bean.LifecycleOperationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
+import app.packed.bean.LifecycleOperationMirror;
 import app.packed.container.Realm;
-import app.packed.extension.BeanHandle;
-import app.packed.extension.BeanIntrospector;
-import app.packed.extension.OperationHandle;
-import app.packed.extension.OperationTemplate;
 import app.packed.extension.BeanElement.BeanMethod;
+import app.packed.extension.BeanIntrospector;
+import app.packed.extension.bean.BeanHandle;
+import app.packed.extension.operation.OperationHandle;
+import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.FunctionType;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingResolution;
@@ -85,22 +85,16 @@ public final class BeanSetup {
     /** The extension that installed the bean. */
     public final ExtensionSetup installedBy;
 
-    /** Non-null while a bean is being introspected. */
-    @Nullable
-    public BeanReflector introspecting;
-
     public final ArrayList<BeanLifecycleOperation> lifecycleOperations = new ArrayList<>();
-
-    public void addLifecycleOperation(BeanLifecycleOrder runOrder, OperationHandle operation) {
-        lifecycleOperations.add(new BeanLifecycleOperation(runOrder, operation));
-        operation.specializeMirror(() -> new LifecycleOperationMirror());
-    }
 
     /** The lifetime the component is a part of. */
     public final LifetimeSetup lifetime;
 
     /** An index into a container lifetime store, or -1. */
     public final int lifetimeStoreIndex;
+
+    /** A bean local map. */
+    public final IdentityHashMap<PackedBeanLocal<?>, Object> locals;
 
     /** Supplies a mirror for the operation */
     @Nullable
@@ -115,12 +109,11 @@ public final class BeanSetup {
     /** The owner of the bean. */
     public final BeanOwner owner;
 
+    // ???
     public boolean providingOperationsVisited;
 
     /** A list of services provided by the bean, used for circular dependency checks. */
     public final List<ServiceProviderSetup> serviceProviders = new ArrayList<>();
-
-    public IdentityHashMap<PackedBeanLocal<?>, Object> locals;
 
     /** Create a new bean. */
     BeanSetup(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
@@ -148,6 +141,11 @@ public final class BeanSetup {
             this.lifetimeStoreIndex = -1;
             containerLifetime.addDetachedChildBean(bls);
         }
+    }
+
+    public void addLifecycleOperation(BeanLifecycleOrder runOrder, OperationHandle operation) {
+        lifecycleOperations.add(new BeanLifecycleOperation(runOrder, operation));
+        operation.specializeMirror(() -> new LifecycleOperationMirror());
     }
 
     public BindingResolution beanInstanceBindingProvider() {
@@ -230,11 +228,6 @@ public final class BeanSetup {
         return new PackedNamespacePath(paths);
     }
 
-    public static BeanSetup crack(BeanIntrospector introspector) {
-        requireNonNull(introspector, "introspector is null");
-        return ((BeanScannerExtension) VH_BEAN_INTROSPECTOR_TO_THIS.get(introspector)).scanner.bean;
-    }
-
     /**
      * Extracts a bean setup from a bean configuration.
      *
@@ -248,6 +241,15 @@ public final class BeanSetup {
         return handle.bean();
     }
 
+    public static BeanSetup crack(BeanHandle<?> handle) {
+        return ((PackedBeanHandle<?>) handle).bean();
+    }
+
+    public static BeanSetup crack(BeanIntrospector introspector) {
+        requireNonNull(introspector, "introspector is null");
+        return ((BeanScannerExtension) VH_BEAN_INTROSPECTOR_TO_THIS.get(introspector)).scanner.bean;
+    }
+
     /**
      * Extracts a bean setup from a bean handle.
      *
@@ -257,9 +259,5 @@ public final class BeanSetup {
      */
     public static BeanSetup crack(BeanMethod m) {
         return ((PackedBeanMethod) m).extension.scanner.bean;
-    }
-
-    public static BeanSetup crack(BeanHandle<?> handle) {
-        return ((PackedBeanHandle<?>) handle).bean();
     }
 }

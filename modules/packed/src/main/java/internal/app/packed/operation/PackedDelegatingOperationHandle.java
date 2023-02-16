@@ -19,13 +19,14 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.extension.DelegatingOperationHandle;
 import app.packed.extension.Extension;
-import app.packed.extension.OperationHandle;
-import app.packed.extension.OperationTemplate;
 import app.packed.extension.ExtensionPoint.UseSite;
+import app.packed.extension.operation.DelegatingOperationHandle;
+import app.packed.extension.operation.OperationHandle;
+import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.OperationTarget;
 import app.packed.util.FunctionType;
+import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
@@ -49,8 +50,11 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
     /** The target of the operation. */
     public final OperationMemberTarget<?> target;
 
-    public PackedDelegatingOperationHandle(ExtensionSetup delegatedFrom, BeanSetup bean, OperationMemberTarget<?> target, FunctionType operationType,
-            MethodHandle methodHandle) {
+    final BeanScanner scanner;
+
+    public PackedDelegatingOperationHandle(BeanScanner scanner, ExtensionSetup delegatedFrom, BeanSetup bean, OperationMemberTarget<?> target,
+            FunctionType operationType, MethodHandle methodHandle) {
+        this.scanner = requireNonNull(scanner);
         this.target = requireNonNull(target);
         this.delegatedFrom = requireNonNull(delegatedFrom);
         this.bean = requireNonNull(bean);
@@ -68,8 +72,8 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
         // checkConfigurable
         OperationSetup os = new MemberOperationSetup(extension, bean, operationType, template, target, methodHandle);
         bean.operations.add(os);
-        bean.introspecting.unBoundOperations.add(os);
-        return os.toHandle();
+        scanner.unBoundOperations.add(os);
+        return os.toHandle(scanner);
     }
 
     /** {@inheritDoc} */

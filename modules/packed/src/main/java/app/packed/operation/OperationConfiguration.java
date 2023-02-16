@@ -17,7 +17,7 @@ package app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.extension.OperationHandle;
+import app.packed.extension.operation.OperationHandle;
 
 /**
  *

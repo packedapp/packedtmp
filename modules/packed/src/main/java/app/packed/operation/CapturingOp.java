@@ -15,12 +15,23 @@
  */
 package app.packed.operation;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Parameter;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 
-import app.packed.util.Nullable;
 import app.packed.util.FunctionType;
-import internal.app.packed.operation.CapturingOpHelper;
+import app.packed.util.Nullable;
+import app.packed.util.Variable;
+import internal.app.packed.binding.InternalDependency;
 import internal.app.packed.operation.PackedOp;
+import internal.app.packed.operation.SamType;
+import internal.app.packed.operation.TerminalOp.FunctionInvocationOp;
+import internal.app.packed.util.types.TypeVariableExtractor;
 
 /**
  * A abstract op that captures the type an annotated return type and annotated type apra
@@ -33,6 +44,50 @@ import internal.app.packed.operation.PackedOp;
  */
 public abstract non-sealed class CapturingOp<R> implements Op<R> {
 
+    private static final ClassValue<Base> BASE = new ClassValue<>() {
+
+        @Override
+        protected Base computeValue(Class<?> type) {
+
+            // Maaske er det fint at smide en error?
+            Constructor<?>[] con = type.getDeclaredConstructors();
+            if (con.length != 1) {
+                throw new Error(type + " must declare a single constructor");
+            }
+            Constructor<?> c = con[0];
+            if (c.getParameterCount() != 1) {
+                throw new Error(type + " must declare a single constructor with a single parameter taking a function interface");
+            }
+
+            Parameter p = c.getParameters()[0];
+
+            Class<?> functionalInterface = p.getType();
+
+            SamType st = SamType.of(functionalInterface);
+            return new Base(type, st);
+        }
+    };
+
+    private static final ClassValue<Top> TOP = new ClassValue<>() {
+
+        @Override
+        protected Top computeValue(Class<?> type) {
+            Class<?> baseClass = type.getSuperclass();
+            while (baseClass.getSuperclass() != CapturingOp.class) {
+                baseClass = baseClass.getSuperclass();
+            }
+            Base b = BASE.get(baseClass);
+
+            Variable[] types = b.tve.extractAllVariables(type, IllegalArgumentException::new);
+
+            Variable last = types[types.length - 1];
+
+            FunctionType ot = FunctionType.of(last, Arrays.copyOf(types, types.length - 1));
+
+            return new Top(b, ot);
+        }
+    };
+
     /** The op that all calls delegate to. */
     private final PackedOp<R> op;
 
@@ -43,7 +98,9 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
      *            the function instance
      */
     protected CapturingOp(Object function) {
-        this.op = CapturingOpHelper.capture(getClass(), function);
+        requireNonNull(function, "function is null"); // should have already been checked by subclasses
+        Top top = TOP.get(getClass());
+        this.op = new FunctionInvocationOp<>(top.ot, top.create(function), top.base.samType, function.getClass().getMethods()[0]);
     }
 
     /** {@inheritDoc} */
@@ -79,5 +136,55 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
     @Override
     public final FunctionType type() {
         return op.type();
+    }
+
+    private static class Base {
+        final SamType samType;
+
+        final TypeVariableExtractor tve;
+
+        Base(Class<?> baseType, SamType samType) {
+            this.samType = samType;
+            this.tve = TypeVariableExtractor.of(baseType);
+
+            // TODO make methodHandle that can
+        }
+    }
+
+    private static class Top {
+        final Base base;
+        @SuppressWarnings("unused")
+        final List<InternalDependency> deps;
+
+        final FunctionType ot;
+
+        Top(Base base, FunctionType ot) {
+            this.base = base;
+            this.ot = ot;
+            this.deps = InternalDependency.fromOperationType(ot);
+
+        }
+
+        // MethodHandle mh = null;
+
+        MethodHandle create(Object function) {
+            MethodHandle mh = base.samType.methodHandle().bindTo(function);
+            return mh.asType(ot.toMethodType());
+
+            // Think we need to validate it
+
+//            if (!expectedType.isInstance(value)) {
+//                String type = Supplier.class.isAssignableFrom(supplierOrFunction.getClass()) ? "supplier" : "function";
+//                if (value == null) {
+//                    // NPE???
+//                    throw new NullPointerException("The " + type + " '" + supplierOrFunction + "' must not return null");
+//                } else {
+//                    // throw new ClassCastException("Expected factory to produce an instance of " + format(type) + " but was " +
+//                    // instance.getClass());
+//                    throw new ClassCastException("The \" + type + \" '" + supplierOrFunction + "' was expected to return instances of type "
+//                            + expectedType.getName() + " but returned a " + value.getClass().getName() + " instance");
+//                }
+//            }
+        }
     }
 }

@@ -30,12 +30,13 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanFactoryMirror;
 import app.packed.bean.BeanKind;
 import app.packed.bean.NonStaticMemberException;
-import app.packed.extension.OperationHandle;
-import app.packed.extension.OperationTemplate;
+import app.packed.extension.operation.OperationHandle;
+import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.util.FunctionType;
 import app.packed.util.Nullable;
+import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.BindingSetup;
@@ -154,9 +155,13 @@ public sealed abstract class OperationSetup {
         return (OperationTarget) this;
     }
 
-    /** {@return an operation handle for this operation.} */
     public final PackedOperationHandle toHandle() {
-        return new PackedOperationHandle(this);
+        return new PackedOperationHandle(this, null);
+    }
+
+    /** {@return an operation handle for this operation.} */
+    public final PackedOperationHandle toHandle( BeanScanner scanner) {
+        return new PackedOperationHandle(this, scanner);
     }
 
     /** {@return the type of operation.} */

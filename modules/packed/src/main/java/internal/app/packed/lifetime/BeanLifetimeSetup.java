@@ -42,7 +42,11 @@ public final class BeanLifetimeSetup implements LifetimeSetup {
     public final List<FuseableOperation> lifetimes;
 
     public BeanLifetimeSetup(BeanSetup bean, PackedBeanInstaller installer) {
-        this.lifetimes = FuseableOperation.of(List.of(installer.template.bot));
+        if (installer.template.bot == null) {
+            this.lifetimes = List.of();
+        } else {
+            this.lifetimes = FuseableOperation.of(List.of(installer.template.bot));
+        }
         this.bean = requireNonNull(bean);
     }
 

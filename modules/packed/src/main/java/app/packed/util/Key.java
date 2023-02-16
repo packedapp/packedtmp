@@ -18,7 +18,6 @@ package app.packed.util;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
@@ -33,11 +32,10 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 
-import app.packed.extension.BeanVariable;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
+import app.packed.extension.BeanVariable;
 import app.packed.operation.Provider;
-import internal.app.packed.bean.PackedBeanField;
 import internal.app.packed.bean.PackedBeanMethod;
 import internal.app.packed.bean.PackedBindableVariable;
 import internal.app.packed.util.AnnotationUtil;
@@ -465,10 +463,6 @@ public abstract class Key<T> {
         return new CanonicalizedKey<>(convertType(type, null), qualifiers);
     }
 
-    static Key<?> convert(Object source, AnnotatedType type) {
-        return Key.convert(type.getType(), type.getAnnotations(), true, source);
-    }
-
     private static Key<?> convert(Type type, Annotation[] annotations, boolean ignoreNonQualifyingAnnotations, Object source) {
         Type t = convertType(type, source);
         PackedAnnotationList apl;
@@ -572,8 +566,7 @@ public abstract class Key<T> {
     // Here for now, might move it somewhere else when we have finalized it
     public static Key<?> fromField(BeanField field) {
         requireNonNull(field, "field is null");
-        PackedBeanField pbf = (PackedBeanField) field;
-        return convert(pbf, pbf.annotatedType);
+        return convert(field.field().getGenericType(), field.field().getAnnotations(), true, field);
     }
 
     /**
@@ -589,12 +582,12 @@ public abstract class Key<T> {
      */
     public static Key<?> fromField(Field field) {
         requireNonNull(field, "field is null");
-        return convert(field, field.getAnnotatedType());
+        return convert(field.getGenericType(), field.getAnnotations(), true, field);
     }
 
     public static Key<?> fromMethodReturnType(BeanMethod method) {
         PackedBeanMethod pbm = (PackedBeanMethod) method;
-        return convert(pbm, pbm.method().getAnnotatedReturnType());
+        return convert(pbm.method().getGenericReturnType(), pbm.method().getAnnotations(), true, method);
     }
 
     /**

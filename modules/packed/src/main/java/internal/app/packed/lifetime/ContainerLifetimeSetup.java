@@ -25,8 +25,8 @@ import java.util.Set;
 
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
-import app.packed.extension.ContainerState;
-import app.packed.extension.OperationTemplate;
+import app.packed.extension.ExtensionHandle;
+import app.packed.extension.operation.OperationTemplate;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.RunState;
@@ -35,7 +35,7 @@ import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanLifecycleOperation;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.PackedContainerInstaller;
+import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.entrypoint.EntryPointSetup;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
@@ -51,7 +51,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
     private static final MethodHandle MH_INVOKE_INITIALIZER = LookupUtil.findStaticOwn(MethodHandles.lookup(), "invokeInitializer", void.class, BeanSetup.class,
-            MethodHandle.class, ContainerState.class);
+            MethodHandle.class, ExtensionHandle.class);
 
     /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
     private static final MethodHandle MH_LIFETIME_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ContainerLifetimeMirror.class,
@@ -87,7 +87,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
      * @param origin
      * @param parent
      */
-    public ContainerLifetimeSetup(PackedContainerInstaller installer, ContainerSetup newContainer, @Nullable ContainerLifetimeSetup parent) {
+    public ContainerLifetimeSetup(PackedContainerBuilder installer, ContainerSetup newContainer, @Nullable ContainerLifetimeSetup parent) {
         super(parent);
         this.lifetimes = FuseableOperation.of(List.of(OperationTemplate.defaults())); // obviously wrong
         this.initialization = new FuseableOperation(OperationTemplate.defaults());
@@ -136,7 +136,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         return mirror;
     }
 
-    public ContainerState newRuntimePool() {
+    public ExtensionHandle newRuntimePool() {
         return PackedExtensionContext.create(size);
     }
 
@@ -225,7 +225,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         return size++;
     }
 
-    public static void invokeInitializer(BeanSetup bean, MethodHandle mh, ContainerState ec) {
+    public static void invokeInitializer(BeanSetup bean, MethodHandle mh, ExtensionHandle ec) {
         Object instance;
         try {
             instance = mh.invokeExact(ec);

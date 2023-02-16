@@ -20,6 +20,7 @@ import static internal.app.packed.util.StringFormatter.formatSimple;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -77,7 +78,8 @@ public final class TypeVariableExtractor {
 
         Variable[] variables = new Variable[types.length];
         for (int i = 0; i < variables.length; i++) {
-            variables[i] = PackedVariable.of(pta.getAnnotatedActualTypeArguments()[i]);
+            AnnotatedType at = pta.getAnnotatedActualTypeArguments()[i];
+            variables[i] = PackedVariable.of(at.getAnnotations(), at.getType());
         }
         return variables;
     }

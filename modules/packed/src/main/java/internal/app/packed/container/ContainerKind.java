@@ -19,10 +19,13 @@ package internal.app.packed.container;
  *
  */
 public enum ContainerKind {
+
     ROOT,
 
+    // Same lifetime as parent
     PARENT,
 
+    // Lazy lifetime as parent
     LAZY,
 
     MANY;

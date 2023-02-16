@@ -22,10 +22,10 @@ import java.util.function.BiConsumer;
 
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.BeanElement.BeanField;
+import app.packed.extension.operation.OperationHandle;
 import app.packed.extension.Extension;
-import app.packed.extension.OperationHandle;
 import app.packed.extension.BeanIntrospector;
-import app.packed.extension.ContainerState;
+import app.packed.extension.ExtensionHandle;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.util.AnnotationList;
 import app.packed.util.Key;
@@ -39,7 +39,7 @@ public class HExtension extends Extension<HExtension> {
     // Tmp hack until channels work better
     static Map<Integer, MethodHandle> M = new HashMap<>();
 
-    static ContainerState EC;
+    static ExtensionHandle EC;
 
     ServiceableBeanConfiguration<MyBean> install;
 
@@ -94,10 +94,10 @@ public class HExtension extends Extension<HExtension> {
     }
 
     static class MyBean {
-        final ContainerState ec;
+        final ExtensionHandle ec;
         final Map<Integer, MethodHandle> mh;
 
-        MyBean(ContainerState ec, @CodeGenerated Map<Integer, MethodHandle> mh) throws Throwable {
+        MyBean(ExtensionHandle ec, @CodeGenerated Map<Integer, MethodHandle> mh) throws Throwable {
             this.mh = mh;
             this.ec = EC = ec;
         }

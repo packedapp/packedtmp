@@ -19,9 +19,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 
 import app.packed.util.Key;
-import app.packed.extension.OperationHandle;
-import app.packed.extension.OperationTemplate;
 import app.packed.extension.BeanElement.BeanConstructor;
+import app.packed.extension.operation.OperationHandle;
+import app.packed.extension.operation.OperationTemplate;
 
 /**
  *

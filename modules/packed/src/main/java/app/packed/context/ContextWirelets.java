@@ -26,11 +26,13 @@ public class ContextWirelets {
         throw new UnsupportedOperationException();
     }
 
-    Wirelet propagete(@SuppressWarnings("unchecked") Class<? extends Context<?>>... contexts) {
+    @SuppressWarnings("unchecked")
+    static final Wirelet propagete(Class<? extends Context<?>>... contexts) {
         throw new UnsupportedOperationException();
     }
 
-    Wirelet propageteIfPresent(@SuppressWarnings("unchecked") Class<? extends Context<?>>... contexts) {
+    @SuppressWarnings("unchecked")
+    static final Wirelet propageteIfPresent(Class<? extends Context<?>>... contexts) {
         throw new UnsupportedOperationException();
     }
 }

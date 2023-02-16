@@ -20,6 +20,7 @@ import app.packed.application.BuildException;
 /**
  *
  */
+//LifetimeNotManaged Hmm stateless fungere jo tit
 public class UnmanagedLifetimeException extends BuildException {
 
     private static final long serialVersionUID = 1L;

@@ -25,9 +25,9 @@ import app.packed.util.FunctionType;
 /**
  *
  */
-record SamType(Class<?> functionInterface, Method saMethod, MethodHandle methodHandle, FunctionType type) {
+public record SamType(Class<?> functionInterface, Method saMethod, MethodHandle methodHandle, FunctionType type) {
 
-    static SamType of(Class<?> functionInterface) {
+    public static SamType of(Class<?> functionInterface) {
         if (!functionInterface.isInterface()) {
             throw new IllegalArgumentException(functionInterface + " is not an interface");
         }

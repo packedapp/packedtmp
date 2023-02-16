@@ -18,15 +18,16 @@ package app.packed.application;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.extension.BeanHandle;
-import app.packed.extension.BeanInstaller;
-import app.packed.extension.BeanLifetimeTemplate;
+import app.packed.bean.BeanKind;
 import app.packed.extension.BeanLocal;
-import app.packed.extension.ContextTemplate;
 import app.packed.extension.FrameworkExtension;
-import app.packed.extension.OperationHandle;
-import app.packed.extension.OperationTemplate;
+import app.packed.extension.bean.BeanBuilder;
+import app.packed.extension.bean.BeanHandle;
+import app.packed.extension.bean.BeanTemplate;
+import app.packed.extension.context.ContextTemplate;
+import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.Op;
+import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 
 /**
@@ -38,15 +39,20 @@ import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 
 // Er ude i maaske multiple application er paa BaseExtension.
 // Men vil man deploye at runtime jo need this host/deployer extension
+
+//ApplicationInstaller?
 public class ApplicationHostExtension extends FrameworkExtension<ApplicationHostExtension> {
 
     static final ContextTemplate CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationInitializationContext.class,
             ApplicationInitializationContext.class);
 
     static final BeanLocal<InstallingAppHost> L = BeanLocal.of();
+
     static final OperationTemplate ot = OperationTemplate.raw().withContext(CIT).withReturnTypeObject();
 
-    static final BeanLifetimeTemplate BLT = BeanLifetimeTemplate.builderManyton().withLifetime(ot).build();
+    static final BeanTemplate BLT = new PackedBeanTemplate(BeanKind.MANYTON).withOperationTemplate(ot);
+
+   // static final BeanTemplate BLT2 = BeanTemplate.UNMANAGED.instanceAs(Object.class).inFactoryContext(CIT).raw();
 
     MethodHandle mh;
 
@@ -54,21 +60,18 @@ public class ApplicationHostExtension extends FrameworkExtension<ApplicationHost
 
     public <T> ApplicationHostConfiguration<T> newApplication(Class<T> guestBean) {
         // We need the attachment, because ContainerGuest is on
-        BeanInstaller bi = base().beanInstaller(BLT).setLocal(L, new InstallingAppHost());
+        BeanBuilder bi = base().beanBuilder(BLT).setLocal(L, new InstallingAppHost());
         return newApplication(bi.install(guestBean));
     }
 
     public <T> ApplicationHostConfiguration<T> newApplication(Op<T> guestBean) {
         // We need the attachment, because ContainerGuest is on
-        BeanInstaller bi = base().beanInstaller(BLT).setLocal(L, new InstallingAppHost());
+        BeanBuilder bi = base().beanBuilder(BLT).setLocal(L, new InstallingAppHost());
         return newApplication(bi.install(guestBean));
     }
 
     private <T> ApplicationHostConfiguration<T> newApplication(BeanHandle<T> handle) {
-        OperationHandle oh = handle.lifetimeOperations().get(0);
-        this.runOnCodegen(() -> {
-            mh = oh.generateMethodHandle();
-        });
+        runOnCodegen(() -> mh = handle.lifetimeOperations().get(0).generateMethodHandle());
         return new ApplicationHostConfiguration<>(handle);
 
     }

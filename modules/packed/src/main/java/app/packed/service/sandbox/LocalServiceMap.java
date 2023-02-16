@@ -15,9 +15,9 @@
  */
 package app.packed.service.sandbox;
 
-import app.packed.extension.BeanHandle;
 import app.packed.extension.BeanVariable;
-import app.packed.extension.OperationHandle;
+import app.packed.extension.bean.BeanHandle;
+import app.packed.extension.operation.OperationHandle;
 import app.packed.util.Key;
 
 // ServiceDomain? Something where keys are unique
@@ -28,6 +28,7 @@ import app.packed.util.Key;
 //// Do we support dynamic services? Key->SomethingBindable.bind
 //// Support hiraki? fx Foerst leder vi i bean map, saa i container map hvis ikke fundet
 
+// Paa BaseExtensionPoint
 /**
  * Ideen er at goere det ket at manage services for fx {@link CodeGenerated}
  */
@@ -37,24 +38,28 @@ import app.packed.util.Key;
 // I'm thinking about errors messages
 
 // Ideen er lidt sat vi hjaelper lidt paa med Key baseret service domain
-public class LocalServiceMap<V> {
+
+// BaseExtensionPoint.newServiceDomain(xxx propertie);
+public interface LocalServiceMap {
 
     // consumers
 
     // Vi har fundet en binding som vi gerne vil binde til en service
 
     // Must be resolvable to a key
-    public void consume(BeanVariable variable) {}
+    void bindInto(BeanVariable variable);
+    void bindInto(Class<?> key, BeanVariable variable);
+    void bindInto(Key<?> key, BeanVariable variable);
 
     // Producing multiple services with the same key is not supported
 
-    public void produceConstant(Key<?> key, Object constant) {}
+    void produceOptionalService(Key<?> key, OperationHandle handle);
 
-    public void produceOptionalService(Key<?> key, OperationHandle handle) {}
+    <T> void provideBeanInstance(Key<T> key, BeanHandle<T> handle);
 
-    public void produce(Key<?> key, OperationHandle handle) {}
+    <T> void provideConstant(Key<T> key, T constant);
 
-    public <T> void produceBean(Key<T> key, BeanHandle<T> handle) {}
+    void provideOperation(Key<?> key, OperationHandle handle);
 
-    public void resolve() {}
+    void resolve();
 }

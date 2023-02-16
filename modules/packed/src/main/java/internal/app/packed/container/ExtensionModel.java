@@ -38,11 +38,11 @@ import app.packed.container.Realm;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
-import app.packed.util.Framework;
-import app.packed.util.Nullable;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.FrameworkExtension;
 import app.packed.extension.InternalExtensionException;
+import app.packed.util.Framework;
+import app.packed.util.Nullable;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
@@ -65,6 +65,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected ExtensionModel computeValue(Class<?> extensionClass) {
+           // new Exception().printStackTrace();
             ClassUtil.checkProperSubclass(Extension.class, extensionClass, s -> new InternalExtensionException(s));
             // Check that
             if (FrameworkExtension.class.isAssignableFrom(extensionClass)) {
@@ -457,8 +458,17 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 }
 
                 // Get any bootstrap data that was create as part of the class initialization
+
+                Object object = DATA.get(extensionClass);
+                if (object instanceof ExtensionModel m) {
+                    // Typically from call to l.ensureInitialized(extensionClass);
+                    // where the class initializer tries to create
+                    // FooExtension
+                    // static final ExtensionDescriptor.of(FooExtension.class;
+                    return m;
+                }
                 @Nullable
-                Builder b = (Builder) DATA.get(extensionClass);
+                Builder b = (Builder) object;
                 if (b == null) {
                     b = new Builder(extensionClass);
                 }

@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
-import java.util.function.Consumer;
 
 import app.packed.container.Realm;
 import app.packed.extension.BeanIntrospector;
@@ -253,8 +252,6 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         // The extension must be recursively installed into all ancestors (if not already installed)
         ExtensionSetup extensionParent = container.treeParent == null ? null : container.treeParent.useExtension(extensionType, requestedByExtension);
 
-        ExtensionPreLoad preLoader = container.preLoad.get(extensionType);
-
         ExtensionSetup extension = new ExtensionSetup(extensionParent, container, extensionType);
 
         Extension<?> instance = extension.instance = extension.model.newInstance(extension);
@@ -269,13 +266,6 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
         if (isAssemblyRoot) {
             container.assembly.extensions.add(extension);
-        }
-
-        if (preLoader != null) {
-            Consumer<? super ExtensionSetup> c = preLoader.onUse;
-            if (c != null) {
-                c.accept(extension);
-            }
         }
 
         // Invoke Extension#onNew() before returning the extension

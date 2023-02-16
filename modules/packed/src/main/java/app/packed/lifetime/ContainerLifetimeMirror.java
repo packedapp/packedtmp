@@ -44,7 +44,13 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
      */
     public ContainerLifetimeMirror() {}
 
-    public /*Ordered */ Collection<BeanMirror> beans() {
+    /**
+     * All the beans contained with the lifetime of this container.
+     * This include static, container. What about lazy?
+     *
+     * @return a list of beans
+     */
+    public /* Ordered */ Collection<BeanMirror> beans() {
         throw new UnsupportedOperationException();
     }
 
@@ -57,6 +63,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
         return lifetime().container.mirror();
     }
 
+    // Vil egentlig jo bare godt have en Tree her?
     public Map<ContainerMirror, /* Ordered */ Collection<BeanMirror>> elements() {
         // beanKind.isInContainerLifetime()
         // alternative BiStream
@@ -127,7 +134,6 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
 }
 ///** {@return the root of the tree.} */
 // LifetimeOriginMirror root(); // Optional<CM> if we have empty trees. Which we probably have with filtering
-
 
 //Do we ever return empty trees? Det tror jeg ikke.
 

@@ -6,8 +6,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationPath;
-import app.packed.extension.ContainerHandle;
 import app.packed.extension.Extension;
+import app.packed.extension.container.ContainerHandle;
+import app.packed.lifetime.LifetimeKind;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedContainerHandle;
@@ -45,10 +46,12 @@ public final class ContainerConfiguration {
     }
 
     /**
+     * Checks that the container's assembly is still configurable.
      *
      * @throws IllegalStateException
-     *             if the container is no longer configurable
+     *             if the container's assembly is no longer configurable
      */
+    // TODO: not currently used
     protected void checkIsConfigurable() {
         if (!handle.container().assembly.isConfigurable()) {
             throw new IllegalStateException("This container is no longer configurable");
@@ -69,7 +72,7 @@ public final class ContainerConfiguration {
      * @see ContainerMirror#extensionsTypes()
      */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
-        return handle.container().extensionTypes();
+        return handle.extensionTypes();
     }
 
     /** {@inheritDoc} */
@@ -89,7 +92,11 @@ public final class ContainerConfiguration {
      *           cannot give a more detailed answer about who is using a particular extension
      */
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-        return handle.container().isExtensionUsed(extensionType);
+        return handle.isExtensionUsed(extensionType);
+    }
+
+    public LifetimeKind lifetimeKind() {
+        return handle.container().lifetime.lifetimeKind();
     }
 
     /**
@@ -147,7 +154,7 @@ public final class ContainerConfiguration {
      * @return the path of this configuration.
      */
     public ApplicationPath path() {
-        return handle.container().path();
+        return handle.path();
     }
 
     // never selects extension wirelets...

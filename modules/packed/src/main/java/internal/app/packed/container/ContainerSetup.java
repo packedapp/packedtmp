@@ -36,7 +36,6 @@ import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
 import internal.app.packed.service.ServiceManager;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
@@ -75,6 +74,9 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     // Or maybe extension types are always sorted??
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
+    /** A bean local map. */
+    public final IdentityHashMap<PackedContainerLocal<?>, Object> locals;
+
     /**
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
      * ignored.
@@ -86,8 +88,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
 
     /** The name of the container. */
     public String name;
-
-    public final IdentityHashMap<Class<? extends Extension<?>>, ExtensionPreLoad> preLoad = new IdentityHashMap<>();
 
     /** The container's service manager. */
     public final ServiceManager sm;
@@ -104,28 +104,26 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      * Create a new container.
      *
      * @param installer
-     *            the container's installer
+     *            the container builder
      * @param assembly
      *            the assembly the container is defined in
      */
-    ContainerSetup(PackedContainerInstaller installer, AssemblySetup assembly, String name) {
-        super(installer.parent);
-        this.application = requireNonNull(installer.application);
+    ContainerSetup(PackedContainerBuilder builder, AssemblySetup assembly, String name) {
+        super(builder.parent);
+        this.application = requireNonNull(builder.application);
         this.assembly = requireNonNull(assembly);
         this.sm = new ServiceManager(null, this);
         this.name = name;
+        this.locals = builder.locals;
 
         // Figure out the lifetime of this container
-        if (installer.lifetime.kind == ContainerKind.PARENT) {
+        if (builder.template.kind() == ContainerKind.PARENT) {
             this.lifetime = treeParent.lifetime;
         } else {
-            this.lifetime = new ContainerLifetimeSetup(installer, this, null);
-            for (PackedContainerLifetimeChannel<?> b : application.driver.channels()) {
-                b.install(this);
-            }
+            this.lifetime = new ContainerLifetimeSetup(builder, this, null);
         }
         // If a name has been set using a wirelet, we ignore calls to #named(String)
-        this.ignoreRename = installer.nameFromWirelet != null;
+        this.ignoreRename = builder.nameFromWirelet != null;
     }
 
     /** {@return a unmodifiable view of all extension types that are in used in no particular order.} */

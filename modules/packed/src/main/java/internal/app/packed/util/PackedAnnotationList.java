@@ -50,6 +50,12 @@ public record PackedAnnotationList(Annotation... annotations) implements Annotat
         return new PackedAnnotationList(annotations);
     }
 
+    public static PackedAnnotationList ofUnsafe(Annotation... annotations) {
+        // TODO check for null
+        return new PackedAnnotationList(annotations.clone());
+    }
+
+
     /** {@inheritDoc} */
     @Override
     public boolean isPresent(Class<? extends Annotation> annotationClass) {

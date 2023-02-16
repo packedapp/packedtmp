@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import app.packed.extension.CustomBeanHook;
+import app.packed.extension.BeanCustomHook;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.extension.BeanHook.AnnotatedBindingHook;
@@ -138,7 +138,7 @@ public final class BeanHookModel {
         this.parent = requireNonNull(parent);
         List<AssemblyMetaHolder> holders = new ArrayList<>();
         for (Annotation a : annotations) {
-            if (a.annotationType().isAnnotationPresent(CustomBeanHook.class)) {
+            if (a.annotationType().isAnnotationPresent(BeanCustomHook.class)) {
                 holders.add(new AssemblyMetaHolder(a.annotationType()));
             }
         }

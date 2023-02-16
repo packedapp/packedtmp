@@ -18,9 +18,11 @@ package app.packed.bean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.extension.BeanHandle;
+import app.packed.extension.bean.BeanHandle;
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
+import app.packed.util.Key;
+import internal.app.packed.bean.BeanSetup;
 
 /**
  * The configuration of a bean that deals with beans that are instantiated.
@@ -52,6 +54,19 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
         super.named(name);
         return this;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public <K> InstanceBeanConfiguration<T> overrideService(Class<K> key, K instance) {
+        return overrideService(Key.of(key), instance);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <K> InstanceBeanConfiguration<T> overrideService(Key<K> key, K instance) {
+        super.overrideService(key, instance);
+        return this;
+    }
 }
 
 //Skal bruges paa params som skal "bootstrappes" med...
@@ -62,8 +77,8 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 //addAnnotation
 //resolve();
 class InstanceBeanConfigurationSandbox<T> {
- //   @SpecFix({ "Da vi altid laver alle bindings naar vi installere... Fungere det ikke super godt med initializeWith.",
- //           " Det er jo ihvertfald ikke en service binding laengere" })
+    // @SpecFix({ "Da vi altid laver alle bindings naar vi installere... Fungere det ikke super godt med initializeWith.",
+    // " Det er jo ihvertfald ikke en service binding laengere" })
 // Hvad hvis man bruger servicen i baade constructoren og i @OnStop...
 // Saa fungere det her initialize jo ikke...
 
@@ -94,14 +109,17 @@ class InstanceBeanConfigurationSandbox<T> {
 //      throw new UnsupportedOperationException();
 //  }
 //
-//  public <K> InstanceBeanConfiguration<T> initializeWithInstance(Class<K> key, K instance) {
-//      return initializeWithInstance(Key.of(key), instance);
-//  }
-//
-//  public <K> InstanceBeanConfiguration<T> initializeWithInstance(Key<K> key, K instance) {
-//      handle().initializeWithInstance(key, instance);
-//      return this;
-//  }
+
+    // Maaske har vi neglet semantikken
+    // Fungere kun som initialization...
+    // Hvis samme key bliver resolvet som en rigtig service andre steder er det en fejl.
+
+    // Override service -> Bliver et specielt mirror... Ikke et ServiceMirror
+    //
+    // Tror vi fejler haardt hvis den ikke er bundet til en potentiel service...
+
+    // Teanker ogsaa det er en fejl. Hvis den ikke overrider noget
+
 
     /**
      * <p>
@@ -126,9 +144,25 @@ class InstanceBeanConfigurationSandbox<T> {
     }
 
     // Peek when???? Maybe wrap a factory for now
-    //// Do we want to peek on instances???? I don't think so
+    //// Do we want to peek on instances???? Maybe fail if used on source=instances
     // peekAfterCreate
-    InstanceBeanConfiguration<T> peek(Consumer<? super T> consumer) {
+    /**
+     * Immediately after a bean instance has been created. But before any lifecycle operations are called.
+     *
+     * @param consumer
+     *            the consumer to call
+     * @return this configuration
+     * @throws UnsupportedOperationException
+     *             if the bean has bean created with an instance (beanSourceKind = BeanSourceKind#INSTANCE)
+     */
+    // Nogen vil man vel gerne fx vaere injected
+    InstanceBeanConfiguration<T> peek(BeanSetup bean, Consumer<? super T> consumer) {
+        if (bean.beanSourceKind == BeanSourceKind.NONE) {
+            throw new UnsupportedOperationException("Operation not supported for beans that have no source");
+        } else if (bean.beanSourceKind == BeanSourceKind.INSTANCE) {
+            throw new UnsupportedOperationException("Operation not supported for beans that have been registered with an instance");
+        }
+
         // peek at constr
         // handle().peekInstance(consumer);
         throw new UnsupportedOperationException();
@@ -190,9 +224,6 @@ class InstanceBeanConfigurationSandbox<T> {
 //Mit eneste problem er, at det kun virker for factory/initailizatio operations.
 //Ellers bliver de resolved som en service. Maaske det kan skabe lidt problemer
 //Tror nu det er bedre... Maa jeg indroemme.. Den foeles ikke helt rigtig den her annotering...
-@interface ZInitializer {
-
-}
 
 // ServiceLocator sl = ServiceLocator.of(xxx) <-- return InternalServiceLocator
 // Syntes man skal angive key.. for let at goere provideInstance(serviceLocator);

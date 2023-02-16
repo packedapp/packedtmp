@@ -27,7 +27,7 @@ import app.packed.bean.BeanInstallationException;
 import app.packed.extension.BeanVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
-import app.packed.extension.OperationTemplate;
+import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
 import app.packed.util.AnnotationList;
@@ -67,12 +67,12 @@ public final class PackedBindableVariable implements BeanVariable {
     public final OperationSetup operation;
 
     /** The bean scanner, used for resolving more nested operations. */
-    private final BeanReflector scanner;
+    private final BeanScanner scanner;
 
     /** The variable to bind. */
     private final Variable variable;
 
-    public PackedBindableVariable(BeanReflector scanner, OperationSetup operation, int index, ExtensionSetup bindingExtension, Variable variable) {
+    public PackedBindableVariable(BeanScanner scanner, OperationSetup operation, int index, ExtensionSetup bindingExtension, Variable variable) {
         this.operation = requireNonNull(operation);
         this.scanner = requireNonNull(scanner);
         this.index = index;

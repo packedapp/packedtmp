@@ -30,8 +30,7 @@ import internal.app.packed.operation.OperationSetup;
  */
 final class BeanScannerBindingResolver {
 
-    static void resolveBinding(BeanReflector iBean, OperationSetup operation, int index) {
-
+    static void resolveBinding(BeanScanner iBean, OperationSetup operation, int index) {
         // Extracts the variable we want to resolve
         Variable v = operation.type.parameter(index);
 
@@ -80,9 +79,8 @@ final class BeanScannerBindingResolver {
      *            the method to look for annotations on
      * @return
      */
-    private static boolean tryResolveWithBindingAnnotation(BeanReflector introspector, Variable var, OperationSetup os, int index) {
+    private static boolean tryResolveWithBindingAnnotation(BeanScanner introspector, Variable var, OperationSetup os, int index) {
         Annotation[] annotations = var.annotations().toArray();
-
         for (Annotation a1 : annotations) {
             Class<? extends Annotation> a1Type = a1.annotationType();
             AnnotatedParameterType hook = introspector.hookModel.testParameterAnnotation(a1Type);

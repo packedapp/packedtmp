@@ -4,7 +4,8 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.application.ApplicationPath;
 import app.packed.container.Realm;
-import app.packed.extension.BeanHandle;
+import app.packed.extension.bean.BeanHandle;
+import app.packed.util.Key;
 
 /** The configuration of a bean, typically returned from the installation site of a bean. */
 public class BeanConfiguration {
@@ -69,6 +70,28 @@ public class BeanConfiguration {
      */
     public BeanConfiguration named(String name) {
         handle.named(name);
+        return this;
+    }
+
+    public <K> BeanConfiguration overrideService(Class<K> key, K constant) {
+        // Add: Provider? Use cases???
+
+        // Problemet med Op er at den skal resolves...
+        // Den kan fx afhavnding af en service. Der allerede er blevet manuelt
+        // bundet tidligere.
+        // Siger ikke det er umuligt, men som det er nu. Tror jeg ikke
+        // vi tillader at tilfoejere operationer dynamisk efter vi har installeret beanen.
+        return overrideService(Key.of(key), constant);
+    }
+
+    /**
+     * @param <K>
+     * @param key
+     * @param instance
+     * @return
+     */
+    public <K> BeanConfiguration overrideService(Key<K> key, K constant) {
+        handle().overrideService(key, constant);
         return this;
     }
 

@@ -16,7 +16,7 @@
 package app.packed.container;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.CustomBeanHook.JavaBaseSupport;
+import app.packed.extension.BeanCustomHook.JavaBaseSupport;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.service.ServiceableBeanConfiguration;

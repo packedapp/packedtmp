@@ -24,15 +24,17 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.extension.Extension;
-import app.packed.extension.OperationHandle;
-import app.packed.extension.OperationTemplate;
 import app.packed.extension.BeanVariable;
-import app.packed.extension.ContainerState;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
+import app.packed.extension.operation.OperationHandle;
+import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.util.FunctionType;
+import app.packed.util.Nullable;
+import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.PackedBindableVariable;
 
 /**
@@ -83,7 +85,7 @@ import internal.app.packed.bean.PackedBindableVariable;
 
 // interceptor().add(...);
 // interceptor().peek(e->System.out.println(e));
-public final record PackedOperationHandle(OperationSetup operation) implements OperationHandle {
+public final record PackedOperationHandle(OperationSetup operation, @Nullable BeanScanner s) implements OperationHandle {
 
     /** {@inheritDoc} */
     @Override
@@ -107,8 +109,11 @@ public final record PackedOperationHandle(OperationSetup operation) implements O
         // This method does not throw IllegalStateExtension, but OnBinding may.
         // custom invocationContext must have been set before calling this method
         checkIndex(index, operation.type.parameterCount());
-
-        return new PackedBindableVariable(operation.bean.introspecting, operation, index, operation.operator, operation.type.parameter(index));
+        if (s == null) {
+            throw new UnsupportedOperationException();
+        }
+        // TODO we need to check that s is still active
+        return new PackedBindableVariable(s, operation, index, operation.operator, operation.type.parameter(index));
     }
 
     /** Checks that the operation is still configurable. */
@@ -233,7 +238,7 @@ interface ZandboxOH {
     // Hmm, kan jo ikke bare tage en tilfaeldig...
     default void invokeFromAncestor(Extension<?> extension) {}
 
-    default void invokeFromAncestor(ContainerState context) {}
+    default void invokeFromAncestor(ExtensionHandle context) {}
 
     // Can be used to optimize invocation...
     // Very advanced though

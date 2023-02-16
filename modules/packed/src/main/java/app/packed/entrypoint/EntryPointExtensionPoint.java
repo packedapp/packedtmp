@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
-import app.packed.extension.OperationHandle;
+import app.packed.extension.operation.OperationHandle;
 
 /** An extension point for {@link EntryPointExtension}. */
 public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension> {

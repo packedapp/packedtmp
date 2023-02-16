@@ -28,6 +28,7 @@ import app.packed.application.ApplicationPath;
 import app.packed.application.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
+import app.packed.extension.container.ContainerHandle;
 import app.packed.service.ServiceableBeanConfiguration;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedContainerHandle;
@@ -73,7 +74,6 @@ public abstract class Extension<E extends Extension<E>> {
     /** The internal configuration of the extension. */
     final ExtensionSetup extension = ExtensionSetup.initalizeExtension(this);
 
-
     /**
      * Creates a new extension. Subclasses should have a single package-private constructor.
      *
@@ -98,7 +98,7 @@ public abstract class Extension<E extends Extension<E>> {
     /** {@return instance of this extension that is used in the lifetimes assembly container.} */
     @SuppressWarnings("unchecked")
     // I don't know if we need this for anything...
-    protected final E assemblyRoot() {
+    final E assemblyRoot() {
         ExtensionSetup s = extension;
         while (s.treeParent != null) {
             if (s.container.assembly != s.treeParent.container.assembly) {
@@ -130,37 +130,24 @@ public abstract class Extension<E extends Extension<E>> {
         }
     }
 
-    /**
-     * Returns a container handle for the extension's container. If this extension installed the container.
-     * <p>
-     * When creating a new container the assembly. The handle returned is always closed
-     *
-     * @return
-     * @throws UnsupportedOperationException
-     *             if the extension this not install the container
-     */
-    protected final ContainerHandle containerHandle() {
-        throw new UnsupportedOperationException();
-    }
-
     /** {@return the path of the container that this extension belongs to.} */
     protected final ApplicationPath containerPath() {
         return extension.container.path();
     }
 
     /**
-     * <p>
-     * This method is mainly used for getting
+     * Returns an extension instance from the container represented by the specified. Or empty if the extension is not
+     * installed.
      *
      * @param handle
      *            represent the container for which the child should be extracted
-     * @return this
+     * @return the extension or empty
      */
     @SuppressWarnings("unchecked")
     protected final Optional<E> fromHandle(ContainerHandle handle) {
         requireNonNull(handle, "handle is null");
         ExtensionSetup s = ((PackedContainerHandle) handle).container().extensions.get(extension.extensionType);
-        return Optional.ofNullable((E) s.instance());
+        return s == null ? Optional.empty() : Optional.ofNullable((E) s.instance());
     }
 
     /** {@return whether or not the container is the root container in the application.} */
@@ -195,6 +182,7 @@ public abstract class Extension<E extends Extension<E>> {
      *
      * @return the instance of this extension that is root of this container's lifetime
      */
+    // What about cross application???
     @SuppressWarnings("unchecked")
     protected final E lifetimeRoot() {
         ExtensionSetup s = extension;
@@ -218,21 +206,16 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /**
-     * Returns a bean introspector
+     * Returns a bean introspector.
      *
      * Whenever a Hook annotation is found
      * <p>
-     * This method is never called more than once for a single bean.
+     * This method is called exactly once for a single bean if needed.
      *
      * @return a new bean introspector
-     *
-     * @throws InternalExtensionException
-     *             if the method is not overridden
      */
     protected BeanIntrospector newBeanIntrospector() {
-        // TODO we should provide some context...
-        // Or maybe just return a default BeanIntrospector, where nothing is overridden
-        throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
+        return new BeanIntrospector() {};
     }
 
     /**
@@ -243,7 +226,7 @@ public abstract class Extension<E extends Extension<E>> {
      *
      * @return a customized mirror for the extension
      * @throws InternalExtensionException
-     *             if the method is not overridden
+     *             if the extension defines an extension mirror but does not override this method.
      */
     protected ExtensionMirror<E> newExtensionMirror() {
         // This exception is only throw if the extension forgot to override the method
@@ -257,8 +240,8 @@ public abstract class Extension<E extends Extension<E>> {
      *
      * @return a new extension point
      *
-     * @throws UnsupportedOperationException
-     *             if the extension does not support extension points.
+     * @throws InternalExtensionException
+     *             if the extension defines an extension point but does not override this method.
      */
     protected ExtensionPoint<E> newExtensionPoint() {
         // I think it is the same as newExtensionMirror an internal excetion
@@ -330,7 +313,7 @@ public abstract class Extension<E extends Extension<E>> {
      * @see #onAssemblyClose()
      * @see #onApplicationClose()
      */
-    // TODO Hmm doesnt work properly any more...
+    // TODO Hmm doesnt work properly any more... Why?
     // I think either we need to fail for example
     protected void onNew() {}
 
@@ -456,7 +439,9 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /**
-     * Uses an dependent extension.
+     * Uses an extension that explicitly depends on this extension.
+     * <p>
+     *
      * <p>
      * The dependent extension must have declared this extension as a dependency using {@link DependsOn}. Otherwise this
      * method will throw an {@link InternalExtensionException}.
@@ -509,3 +494,17 @@ public abstract class Extension<E extends Extension<E>> {
         String[] optionally() default {};
     }
 }
+//
+///**
+// * Returns a container handle for the extension's container. If this extension installed the container.
+// * <p>
+// * When creating a new container the assembly. The handle returned is always closed
+// *
+// * @return
+// * @throws UnsupportedOperationException
+// *             if this extension this not install this extension's container
+// */
+//// I'm not sure this is needed
+//protected final ContainerHandle containerHandle() {
+//    throw new UnsupportedOperationException();
+//}

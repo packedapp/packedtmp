@@ -40,7 +40,7 @@ import internal.app.packed.util.ThrowableUtil;
 /** The internal representation of a bootstrap app. */
 public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
 
-    public final List<PackedContainerLifetimeChannel<?>> channels;
+    public final List<PackedContainerLifetimeChannel> channels;
 
     final Set<Class<? extends Extension<?>>> extensionDenyList;
 
@@ -57,7 +57,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
     @Nullable
     public final Wirelet wirelet;
 
-    public BootstrapAppSetup(LifetimeKind lifetimeKind, Supplier<? extends ApplicationMirror> mirrorSupplier, List<PackedContainerLifetimeChannel<?>> channels, MethodHandle mh,
+    public BootstrapAppSetup(LifetimeKind lifetimeKind, Supplier<? extends ApplicationMirror> mirrorSupplier, List<PackedContainerLifetimeChannel> channels, MethodHandle mh,
             Wirelet wirelet) {
         this.wirelet = wirelet;
         this.mhConstructor = requireNonNull(mh);
@@ -81,7 +81,7 @@ public final class BootstrapAppSetup<A> extends ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public List<PackedContainerLifetimeChannel<?>> channels() {
+    public List<PackedContainerLifetimeChannel> channels() {
         return channels;
     }
 

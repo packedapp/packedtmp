@@ -18,10 +18,11 @@ package internal.app.packed.container;
 import java.util.List;
 import java.util.Set;
 
+import app.packed.application.ApplicationPath;
 import app.packed.errorhandling.ErrorHandler;
-import app.packed.extension.ContainerHandle;
 import app.packed.extension.Extension;
-import app.packed.extension.OperationHandle;
+import app.packed.extension.container.ContainerHandle;
+import app.packed.extension.operation.OperationHandle;
 
 /** Implementation of {@link ContainerHandle}. */
 public record PackedContainerHandle(ContainerSetup container) implements ContainerHandle {
@@ -34,7 +35,6 @@ public record PackedContainerHandle(ContainerSetup container) implements Contain
      *
      * @return a set of disabled extensions
      */
-    @Override
     public Set<Class<? extends Extension<?>>> bannedExtensions() {
         throw new UnsupportedOperationException();
     }
@@ -65,15 +65,51 @@ public record PackedContainerHandle(ContainerSetup container) implements Contain
         return List.of();
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Sets the name of the container.
+     *
+     * @param name
+     *
+     * @throws IllegalStateException
+     *             if the container is no long configurable
+     *
+     * @see ContainerConfiguration#named(String)
+     * @see ContainerInstaller#named(String)
+     */
     public void named(String name) {
         container.named(name);
     }
 
-    /** {@inheritDoc} */
-    @Override
+
+    /**
+     * @param errorHandler
+     *
+     * @see ContainerInstaller#errorHandle(ErrorHandler)
+     *
+     * @throws IllegalStateException
+     *             if the container is no long configurable
+     */
+    // Denneer primaert taenkt for brugeren, hvis fx usereren skal have lov at besteem error handleren
+    // En wirelet er alternativet
     public void setErrorHandler(ErrorHandler errorHandler) {
         checkIsConfigurable();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
+        return container.isExtensionUsed(extensionType);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<Class<? extends Extension<?>>> extensionTypes() {
+        return container.extensionTypes();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ApplicationPath path() {
+        return container.path();
     }
 }

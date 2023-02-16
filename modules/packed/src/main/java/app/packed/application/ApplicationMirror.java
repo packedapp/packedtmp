@@ -19,12 +19,13 @@ import internal.app.packed.operation.OperationSetup;
 /**
  * A mirror of an application.
  * <p>
- * An application mirror instance is typically obtained by calling a application mirror factory methods such as
+ * An application mirror instance is typically obtained by calling application mirror factory methods such as
  * {@link App#mirrorOf(Assembly, Wirelet...)}.
  * <p>
  * Instances of ApplicationMirror can be injected at runtime simply by declaring a dependency on it.
  * <p>
- * Like many other mirrors this class is exte extendable via {@link BootstrapApp.Composer#}
+ * Like many other mirrors classes this class can be extended and returned using
+ * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)}.
  */
 @BindingTypeHook(extension = BaseExtension.class)
 public class ApplicationMirror implements Mirror {

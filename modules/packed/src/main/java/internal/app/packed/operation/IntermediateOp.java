@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
 import app.packed.container.Realm;
-import app.packed.extension.OperationTemplate;
+import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import app.packed.util.FunctionType;
 import internal.app.packed.bean.BeanSetup;

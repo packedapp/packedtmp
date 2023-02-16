@@ -29,7 +29,7 @@ import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.extension.ContainerLifetimeChannel;
+import app.packed.extension.container.ExtensionLink;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
@@ -212,7 +212,7 @@ public final class BootstrapApp<A> {
         ApplicationHostExtension ahe;
 
         /** Lifetime channels for the. */
-        private final ArrayList<PackedContainerLifetimeChannel<?>> channels = new ArrayList<>();
+        private final ArrayList<PackedContainerLifetimeChannel> channels = new ArrayList<>();
 
         private LifetimeKind lifetimeKind = LifetimeKind.UNMANAGED;
 
@@ -233,7 +233,7 @@ public final class BootstrapApp<A> {
          *            the channel(s) to add
          * @return this composer
          */
-        public Composer addChannel(ContainerLifetimeChannel... channels) {
+        public Composer addChannel(ExtensionLink... channels) {
             this.channels.addAll(List.of(channels).stream().map(PackedContainerLifetimeChannel::crack).toList());
             return this;
         }
@@ -279,7 +279,7 @@ public final class BootstrapApp<A> {
 
         /** {@inheritDoc} */
         @Override
-        public List<PackedContainerLifetimeChannel<?>> channels() {
+        public List<PackedContainerLifetimeChannel> channels() {
             return List.of();
         }
 

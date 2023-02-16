@@ -24,7 +24,7 @@ import java.util.Set;
 
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.operation.Provider;
-import app.packed.extension.ContainerState;
+import app.packed.extension.ExtensionHandle;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceSelection;
 import app.packed.util.Key;
@@ -33,7 +33,7 @@ import internal.app.packed.util.ThrowableUtil;
 /**
  *
  */
-public record PackedServiceLocator(ContainerState context, @CodeGenerated Map<Key<?>, MethodHandle> entries) implements ServiceLocator {
+public record PackedServiceLocator(ExtensionHandle context, @CodeGenerated Map<Key<?>, MethodHandle> entries) implements ServiceLocator {
 
     /** {@inheritDoc} */
     @Override

@@ -19,14 +19,13 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.application.App;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.Extension;
-import app.packed.extension.OperationHandle;
-import app.packed.extension.BeanHandle;
-import app.packed.extension.BeanLifetimeTemplate;
-import app.packed.extension.ContainerState;
+import app.packed.extension.ExtensionHandle;
+import app.packed.extension.bean.BeanHandle;
+import app.packed.extension.bean.BeanTemplate;
+import app.packed.extension.operation.OperationHandle;
 
 /**
  *
@@ -53,11 +52,11 @@ public class MhExt extends BaseAssembly {
     public static class EBean {
         final MethodHandle mh;
 
-        public EBean(ContainerState context, @CodeGenerated MethodHandle f) throws Throwable {
+        public EBean(ExtensionHandle context, @CodeGenerated MethodHandle f) throws Throwable {
             this.mh = f;
         }
 
-        @OnInitialize
+       // @OnInitialize
         public void onInit() throws Throwable {
             mh.invoke();
         }
@@ -70,7 +69,7 @@ public class MhExt extends BaseAssembly {
         BeanHandle<?> h;
 
         public void ownL(Class<?> cl) {
-            h = base().beanInstaller(BeanLifetimeTemplate.builderManyton().build()).install(cl);
+            h = base().beanBuilder(BeanTemplate.UNMANAGED).install(cl);
         }
 
         @Override

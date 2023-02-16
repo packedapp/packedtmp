@@ -15,7 +15,13 @@
  */
 package app.packed.extension.sandbox;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.invoke.MethodHandles;
+
 import app.packed.extension.Extension;
+import internal.app.packed.util.StackWalkerUtil;
+import internal.app.packed.util.types.ClassUtil;
 
 /**
  * <p>
@@ -23,13 +29,39 @@ import app.packed.extension.Extension;
  */
 // Hvor skal vi bruges
 
-
 /// Indtil videre har vi de her 2 use cases
 // ContainerLifetimeBridge
 // Context
-class ExtensionLookup<E extends Extension<E>> {
+class ExtensionLookup {
 
-    static <E extends Extension<E>> ExtensionLookup<E> of(Class<E> extensionClass) {
-        return new ExtensionLookup<>();
+    private final Class<? extends Extension<?>> extensionType;
+
+    private ExtensionLookup(Class<? extends Extension<?>> extensionType) {
+        this.extensionType = requireNonNull(extensionType);
+    }
+
+    public Class<? extends Extension<?>> extensionType() {
+        return extensionType;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static ExtensionLookup of() {
+        Class<?> callerClass = StackWalkerUtil.SW.getCallerClass();
+        if (!Extension.class.isAssignableFrom(callerClass)) {
+            throw new IllegalCallerException("Must be called from a subclass of " + Extension.class.getSimpleName());
+        }
+        return new ExtensionLookup((Class) callerClass);
+    }
+
+    public static ExtensionLookup of(MethodHandles.Lookup caller, Class<? extends Extension<?>> extensionType) {
+        ClassUtil.checkProperSubclass(Extension.class, extensionType, "extensionType");
+        if (caller.hasFullPrivilegeAccess()) {
+            throw new IllegalArgumentException();
+        }
+        if (caller.lookupClass().getModule() != extensionType.getModule()) {
+            throw new IllegalCallerException("Specified extensionType '" + extensionType + "' must be in same module as caller, caller module = "
+                    + caller.lookupClass().getModule().getName());
+        }
+        return new ExtensionLookup(extensionType);
     }
 }

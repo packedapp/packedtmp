@@ -21,10 +21,10 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
-import app.packed.extension.DelegatingOperationHandle;
-import app.packed.extension.OperationHandle;
-import app.packed.extension.OperationTemplate;
 import app.packed.extension.BeanElement.BeanMethod;
+import app.packed.extension.operation.DelegatingOperationHandle;
+import app.packed.extension.operation.OperationHandle;
+import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.Key;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
@@ -55,7 +55,7 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
         // Probably need to store the lookup mechanism on the bean...
         MethodHandle methodHandle = extension.scanner.unreflectMethod(member);
 
-        PackedDelegatingOperationHandle h = new PackedDelegatingOperationHandle(extension.extension, extension.scanner.bean, new OperationMethodTarget(member),
+        PackedDelegatingOperationHandle h = new PackedDelegatingOperationHandle(extension.scanner, extension.extension, extension.scanner.bean, new OperationMethodTarget(member),
                 operationType(), methodHandle);
         return h;
     }
@@ -73,7 +73,7 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
                 new OperationMethodTarget(member), methodHandle);
         extension.scanner.bean.operations.add(operation);
         extension.scanner.unBoundOperations.add(operation);
-        return operation.toHandle();
+        return operation.toHandle(extension.scanner);
     }
 
     /** {@inheritDoc} */
@@ -88,7 +88,7 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
      * @param method
      *            the method to look for annotations on
      */
-    static void introspectMethodForAnnotations(BeanReflector iBean, Method method) {
+    static void introspectMethodForAnnotations(BeanScanner iBean, Method method) {
         Annotation[] annotations = method.getAnnotations();
         for (int i = 0; i < annotations.length; i++) {
             Annotation a1 = annotations[i];

@@ -98,7 +98,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     }
 
     /** {@return the context for this extension point.} */
-    private final PackedExtensionPointContext contextUse() {
+    final PackedExtensionPointContext contextUse() {
         PackedExtensionPointContext c = context;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of an extension point.");

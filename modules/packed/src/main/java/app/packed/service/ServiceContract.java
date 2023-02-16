@@ -159,7 +159,7 @@ public final class ServiceContract {
      */
     // transform(), change(), adapt, update()
     // toBuilder()
-    public ServiceContract.Builder modify() {
+    public ServiceContract.Builder toBuilder() {
         return new ServiceContract.Builder(this);
     }
 

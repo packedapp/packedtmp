@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import app.packed.bean.BeanSourceKind;
-import app.packed.extension.ContainerState;
+import app.packed.extension.ExtensionHandle;
 import app.packed.service.ExportedServiceMirror;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
@@ -104,14 +104,14 @@ public final class ServiceManager {
             if (!(o instanceof MemberOperationSetup) && o.bean.beanSourceKind == BeanSourceKind.INSTANCE) {
                 // It is a a constant
                 mh = MethodHandles.constant(Object.class, o.bean.beanSource);
-                mh = MethodHandles.dropArguments(mh, 0, ContainerState.class);
+                mh = MethodHandles.dropArguments(mh, 0, ExtensionHandle.class);
             } else if (accessor >= 0) {
                 mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, accessor);
             } else {
                 mh = o.generateMethodHandle();
             }
             mh = mh.asType(mh.type().changeReturnType(Object.class));
-            assert (mh.type().equals(MethodType.methodType(Object.class, ContainerState.class)));
+            assert (mh.type().equals(MethodType.methodType(Object.class, ExtensionHandle.class)));
             return mh;
         });
         return result;
@@ -138,7 +138,7 @@ public final class ServiceManager {
         return builder.build();
     }
 
-    public ServiceLocator newExportedServiceLocator(ContainerState context) {
+    public ServiceLocator newExportedServiceLocator(ExtensionHandle context) {
         Map<Key<?>, MethodHandle> m = exportedServices;
         if (m == null) {
             throw new UnsupportedOperationException("Exported services not available");

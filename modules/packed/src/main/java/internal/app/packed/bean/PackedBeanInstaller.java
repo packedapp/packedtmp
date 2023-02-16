@@ -27,12 +27,12 @@ import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.extension.BeanHandle;
-import app.packed.extension.BeanInstaller;
-import app.packed.extension.BeanLifetimeTemplate;
 import app.packed.extension.BeanLocal;
 import app.packed.extension.InternalExtensionException;
-import app.packed.extension.OperationTemplate;
+import app.packed.extension.bean.BeanHandle;
+import app.packed.extension.bean.BeanBuilder;
+import app.packed.extension.bean.BeanTemplate;
+import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.Provider;
 import app.packed.util.Key;
@@ -40,19 +40,21 @@ import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ContainerSetup.BeanClassKey;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.lifetime.PackedBeanLifetimeTemplate;
+import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
 
 /**
  * This class is responsible for installing new beans.
  */
-public final class PackedBeanInstaller implements BeanInstaller {
+public final class PackedBeanInstaller implements BeanBuilder {
 
     /** A list ofIllegal bean classes. Void is technically allowed but {@link #installWithoutSource()} needs to used. */
     // Allign with Key
     static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
 
+    // TODO: If an installer should be reusable we need to copy locals
+    // Right now we just store this map in BeanSetup
     final IdentityHashMap<PackedBeanLocal<?>, Object> locals = new IdentityHashMap<>();
 
     /** The container the bean is being installed into. */
@@ -75,7 +77,7 @@ public final class PackedBeanInstaller implements BeanInstaller {
     boolean synthetic;
 
     /** A template for the lifetime of the bean. */
-    public final PackedBeanLifetimeTemplate template;
+    public final PackedBeanTemplate template;
 
     /**
      * Create a new installer.
@@ -87,11 +89,11 @@ public final class PackedBeanInstaller implements BeanInstaller {
      * @param template
      *            a lifetime template for the new bean
      */
-    public PackedBeanInstaller(ExtensionSetup installingExtension, BeanOwner owner, BeanLifetimeTemplate template) {
+    public PackedBeanInstaller(ExtensionSetup installingExtension, BeanOwner owner, BeanTemplate template) {
         this.container = installingExtension.container;
         this.installingExtension = requireNonNull(installingExtension);
         this.owner = requireNonNull(owner);
-        this.template = (PackedBeanLifetimeTemplate) requireNonNull(template, "template is null");
+        this.template = (PackedBeanTemplate) requireNonNull(template, "template is null");
     }
 
     /** {@inheritDoc} */
@@ -149,7 +151,7 @@ public final class PackedBeanInstaller implements BeanInstaller {
 
     /** {@inheritDoc} */
     @Override
-    public BeanInstaller multi() {
+    public BeanBuilder multi() {
         if (template.kind == BeanKind.STATIC) {
             throw new InternalExtensionException("multiInstall is not supported for static beans");
         }
@@ -159,7 +161,7 @@ public final class PackedBeanInstaller implements BeanInstaller {
 
     /** {@inheritDoc} */
     @Override
-    public BeanInstaller namePrefix(String prefix) {
+    public BeanBuilder namePrefix(String prefix) {
         this.namePrefix = requireNonNull(prefix, "prefix is null");
         return this;
     }
@@ -223,7 +225,7 @@ public final class PackedBeanInstaller implements BeanInstaller {
                         return bean;
                     } else if (o instanceof BeanSetup) {
                         // singular???
-                        throw new BeanInstallationException("A non-multi bean has already been defined for " + bean.beanClass);
+                        throw new BeanInstallationException("A bean of type [" + bean.beanClass + "] has already been added to " + container.path());
                     } else {
                         // We already have some multiple beans installed
                         throw new BeanInstallationException("Oops");
@@ -257,7 +259,7 @@ public final class PackedBeanInstaller implements BeanInstaller {
 
         // Scan the bean class for annotations unless the bean class is void
         if (sourceKind != BeanSourceKind.NONE) {
-            new BeanReflector(bean).introspect();
+            new BeanScanner(bean).introspect();
         }
 
         // Bean was successfully created, add it to the container
@@ -274,7 +276,7 @@ public final class PackedBeanInstaller implements BeanInstaller {
 
     /** {@inheritDoc} */
     @Override
-    public BeanInstaller specializeMirror(Supplier<? extends BeanMirror> supplier) {
+    public BeanBuilder specializeMirror(Supplier<? extends BeanMirror> supplier) {
         requireNonNull(supplier, "supplier is null");
         this.supplier = supplier;
         return this;
@@ -282,7 +284,7 @@ public final class PackedBeanInstaller implements BeanInstaller {
 
     /** {@inheritDoc} */
     @Override
-    public BeanInstaller synthetic() {
+    public BeanBuilder synthetic() {
         synthetic = true;
         return this;
     }
@@ -293,7 +295,7 @@ public final class PackedBeanInstaller implements BeanInstaller {
 
     /** {@inheritDoc} */
     @Override
-    public <T> BeanInstaller setLocal(BeanLocal<T> local, T value) {
+    public <T> BeanBuilder setLocal(BeanLocal<T> local, T value) {
         locals.put((PackedBeanLocal<?>) local, value);
         return this;
     }

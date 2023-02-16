@@ -25,12 +25,13 @@ import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
-import app.packed.extension.BeanIntrospector;
-import app.packed.extension.ContainerHandle;
-import app.packed.extension.ContainerLifetimeTemplate;
-import app.packed.extension.Extension;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanHook.AnnotatedMethodHook;
+import app.packed.extension.BeanIntrospector;
+import app.packed.extension.Extension;
+import app.packed.extension.bean.BeanTemplate;
+import app.packed.extension.container.ContainerHandle;
+import app.packed.extension.container.ContainerTemplate;
 import app.packed.lifetime.LifetimeOrder;
 
 /**
@@ -42,7 +43,7 @@ public class Ddd extends BaseAssembly {
     @Override
     protected void build() {
         install(Oi.class);
-        use(MyE.class).foo();
+        use(MyEntityException.class).addEntityBean(String.class);
     }
 
     public static void main(String[] args) {
@@ -51,30 +52,28 @@ public class Ddd extends BaseAssembly {
         m.print();
     }
 
-    public static class Oi {
-
-        @OnInitialize
-        public void onInit() {
-            System.out.println("ASDASD");
-        }
-
-        @MyOnInitialize
-        public void onInixt() {
-            System.out.println("xxASDASD");
-        }
-    }
-
     public static class Foo {
         Foo() {
             System.out.println("New foo");
         }
     }
-    public static class MyE extends Extension<MyE> {
-        MyE() {}
 
-        void foo() {
-            ContainerHandle h = base().containerInstaller(ContainerLifetimeTemplate.PARENT).named("EntityBeans").useThisExtension().install();
-            fromHandle(h);
+    public static class MyEntityException extends Extension<MyEntityException> {
+        MyEntityException child;
+
+        MyEntityException() {}
+
+        public void addEntityBean(Class<?> entityBean) {
+            child().base().beanBuilder(BeanTemplate.EXTERNAL).install(entityBean);
+        }
+
+        MyEntityException child() {
+            MyEntityException c = child;
+            if (c == null) {
+                ContainerHandle h = base().containerBuilder(ContainerTemplate.IN_PARENT).named("EntityBeans").buildAndUseThisExtension();
+                c = child = fromHandle(h).get();
+            }
+            return c;
         }
 
         @Override
@@ -92,7 +91,7 @@ public class Ddd extends BaseAssembly {
 
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedMethodHook(allowInvoke = true, extension = MyE.class)
+    @AnnotatedMethodHook(allowInvoke = true, extension = MyEntityException.class)
     public @interface MyOnInitialize {
 
         /**
@@ -100,5 +99,18 @@ public class Ddd extends BaseAssembly {
          *         initialized.
          */
         LifetimeOrder ordering() default LifetimeOrder.BEFORE_DEPENDENCIES;
+    }
+
+    public static class Oi {
+
+        @OnInitialize
+        public void onInit() {
+            System.out.println("ASDASD");
+        }
+
+        @MyOnInitialize
+        public void onInixt() {
+            System.out.println("xxASDASD");
+        }
     }
 }

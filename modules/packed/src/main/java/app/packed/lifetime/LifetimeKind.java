@@ -28,9 +28,7 @@ package app.packed.lifetime;
 //Because even though they are stateless they should be called outside of the containers
 //lifetime
 
-// Tror vi skal have Stateless introduceret igen
-// Og så sige at
-
+// Bean vs Container er ogsaa en slags Kind
 public enum LifetimeKind {
 
     /**
@@ -38,7 +36,7 @@ public enum LifetimeKind {
      * extension.
      * <p>
      * Beans that have stateless lifetime. Will be contained in the container's lifetime. Meaning that they can be used as
-     * long as the container they are in are running.
+     * long as the container they are installed in is running.
      *
      * @see app.packed.bean.BeanKind#STATIC
      * @see app.packed.bean.BeanKind#FOREIGN
@@ -46,8 +44,7 @@ public enum LifetimeKind {
     STATELESS,
 
     /**
-     * A lifetime that can only be initialized. But where there exists no way to close it. Cleanup relies on the garbage
-     * collection to clean up.
+     * A lifetime that can only be initialized and not stopped. Cleanup relies only on the garbage collector.
      * <p>
      * A typical example is prototype services. Once created they are no longer tracked.
      *

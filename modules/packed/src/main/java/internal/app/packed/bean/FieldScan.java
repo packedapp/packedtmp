@@ -16,7 +16,6 @@
 package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -35,8 +34,8 @@ import internal.app.packed.util.PackedAnnotationList;
  */
 class FieldScan {
 
-    private static void bindingsCheckNoHooks(BeanReflector scanner, Field field, Annotation fieldAnnotation) {
-        for (Annotation a : field.getAnnotatedType().getAnnotations()) {
+    private static void checkNoBindingHooks(BeanScanner scanner, Field field, Annotation[] annotations, Annotation fieldAnnotation) {
+        for (Annotation a : annotations) {
             HookOnAnnotatedBinding b = HookOnAnnotatedBinding.find(a.annotationType());
             if (b != null) {
                 throw new InternalExtensionException("Nope");
@@ -44,10 +43,9 @@ class FieldScan {
         }
     }
 
-    static void introspectField(BeanReflector scanner, Field field) {
+    static void introspectField(BeanScanner scanner, Field field) {
         Annotation[] annotations = field.getAnnotations();
-        AnnotatedType at = field.getAnnotatedType();
-        PackedAnnotationList annos = new PackedAnnotationList(annotations);
+        PackedAnnotationList pal = new PackedAnnotationList(annotations);
 
         switch (annotations.length) {
         case 0 -> { // fall-through
@@ -56,8 +54,8 @@ class FieldScan {
             Annotation a = annotations[0];
             HookOnFieldAnnotation hook = HookOnFieldAnnotation.find(a.annotationType());
             if (hook != null) {
-                bindingsCheckNoHooks(scanner, field, a);
-                new PackedBeanField(scanner, field, at, annos, annos, hook).onHook();
+                checkNoBindingHooks(scanner, field, annotations, a);
+                new PackedBeanField(scanner, field, pal, pal, hook).onHook();
                 return;
             }
         }
@@ -67,20 +65,20 @@ class FieldScan {
             HookOnFieldAnnotation hook0 = HookOnFieldAnnotation.find(a0.annotationType());
             HookOnFieldAnnotation hook1 = HookOnFieldAnnotation.find(a1.annotationType());
             if (hook0 != null) {
-                bindingsCheckNoHooks(scanner, field, a0);
+                checkNoBindingHooks(scanner, field, annotations, a0);
                 if (hook1 == null) {
-                    new PackedBeanField(scanner, field, at, annos, new PackedAnnotationList(a0), hook0).onHook();
+                    new PackedBeanField(scanner, field, pal, new PackedAnnotationList(a0), hook0).onHook();
                 } else if (hook0.extensionType() == hook1.extensionType()) {
-                    new PackedBeanField(scanner, field, at, annos, new PackedAnnotationList(a0, a1), hook0, hook1).onHook();
+                    new PackedBeanField(scanner, field, pal, new PackedAnnotationList(a0, a1), hook0, hook1).onHook();
                 } else {
                     // TODO sort
-                    new PackedBeanField(scanner, field, at, annos, new PackedAnnotationList(a0), hook0).onHook();
-                    new PackedBeanField(scanner, field, at, annos, new PackedAnnotationList(a1), hook1).onHook();
+                    new PackedBeanField(scanner, field, pal, new PackedAnnotationList(a0), hook0).onHook();
+                    new PackedBeanField(scanner, field, pal, new PackedAnnotationList(a1), hook1).onHook();
                 }
                 return;
             } else if (hook1 != null) {
-                bindingsCheckNoHooks(scanner, field, a1);
-                new PackedBeanField(scanner, field, at, annos, new PackedAnnotationList(a1), hook1).onHook();
+                checkNoBindingHooks(scanner, field, annotations, a1);
+                new PackedBeanField(scanner, field, pal, new PackedAnnotationList(a1), hook1).onHook();
                 return;
             }
         }
@@ -103,7 +101,7 @@ class FieldScan {
                 break;
             }
 
-            bindingsCheckNoHooks(scanner, field, a);
+            checkNoBindingHooks(scanner, field, annotations, a);
             if (map.size() > 1) {
                 // Annotations will always be for a single class loader so
                 // never any with same canonical name
@@ -118,7 +116,7 @@ class FieldScan {
                     ha[i] = p.af;
                     hooks[i] = p.a;
                 }
-                new PackedBeanField(scanner, field, at, annos, new PackedAnnotationList(hooks), ha).onHook();
+                new PackedBeanField(scanner, field, pal, new PackedAnnotationList(hooks), ha).onHook();
             }
             return;
         }
@@ -126,17 +124,16 @@ class FieldScan {
 
         // There were no field hook annotations, let's see if we have any binding annotations.
         HookOnAnnotatedBinding b = null;
-        for (Annotation a : at.getAnnotations()) {
+        for (Annotation a : annotations) {
             HookOnAnnotatedBinding bb = HookOnAnnotatedBinding.find(a.annotationType());
             if (b != null) {
                 throw new BeanInstallationException("Can only have 1 binding annotation");
             }
             b = bb;
         }
-        if (b == null) {
-        }
+        if (b == null) {}
 
-        //BeanScannerExtension e = scanner.computeContributor(b.extensionType());
+        // BeanScannerExtension e = scanner.computeContributor(b.extensionType());
 
         // Skal vi lave operationen med det samme?
         // Eller foerst naar vi binder?

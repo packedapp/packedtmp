@@ -17,12 +17,15 @@ import app.packed.container.Realm;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
+import app.packed.extension.BeanLocal;
+import app.packed.extension.ContainerLocal;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.mirror.DependenciesMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup;
 
@@ -122,6 +125,10 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
         return Optional.empty();
     }
 
+    protected final <T> T getLocal(BeanLocal<T> local) {
+        return ((PackedBeanLocal<T>) local).get(bean());
+    }
+
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
@@ -139,6 +146,27 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
             throw new IllegalStateException("This mirror has already been initialized.");
         }
         this.bean = bean;
+    }
+
+    /**
+     * @param local
+     *            the local to query
+     * @return if a value is present for this bean in the specified local
+     * @throws UnsupportedOperationException
+     *             if the specified local was initialized with a value
+     */
+    protected final boolean isLocalPresent(BeanLocal<?> local) {
+        return ((PackedBeanLocal<?>) local).isPresent(bean());
+    }
+
+    /**
+     * If the bean's container has a value present for the specified local.
+     *
+     * @param local
+     * @return
+     */
+    protected final boolean isLocalPresent(ContainerLocal<?> local) {
+        throw new UnsupportedOperationException();
     }
 
     /**

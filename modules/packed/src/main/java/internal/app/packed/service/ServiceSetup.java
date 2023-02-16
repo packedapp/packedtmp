@@ -18,6 +18,8 @@ package internal.app.packed.service;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Stream;
 
 import app.packed.service.ProvidedServiceMirror;
@@ -26,6 +28,7 @@ import app.packed.service.UnsatisfiableDependencyException;
 import app.packed.util.Key;
 import app.packed.util.KeyAlreadyInUseException;
 import app.packed.util.Nullable;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
 import internal.app.packed.binding.BindingResolution.FromOperation;
@@ -40,8 +43,7 @@ import internal.app.packed.util.StringFormatter;
 public final class ServiceSetup {
 
     /** All bindings (in a interned linked list) that points to this entry. */
-    @Nullable
-    ServiceBindingSetup bindings;
+    final ArrayList<ServiceBindingSetup> bindings = new ArrayList<>();
 
     /** Used for checking for dependency cycles. */
     boolean hasBeenCheckForDependencyCycles;
@@ -60,6 +62,26 @@ public final class ServiceSetup {
         this.key = requireNonNull(key);
     }
 
+    public List<ServiceBindingSetup> removeBindingsForBean(BeanSetup bean) {
+        boolean isRequired = false;
+        ArrayList<ServiceBindingSetup> l = new ArrayList<>();
+        for (Iterator<ServiceBindingSetup> iterator = bindings.iterator(); iterator.hasNext();) {
+            ServiceBindingSetup s = iterator.next();
+            if (s.operation.bean == bean) {
+                l.add(s);
+                iterator.remove();
+            } else {
+                isRequired |= s.isRequired;
+            }
+        }
+        if (provider == null && bindings.isEmpty()) {
+            bean.container.sm.entries.remove(key);
+        } else {
+            this.isRequired = isRequired;
+        }
+        return l;
+    }
+
     ServiceBindingSetup bind(boolean isRequired, OperationSetup operation, int operationBindingIndex) {
         if (isRequired) {
             this.isRequired = true;
@@ -68,14 +90,7 @@ public final class ServiceSetup {
         // Create the new binding
         ServiceBindingSetup binding = new ServiceBindingSetup(operation, operationBindingIndex, this, isRequired);
 
-        // Add this binding to the list of bindings for the entry
-        ServiceBindingSetup existing = bindings;
-        if (existing == null) {
-            bindings = binding;
-        } else {
-            existing.nextBinding = binding;
-            bindings = binding;
-        }
+        bindings.add(binding);
         return binding;
     }
 
@@ -104,7 +119,7 @@ public final class ServiceSetup {
 
     public Stream<ServiceBindingMirror> useSiteMirrors() {
         ArrayList<ServiceBindingMirror> l = new ArrayList<>();
-        for (var b = bindings; b != null; b = b.nextBinding) {
+        for (ServiceBindingSetup b : bindings) {
             l.add((ServiceBindingMirror) b.mirror());
         }
         return l.stream();
@@ -115,7 +130,7 @@ public final class ServiceSetup {
      */
     public void verify() {
         if (provider == null) {
-            for (var b = bindings; b != null; b = b.nextBinding) {
+            for (ServiceBindingSetup b : bindings) {
                 System.out.println("Binding not resolved " + b);
             }
             throw new UnsatisfiableDependencyException("For key " + key);

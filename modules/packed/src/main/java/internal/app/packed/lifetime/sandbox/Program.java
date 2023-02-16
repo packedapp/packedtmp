@@ -21,7 +21,7 @@ import app.packed.application.BootstrapApp;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint;
-import app.packed.extension.FromLifetimeChannel;
+import app.packed.extension.container.ContainerHolderService;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Key;
@@ -153,8 +153,8 @@ public interface Program extends AutoCloseable {
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementation(@FromLifetimeChannel String name, @FromLifetimeChannel ServiceLocator services, @FromLifetimeChannel ManagedLifetimeController runtime)
-        implements Program {
+record ProgramImplementation(@ContainerHolderService String name, @ContainerHolderService ServiceLocator services,
+        @ContainerHolderService ManagedLifetimeController runtime) implements Program {
 
     ProgramImplementation {
         // System.out.println(services.keys());

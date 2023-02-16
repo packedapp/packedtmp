@@ -28,8 +28,8 @@ import app.packed.extension.BaseExtension;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.PackedContainerInstaller;
-import internal.app.packed.container.PackedContainerLifetimeTemplate;
+import internal.app.packed.container.PackedContainerBuilder;
+import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.jfr.CodegenEvent;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -44,7 +44,7 @@ public final class ApplicationSetup {
 
     /** A list of actions that will be executed doing the code generating phase. Or null if code generation is disabled. */
     @Nullable
-    private final ArrayList<Runnable> codegenActions;
+    private ArrayList<Runnable> codegenActions;
 
     /** The root container of the application. */
     public final ContainerSetup container;
@@ -54,8 +54,8 @@ public final class ApplicationSetup {
 
     /**
      * All extensions used in an application has a unique instance id attached. This is used in case we have multiple
-     * extension with the same canonical name (from different class loaders). We then compare the extension id of
-     * the extensions as a last resort when sorting them.
+     * extension with the same canonical name (from different class loaders). We then compare the extension id of the
+     * extensions as a last resort when sorting them.
      */
     public int extensionId;
 
@@ -85,7 +85,7 @@ public final class ApplicationSetup {
         this.driver = requireNonNull(driver);
         this.goal = requireNonNull(goal);
         this.codegenActions = goal.isCodeGenerating() ? new ArrayList<>() : null;
-        this.container = new PackedContainerInstaller(PackedContainerLifetimeTemplate.ROOT, BaseExtension.class, this, null).newContainer(assembly, wirelets);
+        this.container = PackedContainerBuilder.of(PackedContainerTemplate.APPLICATION_ROOT, BaseExtension.class, this, null).newContainer(assembly, wirelets);
     }
 
     /**
@@ -134,8 +134,8 @@ public final class ApplicationSetup {
             }
 
             ce.commit();
-
             generatedLauncher = new RuntimeApplicationLauncher(this);
+            codegenActions = null;
         }
 
         // The application was build successfully

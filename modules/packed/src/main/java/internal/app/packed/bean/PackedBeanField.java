@@ -20,15 +20,14 @@ import java.lang.annotation.ElementType;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import app.packed.extension.Extension;
-import app.packed.extension.OperationHandle;
-import app.packed.extension.OperationTemplate;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanHook.AnnotatedFieldHook;
+import app.packed.extension.Extension;
+import app.packed.extension.operation.OperationHandle;
+import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.AnnotationList;
 import app.packed.util.FunctionType;
 import app.packed.util.Nullable;
@@ -50,31 +49,27 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
     /** Whether or not operations that write to the field can be created. */
     final boolean allowSet;
 
-    /** The annotated type of the field. */
-    public final AnnotatedType annotatedType;
-
     /** The extension that can create new operations from the member. */
     private final BeanScannerExtension extension;
 
-    /** The member. */
+    /** The field. */
     public final Field field;
 
-    /** Annotations on the member. */
-    private final PackedAnnotationList fieldAnnotations;
+    /** Annotations on the field. */
+    private final PackedAnnotationList annotations;
 
     /** Hooks on the field */
     private final PackedAnnotationList hooks;
 
     // Field, FieldAnnotations, Type, TypeAnnotations
-    PackedBeanField(BeanReflector scanner, Field field, AnnotatedType annotatedType, PackedAnnotationList fieldAnnotations,
+    PackedBeanField(BeanScanner scanner, Field field, PackedAnnotationList annotations,
             PackedAnnotationList hookAnnotations, HookOnFieldAnnotation... hooks) {
         this.extension = scanner.computeContributor(hooks[0].extensionType());
         this.field = field;
-        this.fieldAnnotations = fieldAnnotations;
-        this.annotatedType = annotatedType;
+        this.annotations = annotations;
 
         boolean allowGet = extension.hasFullAccess();
-        boolean allowSet = extension.hasFullAccess();
+        boolean allowSet = allowGet;
         for (HookOnFieldAnnotation annotatedField : hooks) {
             allowGet |= annotatedField.isGettable();
             allowSet |= annotatedField.isSettable();
@@ -87,7 +82,7 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
     /** {@return a list of annotations on the member.} */
     @Override
     public AnnotationList annotations() {
-        return fieldAnnotations;
+        return annotations;
     }
 
     /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */
@@ -140,7 +135,7 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
                 new OperationFieldTarget(field, accessMode), mh);
         extension.scanner.unBoundOperations.add(operation);
         extension.scanner.bean.operations.add(operation);
-        return operation.toHandle();
+        return operation.toHandle(extension.scanner);
     }
 
     /** {@inheritDoc} */
@@ -159,7 +154,7 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
     /** {@inheritDoc} */
     @Override
     public Variable variable() {
-        return PackedVariable.of(annotatedType);
+        return PackedVariable.of(field.getAnnotations(), field.getGenericType());
     }
 
     record HookOnFieldAnnotation(Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable) {

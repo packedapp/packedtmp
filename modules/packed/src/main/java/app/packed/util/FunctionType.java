@@ -17,11 +17,12 @@ package app.packed.util;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle.AccessMode;
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
@@ -227,14 +228,15 @@ public final /* primitive */ class FunctionType {
     public static FunctionType fromExecutable(Executable executable) {
         requireNonNull(executable, "executable is null");
         Variable[] vars = NO_PARAMETERS;
-        AnnotatedType[] parameters = executable.getAnnotatedParameterTypes();
-        if (parameters.length > 0) {
-            vars = new Variable[parameters.length];
+        Annotation[][] annotations = executable.getParameterAnnotations();
+        Type[] parameterTypes = executable.getGenericParameterTypes();
+        if (parameterTypes.length > 0) {
+            vars = new Variable[parameterTypes.length];
             for (int i = 0; i < vars.length; i++) {
-                vars[i] = PackedVariable.of(parameters[i]);
+                vars[i] = PackedVariable.of(annotations[i], parameterTypes[i]);
             }
         }
-        return new FunctionType(AnnotationList.fromExecutable(executable), Variable.fromExecutableReturnType(executable), vars);
+        return new FunctionType(AnnotationList.fromExecutable(executable), Variable.fromReturnType(executable), vars);
     }
 
     /**

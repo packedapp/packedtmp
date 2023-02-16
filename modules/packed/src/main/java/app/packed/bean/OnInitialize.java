@@ -59,9 +59,12 @@ import app.packed.lifetime.LifetimeOrder;
 public @interface OnInitialize {
 
     /**
+     * If the annotated bean is installed
+     *
      * @return whether or not the annotated method should be run before or after dependencies in the same lifetime are
      *         initialized.
      */
+    // Hvordan fungere lazy?
     LifetimeOrder order() default LifetimeOrder.BEFORE_DEPENDENCIES;
 }
 

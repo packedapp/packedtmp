@@ -16,7 +16,7 @@
 package app.packed.service;
 
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.extension.BeanHandle;
+import app.packed.extension.bean.BeanHandle;
 import app.packed.util.Key;
 
 /**

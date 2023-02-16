@@ -28,13 +28,15 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Realm;
 import app.packed.context.Context;
 import app.packed.errorhandling.ErrorHandler;
-import app.packed.extension.BeanHandle;
-import app.packed.extension.DelegatingOperationHandle;
-import app.packed.extension.OperationHandle;
+import app.packed.extension.bean.BeanHandle;
+import app.packed.extension.operation.OperationHandle;
 import app.packed.operation.Op;
-import app.packed.util.FunctionType;
 import app.packed.util.Key;
+import internal.app.packed.binding.BindingResolution.FromConstant;
+import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.service.InternalServiceUtil;
+import internal.app.packed.service.ServiceBindingSetup;
+import internal.app.packed.service.ServiceSetup;
 
 /** Implementation of {@link BeanHandle}. */
 public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
@@ -85,30 +87,6 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
         bean.named(name);
     }
 
-    protected DelegatingOperationHandle newDelegationFunctionalOperation(Class<?> functionalInterface, Object function, FunctionType operationType) {
-        // We only take public exported types
-        throw new UnsupportedOperationException();
-    }
-
-    protected OperationHandle newFunctionalOperation(Class<?> functionalInterface, Object function, FunctionType operationType) {
-        throw new UnsupportedOperationException();
-    }
-
-    // We need a extension bean
-    // Dem der resolver bindings, skal goeres mens man introspector...
-    // Burde have en OperationType uden annoteringer
-    // Maaske bare stripper annoteringer...
-    // Men okay vi kan stadig fx bruge Logger som jo stadig skulle
-    // supplies uden et hook
-    @Override
-    public OperationHandle newFunctionalOperation(InstanceBeanConfiguration<?> operator, Class<?> functionalInterface, FunctionType type,
-            Object functionInstance) {
-        // I think we can ignore the operator now.
-
-        // Function, OpType.of(void.class, HttpRequest.class, HttpResponse.class), someFunc)
-        throw new UnsupportedOperationException();
-    }
-
     /** {@inheritDoc} */
     @Override
     public Realm owner() {
@@ -151,6 +129,26 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
     public String toString() {
         return bean.toString();
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public <K> void overrideService(Key<K> key, K instance) {
+        ServiceSetup ss = bean.container.sm.entries.get(key);
+        if (ss != null) {
+            List<ServiceBindingSetup> l = ss.removeBindingsForBean(bean);
+            if (!l.isEmpty()) {
+                for (ServiceBindingSetup s : l) {
+                    s.operation.bindings[s.operationBindingIndex] = new ManualBindingSetup(s.operation, s.operationBindingIndex, s.operation.bean.owner(),
+                            new FromConstant(instance.getClass(), instance));
+                }
+                return;
+            }
+        }
+
+        // TODO we should go through all bindings and see if have some where the type matches.
+        // But is not resolved as a service
+        throw new IllegalStateException("Bean does not have any service dependencies for " + key);
+    }
 }
 
 class ZBeanHandleSandbox<T> {
@@ -163,35 +161,15 @@ class ZBeanHandleSandbox<T> {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * @param <K>
-     *            the type of key
-     * @param key
-     *            the key
-     * @param instance
-     *            the instance to inject
-     *
-     * @throws UnsupportedOperationException
-     *             if the bean handle does not have instances
-     *
-     * @see InstanceBeanConfiguration#initializeWithInstance(Class, Object)
-     * @see InstanceBeanConfiguration#initializeWithInstance(Key, Object)
-     */
-    public <K> void initializeWithInstance(Key<K> key, K instance) {
-//        if (!beanKind().hasInstances()) {
-//            throw new UnsupportedOperationException();
-//        }
-        throw new UnsupportedOperationException();
-    }
-
     public <B> void onInitialize(Class<B> extensionBeanClass, BiConsumer<? super B, ? super T> consumer) {
         // checkHasInstances
         // We add a operation to this beanhandle...
     }
 
     public <K> OperationHandle overrideService(Key<K> key, K instance) {
-        // checkIsConfigurable();
-
+//      if (!beanKind().hasInstances()) {
+//      throw new UnsupportedOperationException();
+//  }
         throw new UnsupportedOperationException();
     }
 

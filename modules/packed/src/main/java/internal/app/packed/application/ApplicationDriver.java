@@ -36,7 +36,7 @@ public abstract class ApplicationDriver<A> {
 
     public abstract Wirelet wirelet();
 
-    public abstract List<PackedContainerLifetimeChannel<?>> channels();
+    public abstract List<PackedContainerLifetimeChannel> channels();
     /**
      * @return
      */

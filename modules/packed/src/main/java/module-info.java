@@ -7,6 +7,11 @@ module app.packed {
     exports app.packed.container;
     exports app.packed.errorhandling;
     exports app.packed.extension;
+    exports app.packed.extension.bean;
+    exports app.packed.extension.container;
+    exports app.packed.extension.context;
+    exports app.packed.extension.operation;
+    exports app.packed.extension.sandbox;
     exports app.packed.lifetime;
     exports app.packed.operation;
     exports app.packed.service;

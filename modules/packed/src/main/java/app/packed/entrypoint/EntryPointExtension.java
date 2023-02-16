@@ -8,20 +8,19 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.extension.ApplicationLocal;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.FrameworkExtension;
-import app.packed.extension.OperationHandle;
-import app.packed.extension.OperationTemplate;
+import app.packed.extension.operation.OperationHandle;
+import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
 import app.packed.util.Nullable;
-import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.entrypoint.EntryPointSetup;
 import internal.app.packed.entrypoint.EntryPointSetup.MainThreadOfControl;
 
@@ -33,12 +32,14 @@ import internal.app.packed.entrypoint.EntryPointSetup.MainThreadOfControl;
 public class EntryPointExtension extends FrameworkExtension<EntryPointExtension> {
 
     /** The configuration of the application. */
-    final ApplicationSetup application;
+    // final ApplicationSetup application;
 
     boolean hasMain;
 
     /** An object that is shared between all entry point extensions in the same application. */
     final ApplicationShare shared;
+
+    static final ApplicationLocal<ApplicationShare> SHARED = ApplicationLocal.of(ApplicationShare::new);
 
     /**
      * Create a new service extension.
@@ -47,8 +48,8 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
      *            an extension configuration object.
      */
     /* package-private */ EntryPointExtension() {
-        ExtensionSetup setup = ExtensionSetup.crack(this);
-        this.application = setup.container.application;
+        // ExtensionSetup setup = ExtensionSetup.crack(this);
+        // this.application = setup.container.application;
         this.shared = parent().map(e -> e.shared).orElseGet(ApplicationShare::new);
     }
 
@@ -99,9 +100,9 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
         // method.reserveMethodHandle(EC);
         // Grim kode pfa ExtensoinSupportContest i constructoren
         if (extensionType == null) {
-            shared.takeOver(EntryPointExtension.class);
+            shared.takeOver(applicationRoot(), EntryPointExtension.class);
         } else {
-            shared.takeOver(extensionType);
+            shared.takeOver(applicationRoot(), extensionType);
         }
         if (isMain) {
             hasMain = true;
@@ -119,7 +120,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
     }
 
     /** An instance of this class is shared between all entry point extensions for a single application. */
-    class ApplicationShare {
+    static class ApplicationShare {
 
         @Nullable
         Class<? extends Extension<?>> dispatcher;
@@ -131,7 +132,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
 
         MethodHandle[] entryPoints;
 
-        void takeOver(Class<? extends Extension<?>> takeOver) {
+        void takeOver(EntryPointExtension epe, Class<? extends Extension<?>> takeOver) {
             if (this.dispatcher != null) {
                 if (takeOver == this.dispatcher) {
                     return;
@@ -139,7 +140,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
                 throw new IllegalStateException();
             }
             this.dispatcher = takeOver;
-            ebc = provide(EntryPointDispatcher.class);
+            ebc = epe.provide(EntryPointDispatcher.class);
         }
     }
 

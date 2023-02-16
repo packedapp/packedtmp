@@ -33,9 +33,9 @@ public final class BeanScannerExtension implements Comparable<BeanScannerExtensi
     /** A bean introspector provided by the extension via {@link Extension#newBeanIntrospector} */
     final BeanIntrospector introspector;
 
-    public final BeanReflector scanner;
+    public final BeanScanner scanner;
 
-    BeanScannerExtension(BeanReflector scanner, ExtensionSetup extension, BeanIntrospector introspector) {
+    BeanScannerExtension(BeanScanner scanner, ExtensionSetup extension, BeanIntrospector introspector) {
         this.extension = extension;
         this.introspector = introspector;
         this.scanner = scanner;

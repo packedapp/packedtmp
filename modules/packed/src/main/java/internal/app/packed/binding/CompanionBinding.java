@@ -25,7 +25,7 @@ import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
  */
 public class CompanionBinding  {
 
-    PackedContainerLifetimeChannel<?> bridge;
+    PackedContainerLifetimeChannel bridge;
 
     // Vi bygger en application
 

@@ -16,7 +16,6 @@
 package internal.app.packed.util;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,16 +29,8 @@ public record PackedVariable(PackedAnnotationList annotations, Type type) implem
         return new PackedVariable(new PackedAnnotationList(annotations), type);
     }
 
-    public static PackedVariable of(AnnotatedType type) {
-        return new PackedVariable(new PackedAnnotationList(type.getAnnotations()), type.getType());
-    }
-
     public static PackedVariable ofType(Type type) {
         return new PackedVariable(PackedAnnotationList.EMPTY, type);
-    }
-
-    public static PackedVariable ofRaw(Class<?> clazz) {
-        return new PackedVariable(PackedAnnotationList.EMPTY, clazz);
     }
 
     /** {@inheritDoc} */

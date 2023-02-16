@@ -16,11 +16,14 @@
 package app.packed.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
+import internal.app.packed.util.PackedAnnotationList;
 import internal.app.packed.util.PackedVariable;
 import internal.app.packed.util.types.TypeUtil;
 
@@ -74,8 +77,13 @@ public sealed interface Variable permits PackedVariable {
      *
      * @see Executable#getAnnotatedReturnType()
      */
-    static Variable fromExecutableReturnType(Executable executable) {
-        return PackedVariable.of(executable.getAnnotatedReturnType());
+    static Variable fromReturnType(Executable executable) {
+        if (executable instanceof Method m) {
+            return PackedVariable.of(m.getAnnotations(), m.getGenericReturnType());
+        } else {
+            Constructor<?> c = (Constructor<?>) executable;
+            return PackedVariable.of(c.getAnnotations(), c.getDeclaringClass());
+        }
     }
 
     /**
@@ -88,7 +96,7 @@ public sealed interface Variable permits PackedVariable {
      * @return the variable
      */
     static Variable fromField(Field field) {
-        return PackedVariable.of(field.getAnnotatedType());
+        return PackedVariable.of(field.getAnnotations(), field.getGenericType());
     }
 
     /**
@@ -99,14 +107,14 @@ public sealed interface Variable permits PackedVariable {
      * @return the variable
      */
     static Variable fromParameter(Parameter parameter) {
-        return PackedVariable.of(parameter.getAnnotatedType());
+        return PackedVariable.of(parameter.getAnnotations(), parameter.getParameterizedType());
     }
 
     static Variable of(Type type) {
-        return PackedVariable.ofType(type);
+        return new PackedVariable(PackedAnnotationList.EMPTY, type);
     }
 
     static Variable of(Type type, Annotation... annotations) {
-        return PackedVariable.ofType(type);
+        return new PackedVariable(PackedAnnotationList.ofUnsafe(annotations), type);
     }
 }

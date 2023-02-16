@@ -15,21 +15,17 @@
  */
 package internal.app.packed.bean;
 
-import static internal.app.packed.bean.BeanSetup.crack;
 import static java.util.Objects.requireNonNull;
 
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanConfiguration;
-import app.packed.extension.BeanHandle;
-import app.packed.extension.BeanIntrospector;
 import app.packed.extension.BeanLocal;
 import app.packed.util.Nullable;
 
 /**
- * Implementation of {@link BeanLocal}.
+ * Implementation of {@link BeanLocal}. Internally we use this to allow querying using BeanSetup instance.
  */
-public final class PackedBeanLocal<T> implements BeanLocal<T> {
+public final class PackedBeanLocal<T> extends BeanLocal<T> {
 
     private final @Nullable Supplier<? extends T> initialValueSupplier;
 
@@ -37,18 +33,7 @@ public final class PackedBeanLocal<T> implements BeanLocal<T> {
         this.initialValueSupplier = initialValueSupplier;
     }
 
-    public T get(BeanConfiguration configuration) {
-        return get(BeanSetup.crack(configuration));
-    }
-
-    public T get(BeanHandle<?> handle) {
-        return get(crack(handle));
-    }
-
-    public T get(BeanIntrospector introspector) {
-        return get(BeanSetup.crack(introspector));
-    }
-
+    @Override
     @SuppressWarnings("unchecked")
     public T get(BeanSetup bean) {
         if (initialValueSupplier == null) {
@@ -60,26 +45,9 @@ public final class PackedBeanLocal<T> implements BeanLocal<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isPresent(BeanConfiguration configuration) {
-        return isPresent(crack(configuration));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPresent(BeanHandle<?> handle) {
-        return isPresent(crack(handle));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPresent(BeanIntrospector introspector) {
-        return isPresent(crack(introspector));
-
-    }
-
     public boolean isPresent(BeanSetup setup) {
         // Cannot come up with any situations where you want to call isPresent
-        // and at the same time as has used an initial value supplier
+        // and at the same time have an initial value supplier
         if (initialValueSupplier != null) {
             throw new UnsupportedOperationException("isPresent is not supported for bean locals that have been created with a initial-value supplier");
         }
@@ -88,25 +56,6 @@ public final class PackedBeanLocal<T> implements BeanLocal<T> {
 
     /** {@inheritDoc} */
     @Override
-    public <B extends BeanIntrospector> B set(B introspector, T value) {
-        set(crack(introspector), value);
-        return introspector;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <B extends BeanConfiguration> B set(B configuration, T value) {
-        set(crack(configuration), value);
-        return configuration;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <B extends BeanHandle<?>> B set(B handle, T value) {
-        set(crack(handle), value);
-        return handle;
-    }
-
     public void set(BeanSetup bean, T value) {
         requireNonNull(value);
         bean.locals.put(this, value);

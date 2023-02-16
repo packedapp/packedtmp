@@ -104,7 +104,7 @@ public final class AssemblySetup implements BeanOwner {
      * @param wirelets
      *            optional wirelets
      */
-    public AssemblySetup(@Nullable ApplicationDriver<?> applicationDriver, BuildGoal goal, @Nullable PackedContainerInstaller installer,
+    public AssemblySetup(@Nullable ApplicationDriver<?> applicationDriver, BuildGoal goal, @Nullable PackedContainerBuilder installer,
             Assembly assembly, Wirelet[] wirelets) {
         // We need to unpack any delegating assemblies
         requireNonNull(goal);

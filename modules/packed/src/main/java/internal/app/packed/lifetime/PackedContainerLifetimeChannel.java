@@ -21,40 +21,34 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.extension.ContainerLifetimeChannel;
 import app.packed.extension.Extension;
+import app.packed.extension.container.ExtensionLink;
 import app.packed.util.Key;
-import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.ExtensionPreLoad;
-import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.util.LookupUtil;
 
 /**
  * Represent a communication channel between a parent container lifetime and a child container lifetime. This class is
  * exposed as {@link ContainerLifetimeChannel}.
  */
-public record PackedContainerLifetimeChannel<E extends Extension<E>>(Class<? extends Extension<E>> extensionClass, Consumer<? super ExtensionSetup> onUse,
+public record PackedContainerLifetimeChannel(Class<? extends Extension<?>> extensionClass, Consumer<? super PackedContainerBuilder> onUse,
         Set<Key<?>> exports) {
 
     /** A handle that can access BeanConfiguration#handle. */
-    private static final VarHandle VH_BRIGE = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerLifetimeChannel.class, "channel",
+    private static final VarHandle VH_BRIGE = LookupUtil.findVarHandle(MethodHandles.lookup(), ExtensionLink.class, "channel",
             PackedContainerLifetimeChannel.class);
 
     /**
      * @param type
      * @return
      */
-    public PackedContainerLifetimeChannel<E> addInvocationArgument(Class<?> type) {
+    public PackedContainerLifetimeChannel addInvocationArgument(Class<?> type) {
         return null;
     }
 
-    /**
-     * @param containerSetup
-     */
-    public void install(ContainerSetup container) {
+    public void use(PackedContainerBuilder builder) {
         if (onUse != null) {
-            ExtensionPreLoad epl = container.preLoad.computeIfAbsent(extensionClass, k -> new ExtensionPreLoad());
-            epl.add(this);
+            onUse.accept(builder);
         }
     }
 
@@ -69,8 +63,8 @@ public record PackedContainerLifetimeChannel<E extends Extension<E>>(Class<? ext
      *            the channel to crack
      * @return the cracked channel
      */
-    public static PackedContainerLifetimeChannel<?> crack(ContainerLifetimeChannel channel) {
-        return (PackedContainerLifetimeChannel<?>) VH_BRIGE.get(channel);
+    public static PackedContainerLifetimeChannel crack(ExtensionLink channel) {
+        return (PackedContainerLifetimeChannel) VH_BRIGE.get(channel);
     }
 
 }
