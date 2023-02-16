@@ -18,8 +18,8 @@ package app.packed.application;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.extension.BeanHandle;
+import app.packed.extension.BeanInstaller;
 import app.packed.extension.BeanLifetimeTemplate;
 import app.packed.extension.BeanLocal;
 import app.packed.extension.ContextTemplate;

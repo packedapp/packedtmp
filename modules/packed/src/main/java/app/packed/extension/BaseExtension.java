@@ -29,7 +29,6 @@ import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
-import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
@@ -94,6 +93,7 @@ import internal.app.packed.util.MethodHandleUtil;
 
 public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
+    /** A key map with providers for use together with {@link app.packed.extension.BaseExtensionPoint.CodeGenerated}.  */
     static final PackedBeanLocal<Map<Key<?>, BeanVariable>> CODEGEN = PackedBeanLocal.of(() -> new HashMap<>());
 
     final ArrayList<BeanVariable> varsToResolve = new ArrayList<>();
@@ -474,8 +474,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                         // throw new Error(v.availableInvocationArguments().toString());
                     }
                     binding.bindInvocationArgument(0);
-                } else
-                if (hook == ApplicationMirror.class) {
+                } else if (hook == ApplicationMirror.class) {
                     binding.bindConstant(operation.bean.container.application.mirror());
                 } else if (hook == ContainerMirror.class) {
                     binding.bindConstant(operation.bean.container.mirror());
@@ -486,14 +485,11 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                 } else if (hook == OperationMirror.class) {
                     binding.bindConstant(operation.mirror());
                 } else {
-                    binding.checkAssignableTo(ContainerState.class, ApplicationMirror.class, ContainerMirror.class, AssemblyMirror.class, BeanMirror.class, OperationMirror.class);
-
-                    // binding.unwrap(BindingTracer.class);
-
-                    // Not a supported mirror type, let checkAssignableTo throw an exception
+                    // will always fail
+                    binding.checkAssignableTo(ContainerState.class, ApplicationMirror.class, ContainerMirror.class, AssemblyMirror.class, BeanMirror.class,
+                            OperationMirror.class);
                 }
             }
-
         };
     }
 

@@ -34,7 +34,7 @@ import java.util.IdentityHashMap;
 
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.InaccessibleBeanMemberException;
+import app.packed.bean.InaccessibleMemberException;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.extension.OperationTemplate;
@@ -286,7 +286,7 @@ public final class BeanReflector {
         try {
             return lookup.unreflectConstructor(constructor);
         } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+            throw new InaccessibleMemberException("Could not create a MethodHandle", e);
         }
     }
 
@@ -302,7 +302,7 @@ public final class BeanReflector {
         try {
             return lookup.unreflectGetter(field);
         } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+            throw new InaccessibleMemberException("Could not create a MethodHandle", e);
         }
     }
 
@@ -311,7 +311,7 @@ public final class BeanReflector {
         try {
             return lookup.unreflect(method);
         } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+            throw new InaccessibleMemberException("Could not create a MethodHandle", e);
         }
     }
 
@@ -320,7 +320,7 @@ public final class BeanReflector {
         try {
             return lookup.unreflectSetter(field);
         } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+            throw new InaccessibleMemberException("Could not create a MethodHandle", e);
         }
     }
 
@@ -329,7 +329,7 @@ public final class BeanReflector {
         try {
             return lookup.unreflectVarHandle(field);
         } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+            throw new InaccessibleMemberException("Could not create a MethodHandle", e);
         }
     }
 
@@ -394,7 +394,7 @@ public final class BeanReflector {
             if (!beanModule.isOpen(pckName, APP_PACKED_BASE_MODULE)) {
                 String otherModule = beanModule.getName();
                 String thisModule = APP_PACKED_BASE_MODULE.getName();
-                throw new InaccessibleBeanMemberException("In order to access '" + StringFormatter.format(beanClass) + "', the module '" + otherModule
+                throw new InaccessibleMemberException("In order to access '" + StringFormatter.format(beanClass) + "', the module '" + otherModule
                         + "' must be open to '" + thisModule + "'. This can be done, for example, by adding 'opens " + pckName + " to " + thisModule
                         + ";' to the module-info.java file for " + otherModule);
             }
@@ -407,7 +407,7 @@ public final class BeanReflector {
                 // Fjernede lookup... Skal vitterligt have samlet det i en klasse
                 return privateLookup = MethodHandles.privateLookupIn(beanClass, MethodHandles.lookup() /* lookup */);
             } catch (IllegalAccessException e) {
-                throw new InaccessibleBeanMemberException("Could not create private lookup [type=" + beanClass + ", Member = " + member + "]", e);
+                throw new InaccessibleMemberException("Could not create private lookup [type=" + beanClass + ", Member = " + member + "]", e);
             }
         }
 

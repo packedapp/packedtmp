@@ -27,7 +27,7 @@ package app.packed.bean;
  * If an extension tries to install one of its own beans without sufficient access, {@link InternalExtensionException}
  * is thrown instead.
  */
-public class InaccessibleBeanMemberException extends BeanInstallationException {
+public class InaccessibleMemberException extends BeanInstallationException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -40,7 +40,7 @@ public class InaccessibleBeanMemberException extends BeanInstallationException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public InaccessibleBeanMemberException(String message) {
+    public InaccessibleMemberException(String message) {
         super(message);
     }
 
@@ -54,7 +54,7 @@ public class InaccessibleBeanMemberException extends BeanInstallationException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public InaccessibleBeanMemberException(String message, Throwable cause) {
+    public InaccessibleMemberException(String message, Throwable cause) {
         super(message, cause);
     }
 }

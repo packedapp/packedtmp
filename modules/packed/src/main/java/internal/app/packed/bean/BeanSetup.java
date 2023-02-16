@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationPath;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanLifecycleOperationMirror;
+import app.packed.bean.LifecycleOperationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.container.Realm;
@@ -93,7 +93,7 @@ public final class BeanSetup {
 
     public void addLifecycleOperation(BeanLifecycleOrder runOrder, OperationHandle operation) {
         lifecycleOperations.add(new BeanLifecycleOperation(runOrder, operation));
-        operation.specializeMirror(() -> new BeanLifecycleOperationMirror());
+        operation.specializeMirror(() -> new LifecycleOperationMirror());
     }
 
     /** The lifetime the component is a part of. */

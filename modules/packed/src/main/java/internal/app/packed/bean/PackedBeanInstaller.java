@@ -27,11 +27,10 @@ import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.extension.BaseExtensionPoint;
 import app.packed.extension.BeanHandle;
+import app.packed.extension.BeanInstaller;
 import app.packed.extension.BeanLifetimeTemplate;
 import app.packed.extension.BeanLocal;
-import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.extension.InternalExtensionException;
 import app.packed.extension.OperationTemplate;
 import app.packed.operation.Op;
@@ -48,7 +47,7 @@ import internal.app.packed.operation.PackedOp;
 /**
  * This class is responsible for installing new beans.
  */
-public final class PackedBeanInstaller implements BaseExtensionPoint.BeanInstaller {
+public final class PackedBeanInstaller implements BeanInstaller {
 
     /** A list ofIllegal bean classes. Void is technically allowed but {@link #installWithoutSource()} needs to used. */
     // Allign with Key

@@ -27,14 +27,8 @@ import app.packed.extension.BeanLocal;
 import app.packed.util.Nullable;
 
 /**
- *
+ * Implementation of {@link BeanLocal}.
  */
-// Alternativ til attachments
-
-// Min eneste anke er an man maaske gerne vil kunne bruge navnet for noget
-// Der fungere paa runtime
-
-// Maybe have a BeanLocalMap as well
 public final class PackedBeanLocal<T> implements BeanLocal<T> {
 
     private final @Nullable Supplier<? extends T> initialValueSupplier;
@@ -84,6 +78,11 @@ public final class PackedBeanLocal<T> implements BeanLocal<T> {
     }
 
     public boolean isPresent(BeanSetup setup) {
+        // Cannot come up with any situations where you want to call isPresent
+        // and at the same time as has used an initial value supplier
+        if (initialValueSupplier != null) {
+            throw new UnsupportedOperationException("isPresent is not supported for bean locals that have been created with a initial-value supplier");
+        }
         return setup.locals.containsKey(this);
     }
 

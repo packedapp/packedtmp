@@ -15,7 +15,7 @@
  */
 package internal.app.packed.bean;
 
-import app.packed.bean.DependencyOrder;
+import app.packed.lifetime.LifetimeOrder;
 import app.packed.lifetime.RunState;
 
 public enum BeanLifecycleOrder {
@@ -28,15 +28,15 @@ public enum BeanLifecycleOrder {
         this.runState = runState;
     }
 
-    public static BeanLifecycleOrder fromInitialize(DependencyOrder ordering) {
-        return ordering == DependencyOrder.BEFORE_DEPENDENCIES ? INITIALIZE_PRE_ORDER : BeanLifecycleOrder.INITIALIZE_POST_ORDER;
+    public static BeanLifecycleOrder fromInitialize(LifetimeOrder ordering) {
+        return ordering == LifetimeOrder.BEFORE_DEPENDENCIES ? INITIALIZE_PRE_ORDER : BeanLifecycleOrder.INITIALIZE_POST_ORDER;
     }
 
-    public static BeanLifecycleOrder fromStarting(DependencyOrder ordering) {
-        return ordering == DependencyOrder.BEFORE_DEPENDENCIES ? START_PRE_ORDER : BeanLifecycleOrder.START_POST_ORDER;
+    public static BeanLifecycleOrder fromStarting(LifetimeOrder ordering) {
+        return ordering == LifetimeOrder.BEFORE_DEPENDENCIES ? START_PRE_ORDER : BeanLifecycleOrder.START_POST_ORDER;
     }
 
-    public static BeanLifecycleOrder fromStopping(DependencyOrder ordering) {
-        return ordering == DependencyOrder.BEFORE_DEPENDENCIES ? STOP_PRE_ORDER : BeanLifecycleOrder.STOP_POST_ORDER;
+    public static BeanLifecycleOrder fromStopping(LifetimeOrder ordering) {
+        return ordering == LifetimeOrder.BEFORE_DEPENDENCIES ? STOP_PRE_ORDER : BeanLifecycleOrder.STOP_POST_ORDER;
     }
 }

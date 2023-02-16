@@ -18,8 +18,8 @@ package app.packed.extension.template;
 import java.lang.invoke.VarHandle.AccessMode;
 
 import app.packed.bean.BeanKind;
+import app.packed.extension.BeanInstaller;
 import app.packed.extension.OperationHandle;
-import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 
 /**
  *

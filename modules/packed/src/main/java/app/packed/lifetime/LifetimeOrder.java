@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.lifetime;
 
 /**
  *
@@ -24,7 +24,10 @@ package app.packed.bean;
 // LifetimeLifecycleOrder, LifecycleLifetimeOrder
 
 //LifecycleOrder
-public enum DependencyOrder {
+
+// LifetimeOrder
+
+public enum LifetimeOrder {
 
     /** The operation will be executed before any dependencies. */
     BEFORE_DEPENDENCIES,

@@ -23,10 +23,10 @@ import java.time.LocalDateTime;
 import app.packed.application.App;
 import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
+import app.packed.extension.BeanHook.AnnotatedBindingHook;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.BeanVariable;
 import app.packed.extension.Extension;
-import app.packed.extension.BeanHook.AnnotatedBindingHook;
 import app.packed.operation.Op0;
 import app.packed.operation.Op1;
 
@@ -89,19 +89,6 @@ public class OSITest extends BaseAssembly {
                         super.hookOnAnnotatedVariable(hook, d);
                     }
                 }
-//
-//                @Override
-//                public void hookOnAnnotatedVariablex(Annotation hook, BindableVariable v) {
-//                    switch (hook) {
-//                    case BuildTime b -> v.bindConstant(LocalDateTime.now());
-//                    case Now n -> v.bindTo(new Op0<>(LocalDateTime::now) {});
-//                    case AppInitializeRecord a -> {
-//                        root().base().installIfAbsent(AppInitializeRecord.class);
-//                        v.bindTo(new Op1<AppInitializeRecord, LocalDateTime>(b -> b.initialized) {});
-//                    }
-//                    case default -> super.hookOnAnnotatedVariablex(hook, v);
-//                    }
-//                }
             };
         }
 

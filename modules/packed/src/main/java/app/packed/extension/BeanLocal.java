@@ -35,8 +35,6 @@ public sealed interface BeanLocal<T> permits PackedBeanLocal {
 
     boolean isPresent(BeanHandle<?> handle);
 
-    // Im guessing if it has a supplier this is always true
-    // Actually I think it is the reverse
     boolean isPresent(BeanIntrospector introspector);
 
     <B extends BeanIntrospector> B set(B introspector, T value);

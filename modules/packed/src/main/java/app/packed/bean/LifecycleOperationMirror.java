@@ -16,6 +16,7 @@
 package app.packed.bean;
 
 import app.packed.lifetime.LifetimeMirror;
+import app.packed.lifetime.LifetimeOrder;
 import app.packed.lifetime.RunState;
 import app.packed.operation.OperationMirror;
 
@@ -24,7 +25,7 @@ import app.packed.operation.OperationMirror;
  */
 
 // Is a factory a lifecycle operation? I don't think so
-public class BeanLifecycleOperationMirror extends OperationMirror {
+public class LifecycleOperationMirror extends OperationMirror {
 
     /**
      * The lifetime the operation is run in.
@@ -35,7 +36,7 @@ public class BeanLifecycleOperationMirror extends OperationMirror {
         return bean().lifetime();
     }
 
-    public DependencyOrder isNaturalOrder() {
+    public LifetimeOrder isNaturalOrder() {
        throw new UnsupportedOperationException();
     }
 
@@ -62,7 +63,7 @@ public class BeanLifecycleOperationMirror extends OperationMirror {
      * The operator of this operation is always {@link BaseExtension}.
      */
     // IDK know if we want this
-    public static class BeanInstantiationOperationMirror extends BeanLifecycleOperationMirror {}
+    public static class BeanInstantiationOperationMirror extends LifecycleOperationMirror {}
 
     // Hvis jeg register en instance har min bean ikke en
     // Men factory og non-static class har altid en
