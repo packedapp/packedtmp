@@ -27,9 +27,9 @@ import java.util.function.Supplier;
 import app.packed.application.BootstrapApp.Composer.BootstrapAppAssembly;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
-import app.packed.extension.ContainerLifetimeChannel;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.extension.ContainerLifetimeChannel;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
@@ -40,7 +40,7 @@ import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 
 /**
- * A bootstrap app is a special type of applications that can be used to create other (non-bootstrap) application.
+ * A bootstrap app is a special type of application that can be used to create other (non-bootstrap) application.
  * <p>
  * Bootstrap application Packed comes with a number of predefined application drivers:
  * <p>
@@ -54,10 +54,10 @@ import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
  * {@link ServiceLocator} are not sufficient. In fact, the default implementations of both {@link App} and
  * {@link ServiceLocator} uses an artifact driver themselves.
  * <p>
- * Normally, you never create more than a single instance of an application driver.
+ * Normally, you never create more than a single instance of a bootstrap app.
  *
  * @param <A>
- *            the type of applications this bootstrap app creates.
+ *            the type of application this bootstrap app creates.
  */
 public final class BootstrapApp<A> {
 

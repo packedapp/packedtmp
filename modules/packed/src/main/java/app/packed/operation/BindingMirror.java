@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings;
+package app.packed.operation;
 
 import java.util.Optional;
 
-import app.packed.bindings.mirror.BindingProviderKind;
-import app.packed.bindings.mirror.BindingTarget;
-import app.packed.bindings.mirror.DependenciesMirror;
 import app.packed.container.Realm;
-import app.packed.operation.OperationMirror;
+import app.packed.operation.mirror.BindingProviderKind;
+import app.packed.operation.mirror.BindingTarget;
+import app.packed.operation.mirror.DependenciesMirror;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
 import internal.app.packed.binding.BindingResolution;

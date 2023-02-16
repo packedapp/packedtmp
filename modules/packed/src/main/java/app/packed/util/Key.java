@@ -33,10 +33,10 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 
-import app.packed.bindings.Provider;
 import app.packed.extension.BeanVariable;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
+import app.packed.operation.Provider;
 import internal.app.packed.bean.PackedBeanField;
 import internal.app.packed.bean.PackedBeanMethod;
 import internal.app.packed.bean.PackedBindableVariable;

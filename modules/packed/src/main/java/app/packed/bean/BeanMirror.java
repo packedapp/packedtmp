@@ -11,17 +11,16 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationPath;
-import app.packed.bindings.mirror.DependenciesMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Realm;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.Extension;
-import app.packed.extension.MirrorExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
+import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
+import app.packed.operation.mirror.DependenciesMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.Mirror;
@@ -32,7 +31,7 @@ import internal.app.packed.operation.OperationSetup;
  * <p>
  * Instances of this class is typically obtained from calls to {@link ApplicationMirror} or {@link ContainerMirror}.
  */
-@BindingTypeHook(extension = MirrorExtension.class)
+@BindingTypeHook(extension = BaseExtension.class)
 public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirror {
 
     /**

@@ -5,10 +5,10 @@ import java.util.function.Consumer;
 
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
+import app.packed.extension.BaseExtension;
+import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
-import app.packed.extension.MirrorExtension;
-import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
@@ -26,7 +26,7 @@ import internal.app.packed.operation.OperationSetup;
  * <p>
  * Like many other mirrors this class is exte extendable via {@link BootstrapApp.Composer#}
  */
-@BindingTypeHook(extension = MirrorExtension.class)
+@BindingTypeHook(extension = BaseExtension.class)
 public class ApplicationMirror implements Mirror {
 
     /** The configuration of the application. Is initially null but populated via {@link #initialize(ApplicationSetup)}. */

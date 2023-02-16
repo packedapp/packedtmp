@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings;
+package app.packed.service;
 
-/**
- * Thrown at runtime if a value cannot be provided for a binding.
- */
-public class ProvisionException extends RuntimeException {
+import app.packed.application.BuildException;
+
+/** An exception thrown at build-time when a valid binding could not be created for an operation. */
+// Valid but the
+// Binding
+// Giver bare ikke rigtig mening navngivningsmaessigt...
+// Dependency yws, binding no.
+// IDeen er er lidt at lave en generiks vi kan ikke lave den binding fordi xxx.
+public class UnsatisfiableDependencyException extends BuildException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -31,9 +36,8 @@ public class ProvisionException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public ProvisionException(String message) {
+    public UnsatisfiableDependencyException(String message) {
         super(message);
-
     }
 
     /**
@@ -46,7 +50,7 @@ public class ProvisionException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public ProvisionException(String message, Throwable cause) {
+    public UnsatisfiableDependencyException(String message, Throwable cause) {
         super(message, cause);
     }
 }

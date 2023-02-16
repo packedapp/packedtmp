@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.bindings.Provider;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
+import app.packed.operation.Provider;
 import app.packed.extension.ContainerState;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceSelection;

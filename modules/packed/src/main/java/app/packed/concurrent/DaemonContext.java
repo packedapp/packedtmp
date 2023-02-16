@@ -28,5 +28,4 @@ public interface DaemonContext extends Context<ThreadExtension> {
 
     // should probably check isShutdown();
     void await() throws InterruptedException;
-
 }

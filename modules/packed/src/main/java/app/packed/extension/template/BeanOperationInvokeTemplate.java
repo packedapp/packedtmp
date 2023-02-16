@@ -13,32 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings.mirror;
+package app.packed.extension.template;
 
 /**
  *
- * <p>
- * Custom wrapper kinds are not supported.
  */
-// What about TraceBinding<T>?
-public enum BindingWrapperKind {
+public interface BeanOperationInvokeTemplate {
 
-    /**
-     *
-     * @see Optional
-     * @see OptionalInt
-     * @see OptionalLong
-     * @see OptionalDouble
-     **/
-    OPTIONAL,
+    static BeanOperationInvokeTemplate method() {
+        throw new UnsupportedOperationException();
+    }
 
-    /**
-     * This wrapper kind supports repeated delivery of values.
-     *
-     * @see Provider
-     **/
-    PROVIDER,
-
-    /** */
-    LAZY;
+    static BeanOperationInvokeTemplate methodIgnoreReturn() {
+        throw new UnsupportedOperationException();
+    }
 }

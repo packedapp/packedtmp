@@ -13,12 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.template;
+package app.packed.operation.mirror;
 
 /**
  *
+ * <p>
+ * Custom wrapper kinds are not supported.
  */
-public class ContainerLifetimeOperationTemplate {
+// What about TraceBinding<T>?
+public enum BindingWrapperKind {
 
+    /**
+     *
+     * @see Optional
+     * @see OptionalInt
+     * @see OptionalLong
+     * @see OptionalDouble
+     **/
+    OPTIONAL,
+
+    /**
+     * This wrapper kind supports repeated delivery of values.
+     *
+     * @see Provider
+     **/
+    PROVIDER,
+
+    /** */
+    LAZY;
 }
-

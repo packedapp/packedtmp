@@ -15,9 +15,9 @@
  */
 package internal.app.packed.binding;
 
-import app.packed.bindings.BindingMirror;
 import app.packed.container.Realm;
 import app.packed.extension.BaseExtension;
+import app.packed.operation.BindingMirror;
 import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
 
 /**

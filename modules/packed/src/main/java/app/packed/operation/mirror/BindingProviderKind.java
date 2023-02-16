@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.template;
+package app.packed.operation.mirror;
 
 /**
  *
  */
-public interface BeanOperationInvokeTemplate {
+// What about @Default... Optional, osv)
+// Er ikke super interessant for brugere...
+public enum BindingProviderKind {
 
-    static BeanOperationInvokeTemplate method() {
-        throw new UnsupportedOperationException();
-    }
+    /** A constant. */
+    CONSTANT,
 
-    static BeanOperationInvokeTemplate methodIgnoreReturn() {
-        throw new UnsupportedOperationException();
-    }
+    /** An argument that is provided when invoking the operation. */
+    ARGUMENT,
+
+    /** The binding is a result of another operation. */
+    OPERATION;
 }
+// LifetimeConstant

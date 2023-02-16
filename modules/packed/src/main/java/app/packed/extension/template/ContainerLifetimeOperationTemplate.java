@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.template;
+package app.packed.extension.template;
 
 /**
  *
  */
-public interface OpTemplate {
+public class ContainerLifetimeOperationTemplate {
 
 }
+

@@ -25,15 +25,14 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.bindings.BindingMirror;
-import app.packed.bindings.mirror.DependenciesMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.context.ContextMirror;
 import app.packed.context.ContextualizedElementMirror;
-import app.packed.extension.Extension;
-import app.packed.extension.MirrorExtension;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
+import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
+import app.packed.operation.mirror.DependenciesMirror;
 import app.packed.util.FunctionType;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -52,7 +51,7 @@ import internal.app.packed.operation.OperationSetup;
  * <li>Must be located in the same module as the extension it is a member of.</li>
  * </ul>
  */
-@BindingTypeHook(extension = MirrorExtension.class)
+@BindingTypeHook(extension = BaseExtension.class)
 public non-sealed class OperationMirror implements ContextualizedElementMirror , Mirror {
 
     /**

@@ -13,18 +13,21 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildException;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanMirror;
 import app.packed.bean.Inject;
 import app.packed.bean.OnInitialize;
 import app.packed.bean.OnStart;
 import app.packed.bean.OnStop;
 import app.packed.bean.UnavailableLifecycleException;
-import app.packed.bindings.Provider;
 import app.packed.container.Assembly;
+import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint.BeanInstaller;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
@@ -35,6 +38,8 @@ import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationMirror;
+import app.packed.operation.Provider;
 import app.packed.service.Export;
 import app.packed.service.Provide;
 import app.packed.service.ServiceContract;
@@ -48,6 +53,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanLocal;
+import internal.app.packed.bean.PackedBeanWrappedVariable;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
@@ -457,17 +463,34 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             }
 
             @Override
-            public void hookOnVariableType(Class<?> hook, BeanWrappedVariable v) {
+            public void hookOnVariableType(Class<?> hook, BeanWrappedVariable binding) {
+                OperationSetup operation = ((PackedBeanWrappedVariable) binding).v.operation;
+
                 if (hook == ContainerState.class) {
                     if (beanOwner().isApplication()) {
-                        v.failWith("ExtensionContext can only be injected into extensions");
+                        binding.failWith("ExtensionContext can only be injected into extensions");
                     }
-                    if (v.availableInvocationArguments().isEmpty() || v.availableInvocationArguments().get(0) != ContainerState.class) {
+                    if (binding.availableInvocationArguments().isEmpty() || binding.availableInvocationArguments().get(0) != ContainerState.class) {
                         // throw new Error(v.availableInvocationArguments().toString());
                     }
-                    v.bindInvocationArgument(0);
+                    binding.bindInvocationArgument(0);
+                } else
+                if (hook == ApplicationMirror.class) {
+                    binding.bindConstant(operation.bean.container.application.mirror());
+                } else if (hook == ContainerMirror.class) {
+                    binding.bindConstant(operation.bean.container.mirror());
+                } else if (hook == AssemblyMirror.class) {
+                    binding.bindConstant(operation.bean.container.assembly.mirror());
+                } else if (hook == BeanMirror.class) {
+                    binding.bindConstant(operation.bean.mirror());
+                } else if (hook == OperationMirror.class) {
+                    binding.bindConstant(operation.mirror());
                 } else {
-                    v.checkAssignableTo(ContainerState.class);
+                    binding.checkAssignableTo(ContainerState.class, ApplicationMirror.class, ContainerMirror.class, AssemblyMirror.class, BeanMirror.class, OperationMirror.class);
+
+                    // binding.unwrap(BindingTracer.class);
+
+                    // Not a supported mirror type, let checkAssignableTo throw an exception
                 }
             }
 

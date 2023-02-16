@@ -27,15 +27,15 @@ import org.junit.jupiter.api.Test;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanMirror;
-import app.packed.bindings.BindingKind;
-import app.packed.bindings.BindingMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Realm;
-import app.packed.extension.MirrorExtension;
+import app.packed.extension.BaseExtension;
+import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.OperationHandle;
 import app.packed.extension.OperationTemplate;
-import app.packed.extension.BeanHook.BindingTypeHook;
+import app.packed.operation.BindingKind;
+import app.packed.operation.BindingMirror;
 import app.packed.operation.OperationMirror;
 import tools.H;
 
@@ -64,7 +64,7 @@ public class MirrorInjection {
                     assertEquals(om, bim.operation());
                     assertEquals(i, bim.operationBindingIndex());
                     assertEquals(BindingKind.HOOK, bim.bindingKind());
-                    assertSame(Realm.extension(MirrorExtension.class), bim.zBoundBy());
+                    assertSame(Realm.extension(BaseExtension.class), bim.zBoundBy());
                     assertTrue(bim.variable().annotations().isEmpty());
                     assertEquals(l.get(i), bim.variable().type());
                     assertEquals(l.get(i), bim.variable().rawType());
@@ -84,7 +84,7 @@ public class MirrorInjection {
 
     @Test
     public void unknownMirror() {
-        @BindingTypeHook(extension = MirrorExtension.class)
+        @BindingTypeHook(extension = BaseExtension.class)
         record MirrorAlien() {}
         H.assertThrows(BeanInstallationException.class, c -> {
             c.onAnnotatedFieldHook((l, b) -> b.newGetOperation(OperationTemplate.defaults()));

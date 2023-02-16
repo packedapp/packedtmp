@@ -13,10 +13,10 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationPath;
 import app.packed.bean.BeanMirror;
 import app.packed.context.ContextualizedElementMirror;
+import app.packed.extension.BaseExtension;
+import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
-import app.packed.extension.MirrorExtension;
-import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerSetup;
@@ -36,7 +36,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * <p>
  * At runtime you can have a ContainerMirror injected
  */
-@BindingTypeHook(extension = MirrorExtension.class)
+@BindingTypeHook(extension = BaseExtension.class)
 public non-sealed class ContainerMirror implements ContextualizedElementMirror , Mirror {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */

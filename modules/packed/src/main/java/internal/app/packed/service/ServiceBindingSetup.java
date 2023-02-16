@@ -17,9 +17,9 @@ package internal.app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.bindings.BindingKind;
 import app.packed.container.Realm;
 import app.packed.extension.BaseExtension;
+import app.packed.operation.BindingKind;
 import app.packed.service.ServiceBindingMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingResolution;

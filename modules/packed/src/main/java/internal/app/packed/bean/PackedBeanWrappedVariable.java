@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import app.packed.bindings.BindingMirror;
 import app.packed.context.Context;
 import app.packed.extension.BeanVariable;
 import app.packed.extension.BeanWrappedVariable;
 import app.packed.extension.Extension;
+import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
 import app.packed.util.AnnotationList;
 import app.packed.util.Key;

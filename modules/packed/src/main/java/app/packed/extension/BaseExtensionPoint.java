@@ -33,6 +33,18 @@ import internal.app.packed.operation.PackedOperationHandle;
 /** An {@link ExtensionPoint extension point} for {@link BaseExtension}. */
 public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
+    // Hmm Installering af MirrorExtension er lidt hmm hmm
+
+    // Maaske er det bare en dum extension?
+    // Og saa paa en anden checke om der er mirrors
+    // Alle mirror typerne er jo en del af base's ansvar
+
+    // Altsaa fx naar vi naar hen til application.
+    // Vi kan jo ikke installere den i extensionen...
+    public static ContainerLifetimeChannel CONTAINER_MIRROR = ContainerLifetimeChannel.builder(MethodHandles.lookup(), BaseExtension.class, "ContainerMirror")
+            .build();
+
+
     /** A bridge that makes the name of the container available. */
     public static final ContainerLifetimeChannel CONTAINER_NAME = null;
 

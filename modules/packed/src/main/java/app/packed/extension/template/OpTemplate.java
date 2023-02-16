@@ -13,22 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bindings.mirror;
+package app.packed.extension.template;
 
 /**
  *
  */
-// What about @Default... Optional, osv)
-// Er ikke super interessant for brugere...
-public enum BindingProviderKind {
+public interface OpTemplate {
 
-    /** A constant. */
-    CONSTANT,
-
-    /** An argument that is provided when invoking the operation. */
-    ARGUMENT,
-
-    /** The binding is a result of another operation. */
-    OPERATION;
 }
-// LifetimeConstant

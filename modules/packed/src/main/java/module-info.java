@@ -6,20 +6,17 @@ module app.packed {
     exports app.packed.context;
     exports app.packed.container;
     exports app.packed.errorhandling;
-    exports app.packed.util;
-    exports app.packed.operation;
-    exports app.packed.lifetime;
-    exports app.packed.service;
-
-    // Taenker de her ryger paa et tidspunkt
-    exports app.packed.bindings;
     exports app.packed.extension;
+    exports app.packed.lifetime;
+    exports app.packed.operation;
+    exports app.packed.service;
+    exports app.packed.util;
 
     // Essential extensions
     exports app.packed.entrypoint;
 
     // temporary sandbox thingies
-    exports app.packed.bindings.mirror;
+    exports app.packed.operation.mirror;
     exports app.packed.lifetime.sandbox;
 
     /* Special support for packed-devtoolks */

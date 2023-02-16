@@ -13,26 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.template;
-
-import java.lang.invoke.VarHandle.AccessMode;
-
-import app.packed.extension.ContextTemplate;
+package app.packed.extension.template;
 
 /**
  *
  */
-public class FieldAccessContext {
+// An operation that creates a new BeanLifetime
+public class BeanLifetimeOperationTemplate {
 
-    static ContextTemplate get(Class<?> returnType) {
-        throw new UnsupportedOperationException();
-    }
-
-    static ContextTemplate set(Class<?> invocationType) {
-        throw new UnsupportedOperationException();
-    }
-
-    static ContextTemplate access(AccessMode accessMode, Class<?> invocationType) {
-        throw new UnsupportedOperationException();
-    }
 }

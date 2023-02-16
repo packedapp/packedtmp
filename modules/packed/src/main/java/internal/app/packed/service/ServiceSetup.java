@@ -20,9 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-import app.packed.bindings.UnsatisfiableDependencyException;
 import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.ServiceBindingMirror;
+import app.packed.service.UnsatisfiableDependencyException;
 import app.packed.util.Key;
 import app.packed.util.KeyAlreadyInUseException;
 import app.packed.util.Nullable;

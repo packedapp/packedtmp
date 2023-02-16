@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.extension.MirrorExtension;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
@@ -22,7 +22,7 @@ import internal.app.packed.container.Mirror;
  * Instances of ApplicationMirror can be injected at runtime simply by declaring a dependency on it. This will
  * automatically install the {@link MirrorExtension} which will provide an instance at runtime.
  */
-@BindingTypeHook(extension = MirrorExtension.class)
+@BindingTypeHook(extension = BaseExtension.class)
 public class AssemblyMirror implements Mirror {
 
     /**

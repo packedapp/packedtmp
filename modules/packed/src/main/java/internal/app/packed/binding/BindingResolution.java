@@ -17,7 +17,7 @@ package internal.app.packed.binding;
 
 import java.util.function.Supplier;
 
-import app.packed.bindings.mirror.BindingProviderKind;
+import app.packed.operation.mirror.BindingProviderKind;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 

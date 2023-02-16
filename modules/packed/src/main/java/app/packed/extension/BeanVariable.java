@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanInstallationException;
-import app.packed.bindings.BindingMirror;
 import app.packed.context.Context;
+import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
