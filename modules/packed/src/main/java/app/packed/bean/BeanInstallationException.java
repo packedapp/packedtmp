@@ -17,7 +17,7 @@ package app.packed.bean;
 
 import app.packed.application.BuildException;
 
-/** A generic build-time exception used to indicate that the installation of a bean failed. */
+/** A build-time exception used to indicate that the installation of a bean failed. */
 public class BeanInstallationException extends BuildException {
 
     private static final long serialVersionUID = 1L;

@@ -28,7 +28,7 @@ import app.packed.service.ServiceLocator;
  *
  */
 public class Usage extends Extension<Usage> {
-    private static final ContainerTemplate CT = ContainerTemplate.OPERATION.linkWith(BaseExtensionPoint.EXPORTED_SERVICE_LOCATOR);
+    private static final ContainerTemplate CT = ContainerTemplate.Z_OPERATION.linkWith(BaseExtensionPoint.EXPORTED_SERVICE_LOCATOR);
 
     public ContainerConfiguration foo() {
         ContainerHolderConfiguration<Guest> chg = base().containerHolderInstallIfAbsent(Guest.class, c -> {});

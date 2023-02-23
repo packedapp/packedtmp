@@ -25,7 +25,7 @@ import java.util.Set;
 
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
-import app.packed.extension.ExtensionHandle;
+import app.packed.extension.ContainerContext;
 import app.packed.extension.operation.OperationTemplate;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeKind;
@@ -37,7 +37,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.entrypoint.EntryPointSetup;
-import internal.app.packed.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.lifetime.runtime.PackedContainerContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
@@ -51,7 +51,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
     private static final MethodHandle MH_INVOKE_INITIALIZER = LookupUtil.findStaticOwn(MethodHandles.lookup(), "invokeInitializer", void.class, BeanSetup.class,
-            MethodHandle.class, ExtensionHandle.class);
+            MethodHandle.class, ContainerContext.class);
 
     /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
     private static final MethodHandle MH_LIFETIME_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ContainerLifetimeMirror.class,
@@ -136,8 +136,8 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         return mirror;
     }
 
-    public ExtensionHandle newRuntimePool() {
-        return PackedExtensionContext.create(size);
+    public ContainerContext newRuntimePool() {
+        return PackedContainerContext.create(size);
     }
 
     private void orderBeans(BeanSetup bean) {
@@ -225,7 +225,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         return size++;
     }
 
-    public static void invokeInitializer(BeanSetup bean, MethodHandle mh, ExtensionHandle ec) {
+    public static void invokeInitializer(BeanSetup bean, MethodHandle mh, ContainerContext ec) {
         Object instance;
         try {
             instance = mh.invokeExact(ec);
@@ -238,7 +238,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         if (!bean.beanClass.isInstance(instance)) {
             throw new Error("Expected " + bean.beanClass + ", was " + instance.getClass());
         }
-        PackedExtensionContext pec = (PackedExtensionContext) ec;
+        PackedContainerContext pec = (PackedContainerContext) ec;
         pec.storeObject(bean.lifetimeStoreIndex, instance);
     }
 

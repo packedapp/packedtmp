@@ -33,7 +33,7 @@ import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.util.Key;
 import internal.app.packed.bean.BeanLifecycleOrder;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.PackedBeanInstaller;
+import internal.app.packed.bean.PackedBeanBuilder;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.PackedExtensionPointContext;
@@ -60,7 +60,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * {@link app.packed.service.ServiceLocator}.
      */
     public static final ExtensionLink EXPORTED_SERVICE_LOCATOR = baseBuilder("ExportedServiceLocator")
-            .consumeLocal(BaseExtension.DEFAULTS, t -> t.exportServices = true).expose(ServiceLocator.class).build();
+            .consumeLocal(BaseExtension.FROM_LINKS, t -> t.exportServices = true).expose(ServiceLocator.class).build();
 
     // Teanker vi altid exportere den
     // check that we have a managed lifetime. Maybe PackedManagedBeanController is already installed
@@ -131,7 +131,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return the installer
      */
     public BeanBuilder beanBuilder(BeanTemplate template) {
-        return new PackedBeanInstaller(extension().extension, extension().extension.container.assembly, template);
+        return new PackedBeanBuilder(extension().extension, extension().extension.container.assembly, template);
     }
 
     /**
@@ -143,7 +143,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public BeanBuilder beanInstallerForExtension(BeanTemplate template, UseSite forExtension) {
         requireNonNull(forExtension, "forExtension is null");
-        return new PackedBeanInstaller(extension().extension, ((PackedExtensionPointContext) forExtension).usedBy(), template);
+        return new PackedBeanBuilder(extension().extension, ((PackedExtensionPointContext) forExtension).usedBy(), template);
     }
 
     /**
@@ -235,7 +235,8 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     public FunctionalBeanConfiguration installFunctional() {
-        BeanHandle<?> handle = beanInstallerForExtension(BeanTemplate.STATIC, context()).installWithoutSource();
+        PackedBeanBuilder bb = (PackedBeanBuilder) beanInstallerForExtension(BeanTemplate.STATIC, context());
+        BeanHandle<?> handle = bb.installSourceless();
         return new FunctionalBeanConfiguration(handle);
     }
 

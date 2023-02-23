@@ -22,7 +22,7 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionHandle;
+import app.packed.extension.ContainerContext;
 import app.packed.extension.bean.BeanHandle;
 import app.packed.extension.bean.BeanTemplate;
 import app.packed.extension.operation.OperationHandle;
@@ -52,7 +52,7 @@ public class MhExt extends BaseAssembly {
     public static class EBean {
         final MethodHandle mh;
 
-        public EBean(ExtensionHandle context, @CodeGenerated MethodHandle f) throws Throwable {
+        public EBean(ContainerContext context, @CodeGenerated MethodHandle f) throws Throwable {
             this.mh = f;
         }
 

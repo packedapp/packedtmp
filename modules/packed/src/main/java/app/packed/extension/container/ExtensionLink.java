@@ -48,19 +48,10 @@ import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
 
 // Or just ContainerTemplate.ExtensionLink
 // Hvad med mesh
-public final class ExtensionLink {
-
-    /** The internal container lifetime channel. */
-    private final PackedContainerLifetimeChannel channel;
-
-    private ExtensionLink(PackedContainerLifetimeChannel channel) {
-        this.channel = requireNonNull(channel);
-    }
+public sealed interface ExtensionLink permits PackedContainerLifetimeChannel {
 
     /** {@return the extension that defined the channel.} */
-    public Class<? extends Extension<?>> extensionClass() {
-        return channel.extensionClass();
-    }
+    Class<? extends Extension<?>> extensionClass();
 
 //   // Context injection???
 //   // Hvordan faar vi dem hen til en bean???
@@ -82,19 +73,11 @@ public final class ExtensionLink {
      * @see Builder#exposeExports(Key...)
      * @see FromLifetimeChannel
      */
-    public Set<Key<?>> keys() {
-        return channel.exports();
-    }
+    Set<Key<?>> keys();
 
     // is used in the (unlikely) scenario with multiple links
     // that each provide something with the same key
-    public ExtensionLink rekey(Key<?> from, Key<?> to) {
-        // from key must exist
-        // Advanced operation
-        // no case checks are performed
-        // or maybe we do anywhere, should probably be simple
-        throw new UnsupportedOperationException();
-    }
+    ExtensionLink rekey(Key<?> from, Key<?> to);
 
     /**
      * Returns a new container lifetime channel builder for the specified extension.
@@ -107,7 +90,7 @@ public final class ExtensionLink {
      *            the type of extension
      * @return the builder
      */
-    public static ExtensionLink.Builder builder(MethodHandles.Lookup caller, Class<? extends Extension<?>> extensionType, String name) {
+    static ExtensionLink.Builder builder(MethodHandles.Lookup caller, Class<? extends Extension<?>> extensionType, String name) {
         if (!caller.hasFullPrivilegeAccess()) {
             throw new IllegalArgumentException("caller must have full privilege access");
         } else if (caller.lookupClass().getModule() != extensionType.getModule()) {
@@ -131,21 +114,22 @@ public final class ExtensionLink {
      *            the constant
      * @return the link
      */
-    public static <T> ExtensionLink ofConstant(Class<T> key, T constant) {
+    static <T> ExtensionLink ofConstant(Class<T> key, T constant) {
         return ofConstant(Key.of(key), constant);
     }
 
-    public static <T> ExtensionLink ofConstant(Key<T> key, T arg) {
+    static <T> ExtensionLink ofConstant(Key<T> key, T arg) {
         // Det er er fint a BaseExtension staar som afsender
         // builder().expose(Op.ofConstant(Key.toVariable, arg).build()
         throw new UnsupportedOperationException();
     }
 
-    /** A builder for container lifetime channels. */
+    /** A builder for {@link ExtensionLink}. */
     // Could move this class to ExtensionContext
     // and have newExtensionLink(String name) paa den
     public static final class Builder {
-
+        // We need this builder. Because it has methods that should be exposed to
+        // users of the built product.
         /** The internal channel. */
         private PackedContainerLifetimeChannel channel;
 
@@ -159,8 +143,11 @@ public final class ExtensionLink {
          * @return the new channel
          */
         public ExtensionLink build() {
-            return new ExtensionLink(channel);
+            return channel;
         }
+
+        // Hvis extensionen ikke er installeret (eller eksportere den)
+        // exposeOrAlternative(Key<T>, T alternative)
 
         public <T> ExtensionLink.Builder consumeLocal(ContainerLocal<T> local, Consumer<T> action) {
             return useBuilder(c -> c.consumeLocal(local, action));
@@ -174,12 +161,9 @@ public final class ExtensionLink {
          * <p>
          * If this channel is applied to a container that does not export services with the specified keys. A build time
          * exception is thrown.
-         *
-         *
          * @param keys
          *            the keys to include
          * @return this builder
-         *
          */
         public ExtensionLink.Builder expose(Key<?>... keys) {
             PackedContainerLifetimeChannel c = channel;
@@ -213,10 +197,8 @@ public final class ExtensionLink {
          */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         ExtensionLink.Builder useBuilder(Consumer<? super PackedContainerBuilder> action) {
-            requireNonNull(action, "action is null");
-            PackedContainerLifetimeChannel ch = channel;
-            channel = new PackedContainerLifetimeChannel(ch.extensionClass(), ch.onUse() == null ? action : ch.onUse().andThen((Consumer) action),
-                    ch.exports());
+            channel = new PackedContainerLifetimeChannel(channel.extensionClass(), channel.onUse() == null ? action : channel.onUse().andThen((Consumer) action),
+                    channel.exports());
             return this;
         }
     }

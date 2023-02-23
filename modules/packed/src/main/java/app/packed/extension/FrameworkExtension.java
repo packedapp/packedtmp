@@ -16,7 +16,7 @@
 package app.packed.extension;
 
 /**
- * A framework extension indicates that an extension is part of the framework.
+ * A framework extension indicates that an extension is part of the Framework.
  * <p>
  * Framework extensions receive no special treatment. As such this class merely indicates whether or not a particular
  * extension is part of the framework.

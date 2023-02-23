@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.bean;
+package app.packed.extension.operation;
 
 /**
  *
  */
+// Hmm, de problemer der er nu
+public interface OperationBuilder {
+    // nested operations
 
-// Kan vaere med i OperationTemplaten?
-// og saa laver vi den lazy
-public class PouchTemplate {
+    // Syntes ikke det giver mening at merge dem ind i nested
+    // Maaske har man en NestedOperationTemplate
+    // Og saa siger man nest in OperationTemplate
 
-    // supports foreign threads ect.
-    //
+    // IDK tricky,
 }

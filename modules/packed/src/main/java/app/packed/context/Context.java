@@ -30,6 +30,10 @@ import app.packed.extension.Extension;
 //// ContextClass
 //// ContextSpan (Variable)
 
+// er requiresContext hard paa hook annotation?
+// dvs kan man kun se de contexts der er til raadighed
+
+
 public interface Context<E extends Extension<E>> {}
 
 // Protected typeClass for configuration...

@@ -18,15 +18,14 @@ package internal.app.packed.bean;
 import static java.util.Objects.checkIndex;
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanInstallationException;
+import app.packed.context.Context;
 import app.packed.extension.BeanVariable;
 import app.packed.extension.Extension;
-import app.packed.extension.InternalExtensionException;
 import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
@@ -130,23 +129,16 @@ public final class PackedBindableVariable implements BeanVariable {
 
     /** {@inheritDoc} */
     @Override
-    public void bindGeneratedConstant(Supplier<?> supplier) {
-        checkBeforeBind();
-        // We can't really do any form of type checks until we call the supplier
-        bind(new FromCodeGenerated(supplier));
+    public void bindContextValue(Class<? extends Context<?>> context) {
+        bindInvocationArgument(0);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void bindInvocationArgument(Class<?> argumentType) {
-        requireNonNull(argumentType, "argumentType is null");
-        MethodType mt = operation.template.invocationType();
-        for (int i = 0; i < mt.parameterCount(); i++) {
-            if (argumentType == mt.parameterType(i)) {
-                bindInvocationArgument(i);
-            }
-        }
-        throw new InternalExtensionException("oops");
+    public void bindGeneratedConstant(Supplier<?> supplier) {
+        checkBeforeBind();
+        // We can't really do any form of type checks until we call the supplier
+        bind(new FromCodeGenerated(supplier));
     }
 
     /** {@inheritDoc} */
@@ -169,7 +161,7 @@ public final class PackedBindableVariable implements BeanVariable {
         PackedOp<?> pop = PackedOp.crack(op);
 
         // Nested operation get the same arguments as this operation, but with op return type
-        OperationTemplate template = operation.template.withReturnType(pop.type().returnRawType());
+        OperationTemplate template = operation.template.returnType(pop.type().returnRawType());
 
         // Create the nested operation
         OperationSetup os = pop.newOperationSetup(operation.bean, bindingExtension, template, new EmbeddedIntoOperation(operation, index));
@@ -207,6 +199,12 @@ public final class PackedBindableVariable implements BeanVariable {
 
     /** {@inheritDoc} */
     @Override
+    public int modifiers() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public BeanVariable specializeMirror(Supplier<? extends BindingMirror> supplier) {
         checkNotBound();
         this.mirrorSupplier = requireNonNull(supplier);
@@ -215,19 +213,13 @@ public final class PackedBindableVariable implements BeanVariable {
 
     /** {@inheritDoc} */
     @Override
-    public Variable variable() {
-        return variable;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int modifiers() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Key<?> toKey() {
         return Key.fromVariable(this);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Variable variable() {
+        return variable;
     }
 }

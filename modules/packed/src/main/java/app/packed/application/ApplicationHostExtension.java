@@ -48,11 +48,9 @@ public class ApplicationHostExtension extends FrameworkExtension<ApplicationHost
 
     static final BeanLocal<InstallingAppHost> L = BeanLocal.of();
 
-    static final OperationTemplate ot = OperationTemplate.raw().withContext(CIT).withReturnTypeObject();
+    static final OperationTemplate ot = OperationTemplate.raw().withContext(CIT).returnTypeObject();
 
     static final BeanTemplate BLT = new PackedBeanTemplate(BeanKind.MANYTON).withOperationTemplate(ot);
-
-   // static final BeanTemplate BLT2 = BeanTemplate.UNMANAGED.instanceAs(Object.class).inFactoryContext(CIT).raw();
 
     MethodHandle mh;
 

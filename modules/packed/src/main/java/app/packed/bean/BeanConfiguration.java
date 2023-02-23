@@ -2,16 +2,20 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Set;
+
 import app.packed.application.ApplicationPath;
 import app.packed.container.Realm;
+import app.packed.context.Context;
 import app.packed.extension.bean.BeanHandle;
 import app.packed.util.Key;
+import internal.app.packed.bean.PackedBeanHandle;
 
 /** The configuration of a bean, typically returned from the installation site of a bean. */
 public class BeanConfiguration {
 
     /** The bean handle. */
-    private final BeanHandle<?> handle;
+    private final PackedBeanHandle<?> handle;
 
     /**
      * Create a new bean configuration using the specified handle.
@@ -20,7 +24,7 @@ public class BeanConfiguration {
      *            the bean handle
      */
     public BeanConfiguration(BeanHandle<?> handle) {
-        this.handle = requireNonNull(handle, "handle is null");
+        this.handle = (PackedBeanHandle<?>) requireNonNull(handle, "handle is null");
     }
 
     /** {@return the bean class.} */
@@ -31,6 +35,11 @@ public class BeanConfiguration {
     /** {@return the kind of bean that is being configured.} */
     public final BeanKind beanKind() {
         return handle.beanKind();
+    }
+
+    /** {@return a set of contexts the bean is in.} */
+    public final Set<Class<? extends Context<?>>> contexts() {
+        return handle.contexts(handle.owner());
     }
 
     /** {@inheritDoc} */
@@ -85,13 +94,20 @@ public class BeanConfiguration {
     }
 
     /**
+     * Overrides a previously resolved service with the specified key.
+     *
      * @param <K>
+     *            type of the constant
      * @param key
-     * @param instance
-     * @return
+     *            the key of the service
+     * @param constant
+     *            the constant replace service binding with
+     * @return this configuration
+     * @throws IllegalArgumentException
+     *             if the bean does not have binding that are resolved as a service with the specified key
      */
     public <K> BeanConfiguration overrideService(Key<K> key, K constant) {
-        handle().overrideService(key, constant);
+        handle.overrideService(key, constant);
         return this;
     }
 

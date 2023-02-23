@@ -54,7 +54,7 @@ public final class BeanSetup {
 
     /** A handle that can access BeanConfiguration#handle. */
     private static final VarHandle VH_BEAN_CONFIGURATION_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanConfiguration.class, "handle",
-            BeanHandle.class);
+            PackedBeanHandle.class);
 
     /** A handle that can access BeanConfiguration#handle. */
     private static final VarHandle VH_BEAN_INTROSPECTOR_TO_THIS = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanIntrospector.class, "setup",
@@ -98,7 +98,7 @@ public final class BeanSetup {
 
     /** Supplies a mirror for the operation */
     @Nullable
-    private Supplier<? extends BeanMirror> mirrorSupplier;
+    private final Supplier<? extends BeanMirror> mirrorSupplier;
 
     /** The name of this bean. Should only be updated through {@link #named(String)} */
     String name;
@@ -116,8 +116,8 @@ public final class BeanSetup {
     public final List<ServiceProviderSetup> serviceProviders = new ArrayList<>();
 
     /** Create a new bean. */
-    BeanSetup(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
-        this.beanKind = requireNonNull(installer.template.kind);
+    BeanSetup(PackedBeanBuilder installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
+        this.beanKind = requireNonNull(installer.template.kind());
         this.beanClass = requireNonNull(beanClass);
         this.beanSource = beanSource;
         this.beanSourceKind = requireNonNull(beanSourceKind);
@@ -169,7 +169,7 @@ public final class BeanSetup {
 
     // Relative to x
     public OperationSetup instanceAccessOperation() {
-        OperationTemplate template = OperationTemplate.defaults().withReturnType(beanClass);
+        OperationTemplate template = OperationTemplate.defaults().returnType(beanClass);
         return new BeanAccessOperationSetup(installedBy, this, FunctionType.of(beanClass), template);
     }
 

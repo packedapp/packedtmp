@@ -37,7 +37,8 @@ public @interface BeanHook {
      * Attempting to place multiple annotated variable hook annotations on a single field or parameter will result in a
      * {@link BeanInstallationException} being thrown at build-time.
      *
-     * @see BeanIntrospector#hookOnProvidedAnnotatedVariable(java.lang.annotation.Annotation, app.packed.bindings.BindableVariable)
+     * @see BeanIntrospector#hookOnProvidedAnnotatedVariable(java.lang.annotation.Annotation,
+     *      app.packed.bindings.BindableVariable)
      */
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RetentionPolicy.RUNTIME)
@@ -93,7 +94,8 @@ public @interface BeanHook {
 
     /**
      * In order to process fields that are annotated with the target annotation,
-     * {@link BeanIntrospector#hookOnProvidedVariableType(Class, app.packed.bindings.BindableWrappedVariable)} must be overridden.
+     * {@link BeanIntrospector#hookOnProvidedVariableType(Class, app.packed.bindings.BindableWrappedVariable)} must be
+     * overridden.
      *
      * @see BeanIntrospector#hookOnAnnotatedField(OperationalField)
      */
@@ -129,8 +131,8 @@ public @interface BeanHook {
         /**
          * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
          * <p>
-         * Methods such as idk and... will
-         * fail with {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
+         * Methods such as idk and... will fail with {@link UnsupportedOperationException} unless the value of this attribute is
+         * {@code true}.
          *
          * @return whether or not the implementation is allowed to invoke the target method
          *
@@ -171,6 +173,6 @@ public @interface BeanHook {
          *
          * @return stuff
          */
-        Class<? extends Context<?>>[] requiresContext() default {};
+        Class<? extends Context<?>>[] requiresContext() default { ContainerContext.class };
     }
 }

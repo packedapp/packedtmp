@@ -24,9 +24,12 @@ import app.packed.util.FunctionType;
 import app.packed.util.Key;
 
 /**
- * Represents a (source-less) bean that can have multiple functions attached
+ * Represents a (source-less) bean that can have multiple functions attached.
+ * <p>
+ * {@link BaseExtensionPoint#installFunctional()}
+ *
+ * @see BaseExtensionPoint#installFunctional()
  */
-// A special bean that allows one to add functions
 public class FunctionalBeanConfiguration extends BeanConfiguration {
 
     /**
@@ -35,6 +38,8 @@ public class FunctionalBeanConfiguration extends BeanConfiguration {
     FunctionalBeanConfiguration(BeanHandle<?> handle) {
         super(handle);
     }
+
+    // Maaske vi har en FunctionTemplate der pakker interface + operation type + prefix
 
     public OperationHandle addFunction(Class<?> functionalInterface, Object function, FunctionType operationType) {
         throw new UnsupportedOperationException();
@@ -53,6 +58,7 @@ public class FunctionalBeanConfiguration extends BeanConfiguration {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     @Override
     public FunctionalBeanConfiguration named(String name) {
         super.named(name);
@@ -66,19 +72,19 @@ public class FunctionalBeanConfiguration extends BeanConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public <K> BeanConfiguration overrideService(Class<K> key, K instance) {
+    public <K> FunctionalBeanConfiguration overrideService(Class<K> key, K instance) {
         super.overrideService(key, instance); // will always fail, because there are no services
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public <K> BeanConfiguration overrideService(Key<K> key, K instance) {
+    public <K> FunctionalBeanConfiguration overrideService(Key<K> key, K instance) {
         super.overrideService(key, instance); // will always fail, because there are no services
         return this;
     }
-
 }
+
 //
 // Could have a StaticBeanConfiguration as this is the only reason
 // override service is on BeanConfiguration

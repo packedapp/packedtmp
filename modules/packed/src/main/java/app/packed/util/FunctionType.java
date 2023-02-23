@@ -182,7 +182,7 @@ public final /* primitive */ class FunctionType {
         return sj.toString();
     }
 
-    public static FunctionType of(Class<?> returnType) {
+    public static FunctionType of(Type returnType) {
         requireNonNull(returnType, "returnType is null");
         return new FunctionType(Variable.of(returnType), NO_PARAMETERS);
     }

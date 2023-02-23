@@ -15,8 +15,9 @@
  */
 package app.packed.extension;
 
+import app.packed.context.Context;
 import app.packed.extension.BeanHook.BindingTypeHook;
-import internal.app.packed.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.lifetime.runtime.PackedContainerContext;
 
 /**
  * All beans that are owned by an extension operates within an ExtensionContext.
@@ -24,9 +25,16 @@ import internal.app.packed.lifetime.runtime.PackedExtensionContext;
  * An instance of this class is typically required when invoking operations.
  */
 @BindingTypeHook(extension = BaseExtension.class)
+public sealed interface ContainerContext extends Context<BaseExtension> permits PackedContainerContext {}
 
-// Vil mene det ikke er en Context. Syntes span fungere daarligt
-// Saa maaske er Context skidt
+//Vil mene det ikke er en Context. Syntes span fungere daarligt
+//Saa maaske er Context skidt
 
-// RuntimeExtensionHandle?
-public sealed interface ExtensionHandle permits PackedExtensionContext {}
+//RuntimeExtensionHandle?
+//ContainerContext
+
+//Problemet med Context som jeg ser det. Er at man kan vaelge for beans.
+//At man ikke skal vaere i ContextContext
+//Maaske har vi negativ context (man kan fjerne det eksplicit via bean templates)
+
+//Maaske er ContainerContext simpelthen bare ikke ContainerWide...

@@ -16,7 +16,6 @@
 package internal.app.packed.bean;
 
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -26,8 +25,6 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Realm;
-import app.packed.context.Context;
-import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.bean.BeanHandle;
 import app.packed.extension.operation.OperationHandle;
 import app.packed.operation.Op;
@@ -61,12 +58,6 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
 
     /** {@inheritDoc} */
     @Override
-    public Set<Class<? extends Context<?>>> contexts() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public boolean isConfigurable() {
         return bean.owner.isConfigurable();
     }
@@ -74,7 +65,7 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
     /** {@inheritDoc} */
     @Override
     public List<OperationHandle> lifetimeOperations() {
-        if (beanKind() != BeanKind.STATIC && beanSourceKind() != BeanSourceKind.NONE) {
+        if (beanKind() != BeanKind.STATIC && beanSourceKind() != BeanSourceKind.SOURCELESS) {
             return List.of(bean.operations.get(0).toHandle());
         }
         return List.of();
@@ -122,16 +113,10 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
 
     /** {@inheritDoc} */
     @Override
-    public void setErrorHandler(ErrorHandler errorHandler) {}
-
-    /** {@inheritDoc} */
-    @Override
     public String toString() {
         return bean.toString();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public <K> void overrideService(Key<K> key, K instance) {
         ServiceSetup ss = bean.container.sm.entries.get(key);
         if (ss != null) {
@@ -147,7 +132,7 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
 
         // TODO we should go through all bindings and see if have some where the type matches.
         // But is not resolved as a service
-        throw new IllegalStateException("Bean does not have any service dependencies for " + key);
+        throw new IllegalArgumentException("Bean does not have any service dependencies on " + key);
     }
 }
 

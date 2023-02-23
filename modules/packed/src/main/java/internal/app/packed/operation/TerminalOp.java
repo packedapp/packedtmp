@@ -57,7 +57,7 @@ public abstract sealed class TerminalOp<R> extends PackedOp<R> {
         @Override
         public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template,
                 @Nullable EmbeddedIntoOperation nestedParent) {
-            template = template.withReturnType(type.returnRawType());
+            template = template.returnType(type.returnRawType());
             OperationSetup os = new OperationSetup.FunctionOperationSetup(operator, bean, type, template, nestedParent, mhOperation, samType,
                     implementationMethod);
             return os;

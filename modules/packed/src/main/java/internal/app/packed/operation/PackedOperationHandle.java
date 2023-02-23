@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 
 import app.packed.extension.BeanVariable;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionHandle;
+import app.packed.extension.ContainerContext;
 import app.packed.extension.operation.OperationHandle;
 import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.Op;
@@ -238,7 +238,7 @@ interface ZandboxOH {
     // Hmm, kan jo ikke bare tage en tilfaeldig...
     default void invokeFromAncestor(Extension<?> extension) {}
 
-    default void invokeFromAncestor(ExtensionHandle context) {}
+    default void invokeFromAncestor(ContainerContext context) {}
 
     // Can be used to optimize invocation...
     // Very advanced though

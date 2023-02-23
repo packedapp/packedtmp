@@ -24,6 +24,10 @@ import internal.app.packed.context.PackedContextTemplate;
 /**
  *
  */
+// Hvad er argumentent
+// Hvem kan se contexten, ejeren selvfoelgelig
+// Hvem kan bruge ContextValue??? Kun ejeren af context'en vil jeg mene.
+//
 public sealed interface ContextTemplate permits PackedContextTemplate {
 
     /** {@return the context this template is a part of.} */

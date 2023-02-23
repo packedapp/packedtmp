@@ -13,21 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.bean;
+package app.packed.extension.beanpouch;
 
 /**
  *
  */
-public class BeanProps {
-
-    // Actor.serialize
-    // Wrapper alle operationer
+// Ideen er lidt at liste her, hvad vi kan bruge dem til
 
 
-    // Controlled.. Vi behoever ikke have en shutdown lock.
+public class Beanlets {
 
-    // Controlled, er vel uafhandig af single multi_threading?
-    enum Threading {
-        SINGLE_THREAD, CONTROLLED, MULTI_THREADED;
-    }
 }

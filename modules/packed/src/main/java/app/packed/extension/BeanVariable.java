@@ -71,6 +71,16 @@ public non-sealed interface BeanVariable extends BeanElement {
     void bindConstant(@Nullable Object value);
 
     /**
+     * @param argumentIndex
+     * @param context
+     *
+     * @see InvocationContextArgument
+     * @throws app.packed.context.ContextNotAvailableException
+     *             if the context is not available
+     */
+    void bindContextValue(Class<? extends Context<?>> context);
+
+    /**
      * Binds the underlying variable to a constant that is generated as part of the application's code generating phase.
      * <p>
      * If the application does not have a {@link BuildGoal#isCodeGenerating() code generating} phase. The specified supplier
@@ -85,13 +95,8 @@ public non-sealed interface BeanVariable extends BeanElement {
      *            the supplier of the constant
      * @see #bindConstant(Object)
      */
+    // BindCodegen?
     void bindGeneratedConstant(Supplier<@Nullable ?> supplier);
-
-    /**
-     * @param argumentType
-     */
-    // Er den for farlig? Man kan jo kun binde hvis man ogsaa er operator
-    void bindInvocationArgument(Class<?> argumentType);
 
     /**
      * @param argumentIndex
@@ -108,17 +113,8 @@ public non-sealed interface BeanVariable extends BeanElement {
      * @see OperationTemplate
      * @see InvocationArgument
      */
+    @Deprecated
     void bindInvocationArgument(int argumentIndex);
-
-    /**
-     * @param argumentIndex
-     * @param context
-     *
-     * @see InvocationContextArgument
-     */
-    default void bindInvocationArgumentForContext(Class<? extends Context<?>> context, int argumentIndex) {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Binds an operation that will invoked every time the variable is needed

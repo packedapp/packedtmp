@@ -15,8 +15,6 @@
  */
 package internal.app.packed.lifetime;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -25,19 +23,29 @@ import app.packed.extension.Extension;
 import app.packed.extension.container.ExtensionLink;
 import app.packed.util.Key;
 import internal.app.packed.container.PackedContainerBuilder;
-import internal.app.packed.util.LookupUtil;
 
 /**
  * Represent a communication channel between a parent container lifetime and a child container lifetime. This class is
  * exposed as {@link ContainerLifetimeChannel}.
  */
 public record PackedContainerLifetimeChannel(Class<? extends Extension<?>> extensionClass, Consumer<? super PackedContainerBuilder> onUse,
-        Set<Key<?>> exports) {
+        Set<Key<?>> exports) implements ExtensionLink {
 
-    /** A handle that can access BeanConfiguration#handle. */
-    private static final VarHandle VH_BRIGE = LookupUtil.findVarHandle(MethodHandles.lookup(), ExtensionLink.class, "channel",
-            PackedContainerLifetimeChannel.class);
+    @Override
+    public Set<Key<?>> keys() {
+        return exports();
+    }
 
+    // is used in the (unlikely) scenario with multiple links
+    // that each provide something with the same key
+    @Override
+    public ExtensionLink rekey(Key<?> from, Key<?> to) {
+        // from key must exist
+        // Advanced operation
+        // no case checks are performed
+        // or maybe we do anywhere, should probably be simple
+        throw new UnsupportedOperationException();
+    }
     /**
      * @param type
      * @return
@@ -54,17 +62,6 @@ public record PackedContainerLifetimeChannel(Class<? extends Extension<?>> exten
 
     public List<Class<?>> invocationArguments() {
         return List.of();
-    }
-
-    /**
-     * Cracks a {@link ContainerLifetimeChannel} and returns its internal {@link PackedContainerLifetimeChannel}.
-     *
-     * @param channel
-     *            the channel to crack
-     * @return the cracked channel
-     */
-    public static PackedContainerLifetimeChannel crack(ExtensionLink channel) {
-        return (PackedContainerLifetimeChannel) VH_BRIGE.get(channel);
     }
 
 }

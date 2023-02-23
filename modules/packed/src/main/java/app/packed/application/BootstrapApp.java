@@ -234,7 +234,7 @@ public final class BootstrapApp<A> {
          * @return this composer
          */
         public Composer addChannel(ExtensionLink... channels) {
-            this.channels.addAll(List.of(channels).stream().map(PackedContainerLifetimeChannel::crack).toList());
+            this.channels.addAll(List.of(channels).stream().map(e -> (PackedContainerLifetimeChannel) e).toList());
             return this;
         }
 

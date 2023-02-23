@@ -29,8 +29,8 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.extension.BeanLocal;
 import app.packed.extension.InternalExtensionException;
-import app.packed.extension.bean.BeanHandle;
 import app.packed.extension.bean.BeanBuilder;
+import app.packed.extension.bean.BeanHandle;
 import app.packed.extension.bean.BeanTemplate;
 import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.Op;
@@ -47,21 +47,21 @@ import internal.app.packed.operation.PackedOp;
 /**
  * This class is responsible for installing new beans.
  */
-public final class PackedBeanInstaller implements BeanBuilder {
+public final class PackedBeanBuilder implements BeanBuilder {
 
     /** A list ofIllegal bean classes. Void is technically allowed but {@link #installWithoutSource()} needs to used. */
     // Allign with Key
-    static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
-
-    // TODO: If an installer should be reusable we need to copy locals
-    // Right now we just store this map in BeanSetup
-    final IdentityHashMap<PackedBeanLocal<?>, Object> locals = new IdentityHashMap<>();
+    public static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
 
     /** The container the bean is being installed into. */
     final ContainerSetup container;
 
     /** The extension that is installing the bean */
     final ExtensionSetup installingExtension;
+
+    // TODO: If an installer should be reusable we need to copy locals
+    // Right now we just store this map in BeanSetup
+    final IdentityHashMap<PackedBeanLocal<?>, Object> locals = new IdentityHashMap<>();
 
     boolean multiInstall;
 
@@ -74,9 +74,7 @@ public final class PackedBeanInstaller implements BeanBuilder {
     @Nullable
     Supplier<? extends BeanMirror> supplier;
 
-    boolean synthetic;
-
-    /** A template for the lifetime of the bean. */
+    /** The bean's template. */
     public final PackedBeanTemplate template;
 
     /**
@@ -89,7 +87,7 @@ public final class PackedBeanInstaller implements BeanBuilder {
      * @param template
      *            a lifetime template for the new bean
      */
-    public PackedBeanInstaller(ExtensionSetup installingExtension, BeanOwner owner, BeanTemplate template) {
+    public PackedBeanBuilder(ExtensionSetup installingExtension, BeanOwner owner, BeanTemplate template) {
         this.container = installingExtension.container;
         this.installingExtension = requireNonNull(installingExtension);
         this.owner = requireNonNull(owner);
@@ -140,19 +138,44 @@ public final class PackedBeanInstaller implements BeanBuilder {
         return newBean((Class<T>) beanClass, BeanSourceKind.INSTANCE, instance);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public BeanHandle<Void> installWithoutSource() {
-        if (template.kind != BeanKind.STATIC) {
+    /**
+     * Creates a new bean without a source.
+     *
+     * @return a bean handle representing the new bean
+     *
+     * @throws IllegalStateException
+     *             if this builder was created with a base template other than {@link BeanTemplate#STATIC}
+     * @apiNote Currently this is an internal API only. Main reason is that I don't see any use cases as long as we don't
+     *          support adding operations at will
+     * @see app.packed.bean.BeanSourceKind#SOURCELESS
+     */
+    public BeanHandle<Void> installSourceless() {
+        if (template.kind() != BeanKind.STATIC) {
             throw new InternalExtensionException("Only static beans can be source less");
         }
-        return newBean(void.class, BeanSourceKind.NONE, null);
+        return newBean(void.class, BeanSourceKind.SOURCELESS, null);
     }
 
-    /** {@inheritDoc} */
-    @Override
+
+    /**
+     * Allows multiple beans of the same type in a container.
+     * <p>
+     * By default, a container only allows a single bean of particular type if non-void.
+     *
+     * @return this builder
+     * @throws UnsupportedOperationException
+     *             if bean kind is {@link BeanKind#FUNCTIONAL} or {@link BeanKind#STATIC}
+     */
+    // I don't see this not living on BeanTemplate
+    // IDK det er en af de ting
+    // allowClones?
+
+    // Den fungere bare andre steder end paa BeanConfiguration
+
+    // Lad os sige vi vil have SE.schedule og SE.scheduleMulti...
+    // Det giver ingen mening. Den skal vaere paa BeanConfiguration
     public BeanBuilder multi() {
-        if (template.kind == BeanKind.STATIC) {
+        if (template.kind() == BeanKind.STATIC) {
             throw new InternalExtensionException("multiInstall is not supported for static beans");
         }
         multiInstall = true;
@@ -180,14 +203,14 @@ public final class PackedBeanInstaller implements BeanBuilder {
      * @return a handle for the bean
      */
     private <T> BeanHandle<T> newBean(Class<T> beanClass, BeanSourceKind sourceKind, Object source) {
-        if (sourceKind != BeanSourceKind.NONE && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
+        if (sourceKind != BeanSourceKind.SOURCELESS && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
         }
 
         String prefix = namePrefix;
         if (prefix == null) {
             prefix = "Functional";
-            BeanModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanModel(beanClass);
+            BeanModel beanModel = sourceKind == BeanSourceKind.SOURCELESS ? null : new BeanModel(beanClass);
 
             if (beanModel != null) {
                 prefix = beanModel.simpleName();
@@ -258,7 +281,7 @@ public final class PackedBeanInstaller implements BeanBuilder {
         }
 
         // Scan the bean class for annotations unless the bean class is void
-        if (sourceKind != BeanSourceKind.NONE) {
+        if (sourceKind != BeanSourceKind.SOURCELESS) {
             new BeanScanner(bean).introspect();
         }
 
@@ -276,27 +299,31 @@ public final class PackedBeanInstaller implements BeanBuilder {
 
     /** {@inheritDoc} */
     @Override
+    public <T> BeanBuilder setLocal(BeanLocal<T> local, T value) {
+        locals.put((PackedBeanLocal<?>) local, value);
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public BeanBuilder specializeMirror(Supplier<? extends BeanMirror> supplier) {
         requireNonNull(supplier, "supplier is null");
+        checkNotUsed();
         this.supplier = supplier;
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public BeanBuilder synthetic() {
-        synthetic = true;
-        return this;
+    /**
+     * Checks that the builder has not been used to create a new bean.
+     * <p>
+     * There is technically no reason to not allow this. But we will need to make a copy of the locals if we want to support
+     * this.
+     */
+    private void checkNotUsed() {
+
     }
 
     static class MuInst {
         int counter;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> BeanBuilder setLocal(BeanLocal<T> local, T value) {
-        locals.put((PackedBeanLocal<?>) local, value);
-        return this;
     }
 }

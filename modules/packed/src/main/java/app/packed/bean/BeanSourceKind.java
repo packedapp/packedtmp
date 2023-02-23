@@ -34,14 +34,14 @@ public enum BeanSourceKind {
      */
     INSTANCE,
 
-    /** No source was specified when installing the bean. */
-    NONE,
-
     /**
      * An {@link Op} was specified when installing the bean.
      *
      * @see BaseExtension#install(Op)
      * @see BaseExtension#installLazy(Op)
      */
-    OP;
+    OP,
+
+    /** No source was specified when installing the bean. */
+    SOURCELESS;
 }

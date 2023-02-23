@@ -39,7 +39,7 @@ public final class FrameworkNames {
     public static final String DEVTOOLS_MODULE = "app.packed.devtools";
 
     /** The name of the framework. */
-    static final String FRAMEWORK = "Packed";
+    public static final String FRAMEWORK = "Packed";
 
     static final String WEB_MODULE = "app.packed.web";
 

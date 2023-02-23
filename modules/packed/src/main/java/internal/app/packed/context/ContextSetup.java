@@ -15,9 +15,38 @@
  */
 package internal.app.packed.context;
 
+import java.util.IdentityHashMap;
+
+import app.packed.context.Context;
+
+// Implementerings muligheder
+//// With parent
+////
+
+//// Hvad med nested operations??? Er de i context???????
+//// Embedded operations er selvfoelgelig
+
+// Der er forskel paa invocation context, og de contexts man er i.
+
 /**
  *
  */
-public class ContextSetup {
+// All contexts skal vel saettes i templates???
 
+// BeanLifetimeOperationContext er vel i virkeligheden en context operation.
+// Som er til raadighed for dens nested boern
+
+// ContainerContext er til raadighed for alle dependencies (alle depender on BaseExtension, lol)
+// Samtidig kan alle invoke med den..
+public final class ContextSetup {
+
+    private final IdentityHashMap<Class<? extends Context<?>>, ContextEntry> m = new IdentityHashMap<>();
+
+    public boolean isInContext(Class<? extends Context<?>> contextClass) {
+        return m.containsKey(contextClass);
+    }
+
+    static class ContextEntry {
+
+    }
 }

@@ -30,12 +30,13 @@ import internal.app.packed.bean.PackedBeanLocal;
  * <p>
  *
  * <p>
- * Bean locals are only intended to be used when building an application or from mirror subclasses. Specifically, there
- * are no support for querying a bean local at runtime.
+ * Bean locals are only intended to be used when building an application or from bean mirror subclasses. Specifically,
+ * there are no support for querying a bean local at runtime.
  *
- * @see app.packed.extension.BaseExtensionPoint.BeanInstaller#setLocal(BeanLocal, Object)
+ * @see app.packed.extension.bean.BeanBuilder#setLocal(BeanLocal, Object)
  * @see app.packed.bean.BeanMirror#isLocalPresent(BeanLocal)
  * @see app.packed.bean.BeanMirror#getLocal(BeanLocal)
+ * @see ContainerLocal
  */
 // get, use, remove..
 

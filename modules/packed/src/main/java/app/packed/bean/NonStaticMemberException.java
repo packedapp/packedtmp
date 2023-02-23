@@ -16,9 +16,10 @@
 package app.packed.bean;
 
 /**
- * An exception that is thrown when trying to install a {@link BeanKind#STATIC static} bean that use annotations on
- * non-static fields or methods. A static bean can only apply hook annotations on static members as no instances of the
- * bean is available at runtime.
+ * Indicates that a {@link BeanKind#STATIC static} bean uses hook annotations on non-static fields or methods.
+ * <p>
+ * A static bean can only apply hook annotations on static fields or methods as no instances of the bean is available at
+ * runtime.
  */
 public class NonStaticMemberException extends BeanInstallationException {
 

@@ -72,8 +72,8 @@ public final class PackedBeanWrappedVariable implements BeanWrappedVariable {
     }
 
     @Override
-    public void bindInvocationArgumentForContext(Class<? extends Context<?>> context, int argumentIndex) {
-        v.bindInvocationArgumentForContext(context, argumentIndex);
+    public void bindContextValue(Class<? extends Context<?>> context) {
+        v.bindContextValue(context);
     }
 
     @Override
@@ -200,12 +200,6 @@ public final class PackedBeanWrappedVariable implements BeanWrappedVariable {
     @Override
     public void bindGeneratedConstant(Supplier<?> consumer) {
         v.bindGeneratedConstant(consumer);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void bindInvocationArgument(Class<?> argumentType) {
-        v.bindInvocationArgument(argumentType);
     }
 
     /** {@inheritDoc} */

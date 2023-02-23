@@ -34,9 +34,9 @@ import internal.app.packed.operation.PackedOperationTemplate;
 // So we can condense information
 
 // Components
+//// BeanInstance, BeanPouch
+
 //// ExtensionContext  (Or InvocationContext??? IDK bliver jo brugt across multi usage)
-//// BeanInstance
-//// Other arguments
 //// Contexts
 
 // Reserved arguments: ExtensionContext | Wirelet[] | BeanInstance
@@ -68,15 +68,21 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         throw new UnsupportedOperationException();
     }
 
-    int extensionContextIndex();
-
     /**
      *
      * @return the method type representing the invocation
      */
     MethodType invocationType();
 
-    boolean isIgnoreReturn();
+    /** {@return the operation will ignore any return value.} */
+    // If you want to fail. Check return type
+    OperationTemplate returnIgnore();
+
+    OperationTemplate returnType(Class<?> type);
+
+    default OperationTemplate returnTypeObject() {
+        return returnType(Object.class);
+    }
 
     default OperationTemplate withBeanInstance() {
         return withBeanInstance(Object.class);
@@ -84,15 +90,11 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
 
     OperationTemplate withBeanInstance(Class<?> beanClass);
 
-    // Har altid operation span
     OperationTemplate withContext(ContextTemplate context);
 
-    OperationTemplate withReturnIgnore();
-
-    OperationTemplate withReturnType(Class<?> type);
-
-    default OperationTemplate withReturnTypeObject() {
-        return withReturnType(Object.class);
+    default OperationTemplate withoutContext(Class<? extends Context<?>> contextClass) {
+        // Den eneste usecase er at fjerne ContainerContext
+        return this;
     }
 
     // Takes EBC returns void

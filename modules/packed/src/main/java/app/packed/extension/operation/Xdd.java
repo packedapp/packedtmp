@@ -28,7 +28,6 @@ public class Xdd extends BaseAssembly {
     @Override
     protected void build() {
         install(Foo.class).overrideService(String.class, "Boo").overrideService(Integer.class, 12333);
-
     }
 
     public static void main(String[] args) {

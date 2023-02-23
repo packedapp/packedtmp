@@ -25,6 +25,8 @@ package app.packed.context;
 
 public enum ContextSpan {
 
+    // Maaske er det i virkeligheden en setting naar man laver en ContainerTemplate?
+    // Denne context, skal automatisk propagate til alle sub containers
     CONTAINER_TREE,
 
     CONTAINER_LIFETIME,

@@ -25,10 +25,17 @@ import app.packed.extension.operation.OperationTemplate;
 import internal.app.packed.lifetime.PackedBeanTemplate;
 
 /**
- * Ideen er man started med en af de foruddefinered templates, og saa laver man modification
+ * A bean template defines basic properties for a bean and one must be provided when creating a new bean.
+ * <p>
+ * using when installating new beans using {@link app.packed.extension.BaseExtensionPoint#beanBuilder(BeanTemplate)} or
+ * {@link app.packed.extension.BaseExtensionPoint#beanInstallerForExtension(BeanTemplate, app.packed.extension.ExtensionPoint.UseSite)}.
+ *
+ * <p>
+ * In most cases Ideen er man started med en af de foruddefinered templates, og saa laver man modification
+ *
  */
-// Contexts, Args
-// Lifetime
+// Contexts (Hele beanen)
+// Lifetime Args (Er det bare private
 // Pouched-non-pouched
 public sealed interface BeanTemplate permits PackedBeanTemplate {
 
@@ -92,45 +99,92 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     // An unmanaged bean will always return the bean instance.
     BeanTemplate UNMANAGED = new PackedBeanTemplate(BeanKind.MANYTON);
 
+    /**
+     * Specifies the return type signature of the lifetime operation that creates the bean.
+     * <p>
+     * The return type of the lifetime operation that creates the bean is normally {@link BeanHandle#beanClass()}. However,
+     * in order to better support {@link java.lang.invoke.MethodHandle#invokeExact(Object...)} this method can be used to
+     * specify a more generic type, typically {@code Object.class}.
+     * <p>
+     * If this template is used when installing a bean whose bean class is not assignable to the specified class. The
+     * framework will throw a {@link app.packed.bean.BeanInstallationException}.
+     * <p>
+     * The method handle of the first lifetime operation of the new template will always have the specified class as its
+     * {@link java.lang.invoke.MethodType#returnType()}.
+     *
+     * @param clazz
+     *            the return type of the method handle that creates the bean lifetime
+     * @return a new template
+     * @throws IllegalArgumentException
+     *             if specifying a primitive type or {@code Void}
+     * @throws UnsupportedOperationException
+     *             if this template is not based on {@link #MANAGED} or {@link #UNMANAGED}
+     * @see java.lang.invoke.MethodHandle#invokeExact(Object...)
+     * @see java.lang.invoke.MethodType#changeReturnType(Class)
+     */
+    BeanTemplate createAs(Class<?> clazz);
+
+    /**
+     * <p>
+     * Use {@code ContextValue(BeanLifetimeOperationContext.class)} of the exact type
+     * <p>
+     * The context is only available for the extension that installed the bean
+     * <p>
+     * When returned the targeted lifetime operation will have been updated.
+     * <p>
+     * If this template contains multiple lifetime operations different contexts can be set.
+     *
+     * @param index
+     *            the index of the lifetime operation. Must match an operation in {@link #lifetimeOperations()}.
+     * @param argumentType
+     *            the type of argument that will be taken and made available
+     * @return the new template
+     * @throws IndexOutOfBoundsException
+     *             if the specified index does not match a lifetime operation
+     * @throws IllegalArgumentException
+     *             if the specified argument type is void
+     * @see BeanLifetimeOperationContext
+     * @see app.packed.extension.context.ContextValue
+     */
+    BeanTemplate lifetimeOperationContext(int index, ContextTemplate template);
+}
+
+interface Sandbox {
+
+    /** {@return a list of the various lifetime operations for this bean template.} */
+    // Maybe just MethodType???
+    default List<OperationTemplate> lifetimeOperations() {
+        return List.of();
+    }
+
+    /**
+     * Sets a context for the whole bean
+     *
+     * @param context
+     *            the context
+     * @return the new template
+     */
+    // Man skal vel angive hvordan context fungere.
+    // Er den stored, eller skal den med til alle operation?
+    default BeanTemplate beanContext(ContextTemplate context) {
+        throw new UnsupportedOperationException();
+    }
+
     // The bean is created by an operation
     // BeanHandle.attach
     // An instance is created for the lifetime of an operation
     BeanTemplate Z_FROM_OPERATION = new PackedBeanTemplate(BeanKind.MANYTON);
 
-    default BeanTemplate inBeanContext(ContextTemplate context) {
-        throw new UnsupportedOperationException();
-    }
-
-    default BeanTemplate inFactoryContext(ContextTemplate context) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
-     * The return type of 0
-     * <p>
-     * More technically this means the return type of the {@code operations().get(0).invocationType()} is the specified
-     * class.
+     * Marks the bean as synthetic.
      *
-     * @param clazz
-     * @return a new template
-     * @throws UnsupportedOperationException
-     *             if this template is not based on {@link #MANAGED} or {@link #UNMANAGED}
+     * @return this installer
      */
-    default BeanTemplate instanceAs(Class<?> clazz) {
-        return this;
-    }
+    BeanBuilder synthetic(); // Maybe on template?
 
-    /** {@return a list of the various lifetime operations for this bean template.} */
-    default List<OperationTemplate> operations() {
-        return List.of();
-    }
-}
-
-interface Sandbox {
-
-    /** {@return the allowwed bean source kinds for.} */
-    default EnumSet<BeanSourceKind> sourceKinds() {
-        return EnumSet.allOf(BeanSourceKind.class);
+    default boolean isBasedOn(BeanTemplate template) {
+        // return template.isUnmodified() && this.base = template
+        return false;
     }
 
     // Ahh alt er raw
@@ -138,9 +192,13 @@ interface Sandbox {
         return null;
     }
 
-    default boolean isBasedOn(BeanTemplate template) {
-        // return template.isUnmodified() && this.base = template
-        return false;
+    void noScan();
+
+    void ignoreAnnotations(Class<?> annot);
+
+    /** {@return the allowwed bean source kinds for.} */
+    default EnumSet<BeanSourceKind> sourceKinds() {
+        return EnumSet.allOf(BeanSourceKind.class);
     }
 
     // Maa man goere paa installeren..

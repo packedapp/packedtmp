@@ -16,7 +16,6 @@
 package app.packed.extension.bean;
 
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiConsumer;
 
 import app.packed.application.ApplicationPath;
@@ -24,37 +23,28 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Realm;
-import app.packed.context.Context;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
+import app.packed.extension.context.ContextualizedElement;
 import app.packed.extension.operation.OperationHandle;
 import app.packed.operation.Op;
 import app.packed.util.Key;
 import internal.app.packed.bean.PackedBeanHandle;
 
 /**
- * A bean handle is a reference to an installed bean, private to the extension that installed the bean. Created by
- * {@link BeanInstaller}
+ * A bean handle is a reference to an installed bean, private to the extension that installed the bean.
  * <p>
- * Instances of {@code BeanHandle} should never be exposed directly to the owner of the bean. Instead a handle should be
- * returned wrapped in {@link BeanConfiguration} (or a subclass hereof).
+ * Instances of {@code BeanHandle} should never be exposed outside of the extension that created the bean. Instead a
+ * handle should be returned wrapped in {@link BeanConfiguration} (or a subclass hereof).
+ *
+ * @see BeanBuilder#install(Class)
+ * @see BeanBuilder#install(Op)
+ * @see BeanBuilder#installIfAbsent(Class, java.util.function.Consumer)
+ * @see BeanBuilder#installInstance(Object)
  */
 @SuppressWarnings("rawtypes")
-public sealed interface BeanHandle<T> permits PackedBeanHandle {
-
-    // onClientInitialize
-    default <B> void afterInitialize(InstanceBeanConfiguration<B> extensionBean, BiConsumer<? super B, ? super T> consumer) {
-        //// Ideen er at man fx kan have en BeanHandle<Driver>.onInitialize(MyEBC, (b,p)->b.drivers[i]=p);
-        //// Skal godt nok passe paa med capturing her... Ellers faar man hele application setup med i lambdaen
-
-        // Alternativt kan man have noget foo(@SPIInject MyInterface[] mi)..
-        // Og saa have registreret interfacet inde
-        // Maaske den her bare er bedre...
-
-        // state = Initialized? eller Initializing
-        // Take runState???
-    }
+public sealed interface BeanHandle<T> extends ContextualizedElement permits PackedBeanHandle  {
 
     /** {@return the bean class.} */
     Class<?> beanClass();
@@ -80,9 +70,6 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
         }
     }
 
-    /** {@return a set of the contexts available for this bean.} */
-    Set<Class<? extends Context<?>>> contexts();
-
     /**
      * Returns the key that the bean will be made available under as default if provided as service.
      *
@@ -99,8 +86,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
         if (beanClass() == void.class) {
             throw new UnsupportedOperationException("This method is not supported for beans with a void bean class");
         }
-        // TODO we should read qualifiers on the class
-        return (Key<T>) Key.of(beanClass());
+        return (Key<T>) Key.fromClass(beanClass());
     }
 
     /**
@@ -125,14 +111,12 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
     boolean isConfigurable();
 
     /**
-     * If the bean is registered with its own lifetime. This method returns a list of the lifetime operations of the bean.
-     * <p>
-     * The operations in the returned list must be computed exactly once. For example, via
-     * {@link OperationHandle#generateMethodHandle()}. Otherwise a build exception will be thrown. Maybe this goes for all
-     * operation customizers.
+     * Returns a list of operation handles that corresponds to the {@link BeanTemplate#lifetimeOperations() lifetime
+     * operations} on the template that created the bean.
      *
-     * @return a list of lifetime operations
+     * @return a list of lifetime operation handles
      *
+     * @see BeanTemplate#lifetimeOperations()
      * @see BeanInstaller#lifetimes(app.packed.operation.OperationTemplate...)
      */
     List<OperationHandle> lifetimeOperations();
@@ -146,18 +130,6 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
      *             if another bean with the specified name already exists
      */
     void named(String name);
-
-    default Class<? extends Extension<?>> operator() {
-        return BaseExtension.class;
-    }
-
-    /**
-     * @param <K>
-     * @param key
-     * @param instance
-     */
-    // Skal en handler bruge denne???
-    <K> void overrideService(Key<K> key, K instance);
 
     /**
      * @return
@@ -187,6 +159,27 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
      * @see ProvideableBeanConfiguration#provideAs(Key)
      */
     void provideAs(Key<? super T> key);
+
+}
+
+interface Zandbox<T> {
+
+    // onClientInitialize
+    default <B> void afterInitialize(InstanceBeanConfiguration<B> extensionBean, BiConsumer<? super B, ? super T> consumer) {
+        //// Ideen er at man fx kan have en BeanHandle<Driver>.onInitialize(MyEBC, (b,p)->b.drivers[i]=p);
+        //// Skal godt nok passe paa med capturing her... Ellers faar man hele application setup med i lambdaen
+
+        // Alternativt kan man have noget foo(@SPIInject MyInterface[] mi)..
+        // Og saa have registreret interfacet inde
+        // Maaske den her bare er bedre...
+
+        // state = Initialized? eller Initializing
+        // Take runState???
+    }
+
+    default Class<? extends Extension<?>> operator() {
+        return BaseExtension.class;
+    }
 
     default void runOnInitialized(Op<?> op) {
         // First parameter must be assignable to the created instance, IDK

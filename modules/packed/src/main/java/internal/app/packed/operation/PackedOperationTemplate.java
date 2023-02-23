@@ -4,13 +4,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodType;
 
-import app.packed.extension.ExtensionHandle;
+import app.packed.extension.ContainerContext;
 import app.packed.extension.context.ContextTemplate;
 import app.packed.extension.operation.OperationTemplate;
 
 public final class PackedOperationTemplate implements OperationTemplate {
 
-    public static PackedOperationTemplate DEFAULTS = new PackedOperationTemplate(0, -1, MethodType.methodType(void.class, ExtensionHandle.class), false);
+    public static PackedOperationTemplate DEFAULTS = new PackedOperationTemplate(0, -1, MethodType.methodType(void.class, ContainerContext.class), false);
     final int beanInstanceIndex;
     final int extensionContext;
 
@@ -58,7 +58,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
     /** {@inheritDoc} */
     @Override
-    public OperationTemplate withReturnType(Class<?> returnType) {
+    public OperationTemplate returnType(Class<?> returnType) {
         requireNonNull(returnType, "returnType is null");
         MethodType mt = methodType.changeReturnType(returnType);
         return new PackedOperationTemplate(extensionContext, beanInstanceIndex, mt, ignoreReturn);
@@ -66,21 +66,9 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
     /** {@inheritDoc} */
     @Override
-    public OperationTemplate withReturnIgnore() {
+    public OperationTemplate returnIgnore() {
         MethodType mt = methodType.changeReturnType(void.class);
         return new PackedOperationTemplate(extensionContext, beanInstanceIndex, mt, true);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isIgnoreReturn() {
-        return ignoreReturn;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int extensionContextIndex() {
-        return extensionContext;
     }
 
     /** {@inheritDoc} */

@@ -33,7 +33,8 @@ import app.packed.util.Key;
 
 // En slags reducer -> ServiceProvisionMirror -> Parameter
 
-// Vi kan ikke rigtigt tage et mirror...
+// Vi kan ikke rigtigt tage et mirror... Hvorfor???
+///SPM.printUsers()
 
 // Tror ikke vi har den...
 // Syntes det bliver for besvaergeligt

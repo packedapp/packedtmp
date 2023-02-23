@@ -70,7 +70,7 @@ public class Ddd extends BaseAssembly {
         MyEntityException child() {
             MyEntityException c = child;
             if (c == null) {
-                ContainerHandle h = base().containerBuilder(ContainerTemplate.IN_PARENT).named("EntityBeans").buildAndUseThisExtension();
+                ContainerHandle h = base().containerBuilder(ContainerTemplate.DEFAULT).named("EntityBeans").buildAndUseThisExtension();
                 c = child = fromHandle(h).get();
             }
             return c;

@@ -155,7 +155,7 @@ public final class BeanScanner {
         } else {
             ot = bean.lifetime.lifetimes().get(0).template;
         }
-        ot = ot.withReturnType(beanClass);
+        ot = ot.returnType(beanClass);
 
         OperationSetup os = new MemberOperationSetup(bean.installedBy, bean, constructor.operationType(), ot,
                 new OperationConstructorTarget(constructor.constructor()), mh);

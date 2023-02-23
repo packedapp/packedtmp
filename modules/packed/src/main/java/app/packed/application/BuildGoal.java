@@ -18,7 +18,6 @@ package app.packed.application;
 /**
  * The goal of a build task.
  */
-// ApplicationBuildGoal?
 public enum BuildGoal {
 
     /**

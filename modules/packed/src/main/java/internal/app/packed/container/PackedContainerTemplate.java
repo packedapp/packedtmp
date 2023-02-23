@@ -35,25 +35,19 @@ public record PackedContainerTemplate(ContainerKind kind, Class<?> holderClass) 
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> holderClass() {
-        return void.class;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Set<Key<?>> holderKeys() {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
-    public List<OperationTemplate> operations() {
+    public List<OperationTemplate> lifetimeOperations() {
         return List.of();
     }
 
     /** {@inheritDoc} */
     @Override
-    public ContainerTemplate holder(Class<?> guest) {
+    public ContainerTemplate holderLazy(Class<?> guest) {
         // I don't think we are going to do any checks here?
         // Well not interface, annotation, abstract class, ...
         return new PackedContainerTemplate(kind, guest);
@@ -74,6 +68,12 @@ public record PackedContainerTemplate(ContainerKind kind, Class<?> holderClass) 
     /** {@inheritDoc} */
     @Override
     public ContainerTemplate linkWith(ExtensionLink channel) {
+        return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ContainerTemplate lifetimeOperationContext(int index, Class<?> argumentType) {
         return null;
     }
 }

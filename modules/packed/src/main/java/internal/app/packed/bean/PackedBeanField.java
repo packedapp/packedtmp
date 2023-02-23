@@ -116,7 +116,7 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
         checkConfigurable();
         MethodHandle mh = extension.scanner.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
-        template = template.withReturnType(field.getType());
+        template = template.returnType(field.getType());
         return newOperation(template, mh, accessMode);
     }
 

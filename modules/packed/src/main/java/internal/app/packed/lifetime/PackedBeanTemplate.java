@@ -15,36 +15,39 @@
  */
 package internal.app.packed.lifetime;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.bean.BeanKind;
 import app.packed.extension.bean.BeanTemplate;
+import app.packed.extension.context.ContextTemplate;
 import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.Nullable;
+import internal.app.packed.bean.PackedBeanBuilder;
 
 /**
  *
  */
-public final class PackedBeanTemplate implements BeanTemplate {
-
-    @Nullable
-    public final OperationTemplate bot;
-
-    public final BeanKind kind;
+public record PackedBeanTemplate(BeanKind kind, OperationTemplate bot, @Nullable Class<?> createAs) implements BeanTemplate {
 
     public PackedBeanTemplate(BeanKind kind) {
-        this.kind = requireNonNull(kind);
-        this.bot = null;
+        this(kind, null, null);
     }
 
     /** {@inheritDoc} */
     public PackedBeanTemplate withOperationTemplate(OperationTemplate bot) {
-        return new PackedBeanTemplate(kind, bot);
+        return new PackedBeanTemplate(kind, bot, createAs);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public BeanTemplate createAs(Class<?> createAs) {
+        if (createAs.isPrimitive() || PackedBeanBuilder.ILLEGAL_BEAN_CLASSES.contains(createAs)) {
+            throw new IllegalArgumentException(createAs + " is not valid argument");
+        }
+        return new PackedBeanTemplate(kind, bot, createAs);
+    }
 
-    PackedBeanTemplate(BeanKind kind, OperationTemplate bot) {
-        this.kind = requireNonNull(kind);
-        this.bot = bot;
+    /** {@inheritDoc} */
+    @Override
+    public BeanTemplate lifetimeOperationContext(int index, ContextTemplate template) {
+        throw new UnsupportedOperationException();
     }
 }

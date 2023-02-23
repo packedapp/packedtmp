@@ -22,15 +22,16 @@ import java.util.function.Supplier;
 
 import app.packed.extension.BeanVariable;
 import app.packed.extension.Extension;
+import app.packed.extension.context.ContextualizedElement;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.util.FunctionType;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /**
- * An operation handle
+ * A handle for an operation.
  */
-public sealed interface OperationHandle permits PackedOperationHandle {
+public sealed interface OperationHandle extends ContextualizedElement permits PackedOperationHandle {
 
     /** {@return any contexts this operation operates within.} */
     // Hmm there is a difference between operating within contexts./
@@ -122,4 +123,15 @@ public sealed interface OperationHandle permits PackedOperationHandle {
 
     /** {@return the type of this operation.} */
     FunctionType type();
+}
+
+interface Zandbox {
+
+    // Det ville jo vaere rart at sige. Hey
+    // Lav denne Operation. Det er en naestet operation, saa
+    // tages contexts fra parent operation
+
+    // raekkefoelgen kender man jo ikke
+    // Foer vi har sorteret
+    void addChild(OperationHandle h);
 }

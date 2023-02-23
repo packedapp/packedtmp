@@ -23,17 +23,18 @@ import app.packed.application.BuildException;
 // Hmm StaticContextUnavilable?
 // TransactionContext.get()
 
+// ContextNotAvailable
 // ProvisionException
 // ContextUnavailable
 // OutOfContextException
-public class OutOfContextException extends BuildException {
+public class ContextNotAvailableException extends BuildException {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * @param message
      */
-    public OutOfContextException(String message) {
+    public ContextNotAvailableException(String message) {
         super(message);
     }
 }

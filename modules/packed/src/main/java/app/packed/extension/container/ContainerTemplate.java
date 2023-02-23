@@ -36,16 +36,13 @@ import internal.app.packed.container.PackedContainerTemplate;
  */
 public sealed interface ContainerTemplate permits PackedContainerTemplate {
 
-    ContainerTemplate UNMANAGED = null;
-
-    ContainerTemplate MANAGED = null;
-
     /**
      * A template for a container that has the same lifetime as its parent container.
      * <p>
      * This template
      */
-    ContainerTemplate IN_PARENT = new PackedContainerTemplate(ContainerKind.PARENT, void.class);
+    // Creates a new new container in the same lifetime as the extension's container
+    ContainerTemplate DEFAULT = new PackedContainerTemplate(ContainerKind.PARENT, void.class);
 
     /**
      * A template for a container that is lazily created.
@@ -54,16 +51,21 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
      */
     ContainerTemplate LAZY = new PackedContainerTemplate(ContainerKind.LAZY, void.class);
 
+    ContainerTemplate MANAGED = null;
+
+    ContainerTemplate MANAGED_AUTOSTART = null;
+
+    ContainerTemplate UNMANAGED = null;
+
     // The container exists within the operation that creates it
     // Needs a builder. Because of Context, args
     // Men kan vel godt have statiske context
     // Har vel FullLifetime, (HalfLifetime?)
-    ContainerTemplate OPERATION = null;
+    ContainerTemplate Z_OPERATION = null;
 
-    // lazyCreateHolder
-    ContainerTemplate holder(Class<?> guest);
-
-    Class<?> holderClass();
+    default ContainerTemplate allowRuntimeWirelets() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * A set of keys that are available for injection into the holder using {@link FromLifetimeChannel}.
@@ -76,55 +78,55 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
      */
     Set<Key<?>> holderKeys();
 
-    default <T> Builder holderProvideConstant(Class<T> key, T arg) {
+    ContainerTemplate holderLazy(Class<?> guest);
+
+    default <T> ContainerTemplate holderProvideConstant(Class<T> key, T arg) {
         return holderProvideConstant(Key.of(key), arg);
     }
 
     /**
      * @see FromLifetimeChannel
      */
-    default <T> Builder holderProvideConstant(Key<T> key, T arg) {
+    default <T> ContainerTemplate holderProvideConstant(Key<T> key, T arg) {
         throw new UnsupportedOperationException();
     }
 
     // In order to add links. This must have been set
     // Other we do not
+    // Contexts?
     Optional<Class<? extends Extension<?>>> installedBy();
 
     ContainerTemplate installedBy(Class<? extends Extension<?>> installedBy);
 
-
-    /** {@return a list of the various lifetime operations of this template.} */
-    List<OperationTemplate> operations();
+    /** {@return a list of the lifetime operation templates for this template.} */
+    List<OperationTemplate> lifetimeOperations();
 
     ContainerTemplate linkWith(ExtensionLink channel);
 
-    interface Builder {
-
-        // context either from args which are then stored
-        // or from some kind of ContextProvide method
-
-        // @ContextProvide(Context.class) T, hvor T=ArgType
-        Builder addContextFromArg(ContextTemplate template, ContextSpan containerSpan);
-
-        // Soeger vi kun i samme lifetime?
-        Builder addContextFromProvide(ContextTemplate template, ContextSpan containerSpan);
-
-        // BeanSpan not supported
-        // OperationSpan I will have to think about that
-
-        @SuppressWarnings("unchecked")
-        // We have a trivial usecases where the bean is the same parameter
-        // Take a record? that matches the parameters?
-        <T> Builder addContextFromParent(ContextTemplate template, ContextSpan span, Class<?> extensionBean, Op1<T, ?>... op);
-
-        Builder allowRuntimeWirelets();
-
-        // No seperet MH for starting, part of init
-        Builder autoStart(boolean forkOnStart);
-    }
+    // Har kun visibility for the installing extension
+    ContainerTemplate lifetimeOperationContext(int index, Class<?> argumentType);
 }
 
+interface Zandbox {
+
+    // context either from args which are then stored
+    // or from some kind of ContextProvide method
+
+    // @ContextProvide(Context.class) T, hvor T=ArgType
+    Zandbox addContextFromArg(ContextTemplate template);
+
+    @SuppressWarnings("unchecked")
+    // We have a trivial usecases where the bean is the same parameter
+    // Take a record? that matches the parameters?
+    <T> Zandbox addContextFromParent(ContextTemplate template, ContextSpan span, Class<?> extensionBean, Op1<T, ?>... op);
+
+    // BeanSpan not supported
+    // OperationSpan I will have to think about that
+
+    // Soeger vi kun i samme lifetime?
+    Zandbox addContextFromProvide(ContextTemplate template, ContextSpan containerSpan);
+
+}
 //Hvis man har initialization kontekst saa bliver de noedt til ogsaa noedt til
 //kun at vaere parametere i initialzation. Vi kan ikke sige naa jaa de er ogsaa
 //tilgaengelige til start, fordi det er samme lifetime mh. Fordi hvis de nu beslutter

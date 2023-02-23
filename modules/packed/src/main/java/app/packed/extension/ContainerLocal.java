@@ -20,21 +20,15 @@ import java.util.function.Supplier;
 import internal.app.packed.container.PackedContainerLocal;
 
 /**
- *
+ * @see app.packed.extension.container.ExtensionLink.Builder#consumeLocal(ContainerLocal, java.util.function.Consumer)
+ * @see app.packed.extension.container.ExtensionLink.Builder#setLocal(ContainerLocal, Object)
+ * @see app.packed.extension.container.ContainerBuilder#setLocal(ContainerLocal, Object)
+ * @see app.packed.container.ContainerMirror
+ * @see BeanLocal
  */
 @SuppressWarnings("rawtypes")
 public abstract sealed class ContainerLocal<T> permits PackedContainerLocal {
 
-//    static <T> ContainerLocal<T> ofAssembly() {
-//        throw new UnsupportedOperationException();
-//    }
-
-    // Hvor brugbar er denne?? Er det ikke bare at store det i selve extension???
-
-    // Den er super god til at saette noget paa ContainerInstaller,
-
-    // Og saa faa det frem i extensionen... Naar man initialize den.
-    // Vil sige det er vel den eneste maade
     /**
      * Creates a bean local without any initial value.
      *
