@@ -31,7 +31,7 @@ import app.packed.container.Wirelet;
 // [Checked|Not-Checked]Launch, Mirror, Launcher, ReuseableLauncher
 public final class App {
 
-    /** The bootstrap app. */
+    /** The bootstrap application. */
     private static final BootstrapApp<Void> BOOTSTRAP = BootstrapApp.of(c -> c.managedLifetime());
 
     /** Not today Satan, not today. */
@@ -46,7 +46,7 @@ public final class App {
     }
 
     /**
-     * Builds an application from the specified assembly and returns a mirror representing the application.
+     * Builds an application and returns a mirror representing it.
      *
      * @param assembly
      *            the application's assembly
@@ -80,7 +80,7 @@ public final class App {
         return new Launcher(BOOTSTRAP.newLauncher(assembly, wirelets));
     }
 
-    public static void print(Assembly assembly, Object printDetails, Wirelet... wirelets) {
+    static void print(Assembly assembly, Object printDetails, Wirelet... wirelets) {
         // printDetails=Container, Assemblies,////
         mirrorOf(assembly, wirelets).print();
     }
@@ -111,6 +111,16 @@ public final class App {
         BOOTSTRAP.launch(assembly, wirelets);
     }
 
+    /**
+     * Builds and verifies an application.
+     *
+     * @param assembly
+     *            the application's assembly
+     * @param wirelets
+     *            optional wirelets
+     * @throws RuntimeException
+     *             if the application could not be build
+     */
     public static void verify(Assembly assembly, Wirelet... wirelets) {
         BOOTSTRAP.verify(assembly, wirelets);
     }

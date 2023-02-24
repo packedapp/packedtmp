@@ -18,15 +18,16 @@ package app.packed.extension.container;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.extension.bean.BeanHandle;
+import app.packed.util.Key;
 
 /**
  *
  */
-// Har ikke nogle host objekter. Det er jo en almindelige bean...
+// Hvad kan du???
+// Bare at kunne saette wirelets er lidt soso.
 
-// Saa hvis vi endelig ville lave det, skal det generisks for beans.
-
-// Maaske vi bare kan bruge IBC, kan jo altid tage en IBC naar man laver en ContainerInstaller
+// Det er begraenset hvor mange containere man installere med det samme gaest.
+//// Men naar vi nu skal til at deploye...
 
 public class ContainerHolderConfiguration<T> extends InstanceBeanConfiguration<T> {
 
@@ -37,14 +38,25 @@ public class ContainerHolderConfiguration<T> extends InstanceBeanConfiguration<T
         super(handle);
     }
 
-    // Problemet er her. At vi saa skal have en ny for en application?
-    public ContainerBuilder newInstaller(ContainerTemplate template) {
+    public Class<?> holderClass() {
         throw new UnsupportedOperationException();
     }
 
     // All guest will have these wirelets
     public ContainerHolderConfiguration<T> addWirelets(Wirelet... wirelets) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <K> ContainerHolderConfiguration<T> overrideService(Class<K> key, K instance) {
+        super.overrideService(key, instance);
+        return this;
+    }
+
+    @Override
+    public <K> ContainerHolderConfiguration<T> overrideService(Key<K> key, K instance) {
+        super.overrideService(key, instance);
+        return this;
     }
 }
 

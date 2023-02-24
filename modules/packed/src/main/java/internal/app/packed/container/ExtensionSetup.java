@@ -126,21 +126,22 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     public int compareTo(ExtensionSetup o) {
         ExtensionModel otherModel = o.model;
 
+        // We need to have a total deterministic ordering of extensions
+
         // First we compare the depth of each extension
         int d = model.orderingDepth() - otherModel.orderingDepth();
-        if (d != 0) {
-            return d;
+        if (d == 0) {
+            d = model.name().compareTo(otherModel.name());
+            if (d == 0) {
+                d = model.fullName().compareTo(otherModel.fullName());
+                if (d == 0) {
+                    // Same canonical name but different class loaders.
+                    // sort in order of use
+                    d = tree.applicationExtensionId - o.tree.applicationExtensionId;
+                }
+            }
         }
-
-        // Then we compare the full name (class.getCanonicalName());
-
-        int c = model.fullName().compareTo(otherModel.fullName());
-        if (c != 0) {
-            return c;
-        }
-
-        // Same canonical name, sort in order of use
-        return tree.applicationExtensionId - o.tree.applicationExtensionId;
+        return d;
     }
 
     /**
@@ -249,7 +250,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
      * @return the new extension
      */
     static ExtensionSetup install(Class<? extends Extension<?>> extensionType, ContainerSetup container, @Nullable ExtensionSetup requestedByExtension) {
-        // The extension must be recursively installed into all ancestors (if not already installed)
+        // First, we must install the extension recursively into all ancestors (if not already installed)
         ExtensionSetup extensionParent = container.treeParent == null ? null : container.treeParent.useExtension(extensionType, requestedByExtension);
 
         ExtensionSetup extension = new ExtensionSetup(extensionParent, container, extensionType);
@@ -259,12 +260,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         // Add the extension to the container's map of extensions
         container.extensions.put(extensionType, extension);
 
-        // Hvad hvis en extension linker en af deres egne assemblies.
-        // If the extension is added in the root container of an assembly. We need to add it there
-
-        boolean isAssemblyRoot = container.treeParent == null || container.assembly.container == container;
-
-        if (isAssemblyRoot) {
+        if (container.isAssemblyRoot()) {
             container.assembly.extensions.add(extension);
         }
 

@@ -23,4 +23,5 @@ package app.packed.extension.beanpouch;
 
 public class Beanlets {
 
+    // multi
 }

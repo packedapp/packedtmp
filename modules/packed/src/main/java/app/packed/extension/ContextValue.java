@@ -40,6 +40,7 @@ import app.packed.extension.BeanHook.AnnotatedBindingHook;
 @Documented
 @AnnotatedBindingHook(extension = BaseExtension.class)
 // Maybe a less friendly name
+// Alternative @ConjectInject paa contexten...
 public @interface ContextValue {
 
     /** {@return the context type that providing the value.} */

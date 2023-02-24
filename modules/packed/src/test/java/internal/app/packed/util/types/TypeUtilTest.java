@@ -32,14 +32,13 @@ import org.junit.jupiter.api.Test;
 /** Tests {@link TypeUtil}. */
 public class TypeUtilTest {
 
-
     /** Tests {@link TypeUtil#isFreeFromTypeVariables(Type)}. */
     @Test
     public void isFreeFromTypeVariables() {
         npe(() -> TypeUtil.isFreeFromTypeVariables(null), "type");
 
         @SuppressWarnings("unused")
-        class C<T> {
+         class C<T> {
             public String f1;
             public String[] f2;
             public List<String> f3;
@@ -65,7 +64,7 @@ public class TypeUtilTest {
     @Test
     public void rawTypeOf() throws Exception {
         @SuppressWarnings("unused")
-        class C<T> {
+     class C<T> {
             public List<String> f1;
             public Map<? extends String, ? super Integer> f2;
             public List<String>[] f3;
@@ -87,7 +86,6 @@ public class TypeUtilTest {
 
         assertThatThrownBy(() -> TypeUtil.rawTypeOf(new Type() {})).isExactlyInstanceOf(IllegalArgumentException.class);
     }
-
 
     class NestedNonStaticClass {}
 

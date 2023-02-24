@@ -25,10 +25,12 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.util.AbstractTreeNode;
 
 /**
- * Represents a rooted tree of extensions of the same type with a single extension as the origin.
+ * Represents a rooted tree of extensions of the same type with a single node as the origin.
  *
  * @param <E>
  *            the type of extensions
+ *
+ * @see Extension#applicationNavigator()
  */
 public final /* primitive */ class ExtensionNavigator<E extends Extension<E>> implements Iterable<E> {
 

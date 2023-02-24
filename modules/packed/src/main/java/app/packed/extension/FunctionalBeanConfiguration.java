@@ -24,9 +24,9 @@ import app.packed.util.FunctionType;
 import app.packed.util.Key;
 
 /**
- * Represents a (source-less) bean that can have multiple functions attached.
+ * Represents a bean that can have multiple functions attached.
  * <p>
- * {@link BaseExtensionPoint#installFunctional()}
+ * Instances of this bean can only created via {@link BaseExtensionPoint#installFunctional()}.
  *
  * @see BaseExtensionPoint#installFunctional()
  */

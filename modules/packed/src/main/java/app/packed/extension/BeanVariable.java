@@ -71,14 +71,12 @@ public non-sealed interface BeanVariable extends BeanElement {
     void bindConstant(@Nullable Object value);
 
     /**
-     * @param argumentIndex
-     * @param context
+     * @param fromContext
      *
-     * @see InvocationContextArgument
      * @throws app.packed.context.ContextNotAvailableException
      *             if the context is not available
      */
-    void bindContextValue(Class<? extends Context<?>> context);
+    void bindContextValue(Class<? extends Context<?>> fromContext);
 
     /**
      * Binds the underlying variable to a constant that is generated as part of the application's code generating phase.

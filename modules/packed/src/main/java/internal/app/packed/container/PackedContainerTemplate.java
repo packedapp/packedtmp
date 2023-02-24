@@ -16,12 +16,11 @@
 package internal.app.packed.container;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
-import app.packed.extension.Extension;
 import app.packed.extension.container.ContainerTemplate;
 import app.packed.extension.container.ExtensionLink;
+import app.packed.extension.context.ContextTemplate;
 import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.Key;
 
@@ -32,6 +31,9 @@ public record PackedContainerTemplate(ContainerKind kind, Class<?> holderClass) 
 
     /** The root lifetime of an application. */
     public static final ContainerTemplate APPLICATION_ROOT = new PackedContainerTemplate(ContainerKind.ROOT, void.class);
+
+    public static final ContainerTemplate LINKED = new PackedContainerTemplate(ContainerKind.ROOT, void.class);
+
 
     /** {@inheritDoc} */
     @Override
@@ -47,33 +49,23 @@ public record PackedContainerTemplate(ContainerKind kind, Class<?> holderClass) 
 
     /** {@inheritDoc} */
     @Override
-    public ContainerTemplate holderLazy(Class<?> guest) {
+    public ContainerTemplate holder(Class<?> guest) {
         // I don't think we are going to do any checks here?
         // Well not interface, annotation, abstract class, ...
         return new PackedContainerTemplate(kind, guest);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Optional<Class<? extends Extension<?>>> installedBy() {
-        return Optional.empty();
-    }
 
     /** {@inheritDoc} */
     @Override
-    public ContainerTemplate installedBy(Class<? extends Extension<?>> installedBy) {
+    public ContainerTemplate addLink(ExtensionLink channel) {
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ContainerTemplate linkWith(ExtensionLink channel) {
-        return null;
+    public ContainerTemplate lifetimeOperationAddContext(int index, ContextTemplate template) {
+        throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ContainerTemplate lifetimeOperationContext(int index, Class<?> argumentType) {
-        return null;
-    }
 }

@@ -79,8 +79,10 @@ public final class AssemblySetup implements BeanOwner {
     public final List<Class<? extends DelegatingAssembly>> delegatingAssemblies;
 
     /**
-     * All extensions that are used in the assembly ordered accordingly to their natural order. We cannot use
-     * {@link ContainerSetup#extensions} as we remove every node when calling {@link #build()}.
+     * All extensions that are used in the assembly ordered accordingly to their natural order.
+     * <p>
+     * We cannot use {@link ContainerSetup#extensions} as we remove every node when calling {@link #build()} in order to
+     * allow adding new extensions while closing the assembly.
      */
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>();
 
@@ -104,13 +106,13 @@ public final class AssemblySetup implements BeanOwner {
      * @param wirelets
      *            optional wirelets
      */
-    public AssemblySetup(@Nullable ApplicationDriver<?> applicationDriver, BuildGoal goal, @Nullable PackedContainerBuilder installer,
-            Assembly assembly, Wirelet[] wirelets) {
+    public AssemblySetup(@Nullable ApplicationDriver applicationDriver, BuildGoal goal, @Nullable PackedContainerBuilder installer, Assembly assembly,
+            Wirelet[] wirelets) {
         // We need to unpack any delegating assemblies
         requireNonNull(goal);
         Assembly a = requireNonNull(assembly, "assembly is null");
         if (a instanceof DelegatingAssembly) {
-            int attempts = 100;
+            int attempts = 100; // Just a ran
             ArrayList<Class<? extends DelegatingAssembly>> delegatingAssemblies = new ArrayList<>(1);
             AssemblyModel model = null;
             while (a instanceof DelegatingAssembly da) {

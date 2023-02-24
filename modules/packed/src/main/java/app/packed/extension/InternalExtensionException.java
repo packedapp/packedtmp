@@ -20,8 +20,8 @@ import app.packed.application.BuildException;
 /**
  * An exception typically thrown to indicate an internal malfunction of an extension.
  * <p>
- * If you as an end-user encounter this exception. There is typically nothing you can do, except for reporting the issue
- * to the developer of the extension.
+ * If you, as an end-user, encounters this exception. There is typically nothing you can do, except for reporting the
+ * issue to the developer of the extension.
  */
 public class InternalExtensionException extends BuildException {
 

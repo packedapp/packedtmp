@@ -25,6 +25,7 @@ import internal.app.packed.util.types.ClassUtil;
 
 public /* primitive */ final class Realm {
 
+    // ROOT? SYSTEM?
     /** The application realm. */
     private static final Realm APPLICATION = new Realm(Extension.class);
 

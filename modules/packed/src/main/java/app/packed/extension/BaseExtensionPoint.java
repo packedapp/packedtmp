@@ -169,13 +169,17 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     // Can I come up with a situation where we want multiple guests of the same type??
     // I think not
-    public <T> ContainerHolderConfiguration<T> containerHolderInstall(Class<T> holderClass, boolean allowMulti) {
+    public <T> ContainerHolderConfiguration<T> installContainerHolder(Class<T> holderClass) {
         throw new UnsupportedOperationException();
     }
 
-    public <T> ContainerHolderConfiguration<T> containerHolderInstallIfAbsent(Class<T> holderClass, Consumer<? super ContainerHolderConfiguration<T>> action) {
+    public <T> ContainerHolderConfiguration<T> installContainerHolder(Op<T> holderClass) {
         throw new UnsupportedOperationException();
     }
+//
+//    public <T> ContainerHolderConfiguration<T> containerHolderInstallIfAbsent(Class<T> holderClass, Consumer<? super ContainerHolderConfiguration<T>> action) {
+//        throw new UnsupportedOperationException();
+//    }
 
     public <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
         BeanHandle<T> handle = beanInstallerForExtension(BeanTemplate.CONTAINER, context()).install(implementation);

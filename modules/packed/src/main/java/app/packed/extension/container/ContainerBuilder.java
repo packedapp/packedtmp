@@ -81,6 +81,14 @@ public sealed interface ContainerBuilder permits PackedContainerBuilder {
 
     // Only Managed-Operation does not require a wrapper
     // For now this method is here. Might move it to the actual CHC at some point
+    /**
+     *
+     * @param holderConfiguration
+     * @return
+     * @see app.packed.extension.BaseExtensionPoint#installContainerHolder(Class)
+     * @throws IllegalArgumentException
+     *             if the holder class of the bean does not match the holder type set when creating the container template.
+     */
     default ContainerBuilder holder(ContainerHolderConfiguration<?> holderConfiguration) {
         // Gaar udfra vi maa definere wrapper beanen alene...Eller som minimum
         // supportere det

@@ -1,0 +1,34 @@
+Forskellige applicationer
+
+Kan enten laves brugeren eller af en extension som saa vil eje alle containere
+-----
+
+  * Kan have forskellige extensions
+  * Bliver altid bygget efter hoved applicationen.
+
+  * Parent = ApplicationSetup | RunningApplication
+  * OwnerShip = Som parent application | Extension
+
+
+  // LazyWirelets   
+  ** Samme som Lazy Container
+  * Service Bridges
+  * Activated by Web
+  * Run scheduled Faetter
+  * Context propagation
+
+// Features
+
+
+
+
+
+LazyBuild -> Byg naar (og hvis) den skal bruges. Vi bliver noedt til at supportere service proxies
+
+
+
+
+/// RemoteApp something that is not locally on the compoter
+RemoteAPI {
+
+}

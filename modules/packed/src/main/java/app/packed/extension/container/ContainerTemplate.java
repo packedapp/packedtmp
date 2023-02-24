@@ -31,6 +31,7 @@ import internal.app.packed.container.PackedContainerTemplate;
 /**
  * A container template is
  *
+ * Con
  *
  * @see BaseExtensionPoint#containerInstaller(ContainerTemplate)
  */
@@ -39,29 +40,52 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
     /**
      * A template for a container that has the same lifetime as its parent container.
      * <p>
-     * This template
+     * The template has no {@link #lifetimeOperations() lifetime operations} as the container is automatically created when
+     * the root container in the lifetime is created.
      */
-    // Creates a new new container in the same lifetime as the extension's container
     ContainerTemplate DEFAULT = new PackedContainerTemplate(ContainerKind.PARENT, void.class);
 
     /**
      * A template for a container that is lazily created.
      * <p>
-     * This template
+     * The template has no {@link #lifetimeOperations() lifetime operations} as the container is automatically created
+     * whenever it is needed by the runtime.
      */
+    // Kan man have lazy paa unmanaged????
     ContainerTemplate LAZY = new PackedContainerTemplate(ContainerKind.LAZY, void.class);
 
+    // Cannot have managed on unmanaged
     ContainerTemplate MANAGED = null;
 
     ContainerTemplate MANAGED_AUTOSTART = null;
 
+    // Carefull with Unmanaged on Managed
     ContainerTemplate UNMANAGED = null;
 
-    // The container exists within the operation that creates it
-    // Needs a builder. Because of Context, args
-    // Men kan vel godt have statiske context
-    // Har vel FullLifetime, (HalfLifetime?)
-    ContainerTemplate Z_OPERATION = null;
+    /**
+     * A container template representing a container that exists solely within a single operation.
+     * <p>
+     * The container is created. The method is executed. And the container is shutdown again
+     * <p>
+     * A container created using this template must have registered at least one spawning operation. Otherwise an
+     * {@link app.packed.extension.InternalExtensionException} is thrown. TODO we need a method where we can set a supplier
+     * that is executed. It is typically a user error. The specified assembly must hava at least one method that schedules
+     * shit
+     *
+     *
+     * @see app.packed.extension.BeanElement.BeanMethod#newLifetimeOperation(ContainerHandle)
+     * @see app.packed.extension.bean.BeanTemplate#Z_FROM_OPERATION
+     **/
+    ContainerTemplate FROM_OPERATIONS = null;
+
+    ContainerTemplate addLink(ExtensionLink link);
+
+    default ContainerTemplate addLink(ExtensionLink... links) {
+        for (ExtensionLink l : links) {
+            addLink(l);
+        }
+        return this;
+    }
 
     default ContainerTemplate allowRuntimeWirelets() {
         throw new UnsupportedOperationException();
@@ -78,7 +102,19 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
      */
     Set<Key<?>> holderKeys();
 
-    ContainerTemplate holderLazy(Class<?> guest);
+    /**
+     * Creates a new template that We need to set the holder type. Otherwise we cannot calculate
+     * <p>
+     * A bean representing the will automatically be created. If you need speciel configuration for the bean. You can
+     * manually create one using {@link app.packed.extension.BaseExtensionPoint#containerHolderInstall(Class, boolean)}
+     *
+     * @param guest
+     * @return the new template
+     *
+     * @throws UnsupportedOperationException
+     *             on container templates that do not have any lifetime operations
+     */
+    ContainerTemplate holder(Class<?> guest);
 
     default <T> ContainerTemplate holderProvideConstant(Class<T> key, T arg) {
         return holderProvideConstant(Key.of(key), arg);
@@ -91,20 +127,11 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
         throw new UnsupportedOperationException();
     }
 
-    // In order to add links. This must have been set
-    // Other we do not
-    // Contexts?
-    Optional<Class<? extends Extension<?>>> installedBy();
-
-    ContainerTemplate installedBy(Class<? extends Extension<?>> installedBy);
+    // Har kun visibility for the installing extension
+    ContainerTemplate lifetimeOperationAddContext(int index, ContextTemplate template);
 
     /** {@return a list of the lifetime operation templates for this template.} */
     List<OperationTemplate> lifetimeOperations();
-
-    ContainerTemplate linkWith(ExtensionLink channel);
-
-    // Har kun visibility for the installing extension
-    ContainerTemplate lifetimeOperationContext(int index, Class<?> argumentType);
 }
 
 interface Zandbox {
@@ -126,6 +153,13 @@ interface Zandbox {
     // Soeger vi kun i samme lifetime?
     Zandbox addContextFromProvide(ContextTemplate template, ContextSpan containerSpan);
 
+    // I don't know what these do
+    // In order to add links. This must have been set
+    // Other we do not
+    // Contexts?
+    Optional<Class<? extends Extension<?>>> installedBy();
+
+    ContainerTemplate installedBy(Class<? extends Extension<?>> installedBy);
 }
 //Hvis man har initialization kontekst saa bliver de noedt til ogsaa noedt til
 //kun at vaere parametere i initialzation. Vi kan ikke sige naa jaa de er ogsaa

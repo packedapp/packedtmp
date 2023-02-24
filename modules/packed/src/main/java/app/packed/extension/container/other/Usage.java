@@ -28,13 +28,18 @@ import app.packed.service.ServiceLocator;
  *
  */
 public class Usage extends Extension<Usage> {
-    private static final ContainerTemplate CT = ContainerTemplate.Z_OPERATION.linkWith(BaseExtensionPoint.EXPORTED_SERVICE_LOCATOR);
+    private static final ContainerTemplate CT = ContainerTemplate.FROM_OPERATIONS.holder(Guest.class).addLink(BaseExtensionPoint.EXPORTED_SERVICE_LOCATOR);
+
+    public ContainerConfiguration automaticHolder() {
+        ContainerHandle h = base().containerBuilder(CT).build();
+        return new ContainerConfiguration(h);
+    }
 
     public ContainerConfiguration foo() {
-        ContainerHolderConfiguration<Guest> chg = base().containerHolderInstallIfAbsent(Guest.class, c -> {});
+        ContainerHolderConfiguration<Guest> chg = base().installContainerHolder(Guest.class).overrideService(String.class, "Ssdo");
         ContainerHandle h = base().containerBuilder(CT).holder(chg).build();
         return new ContainerConfiguration(h);
     }
 
-    record Guest(@ContainerHolderService ServiceLocator sl) {}
+    record Guest(@ContainerHolderService ServiceLocator sl, String foo) {}
 }

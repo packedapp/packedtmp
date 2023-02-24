@@ -41,20 +41,25 @@ import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 // Men vil man deploye at runtime jo need this host/deployer extension
 
 //ApplicationInstaller?
-public class ApplicationHostExtension extends FrameworkExtension<ApplicationHostExtension> {
+class ApplicationHostExtension extends FrameworkExtension<ApplicationHostExtension> {
 
     static final ContextTemplate CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationInitializationContext.class,
             ApplicationInitializationContext.class);
-
-    static final BeanLocal<InstallingAppHost> L = BeanLocal.of();
 
     static final OperationTemplate ot = OperationTemplate.raw().withContext(CIT).returnTypeObject();
 
     static final BeanTemplate BLT = new PackedBeanTemplate(BeanKind.MANYTON).withOperationTemplate(ot);
 
+    private static final BeanLocal<InstallingAppHost> L = BeanLocal.of();
+
     MethodHandle mh;
 
     ApplicationHostExtension() {}
+
+    private <T> ApplicationHostConfiguration<T> newApplication(BeanHandle<T> handle) {
+        runOnCodegen(() -> mh = handle.lifetimeOperations().get(0).generateMethodHandle());
+        return new ApplicationHostConfiguration<>(handle);
+    }
 
     public <T> ApplicationHostConfiguration<T> newApplication(Class<T> guestBean) {
         // We need the attachment, because ContainerGuest is on
@@ -68,18 +73,7 @@ public class ApplicationHostExtension extends FrameworkExtension<ApplicationHost
         return newApplication(bi.install(guestBean));
     }
 
-    private <T> ApplicationHostConfiguration<T> newApplication(BeanHandle<T> handle) {
-        runOnCodegen(() -> mh = handle.lifetimeOperations().get(0).generateMethodHandle());
-        return new ApplicationHostConfiguration<>(handle);
-
-    }
-
-    static class BootstrapBean {
-
-    }
-
     static class InstallingAppHost {
-
         public InstallingAppHost() {}
     }
 

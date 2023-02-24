@@ -137,7 +137,10 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     }
 
     public boolean isAssemblyRoot() {
-        return this == assembly.container;
+        // The check for treeParent == null
+        // is because AssemblySetup.container is set after BaseExtension is installed
+        // for the root container. And we use this method to test
+        return treeParent == null || assembly.container == this;
     }
 
     /**

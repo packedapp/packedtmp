@@ -36,7 +36,7 @@ import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
 
 /** Internal configuration of an application. */
-public final class ApplicationSetup {
+public final class ApplicationSetup implements ApplicationParent {
 
     /** A MethodHandle for invoking {@link ApplicationMirror#initialize(ApplicationSetup)}. */
     private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ApplicationMirror.class, "initialize",
@@ -50,7 +50,7 @@ public final class ApplicationSetup {
     public final ContainerSetup container;
 
     /** The driver used to create the application. */
-    public final ApplicationDriver<?> driver;
+    public final ApplicationDriver driver;
 
     /**
      * All extensions used in an application has a unique instance id attached. This is used in case we have multiple
@@ -59,15 +59,15 @@ public final class ApplicationSetup {
      */
     public int extensionId;
 
-    /** The application launcher that is being built. */
-    @Nullable
-    public RuntimeApplicationLauncher generatedLauncher;
-
     /** The build goal. */
     public final BuildGoal goal;
 
     /** The current phase of the application's build process. */
     private ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
+
+    /** Any parent application of this application. This is either another application setup or a running application. */
+    @Nullable
+    public final ApplicationParent parent = null;
 
     /**
      * Create a new application.
@@ -81,11 +81,12 @@ public final class ApplicationSetup {
      * @param wirelets
      *            optional wirelets
      */
-    public ApplicationSetup(ApplicationDriver<?> driver, BuildGoal goal, AssemblySetup assembly, Wirelet[] wirelets) {
+    public ApplicationSetup(ApplicationDriver driver, BuildGoal goal, AssemblySetup assembly, Wirelet[] wirelets) {
         this.driver = requireNonNull(driver);
         this.goal = requireNonNull(goal);
         this.codegenActions = goal.isCodeGenerating() ? new ArrayList<>() : null;
-        this.container = PackedContainerBuilder.of(PackedContainerTemplate.APPLICATION_ROOT, BaseExtension.class, this, null).newContainer(assembly, wirelets);
+        PackedContainerBuilder pcb = PackedContainerBuilder.of(PackedContainerTemplate.APPLICATION_ROOT, BaseExtension.class, this, null);
+        this.container = pcb.newContainer(assembly, wirelets);
     }
 
     /**
@@ -134,7 +135,6 @@ public final class ApplicationSetup {
             }
 
             ce.commit();
-            generatedLauncher = new RuntimeApplicationLauncher(this);
             codegenActions = null;
         }
 

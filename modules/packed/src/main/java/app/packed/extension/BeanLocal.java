@@ -28,7 +28,15 @@ import internal.app.packed.bean.PackedBeanLocal;
  * This class provides bean-local variables. Think of them as {@link ThreadLocal thread locals}, but for a single bean
  * instead of a single thread.
  * <p>
+ * There are number where a BeanLocal be used:
  *
+ * Before creating a bean a value can be set using
+ * {@link app.packed.extension.bean.BeanBuilder#setLocal(BeanLocal, Object)}
+ *
+ *
+ * Finally, a bean local can be used from a {@link app.packed.bean.BeanMirror}
+ * <p>
+ * Bean locals should generally not be shared outside of the extension that created them.
  * <p>
  * Bean locals are only intended to be used when building an application or from bean mirror subclasses. Specifically,
  * there are no support for querying a bean local at runtime.
@@ -39,8 +47,6 @@ import internal.app.packed.bean.PackedBeanLocal;
  * @see ContainerLocal
  */
 // get, use, remove..
-
-// Take a name? Could just be withName that creates a new BeanLocal
 @SuppressWarnings("rawtypes")
 public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
 

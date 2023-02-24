@@ -29,12 +29,7 @@ import internal.app.packed.container.PackedContainerBuilder;
  * exposed as {@link ContainerLifetimeChannel}.
  */
 public record PackedContainerLifetimeChannel(Class<? extends Extension<?>> extensionClass, Consumer<? super PackedContainerBuilder> onUse,
-        Set<Key<?>> exports) implements ExtensionLink {
-
-    @Override
-    public Set<Key<?>> keys() {
-        return exports();
-    }
+        Set<Key<?>> keys) implements ExtensionLink {
 
     // is used in the (unlikely) scenario with multiple links
     // that each provide something with the same key

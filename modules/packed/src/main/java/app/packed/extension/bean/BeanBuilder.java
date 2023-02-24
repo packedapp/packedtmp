@@ -49,6 +49,7 @@ public sealed interface BeanBuilder permits PackedBeanBuilder {
 
     <T> BeanHandle<T> install(Op<T> operation);
 
+    // These things can never be multi
     <T> BeanHandle<T> installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle<T>> onInstall);
 
     // instance = introspected bean

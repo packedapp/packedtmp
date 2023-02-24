@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.deployer;
+package app.packed.extension.application.old;
 
 import java.util.function.Supplier;
 
@@ -28,16 +28,19 @@ import app.packed.extension.FrameworkExtension;
 // What about
 public class ApplicationHostExtension extends FrameworkExtension<ApplicationHostExtension> {
 
-    /** Nobody invited you. */
+    /** Not really in the mood for guests. */
     ApplicationHostExtension() {}
 
     // What about concurrency, what about failures?
     // Is this when the root container is starting?
     // Or before the root container
+
     public void deploy(Supplier<? extends Assembly> supplier, Wirelet... wirelets) {}
 
     // deployment is lazy On First access?
-    public void deployLazy(Supplier<? extends Assembly> supplier, Wirelet... wirelets) {}
+    public void deployLazyBuild(Supplier<? extends Assembly> supplier, Wirelet... wirelets) {}
+
+    public void deployLazyStart(Supplier<? extends Assembly> supplier, Wirelet... wirelets) {}
 
     // Propagation
     // ApplicationMirror

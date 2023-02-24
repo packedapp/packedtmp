@@ -21,12 +21,11 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.bean.BeanHandle;
-import app.packed.service.ServiceContract;
 
 /**
  *
  */
-public class ApplicationHostConfiguration<T> extends InstanceBeanConfiguration<T> {
+class ApplicationHostConfiguration<T> extends InstanceBeanConfiguration<T> {
 
     /**
      * @param handle
@@ -43,12 +42,12 @@ public class ApplicationHostConfiguration<T> extends InstanceBeanConfiguration<T
     public void deployLazy(Supplier<? extends Assembly> assemblySupplier, Wirelet... wirelets) {}
 }
 
-class MyS {
-
-    public void host(ApplicationHostConfiguration<?> host, ServiceContract s) {
-        // s maa enten kunne vaere requires, eller kun provide
-        // s maa kun vaere provide...
-
-        // Men kan godt have static requires. og dynamiske provides
-    }
-}
+//class MyS {
+//
+//    public void host(ApplicationHostConfiguration<?> host, ServiceContract s) {
+//        // s maa enten kunne vaere requires, eller kun provide
+//        // s maa kun vaere provide...
+//
+//        // Men kan godt have static requires. og dynamiske provides
+//    }
+//}

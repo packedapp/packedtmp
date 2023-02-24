@@ -29,7 +29,6 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.ContainerLocal;
 import app.packed.extension.Extension;
 import app.packed.extension.container.ContainerBuilder;
-import app.packed.extension.container.ContainerHandle;
 import app.packed.extension.container.ContainerTemplate;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
@@ -37,7 +36,7 @@ import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 
 /** Implementation of {@link ContainerBuilder}. */
-public final class PackedContainerBuilder implements ContainerBuilder {
+public final class PackedContainerBuilder extends AbstractContainerBuilder implements ContainerBuilder {
 
     /** The application we are installing the container into. */
     // I think once we get app-on-app this is Nullable
@@ -53,12 +52,16 @@ public final class PackedContainerBuilder implements ContainerBuilder {
 
     String nameFromWirelet;
 
+    boolean newApplication;
+
     /** The parent of container being installed. Or <code>null</code> if a root container. */
     @Nullable
     final ContainerSetup parent;
 
     /** The template for the new container. */
     final PackedContainerTemplate template;
+
+    boolean isUsed;
 
     // Cannot take ExtensionSetup, as BaseExtension is not instantiated for a root container
     private PackedContainerBuilder(ContainerTemplate template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
@@ -69,10 +72,15 @@ public final class PackedContainerBuilder implements ContainerBuilder {
         this.installedBy = requireNonNull(installedBy);
     }
 
+    private void checkNotUsed() {
+
+    }
+
     /** {@inheritDoc} */
     @Override
-    public ContainerHandle build(Assembly assembly, Wirelet... wirelets) {
+    public PackedContainerHandle build(Assembly assembly, Wirelet... wirelets) {
         parent.assembly.checkIsConfigurable();
+        checkNotUsed();
 
         // Create a new assembly, which call into #containerInstall
         AssemblySetup as = new AssemblySetup(null, application.goal, this, assembly, wirelets);
@@ -85,7 +93,9 @@ public final class PackedContainerBuilder implements ContainerBuilder {
 
     /** {@inheritDoc} */
     @Override
-    public ContainerHandle build(Wirelet... wirelets) {
+    public PackedContainerHandle build(Wirelet... wirelets) {
+        checkNotUsed();
+
         parent.assembly.checkIsConfigurable();
         ContainerSetup container = newContainer(parent.assembly, wirelets);
         return new PackedContainerHandle(container);
@@ -93,11 +103,20 @@ public final class PackedContainerBuilder implements ContainerBuilder {
 
     /** {@inheritDoc} */
     @Override
-    public ContainerHandle buildAndUseThisExtension(Wirelet... wirelets) {
+    public PackedContainerHandle buildAndUseThisExtension(Wirelet... wirelets) {
+        checkNotUsed();
+
         parent.assembly.checkIsConfigurable();
         ContainerSetup container = newContainer(parent.assembly, wirelets);
         container.useExtension(installedBy, null);
         return new PackedContainerHandle(container);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> ContainerBuilder consumeLocal(ContainerLocal<T> local, Consumer<T> action) {
+        PackedContainerLocal<?> pcl = (PackedContainerLocal<?>) local;
+        action.accept((T) pcl.get(this));
+        return this;
     }
 
     /** {@inheritDoc} */
@@ -200,13 +219,6 @@ public final class PackedContainerBuilder implements ContainerBuilder {
         return container;
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> ContainerBuilder consumeLocal(ContainerLocal<T> local, Consumer<T> action) {
-        PackedContainerLocal<?> pcl = (PackedContainerLocal<?>) local;
-        action.accept((T) pcl.get(this));
-        return this;
-    }
-
     /** {@inheritDoc} */
     @Override
     public <T> ContainerBuilder setLocal(ContainerLocal<T> local, T value) {
@@ -227,6 +239,19 @@ public final class PackedContainerBuilder implements ContainerBuilder {
             b.use(pcb);
         }
         return pcb;
+    }
+
+    public static final class NewApplicationWirelet extends InternalWirelet {
+
+        /** {@inheritDoc} */
+        @Override
+        public void onInstall(PackedContainerBuilder installer) {
+            if (installer.parent == null) {
+                throw new Error("This wirelet cannot be used when creating a new application");
+            }
+            installer.newApplication = true;
+        }
+
     }
 
     /** A wirelet that will set the name of the component. Used by {@link Wirelet#named(String)}. */

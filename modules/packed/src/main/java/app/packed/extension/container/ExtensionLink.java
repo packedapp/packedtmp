@@ -102,7 +102,8 @@ public sealed interface ExtensionLink permits PackedContainerLifetimeChannel {
     // Alternativ ContainerLifetimeTemplate.withConstant()
 
     /**
-     * Returns a simple link that simply provides a constant value for the specified key
+     * Returns a simple link that simply provides a constant value for the specified key which can be accessed using
+     * {@link ContainerHolderService}.
      * <p>
      * The returned extension link will return {@code BaseExtension.class} for {@link #extensionClass()}.
      *
@@ -138,9 +139,10 @@ public sealed interface ExtensionLink permits PackedContainerLifetimeChannel {
         }
 
         /**
-         * Builds and returns a new channel.
+         * Creates a new link.
          *
-         * @return the new channel
+         *
+         * @return the new link
          */
         public ExtensionLink build() {
             return channel;
@@ -161,13 +163,16 @@ public sealed interface ExtensionLink permits PackedContainerLifetimeChannel {
          * <p>
          * If this channel is applied to a container that does not export services with the specified keys. A build time
          * exception is thrown.
+         *
          * @param keys
          *            the keys to include
          * @return this builder
          */
+        // Tror bare det skal vaere almindelige provisions
+        // Ser ikke nogen grund til at bl.a. exports into it
         public ExtensionLink.Builder expose(Key<?>... keys) {
             PackedContainerLifetimeChannel c = channel;
-            HashSet<Key<?>> s = new HashSet<>(c.exports());
+            HashSet<Key<?>> s = new HashSet<>(c.keys());
             s.addAll(Set.of(keys));
             channel = new PackedContainerLifetimeChannel(c.extensionClass(), c.onUse(), Set.copyOf(s));
             return this;
@@ -197,8 +202,8 @@ public sealed interface ExtensionLink permits PackedContainerLifetimeChannel {
          */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         ExtensionLink.Builder useBuilder(Consumer<? super PackedContainerBuilder> action) {
-            channel = new PackedContainerLifetimeChannel(channel.extensionClass(), channel.onUse() == null ? action : channel.onUse().andThen((Consumer) action),
-                    channel.exports());
+            channel = new PackedContainerLifetimeChannel(channel.extensionClass(),
+                    channel.onUse() == null ? action : channel.onUse().andThen((Consumer) action), channel.keys());
             return this;
         }
     }

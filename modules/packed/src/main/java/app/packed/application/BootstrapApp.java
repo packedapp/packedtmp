@@ -33,8 +33,12 @@ import app.packed.extension.container.ExtensionLink;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
+import internal.app.packed.application.AppSetup;
+import internal.app.packed.application.AppSetup.ReusableApplicationImage;
+import internal.app.packed.application.AppSetup.SingleShotApplicationImage;
 import internal.app.packed.application.ApplicationDriver;
-import internal.app.packed.application.BootstrapAppSetup;
+import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.application.RootApplicationBuilder;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
@@ -59,12 +63,12 @@ import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
  * @param <A>
  *            the type of application this bootstrap app creates.
  */
-public final class BootstrapApp<A> {
+public final /* primitive */ class BootstrapApp<A> {
 
     /** The internal bootstrap app. */
-    private final BootstrapAppSetup<A> setup;
+    private final AppSetup setup;
 
-    BootstrapApp(BootstrapAppSetup<A> setup) {
+    private BootstrapApp(AppSetup setup) {
         this.setup = requireNonNull(setup);
     }
 
@@ -87,27 +91,49 @@ public final class BootstrapApp<A> {
      *             if the application had an executing phase and it fails
      * @see App#run(Assembly, Wirelet...)
      */
+    @SuppressWarnings("unchecked")
     public A launch(Assembly assembly, Wirelet... wirelets) {
-        return setup.launch(assembly, wirelets);
+        RootApplicationBuilder builder = new RootApplicationBuilder(setup, BuildGoal.LAUNCH_NOW);
+
+        // Builds the application
+        ApplicationSetup application = builder.build(assembly, wirelets);
+
+        // Launch the application
+        ApplicationInitializationContext aic = ApplicationInitializationContext.launch2(application, null);
+
+        // Create an return an instance of the application interface
+        return (A) setup.newInstance(aic);
     }
 
     /**
-     * Creates a new application mirror from the specified assembly and optional wirelets.
+     * Builds an application and returns a mirror representing it.
      *
      * @param assembly
-     *            the assembly to create an application mirror from
+     *            the application's assembly
      * @param wirelets
      *            optional wirelets
-     * @return an application mirror
+     * @return a mirror representing the application
      * @throws RuntimeException
-     *             if the mirror could not be created
+     *             if the application could not be build
      */
     public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        return setup.newMirror(assembly, wirelets);
+        RootApplicationBuilder builder = new RootApplicationBuilder(setup, BuildGoal.MIRROR);
+
+        // Builds the application
+        ApplicationSetup application = builder.build(assembly, wirelets);
+
+        // Returns a mirror for the application
+        return application.mirror();
     }
 
     public ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets) {
-        return setup.newImage(assembly, wirelets);
+        RootApplicationBuilder builder = new RootApplicationBuilder(setup, BuildGoal.LAUNCH_REPEATABLE);
+
+        // Builds the application
+        ApplicationSetup application = builder.build(assembly, wirelets);
+
+        // Create a reusable launcher
+        return new ReusableApplicationImage<>(setup, application);
     }
 
     /**
@@ -121,26 +147,33 @@ public final class BootstrapApp<A> {
      * @throws RuntimeException
      *             if the image could not be build
      */
-    // Andre image optimizations
-    //// Don't cache beans info
-    /// Nu bliver jeg i tvivl igen... Fx med Tester
-    // launchLazily?
+    // Andre image optimizations //// Don't cache beans info
+    /// Nu bliver jeg i tvivl igen... Fx med Tester // launchLazily?
     public ApplicationLauncher<A> newLauncher(Assembly assembly, Wirelet... wirelets) {
-        return setup.newLauncher(assembly, wirelets);
+        RootApplicationBuilder builder = new RootApplicationBuilder(setup, BuildGoal.LAUNCH_LATER);
+
+        // Builds the application
+        ApplicationSetup application = builder.build(assembly, wirelets);
+
+        // Creates a new single shot launcher
+        return new SingleShotApplicationImage<>(setup, application);
     }
 
     /**
-     * Verifies that a valid application can be build.
+     * Builds and verifies an application.
      *
      * @param assembly
-     *            the assembly defining the application that should be verified
+     *            the application's assembly
      * @param wirelets
      *            optional wirelets
      * @throws RuntimeException
-     *             if a valid application cannot be created
+     *             if the application could not be build
      */
     public void verify(Assembly assembly, Wirelet... wirelets) {
-        setup.verify(assembly, wirelets);
+        RootApplicationBuilder builder = new RootApplicationBuilder(setup, BuildGoal.VERIFY);
+
+        // Builds (and verifies) the application
+        builder.build(assembly, wirelets);
     }
 
     /**
@@ -182,7 +215,7 @@ public final class BootstrapApp<A> {
 
     private static <A> BootstrapApp<A> of0(Object o, ComposerAction<? super Composer> action) {
         Composer comp = new Composer(o);
-        PremordialApplicationDriver<A> pad = new PremordialApplicationDriver<>();
+        PremordialApplicationDriver pad = new PremordialApplicationDriver();
         BootstrapAppAssembly<Object> baa = new Composer.BootstrapAppAssembly<>(comp, action);
         AssemblySetup as = new AssemblySetup(pad, BuildGoal.LAUNCH_NOW, null, baa, new Wirelet[0]);
         as.build();
@@ -193,7 +226,7 @@ public final class BootstrapApp<A> {
         }
         mh = mh.asType(mh.type().changeReturnType(Object.class));
 
-        BootstrapAppSetup<A> a = new BootstrapAppSetup<>(comp.lifetimeKind, comp.mirrorSupplier, comp.channels, mh, null);
+        AppSetup a = new AppSetup(comp.lifetimeKind, comp.mirrorSupplier, comp.channels, mh, null);
         return new BootstrapApp<>(a);
     }
 
@@ -275,7 +308,7 @@ public final class BootstrapApp<A> {
         }
     }
 
-    private static final class PremordialApplicationDriver<A> extends ApplicationDriver<BootstrapApp<A>> {
+    private static final class PremordialApplicationDriver extends ApplicationDriver {
 
         /** {@inheritDoc} */
         @Override
@@ -293,12 +326,6 @@ public final class BootstrapApp<A> {
         @Override
         public Supplier<? extends ApplicationMirror> mirrorSupplier() {
             return ApplicationMirror::new;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public BootstrapApp<A> newInstance(ApplicationInitializationContext context) {
-            throw new Error(); // We create the instance ourself
         }
 
         /** {@inheritDoc} */

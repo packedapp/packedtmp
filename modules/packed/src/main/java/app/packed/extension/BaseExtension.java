@@ -292,6 +292,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return new ContainerConfiguration(handle);
     }
 
+    // Maybe just a wirelet...
     public void linkLazy(Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }

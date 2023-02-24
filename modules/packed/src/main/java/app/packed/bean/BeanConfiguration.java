@@ -28,6 +28,12 @@ public class BeanConfiguration {
     }
 
     /** {@return the bean class.} */
+    public final BeanConfiguration allowMultiClass() {
+        return this;
+    }
+
+
+    /** {@return the bean class.} */
     public final Class<?> beanClass() {
         return handle.beanClass();
     }

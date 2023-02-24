@@ -106,14 +106,14 @@ public final class ServiceSetup {
         }
 
         // Create a new provider
-        ServiceProviderSetup provider = this.provider = new ServiceProviderSetup(operation, this, resolution);
+        ServiceProviderSetup p = provider = new ServiceProviderSetup(operation, this, resolution);
 
-        operation.mirrorSupplier = () -> new ProvidedServiceMirror(provider);
+        operation.mirrorSupplier = () -> new ProvidedServiceMirror(p);
 
         // add the service provider to the bean, this is used for cyclic dependency check later on
-        operation.bean.serviceProviders.add(provider);
+        operation.bean.serviceProviders.add(p);
 
-        return provider;
+        return p;
 
     }
 
@@ -161,6 +161,6 @@ public final class ServiceSetup {
                 return "A method " + ss + " is already providing a service for " + key;
             }
         }
-        return newOperation + "A service has already been bound for key " + key;
+        return newOperation + " A service has already been bound for key " + key;
     }
 }

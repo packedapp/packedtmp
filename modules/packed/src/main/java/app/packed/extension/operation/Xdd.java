@@ -16,6 +16,7 @@
 package app.packed.extension.operation;
 
 import app.packed.application.App;
+import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
 import app.packed.service.ServiceContract;
 
@@ -27,7 +28,8 @@ public class Xdd extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        install(Foo.class).overrideService(String.class, "Boo").overrideService(Integer.class, 12333);
+        provideInstance(4444L);
+        install(Foo.class).overrideService(String.class, "Boo").overrideService(Integer.class, 12333).overrideService(Long.class, 123L);
     }
 
     public static void main(String[] args) {
@@ -39,6 +41,11 @@ public class Xdd extends BaseAssembly {
     public record Foo(String s, Integer i) {
         public Foo {
             System.out.println(s + " " + i);
+        }
+
+        @OnInitialize
+        public void dd(Long l) {
+            System.out.println(s + " " + l);
         }
     }
 

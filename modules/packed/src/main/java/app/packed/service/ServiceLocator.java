@@ -355,7 +355,7 @@ public interface ServiceLocator {
         return driver().newLauncher(assembly, wirelets);
     }
 
-    static ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets) {
+    static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
         return driver().mirrorOf(assembly, wirelets);
     }
 

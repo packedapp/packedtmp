@@ -83,7 +83,6 @@ import internal.app.packed.util.StackWalkerUtil;
 // Linklet
 // sealed -> ExtensionWirelet<E>, UserWirelet, InternalWirelet
 // Maybe even add RuntimeExtensionWirelet, UserRuntimeWirelet
-
 // Maybe sealed and then we have a couple of abstracts on this class
 public abstract class Wirelet {
 

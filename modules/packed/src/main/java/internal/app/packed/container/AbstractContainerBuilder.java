@@ -13,11 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.deployer;
+package internal.app.packed.container;
+
+import internal.app.packed.application.RootApplicationBuilder;
 
 /**
  *
  */
-public class ApplicationHostExtensionPoint {
+public abstract sealed class AbstractContainerBuilder permits RootApplicationBuilder, PackedContainerBuilder {
 
 }
+
+// BootstrapAppContainerBuilder (does not take wirelets)
+
+// RootContainerBuilder
+
+// ExtensionContainerBuilder (Implements ContainerBuilder)
+
+// LinkedContainerBuilder

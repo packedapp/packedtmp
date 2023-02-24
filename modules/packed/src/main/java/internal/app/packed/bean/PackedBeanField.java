@@ -40,7 +40,7 @@ import internal.app.packed.util.PackedAnnotationList;
 import internal.app.packed.util.PackedVariable;
 
 /** Implementation of {@link BeanField}. */
-// Previous we had a PackedBeanMember, but there are actually only 2-3 common operations.
+// Previous we had a PackedBeanMember, but there are actually only 2-3 common operations. So don't go there again.
 public final class PackedBeanField implements BeanField , Comparable<PackedBeanField> {
 
     /** Whether or not operations that read from the field can be created. */
@@ -62,8 +62,7 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
     private final PackedAnnotationList hooks;
 
     // Field, FieldAnnotations, Type, TypeAnnotations
-    PackedBeanField(BeanScanner scanner, Field field, PackedAnnotationList annotations,
-            PackedAnnotationList hookAnnotations, HookOnFieldAnnotation... hooks) {
+    PackedBeanField(BeanScanner scanner, Field field, PackedAnnotationList annotations, PackedAnnotationList hookAnnotations, HookOnFieldAnnotation... hooks) {
         this.extension = scanner.computeContributor(hooks[0].extensionType());
         this.field = field;
         this.annotations = annotations;

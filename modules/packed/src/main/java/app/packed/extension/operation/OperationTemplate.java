@@ -74,7 +74,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
      */
     MethodType invocationType();
 
-    /** {@return the operation will ignore any return value.} */
+    /** {@return an operation template that ignores any return value.} */
     // If you want to fail. Check return type
     OperationTemplate returnIgnore();
 

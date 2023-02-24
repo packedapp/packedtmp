@@ -24,7 +24,6 @@ import java.util.function.BiConsumer;
 
 import org.junit.jupiter.api.Assertions;
 
-import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
@@ -46,6 +45,7 @@ public class H {
 
     /** An driver for creating App instances. */
     private static final BootstrapApp<H> DRIVER = BootstrapApp.of(H.class, c -> {
+        c.specializeMirror(TestAppMirror::new);
         c.managedLifetime();
         c.addChannel(BaseExtensionPoint.EXPORTED_SERVICE_LOCATOR);
     });
@@ -76,12 +76,12 @@ public class H {
         return HExtension.M.get(name);
     }
 
-    public static ApplicationMirror mirrorOf(ComposerAction<? super Composer> action, Wirelet... wirelets) {
-        return DRIVER.mirrorOf(new ServiceLocatorAssembly(action), wirelets);
+    public static TestAppMirror mirrorOf(ComposerAction<? super Composer> action, Wirelet... wirelets) {
+        return (TestAppMirror) DRIVER.mirrorOf(new ServiceLocatorAssembly(action), wirelets);
 
     }
 
-    public static <T extends Throwable> T assertThrows(Class<? extends T> throwing, ComposerAction<? super Composer> action) {
+    public static <T extends Throwable> T assertThrows(Class<T> throwing, ComposerAction<? super Composer> action) {
         return Assertions.assertThrows(throwing, () -> of(action));
     }
 
@@ -128,6 +128,13 @@ public class H {
          */
         public void provideInstance(Object dd) {
             use(BaseExtension.class).installInstance(dd).provide();
+        }
+
+        /**
+         * @param l
+         */
+        public <T> ServiceableBeanConfiguration<T> installInstance(T instance) {
+            return use(BaseExtension.class).installInstance(instance);
         }
     }
 

@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.extension.ApplicationLocal;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
@@ -39,7 +38,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
     /** An object that is shared between all entry point extensions in the same application. */
     final ApplicationShare shared;
 
-    static final ApplicationLocal<ApplicationShare> SHARED = ApplicationLocal.of(ApplicationShare::new);
+    //static final ApplicationLocal<ApplicationShare> SHARED = ApplicationLocal.of(ApplicationShare::new);
 
     /**
      * Create a new service extension.

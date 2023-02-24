@@ -34,11 +34,11 @@ class AssemblyMetaHolder {
         this.annotationType = annotationType;
 
         // Find Bindings Hooks
-        Set<String> bindings = new HashSet<>();
+        Set<String> bs = new HashSet<>();
         CustomBindingHook[] cbh = annotationType.getAnnotationsByType(BeanCustomHook.CustomBindingHook.class);
         for (CustomBindingHook h : cbh) {
-            bindings.add(h.className());
+            bs.add(h.className());
         }
-        this.bindings = Set.copyOf(bindings);
+        this.bindings = Set.copyOf(bs);
     }
 }

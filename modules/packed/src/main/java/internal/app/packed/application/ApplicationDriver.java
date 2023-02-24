@@ -22,15 +22,12 @@ import app.packed.application.ApplicationMirror;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeKind;
 import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
-import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 
 /**
  *
  */
 // ApplicationInstaller???
-public abstract class ApplicationDriver<A> {
-
-    public abstract A newInstance(ApplicationInitializationContext context);
+public abstract class ApplicationDriver {
 
     public abstract Supplier<? extends ApplicationMirror> mirrorSupplier();
 

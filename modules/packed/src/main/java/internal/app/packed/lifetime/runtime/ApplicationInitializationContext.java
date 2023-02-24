@@ -24,7 +24,6 @@ import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Nullable;
-import internal.app.packed.application.ApplicationDriver;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;
@@ -92,7 +91,7 @@ public final class ApplicationInitializationContext implements Context<BaseExten
      *            optional wirelets is always null if not launched from an image
      * @return the application instance
      */
-    public static <A> A launch(ApplicationDriver<A> driver, ApplicationSetup application, @Nullable WireletWrapper wirelets) {
+    public static ApplicationInitializationContext launch2(ApplicationSetup application, @Nullable WireletWrapper wirelets) {
 
         // Create a launch context
         ApplicationInitializationContext context = new ApplicationInitializationContext(application, wirelets);
@@ -108,7 +107,7 @@ public final class ApplicationInitializationContext implements Context<BaseExten
 
         context.cr.run(application.container);
 
-        return driver.newInstance(context);
-    }
+        return context;
 
+    }
 }

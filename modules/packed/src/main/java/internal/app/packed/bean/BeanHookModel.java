@@ -142,13 +142,13 @@ public final class BeanHookModel {
                 holders.add(new AssemblyMetaHolder(a.annotationType()));
             }
         }
-        Map<String, Class<? extends Annotation>> bindings = new HashMap<>();
+        Map<String, Class<? extends Annotation>> b = new HashMap<>();
         for (AssemblyMetaHolder h : holders) {
             for (String s : h.bindings) {
-                bindings.put(s, h.annotationType);
+                b.put(s, h.annotationType);
             }
         }
-        this.bindings = Map.copyOf(bindings);
+        this.bindings = Map.copyOf(b);
     }
 
     @Nullable

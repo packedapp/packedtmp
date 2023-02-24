@@ -83,6 +83,17 @@ public abstract class Extension<E extends Extension<E>> {
     protected Extension() {}
 
     /**
+     * Returns an extension navigator with this extension instance as the current extension.
+     *
+     * @return an extension navigator
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    // ApplicationNavigator?
+    protected final ExtensionNavigator<E> applicationNavigator() {
+        return new ExtensionNavigator(extension, extension.extensionType);
+    }
+
+    /**
      * {@return an instance of this extension that is used in the application's root container. Will return this if this
      * extension is the root extension}
      */
@@ -95,25 +106,12 @@ public abstract class Extension<E extends Extension<E>> {
         return (E) s.instance();
     }
 
-    /** {@return instance of this extension that is used in the lifetimes assembly container.} */
-    @SuppressWarnings("unchecked")
-    // I don't know if we need this for anything...
-    final E assemblyRoot() {
-        ExtensionSetup s = extension;
-        while (s.treeParent != null) {
-            if (s.container.assembly != s.treeParent.container.assembly) {
-                s = s.treeParent;
-            }
-        }
-        return (E) s.instance();
-    }
-
     /** {@return the base extension point.} */
     protected final BaseExtensionPoint base() {
         return use(BaseExtensionPoint.class);
     }
 
-    /** {@return the build goal.} */
+    /** {@return the build goal of the application.} */
     protected final BuildGoal buildGoal() {
         return extension.container.application.goal;
     }
@@ -136,11 +134,11 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /**
-     * Returns an extension instance from the container represented by the specified. Or empty if the extension is not
-     * installed.
+     * Returns an extension instance from the container represented by the specified container handle. Or empty if the
+     * extension is not used in the container.
      *
      * @param handle
-     *            represent the container for which the child should be extracted
+     *            represent the container for which the extension should be returned
      * @return the extension or empty
      */
     @SuppressWarnings("unchecked")
@@ -150,7 +148,7 @@ public abstract class Extension<E extends Extension<E>> {
         return s == null ? Optional.empty() : Optional.ofNullable((E) s.instance());
     }
 
-    /** {@return whether or not the container is the root container in the application.} */
+    /** {@return whether or not this extension's container is the root container in the application.} */
     protected final boolean isApplicationRoot() {
         return extension.container.isApplicationRoot();
     }
@@ -177,7 +175,7 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /**
-     * Returns the instance of this extension that is root of this container's lifetime. If this container is the root
+     * Returns the instance of this extension that is the root of this container's lifetime. If this container is the root
      * returns this.
      *
      * @return the instance of this extension that is root of this container's lifetime
@@ -192,17 +190,6 @@ public abstract class Extension<E extends Extension<E>> {
             }
         }
         return (E) s.instance();
-    }
-
-    /**
-     * Returns an extension navigator with this extension instance as the current extension.
-     *
-     * @return an extension navigator
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    // ApplicationNavigator?
-    protected final ExtensionNavigator<E> navigator() {
-        return new ExtensionNavigator(extension, extension.extensionType);
     }
 
     /**
@@ -317,7 +304,10 @@ public abstract class Extension<E extends Extension<E>> {
     // I think either we need to fail for example
     protected void onNew() {}
 
-    /** @return the parent of this extension if present. */
+    /**
+     * @return the parent of this extension if present. Or empty if the extension is in the root container of the
+     *         application.
+     */
     @SuppressWarnings("unchecked")
     protected final Optional<E> parent() {
         ExtensionSetup parent = extension.treeParent;
@@ -385,8 +375,8 @@ public abstract class Extension<E extends Extension<E>> {
     /**
      * Returns an extension point of the specified type.
      * <p>
-     * Only extension points of extensions that have been explicitly registered as dependencies by using {@link DependsOn}
-     * may be specified as arguments to this method.
+     * Only extension points of extensions that have been explicitly registered as dependencies using {@link DependsOn} may
+     * be specified as arguments to this method.
      *
      * @param <P>
      *            the type of extension point to return
@@ -494,6 +484,19 @@ public abstract class Extension<E extends Extension<E>> {
         String[] optionally() default {};
     }
 }
+//
+///** {@return instance of this extension that is used in the lifetimes assembly container.} */
+//@SuppressWarnings("unchecked")
+//// I don't know if we need this for anything...
+//final E assemblyRoot() {
+//    ExtensionSetup s = extension;
+//    while (s.treeParent != null) {
+//        if (s.container.assembly != s.treeParent.container.assembly) {
+//            s = s.treeParent;
+//        }
+//    }
+//    return (E) s.instance();
+//}
 //
 ///**
 // * Returns a container handle for the extension's container. If this extension installed the container.

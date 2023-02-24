@@ -99,6 +99,16 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     // An unmanaged bean will always return the bean instance.
     BeanTemplate UNMANAGED = new PackedBeanTemplate(BeanKind.MANYTON);
 
+
+    // The bean is created by an operation
+    // There are no lifetime operations on the bean
+    // But the OperationHandle returned from BeanMethod.newLifetimeOperation.
+    // Has a single operation that will create the bean.
+    // TODO skal vi baade have managed og unmanged operationer???
+    // Fx @Provide paa en prototypeBean (giver vel ikke mening)
+    BeanTemplate Z_FROM_OPERATION = new PackedBeanTemplate(BeanKind.MANYTON);
+
+
     /**
      * Specifies the return type signature of the lifetime operation that creates the bean.
      * <p>
@@ -169,11 +179,6 @@ interface Sandbox {
     default BeanTemplate beanContext(ContextTemplate context) {
         throw new UnsupportedOperationException();
     }
-
-    // The bean is created by an operation
-    // BeanHandle.attach
-    // An instance is created for the lifetime of an operation
-    BeanTemplate Z_FROM_OPERATION = new PackedBeanTemplate(BeanKind.MANYTON);
 
     /**
      * Marks the bean as synthetic.
