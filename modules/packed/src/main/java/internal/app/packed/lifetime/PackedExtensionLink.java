@@ -28,7 +28,7 @@ import internal.app.packed.container.PackedContainerBuilder;
  * Represent a communication channel between a parent container lifetime and a child container lifetime. This class is
  * exposed as {@link ContainerLifetimeChannel}.
  */
-public record PackedContainerLifetimeChannel(Class<? extends Extension<?>> extensionClass, Consumer<? super PackedContainerBuilder> onUse,
+public record PackedExtensionLink(Class<? extends Extension<?>> extensionClass, Consumer<? super PackedContainerBuilder> onUse,
         Set<Key<?>> keys) implements ExtensionLink {
 
     // is used in the (unlikely) scenario with multiple links
@@ -45,7 +45,7 @@ public record PackedContainerLifetimeChannel(Class<? extends Extension<?>> exten
      * @param type
      * @return
      */
-    public PackedContainerLifetimeChannel addInvocationArgument(Class<?> type) {
+    public PackedExtensionLink addInvocationArgument(Class<?> type) {
         return null;
     }
 

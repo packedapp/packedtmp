@@ -20,11 +20,10 @@ import static java.util.Objects.requireNonNull;
 import app.packed.container.Wirelet;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Nullable;
-import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;
 
@@ -38,9 +37,6 @@ public final class ApplicationInitializationContext implements Context<BaseExten
 
     public final ContainerRunner cr;
 
-    /** The launch mode of the application. */
-    final LifetimeKind lifetimeKind;
-
     /** The name of the application. May be overridden via {@link Wirelet#named(String)} if image. */
     public String name;
 
@@ -52,7 +48,6 @@ public final class ApplicationInitializationContext implements Context<BaseExten
         this.application = application;
         this.wirelets = wirelets;
         this.name = requireNonNull(application.container.name);
-        this.lifetimeKind = requireNonNull(application.driver.lifetimeKind());
         this.cr = new ContainerRunner(application);
     }
 
@@ -91,7 +86,7 @@ public final class ApplicationInitializationContext implements Context<BaseExten
      *            optional wirelets is always null if not launched from an image
      * @return the application instance
      */
-    public static ApplicationInitializationContext launch2(ApplicationSetup application, @Nullable WireletWrapper wirelets) {
+    public static ApplicationInitializationContext launch(ApplicationSetup application, @Nullable WireletWrapper wirelets) {
 
         // Create a launch context
         ApplicationInitializationContext context = new ApplicationInitializationContext(application, wirelets);

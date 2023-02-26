@@ -20,27 +20,33 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import app.packed.application.BootstrapApp.Composer.BootstrapAppAssembly;
+import app.packed.bean.BeanKind;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.extension.FrameworkExtension;
+import app.packed.extension.bean.BeanBuilder;
+import app.packed.extension.bean.BeanHandle;
+import app.packed.extension.bean.BeanTemplate;
 import app.packed.extension.container.ExtensionLink;
+import app.packed.extension.context.ContextTemplate;
+import app.packed.extension.operation.OperationTemplate;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
-import internal.app.packed.application.AppSetup;
-import internal.app.packed.application.AppSetup.ReusableApplicationImage;
-import internal.app.packed.application.AppSetup.SingleShotApplicationImage;
-import internal.app.packed.application.ApplicationDriver;
-import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.application.RootApplicationBuilder;
-import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
+import internal.app.packed.container.AppSetup;
+import internal.app.packed.container.ApplicationSetup;
+import internal.app.packed.container.BootstrapAppBuilder;
+import internal.app.packed.container.PackedContainerKind;
+import internal.app.packed.container.PackedContainerTemplate;
+import internal.app.packed.container.RootApplicationBuilder;
+import internal.app.packed.container.AppSetup.ReusableApplicationImage;
+import internal.app.packed.container.AppSetup.SingleShotApplicationImage;
+import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 
 /**
@@ -62,33 +68,38 @@ import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
  *
  * @param <A>
  *            the type of application this bootstrap app creates.
+ *
+ * @see App
+ * @see app.packed.extension.container.ContainerHolderService
  */
 public final /* primitive */ class BootstrapApp<A> {
 
     /** The internal bootstrap app. */
     private final AppSetup setup;
 
+    /**
+     * Create a new bootstrap app
+     *
+     * @param setup
+     *            the internal configuration of the app.
+     */
     private BootstrapApp(AppSetup setup) {
         this.setup = requireNonNull(setup);
     }
 
     /**
-     * Builds an application using the specified assembly and optional wirelets and returns a new instance of it.
+     * Builds an application, launches it and returns the application instance.
      * <p>
-     * This method is typical not called directly by end-users. But indirectly through methods such as
-     * {@link App#run(Assembly, Wirelet...)} .
+     * Typically, methods calling this method is not named {@code launch} but instead something that better reflects what
+     * exactly launch means for the particular type of application.
      *
      * @param assembly
-     *            the main assembly of the application
+     *            the application's assembly
      * @param wirelets
      *            optional wirelets
      * @return the launched application instance
      * @throws RuntimeException
-     *             if the image could not be build
-     * @throws LifecycleException
-     *             if the application failed to initialize
-     * @throws RuntimeException
-     *             if the application had an executing phase and it fails
+     *             if the application could not be built or failed to launch
      * @see App#run(Assembly, Wirelet...)
      */
     @SuppressWarnings("unchecked")
@@ -99,7 +110,7 @@ public final /* primitive */ class BootstrapApp<A> {
         ApplicationSetup application = builder.build(assembly, wirelets);
 
         // Launch the application
-        ApplicationInitializationContext aic = ApplicationInitializationContext.launch2(application, null);
+        ApplicationInitializationContext aic = ApplicationInitializationContext.launch(application, null);
 
         // Create an return an instance of the application interface
         return (A) setup.newInstance(aic);
@@ -107,6 +118,9 @@ public final /* primitive */ class BootstrapApp<A> {
 
     /**
      * Builds an application and returns a mirror representing it.
+     * <p>
+     * If a special mirror supplied was set using {@link Composer#specializeMirror(Supplier)} when creating this bootstrap
+     * app. The mirror returned from this method can be safely cast to the specialized application mirror.
      *
      * @param assembly
      *            the application's assembly
@@ -181,8 +195,8 @@ public final /* primitive */ class BootstrapApp<A> {
      * applications.
      * <p>
      * For example, to : <pre> {@code
-     * ApplicationDriver<App> driver = App.driver();
-     * driver = driver.with(ApplicationWirelets.timeToRun(2, TimeUnit.MINUTES));
+     * BootstrapApp<App> app = ...;
+     * app = app.with(ApplicationWirelets.timeToRun(2, TimeUnit.MINUTES));
      * }</pre>
      *
      * ApplicationW
@@ -195,39 +209,68 @@ public final /* primitive */ class BootstrapApp<A> {
      *
      * @param wirelets
      *            the wirelets to add
-     * @return the augmented application driver
+     * @return the new bootstrap app
      */
     public BootstrapApp<A> with(Wirelet... wirelets) {
         return new BootstrapApp<>(setup.with(wirelets));
     }
 
     public static <A> BootstrapApp<A> of(Class<A> applicationClass, ComposerAction<Composer> action) {
-        return of0(applicationClass, action);
+        return of0(applicationClass, applicationClass, action);
     }
 
     public static BootstrapApp<Void> of(ComposerAction<? super Composer> action) {
-        return of0(null, action);
+        return of0(null, void.class, action);
     }
 
     public static <A> BootstrapApp<A> of(Op<A> op, ComposerAction<? super Composer> action) {
-        return of0(op, action);
+        return of0(op, op.type().returnRawType(), action);
     }
 
-    private static <A> BootstrapApp<A> of0(Object o, ComposerAction<? super Composer> action) {
-        Composer comp = new Composer(o);
-        PremordialApplicationDriver pad = new PremordialApplicationDriver();
-        BootstrapAppAssembly<Object> baa = new Composer.BootstrapAppAssembly<>(comp, action);
-        AssemblySetup as = new AssemblySetup(pad, BuildGoal.LAUNCH_NOW, null, baa, new Wirelet[0]);
-        as.build();
+    private static <A> BootstrapApp<A> of0(@Nullable Object o, Class<?> type, ComposerAction<? super Composer> action) {
+        Composer composer = new Composer(o, type);
 
+        // Build the bootstrap application
+        BootstrapAppBuilder builder = new BootstrapAppBuilder();
+        builder.build(new Composer.BootstrapAppAssembly<>(composer, action));
+
+        // Adapt the method handle
         MethodHandle mh = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationInitializationContext.class));
         if (o != null) {
-            mh = comp.ahe.mh;
+            mh = composer.ahe.mh;
         }
         mh = mh.asType(mh.type().changeReturnType(Object.class));
 
-        AppSetup a = new AppSetup(comp.lifetimeKind, comp.mirrorSupplier, comp.channels, mh, null);
+        AppSetup a = new AppSetup(composer.lifetimeKind, composer.mirrorSupplier, composer.pct, mh, null);
         return new BootstrapApp<>(a);
+    }
+
+    private static class BootstrapAppExtension extends FrameworkExtension<BootstrapAppExtension> {
+
+        static final ContextTemplate CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationInitializationContext.class,
+                ApplicationInitializationContext.class);
+
+        static final OperationTemplate ot = OperationTemplate.raw().withContext(CIT).returnTypeObject();
+
+        static final BeanTemplate BLT = new PackedBeanTemplate(BeanKind.MANYTON).withOperationTemplate(ot);
+
+        MethodHandle mh;
+
+        private <T> void newApplication(BeanHandle<T> handle) {
+            runOnCodegen(() -> mh = handle.lifetimeOperations().get(0).generateMethodHandle());
+        }
+
+        <T> void newApplication(Class<T> guestBean) {
+            // We need the attachment, because ContainerGuest is on
+            BeanBuilder bi = base().beanBuilder(BLT);
+            newApplication(bi.install(guestBean));
+        }
+
+        <T> void newApplication(Op<T> guestBean) {
+            // We need the attachment, because ContainerGuest is on
+            BeanBuilder bi = base().beanBuilder(BLT);
+            newApplication(bi.install(guestBean));
+        }
     }
 
     /**
@@ -237,15 +280,9 @@ public final /* primitive */ class BootstrapApp<A> {
      * @see BootstrapApp#of(Op, ComposerAction)
      * @see BootstrapApp#of(ComposerAction)
      */
-    // ? ApplicationWrapper
-    // Bridge types
-    // Compiler -> Deployable<ApplicationWrapper>
     public static final class Composer extends AbstractComposer {
 
-        ApplicationHostExtension ahe;
-
-        /** Lifetime channels for the. */
-        private final ArrayList<PackedContainerLifetimeChannel> channels = new ArrayList<>();
+        BootstrapAppExtension ahe;
 
         private LifetimeKind lifetimeKind = LifetimeKind.UNMANAGED;
 
@@ -255,8 +292,11 @@ public final /* primitive */ class BootstrapApp<A> {
         @Nullable
         final Object o;
 
-        private Composer(@Nullable Object o) {
+        PackedContainerTemplate pct;
+
+        private Composer(@Nullable Object o, Class<?> type) {
             this.o = o;
+            this.pct = new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP, type, List.of());
         }
 
         /**
@@ -267,7 +307,7 @@ public final /* primitive */ class BootstrapApp<A> {
          * @return this composer
          */
         public Composer addChannel(ExtensionLink... channels) {
-            this.channels.addAll(List.of(channels).stream().map(e -> (PackedContainerLifetimeChannel) e).toList());
+            this.pct = (PackedContainerTemplate) pct.addLink(channels);
             return this;
         }
 
@@ -286,7 +326,7 @@ public final /* primitive */ class BootstrapApp<A> {
         /** {@inheritDoc} */
         @Override
         protected void preCompose() {
-            ahe = use(ApplicationHostExtension.class);
+            ahe = use(BootstrapAppExtension.class);
             if (o instanceof Class<?> cl) {
                 ahe.newApplication(cl);
             } else if (o instanceof Op<?> op) {
@@ -294,6 +334,15 @@ public final /* primitive */ class BootstrapApp<A> {
             }
         }
 
+        /**
+         * Sets a special supplier that create application mirror instances
+         *
+         * @param mirrorSupplier
+         *            an application mirror supplier
+         * @return this composer
+         *
+         * @see BootstrapApp#mirrorOf(Assembly, Wirelet...)
+         */
         public Composer specializeMirror(Supplier<? extends ApplicationMirror> mirrorSupplier) {
             this.mirrorSupplier = requireNonNull(mirrorSupplier, "mirrorSupplier is null");
             return this;
@@ -305,34 +354,6 @@ public final /* primitive */ class BootstrapApp<A> {
             BootstrapAppAssembly(Composer c, ComposerAction<? super Composer> action) {
                 super(c, action);
             }
-        }
-    }
-
-    private static final class PremordialApplicationDriver extends ApplicationDriver {
-
-        /** {@inheritDoc} */
-        @Override
-        public List<PackedContainerLifetimeChannel> channels() {
-            return List.of();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public LifetimeKind lifetimeKind() {
-            return LifetimeKind.UNMANAGED;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Supplier<? extends ApplicationMirror> mirrorSupplier() {
-            return ApplicationMirror::new;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        @Nullable
-        public Wirelet wirelet() {
-            return null;
         }
     }
 }

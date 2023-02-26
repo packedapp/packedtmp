@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package internal.app.packed.container;
 
 /**
- *
+ * Hmm
  */
-public final class InstantiatedApplicationSetup implements ApplicationParent {
+record ContainerName(String name, ContainerName.Kind kind) {
 
+    // Add Used? So we cannot override it??
+    enum Kind {
+        FROM_WIRELET, GENERATED, OVERRIDDEN;
+    }
 }

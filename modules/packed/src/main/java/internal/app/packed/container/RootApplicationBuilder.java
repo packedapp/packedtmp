@@ -13,34 +13,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package internal.app.packed.container;
 
 import app.packed.application.BuildGoal;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import internal.app.packed.container.AbstractContainerBuilder;
-import internal.app.packed.container.AssemblySetup;
+import app.packed.lifetime.LifetimeKind;
+import app.packed.util.Nullable;
 
 /**
  * Used by {@link BootstrapApp} to build applications.
  */
 public final class RootApplicationBuilder extends AbstractContainerBuilder {
 
-    private final BuildGoal goal;
-
     final AppSetup ba;
 
+    /** The build goal. */
+    private final BuildGoal goal;
+
     public RootApplicationBuilder(AppSetup ba, BuildGoal goal) {
+        super(ba.pot);
         this.ba = ba;
         this.goal = goal;
+        super.applicationMirrorSupplier = ba.mirrorSupplier;
     }
 
     public ApplicationSetup build(Assembly assembly, Wirelet[] wirelets) {
-        // Build the application
-        AssemblySetup as = new AssemblySetup(ba, goal, null, assembly, wirelets);
+        processWirelets(wirelets);
+        AssemblySetup as = new AssemblySetup(this, assembly);
+
         as.build();
 
         // return the application we just build.
-        return as.application;
+        return as.container.application;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BuildGoal goal() {
+        return goal;
+    }
+
+    @Override
+    protected @Nullable Wirelet prefix() {
+        return ba.wirelet;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public LifetimeKind lifetimeKind() {
+        return ba.lifetimeKind;
     }
 }

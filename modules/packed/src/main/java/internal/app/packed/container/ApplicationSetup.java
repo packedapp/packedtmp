@@ -13,30 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
-import app.packed.container.Wirelet;
-import app.packed.extension.BaseExtension;
 import app.packed.util.Nullable;
-import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.PackedContainerBuilder;
-import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.jfr.CodegenEvent;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
 
 /** Internal configuration of an application. */
-public final class ApplicationSetup implements ApplicationParent {
+// I think we are going to move it to internal.container
+public final class ApplicationSetup {
 
     /** A MethodHandle for invoking {@link ApplicationMirror#initialize(ApplicationSetup)}. */
     private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ApplicationMirror.class, "initialize",
@@ -49,44 +45,36 @@ public final class ApplicationSetup implements ApplicationParent {
     /** The root container of the application. */
     public final ContainerSetup container;
 
-    /** The driver used to create the application. */
-    public final ApplicationDriver driver;
-
     /**
      * All extensions used in an application has a unique instance id attached. This is used in case we have multiple
      * extension with the same canonical name (from different class loaders). We then compare the extension id of the
      * extensions as a last resort when sorting them.
      */
-    public int extensionId;
+    public int extensionIdCounter;
 
     /** The build goal. */
     public final BuildGoal goal;
 
+    final Supplier<? extends ApplicationMirror> mirrorSupplier;
+
     /** The current phase of the application's build process. */
     private ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
-
-    /** Any parent application of this application. This is either another application setup or a running application. */
-    @Nullable
-    public final ApplicationParent parent = null;
 
     /**
      * Create a new application.
      *
-     * @param driver
-     *            the application driver
-     * @param goal
-     *            the build goal
+     * @param containerBuilder
+     *            the container builder
      * @param assembly
      *            the assembly that defines the application
-     * @param wirelets
-     *            optional wirelets
      */
-    public ApplicationSetup(ApplicationDriver driver, BuildGoal goal, AssemblySetup assembly, Wirelet[] wirelets) {
-        this.driver = requireNonNull(driver);
-        this.goal = requireNonNull(goal);
+    public ApplicationSetup(AbstractContainerBuilder containerBuilder, AssemblySetup assembly) {
+        containerBuilder.application = this;
+
+        this.goal = containerBuilder.goal();
         this.codegenActions = goal.isCodeGenerating() ? new ArrayList<>() : null;
-        PackedContainerBuilder pcb = PackedContainerBuilder.of(PackedContainerTemplate.APPLICATION_ROOT, BaseExtension.class, this, null);
-        this.container = pcb.newContainer(assembly, wirelets);
+        this.mirrorSupplier = containerBuilder.applicationMirrorSupplier;
+        this.container = containerBuilder.newContainer(assembly);
     }
 
     /**
@@ -144,7 +132,7 @@ public final class ApplicationSetup implements ApplicationParent {
 
     /** {@return a mirror that can be exposed to end-users.} */
     public ApplicationMirror mirror() {
-        ApplicationMirror mirror = ClassUtil.mirrorHelper(ApplicationMirror.class, ApplicationMirror::new, driver.mirrorSupplier());
+        ApplicationMirror mirror = ClassUtil.mirrorHelper(ApplicationMirror.class, ApplicationMirror::new, mirrorSupplier);
 
         // Initialize ApplicationMirror by calling ApplicationMirror#initialize(ApplicationSetup)
         try {

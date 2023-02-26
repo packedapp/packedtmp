@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package app.packed.extension.application.old;
 
-/**
- *
- */
-public sealed interface ApplicationParent permits ApplicationSetup, InstantiatedApplicationSetup {
+import app.packed.bean.BeanMirror;
+
+/** A mirror of an application host. */
+// Ved ikke om den er speciel iforhold til almindelig container
+// Fordi man eksplicit skal sige alting
+class ApplicationHostMirror extends BeanMirror {
 
 }

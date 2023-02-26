@@ -9,6 +9,7 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.function.Supplier;
 
+import app.packed.util.Nullable;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.errorhandling.ErrorProcessor;
 import internal.app.packed.util.StringFormatter;
@@ -135,7 +136,7 @@ public class ClassUtil {
         return type;
     }
 
-    public static <T extends Mirror> T mirrorHelper(Class<T> t, Supplier<T> supplier, Supplier<? extends T> specializedSupplier) {
+    public static <T extends Mirror> T mirrorHelper(Class<T> t, Supplier<T> supplier, @Nullable Supplier<? extends T> specializedSupplier) {
         // Create a new BeanMirror
         if (specializedSupplier == null) {
             return supplier.get();

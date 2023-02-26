@@ -16,7 +16,6 @@
 package internal.app.packed.container;
 
 import app.packed.container.Wirelet;
-import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 
 /** Internal wirelets have their logic directly embedded into the wirelet. */
@@ -50,7 +49,7 @@ public abstract class InternalWirelet extends Wirelet {
      * @param installer
      *            an installer for the container
      */
-    public abstract void onInstall(PackedContainerBuilder installer);
+    public abstract void onInstall(AbstractContainerBuilder installer);
 
     /** {@inheritDoc} */
     @Override

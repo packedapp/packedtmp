@@ -26,7 +26,7 @@ import app.packed.extension.ContainerLocal;
 import app.packed.extension.Extension;
 import app.packed.util.Key;
 import internal.app.packed.container.PackedContainerBuilder;
-import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
+import internal.app.packed.lifetime.PackedExtensionLink;
 
 // A link has
 //// A (possible empty) set of keys that are provided under @ContainerHolderService
@@ -48,7 +48,7 @@ import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
 
 // Or just ContainerTemplate.ExtensionLink
 // Hvad med mesh
-public sealed interface ExtensionLink permits PackedContainerLifetimeChannel {
+public sealed interface ExtensionLink permits PackedExtensionLink {
 
     /** {@return the extension that defined the channel.} */
     Class<? extends Extension<?>> extensionClass();
@@ -96,7 +96,7 @@ public sealed interface ExtensionLink permits PackedContainerLifetimeChannel {
         } else if (caller.lookupClass().getModule() != extensionType.getModule()) {
             throw new IllegalArgumentException("extension type must be in the same module as the caller");
         }
-        return new ExtensionLink.Builder(new PackedContainerLifetimeChannel(extensionType, null, Set.of()));
+        return new ExtensionLink.Builder(new PackedExtensionLink(extensionType, null, Set.of()));
     }
 
     // Alternativ ContainerLifetimeTemplate.withConstant()
@@ -132,9 +132,9 @@ public sealed interface ExtensionLink permits PackedContainerLifetimeChannel {
         // We need this builder. Because it has methods that should be exposed to
         // users of the built product.
         /** The internal channel. */
-        private PackedContainerLifetimeChannel channel;
+        private PackedExtensionLink channel;
 
-        private Builder(PackedContainerLifetimeChannel channel) {
+        private Builder(PackedExtensionLink channel) {
             this.channel = requireNonNull(channel);
         }
 
@@ -171,10 +171,10 @@ public sealed interface ExtensionLink permits PackedContainerLifetimeChannel {
         // Tror bare det skal vaere almindelige provisions
         // Ser ikke nogen grund til at bl.a. exports into it
         public ExtensionLink.Builder expose(Key<?>... keys) {
-            PackedContainerLifetimeChannel c = channel;
+            PackedExtensionLink c = channel;
             HashSet<Key<?>> s = new HashSet<>(c.keys());
             s.addAll(Set.of(keys));
-            channel = new PackedContainerLifetimeChannel(c.extensionClass(), c.onUse(), Set.copyOf(s));
+            channel = new PackedExtensionLink(c.extensionClass(), c.onUse(), Set.copyOf(s));
             return this;
         }
 
@@ -202,7 +202,7 @@ public sealed interface ExtensionLink permits PackedContainerLifetimeChannel {
          */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         ExtensionLink.Builder useBuilder(Consumer<? super PackedContainerBuilder> action) {
-            channel = new PackedContainerLifetimeChannel(channel.extensionClass(),
+            channel = new PackedExtensionLink(channel.extensionClass(),
                     channel.onUse() == null ? action : channel.onUse().andThen((Consumer) action), channel.keys());
             return this;
         }

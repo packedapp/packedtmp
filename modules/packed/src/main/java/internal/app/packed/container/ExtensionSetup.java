@@ -300,7 +300,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
          */
         private ExtensionTree(ContainerSetup container, Class<? extends Extension<?>> extensionType) {
             this.model = ExtensionModel.of(extensionType);
-            this.applicationExtensionId = container.application.extensionId++;
+            this.applicationExtensionId = container.application.extensionIdCounter++;
         }
     }
 }

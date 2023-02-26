@@ -19,11 +19,10 @@ import internal.app.packed.container.Mirror;
  * An instance of this class is typically obtained by calling a application mirror factory method such as
  * {@link App#mirrorOf(Assembly, Wirelet...)}.
  * <p>
- * Instances of ApplicationMirror can be injected at runtime simply by declaring a dependency on it. This will
- * automatically install the {@link MirrorExtension} which will provide an instance at runtime.
+ * An instance of ApplicationMirror can be injected at runtime simply by declaring a dependency on it.
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public class AssemblyMirror implements Mirror {
+public final class AssemblyMirror implements Mirror {
 
     /**
      * The internal configuration of the application we are mirrored. Is initially null but populated via
@@ -41,7 +40,7 @@ public class AssemblyMirror implements Mirror {
 
     /** {@return the application this assembly contributes to.} */
     public ApplicationMirror application() {
-        return assembly().application.mirror();
+        return assembly().container.application.mirror();
     }
 
     /**
@@ -95,13 +94,13 @@ public class AssemblyMirror implements Mirror {
 
     /** {@inheritDoc} */
     @Override
-    public final boolean equals(Object other) {
+    public boolean equals(Object other) {
         return this == other || other instanceof AssemblyMirror m && assembly() == m.assembly();
     }
 
     /** {@inheritDoc} */
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         return assembly().hashCode();
     }
 
@@ -117,7 +116,7 @@ public class AssemblyMirror implements Mirror {
      * @param assembly
      *            the internal configuration of the application to mirror
      */
-    final void initialize(AssemblySetup assembly) {
+    void initialize(AssemblySetup assembly) {
         if (this.assembly != null) {
             throw new IllegalStateException("This mirror has already been initialized.");
         }

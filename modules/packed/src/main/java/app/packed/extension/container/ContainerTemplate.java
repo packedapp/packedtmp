@@ -25,7 +25,7 @@ import app.packed.extension.context.ContextTemplate;
 import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.Op1;
 import app.packed.util.Key;
-import internal.app.packed.container.ContainerKind;
+import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
 
 /**
@@ -43,7 +43,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
      * The template has no {@link #lifetimeOperations() lifetime operations} as the container is automatically created when
      * the root container in the lifetime is created.
      */
-    ContainerTemplate DEFAULT = new PackedContainerTemplate(ContainerKind.PARENT, void.class);
+    ContainerTemplate DEFAULT = new PackedContainerTemplate(PackedContainerKind.PARENT, void.class, List.of());
 
     /**
      * A template for a container that is lazily created.
@@ -52,7 +52,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
      * whenever it is needed by the runtime.
      */
     // Kan man have lazy paa unmanaged????
-    ContainerTemplate LAZY = new PackedContainerTemplate(ContainerKind.LAZY, void.class);
+    ContainerTemplate LAZY = new PackedContainerTemplate(PackedContainerKind.LAZY, void.class, List.of());
 
     // Cannot have managed on unmanaged
     ContainerTemplate MANAGED = null;

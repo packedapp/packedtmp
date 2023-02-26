@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -28,18 +27,15 @@ import app.packed.application.ApplicationMirror;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.util.Nullable;
-import internal.app.packed.container.CompositeWirelet;
-import internal.app.packed.container.WireletWrapper;
-import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The internal representation of a bootstrap app. */
-public final class AppSetup extends ApplicationDriver {
+public final class AppSetup {
 
-    public final List<PackedContainerLifetimeChannel> channels;
+    public final PackedContainerTemplate pot;
 
-    private final LifetimeKind lifetimeKind;
+    public final LifetimeKind lifetimeKind;
 
     /** The method handle used for creating new application instances. */
     // We need more info for bootstrap mirrors
@@ -52,37 +48,13 @@ public final class AppSetup extends ApplicationDriver {
     @Nullable
     public final Wirelet wirelet;
 
-    public AppSetup(LifetimeKind lifetimeKind, Supplier<? extends ApplicationMirror> mirrorSupplier, List<PackedContainerLifetimeChannel> channels,
+    public AppSetup(LifetimeKind lifetimeKind, Supplier<? extends ApplicationMirror> mirrorSupplier, PackedContainerTemplate pot,
             MethodHandle mh, Wirelet wirelet) {
         this.wirelet = wirelet;
         this.mhConstructor = requireNonNull(mh);
         this.mirrorSupplier = requireNonNull(mirrorSupplier);
         this.lifetimeKind = requireNonNull(lifetimeKind);
-        this.channels = List.copyOf(channels);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<PackedContainerLifetimeChannel> channels() {
-        return channels;
-    }
-
-    /**
-     * Returns whether or not applications produced by this driver have an {@link ManagedLifetimeController}.
-     * <p>
-     * Applications that are not runnable will always be launched in the Initial state.
-     *
-     * @return whether or not the applications produced by this driver are runnable
-     */
-    @Override
-    public LifetimeKind lifetimeKind() {
-        return lifetimeKind;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Supplier<? extends ApplicationMirror> mirrorSupplier() {
-        return mirrorSupplier;
+        this.pot = pot;
     }
 
     /**
@@ -101,16 +73,10 @@ public final class AppSetup extends ApplicationDriver {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Wirelet wirelet() {
-        return wirelet;
-    }
-
-    /** {@inheritDoc} */
     public AppSetup with(Wirelet... wirelets) {
         // Skal vi checke noget med components
         Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
-        return new AppSetup(lifetimeKind, mirrorSupplier, channels, mhConstructor, w);
+        return new AppSetup(lifetimeKind, mirrorSupplier, pot, mhConstructor, w);
     }
 
     /**
@@ -154,7 +120,7 @@ public final class AppSetup extends ApplicationDriver {
             if (wirelets.length > 0) {
                 wrapper = new WireletWrapper(CompositeWirelet.flattenAll(wirelets));
             }
-            ApplicationInitializationContext aic = ApplicationInitializationContext.launch2(application, wrapper);
+            ApplicationInitializationContext aic = ApplicationInitializationContext.launch(application, wrapper);
 
             return (A) driver.newInstance(aic);
         }

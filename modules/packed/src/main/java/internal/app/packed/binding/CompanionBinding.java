@@ -18,14 +18,14 @@ package internal.app.packed.binding;
 import app.packed.container.Realm;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.BindingMirror;
-import internal.app.packed.lifetime.PackedContainerLifetimeChannel;
+import internal.app.packed.lifetime.PackedExtensionLink;
 
 /**
  *
  */
 public class CompanionBinding  {
 
-    PackedContainerLifetimeChannel bridge;
+    PackedExtensionLink bridge;
 
     // Vi bygger en application
 

@@ -25,17 +25,13 @@ import java.util.List;
 import java.util.TreeSet;
 
 import app.packed.application.BuildException;
-import app.packed.application.BuildGoal;
 import app.packed.container.AbstractComposer.ComposerAssembly;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.BuildableAssembly;
 import app.packed.container.DelegatingAssembly;
 import app.packed.container.Realm;
-import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
-import internal.app.packed.application.ApplicationDriver;
-import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanOwner;
 import internal.app.packed.jfr.BuildApplicationEvent;
 import internal.app.packed.service.CircularServiceDependencyChecker;
@@ -66,9 +62,6 @@ public final class AssemblySetup implements BeanOwner {
     @Nullable
     public Lookup customLookup;
 
-    /** The application that is being the assembly is used to built. */
-    public final ApplicationSetup application;
-
     /** The assembly instance. */
     public final Assembly assembly;
 
@@ -95,21 +88,13 @@ public final class AssemblySetup implements BeanOwner {
     /**
      * This constructor is used for an assembly that defines an application.
      *
-     * @param driver
-     *            the application driver
-     * @param goal
-     *            the build goal
-     * @param linkTo
-     *            the container that is being linked to
+     * @param containerBuilder
+     *            the container builder
      * @param assembly
-     *            the application's assembly
-     * @param wirelets
-     *            optional wirelets
+     *            the assembly
      */
-    public AssemblySetup(@Nullable ApplicationDriver applicationDriver, BuildGoal goal, @Nullable PackedContainerBuilder installer, Assembly assembly,
-            Wirelet[] wirelets) {
+    public AssemblySetup(AbstractContainerBuilder containerBuilder, Assembly assembly) {
         // We need to unpack any delegating assemblies
-        requireNonNull(goal);
         Assembly a = requireNonNull(assembly, "assembly is null");
         if (a instanceof DelegatingAssembly) {
             int attempts = 100; // Just a ran
@@ -141,16 +126,15 @@ public final class AssemblySetup implements BeanOwner {
 
         this.assembly = a;
 
-        if (installer == null) {
-            this.application = new ApplicationSetup(applicationDriver, goal, this, wirelets);
-            this.container = application.container;
-        } else {
+        if (containerBuilder instanceof PackedContainerBuilder installer) {
             if (a instanceof ComposerAssembly) {
                 throw new IllegalArgumentException("Cannot link an instance of " + ComposerAssembly.class + ", assembly must extend "
                         + BuildableAssembly.class.getSimpleName() + " instead");
             }
-            this.application = installer.application;
-            this.container = installer.newContainer(this, wirelets);
+            this.container = installer.newContainer(this);
+        } else {
+            ApplicationSetup application = new ApplicationSetup(containerBuilder, this);
+            this.container = application.container;
         }
     }
 
@@ -206,7 +190,7 @@ public final class AssemblySetup implements BeanOwner {
             CircularServiceDependencyChecker.dependencyCyclesFind(container);
 
             // The application has been built successfully, generate code if needed
-            application.close();
+            container.application.close();
 
             buildEvent.applicationName = container.name;
             buildEvent.commit();

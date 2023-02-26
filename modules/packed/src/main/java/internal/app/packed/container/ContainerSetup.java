@@ -33,7 +33,6 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
-import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.service.ServiceManager;
@@ -74,9 +73,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     // Or maybe extension types are always sorted??
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
-    /** A bean local map. */
-    public final IdentityHashMap<PackedContainerLocal<?>, Object> locals;
-
     /**
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
      * ignored.
@@ -85,6 +81,9 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
 
     /** The lifetime the container is a part of. */
     public final ContainerLifetimeSetup lifetime;
+
+    /** A bean local map. */
+    public final IdentityHashMap<PackedContainerLocal<?>, Object> locals;
 
     /** The name of the container. */
     public String name;
@@ -108,20 +107,14 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      * @param assembly
      *            the assembly the container is defined in
      */
-    ContainerSetup(PackedContainerBuilder builder, AssemblySetup assembly, String name) {
+    ContainerSetup(AbstractContainerBuilder builder, AssemblySetup assembly, String name) {
         super(builder.parent);
         this.application = requireNonNull(builder.application);
         this.assembly = requireNonNull(assembly);
-        this.sm = new ServiceManager(null, this);
         this.name = name;
         this.locals = builder.locals;
-
-        // Figure out the lifetime of this container
-        if (builder.template.kind() == ContainerKind.PARENT) {
-            this.lifetime = treeParent.lifetime;
-        } else {
-            this.lifetime = new ContainerLifetimeSetup(builder, this, null);
-        }
+        this.lifetime = builder.newLifetime(this);
+        this.sm = new ServiceManager(null, this);
         // If a name has been set using a wirelet, we ignore calls to #named(String)
         this.ignoreRename = builder.nameFromWirelet != null;
     }

@@ -15,6 +15,7 @@
  */
 package internal.app.packed.container;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -23,17 +24,15 @@ import app.packed.extension.container.ExtensionLink;
 import app.packed.extension.context.ContextTemplate;
 import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.Key;
+import internal.app.packed.lifetime.PackedExtensionLink;
 
 /**
  *
  */
-public record PackedContainerTemplate(ContainerKind kind, Class<?> holderClass) implements ContainerTemplate {
+public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, List<PackedExtensionLink> links) implements ContainerTemplate {
 
     /** The root lifetime of an application. */
-    public static final ContainerTemplate APPLICATION_ROOT = new PackedContainerTemplate(ContainerKind.ROOT, void.class);
-
-    public static final ContainerTemplate LINKED = new PackedContainerTemplate(ContainerKind.ROOT, void.class);
-
+    public static final ContainerTemplate APPLICATION_ROOT = new PackedContainerTemplate(PackedContainerKind.ROOT, void.class, List.of());
 
     /** {@inheritDoc} */
     @Override
@@ -52,14 +51,15 @@ public record PackedContainerTemplate(ContainerKind kind, Class<?> holderClass) 
     public ContainerTemplate holder(Class<?> guest) {
         // I don't think we are going to do any checks here?
         // Well not interface, annotation, abstract class, ...
-        return new PackedContainerTemplate(kind, guest);
+        return new PackedContainerTemplate(kind, guest, links);
     }
-
 
     /** {@inheritDoc} */
     @Override
     public ContainerTemplate addLink(ExtensionLink channel) {
-        return null;
+        ArrayList<PackedExtensionLink> l = new ArrayList<>(links);
+        l.add((PackedExtensionLink) channel);
+        return new PackedContainerTemplate(kind, holderClass, List.copyOf(l));
     }
 
     /** {@inheritDoc} */
