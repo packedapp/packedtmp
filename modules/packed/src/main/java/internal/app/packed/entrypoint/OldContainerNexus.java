@@ -15,9 +15,19 @@
  */
 package internal.app.packed.entrypoint;
 
+import app.packed.extension.Extension;
+import app.packed.util.Nullable;
+
 /**
  *
  */
-public class ContainerEntryPointDomain {
+public final class OldContainerNexus {
 
+    Class<? extends Extension<?>> controlledBy;
+
+    /** Any entry point of the lifetime, null if there are none. */
+    @Nullable
+    public EntryPointSetup entryPoint;
+
+    Class<?> resultType;
 }

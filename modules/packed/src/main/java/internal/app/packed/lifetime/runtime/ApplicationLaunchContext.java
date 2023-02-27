@@ -30,7 +30,7 @@ import internal.app.packed.container.WireletWrapper;
 /**
  * A temporary context object that is created whenever we launch an application.
  */
-public final class ApplicationInitializationContext implements Context<BaseExtension> {
+public final class ApplicationLaunchContext implements Context<BaseExtension> {
 
     /** The configuration of the application we are launching. */
     public final ApplicationSetup application;
@@ -44,7 +44,7 @@ public final class ApplicationInitializationContext implements Context<BaseExten
     @Nullable
     private final WireletWrapper wirelets;
 
-    private ApplicationInitializationContext(ApplicationSetup application, WireletWrapper wirelets) {
+    private ApplicationLaunchContext(ApplicationSetup application, WireletWrapper wirelets) {
         this.application = application;
         this.wirelets = wirelets;
         this.name = requireNonNull(application.container.name);
@@ -86,10 +86,10 @@ public final class ApplicationInitializationContext implements Context<BaseExten
      *            optional wirelets is always null if not launched from an image
      * @return the application instance
      */
-    public static ApplicationInitializationContext launch(ApplicationSetup application, @Nullable WireletWrapper wirelets) {
+    public static ApplicationLaunchContext launch(ApplicationSetup application, @Nullable WireletWrapper wirelets) {
 
         // Create a launch context
-        ApplicationInitializationContext context = new ApplicationInitializationContext(application, wirelets);
+        ApplicationLaunchContext context = new ApplicationLaunchContext(application, wirelets);
 
         // Apply all internal wirelets
         if (wirelets != null) {

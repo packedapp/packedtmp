@@ -20,16 +20,18 @@ package internal.app.packed.container;
  */
 public enum PackedContainerKind {
 
-    PREMORDIAL,
+    /** Represents the root container of a {@link BootstrapApp}. */
+    BOOTSTRAP_APPLICATION,
 
-    BOOTSTRAP,
+    ROOT_UNMANAGED,
 
-    ROOT,
+    ROOT_MANAGED,
 
     // Lazy lifetime as parent
     LAZY,
 
-    MANY,
+    MANY_UNMANAGED,
+    MANY_MANAGED,
 
     // Same lifetime as parent
     PARENT;

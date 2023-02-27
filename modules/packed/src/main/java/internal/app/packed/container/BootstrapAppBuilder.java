@@ -20,27 +20,20 @@ import java.util.List;
 import app.packed.application.BootstrapApp;
 import app.packed.application.BuildGoal;
 import app.packed.container.AbstractComposer.ComposerAssembly;
-import app.packed.extension.container.ContainerTemplate;
 import app.packed.lifetime.LifetimeKind;
 
-/**
- *
- */
+/** A builder for creating {@link app.packed.application.BootstrapApp bootstrap applications}. */
 public final class BootstrapAppBuilder extends AbstractContainerBuilder {
 
-    private static final ContainerTemplate TEMPLATE = new PackedContainerTemplate(PackedContainerKind.PREMORDIAL, BootstrapApp.class, List.of());
+    /** A container template that is used for {@link BootstrapApp}. */
+    private static final PackedContainerTemplate TEMPLATE = new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION, BootstrapApp.class,
+            List.of(), null);
 
     /**
      * @param template
      */
     public BootstrapAppBuilder() {
         super(TEMPLATE);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BuildGoal goal() {
-        return BuildGoal.LAUNCH_NOW;
     }
 
     public void build(ComposerAssembly<?> assembly) {
@@ -50,7 +43,13 @@ public final class BootstrapAppBuilder extends AbstractContainerBuilder {
 
     /** {@inheritDoc} */
     @Override
+    public BuildGoal goal() {
+        return BuildGoal.LAUNCH_NOW;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public LifetimeKind lifetimeKind() {
-        return LifetimeKind.STATELESS;
+        return LifetimeKind.UNMANAGED;
     }
 }

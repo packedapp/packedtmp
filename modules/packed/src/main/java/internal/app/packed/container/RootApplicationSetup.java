@@ -25,17 +25,12 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.LifetimeKind;
 import app.packed.util.Nullable;
-import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
+import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The internal representation of a bootstrap app. */
-public final class AppSetup {
-
-    public final PackedContainerTemplate pot;
-
-    public final LifetimeKind lifetimeKind;
+public final class RootApplicationSetup {
 
     /** The method handle used for creating new application instances. */
     // We need more info for bootstrap mirrors
@@ -44,27 +39,28 @@ public final class AppSetup {
     /** Supplies a mirror for the application. */
     public final Supplier<? extends ApplicationMirror> mirrorSupplier;
 
-    /** Optional (flattened) wirelets that will be applied to any applications created by this driver. */
+    /** The template for the root container. */
+    public final PackedContainerTemplate template;
+
+    /** Optional (flattened) wirelets that will be applied to every application. */
     @Nullable
     public final Wirelet wirelet;
 
-    public AppSetup(LifetimeKind lifetimeKind, Supplier<? extends ApplicationMirror> mirrorSupplier, PackedContainerTemplate pot,
-            MethodHandle mh, Wirelet wirelet) {
+    public RootApplicationSetup(Supplier<? extends ApplicationMirror> mirrorSupplier, PackedContainerTemplate pot, MethodHandle mh, Wirelet wirelet) {
         this.wirelet = wirelet;
         this.mhConstructor = requireNonNull(mh);
         this.mirrorSupplier = requireNonNull(mirrorSupplier);
-        this.lifetimeKind = requireNonNull(lifetimeKind);
-        this.pot = pot;
+        this.template = pot;
     }
 
     /**
-     * Create a new application instance using the specified launch context.
+     * Create a new application interface using the specified launch context.
      *
      * @param context
      *            the launch context to use for creating the application instance
      * @return the new application instance
      */
-    public Object newInstance(ApplicationInitializationContext context) {
+    public Object newHolder(ApplicationLaunchContext context) {
         try {
             return mhConstructor.invokeExact(context);
         } catch (Throwable e) {
@@ -73,10 +69,10 @@ public final class AppSetup {
     }
 
     /** {@inheritDoc} */
-    public AppSetup with(Wirelet... wirelets) {
+    public RootApplicationSetup with(Wirelet... wirelets) {
         // Skal vi checke noget med components
         Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
-        return new AppSetup(lifetimeKind, mirrorSupplier, pot, mhConstructor, w);
+        return new RootApplicationSetup(mirrorSupplier, template, mhConstructor, w);
     }
 
     /**
@@ -86,7 +82,7 @@ public final class AppSetup {
 
         private final AtomicReference<ReusableApplicationImage<A>> ref;
 
-        public SingleShotApplicationImage(AppSetup driver, ApplicationSetup application) {
+        public SingleShotApplicationImage(RootApplicationSetup driver, ApplicationSetup application) {
             this.ref = new AtomicReference<>(new ReusableApplicationImage<>(driver, application));
         }
 
@@ -107,7 +103,7 @@ public final class AppSetup {
     /**
      * Implementation of {@link ApplicationLauncher} used by {@link OldBootstrapApp#newImage(Assembly, Wirelet...)}.
      */
-    public /* primitive */ record ReusableApplicationImage<A>(AppSetup driver, ApplicationSetup application) implements ApplicationLauncher<A> {
+    public /* primitive */ record ReusableApplicationImage<A>(RootApplicationSetup driver, ApplicationSetup application) implements ApplicationLauncher<A> {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
@@ -120,9 +116,9 @@ public final class AppSetup {
             if (wirelets.length > 0) {
                 wrapper = new WireletWrapper(CompositeWirelet.flattenAll(wirelets));
             }
-            ApplicationInitializationContext aic = ApplicationInitializationContext.launch(application, wrapper);
+            ApplicationLaunchContext aic = ApplicationLaunchContext.launch(application, wrapper);
 
-            return (A) driver.newInstance(aic);
+            return (A) driver.newHolder(aic);
         }
     }
 

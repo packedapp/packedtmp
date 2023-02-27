@@ -21,6 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.AnnotatedMethodHook;
 
 /**
@@ -36,13 +37,12 @@ import app.packed.extension.BeanHook.AnnotatedMethodHook;
  * <p>
  * Annotated methods will never be invoked more than once??? Well if we have some retry mechanism
  */
-
-// A single method. Will be executed.
-// and then shutdown container down again
-// Panic if it fails???? or do we not wrap exception??? I think we wrap...
-// We always wrap in container panic exception
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedMethodHook(allowInvoke = true, extension = EntryPointExtension.class)
+@AnnotatedMethodHook(allowInvoke = true, extension = BaseExtension.class)
 public @interface Main {}
+//A single method. Will be executed.
+//and then shutdown container down again
+//Panic if it fails???? or do we not wrap exception??? I think we wrap...
+//We always wrap in container panic exception

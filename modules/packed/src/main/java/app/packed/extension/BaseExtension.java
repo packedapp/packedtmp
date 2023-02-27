@@ -40,6 +40,7 @@ import app.packed.extension.container.ContainerHolderService;
 import app.packed.extension.container.ContainerTemplate;
 import app.packed.extension.operation.OperationHandle;
 import app.packed.extension.operation.OperationTemplate;
+import app.packed.lifetime.Main;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
@@ -62,7 +63,9 @@ import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.bean.PackedBeanWrappedVariable;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.container.PackedContainerBuilder;
-import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
+import internal.app.packed.entrypoint.EntryPointSetup;
+import internal.app.packed.entrypoint.EntryPointSetup.MainThreadOfControl;
+import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.PackedServiceLocator;
 import internal.app.packed.util.CollectionUtil;
@@ -420,6 +423,22 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     }
                     OperationSetup operation = OperationSetup.crack(method.newOperation(temp2));
                     bean.container.sm.export(method.toKey(), operation);
+                } else if (annotation instanceof Main) {
+                    if (!isInApplicationLifetime()) {
+                        throw new BeanInstallationException("Must be in the application lifetime to use @" + Main.class.getSimpleName());
+                    }
+
+
+                    bean.container.application.shared.takeOver(BaseExtension.this, BaseExtension.class);
+
+                    bean.container.lifetime.nexus.entryPoint = new EntryPointSetup();
+
+                    OperationTemplate temp = OperationTemplate.defaults().returnType(method.operationType().returnRawType());
+                    OperationHandle os = method.newOperation(temp);
+                    // os.specializeMirror(() -> new EntryPointMirror(index));
+
+                    MainThreadOfControl mc = bean.container.lifetime.nexus.entryPoint.mainThread();
+                    runOnCodegen(() -> mc.generatedMethodHandle = os.generateMethodHandle());
                 } else {
                     super.hookOnAnnotatedMethod(annotation, method);
                 }
@@ -429,8 +448,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             @Override
             public void hookOnAnnotatedVariable(Annotation annotation, BeanVariable v) {
                 if (annotation instanceof ContextValue cv) {
-                    if (cv.value() == ApplicationInitializationContext.class) {
-                        v.bindContextValue(ApplicationInitializationContext.class);
+                    if (cv.value() == ApplicationLaunchContext.class) {
+                        v.bindContextValue(ApplicationLaunchContext.class);
                     } else {
                         throw new UnsupportedOperationException();
                     }
@@ -438,11 +457,13 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     Variable va = v.variable();
                     if (va.rawType().equals(String.class)) {
                         // Burde vel vaere en generics BeanInvocationContext her???
-                        v.bindOp(new Op1<@ContextValue(ApplicationInitializationContext.class) ApplicationInitializationContext, String>(a -> a.name()) {});
+                        v.bindOp(new Op1<@ContextValue(ApplicationLaunchContext.class) ApplicationLaunchContext, String>(a -> a.name()) {});
                     } else if (va.rawType().equals(ManagedLifetimeController.class)) {
-                        v.bindOp(new Op1<@ContextValue(ApplicationInitializationContext.class) ApplicationInitializationContext, ManagedLifetimeController>(a -> a.cr.runtime) {});
+                        v.bindOp(new Op1<@ContextValue(ApplicationLaunchContext.class) ApplicationLaunchContext, ManagedLifetimeController>(
+                                a -> a.cr.runtime) {});
                     } else if (va.rawType().equals(ServiceLocator.class)) {
-                        v.bindOp(new Op1<@ContextValue(ApplicationInitializationContext.class) ApplicationInitializationContext, ServiceLocator>(a -> a.serviceLocator()) {});
+                        v.bindOp(new Op1<@ContextValue(ApplicationLaunchContext.class) ApplicationLaunchContext, ServiceLocator>(
+                                a -> a.serviceLocator()) {});
                     } else {
                         throw new UnsupportedOperationException("va " + va.rawType());
                     }

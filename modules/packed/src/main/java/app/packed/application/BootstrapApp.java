@@ -35,26 +35,23 @@ import app.packed.extension.bean.BeanTemplate;
 import app.packed.extension.container.ExtensionLink;
 import app.packed.extension.context.ContextTemplate;
 import app.packed.extension.operation.OperationTemplate;
-import app.packed.lifetime.LifetimeKind;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
-import internal.app.packed.container.AppSetup;
-import internal.app.packed.container.AppSetup.ReusableApplicationImage;
-import internal.app.packed.container.AppSetup.SingleShotApplicationImage;
 import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.BootstrapAppBuilder;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.container.RootApplicationBuilder;
+import internal.app.packed.container.RootApplicationSetup;
+import internal.app.packed.container.RootApplicationSetup.ReusableApplicationImage;
+import internal.app.packed.container.RootApplicationSetup.SingleShotApplicationImage;
 import internal.app.packed.lifetime.PackedBeanTemplate;
-import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
+import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /**
- * A bootstrap app is a special type of application that can be used to create other (non-bootstrap) application.
- * <p>
- * Bootstrap application Packed comes with a number of predefined application drivers:
- * <p>
- * Bootstrap applications are normally never exposed to end users.
+ * A bootstrap app is a special type of application that can be used to create other (non-bootstrap) application. They
+ * are typically not used directly by end-users. Instead end-users typically use wrappers such as {@link App} or
+ * {@link app.packed.service.ServiceLocator}. These classes are typically thin wrappers around a bootstrap app instance.
  * <p>
  * If these are not sufficient, it is very easy to build your own.
  *
@@ -64,18 +61,19 @@ import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
  * {@link ServiceLocator} are not sufficient. In fact, the default implementations of both {@link App} and
  * {@link ServiceLocator} uses an artifact driver themselves.
  * <p>
+ * One of the reasons packed is so cool is that. Is that packed uses an application to launch a new application.
+ * <p>
  * Normally, you never create more than a single instance of a bootstrap app.
  *
  * @param <A>
  *            the type of application this bootstrap app creates.
- *
  * @see App
  * @see app.packed.extension.container.ContainerHolderService
  */
 public final /* primitive */ class BootstrapApp<A> {
 
     /** The internal bootstrap app. */
-    private final AppSetup setup;
+    private final RootApplicationSetup setup;
 
     /**
      * Create a new bootstrap app
@@ -83,7 +81,7 @@ public final /* primitive */ class BootstrapApp<A> {
      * @param setup
      *            the internal configuration of the app.
      */
-    private BootstrapApp(AppSetup setup) {
+    private BootstrapApp(RootApplicationSetup setup) {
         this.setup = requireNonNull(setup);
     }
 
@@ -110,10 +108,10 @@ public final /* primitive */ class BootstrapApp<A> {
         ApplicationSetup application = builder.build(assembly, wirelets);
 
         // Launch the application
-        ApplicationInitializationContext aic = ApplicationInitializationContext.launch(application, null);
+        ApplicationLaunchContext aic = ApplicationLaunchContext.launch(application, null);
 
         // Create an return an instance of the application interface
-        return (A) setup.newInstance(aic);
+        return (A) setup.newHolder(aic);
     }
 
     /**
@@ -214,6 +212,10 @@ public final /* primitive */ class BootstrapApp<A> {
     public BootstrapApp<A> with(Wirelet... wirelets) {
         return new BootstrapApp<>(setup.with(wirelets));
     }
+    public BootstrapApp<A> expectsResult(Class<?> resultType) {
+        return this;
+        // Ideen er bootstrapApp.expectsResult(FooBar.class).launch(...);
+    }
 
     public static <A> BootstrapApp<A> of(Class<A> applicationClass, ComposerAction<Composer> action) {
         return of0(applicationClass, applicationClass, action);
@@ -232,27 +234,32 @@ public final /* primitive */ class BootstrapApp<A> {
 
         // Build the bootstrap application
         BootstrapAppBuilder builder = new BootstrapAppBuilder();
+
+        // Builds the bootstrap application
         builder.build(new Composer.BootstrapAppAssembly<>(composer, action));
 
-        // Adapt the method handle
-        MethodHandle mh = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationInitializationContext.class));
-        if (o != null) {
+        // Adapts the method handle
+        MethodHandle mh;
+        if (o == null) {
+            // Produces null always. Expected signature BootstrapApp<Void>
+            mh = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
+        } else {
             mh = composer.ahe.mh;
+            mh = mh.asType(mh.type().changeReturnType(Object.class));
         }
-        mh = mh.asType(mh.type().changeReturnType(Object.class));
 
-        AppSetup a = new AppSetup(composer.lifetimeKind, composer.mirrorSupplier, composer.pct, mh, null);
+        RootApplicationSetup a = new RootApplicationSetup(composer.mirrorSupplier, composer.template, mh, null);
         return new BootstrapApp<>(a);
     }
 
     private static class BootstrapAppExtension extends FrameworkExtension<BootstrapAppExtension> {
 
-        static final ContextTemplate CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationInitializationContext.class,
-                ApplicationInitializationContext.class);
+        static final ContextTemplate CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationLaunchContext.class,
+                ApplicationLaunchContext.class);
 
         static final OperationTemplate ot = OperationTemplate.raw().withContext(CIT).returnTypeObject();
 
-        static final BeanTemplate BLT = new PackedBeanTemplate(BeanKind.MANYTON).withOperationTemplate(ot);
+        static final BeanTemplate ZBLT = new PackedBeanTemplate(BeanKind.MANYTON).withOperationTemplate(ot);
 
         MethodHandle mh;
 
@@ -262,13 +269,13 @@ public final /* primitive */ class BootstrapApp<A> {
 
         <T> void newApplication(Class<T> guestBean) {
             // We need the attachment, because ContainerGuest is on
-            BeanBuilder bi = base().beanBuilder(BLT);
+            BeanBuilder bi = base().beanBuilder(ZBLT);
             newApplication(bi.install(guestBean));
         }
 
         <T> void newApplication(Op<T> guestBean) {
             // We need the attachment, because ContainerGuest is on
-            BeanBuilder bi = base().beanBuilder(BLT);
+            BeanBuilder bi = base().beanBuilder(ZBLT);
             newApplication(bi.install(guestBean));
         }
     }
@@ -284,19 +291,18 @@ public final /* primitive */ class BootstrapApp<A> {
 
         BootstrapAppExtension ahe;
 
-        private LifetimeKind lifetimeKind = LifetimeKind.UNMANAGED;
-
         /** Supplies a mirror for the application. */
         private Supplier<? extends ApplicationMirror> mirrorSupplier = ApplicationMirror::new;
 
         @Nullable
         final Object o;
 
-        PackedContainerTemplate pct;
+        /** The template for the root container of the bootstrapped application. */
+        private PackedContainerTemplate template;
 
         private Composer(@Nullable Object o, Class<?> type) {
             this.o = o;
-            this.pct = new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP, type, List.of());
+            this.template = new PackedContainerTemplate(PackedContainerKind.ROOT_UNMANAGED, type, List.of(), null);
         }
 
         /**
@@ -307,7 +313,12 @@ public final /* primitive */ class BootstrapApp<A> {
          * @return this composer
          */
         public Composer addChannel(ExtensionLink... channels) {
-            this.pct = (PackedContainerTemplate) pct.addLink(channels);
+            this.template = (PackedContainerTemplate) template.addLink(channels);
+            return this;
+        }
+
+        public Composer expectsResult(Class<?> resultType) {
+            this.template = template.expectResult(resultType);
             return this;
         }
 
@@ -319,7 +330,7 @@ public final /* primitive */ class BootstrapApp<A> {
          * @return this builder
          */
         public Composer managedLifetime() {
-            this.lifetimeKind = LifetimeKind.MANAGED;
+            this.template = template.withKind(PackedContainerKind.ROOT_MANAGED);
             return this;
         }
 
@@ -348,8 +359,9 @@ public final /* primitive */ class BootstrapApp<A> {
             return this;
         }
 
+        // Flyt engang op. Saa getClass() er lidt mere printable?
         /** An composer wrapping Assembly. */
-        static class BootstrapAppAssembly<A> extends ComposerAssembly<Composer> {
+        private static class BootstrapAppAssembly<A> extends ComposerAssembly<Composer> {
 
             BootstrapAppAssembly(Composer c, ComposerAction<? super Composer> action) {
                 super(c, action);

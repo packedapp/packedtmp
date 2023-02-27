@@ -170,7 +170,7 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
 
         start(container, cr);
 
-        EntryPointSetup ep = container.lifetime.entryPoint;
+        EntryPointSetup ep = container.lifetime.nexus.entryPoint;
 
         if (ep != null) {
             ep.enter(cr);

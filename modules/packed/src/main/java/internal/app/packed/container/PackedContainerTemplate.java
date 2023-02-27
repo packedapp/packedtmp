@@ -24,15 +24,14 @@ import app.packed.extension.container.ExtensionLink;
 import app.packed.extension.context.ContextTemplate;
 import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.Key;
+import app.packed.util.Nullable;
 import internal.app.packed.lifetime.PackedExtensionLink;
 
 /**
  *
  */
-public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, List<PackedExtensionLink> links) implements ContainerTemplate {
-
-    /** The root lifetime of an application. */
-    public static final ContainerTemplate APPLICATION_ROOT = new PackedContainerTemplate(PackedContainerKind.ROOT, void.class, List.of());
+public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, List<PackedExtensionLink> links, @Nullable Class<?> expectsResult)
+        implements ContainerTemplate {
 
     /** {@inheritDoc} */
     @Override
@@ -46,26 +45,34 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
         return List.of();
     }
 
+    // expects results. Maa ogsaa tage en Extension...
+    public PackedContainerTemplate expectResult(Class<?> resultType) {
+        return new PackedContainerTemplate(kind, holderClass, links, resultType);
+    }
+
     /** {@inheritDoc} */
     @Override
-    public ContainerTemplate holder(Class<?> guest) {
+    public PackedContainerTemplate holder(Class<?> guest) {
         // I don't think we are going to do any checks here?
         // Well not interface, annotation, abstract class, ...
-        return new PackedContainerTemplate(kind, guest, links);
+        return new PackedContainerTemplate(kind, guest, links, expectsResult);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ContainerTemplate addLink(ExtensionLink channel) {
+    public PackedContainerTemplate addLink(ExtensionLink channel) {
         ArrayList<PackedExtensionLink> l = new ArrayList<>(links);
         l.add((PackedExtensionLink) channel);
-        return new PackedContainerTemplate(kind, holderClass, List.copyOf(l));
+        return new PackedContainerTemplate(kind, holderClass, List.copyOf(l), expectsResult);
+    }
+
+    public PackedContainerTemplate withKind(PackedContainerKind kind) {
+        return new PackedContainerTemplate(kind, holderClass, links, expectsResult);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ContainerTemplate lifetimeOperationAddContext(int index, ContextTemplate template) {
+    public PackedContainerTemplate lifetimeOperationAddContext(int index, ContextTemplate template) {
         throw new UnsupportedOperationException();
     }
-
 }

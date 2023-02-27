@@ -174,6 +174,10 @@ public abstract class Extension<E extends Extension<E>> {
         return extension.container.isLifetimeRoot();
     }
 
+    protected final boolean isInApplicationLifetime() {
+        return lifetimeRoot() == applicationRoot();
+    }
+
     /**
      * Returns the instance of this extension that is the root of this container's lifetime. If this container is the root
      * returns this.

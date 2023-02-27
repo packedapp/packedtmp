@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime;
+package internal.app.packed.entrypoint;
 
-import app.packed.container.Wirelet;
+import app.packed.extension.Extension;
 
-/** Various wirelets that can be used together with the {@link EntryPointExtension}. */
-public final class EntryPointWirelets {
+/**
+ *
+ */
+// Error messages comes later
+public final class ContainerNexus {
 
-    /** No entry for you. */
-    private EntryPointWirelets() {}
+    final Class<? extends Extension<?>> controlledBy;
 
-    public static Wirelet args(String... args) {
-        throw new UnsupportedOperationException();
+    // Maa komm
+    final Class<?> resultType;
+
+    public ContainerNexus(Class<? extends Extension<?>> controlledBy, Class<?> resultType) {
+        this.controlledBy = controlledBy;
+        this.resultType = resultType;
     }
 }

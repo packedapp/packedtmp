@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime;
+package app.packed.lifetime.sandbox;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
+import app.packed.lifetime.EntryPointMirror;
 
 /** A mirror for {@link EntryPointExtension}. */
-public final class EntryPointExtensionMirror extends ExtensionMirror<EntryPointExtension> {
+public final class OldEntryPointExtensionMirror extends ExtensionMirror<BaseExtension> {
 
-    /* package-private */ EntryPointExtensionMirror() {}
+    /* package-private */ OldEntryPointExtensionMirror() {}
 
     // Optional, I think. We can add the extension
     // But add any entry points
@@ -34,7 +36,8 @@ public final class EntryPointExtensionMirror extends ExtensionMirror<EntryPointE
         // Fx
         //// CLI
         //// Serverless
-        return Optional.ofNullable(navigator().root().shared.dispatcher);
+    //    return Optional.ofNullable(navigator().root().shared.dispatcher);
+        return Optional.empty();
     }
 
     public Collection<EntryPointMirror> entryPoints() {
@@ -52,7 +55,8 @@ public final class EntryPointExtensionMirror extends ExtensionMirror<EntryPointE
      * @see Main
      */
     public boolean hasMain() {
-        return allAnyMatch(e -> e.hasMain);
+        return false;
+//        return allAnyMatch(e -> e.shared.dispatcher == EntryPointExtension.class);
     }
 
     /**

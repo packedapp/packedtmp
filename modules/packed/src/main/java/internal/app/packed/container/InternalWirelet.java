@@ -16,7 +16,7 @@
 package internal.app.packed.container;
 
 import app.packed.container.Wirelet;
-import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
+import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /** Internal wirelets have their logic directly embedded into the wirelet. */
 public abstract class InternalWirelet extends Wirelet {
@@ -38,7 +38,7 @@ public abstract class InternalWirelet extends Wirelet {
         return application;
     }
 
-    public void onImageInstantiation(ContainerSetup component, ApplicationInitializationContext context) {
+    public void onImageInstantiation(ContainerSetup component, ApplicationLaunchContext context) {
         throw new IllegalArgumentException(
                 "The wirelet {" + getClass().getSimpleName() + "} must be specified at build-time. It cannot be specified when instantiating an image");
     }

@@ -31,7 +31,7 @@ import app.packed.extension.container.ContainerTemplate;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.util.Nullable;
 import internal.app.packed.lifetime.PackedExtensionLink;
-import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
+import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /** Implementation of {@link ContainerBuilder}. */
 public final class PackedContainerBuilder extends AbstractContainerBuilder implements ContainerBuilder {
@@ -171,7 +171,7 @@ public final class PackedContainerBuilder extends AbstractContainerBuilder imple
 
         /** {@inheritDoc} */
         @Override
-        public void onImageInstantiation(ContainerSetup c, ApplicationInitializationContext ic) {
+        public void onImageInstantiation(ContainerSetup c, ApplicationLaunchContext ic) {
             ic.name = name;
         }
 

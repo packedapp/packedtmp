@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
 import app.packed.util.Nullable;
-import internal.app.packed.jfr.CodegenEvent;
+import internal.app.packed.entrypoint.LifetimeEntryPointManager;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
@@ -41,6 +41,10 @@ public final class ApplicationSetup {
     /** A MethodHandle for invoking {@link ApplicationMirror#initialize(ApplicationSetup)}. */
     private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ApplicationMirror.class, "initialize",
             void.class, ApplicationSetup.class);
+
+    /** An object that is shared between all entry point extensions in the same application. */
+    public final LifetimeEntryPointManager shared = new LifetimeEntryPointManager();
+
 
     /** A list of actions that will be executed doing the code generating phase. Or null if code generation is disabled. */
     @Nullable
@@ -118,15 +122,15 @@ public final class ApplicationSetup {
         if (codegenActions != null) {
             phase = ApplicationBuildPhase.CODEGEN;
 
-            CodegenEvent ce = new CodegenEvent();
-            ce.begin();
+//            CodegenEvent ce = new CodegenEvent();
+//            ce.begin();
 
             // Run through all code generating actions
             for (Runnable r : codegenActions) {
                 r.run();
             }
 
-            ce.commit();
+//            ce.commit();
             codegenActions = null;
         }
 

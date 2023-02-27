@@ -33,7 +33,6 @@ import app.packed.container.DelegatingAssembly;
 import app.packed.container.Realm;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanOwner;
-import internal.app.packed.jfr.BuildApplicationEvent;
 import internal.app.packed.service.CircularServiceDependencyChecker;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -139,12 +138,13 @@ public final class AssemblySetup implements BeanOwner {
     }
 
     public void build() {
+        // Initializing JFR takes 40 ms
         // Create a JFR build event if application root
-        BuildApplicationEvent buildEvent = null;
+      //  BuildApplicationEvent buildEvent = null;
         if (container.treeParent == null) {
-            buildEvent = new BuildApplicationEvent();
-            buildEvent.assemblyClass = assembly.getClass();
-            buildEvent.begin();
+       //     buildEvent = new BuildApplicationEvent();
+       //     buildEvent.assemblyClass = assembly.getClass();
+       //     buildEvent.begin();
         }
 
         // Call into the assembly provided by the user
@@ -192,8 +192,8 @@ public final class AssemblySetup implements BeanOwner {
             // The application has been built successfully, generate code if needed
             container.application.close();
 
-            buildEvent.applicationName = container.name;
-            buildEvent.commit();
+      //      buildEvent.applicationName = container.name;
+      //      buildEvent.commit();
         } else {
             // Similar to above, except we do not call Extension#onApplicationClose
             for (ExtensionSetup e = extensions.pollLast(); e != null; e = extensions.pollLast()) {

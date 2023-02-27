@@ -219,6 +219,10 @@ public abstract class Wirelet {
     public static Wirelet named(String name) {
         return new OverrideNameWirelet(name);
     }
+
+    public static Wirelet mainArgs(String... args) {
+        throw new UnsupportedOperationException();
+    }
 }
 
 /**

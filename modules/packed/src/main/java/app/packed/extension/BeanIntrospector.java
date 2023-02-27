@@ -29,6 +29,7 @@ import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanScannerExtension;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.util.PackedAnnotationList;
 import internal.app.packed.util.StringFormatter;
 
@@ -89,14 +90,14 @@ public abstract class BeanIntrospector {
         return bean().installedBy.extensionType;
     }
 
-    /** {@return the extension the bean was installed via.} */
-    public final LifetimeKind beanLifetimeKind() {
-        return bean().lifetime.lifetimeKind();
-    }
-
     /** {@return an annotation reader for the bean class.} */
     public final BeanKind beanKind() {
         return bean().beanKind;
+    }
+
+    /** {@return the extension the bean was installed via.} */
+    public final LifetimeKind beanLifetimeKind() {
+        return bean().lifetime.lifetimeKind();
     }
 
     /** {@return the owner of the bean.} */
@@ -234,6 +235,20 @@ public abstract class BeanIntrospector {
             throw new IllegalStateException("This scanner has already been initialized.");
         }
         this.setup = ce;
+    }
+
+    /**
+     * Returns whether or not the bean is in the application lifetime.
+     *
+     * @return
+     */
+    public final boolean isInApplicationLifetime() {
+        BeanSetup b = bean();
+        return b.lifetime == b.container.application.container.lifetime;
+    }
+
+    public final boolean isInContainerLifetime() {
+        return bean().lifetime instanceof ContainerLifetimeSetup;
     }
 
     /** {@return whether or not this introspector is the installing introspector.} */

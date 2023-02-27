@@ -29,14 +29,16 @@ import app.packed.container.Wirelet;
  * This class does not prov For creating application -instances -mirrors and -images.
  */
 // [Checked|Not-Checked]Launch, Mirror, Launcher, ReuseableLauncher
+
+// App must either have threads running after it has started, or an entry point.
+// Ellers er det et sort hul...
 public final class App {
 
-    /** The bootstrap application. */
+    /** The bootstrap app. */
     private static final BootstrapApp<Void> BOOTSTRAP = BootstrapApp.of(c -> c.managedLifetime());
 
     /** Not today Satan, not today. */
     private App() {}
-
 
     /**
      * Builds an application and returns a mirror representing it.

@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime;
+package app.packed.lifetime.sandbox;
 
 import app.packed.application.App;
 import app.packed.container.BaseAssembly;
-import app.packed.operation.OperationMirror;
+import app.packed.lifetime.Main;
 
 /**
  *
@@ -27,28 +27,20 @@ public class MainUsage extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        provide(MyBean.class);
-        provideInstance("asdsd");
-        provideInstance(123);
+        install(MyBean.class);
     }
 
     public static void main(String[] args) {
         long l = System.nanoTime();
-        App.run(new MainUsage());
-        App.run(new MainUsage());
         App.run(new MainUsage());
         System.out.println(System.nanoTime() - l);
     }
 
     public static class MyBean {
 
-        public MyBean(OperationMirror am) {
-            System.out.println(am.type());
-        }
-
         @Main
-        public void hello() {
-            System.out.println("Hello");
+        public static void hello() {
+            System.out.println("HelloWorld ");
         }
     }
 }

@@ -27,7 +27,7 @@ import app.packed.extension.context.ContextTemplate;
 import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.Op;
 import internal.app.packed.lifetime.PackedBeanTemplate;
-import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
+import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /**
  *
@@ -42,8 +42,8 @@ import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 //ApplicationInstaller?
 class ApplicationHostExtension2 extends FrameworkExtension<ApplicationHostExtension2> {
 
-    static final ContextTemplate CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationInitializationContext.class,
-            ApplicationInitializationContext.class);
+    static final ContextTemplate CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationLaunchContext.class,
+            ApplicationLaunchContext.class);
 
     static final OperationTemplate ot = OperationTemplate.raw().withContext(CIT).returnTypeObject();
 

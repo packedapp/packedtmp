@@ -22,9 +22,9 @@ import java.util.function.Function;
 
 import app.packed.container.Wirelet;
 import app.packed.lifetime.RunState;
-import internal.app.packed.container.AppSetup.MappedApplicationImage;
-import internal.app.packed.container.AppSetup.ReusableApplicationImage;
-import internal.app.packed.container.AppSetup.SingleShotApplicationImage;
+import internal.app.packed.container.RootApplicationSetup.MappedApplicationImage;
+import internal.app.packed.container.RootApplicationSetup.ReusableApplicationImage;
+import internal.app.packed.container.RootApplicationSetup.SingleShotApplicationImage;
 
 /**
  * An application image is a pre-built application that can be launched at a later time.

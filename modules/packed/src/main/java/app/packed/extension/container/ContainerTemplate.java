@@ -43,7 +43,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
      * The template has no {@link #lifetimeOperations() lifetime operations} as the container is automatically created when
      * the root container in the lifetime is created.
      */
-    ContainerTemplate DEFAULT = new PackedContainerTemplate(PackedContainerKind.PARENT, void.class, List.of());
+    ContainerTemplate DEFAULT = new PackedContainerTemplate(PackedContainerKind.PARENT, void.class, List.of(), null);
 
     /**
      * A template for a container that is lazily created.
@@ -52,7 +52,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
      * whenever it is needed by the runtime.
      */
     // Kan man have lazy paa unmanaged????
-    ContainerTemplate LAZY = new PackedContainerTemplate(PackedContainerKind.LAZY, void.class, List.of());
+    ContainerTemplate LAZY = new PackedContainerTemplate(PackedContainerKind.LAZY, void.class, List.of(), null);
 
     // Cannot have managed on unmanaged
     ContainerTemplate MANAGED = null;

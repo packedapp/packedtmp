@@ -36,7 +36,7 @@ import internal.app.packed.bean.BeanLifecycleOperation;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.AbstractContainerBuilder;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.entrypoint.EntryPointSetup;
+import internal.app.packed.entrypoint.OldContainerNexus;
 import internal.app.packed.lifetime.runtime.PackedContainerContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.AbstractTreeNode;
@@ -66,9 +66,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     /** The root container of the lifetime. */
     public final ContainerSetup container;
 
-    /** Any entry point of the lifetime, null if there are none. */
-    @Nullable
-    public EntryPointSetup entryPoint;
+    public final OldContainerNexus nexus = new OldContainerNexus();
 
     public final FuseableOperation initialization;
 

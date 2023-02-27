@@ -123,6 +123,10 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         be.addCodeGenerated(b, key, supplier);
     }
 
+    public int registerEntryPoint(Class<?> hook) {
+        return super.extensionSetup().container.application.shared.takeOver(extension(), usedBy());// .registerEntryPoint(usedBy(), isMain);
+    }
+
     /**
      * Creates a new application bean installer.
      *

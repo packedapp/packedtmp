@@ -26,13 +26,13 @@ import app.packed.util.Nullable;
  */
 public final class RootApplicationBuilder extends AbstractContainerBuilder {
 
-    final AppSetup ba;
+    final RootApplicationSetup ba;
 
     /** The build goal. */
     private final BuildGoal goal;
 
-    public RootApplicationBuilder(AppSetup ba, BuildGoal goal) {
-        super(ba.pot);
+    public RootApplicationBuilder(RootApplicationSetup ba, BuildGoal goal) {
+        super(ba.template);
         this.ba = ba;
         this.goal = goal;
         super.applicationMirrorSupplier = ba.mirrorSupplier;
@@ -62,6 +62,6 @@ public final class RootApplicationBuilder extends AbstractContainerBuilder {
     /** {@inheritDoc} */
     @Override
     public LifetimeKind lifetimeKind() {
-        return ba.lifetimeKind;
+        throw new UnsupportedOperationException();
     }
 }
