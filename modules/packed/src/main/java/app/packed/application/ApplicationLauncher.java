@@ -57,9 +57,8 @@ import internal.app.packed.container.AppSetup.SingleShotApplicationImage;
  * @see App#newLauncher(Assembly, Wirelet...)
  * @see App#newImage(Assembly, Wirelet...)
  */
-// Hvorfor skal man egentlig ikke kunne extende den med sine egne ting
 
-// rename to launcher and then image is a special type of launcher that can be used repeatable
+// BootstrapAppLauncher
 @SuppressWarnings("rawtypes")
 public sealed interface ApplicationLauncher<A> permits SingleShotApplicationImage, ReusableApplicationImage, MappedApplicationImage {
 
@@ -151,7 +150,6 @@ interface Zimgbox<A> {
      * @return the launch mode of the application
      *
      */
-    // ApplicationInfo instead???
     RunState launchMode(); // usageMode??
 
     // Hmmmmmmm IDK

@@ -17,37 +17,26 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.util.Nullable;
-
-import java.lang.invoke.VarHandle;
-
 import internal.app.packed.container.AssemblyModel;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerHandle;
-import internal.app.packed.util.LookupUtil;
 
 /**
  * Assemblies are the main way that applications are configured in Packed.
  * <p>
  * The assembly configures 1 or more containers.
  * <p>
- * This class is rarely extended directly by end-users. But provides means for power users to extend the basic
- * functionality of Packed.
+ * This class is rarely extended directly by end-users, typically {@link BaseAssembly} is extended instead.
  * <p>
- * An assembly is a thin wrapper that encapsulates the configuration of a container provided by the driver. This class
- * is mainly used through one of its subclasses such as {@link BaseAssembly}.
- * <p>
- * Assemblies are composable via linking.
+ * There are two types of annotations that can be placed on subclass of this class. AssemblyHook
  *
+ * BeanHook
  * <p>
- * Subclasses of this class supports 2 type based annotations. . Which controls how containers and beans are added
- * respectively.
- * <p>
- * Packed does not support any annotations on fields or methods. And will never perform any kind of reflection based
- * introspection of subclasses.
+ * Packed has no features that requires annotation based fields or methods on assemblies. And the framework will never
+ * perform any kind of reflection based introspection of assembly subclasses.
  * <p>
  * An assembly can never be used more than once. Trying to do so will result in an {@link IllegalStateException} being
  * thrown.
@@ -56,9 +45,6 @@ import internal.app.packed.util.LookupUtil;
  */
 // LinkedAssembly, LinkableAssembly
 public non-sealed abstract class BuildableAssembly extends Assembly {
-
-    /** A var handle that can update the {@link #configuration} field in this class. */
-    private static final VarHandle VH_CONFIGURATION = LookupUtil.findVarHandleOwn(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);
 
     /**
      * The configuration of the container that this assembly defines.
@@ -76,6 +62,11 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
     @Nullable
     private ContainerConfiguration configuration;
 
+    /** {@return an assembly finder that can used to find assemblies on the class- or module-path.} */
+    protected final AssemblyFinder assemblyFinder() {
+        return new PackedAssemblyFinder(getClass(), container().handle.container().assembly);
+    }
+
     /**
      * This method must be overridden by the application developer in order to configure the application.
      * <p>
@@ -88,7 +79,7 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
     /**
      * Checks that {@link #build()} has not yet been called by the framework.
      * <p>
-     * This method is typically used by assemblies that define configuration methods that must be called before
+     * This method is typically used by assemblies that define configuration methods that can only be called before
      * {@link #build()} is invoked.
      *
      * @throws IllegalStateException
@@ -132,10 +123,9 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
      */
     @SuppressWarnings("unused")
     private void doBuild(AssemblyModel assemblyModel, ContainerSetup container) {
-        ContainerConfiguration configuration = new ContainerConfiguration(new PackedContainerHandle(container));
-        // Do we really need to guard against concurrent usage of an assembly?
-        Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
+        Object existing = configuration;
         if (existing == null) {
+            existing = configuration = new ContainerConfiguration(new PackedContainerHandle(container));
             try {
                 // Run AssemblyHook.onPreBuild if hooks are present
                 assemblyModel.preBuild(configuration);
@@ -147,7 +137,7 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
                 assemblyModel.postBuild(configuration);
             } finally {
                 // Sets #configuration to a marker object that indicates the assembly has been used
-                VH_CONFIGURATION.setVolatile(this, ContainerConfiguration.USED);
+                existing = ContainerConfiguration.USED;
             }
         } else if (existing == ContainerConfiguration.USED) {
             // Assembly has already been used (successfully or unsuccessfully)

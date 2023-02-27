@@ -1,4 +1,4 @@
-package app.packed.entrypoint;
+package app.packed.lifetime;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;

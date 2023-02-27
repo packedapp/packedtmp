@@ -82,8 +82,8 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     /** The lifetime the container is a part of. */
     public final ContainerLifetimeSetup lifetime;
 
-    /** A bean local map. */
-    public final IdentityHashMap<PackedContainerLocal<?>, Object> locals;
+    /** A container local map. */
+    final IdentityHashMap<PackedContainerLocal<?>, Object> locals;
 
     /** The name of the container. */
     public String name;
@@ -92,7 +92,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     public final ServiceManager sm;
 
     /** Supplies a mirror for the container. */
-    public Supplier<? extends ContainerMirror> specializedMirror;
+    private Supplier<? extends ContainerMirror> specializedMirror;
 
     /** Wirelets that were specified when creating the component. */
     // As an alternative non-final, and then nulled out whenever the last wirelet is consumed
@@ -102,16 +102,16 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     /**
      * Create a new container.
      *
-     * @param installer
+     * @param builder
      *            the container builder
      * @param assembly
-     *            the assembly the container is defined in
+     *            the assembly the defines the container
      */
-    ContainerSetup(AbstractContainerBuilder builder, AssemblySetup assembly, String name) {
+    ContainerSetup(AbstractContainerBuilder builder, AssemblySetup assembly) {
         super(builder.parent);
         this.application = requireNonNull(builder.application);
         this.assembly = requireNonNull(assembly);
-        this.name = name;
+        this.name = builder.name;
         this.locals = builder.locals;
         this.lifetime = builder.newLifetime(this);
         this.sm = new ServiceManager(null, this);

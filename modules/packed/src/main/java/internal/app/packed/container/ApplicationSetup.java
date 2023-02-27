@@ -30,8 +30,12 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
 
-/** Internal configuration of an application. */
-// I think we are going to move it to internal.container
+/**
+ * Internal configuration of an application.
+ * <p>
+ * Is {@code internal.app.packed.container} because it is so tightly integrated with containers.
+ * It made best to put it here as well.
+ */
 public final class ApplicationSetup {
 
     /** A MethodHandle for invoking {@link ApplicationMirror#initialize(ApplicationSetup)}. */

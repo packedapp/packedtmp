@@ -13,42 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.entrypoint;
+package app.packed.container;
 
 import app.packed.application.App;
-import app.packed.container.BaseAssembly;
-import app.packed.operation.OperationMirror;
 
 /**
  *
  */
-public class MainUsage extends BaseAssembly {
+public class TE extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        provide(MyBean.class);
-        provideInstance("asdsd");
-        provideInstance(123);
+        link(assemblyFinder().paths("/Users/kaspernielsen/packed-workspace/packed-usage-on-modulepath/bin").assembly("app.packed.usage",
+                "app.packed.application.usage.HelloWorldAssembly"));
+        link(assemblyFinder().paths("/Users/kaspernielsen/packed-workspace/packed-usage-on-modulepath/bin").assembly("app.packed.usage",
+                "app.packed.application.usage.HelloWorldAssembly"));
+
     }
 
     public static void main(String[] args) {
-        long l = System.nanoTime();
-        App.run(new MainUsage());
-        App.run(new MainUsage());
-        App.run(new MainUsage());
-        System.out.println(System.nanoTime() - l);
-    }
+        App.run(new TE());
 
-    public static class MyBean {
-
-        public MyBean(OperationMirror am) {
-            System.out.println(am.type());
-        }
-
-        @Main
-        public void hello() {
-            System.out.println("Hello");
-        }
+        App.mirrorOf(new TE()).print();
     }
 }

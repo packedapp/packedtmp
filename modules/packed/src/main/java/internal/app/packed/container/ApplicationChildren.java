@@ -13,29 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.entrypoint;
+package internal.app.packed.container;
 
 /**
  *
  */
-//En wrapper omkring et String arrays
-//Alle skal kunne faa den injected.
-//Paanaer non- entrypoint controlling extensions.
-//Som jeg vil mene ikke har adgang til den
+public class ApplicationChildren {
 
-// was StringArgs
-// MainArgs... Men det er vel ikke kun Main den virker sammen med?
-// Eller maaske er det. Nej fordi vi vil gerne kunne bruge
-// ApplicationImage.use("fsdfsdf") <- uaghaendig af extension
-// Det kan vi vel egentlig ogsaa...
-public /* primitive */ class ArgList {
-    private final String[] args;
+    void parentBuild() {
 
-    ArgList(String[] args) {
-        this.args = args;
     }
 
-    public int argumentCount() {
-        return args.length;
+    void parentGenerated() {
+
     }
 }

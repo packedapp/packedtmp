@@ -37,13 +37,6 @@ public final class App {
     /** Not today Satan, not today. */
     private App() {}
 
-    /**
-     *
-     * @return
-     */
-    static App.Customizer customize() {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Builds an application and returns a mirror representing it.
@@ -100,12 +93,11 @@ public final class App {
      * executed. This method will block until the application reaches the {@link RunState#TERMINATED terminated} state.
      *
      * @param assembly
-     *            the assembly representing the application
+     *            the application's assembly
      * @param wirelets
      *            optional wirelets
      * @throws RuntimeException
      *             if the application failed to build or run
-     * @see #checkedRun(Assembly, Wirelet...)
      */
     public static void run(Assembly assembly, Wirelet... wirelets) {
         BOOTSTRAP.launch(assembly, wirelets);
@@ -125,22 +117,14 @@ public final class App {
         BOOTSTRAP.verify(assembly, wirelets);
     }
 
-    // class probably... no need for an interface. Noone is going to call in
-    interface Customizer {
-        ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets);
 
-        // exception application panic/build strategy
 
-        Customizer restartable();
-
-        void run(Assembly assembly, Wirelet... wirelets);
-    }
-
+    /** An application launcher for App. */
     public static final class Launcher {
 
         private final ApplicationLauncher<?> original;
 
-        Launcher(ApplicationLauncher<?> original) {
+        private Launcher(ApplicationLauncher<?> original) {
             this.original = original;
         }
 
@@ -176,7 +160,26 @@ interface SandboxAppResult<A> {
 }
 
 class Usage {
+
+    /**
+     *
+     * @return
+     */
+    static Usage.Customizer customize() {
+        throw new UnsupportedOperationException();
+    }
+    // Idk, det er vel bare wirelets det hele
+    // class probably... no need for an interface. Noone is going to call in
+    interface Customizer {
+        ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets);
+
+        // exception application panic/build strategy
+
+        Customizer restartable();
+
+        void run(Assembly assembly, Wirelet... wirelets);
+    }
     public static void main(String[] args) {
-        App.customize().restartable().run(null);
+        Usage.customize().restartable().run(null);
     }
 }

@@ -30,8 +30,10 @@ import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.util.LookupUtil;
 
 /**
- *
+ * A composer is
  */
+
+// Operere vi pa Extensions? eller Extenpoints??
 public abstract class AbstractComposer {
 
     /** A var handle that can update the {@link #configuration} field in this class. */
@@ -96,6 +98,7 @@ public abstract class AbstractComposer {
      *            the lookup object
      * @throws IllegalStateException
      *             if called from outside of {@link #build()}
+     * @see BuildableAssembly#lookup(Lookup)
      */
     public final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
@@ -121,9 +124,7 @@ public abstract class AbstractComposer {
         void build(C composer);
     }
 
-    /**
-     * A special assembly that accompanies a composer.
-     */
+    /** A special type of assembly that a composer must use to wrap the composer and its action. */
     public static abstract non-sealed class ComposerAssembly<C extends AbstractComposer> extends Assembly {
 
         /** The action to run. */

@@ -22,52 +22,17 @@ import app.packed.operation.Op;
 import app.packed.service.ServiceableBeanConfiguration;
 
 /**
- * Extends {@link ContainerAssembly} with shortcuts for some commonly used extensions and their methods.
+ * Extends {@link BuildableAssembly} with shortcuts for many commonly used methods on {@link BaseExtension} and
+ * {@link ContainerConfiguration}.
  * <p>
- * For example, instead of calling use(ServiceExtension.class).provide(Foo.class) you can just use
- * service().provide(Foo.class) or even just provide(Foo.class).
+ * For example, instead of calling {@code use(BaseExtension.class).provide(FooBean.class)} you can just call
+ * {@code provide(FooBean.class)}.
  * <p>
- * All extensions defined in this module
+ * This class is also annotated with {@link app.packed.extension.BeanCustomHook.JavaBaseSupport} which provide
  *
- * Assemblies provide a simply way to package components and build modular application. This is useful, for example,
- * for:
- * <ul>
- * <li>Sharing functionality across multiple injectors and/or containers.</li>
- * <li>Hiding implementation details from users.</li>
- * <li>Organizing a complex project into distinct sections, such that each section addresses a separate concern.</li>
- * </ul>
- * <p>
- * There are currently two types of assemblies available:
- * <ul>
- * <li><b>{@link BaseAssembly}</b> which assemblies information about services, and creates injector instances using
- * .</li>
- * <li><b>{@link BaseAssembly}</b> which assemblies information about both services and components, and creates
- * container instances using .</li>
- * </ul>
- *
- * @apiNote We never return, for example, Assembly or BaseAssembly. As this would make extending the class difficult
- *          unless we defined all methods as non-final. Method Chaining is used on the component level... Not on the
- *          assembly level?
+ * @apiNote We never return BaseAssembly directly from any method. As this would make extending the class difficult
+ *          unless we defined all methods as non-final.
  */
-
-/**
- * A container assembly. Typically you
- *
- *
- * Assemblies are the main source of system configuration. Basically a assembly is just a thin wrapper around
- * {@link ContainerConfiguration}. Delegating every invocation in the class to an instance of
- * {@link ContainerConfiguration} available via {@link #container()}.
- * <p>
- * A assembly instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with
- * an {@link IllegalStateException}.
- *
- * A generic assembly. Normally you would extend {@link BaseAssembly}
- *
- * @see BaseAssembly
- */
-// Skal have en strategi for hvilke extension vi har med
-// og hvilke metoder fra disse extensions vi har med
-// TODO tror vi sortere metoderne efter extension og saa efter navn
 @JavaBaseSupport
 public abstract class BaseAssembly extends BuildableAssembly {
 

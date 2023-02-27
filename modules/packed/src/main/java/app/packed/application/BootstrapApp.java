@@ -39,13 +39,13 @@ import app.packed.lifetime.LifetimeKind;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AppSetup;
+import internal.app.packed.container.AppSetup.ReusableApplicationImage;
+import internal.app.packed.container.AppSetup.SingleShotApplicationImage;
 import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.BootstrapAppBuilder;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.container.RootApplicationBuilder;
-import internal.app.packed.container.AppSetup.ReusableApplicationImage;
-import internal.app.packed.container.AppSetup.SingleShotApplicationImage;
 import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationInitializationContext;
 
@@ -88,7 +88,7 @@ public final /* primitive */ class BootstrapApp<A> {
     }
 
     /**
-     * Builds an application, launches it and returns the application instance.
+     * Builds an application, launches it and returns an application interface instance (possible {@code void})
      * <p>
      * Typically, methods calling this method is not named {@code launch} but instead something that better reflects what
      * exactly launch means for the particular type of application.
@@ -97,7 +97,7 @@ public final /* primitive */ class BootstrapApp<A> {
      *            the application's assembly
      * @param wirelets
      *            optional wirelets
-     * @return the launched application instance
+     * @return an application interface instance or void
      * @throws RuntimeException
      *             if the application could not be built or failed to launch
      * @see App#run(Assembly, Wirelet...)

@@ -15,42 +15,38 @@
  */
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
 /**
- * An assembly that delegates all calls to another assembly.
+ * A special assembly type that delegates all calls to another assembly.
  * <p>
- * Typical use cases for delegating assembly are:
- *
- * Hide methods on the original assembly. Or to configure a assembly, for example, in test scenarios where you want to
- * specify an assembly class in an annotation.
+ * Some typical use cases for delegating assembly are: TODO
+ * <ul>
+ * <li>Hide methods on an original assembly.</li>
+ * <li>Custom configuration of an existing assembly, for example, in test scanerioys specified .</li>
+ * <li>Finally, {@link ContainerConfiguration#USED} is set to indicate that the composer has been used.</li>
+ * </ul>
  * <p>
- * Delegating assemblies cannot use the {@link AssemblyHook} annotation or {@link BeanHook custom bean hooks}.
- * Attempting to use any of these annotations on a delegating assembly will result in a {@link BuildException} being
- * thrown.
+ * Delegating assemblies cannot use the {@link AssemblyHook} annotation or {@link BeanHook custom bean hooks}. They must
+ * always be placed on the assembly being delegated to instead. Failure to do so will result in a {@link BuildException}
+ * being thrown.
  * <p>
- * Delegated assemblies are never reported from {@link AssemblyMirror#assemblyClass()}, but can be obtained by calling
- * {@link AssemblyMirror#delegatedFrom()}.
+ * Delegating assemblies are never reported from {@link AssemblyMirror#assemblyClass()}, instead the assembly that was
+ * delegated to is reported. The delegating assembly can be obtained from {@link AssemblyMirror#delegatedFrom()}.
  */
-// Alternativt tager den i constructeren, har noget kode jeg ikke lige kan huske der ikke fungere super godt
 public non-sealed abstract class DelegatingAssembly extends Assembly {
 
     /** {@return the assembly to delegate to.} */
     protected abstract Assembly delegateTo();
-}
 
-//// Kan jo saa argumentere for hvorfor man ikke kan specificere wirelets for alle assemblies????
-//// Altsaa det ikke mening kun at give tilladelse til at have den her
-//// Kunne endda have en instans metode paa Assembly....
-//static Assembly wireWith(Assembly assembly, Wirelet... wirelets) {
-//    return assembly;
-//}
-
-abstract class ZalternativDesignAssembly<T extends Assembly> {
-
-    protected final T assembly;
-
-    ZalternativDesignAssembly(T assembly, Wirelet... wirelets) {
-        this.assembly = requireNonNull(assembly);
+    /**
+     * Constructs a delegating assembly that will prefix all usage of the specified assembly with specified wirelets
+     *
+     * @param assembly
+     *            the assembly to add wirelets to
+     * @param wirelets
+     *            the wirelets to add when using the delegated assembly
+     * @return the delegating assembly
+     */
+    static DelegatingAssembly wireWith(Assembly assembly, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
     }
 }

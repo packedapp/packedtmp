@@ -21,7 +21,7 @@ import app.packed.bean.OnInitialize;
 import app.packed.bean.OnStart;
 import app.packed.bean.OnStop;
 import app.packed.container.BaseAssembly;
-import app.packed.entrypoint.Main;
+import app.packed.lifetime.Main;
 import internal.app.packed.lifetime.sandbox.Program;
 
 /**

@@ -24,7 +24,7 @@ import internal.app.packed.operation.OperationSetup;
  * <p>
  * Instances of ApplicationMirror can be injected at runtime simply by declaring a dependency on it.
  * <p>
- * Like many other mirrors classes this class can be extended and returned using
+ * Like many other mirrors classes the type of application mirror being returned can be specialized using
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)}.
  */
 @BindingTypeHook(extension = BaseExtension.class)
@@ -119,7 +119,6 @@ public class ApplicationMirror implements Mirror {
     }
 
     private void print0(ContainerSetup cs) {
-        System.out.println(cs.path());
         for (var e = cs.treeFirstChild; e != null; e = e.treeNextSiebling) {
             print0(e);
         }
@@ -129,7 +128,8 @@ public class ApplicationMirror implements Mirror {
             sb.append(" [").append(b.beanClass.getName()).append("], owner = " + b.owner());
             sb.append("\n");
             for (OperationSetup os : b.operations) {
-                sb.append("  ".repeat(b.path().depth()));
+                // sb.append(" ".repeat(b.path().depth()));
+                sb.append("    o ");
                 sb.append(os.mirror());
                 sb.append("\n");
             }
@@ -163,24 +163,3 @@ public class ApplicationMirror implements Mirror {
     }
 }
 
-//default <T extends ComponentMirror> SetView<T> findAll(Class<T> componentType, boolean includeChildApplications) {
-//    throw new UnsupportedOperationException();
-//}
-
-//// Relations between to different applications
-//// Ret meget som ComponentRelation
-//
-///// Maaske flyt til ApplicationMirror.relation...
-///// Der er ingen der kommer til at lave dem selv...
-
-//default <T extends ComponentMirror> Stream<T> select(Class<T> componentType) {
-//  throw new UnsupportedOperationException();
-//}
-
-//default TreeWalker<ApplicationMirror> walker() {
-//    throw new UnsupportedOperationException();
-//    // app.components() <-- all component in the application
-//    // app.component().walker() <--- all components application or not...
-//
-//    // someComponent.walker().filter(c->c.application == SomeApp)...
-//}

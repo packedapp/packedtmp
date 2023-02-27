@@ -7,22 +7,21 @@ module app.packed {
     exports app.packed.container;
     exports app.packed.errorhandling;
     exports app.packed.extension;
-    exports app.packed.extension.bean;
-    exports app.packed.extension.container;
-    exports app.packed.extension.context;
-    exports app.packed.extension.operation;
-    exports app.packed.extension.sandbox;
     exports app.packed.lifetime;
     exports app.packed.operation;
     exports app.packed.service;
     exports app.packed.util;
 
     // Essential extensions
-    exports app.packed.entrypoint;
 
     // temporary sandbox thingies
     exports app.packed.operation.mirror;
     exports app.packed.lifetime.sandbox;
+    exports app.packed.extension.bean;
+    exports app.packed.extension.container;
+    exports app.packed.extension.context;
+    exports app.packed.extension.operation;
+    exports app.packed.extension.sandbox;
 
     /* Special support for packed-devtoolks */
     uses internal.app.packed.framework.devtools.PackedDevToolsIntegration;

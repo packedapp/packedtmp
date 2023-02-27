@@ -21,7 +21,7 @@ package app.packed.application;
 public enum BuildGoal {
 
     /**
-     * The goal is to build an {@link ApplicationImage} that can be launched a single time.
+     * The goal is to build an application image that can be launched a single time at a later point.
      *
      * @see App#newLauncher(Assembly, Wirelet...)
      */
@@ -55,7 +55,7 @@ public enum BuildGoal {
      */
     VERIFY;
 
-    /** {@return whether or not code should be generated doing the build phase.} */
+    /** {@return whether or not code will be generated doing the build task.} */
     public boolean isCodeGenerating() {
         return this == LAUNCH_NOW || this == LAUNCH_LATER || this == LAUNCH_REPEATABLE;
     }

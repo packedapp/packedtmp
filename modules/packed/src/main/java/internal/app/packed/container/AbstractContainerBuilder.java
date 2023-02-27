@@ -39,7 +39,7 @@ public abstract sealed class AbstractContainerBuilder permits RootApplicationBui
     /** The application we are installing the container into. */
     // I think once we get app-on-app this is Nullable
     @Nullable
-    public ApplicationSetup application;
+    ApplicationSetup application;
 
     /** Locals that the container is initialized with. */
     final IdentityHashMap<PackedContainerLocal<?>, Object> locals = new IdentityHashMap<>();
@@ -59,7 +59,7 @@ public abstract sealed class AbstractContainerBuilder permits RootApplicationBui
 
     public Wirelet[] wirelets = new Wirelet[0];
 
-    protected AbstractContainerBuilder(ContainerTemplate template) {
+    AbstractContainerBuilder(ContainerTemplate template) {
         this.template = (PackedContainerTemplate) requireNonNull(template, "template is null");
     }
 
@@ -71,7 +71,6 @@ public abstract sealed class AbstractContainerBuilder permits RootApplicationBui
             return new ContainerLifetimeSetup(this, container, null);
         }
     }
-
 
     public abstract BuildGoal goal();
 
@@ -159,9 +158,10 @@ public abstract sealed class AbstractContainerBuilder permits RootApplicationBui
                 }
             }
         }
+        this.name = n;
 
         // Create the new extension
-        ContainerSetup container = new ContainerSetup(this, assembly, n);
+        ContainerSetup container = new ContainerSetup(this, assembly);
 
         // BaseExtension is automatically used by every container
         ExtensionSetup.install(BaseExtension.class, container, null);

@@ -1,4 +1,4 @@
-package app.packed.entrypoint;
+package app.packed.lifetime;
 
 import app.packed.operation.OperationMirror;
 

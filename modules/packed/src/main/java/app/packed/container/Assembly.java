@@ -18,32 +18,37 @@ package app.packed.container;
 import app.packed.container.AbstractComposer.ComposerAssembly;
 
 /**
+ * An assembly is the basic building block for creating applications in Packed.
  * <p>
- * An assembly encapsulates the instructions to build an application or parts hereof.
+ * An assembly provides the fundamental instructions for creating an application, and every application in Packed is
+ * constructed either directly or indirectly from an assembly. A single assembly can either comprise the entire
+ * application or serve as the root of an assembly hierarchy in which each node is responsible for building a specific
+ * portion of the application.
+ * <p>
+ * Assemblies provide a simply way to package components and build modular application. This is useful, for example,
+ * for:
+ * <ul>
+ * <li>Sharing functionality across multiple injectors and/or containers.</li>
+ * <li>Hiding implementation details from users.</li>
+ * <li>Organizing a complex project into distinct sections, such that each section addresses a separate concern.</li>
+ * </ul>
+ * <p>
+ * There are currently two types of assemblies available:
+ * <ul>
+ * <li><b>{@link BaseAssembly}</b> which assemblies information about services, and creates injector instances using
+ * .</li>
+ * <li><b>{@link BaseAssembly}</b> which assemblies information about both services and components, and creates
+ * container instances using .</li>
+ * </ul>
  *
+ * A assembly instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with
+ * an {@link IllegalStateException}.
  *
  * <p>
- * An assembly can statically link other assemblies, typically by calling
- * {@link ContainerConfiguration#link(Assembly, Wirelet...)}. Paa den
- *
+ * For more complicated needs an application can itself be split into a hierarchy of application nodes with a single
+ * application as the root.
  * <p>
  * This class cannot be extended directly, instead you should typically extend {@link BaseAssembly} instead.
- *
- *
- *
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings("rawtypes") // Eclipse bug
 public sealed abstract class Assembly permits BuildableAssembly, DelegatingAssembly, ComposerAssembly {}
-/*
- *
- * Assemblies contain instructions on how to build an application
- *
- * Assemblies are the main way
- *
- * An assembly is basically instructions on how to create an application. And all applications in Packed are created
- * either directly or indirectly from an Assembly. A single assembly either forms the whole or application or is linkage
- * in an tree. In such a way as the assemblies form a tree.
- *
- * Every component of an application has an assembly where they where configured.
- *
- */

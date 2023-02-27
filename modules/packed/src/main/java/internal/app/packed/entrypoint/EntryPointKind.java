@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.entrypoint;
+package internal.app.packed.entrypoint;
 
-import app.packed.container.Wirelet;
+/**
+ *
+ */
+public enum EntryPointKind {
 
-/** Various wirelets that can be used together with the {@link EntryPointExtension}. */
-public final class EntryPointWirelets {
+    // Attempt to run this as early as possible
+    EARLY_STOP,
 
-    /** No entry for you. */
-    private EntryPointWirelets() {}
+    OPERATION_THIS_LIFETIME,
 
-    public static Wirelet args(String... args) {
-        throw new UnsupportedOperationException();
-    }
+    OPERATION_NEW_LIFETIME;
 }

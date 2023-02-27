@@ -268,6 +268,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return PackedContainerBuilder.of(ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application, extension.container);
     }
 
+    public void applicationLink(Assembly assembly, Wirelet... wirelets) {
+        // Syntes den er maerkelig hvis vi havde ApplicationWirelet.NEW_APPLICATION
+        // Den her er klarere
+        link().build(assembly, wirelets);
+    }
+
     /**
      * Creates a new child container by linking the specified assembly.
      *
@@ -290,15 +296,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     public ContainerConfiguration link(Wirelet... wirelets) {
         ContainerHandle handle = link().build(wirelets);
         return new ContainerConfiguration(handle);
-    }
-
-    // Maybe just a wirelet...
-    public void linkLazy(Assembly assembly, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    public ContainerConfiguration linkLazy(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
     }
 
     /**
