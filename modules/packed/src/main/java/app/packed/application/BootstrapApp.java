@@ -23,6 +23,8 @@ import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.function.Supplier;
 
+import app.packed.application.BootstrapAppApplicationSetup.ReusableApplicationImage;
+import app.packed.application.BootstrapAppApplicationSetup.SingleShotApplicationImage;
 import app.packed.bean.BeanKind;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
@@ -35,16 +37,13 @@ import app.packed.extension.bean.BeanTemplate;
 import app.packed.extension.container.ExtensionLink;
 import app.packed.extension.context.ContextTemplate;
 import app.packed.extension.operation.OperationTemplate;
+import app.packed.lifetime.LifetimeKind;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
+import internal.app.packed.container.AbstractContainerBuilder;
 import internal.app.packed.container.ApplicationSetup;
-import internal.app.packed.container.BootstrapAppBuilder;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
-import internal.app.packed.container.RootApplicationBuilder;
-import internal.app.packed.container.RootApplicationSetup;
-import internal.app.packed.container.RootApplicationSetup.ReusableApplicationImage;
-import internal.app.packed.container.RootApplicationSetup.SingleShotApplicationImage;
 import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
@@ -73,7 +72,7 @@ import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 public final /* primitive */ class BootstrapApp<A> {
 
     /** The internal bootstrap app. */
-    private final RootApplicationSetup setup;
+    private final BootstrapAppApplicationSetup setup;
 
     /**
      * Create a new bootstrap app
@@ -81,7 +80,7 @@ public final /* primitive */ class BootstrapApp<A> {
      * @param setup
      *            the internal configuration of the app.
      */
-    private BootstrapApp(RootApplicationSetup setup) {
+    private BootstrapApp(BootstrapAppApplicationSetup setup) {
         this.setup = requireNonNull(setup);
     }
 
@@ -102,7 +101,7 @@ public final /* primitive */ class BootstrapApp<A> {
      */
     @SuppressWarnings("unchecked")
     public A launch(Assembly assembly, Wirelet... wirelets) {
-        RootApplicationBuilder builder = new RootApplicationBuilder(setup, BuildGoal.LAUNCH_NOW);
+        BootstrapAppApplicationBuilder builder = new BootstrapAppApplicationBuilder(setup, BuildGoal.LAUNCH_NOW);
 
         // Builds the application
         ApplicationSetup application = builder.build(assembly, wirelets);
@@ -129,7 +128,7 @@ public final /* primitive */ class BootstrapApp<A> {
      *             if the application could not be build
      */
     public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        RootApplicationBuilder builder = new RootApplicationBuilder(setup, BuildGoal.MIRROR);
+        BootstrapAppApplicationBuilder builder = new BootstrapAppApplicationBuilder(setup, BuildGoal.MIRROR);
 
         // Builds the application
         ApplicationSetup application = builder.build(assembly, wirelets);
@@ -139,7 +138,7 @@ public final /* primitive */ class BootstrapApp<A> {
     }
 
     public ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets) {
-        RootApplicationBuilder builder = new RootApplicationBuilder(setup, BuildGoal.LAUNCH_REPEATABLE);
+        BootstrapAppApplicationBuilder builder = new BootstrapAppApplicationBuilder(setup, BuildGoal.LAUNCH_REPEATABLE);
 
         // Builds the application
         ApplicationSetup application = builder.build(assembly, wirelets);
@@ -162,7 +161,7 @@ public final /* primitive */ class BootstrapApp<A> {
     // Andre image optimizations //// Don't cache beans info
     /// Nu bliver jeg i tvivl igen... Fx med Tester // launchLazily?
     public ApplicationLauncher<A> newLauncher(Assembly assembly, Wirelet... wirelets) {
-        RootApplicationBuilder builder = new RootApplicationBuilder(setup, BuildGoal.LAUNCH_LATER);
+        BootstrapAppApplicationBuilder builder = new BootstrapAppApplicationBuilder(setup, BuildGoal.LAUNCH_LATER);
 
         // Builds the application
         ApplicationSetup application = builder.build(assembly, wirelets);
@@ -182,7 +181,7 @@ public final /* primitive */ class BootstrapApp<A> {
      *             if the application could not be build
      */
     public void verify(Assembly assembly, Wirelet... wirelets) {
-        RootApplicationBuilder builder = new RootApplicationBuilder(setup, BuildGoal.VERIFY);
+        BootstrapAppApplicationBuilder builder = new BootstrapAppApplicationBuilder(setup, BuildGoal.VERIFY);
 
         // Builds (and verifies) the application
         builder.build(assembly, wirelets);
@@ -212,6 +211,7 @@ public final /* primitive */ class BootstrapApp<A> {
     public BootstrapApp<A> with(Wirelet... wirelets) {
         return new BootstrapApp<>(setup.with(wirelets));
     }
+
     public BootstrapApp<A> expectsResult(Class<?> resultType) {
         return this;
         // Ideen er bootstrapApp.expectsResult(FooBar.class).launch(...);
@@ -248,14 +248,40 @@ public final /* primitive */ class BootstrapApp<A> {
             mh = mh.asType(mh.type().changeReturnType(Object.class));
         }
 
-        RootApplicationSetup a = new RootApplicationSetup(composer.mirrorSupplier, composer.template, mh, null);
+        BootstrapAppApplicationSetup a = new BootstrapAppApplicationSetup(composer.mirrorSupplier, composer.template, mh, null);
         return new BootstrapApp<>(a);
+    }
+
+    /** A builder for creating {@link app.packed.application.BootstrapApp bootstrap applications}. */
+    private static final class BootstrapAppBuilder extends AbstractContainerBuilder {
+
+        /** A container template that is used for {@link BootstrapApp}. */
+        private static final PackedContainerTemplate TEMPLATE = new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION, BootstrapApp.class,
+                List.of(), void.class);
+
+        /**
+         * @param template
+         */
+        public BootstrapAppBuilder() {
+            super(TEMPLATE);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public BuildGoal goal() {
+            return BuildGoal.LAUNCH_NOW;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public LifetimeKind lifetimeKind() {
+            return LifetimeKind.UNMANAGED;
+        }
     }
 
     private static class BootstrapAppExtension extends FrameworkExtension<BootstrapAppExtension> {
 
-        static final ContextTemplate CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationLaunchContext.class,
-                ApplicationLaunchContext.class);
+        static final ContextTemplate CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationLaunchContext.class, ApplicationLaunchContext.class);
 
         static final OperationTemplate ot = OperationTemplate.raw().withContext(CIT).returnTypeObject();
 
@@ -302,7 +328,7 @@ public final /* primitive */ class BootstrapApp<A> {
 
         private Composer(@Nullable Object o, Class<?> type) {
             this.o = o;
-            this.template = new PackedContainerTemplate(PackedContainerKind.ROOT_UNMANAGED, type, List.of(), null);
+            this.template = new PackedContainerTemplate(PackedContainerKind.ROOT_UNMANAGED, type, List.of(), void.class);
         }
 
         /**

@@ -13,25 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package app.packed.cli;
 
-import app.packed.container.Wirelet;
-import app.packed.util.Nullable;
+import java.util.LinkedHashMap;
+
+import app.packed.extension.domain.ExtensionDomain;
+import app.packed.extension.operation.OperationHandle;
 
 /**
- *
+ * A cli domain is a domain where all cli commands are unique. Typically there is never more than one per application.
  */
-public class BuildtimeWireletProcessor {
+class CliExtensionDomain extends ExtensionDomain<CliExtension> {
 
-    @Nullable
-    String name;
+    /** All the commands within the domain. */
+    final LinkedHashMap<String, CliC> commands = new LinkedHashMap<>();
 
-
-    public void process(Wirelet[] wirelets) {
-
-    }
-
-    public enum UseType {
-        LINK_ASSEMBLY, LINK;
-    }
+    record CliC(CliCommand command, OperationHandle operation) {}
 }

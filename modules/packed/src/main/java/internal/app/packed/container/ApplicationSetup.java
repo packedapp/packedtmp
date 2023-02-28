@@ -25,7 +25,6 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
 import app.packed.util.Nullable;
-import internal.app.packed.entrypoint.LifetimeEntryPointManager;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
@@ -33,8 +32,8 @@ import internal.app.packed.util.types.ClassUtil;
 /**
  * Internal configuration of an application.
  * <p>
- * Is {@code internal.app.packed.container} because it is so tightly integrated with containers.
- * It made best to put it here as well.
+ * This class is placed in {@code internal.app.packed.container} because it is so tightly integrated with containers. It
+ * made best to put it here as well.
  */
 public final class ApplicationSetup {
 
@@ -42,9 +41,8 @@ public final class ApplicationSetup {
     private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ApplicationMirror.class, "initialize",
             void.class, ApplicationSetup.class);
 
-    /** An object that is shared between all entry point extensions in the same application. */
-    public final LifetimeEntryPointManager shared = new LifetimeEntryPointManager();
-
+    /** Children (statically defined) of this application. */
+    final ArrayList<ApplicationChild> children = new ArrayList<>();
 
     /** A list of actions that will be executed doing the code generating phase. Or null if code generation is disabled. */
     @Nullable
@@ -55,15 +53,16 @@ public final class ApplicationSetup {
 
     /**
      * All extensions used in an application has a unique instance id attached. This is used in case we have multiple
-     * extension with the same canonical name (from different class loaders). We then compare the extension id of the
-     * extensions as a last resort when sorting them.
+     * extension with the same canonical name. Which may happen for if the same extension is defined in different class
+     * loaders. We then compare the extension id of the extensions as a last resort when sorting them.
      */
-    public int extensionIdCounter;
+    int extensionIdCounter;
 
     /** The build goal. */
     public final BuildGoal goal;
 
-    final Supplier<? extends ApplicationMirror> mirrorSupplier;
+    /** Supplies mirrors for the application. */
+    private final Supplier<? extends ApplicationMirror> mirrorSupplier;
 
     /** The current phase of the application's build process. */
     private ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
@@ -77,12 +76,10 @@ public final class ApplicationSetup {
      *            the assembly that defines the application
      */
     public ApplicationSetup(AbstractContainerBuilder containerBuilder, AssemblySetup assembly) {
-        containerBuilder.application = this;
-
         this.goal = containerBuilder.goal();
         this.codegenActions = goal.isCodeGenerating() ? new ArrayList<>() : null;
         this.mirrorSupplier = containerBuilder.applicationMirrorSupplier;
-        this.container = containerBuilder.newContainer(assembly);
+        this.container = containerBuilder.newContainer(this, assembly);
     }
 
     /**
@@ -94,7 +91,7 @@ public final class ApplicationSetup {
      * @throws IllegalStateException
      *             if already in the code generating phase or if the build has finished
      */
-    public void addCodeGenerator(Runnable action) {
+    public void addCodegenAction(Runnable action) {
         requireNonNull(action, "action is null");
         if (phase != ApplicationBuildPhase.ASSEMBLE) {
             throw new IllegalStateException("This method must be called in the assemble phase of the application");
@@ -122,15 +119,12 @@ public final class ApplicationSetup {
         if (codegenActions != null) {
             phase = ApplicationBuildPhase.CODEGEN;
 
-//            CodegenEvent ce = new CodegenEvent();
-//            ce.begin();
-
             // Run through all code generating actions
             for (Runnable r : codegenActions) {
                 r.run();
             }
 
-//            ce.commit();
+            // clear out all actions.
             codegenActions = null;
         }
 

@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.entrypoint;
+package app.packed.cli;
 
 /**
- *
+ * Thrown at runtime to indicate a problem with CLI
  */
-public class ContainerEntryPoint {
+// Fx ConverterExceptions taenker jeg ikke at vi wrapper...
+public class CliException extends RuntimeException {
 
+    private static final long serialVersionUID = 1L;
 
 }

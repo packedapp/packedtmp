@@ -124,7 +124,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     public int registerEntryPoint(Class<?> hook) {
-        return super.extensionSetup().container.application.shared.takeOver(extension(), usedBy());// .registerEntryPoint(usedBy(), isMain);
+        return super.extensionSetup().container.lifetime.entryPoints.takeOver(extension(), usedBy());// .registerEntryPoint(usedBy(), isMain);
     }
 
     /**

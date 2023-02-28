@@ -23,9 +23,9 @@ import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.operation.OperationHandle;
-import app.packed.lifetime.EntryPointMirror;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationMirror;
 
 /** An extension point for {@link EntryPointExtension}. */
 
@@ -69,7 +69,7 @@ public class OldEntryPointExtensionPoint extends ExtensionPoint<BaseExtension> {
 //        return extension().shared.takeOver(extension(), usedBy());// .registerEntryPoint(usedBy(), isMain);
 //    }
 
-    public OperationHandle specializeMirror(OperationHandle configuration, int id, Supplier<? extends EntryPointMirror> supplier) {
+    public OperationHandle specializeMirror(OperationHandle configuration, int id, Supplier<? extends OperationMirror> supplier) {
         // Ved ikke lige helt hvordan den skal fungere
         return configuration;
     }

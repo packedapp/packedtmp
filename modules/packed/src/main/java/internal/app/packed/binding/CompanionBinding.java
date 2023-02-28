@@ -16,14 +16,13 @@
 package internal.app.packed.binding;
 
 import app.packed.container.Realm;
-import app.packed.extension.BaseExtension;
 import app.packed.operation.BindingMirror;
 import internal.app.packed.lifetime.PackedExtensionLink;
 
 /**
  *
  */
-public class CompanionBinding  {
+public class CompanionBinding {
 
     PackedExtensionLink bridge;
 
@@ -41,17 +40,15 @@ public class CompanionBinding  {
 
     // UserSpace, ExtensionSpace, FrameworkSpace
 
-
     // Kan vel kun paa ting man direkte depender paa?
-
 
     /** {@inheritDoc} */
     public Realm boundBy() {
-        return Realm.extension(BaseExtension.class);
+       throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     protected BindingMirror mirror0() {
         throw new UnsupportedOperationException();
     }
-    }
+}

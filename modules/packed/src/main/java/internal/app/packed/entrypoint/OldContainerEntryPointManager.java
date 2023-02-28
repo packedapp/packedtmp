@@ -24,7 +24,7 @@ import app.packed.extension.Extension;
 import app.packed.util.Nullable;
 
 /** An instance of this class is shared between all entry point extensions for a single application. */
-public class LifetimeEntryPointManager {
+public class OldContainerEntryPointManager {
 
     @Nullable
     public Class<? extends Extension<?>> dispatcher;
@@ -35,6 +35,14 @@ public class LifetimeEntryPointManager {
     public final List<EntryPointConf> entrypoints = new ArrayList<>();
 
     MethodHandle[] entryPoints;
+
+    Class<? extends Extension<?>> controlledBy;
+
+    /** Any entry point of the lifetime, null if there are none. */
+    @Nullable
+    public OldEntryPointSetup entryPoint;
+
+    Class<?> resultType;
 
     public int takeOver(Extension<?> epe, Class<? extends Extension<?>> takeOver) {
         if (this.dispatcher != null) {

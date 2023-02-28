@@ -1,5 +1,6 @@
 module app.packed {
     requires transitive jdk.jfr;
+//    requires jdk.incubator.concurrent;
 
     exports app.packed.application;
     exports app.packed.bean;

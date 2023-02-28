@@ -100,7 +100,7 @@ public final /* primitive */ class AssemblyModel {
      *            the type of assembly to return a model for
      * @return a model for the specified assembly
      */
-    static AssemblyModel of(Class<? extends Assembly> assemblyClass) {
+    public static AssemblyModel of(Class<? extends Assembly> assemblyClass) {
         return MODELS.get(assemblyClass);
     }
 }

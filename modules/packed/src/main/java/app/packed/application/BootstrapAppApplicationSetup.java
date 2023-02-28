@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,15 +22,17 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.application.ApplicationLauncher;
-import app.packed.application.ApplicationMirror;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
+import internal.app.packed.container.ApplicationSetup;
+import internal.app.packed.container.CompositeWirelet;
+import internal.app.packed.container.PackedContainerTemplate;
+import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The internal representation of a bootstrap app. */
-public final class RootApplicationSetup {
+final class BootstrapAppApplicationSetup {
 
     /** The method handle used for creating new application instances. */
     // We need more info for bootstrap mirrors
@@ -46,7 +48,7 @@ public final class RootApplicationSetup {
     @Nullable
     public final Wirelet wirelet;
 
-    public RootApplicationSetup(Supplier<? extends ApplicationMirror> mirrorSupplier, PackedContainerTemplate pot, MethodHandle mh, Wirelet wirelet) {
+    BootstrapAppApplicationSetup(Supplier<? extends ApplicationMirror> mirrorSupplier, PackedContainerTemplate pot, MethodHandle mh, Wirelet wirelet) {
         this.wirelet = wirelet;
         this.mhConstructor = requireNonNull(mh);
         this.mirrorSupplier = requireNonNull(mirrorSupplier);
@@ -69,20 +71,20 @@ public final class RootApplicationSetup {
     }
 
     /** {@inheritDoc} */
-    public RootApplicationSetup with(Wirelet... wirelets) {
+    public BootstrapAppApplicationSetup with(Wirelet... wirelets) {
         // Skal vi checke noget med components
         Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
-        return new RootApplicationSetup(mirrorSupplier, template, mhConstructor, w);
+        return new BootstrapAppApplicationSetup(mirrorSupplier, template, mhConstructor, w);
     }
 
     /**
      * Implementation of {@link ApplicationLauncher} used by {@link BootstrapApp#newImage(Assembly, Wirelet...)}.
      */
-    public static final class SingleShotApplicationImage<A> implements ApplicationLauncher<A> {
+    static final class SingleShotApplicationImage<A> implements ApplicationLauncher<A> {
 
         private final AtomicReference<ReusableApplicationImage<A>> ref;
 
-        public SingleShotApplicationImage(RootApplicationSetup driver, ApplicationSetup application) {
+        SingleShotApplicationImage(BootstrapAppApplicationSetup driver, ApplicationSetup application) {
             this.ref = new AtomicReference<>(new ReusableApplicationImage<>(driver, application));
         }
 
@@ -103,7 +105,7 @@ public final class RootApplicationSetup {
     /**
      * Implementation of {@link ApplicationLauncher} used by {@link OldBootstrapApp#newImage(Assembly, Wirelet...)}.
      */
-    public /* primitive */ record ReusableApplicationImage<A>(RootApplicationSetup driver, ApplicationSetup application) implements ApplicationLauncher<A> {
+    /* primitive */ record ReusableApplicationImage<A>(BootstrapAppApplicationSetup driver, ApplicationSetup application) implements ApplicationLauncher<A> {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
@@ -123,7 +125,7 @@ public final class RootApplicationSetup {
     }
 
     /** A application launcher that maps the result of the launch. */
-    public /* primitive */ record MappedApplicationImage<A, F>(ApplicationLauncher<F> image, Function<? super F, ? extends A> mapper)
+    /* primitive */ record MappedApplicationImage<A, F>(ApplicationLauncher<F> image, Function<? super F, ? extends A> mapper)
             implements ApplicationLauncher<A> {
 
         /** {@inheritDoc} */

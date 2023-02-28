@@ -36,7 +36,7 @@ import internal.app.packed.bean.BeanLifecycleOperation;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.AbstractContainerBuilder;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.entrypoint.OldContainerNexus;
+import internal.app.packed.entrypoint.OldContainerEntryPointManager;
 import internal.app.packed.lifetime.runtime.PackedContainerContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.AbstractTreeNode;
@@ -57,16 +57,17 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     private static final MethodHandle MH_LIFETIME_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ContainerLifetimeMirror.class,
             "initialize", void.class, ContainerLifetimeSetup.class);
 
-    /** Beans that have independent lifetime of the container. */
-    private List<BeanLifetimeSetup> beanLifetimes; // what are using this for??
+    /** Beans that have independent lifetime of all the container's in this lifetime. */
+    private final ArrayList<BeanLifetimeSetup> beanLifetimes = new ArrayList<>(); // what are using this for??
 
-    /** All beans that are of this lifetime in order of installation. */
+    /** All beans that are in this lifetime, in order of installation. */
     public final ArrayList<BeanSetup> beans = new ArrayList<>();
 
     /** The root container of the lifetime. */
     public final ContainerSetup container;
 
-    public final OldContainerNexus nexus = new OldContainerNexus();
+    /** An object that is shared between all entry point extensions in the same application. */
+    public final OldContainerEntryPointManager entryPoints = new OldContainerEntryPointManager();
 
     public final FuseableOperation initialization;
 
@@ -81,6 +82,8 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     public final FuseableOperation startup;
 
+    // Er ikke noedvendigvis fra et entrypoint, kan ogsaa vaere en completer
+    public final Class<?> resultType;
     /**
      * @param origin
      * @param parent
@@ -93,6 +96,8 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         this.shutdown = new FuseableOperation(OperationTemplate.defaults());
 
         this.container = newContainer;
+        this.resultType = installer.template.resultType();
+
         if (newContainer.treeParent == null) {
             reserve(ManagedLifetime.class);
         }
@@ -107,11 +112,15 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     }
 
     public BeanLifetimeSetup addDetachedChildBean(BeanLifetimeSetup lifetime) {
-        if (beanLifetimes == null) {
-            beanLifetimes = new ArrayList<>(1);
-        }
+        // I don't know what we use this method for
         beanLifetimes.add(lifetime);
         return lifetime;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public LifetimeKind lifetimeKind() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -176,7 +185,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
                 OperationSetup os = bean.operations.get(0);
 
-                bean.container.application.addCodeGenerator(() -> {
+                bean.container.application.addCodegenAction(() -> {
                     MethodHandle mha = os.generateMethodHandle();
 
                     // We store container beans in a generic object array.
@@ -192,19 +201,19 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         for (BeanLifecycleOperation lop : bean.lifecycleOperations) {
             if (lop.runOrder().runState == RunState.INITIALIZING) {
                 initialization.operations.add(lop.handle());
-                bean.container.application.addCodeGenerator(() -> {
+                bean.container.application.addCodegenAction(() -> {
                     MethodHandle mh = lop.handle().generateMethodHandle();
                     initialization.methodHandles.add(mh);
                 });
             } else if (lop.runOrder().runState == RunState.STARTING) {
                 startup.operations.add(lop.handle());
-                bean.container.application.addCodeGenerator(() -> {
+                bean.container.application.addCodegenAction(() -> {
                     MethodHandle mh = lop.handle().generateMethodHandle();
                     startup.methodHandles.add(mh);
                 });
             } else if (lop.runOrder().runState == RunState.STOPPING) {
                 shutdown.operations.addFirst(lop.handle());
-                bean.container.application.addCodeGenerator(() -> {
+                bean.container.application.addCodegenAction(() -> {
                     MethodHandle mh = lop.handle().generateMethodHandle();
                     shutdown.methodHandles.addFirst(mh);
                 });
@@ -238,12 +247,6 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         }
         PackedContainerContext pec = (PackedContainerContext) ec;
         pec.storeObject(bean.lifetimeStoreIndex, instance);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public LifetimeKind lifetimeKind() {
-        throw new UnsupportedOperationException();
     }
 }
 

@@ -15,6 +15,14 @@
  */
 package app.packed.container;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import app.packed.application.BuildException;
+import internal.app.packed.container.AbstractContainerBuilder;
+import internal.app.packed.container.AssemblyModel;
+import internal.app.packed.container.AssemblySetup;
+
 /**
  * A special assembly type that delegates all calls to another assembly.
  * <p>
@@ -37,6 +45,31 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
     /** {@return the assembly to delegate to.} */
     protected abstract Assembly delegateTo();
 
+    @Override
+    AssemblySetup build(AbstractContainerBuilder containerBuilder) {
+        // Check that this assembly does not use AssemblyHooks
+        AssemblyModel.of(getClass());
+
+        ArrayList<Class<? extends DelegatingAssembly>> delegatingAssemblies = containerBuilder.delegatingAssemblies;
+        if (delegatingAssemblies == null) {
+            delegatingAssemblies = containerBuilder.delegatingAssemblies = new ArrayList<>(1);
+        } else if (delegatingAssemblies.size() == 100) {
+            // Maybe stack overflow is fine
+            throw new BuildException(
+                    "Inifite loop suspected, cannot have more than 100 delegating assemblies, assemblyClass = " + getClass().getCanonicalName());
+        }
+
+        Assembly a = delegateTo();
+        if (a == null) {
+            throw new BuildException(
+                    "Delagating assembly: " + getClass() + " cannot return null from " + DelegatingAssembly.class.getSimpleName() + "::delegateTo");
+        }
+        delegatingAssemblies.add(getClass());
+
+        // Process the assembly that was delegated to
+        return a.build(containerBuilder);
+    }
+
     /**
      * Constructs a delegating assembly that will prefix all usage of the specified assembly with specified wirelets
      *
@@ -46,7 +79,32 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
      *            the wirelets to add when using the delegated assembly
      * @return the delegating assembly
      */
-    static DelegatingAssembly wireWith(Assembly assembly, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
+    // Maybe on Wirelet?
+    public static Assembly wireWith(Assembly assembly, Wirelet... wirelets) {
+        return new WireletDelegatingAssembly(assembly, wirelets);
+    }
+
+    private static class WireletDelegatingAssembly extends DelegatingAssembly {
+        private final Assembly assembly;
+        private final List<Wirelet> wirelets;
+
+        private WireletDelegatingAssembly(Assembly assembly, Wirelet[] wirelets) {
+            this.assembly = assembly;
+            this.wirelets = List.of(wirelets);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        protected Assembly delegateTo() {
+            return assembly;
+        }
+
+        @Override
+        AssemblySetup build(AbstractContainerBuilder containerBuilder) {
+            for (Wirelet w : wirelets) {
+                containerBuilder.processWirelet(w);
+            }
+            return assembly.build(containerBuilder);
+        }
     }
 }

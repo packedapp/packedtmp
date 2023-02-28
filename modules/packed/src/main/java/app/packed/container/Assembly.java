@@ -16,6 +16,8 @@
 package app.packed.container;
 
 import app.packed.container.AbstractComposer.ComposerAssembly;
+import internal.app.packed.container.AbstractContainerBuilder;
+import internal.app.packed.container.AssemblySetup;
 
 /**
  * An assembly is the basic building block for creating applications in Packed.
@@ -51,4 +53,7 @@ import app.packed.container.AbstractComposer.ComposerAssembly;
  * This class cannot be extended directly, instead you should typically extend {@link BaseAssembly} instead.
  */
 @SuppressWarnings("rawtypes") // Eclipse bug
-public sealed abstract class Assembly permits BuildableAssembly, DelegatingAssembly, ComposerAssembly {}
+public sealed abstract class Assembly permits BuildableAssembly, DelegatingAssembly, ComposerAssembly {
+
+    abstract AssemblySetup build(AbstractContainerBuilder containerBuilder);
+}

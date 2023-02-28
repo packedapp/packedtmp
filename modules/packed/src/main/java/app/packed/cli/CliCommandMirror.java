@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.application;
+package app.packed.cli;
 
-import app.packed.extension.ContainerLocal;
+import app.packed.operation.OperationMirror;
 
 /**
- *
+ * A mirror for a CLI command operation.
  */
-public interface ApplicationInstaller {
+public class CliCommandMirror extends OperationMirror {
 
-    // ServiceExtension.
-    <T> ApplicationInstaller setLocal(ContainerLocal<T> local, T value);
 }

@@ -63,7 +63,7 @@ public final class ServiceManager {
         this.parent = parent;
 
         if (container != null && container.treeParent == null) {
-            container.application.addCodeGenerator(() -> exportedServices = exportedServices());
+            container.application.addCodegenAction(() -> exportedServices = exportedServices());
         }
     }
 

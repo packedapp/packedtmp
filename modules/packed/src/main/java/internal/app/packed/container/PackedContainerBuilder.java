@@ -47,7 +47,6 @@ public final class PackedContainerBuilder extends AbstractContainerBuilder imple
     private PackedContainerBuilder(ContainerTemplate template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
             @Nullable ContainerSetup parent) {
         super(template);
-        this.application = requireNonNull(application);
         this.parent = parent;
         this.installedBy = requireNonNull(installedBy);
     }
@@ -55,27 +54,34 @@ public final class PackedContainerBuilder extends AbstractContainerBuilder imple
     /** {@inheritDoc} */
     @Override
     public PackedContainerHandle build(Assembly assembly, Wirelet... wirelets) {
-        parent.assembly.checkIsConfigurable();
+        checkIsConfigurable();
         checkNotUsed();
 
         // Create a new assembly, which call into #containerInstall
         processWirelets(wirelets);
-        AssemblySetup as = new AssemblySetup(this, assembly);
-
-        // Build the assembly
-        as.build();
+        AssemblySetup as = build(assembly);
 
         return new PackedContainerHandle(as.container);
     }
 
+    /**
+     *
+     * @throws IllegalStateException
+     *             if the container is no longer configurable
+     */
+    public void checkIsConfigurable() {
+        if (!parent.assembly.isConfigurable()) {
+            throw new IllegalStateException("This assembly is no longer configurable");
+        }
+    }
     /** {@inheritDoc} */
     @Override
     public PackedContainerHandle build(Wirelet... wirelets) {
         checkNotUsed();
-        parent.assembly.checkIsConfigurable();
+        checkIsConfigurable();
 
         processWirelets(wirelets);
-        ContainerSetup container = newContainer(parent.assembly);
+        ContainerSetup container = newContainer(parent.application, parent.assembly);
         return new PackedContainerHandle(container);
     }
 

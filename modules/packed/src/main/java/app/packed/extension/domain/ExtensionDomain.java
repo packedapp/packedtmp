@@ -13,26 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.entrypoint;
+package app.packed.extension.domain;
 
-import internal.app.packed.lifetime.LifetimeSetup;
-import internal.app.packed.operation.OperationSetup;
+import java.util.Set;
+
+import app.packed.extension.Extension;
+import internal.app.packed.container.ContainerSetup;
 
 /**
  *
+ * Instances of this class should not be exposed outside of the extension.
  */
-// For now entry points in beans with bean lifetime is not supported
+public abstract class ExtensionDomain<E extends Extension<E>> {
 
-public final class EntryPointSetup {
+    DomainSetup domain;
 
-    public final LifetimeSetup lifetime;
+    DomainSetup domain() {
+        return domain;
+    }
 
-    public final OperationSetup operation;
+    @SuppressWarnings("unchecked")
+    protected E root() {
+        return (E) domain().root.instance();
+    }
 
-    // Har vi brug for en counter, Kan vi smide den paa lifetime setup
+    Set<ContainerSetup> containers() {
+        return Set.of();
+    }
 
-    public EntryPointSetup(OperationSetup operation, LifetimeSetup lifetime) {
-        this.lifetime = lifetime;
-        this.operation = operation;
+    public DomainMirror<E> mirror() {
+        return new DomainMirror<E>();
     }
 }

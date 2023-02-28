@@ -46,11 +46,6 @@ public final class PackedBeanLocal<T> extends BeanLocal<T> {
     /** {@inheritDoc} */
     @Override
     public boolean isPresent(BeanSetup setup) {
-        // Cannot come up with any situations where you want to call isPresent
-        // and at the same time have an initial value supplier
-        if (initialValueSupplier != null) {
-            throw new UnsupportedOperationException("isPresent is not supported for bean locals that have been created with a initial-value supplier");
-        }
         return setup.locals.containsKey(this);
     }
 

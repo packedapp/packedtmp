@@ -13,36 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package app.packed.application;
 
-import app.packed.application.BuildGoal;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.util.Nullable;
+import internal.app.packed.container.AbstractContainerBuilder;
+import internal.app.packed.container.ApplicationSetup;
+import internal.app.packed.container.AssemblySetup;
 
 /**
  * Used by {@link BootstrapApp} to build applications.
  */
-public final class RootApplicationBuilder extends AbstractContainerBuilder {
+final class BootstrapAppApplicationBuilder extends AbstractContainerBuilder {
 
-    final RootApplicationSetup ba;
+    final BootstrapAppApplicationSetup ba;
 
     /** The build goal. */
     private final BuildGoal goal;
 
-    public RootApplicationBuilder(RootApplicationSetup ba, BuildGoal goal) {
+    BootstrapAppApplicationBuilder(BootstrapAppApplicationSetup ba, BuildGoal goal) {
         super(ba.template);
         this.ba = ba;
         this.goal = goal;
         super.applicationMirrorSupplier = ba.mirrorSupplier;
     }
 
-    public ApplicationSetup build(Assembly assembly, Wirelet[] wirelets) {
+    ApplicationSetup build(Assembly assembly, Wirelet[] wirelets) {
+        // Process any wirelets that were specified
         processWirelets(wirelets);
-        AssemblySetup as = new AssemblySetup(this, assembly);
 
-        as.build();
+        // Build the application
+        AssemblySetup as = build(assembly);
 
         // return the application we just build.
         return as.container.application;
@@ -54,14 +57,14 @@ public final class RootApplicationBuilder extends AbstractContainerBuilder {
         return goal;
     }
 
-    @Override
-    protected @Nullable Wirelet prefix() {
-        return ba.wirelet;
-    }
-
     /** {@inheritDoc} */
     @Override
     public LifetimeKind lifetimeKind() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected @Nullable Wirelet prefix() {
+        return ba.wirelet;
     }
 }

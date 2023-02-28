@@ -16,9 +16,14 @@
 package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
+import java.util.Collections;
+import java.util.Set;
 
-import app.packed.extension.Extension;
 import app.packed.extension.BeanHook.AnnotatedBindingHook;
+import app.packed.extension.Extension;
+import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
 
 /**
@@ -35,7 +40,16 @@ record HookOnAnnotatedBinding(Class<? extends Extension<?>> extensionType) {
             if (fieldHook == null) {
                 return null;
             }
-
+            // This should be shared between all hook annotations.
+            Target t = type.getAnnotation(Target.class);
+            if (t == null) {
+                throw new Error();
+            }
+            Set<ElementType> expected = Set.of(ElementType.FIELD, ElementType.TYPE_USE, ElementType.PARAMETER);
+            if (Collections.disjoint(expected, Set.of(t.value()))) {
+                throw new InternalExtensionException("");
+            }
+            // TODO check Element Types on the annotation
             HookUtils.checkExtensionClass(type, fieldHook.extension());
 
             return new HookOnAnnotatedBinding(fieldHook.extension());

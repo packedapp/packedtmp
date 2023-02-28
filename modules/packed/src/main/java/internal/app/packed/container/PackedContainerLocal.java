@@ -33,6 +33,7 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
         this.initialValueSupplier = initialValueSupplier;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public T get(ContainerSetup contianer) {
         if (initialValueSupplier == null) {
@@ -51,13 +52,8 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
         }
     }
 
-
+    @Override
     public boolean isPresent(ContainerSetup container) {
-        // Cannot come up with any situations where you want to call isPresent
-        // and at the same time have an initial value supplier
-        if (initialValueSupplier != null) {
-            throw new UnsupportedOperationException("isPresent is not supported for bean locals that have been created with a initial-value supplier");
-        }
         return container.locals.containsKey(this);
     }
 

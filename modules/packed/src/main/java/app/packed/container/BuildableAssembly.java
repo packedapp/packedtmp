@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.util.Nullable;
-import internal.app.packed.container.AssemblyModel;
-import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.AbstractContainerBuilder;
+import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerHandle;
 
 /**
@@ -121,20 +121,21 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
      * @param configuration
      *            the configuration to use for the assembling process
      */
-    @SuppressWarnings("unused")
-    private void doBuild(AssemblyModel assemblyModel, ContainerSetup container) {
+    @Override
+    AssemblySetup build(AbstractContainerBuilder builder) {
+        AssemblySetup a = new AssemblySetup(builder, this);
         Object existing = configuration;
         if (existing == null) {
-            existing = configuration = new ContainerConfiguration(new PackedContainerHandle(container));
+            existing = configuration = new ContainerConfiguration(new PackedContainerHandle(a.container));
             try {
                 // Run AssemblyHook.onPreBuild if hooks are present
-                assemblyModel.preBuild(configuration);
+                a.model.preBuild(configuration);
 
                 // Call the actual build() method
                 build();
 
                 // Run AssemblyHook.onPostBuild if hooks are present
-                assemblyModel.postBuild(configuration);
+                a.model.postBuild(configuration);
             } finally {
                 // Sets #configuration to a marker object that indicates the assembly has been used
                 existing = ContainerConfiguration.USED;
@@ -146,6 +147,8 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
             // Assembly is in the process of being used. Typically happens, if an assembly is linked recursively.
             throw new IllegalStateException("This assembly is currently being used elsewhere, assembly = " + getClass());
         }
+        a.postBuild();
+        return a;
     }
 
     /**

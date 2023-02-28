@@ -24,13 +24,12 @@ import app.packed.extension.container.ExtensionLink;
 import app.packed.extension.context.ContextTemplate;
 import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.Key;
-import app.packed.util.Nullable;
 import internal.app.packed.lifetime.PackedExtensionLink;
 
 /**
  *
  */
-public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, List<PackedExtensionLink> links, @Nullable Class<?> expectsResult)
+public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, List<PackedExtensionLink> links, Class<?> resultType)
         implements ContainerTemplate {
 
     /** {@inheritDoc} */
@@ -55,7 +54,7 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
     public PackedContainerTemplate holder(Class<?> guest) {
         // I don't think we are going to do any checks here?
         // Well not interface, annotation, abstract class, ...
-        return new PackedContainerTemplate(kind, guest, links, expectsResult);
+        return new PackedContainerTemplate(kind, guest, links, resultType);
     }
 
     /** {@inheritDoc} */
@@ -63,11 +62,11 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
     public PackedContainerTemplate addLink(ExtensionLink channel) {
         ArrayList<PackedExtensionLink> l = new ArrayList<>(links);
         l.add((PackedExtensionLink) channel);
-        return new PackedContainerTemplate(kind, holderClass, List.copyOf(l), expectsResult);
+        return new PackedContainerTemplate(kind, holderClass, List.copyOf(l), resultType);
     }
 
     public PackedContainerTemplate withKind(PackedContainerKind kind) {
-        return new PackedContainerTemplate(kind, holderClass, links, expectsResult);
+        return new PackedContainerTemplate(kind, holderClass, links, resultType);
     }
 
     /** {@inheritDoc} */

@@ -17,6 +17,7 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.extension.ContainerLocal;
 import internal.app.packed.container.CompositeWirelet;
 import internal.app.packed.container.PackedContainerBuilder.OverrideNameWirelet;
 import internal.app.packed.container.WireletModel;
@@ -222,6 +223,18 @@ public abstract class Wirelet {
 
     public static Wirelet mainArgs(String... args) {
         throw new UnsupportedOperationException();
+    }
+
+    static abstract class BuildableWirelet extends Wirelet {
+
+    }
+
+    // Hvad hvis extension ikke bliver brugt...
+    // Men ellers er den smart nok...
+    // Kan vi have noget onConsumed paa locals?
+    static class SetLocalBuildableWirelet<T> extends BuildableWirelet {
+        ContainerLocal<T> local;
+        T initializeWith;
     }
 }
 

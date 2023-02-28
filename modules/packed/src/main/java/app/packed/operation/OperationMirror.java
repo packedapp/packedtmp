@@ -87,6 +87,10 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
         return List.of(hooks);
     }
 
+    public Optional<LifetimeMirror> entryPointIn() {
+        return Optional.ofNullable(operation().entryPoint).map(s -> s.lifetime.mirror());
+    }
+
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
@@ -148,11 +152,6 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
         return o;
     }
 
-    /** {@return the operation site.} */
-    public OperationTarget target() {
-        return operation().target();
-    }
-
 //    // The returned set of keys may contains key that result in a cycle.
 //    // For example, if a bean is provided as a service. Calling this method on any of the
 //    // operations on the bean will include the key under which the bean is being provided.
@@ -166,17 +165,19 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
 //        return Set.copyOf(result);
 //    }
 
+    /** {@return the operation site.} */
+    public OperationTarget target() {
+        return operation().target();
+    }
+
     /** {@return the type of the operation.} */
     public FunctionType type() {
         return operation().type;
     }
 
     /** {@return a set of any contexts initiated by invoking the operation.} */
+    // Context root?
     public Set<ContextMirror> zCreatesContexts() {
-        throw new UnsupportedOperationException();
-    }
-
-    public Optional<LifetimeMirror> zCreatesLifetime() {
         throw new UnsupportedOperationException();
     }
 

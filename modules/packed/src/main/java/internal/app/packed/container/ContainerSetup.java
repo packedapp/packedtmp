@@ -92,7 +92,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     public final ServiceManager sm;
 
     /** Supplies a mirror for the container. */
-    private Supplier<? extends ContainerMirror> specializedMirror;
+    private final Supplier<? extends ContainerMirror> specializedMirror;
 
     /** Wirelets that were specified when creating the component. */
     // As an alternative non-final, and then nulled out whenever the last wirelet is consumed
@@ -107,10 +107,11 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      * @param assembly
      *            the assembly the defines the container
      */
-    ContainerSetup(AbstractContainerBuilder builder, AssemblySetup assembly) {
+    ContainerSetup(AbstractContainerBuilder builder, ApplicationSetup application,  AssemblySetup assembly) {
         super(builder.parent);
-        this.application = requireNonNull(builder.application);
+        this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
+        this.specializedMirror = builder.containerMirrorSupplier;
         this.name = builder.name;
         this.locals = builder.locals;
         this.lifetime = builder.newLifetime(this);

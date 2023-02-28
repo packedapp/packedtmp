@@ -22,7 +22,6 @@ import java.util.Optional;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
-import app.packed.lifetime.EntryPointMirror;
 
 /** A mirror for {@link EntryPointExtension}. */
 public final class OldEntryPointExtensionMirror extends ExtensionMirror<BaseExtension> {
@@ -40,7 +39,7 @@ public final class OldEntryPointExtensionMirror extends ExtensionMirror<BaseExte
         return Optional.empty();
     }
 
-    public Collection<EntryPointMirror> entryPoints() {
+    public Collection<?> entryPoints() {
         // Vi behoever jo strengt taget ikke selv holde styr paa dem
         // OperationMirror.findAllOperationsAssingableTo(EntryPointOperationMirror);
 
@@ -62,7 +61,7 @@ public final class OldEntryPointExtensionMirror extends ExtensionMirror<BaseExte
     /**
      * @return stuff
      */
-    public Optional<EntryPointMirror> main() {
+    public Optional<?> main() {
         return Optional.empty();
     }
 

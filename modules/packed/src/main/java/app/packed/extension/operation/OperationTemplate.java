@@ -68,6 +68,10 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         throw new UnsupportedOperationException();
     }
 
+    default boolean newLifetime() {
+        return false;
+    }
+
     /**
      *
      * @return the method type representing the invocation

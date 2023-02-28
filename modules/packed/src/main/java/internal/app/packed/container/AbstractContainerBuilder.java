@@ -17,6 +17,9 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.function.Supplier;
@@ -24,27 +27,40 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
 import app.packed.container.Assembly;
+import app.packed.container.ContainerMirror;
+import app.packed.container.DelegatingAssembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.container.ContainerTemplate;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.util.Nullable;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
+import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.ThrowableUtil;
 
 /**
+ * A container build is responsible for building containers and applications.
+ * <p>
+ * This class and subclasses are a bit messy.
  *
+ * @implNote This class is not sealed because some of the implementations is in a public package
  */
-public abstract sealed class AbstractContainerBuilder permits RootApplicationBuilder, PackedContainerBuilder, BootstrapAppBuilder {
+// Hvis vi ender med separate Container og Applications links metoder.
+// Saa tror vi skal have en AbstractContainerContainerBuilder, AbstractContainerApplicationBuilder.
+public abstract class AbstractContainerBuilder {
 
-    /** The application we are installing the container into. */
-    // I think once we get app-on-app this is Nullable
-    @Nullable
-    ApplicationSetup application;
+    /** A handle that can invoke {@link BuildableAssembly#doBuild(AssemblyModel, ContainerSetup)}. */
+    private static final MethodHandle MH_ASSEMBLY_BUILD = LookupUtil.findVirtual(MethodHandles.lookup(), Assembly.class, "build", AssemblySetup.class,
+            AbstractContainerBuilder.class);
+
+    protected Supplier<? extends ApplicationMirror> applicationMirrorSupplier;
+
+    protected Supplier<? extends ContainerMirror> containerMirrorSupplier;
+
+    public ArrayList<Class<? extends DelegatingAssembly>> delegatingAssemblies;
 
     /** Locals that the container is initialized with. */
     final IdentityHashMap<PackedContainerLocal<?>, Object> locals = new IdentityHashMap<>();
-
-    public Supplier<? extends ApplicationMirror> applicationMirrorSupplier;
 
     String name;
 
@@ -57,18 +73,20 @@ public abstract sealed class AbstractContainerBuilder permits RootApplicationBui
     /** The template for the new container. */
     public final PackedContainerTemplate template;
 
-    public Wirelet[] wirelets = new Wirelet[0];
+    Wirelet[] wirelets = new Wirelet[0];
 
-    AbstractContainerBuilder(ContainerTemplate template) {
+    protected AbstractContainerBuilder(ContainerTemplate template) {
         this.template = (PackedContainerTemplate) requireNonNull(template, "template is null");
     }
 
-    ContainerLifetimeSetup newLifetime(ContainerSetup container) {
-        // Figure out the lifetime of this container
-        if (template.kind() == PackedContainerKind.PARENT) {
-            return container.treeParent.lifetime;
-        } else {
-            return new ContainerLifetimeSetup(this, container, null);
+    public AssemblySetup build(Assembly assembly) {
+        requireNonNull(assembly, "assembly is null");
+
+        // Calls Assembly.build(AbstractContainerBuilder)
+        try {
+            return (AssemblySetup) MH_ASSEMBLY_BUILD.invokeExact(assembly, this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
         }
     }
 
@@ -76,7 +94,7 @@ public abstract sealed class AbstractContainerBuilder permits RootApplicationBui
 
     public abstract LifetimeKind lifetimeKind();
 
-    public ContainerSetup newContainer(AssemblySetup assembly) {
+    ContainerSetup newContainer(ApplicationSetup application, AssemblySetup assembly) {
         requireNonNull(wirelets, "wirelets is null");
         // Most of this method is just processing wirelets
         Wirelet prefix = prefix();
@@ -161,7 +179,9 @@ public abstract sealed class AbstractContainerBuilder permits RootApplicationBui
         this.name = n;
 
         // Create the new extension
-        ContainerSetup container = new ContainerSetup(this, assembly);
+        ContainerSetup container = new ContainerSetup(this, application, assembly);
+
+        // copy Locals
 
         // BaseExtension is automatically used by every container
         ExtensionSetup.install(BaseExtension.class, container, null);
@@ -169,12 +189,34 @@ public abstract sealed class AbstractContainerBuilder permits RootApplicationBui
         return container;
     }
 
+    public ContainerSetup newContainer(AssemblySetup assembly) {
+        if (this instanceof PackedContainerBuilder installer) {
+            return installer.newContainer(installer.parent.application, assembly);
+        } else {
+            return new ApplicationSetup(this, assembly).container;
+        }
+    }
+
+    ContainerLifetimeSetup newLifetime(ContainerSetup container) {
+        // Figure out the lifetime of this container
+        // Tror vi skal added Lazy
+        if (template.kind() == PackedContainerKind.PARENT) {
+            return container.treeParent.lifetime;
+        } else {
+            return new ContainerLifetimeSetup(this, container, null);
+        }
+    }
+
     @Nullable
     protected Wirelet prefix() {
         return null;
     }
 
-    public void processWirelets(Wirelet[] wirelets) {
+    public void processWirelet(Wirelet wirelet) {
+
+    }
+
+    protected void processWirelets(Wirelet[] wirelets) {
         this.wirelets = wirelets;
     }
 }

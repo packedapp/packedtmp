@@ -23,6 +23,7 @@ import internal.app.packed.util.types.ClassUtil;
 
 /// XIdentity
 
+// Player, Operator, Partner (maybe like Operator best)
 public /* primitive */ final class Realm {
 
     // ROOT? SYSTEM?

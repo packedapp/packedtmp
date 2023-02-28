@@ -26,6 +26,7 @@ public class TE extends BaseAssembly {
     @Override
     protected void build() {
         new Exception().printStackTrace();
+
         link(assemblyFinder().paths("/Users/kaspernielsen/packed-workspace/packed-usage-on-modulepath/bin").assembly("app.packed.usage",
                 "app.packed.application.usage.HelloWorldAssembly"));
         link(assemblyFinder().paths("/Users/kaspernielsen/packed-workspace/packed-usage-on-modulepath/bin").assembly("app.packed.usage",

@@ -1,5 +1,6 @@
 package app.packed.application;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -10,6 +11,7 @@ import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
+import app.packed.operation.OperationMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
@@ -65,6 +67,10 @@ public class ApplicationMirror implements Mirror {
     /** {@return a mirror of the root container in the application.} */
     public ContainerMirror container() {
         return application().container.mirror();
+    }
+
+    public Collection<OperationMirror> entryPoints() {
+        return container().lifetime().entryPoints();
     }
 
     /** {@inheritDoc} */

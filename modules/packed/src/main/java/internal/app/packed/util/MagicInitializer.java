@@ -13,15 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.application;
+package internal.app.packed.util;
 
-import app.packed.extension.ContainerLocal;
+import java.util.function.Supplier;
 
 /**
  *
  */
-public interface ApplicationInstaller {
+// ContainerMirror (Supplier)
+// BeanMirror
+// BindingMirror
+// ApplicationMirror
+// AssemblyMirror
+// BeanLifetimeMirror
+// ContainerLifetimeMirror
+// OperationMirror
 
-    // ServiceExtension.
-    <T> ApplicationInstaller setLocal(ContainerLocal<T> local, T value);
+//// Speciel
+// Extension
+// ExtensionMirror
+// BeanIntrospector
+
+public final class MagicInitializer<T> {
+
+    public T get() {
+        throw new UnsupportedOperationException();
+    }
+
+    public <S> S init(Supplier<S> supplier, T value) {
+        return supplier.get();
+    }
 }

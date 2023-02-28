@@ -13,21 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.entrypoint;
+package app.packed.cli.usage;
 
-import app.packed.extension.Extension;
-import app.packed.util.Nullable;
+import app.packed.application.App;
+import app.packed.cli.CliCommand;
+import app.packed.container.BaseAssembly;
 
 /**
  *
  */
-public final class OldContainerNexus {
+public class MyCliApp extends BaseAssembly {
 
-    Class<? extends Extension<?>> controlledBy;
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {
+        install(Spp.class);
+    }
 
-    /** Any entry point of the lifetime, null if there are none. */
-    @Nullable
-    public EntryPointSetup entryPoint;
+    public static void main(String[] args) {
+        App.run(new MyCliApp());
+    }
 
-    Class<?> resultType;
+    public static class Spp {
+        Spp() {
+            System.out.println("New");
+        }
+
+        @CliCommand(name = "foo")
+        public void foo() {}
+
+        @CliCommand(name = "xoo")
+        public void boo() {}
+
+    }
 }

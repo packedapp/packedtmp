@@ -67,7 +67,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         protected ExtensionModel computeValue(Class<?> extensionClass) {
            // new Exception().printStackTrace();
             ClassUtil.checkProperSubclass(Extension.class, extensionClass, s -> new InternalExtensionException(s));
-            // Check that
+            // Check that framework extensions are in a framework module
             if (FrameworkExtension.class.isAssignableFrom(extensionClass)) {
                 Module m = extensionClass.getModule();
                 if (m.isNamed() && !Framework.moduleNames().contains(m.getName())) {

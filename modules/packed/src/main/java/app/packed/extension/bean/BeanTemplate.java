@@ -106,7 +106,7 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     // Has a single operation that will create the bean.
     // TODO skal vi baade have managed og unmanged operationer???
     // Fx @Provide paa en prototypeBean (giver vel ikke mening)
-    BeanTemplate Z_FROM_OPERATION = new PackedBeanTemplate(BeanKind.MANYTON);
+    BeanTemplate GATEWAY = new PackedBeanTemplate(BeanKind.MANYTON);
 
 
     /**

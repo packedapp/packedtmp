@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.entrypoint;
-
-import app.packed.extension.Extension;
+package internal.app.packed.lifetime;
 
 /**
  *
  */
-// Error messages comes later
-public final class ContainerNexus {
+public class EntryPointsMode {
 
-    final Class<? extends Extension<?>> controlledBy;
+    // ROOT_MAY_HAVE_ENTRYPOINTS
+    //// FromExtensions(X)
+    //// FromAnyExtension
 
-    // Maa komm
-    final Class<?> resultType;
+    //// Hvis vi har den completer...
+    // ROOT_MAY_HAVE_ENTRYPOINTS_WITH_RESULT
+    //// FromExtensions(X)
+    //// FromAnyExtension
 
-    public ContainerNexus(Class<? extends Extension<?>> controlledBy, Class<?> resultType) {
-        this.controlledBy = controlledBy;
-        this.resultType = resultType;
-    }
+
+    // NON_ROOT_NO_ENTRYPOINTS
+    // Fx Session
+
+    // NON_ROOT_ENTRYPOINTS_FOR_EXTENSION
+    //// Must have entrypoints from extension fx Web
+
 }

@@ -15,24 +15,26 @@
  */
 package internal.app.packed.entrypoint;
 
-import internal.app.packed.lifetime.LifetimeSetup;
+import java.util.ArrayList;
+
+import app.packed.extension.Extension;
+import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 
 /**
  *
  */
-// For now entry points in beans with bean lifetime is not supported
+// Error messages comes later
+public final class EntryPointManager {
 
-public final class EntryPointSetup {
+    final Class<? extends Extension<?>> dispatcher;
 
-    public final LifetimeSetup lifetime;
+    final ArrayList<OperationSetup> entryPoints = new ArrayList<>();
 
-    public final OperationSetup operation;
+    final ContainerLifetimeSetup lifetime;
 
-    // Har vi brug for en counter, Kan vi smide den paa lifetime setup
-
-    public EntryPointSetup(OperationSetup operation, LifetimeSetup lifetime) {
+    public EntryPointManager(ContainerLifetimeSetup lifetime, Class<? extends Extension<?>> controlledBy) {
         this.lifetime = lifetime;
-        this.operation = operation;
+        this.dispatcher = controlledBy;
     }
 }

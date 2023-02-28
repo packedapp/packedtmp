@@ -21,7 +21,9 @@ import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
+import app.packed.extension.Extension;
 import app.packed.lifetime.sandbox.ContainerLifetimeHostBeanMirror;
+import app.packed.operation.OperationMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 
@@ -54,10 +56,6 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
         throw new UnsupportedOperationException();
     }
 
-    public LifetimeKind kind() {
-        return LifetimeKind.MANAGED;
-    }
-
     /** {@return the container that is the root of the lifetime.} */
     public ContainerMirror container() {
         return lifetime().container.mirror();
@@ -70,16 +68,33 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * If the lifetime has any entry points. This method returns the extension that is responsible for choosing the right
+     * entry point. This is typically also the extension that manages the lifetime's container. Except for the root
+     * containers which always is BaseExtension but may be taken over by another extension.
+     * <p>
+     *
+     * @return
+     */
     @Override
-    public boolean equals(Object other) {
-        return this == other || other instanceof ContainerLifetimeMirror m && lifetime() == m.lifetime();
+    public Optional<Class<? extends Extension<?>>> entryPointDispatcher() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns a collection of entry points in this lifetime.
+     *
+     * @return a collection of entry points in this lifetime
+     */
+    @Override
+    public Collection<OperationMirror> entryPoints() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
-    public int hashCode() {
-        return lifetime().hashCode();
+    public boolean equals(Object other) {
+        return this == other || other instanceof ContainerLifetimeMirror m && lifetime() == m.lifetime();
     }
 
     /**
@@ -92,6 +107,12 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
      */
     public Optional<ContainerLifetimeHostBeanMirror> guest() { // Do we need a ContainerWrapperBeanMirror?
         return Optional.empty();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return lifetime().hashCode();
     }
 
     /**
@@ -109,6 +130,10 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
 
     public boolean isRoot() {
         return lifetime().parent() == null;
+    }
+
+    public LifetimeKind kind() {
+        return LifetimeKind.MANAGED;
     }
 
     /**
@@ -130,6 +155,16 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
     @Override
     public Optional<ContainerLifetimeMirror> parent() {
         return Optional.ofNullable(lifetime().treeParent).map(e -> e.mirror());
+    }
+
+    /**
+     * If the lifetime needs to produce a result.
+     *
+     * @return {@code void.class} if this lifetime does not produce a result, otherwise the type of result the lifetime
+     *         produces
+     */
+    public Class<?> resultType() {
+        return lifetime().resultType;
     }
 }
 ///** {@return the root of the tree.} */

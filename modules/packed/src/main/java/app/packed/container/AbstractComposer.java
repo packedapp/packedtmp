@@ -24,8 +24,9 @@ import java.lang.invoke.VarHandle;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
-import internal.app.packed.container.AssemblyModel;
-import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.AbstractContainerBuilder;
+import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.util.LookupUtil;
 
@@ -147,8 +148,15 @@ public abstract class AbstractComposer {
          * @param configuration
          *            the configuration to use for the assembling process
          */
-        void doBuild(AssemblyModel assemblyModel, ContainerSetup container) {
-            ContainerConfiguration configuration = new ContainerConfiguration(new PackedContainerHandle(container));
+        @Override
+        AssemblySetup build(AbstractContainerBuilder builder) {
+            if (builder instanceof PackedContainerBuilder installer) {
+                throw new IllegalArgumentException("Cannot link an instance of " + ComposerAssembly.class + ", assembly must extend "
+                        + BuildableAssembly.class.getSimpleName() + " instead");
+            }
+
+            AssemblySetup a = new AssemblySetup(builder, this);
+            ContainerConfiguration configuration = new ContainerConfiguration(new PackedContainerHandle(a.container));
             // Do we really need to guard against concurrent usage of an assembly?
             Object existing = VH_CONFIGURATION.compareAndExchange(composer, null, configuration);
             if (existing == null) {
@@ -156,13 +164,13 @@ public abstract class AbstractComposer {
                     composer.preCompose();
 
                     // Run AssemblyHook.onPreBuild if hooks are present
-                    assemblyModel.preBuild(configuration);
+                    a.model.preBuild(configuration);
 
                     // Call actions build method with this composer
                     action.build(composer);
 
                     // Run AssemblyHook.onPostBuild if hooks are present
-                    assemblyModel.postBuild(configuration);
+                    a.model.postBuild(configuration);
                 } finally {
                     // Sets #configuration to a marker object that indicates the assembly has been used
                     VH_CONFIGURATION.setVolatile(composer, ContainerConfiguration.USED);
@@ -174,6 +182,8 @@ public abstract class AbstractComposer {
                 // Assembly is in the process of being used. Typically happens, if an assembly is linked recursively.
                 throw new IllegalStateException("This assembly is currently being used elsewhere, assembly = " + getClass());
             }
+            a.postBuild();
+            return a;
         }
     }
 }

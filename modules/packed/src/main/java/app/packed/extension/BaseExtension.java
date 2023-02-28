@@ -63,8 +63,8 @@ import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.bean.PackedBeanWrappedVariable;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.container.PackedContainerBuilder;
-import internal.app.packed.entrypoint.EntryPointSetup;
-import internal.app.packed.entrypoint.EntryPointSetup.MainThreadOfControl;
+import internal.app.packed.entrypoint.OldEntryPointSetup;
+import internal.app.packed.entrypoint.OldEntryPointSetup.MainThreadOfControl;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.PackedServiceLocator;
@@ -428,16 +428,15 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                         throw new BeanInstallationException("Must be in the application lifetime to use @" + Main.class.getSimpleName());
                     }
 
+                    bean.container.lifetime.entryPoints.takeOver(BaseExtension.this, BaseExtension.class);
 
-                    bean.container.application.shared.takeOver(BaseExtension.this, BaseExtension.class);
-
-                    bean.container.lifetime.nexus.entryPoint = new EntryPointSetup();
+                    bean.container.lifetime.entryPoints.entryPoint = new OldEntryPointSetup();
 
                     OperationTemplate temp = OperationTemplate.defaults().returnType(method.operationType().returnRawType());
                     OperationHandle os = method.newOperation(temp);
                     // os.specializeMirror(() -> new EntryPointMirror(index));
 
-                    MainThreadOfControl mc = bean.container.lifetime.nexus.entryPoint.mainThread();
+                    MainThreadOfControl mc = bean.container.lifetime.entryPoints.entryPoint.mainThread();
                     runOnCodegen(() -> mc.generatedMethodHandle = os.generateMethodHandle());
                 } else {
                     super.hookOnAnnotatedMethod(annotation, method);

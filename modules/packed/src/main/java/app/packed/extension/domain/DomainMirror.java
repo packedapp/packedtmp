@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.application;
+package app.packed.extension.domain;
 
-import app.packed.extension.ContainerLocal;
+import app.packed.container.ContainerMirror;
+import app.packed.extension.Extension;
 
 /**
  *
  */
-public interface ApplicationInstaller {
+public class DomainMirror<E extends Extension<E>> {
 
-    // ServiceExtension.
-    <T> ApplicationInstaller setLocal(ContainerLocal<T> local, T value);
+    DomainSetup domain;
+
+    /** {@return the root container of the domain.} */
+    public ContainerMirror root() {
+        return domain.root.container.mirror();
+    }
 }

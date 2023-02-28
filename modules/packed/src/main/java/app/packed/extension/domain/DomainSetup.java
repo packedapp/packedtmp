@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package app.packed.extension.domain;
+
+import internal.app.packed.container.ExtensionSetup;
 
 /**
  *
  */
-public class ApplicationChildren {
+class DomainSetup {
 
-    void parentBuild() {
+    final ExtensionSetup root;
 
-    }
-
-    void parentGenerated() {
-
+    DomainSetup(ExtensionSetup root) {
+        this.root = root;
     }
 }

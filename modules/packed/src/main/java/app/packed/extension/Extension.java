@@ -337,7 +337,7 @@ public abstract class Extension<E extends Extension<E>> {
     // add void runOnBuildCompleted, void runOnBuildFailed(Throwable cause); lad os lige faa nogle use cases foerst
     protected final void runOnCodegen(Runnable action) {
         checkIsConfigurable();
-        extension.container.application.addCodeGenerator(action);
+        extension.container.application.addCodegenAction(action);
     }
 
     /**

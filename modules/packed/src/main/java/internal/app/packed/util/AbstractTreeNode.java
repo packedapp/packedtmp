@@ -36,21 +36,13 @@ public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
     @Nullable
     T treeLastChild; // not exposed currently, as there are currently no use cases
 
-    /** Any parent this node may have. Only the root node does not have a parent. */
-    @Nullable
-    public final T treeParent;
-
     /** The (nullable) sibling of the node. */
     @Nullable
     public T treeNextSiebling;
 
-    public final int depth() {
-        int depth = 0;
-        for (AbstractTreeNode<T> node = this; node.treeParent != null; node = node.treeParent) {
-            depth++;
-        }
-        return depth;
-    }
+    /** Any parent this node may have. Only the root node does not have a parent. */
+    @Nullable
+    public final T treeParent;
 
     @SuppressWarnings("unchecked")
     protected AbstractTreeNode(@Nullable T treeParent) {
@@ -64,6 +56,14 @@ public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
             }
             treeParent.treeLastChild = (T) this;
         }
+    }
+
+    public final int depth() {
+        int depth = 0;
+        for (AbstractTreeNode<T> node = this; node.treeParent != null; node = node.treeParent) {
+            depth++;
+        }
+        return depth;
     }
 
     /** A pre-order iterator for a rooted extension tree. */

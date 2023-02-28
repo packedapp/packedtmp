@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.application;
+package app.packed.extension.domain;
 
-import app.packed.extension.ContainerLocal;
+import java.util.function.Supplier;
 
 /**
  *
  */
-public interface ApplicationInstaller {
+public interface DomainTemplate<T extends ExtensionDomain<?>> {
 
-    // ServiceExtension.
-    <T> ApplicationInstaller setLocal(ContainerLocal<T> local, T value);
+    static <T extends ExtensionDomain<?>> DomainTemplate<T> of(Supplier<T> supplier) {
+        return null;
+    }
 }

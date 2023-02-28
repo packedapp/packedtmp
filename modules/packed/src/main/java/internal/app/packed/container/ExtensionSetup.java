@@ -32,6 +32,10 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class,
             "newBeanIntrospector", BeanIntrospector.class);
 
+    /** A MethodHandle for invoking {@link Extension#newExtensionMirror()}. */
+    private static final MethodHandle MH_EXTENSION_NEW_EXTENSION_MIRROR = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "newExtensionMirror",
+            ExtensionMirror.class);
+
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
     private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "onApplicationClose",
             void.class);
@@ -42,10 +46,6 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "onNew", void.class);
-
-    /** A MethodHandle for invoking {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_NEW_EXTENSION_MIRROR = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "newExtensionMirror",
-            ExtensionMirror.class);
 
     /** A handle for setting the private field Extension#setup. */
     private static final VarHandle VH_EXTENSION_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), Extension.class, "extension", ExtensionSetup.class);
@@ -93,7 +93,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         this.model = requireNonNull(tree.model);
     }
 
-    void closeApplication() {
+    public void closeApplication() {
         tree.isConfigurable = false;
 
         try {
@@ -113,7 +113,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         sm.verify();
     }
 
-    void closeAssembly() {
+    public void closeAssembly() {
         try {
             MH_EXTENSION_ON_ASSEMBLY_CLOSE.invokeExact(instance);
         } catch (Throwable t) {
@@ -186,7 +186,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     public ExtensionMirror<?> newExtensionMirror(Class<? extends ExtensionMirror<?>> mirrorClass) {
         ExtensionMirror<?> mirror;
         try {
-            mirror = (ExtensionMirror<?>) MH_NEW_EXTENSION_MIRROR.invokeExact(instance());
+            mirror = (ExtensionMirror<?>) MH_EXTENSION_NEW_EXTENSION_MIRROR.invokeExact(instance());
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
@@ -289,18 +289,16 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         private final ExtensionModel model;
 
         /**
-         * Creates a new realm.
-         * <p>
-         * This constructor is called from the constructor of the specified root
+         * Creates a new ExtensionTree.
          *
-         * @param root
-         *            the root extension
+         * @param container
+         *            the root container
          * @param extensionType
          *            the type of extension
          */
         private ExtensionTree(ContainerSetup container, Class<? extends Extension<?>> extensionType) {
-            this.model = ExtensionModel.of(extensionType);
             this.applicationExtensionId = container.application.extensionIdCounter++;
+            this.model = ExtensionModel.of(extensionType);
         }
     }
 }

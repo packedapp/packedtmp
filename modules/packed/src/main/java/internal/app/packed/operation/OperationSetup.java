@@ -41,6 +41,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.entrypoint.EntryPointSetup;
 import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceProviderSetup;
@@ -87,13 +88,23 @@ public sealed abstract class OperationSetup {
     /** The name of the operation */
     public String zName; // name = operator.simpleName + "Operation"
 
-    private OperationSetup(ExtensionSetup operator, BeanSetup bean, FunctionType type, OperationTemplate template, @Nullable EmbeddedIntoOperation parent) {
+    @Nullable
+    public final EntryPointSetup entryPoint;
+
+    private OperationSetup(ExtensionSetup operator, BeanSetup bean, FunctionType type, OperationTemplate template,
+            @Nullable EmbeddedIntoOperation embeddedInto) {
         this.operator = requireNonNull(operator);
         this.bean = requireNonNull(bean);
         this.type = requireNonNull(type);
-        this.embeddedInto = parent;
+        this.embeddedInto = embeddedInto;
         this.bindings = type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[type.parameterCount()];
         this.template = requireNonNull((PackedOperationTemplate) template);
+
+        if (template.newLifetime()) {
+            this.entryPoint = new EntryPointSetup(this, bean.lifetime);
+        } else {
+            this.entryPoint = null;
+        }
     }
 
     public final Set<BeanSetup> dependsOn() {
@@ -160,7 +171,7 @@ public sealed abstract class OperationSetup {
     }
 
     /** {@return an operation handle for this operation.} */
-    public final PackedOperationHandle toHandle( BeanScanner scanner) {
+    public final PackedOperationHandle toHandle(BeanScanner scanner) {
         return new PackedOperationHandle(this, scanner);
     }
 

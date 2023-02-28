@@ -27,7 +27,7 @@ import app.packed.lifetime.RunState;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.lifetime.sandbox.StopOption;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.entrypoint.EntryPointSetup;
+import internal.app.packed.entrypoint.OldEntryPointSetup;
 
 /**
  *
@@ -170,7 +170,7 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
 
         start(container, cr);
 
-        EntryPointSetup ep = container.lifetime.nexus.entryPoint;
+        OldEntryPointSetup ep = container.lifetime.entryPoints.entryPoint;
 
         if (ep != null) {
             ep.enter(cr);

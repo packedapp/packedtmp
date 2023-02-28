@@ -33,6 +33,9 @@ public enum PackedContainerKind {
     MANY_UNMANAGED,
     MANY_MANAGED,
 
+    // A container lifetime that must define 1 or more entry points
+    GATEWAY,
+
     // Same lifetime as parent
     PARENT;
 }
