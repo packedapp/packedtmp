@@ -17,16 +17,49 @@ package app.packed.cli;
 
 import java.util.LinkedHashMap;
 
+import app.packed.bean.BeanInstallationException;
+import app.packed.cli.CliCommand.Builder;
+import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.domain.ExtensionDomain;
 import app.packed.extension.operation.OperationHandle;
+import app.packed.extension.operation.OperationTemplate;
 
 /**
- * A cli domain is a domain where all cli commands are unique. Typically there is never more than one per application.
+ * A CLI domain is a domain where all CLI commands are unique. Typically there is never more than one per application.
  */
 class CliExtensionDomain extends ExtensionDomain<CliExtension> {
 
     /** All the commands within the domain. */
     final LinkedHashMap<String, CliC> commands = new LinkedHashMap<>();
 
-    record CliC(CliCommand command, OperationHandle operation) {}
+    /**
+     * @param names
+     */
+    public Builder addCommand(String[] names) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public CliDomainMirror mirror() {
+        return new CliDomainMirror();
+    }
+
+    void process(CliExtension extension, CliCommand c, BeanMethod method) {
+        OperationHandle h = null;
+        if (isInApplicationLifetime(extension)) {
+            h = method.newOperation(OperationTemplate.defaults());
+
+            // check Launched
+        } else {
+
+            // EntryPoint.LaunchLifetime
+        }
+
+        CliC cd = new CliC(this, c, h);
+        if (commands.putIfAbsent(c.name()[0], cd) != null) {
+            throw new BeanInstallationException("Multiple cli commands with the same name, name = " + c.name());
+        }
+        h.specializeMirror(() -> new CliCommandMirror(cd));
+        // OT.DEFAULTS.entryPoint();
+    }
 }

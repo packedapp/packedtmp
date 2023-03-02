@@ -55,7 +55,7 @@ public final class App {
         return BOOTSTRAP.mirrorOf(assembly, wirelets);
     }
 
-    public static App.Launcher newImage(Assembly assembly, Wirelet... wirelets) {
+    public static App.Launcher imageOf(Assembly assembly, Wirelet... wirelets) {
         return new Launcher(BOOTSTRAP.newImage(assembly, wirelets));
     }
 

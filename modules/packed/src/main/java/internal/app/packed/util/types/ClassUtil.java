@@ -136,7 +136,7 @@ public class ClassUtil {
         return type;
     }
 
-    public static <T extends Mirror> T mirrorHelper(Class<T> t, Supplier<T> supplier, @Nullable Supplier<? extends T> specializedSupplier) {
+    public static <T extends Mirror> T newMirror(Class<T> t, Supplier<T> supplier, @Nullable Supplier<? extends T> specializedSupplier) {
         // Create a new BeanMirror
         if (specializedSupplier == null) {
             return supplier.get();
@@ -145,7 +145,6 @@ public class ClassUtil {
         if (mirror == null) {
             throw new NullPointerException(specializedSupplier + " returned a null instead of an " + t.getSimpleName() + " instance");
         }
-        // check class cast
-        return mirror;
+        return t.cast(mirror);
     }
 }

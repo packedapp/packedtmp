@@ -13,20 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.domain;
+package app.packed.cli;
 
-import app.packed.container.ContainerMirror;
-import app.packed.extension.Extension;
+import app.packed.container.DomainMirror;
 
 /**
  *
  */
-public class DomainMirror<E extends Extension<E>> {
+public class CliDomainMirror extends DomainMirror<CliExtension> {
 
-    DomainSetup domain;
-
-    /** {@return the root container of the domain.} */
-    public ContainerMirror root() {
-        return domain.root.container.mirror();
-    }
 }

@@ -13,28 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package internal.app.packed.container;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
-import app.packed.container.DomainMirror;
-import app.packed.extension.BaseExtension;
 import app.packed.util.Key;
 
 /**
  *
  */
+public final class PackedContainerLifetimeTunnelSet {
 
-// 2 typer exports + main
+    public final List<PackedContainerLifetimeTunnel> tunnels;
 
-public class ServiceDomainMirror extends DomainMirror<BaseExtension> {
-
-    public Map<Key<?>, Collection<ServiceBindingMirror>> bindings() {
-        throw new UnsupportedOperationException();
+    PackedContainerLifetimeTunnelSet(List<PackedContainerLifetimeTunnel> tunnels) {
+        this.tunnels = List.copyOf(tunnels);
     }
 
-    public ServiceContract contract() {
+    public PackedContainerLifetimeTunnelSet add(PackedContainerLifetimeTunnel tunnel) {
+        ArrayList<PackedContainerLifetimeTunnel> l = new ArrayList<>(tunnels);
+        l.add(tunnel);
+        return new PackedContainerLifetimeTunnelSet(l);
+    }
+
+    /**
+     * @return
+     */
+    public Set<Key<?>> keys() {
         throw new UnsupportedOperationException();
     }
 }

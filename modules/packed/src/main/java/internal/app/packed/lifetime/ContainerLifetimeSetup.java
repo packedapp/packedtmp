@@ -54,7 +54,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
             MethodHandle.class, ContainerContext.class);
 
     /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
-    private static final MethodHandle MH_LIFETIME_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ContainerLifetimeMirror.class,
+    private static final MethodHandle MH_CONTAINER_LIFETIME_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ContainerLifetimeMirror.class,
             "initialize", void.class, ContainerLifetimeSetup.class);
 
     /** Beans that have independent lifetime of all the container's in this lifetime. */
@@ -136,7 +136,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
         // Initialize LifetimeMirror by calling LifetimeMirror#initialize(LifetimeSetup)
         try {
-            MH_LIFETIME_MIRROR_INITIALIZE.invokeExact(mirror, this);
+            MH_CONTAINER_LIFETIME_MIRROR_INITIALIZE.invokeExact(mirror, this);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

@@ -19,6 +19,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.concurrent.locks.ReentrantLock;
 
+import internal.app.packed.util.LookupUtil;
+
 /**
  *
  */
@@ -27,15 +29,7 @@ public class ContainerManagedLifetime {
 
     private final ReentrantLock lifetimeLock = new ReentrantLock();
 
-    private static final VarHandle STATE;
-    static {
-        try {
-            MethodHandles.Lookup l = MethodHandles.lookup();
-            STATE = l.findVarHandle(ContainerManagedLifetime.class, "state", int.class);
-        } catch (Exception e) {
-            throw new InternalError(e);
-        }
-    }
+    private static final VarHandle STATE = LookupUtil.findVarHandleOwn(MethodHandles.lookup(), "state", int.class);
 
     // states: RUNNING -> SHUTDOWN -> TERMINATED
     private static final int UNINITIALIZED = 0;

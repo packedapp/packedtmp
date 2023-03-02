@@ -31,7 +31,6 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.DelegatingAssembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.container.ContainerTemplate;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.util.Nullable;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
@@ -57,7 +56,8 @@ public abstract class AbstractContainerBuilder {
 
     protected Supplier<? extends ContainerMirror> containerMirrorSupplier;
 
-    public ArrayList<Class<? extends DelegatingAssembly>> delegatingAssemblies;
+    /** Delegating assemblies. Empty unless any {@link DelegatingAssembly} has been used. */
+    public final ArrayList<Class<? extends DelegatingAssembly>> delegatingAssemblies = new ArrayList<>();
 
     /** Locals that the container is initialized with. */
     final IdentityHashMap<PackedContainerLocal<?>, Object> locals = new IdentityHashMap<>();
@@ -66,7 +66,7 @@ public abstract class AbstractContainerBuilder {
 
     String nameFromWirelet;
 
-    /** The parent of container being installed. Or <code>null</code> if a root container. */
+    /** The parent of the new container. Or <code>null</code> if a root container. */
     @Nullable
     ContainerSetup parent;
 
@@ -75,19 +75,38 @@ public abstract class AbstractContainerBuilder {
 
     Wirelet[] wirelets = new Wirelet[0];
 
-    protected AbstractContainerBuilder(ContainerTemplate template) {
-        this.template = (PackedContainerTemplate) requireNonNull(template, "template is null");
+    protected AbstractContainerBuilder(PackedContainerTemplate template) {
+        this.template = requireNonNull(template, "template is null");
     }
 
-    public AssemblySetup build(Assembly assembly) {
+    /**
+     * Builds a new container using the specified assembly
+     *
+     * @param assembly
+     *            assembly representing the new container
+     * @param wirelets
+     *            optional wirelets
+     * @return the new container
+     */
+    public ContainerSetup buildFromAssembly(Assembly assembly, Wirelet... wirelets) {
+
+
         requireNonNull(assembly, "assembly is null");
 
+  //      new Exception().printStackTrace();
+        // Process any wirelets that were specified
+        processWirelets(wirelets);
+
         // Calls Assembly.build(AbstractContainerBuilder)
+        AssemblySetup as;
         try {
-            return (AssemblySetup) MH_ASSEMBLY_BUILD.invokeExact(assembly, this);
+            as = (AssemblySetup) MH_ASSEMBLY_BUILD.invokeExact(assembly, this);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
+
+        // Return the container that was just built.
+        return as.container;
     }
 
     public abstract BuildGoal goal();
@@ -96,8 +115,9 @@ public abstract class AbstractContainerBuilder {
 
     ContainerSetup newContainer(ApplicationSetup application, AssemblySetup assembly) {
         requireNonNull(wirelets, "wirelets is null");
+
         // Most of this method is just processing wirelets
-        Wirelet prefix = prefix();
+        Wirelet prefix = template.wirelet();
 
         // We do not current set Container.WW
         WireletWrapper ww = null;
@@ -136,7 +156,6 @@ public abstract class AbstractContainerBuilder {
         if (nameFromWirelet == null) {
             // I think try and move some of this to ComponentNameWirelet
             String n = name;
-
             if (n == null) {
                 // TODO Should only be used on the root container in the assembly
                 Class<? extends Assembly> source = assembly.assembly.getClass();
@@ -189,8 +208,9 @@ public abstract class AbstractContainerBuilder {
         return container;
     }
 
-    public ContainerSetup newContainer(AssemblySetup assembly) {
-        if (this instanceof PackedContainerBuilder installer) {
+    // Er her fordi den skal fixes paa lang sigt
+    ContainerSetup newContainer(AssemblySetup assembly) {
+        if (this instanceof LeafContainerBuilder installer) {
             return installer.newContainer(installer.parent.application, assembly);
         } else {
             return new ApplicationSetup(this, assembly).container;
@@ -200,23 +220,14 @@ public abstract class AbstractContainerBuilder {
     ContainerLifetimeSetup newLifetime(ContainerSetup container) {
         // Figure out the lifetime of this container
         // Tror vi skal added Lazy
-        if (template.kind() == PackedContainerKind.PARENT) {
+        if (template.kind() == PackedContainerKind.PARENT_LIFETIME) {
             return container.treeParent.lifetime;
         } else {
             return new ContainerLifetimeSetup(this, container, null);
         }
     }
 
-    @Nullable
-    protected Wirelet prefix() {
-        return null;
-    }
-
-    public void processWirelet(Wirelet wirelet) {
-
-    }
-
-    protected void processWirelets(Wirelet[] wirelets) {
+    public void processWirelets(Wirelet[] wirelets) {
         this.wirelets = wirelets;
     }
 }

@@ -20,10 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
+import app.packed.extension.domain.ExtensionDomain;
 import app.packed.util.Nullable;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -32,8 +34,8 @@ import internal.app.packed.util.types.ClassUtil;
 /**
  * Internal configuration of an application.
  * <p>
- * This class is placed in {@code internal.app.packed.container} because it is so tightly integrated with containers. It
- * made best to put it here as well.
+ * This class is placed in {@code internal.app.packed.container} because it is so tightly integrated with containers
+ * that it made sense to put it here as well.
  */
 public final class ApplicationSetup {
 
@@ -41,7 +43,7 @@ public final class ApplicationSetup {
     private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ApplicationMirror.class, "initialize",
             void.class, ApplicationSetup.class);
 
-    /** Children (statically defined) of this application. */
+    /** Any (statically defined) children this application has. */
     final ArrayList<ApplicationChild> children = new ArrayList<>();
 
     /** A list of actions that will be executed doing the code generating phase. Or null if code generation is disabled. */
@@ -51,10 +53,14 @@ public final class ApplicationSetup {
     /** The root container of the application. */
     public final ContainerSetup container;
 
+    // Maybe move to container?? Or maybe a DomainManager class? IDK
+    public final HashMap<PackedDomainTemplate<?>, ExtensionDomain<?>> domains = new HashMap<>();
+
     /**
      * All extensions used in an application has a unique instance id attached. This is used in case we have multiple
-     * extension with the same canonical name. Which may happen for if the same extension is defined in different class
-     * loaders. We then compare the extension id of the extensions as a last resort when sorting them.
+     * extension with the same canonical name. Which may happen if different containers uses the "same" extension but
+     * defined in different class loaders. We then compare the extension id of the extensions as a last resort when sorting
+     * them.
      */
     int extensionIdCounter;
 
@@ -114,9 +120,10 @@ public final class ApplicationSetup {
         }
     }
 
+    /** The application has been successfully assembled. Now generate any required code. */
     public void close() {
-        // Generate code if needed
-        if (codegenActions != null) {
+        // Only generate code if needed
+        if (codegenActions != null) { // not mirrorOf or verify
             phase = ApplicationBuildPhase.CODEGEN;
 
             // Run through all code generating actions
@@ -124,7 +131,7 @@ public final class ApplicationSetup {
                 r.run();
             }
 
-            // clear out all actions.
+            // clear out the list of actions.
             codegenActions = null;
         }
 
@@ -134,7 +141,7 @@ public final class ApplicationSetup {
 
     /** {@return a mirror that can be exposed to end-users.} */
     public ApplicationMirror mirror() {
-        ApplicationMirror mirror = ClassUtil.mirrorHelper(ApplicationMirror.class, ApplicationMirror::new, mirrorSupplier);
+        ApplicationMirror mirror = ClassUtil.newMirror(ApplicationMirror.class, ApplicationMirror::new, mirrorSupplier);
 
         // Initialize ApplicationMirror by calling ApplicationMirror#initialize(ApplicationSetup)
         try {

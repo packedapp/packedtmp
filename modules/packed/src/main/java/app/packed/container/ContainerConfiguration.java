@@ -21,12 +21,12 @@ import internal.app.packed.container.PackedContainerHandle;
 public final class ContainerConfiguration {
 
     /**
-     * A marker configuration object indicating that an assembly (or composer) has already been used for building. Should
-     * never be exposed to end-users.
+     * A marker configuration object indicating that an assembly (or composer) has already been used for building a
+     * container. Should never be exposed to end-users.
      */
     static final ContainerConfiguration USED = new ContainerConfiguration();
 
-    /** The component we are configuring. Is only null for {@link #USED}. */
+    /** The container we are configuring. Is only null for {@link #USED}. */
     @Nullable
     final PackedContainerHandle handle;
 
@@ -65,7 +65,7 @@ public final class ContainerConfiguration {
     }
 
     /**
-     * {@return an unmodifiable view of the extensions that are currently used by this container.}
+     * {@return an unmodifiable view of the extensions that are currently used by this container in no particular order.}
      *
      * @see #use(Class)
      * @see BaseAssembly#extensionsTypes()

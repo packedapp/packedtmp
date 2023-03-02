@@ -56,6 +56,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
 // Kan kalde dem Info klasser istedet for, hvis vi vil brug model externt i APIen
 public final class ExtensionModel implements ExtensionDescriptor {
 
+    @Deprecated
     static final ThreadLocal<Wrapper> CONSTRUCT = new ThreadLocal<>();
 
     /** A cache of all encountered extension models. */
@@ -65,7 +66,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected ExtensionModel computeValue(Class<?> extensionClass) {
-           // new Exception().printStackTrace();
+            // new Exception().printStackTrace();
             ClassUtil.checkProperSubclass(Extension.class, extensionClass, s -> new InternalExtensionException(s));
             // Check that framework extensions are in a framework module
             if (FrameworkExtension.class.isAssignableFrom(extensionClass)) {
@@ -216,13 +217,14 @@ public final class ExtensionModel implements ExtensionDescriptor {
      * @return a new extension instance
      */
     Extension<?> newInstance(ExtensionSetup extension) {
-        CONSTRUCT.set(new Wrapper(extension));
+        return ExtensionSetup.MI.run(this::newExtension, extension);
+    }
+
+    Extension<?> newExtension() {
         try {
             return (Extension<?>) mhConstructor.invokeExact();
         } catch (Throwable e) {
             throw new InternalExtensionException("An instance of the extension " + nameFull + " could not be created.", e);
-        } finally {
-            CONSTRUCT.remove();
         }
     }
 

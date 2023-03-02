@@ -76,6 +76,37 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
      */
     protected abstract void build();
 
+    /** {@inheritDoc} */
+    @Override
+    AssemblySetup build(AbstractContainerBuilder builder) {
+        Object existing = configuration;
+        if (existing == null) {
+            AssemblySetup assembly = new AssemblySetup(builder, this);
+            existing = configuration = new ContainerConfiguration(new PackedContainerHandle(assembly.container));
+            try {
+                // Run AssemblyHook.onPreBuild if hooks are present
+                assembly.model.preBuild(configuration);
+
+                // Call the actual build() method
+                build();
+
+                // Run AssemblyHook.onPostBuild if hooks are present
+                assembly.model.postBuild(configuration);
+            } finally {
+                // Sets #configuration to a marker object that indicates the assembly has been used
+                existing = ContainerConfiguration.USED;
+            }
+            assembly.postBuild();
+            return assembly;
+        } else if (existing == ContainerConfiguration.USED) {
+            // Assembly has already been used (successfully or unsuccessfully)
+            throw new IllegalStateException("This assembly has already been used, assembly = " + getClass());
+        } else {
+            // Assembly is in the process of being used. Typically happens, if an assembly is linked recursively.
+            throw new IllegalStateException("This assembly is currently being used elsewhere, assembly = " + getClass());
+        }
+    }
+
     /**
      * Checks that {@link #build()} has not yet been called by the framework.
      * <p>
@@ -110,45 +141,6 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
             throw new IllegalStateException("This method must be called from within the #build() method of an assembly.");
         }
         return c;
-    }
-
-    /**
-     * Invoked by the runtime (via a MethodHandle). This method is mostly machinery that makes sure that the assembly is not
-     * used more than once.
-     *
-     * @param assembly
-     *            the realm used to call container hooks
-     * @param configuration
-     *            the configuration to use for the assembling process
-     */
-    @Override
-    AssemblySetup build(AbstractContainerBuilder builder) {
-        AssemblySetup a = new AssemblySetup(builder, this);
-        Object existing = configuration;
-        if (existing == null) {
-            existing = configuration = new ContainerConfiguration(new PackedContainerHandle(a.container));
-            try {
-                // Run AssemblyHook.onPreBuild if hooks are present
-                a.model.preBuild(configuration);
-
-                // Call the actual build() method
-                build();
-
-                // Run AssemblyHook.onPostBuild if hooks are present
-                a.model.postBuild(configuration);
-            } finally {
-                // Sets #configuration to a marker object that indicates the assembly has been used
-                existing = ContainerConfiguration.USED;
-            }
-        } else if (existing == ContainerConfiguration.USED) {
-            // Assembly has already been used (successfully or unsuccessfully)
-            throw new IllegalStateException("This assembly has already been used, assembly = " + getClass());
-        } else {
-            // Assembly is in the process of being used. Typically happens, if an assembly is linked recursively.
-            throw new IllegalStateException("This assembly is currently being used elsewhere, assembly = " + getClass());
-        }
-        a.postBuild();
-        return a;
     }
 
     /**

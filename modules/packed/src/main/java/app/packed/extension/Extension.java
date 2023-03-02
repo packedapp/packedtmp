@@ -22,6 +22,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.HashMap;
 import java.util.Optional;
 
 import app.packed.application.ApplicationPath;
@@ -29,9 +30,13 @@ import app.packed.application.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.container.ContainerHandle;
+import app.packed.extension.domain.DomainTemplate;
+import app.packed.extension.domain.ExtensionDomain;
 import app.packed.service.ServiceableBeanConfiguration;
+import internal.app.packed.container.DomainSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedContainerHandle;
+import internal.app.packed.container.PackedDomainTemplate;
 import internal.app.packed.container.PackedWireletSelection;
 import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.util.StringFormatter;
@@ -72,7 +77,7 @@ import internal.app.packed.util.types.ClassUtil;
 public abstract class Extension<E extends Extension<E>> {
 
     /** The internal configuration of the extension. */
-    final ExtensionSetup extension = ExtensionSetup.initalizeExtension(this);
+    final ExtensionSetup extension = ExtensionSetup.MI.initialize();
 
     /**
      * Creates a new extension. Subclasses should have a single package-private constructor.
@@ -128,6 +133,16 @@ public abstract class Extension<E extends Extension<E>> {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    protected final <D extends ExtensionDomain<E>> D domain(DomainTemplate<D> template) {
+        PackedDomainTemplate<D> t = (PackedDomainTemplate<D>) template;
+        HashMap<PackedDomainTemplate<?>, ExtensionDomain<?>> m = extension.container.application.domains;
+        return (D) m.computeIfAbsent(t, e -> {
+            DomainSetup ds = new DomainSetup(t, extension, extension);
+            return DomainSetup.MI.run(t.supplier, ds);
+        });
+    }
+
     /** {@return the path of the container that this extension belongs to.} */
     protected final ApplicationPath containerPath() {
         return extension.container.path();
@@ -169,13 +184,13 @@ public abstract class Extension<E extends Extension<E>> {
         return extension.container.isExtensionUsed(extensionType);
     }
 
+    protected final boolean isInApplicationLifetime() {
+        return lifetimeRoot() == applicationRoot();
+    }
+
     /** {@return whether or not this container is the root of its lifetime.} */
     protected final boolean isLifetimeRoot() {
         return extension.container.isLifetimeRoot();
-    }
-
-    protected final boolean isInApplicationLifetime() {
-        return lifetimeRoot() == applicationRoot();
     }
 
     /**

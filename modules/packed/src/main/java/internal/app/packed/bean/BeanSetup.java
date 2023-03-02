@@ -2,7 +2,6 @@ package internal.app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
@@ -19,9 +18,6 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.LifecycleOperationMirror;
 import app.packed.container.Realm;
-import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.extension.BeanIntrospector;
-import app.packed.extension.bean.BeanHandle;
 import app.packed.extension.operation.OperationHandle;
 import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.FunctionType;
@@ -41,24 +37,19 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.BeanAccessOperationSetup;
 import internal.app.packed.service.ServiceProviderSetup;
 import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.PackedNamespacePath;
-import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
 
 /** The internal configuration of a bean. */
 public final class BeanSetup {
 
-    /** A MethodHandle for invoking {@link BeanMirror#initialize(BeanSetup)}. */
-    private static final MethodHandle MH_BEAN_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanMirror.class, "initialize", void.class,
-            BeanSetup.class);
+    /** A magic initializer for {@link BeanMirror}. */
+    public static final MagicInitializer<BeanSetup> MIRROR_INITILIZER = MagicInitializer.of();
 
     /** A handle that can access BeanConfiguration#handle. */
     private static final VarHandle VH_BEAN_CONFIGURATION_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanConfiguration.class, "handle",
             PackedBeanHandle.class);
-
-    /** A handle that can access BeanConfiguration#handle. */
-    private static final VarHandle VH_BEAN_INTROSPECTOR_TO_THIS = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanIntrospector.class, "setup",
-            BeanScannerExtension.class);
 
     /** The bean class, is typical void.class for functional beans. */
     public final Class<?> beanClass;
@@ -96,7 +87,7 @@ public final class BeanSetup {
     /** A bean local map. */
     public final IdentityHashMap<PackedBeanLocal<?>, Object> locals;
 
-    /** Supplies a mirror for the operation */
+    /** Supplies a specialized mirror for the operation. */
     @Nullable
     private final Supplier<? extends BeanMirror> mirrorSupplier;
 
@@ -175,15 +166,7 @@ public final class BeanSetup {
 
     /** {@return a new mirror.} */
     public BeanMirror mirror() {
-        BeanMirror mirror = ClassUtil.mirrorHelper(BeanMirror.class, BeanMirror::new, mirrorSupplier);
-
-        // Initialize BeanMirror by calling BeanMirror#initialize(BeanSetup)
-        try {
-            MH_BEAN_MIRROR_INITIALIZE.invokeExact(mirror, this);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-        return mirror;
+        return MIRROR_INITILIZER.run(() -> ClassUtil.newMirror(BeanMirror.class, BeanMirror::new, mirrorSupplier), this);
     }
 
     public String name() {
@@ -236,28 +219,7 @@ public final class BeanSetup {
      * @return the bean setup
      */
     public static BeanSetup crack(BeanConfiguration configuration) {
-        requireNonNull(configuration, "configuration is null");
         PackedBeanHandle<?> handle = (PackedBeanHandle<?>) VH_BEAN_CONFIGURATION_TO_HANDLE.get(configuration);
         return handle.bean();
-    }
-
-    public static BeanSetup crack(BeanHandle<?> handle) {
-        return ((PackedBeanHandle<?>) handle).bean();
-    }
-
-    public static BeanSetup crack(BeanIntrospector introspector) {
-        requireNonNull(introspector, "introspector is null");
-        return ((BeanScannerExtension) VH_BEAN_INTROSPECTOR_TO_THIS.get(introspector)).scanner.bean;
-    }
-
-    /**
-     * Extracts a bean setup from a bean handle.
-     *
-     * @param handle
-     *            the handle to extract from
-     * @return the bean setup
-     */
-    public static BeanSetup crack(BeanMethod m) {
-        return ((PackedBeanMethod) m).extension.scanner.bean;
     }
 }

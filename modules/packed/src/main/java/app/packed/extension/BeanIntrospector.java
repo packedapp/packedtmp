@@ -71,7 +71,7 @@ public abstract class BeanIntrospector {
 //        return a == null ? Optional.empty() : Optional.ofNullable((A) a.get(attachmentType));
 //    }
 
-    private BeanSetup bean() {
+    BeanSetup bean() {
         return setup().scanner.bean;
     }
 

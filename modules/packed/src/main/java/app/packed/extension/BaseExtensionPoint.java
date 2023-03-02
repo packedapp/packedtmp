@@ -19,7 +19,7 @@ import app.packed.extension.bean.BeanTemplate;
 import app.packed.extension.container.ContainerBuilder;
 import app.packed.extension.container.ContainerHolderConfiguration;
 import app.packed.extension.container.ContainerTemplate;
-import app.packed.extension.container.ExtensionLink;
+import app.packed.extension.container.ContainerLifetimeTunnel;
 import app.packed.extension.operation.DelegatingOperationHandle;
 import app.packed.extension.operation.OperationHandle;
 import app.packed.extension.operation.OperationTemplate;
@@ -35,7 +35,7 @@ import internal.app.packed.bean.BeanLifecycleOrder;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanBuilder;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.PackedContainerBuilder;
+import internal.app.packed.container.LeafContainerBuilder;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.PackedOperationHandle;
 
@@ -50,23 +50,23 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     // Altsaa fx naar vi naar hen til application.
     // Vi kan jo ikke installere den i extensionen...
-    public static ExtensionLink CONTAINER_MIRROR = ExtensionLink.builder(MethodHandles.lookup(), BaseExtension.class, "ContainerMirror").build();
+    public static ContainerLifetimeTunnel CONTAINER_MIRROR = ContainerLifetimeTunnel.builder(MethodHandles.lookup(), BaseExtension.class, "ContainerMirror").build();
 
     /** A bridge that makes the name of the container available. */
-    public static final ExtensionLink CONTAINER_NAME = null;
+    public static final ContainerLifetimeTunnel CONTAINER_NAME = null;
 
     /**
      * A container lifetime channel that makes the container's exported services available as
      * {@link app.packed.service.ServiceLocator}.
      */
-    public static final ExtensionLink EXPORTED_SERVICE_LOCATOR = baseBuilder("ExportedServiceLocator")
+    public static final ContainerLifetimeTunnel EXPORTED_SERVICE_LOCATOR = baseBuilder("ExportedServiceLocator")
             .consumeLocal(BaseExtension.FROM_LINKS, t -> t.exportServices = true).expose(ServiceLocator.class).build();
 
     // Teanker vi altid exportere den
     // check that we have a managed lifetime. Maybe PackedManagedBeanController is already installed
     // baseExtension.managedLifetimeBean.export(); // maybe it is already exported
 
-    public static final ExtensionLink MANAGED_LIFETIME_CONTROLLER = baseBuilder("ManagedLifetimeController").expose(ManagedLifetimeController.class).build();
+    public static final ContainerLifetimeTunnel MANAGED_LIFETIME_CONTROLLER = baseBuilder("ManagedLifetimeController").expose(ManagedLifetimeController.class).build();
 
     /** Creates a new base extension point. */
     BaseExtensionPoint() {}
@@ -160,7 +160,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     public ContainerBuilder containerBuilder(ContainerTemplate template) {
         // Kan only use channels that are direct dependencies of the usage extension
         ExtensionSetup es = contextUse().usedBy();
-        return PackedContainerBuilder.of(template, es.extensionType, es.container.application, es.container);
+        return LeafContainerBuilder.of(template, es.extensionType, es.container.application, es.container);
     }
 
 //    // Contexts
@@ -305,8 +305,8 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         throw new UnsupportedOperationException();
     }
 
-    private static ExtensionLink.Builder baseBuilder(String name) {
-        return ExtensionLink.builder(MethodHandles.lookup(), BaseExtension.class, name);
+    private static ContainerLifetimeTunnel.Builder baseBuilder(String name) {
+        return ContainerLifetimeTunnel.builder(MethodHandles.lookup(), BaseExtension.class, name);
     }
 
     /**

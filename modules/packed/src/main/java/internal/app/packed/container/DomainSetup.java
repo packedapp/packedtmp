@@ -13,28 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package internal.app.packed.container;
 
-import java.util.Collection;
-import java.util.Map;
-
-import app.packed.container.DomainMirror;
-import app.packed.extension.BaseExtension;
-import app.packed.util.Key;
+import internal.app.packed.bean.BeanOwner;
+import internal.app.packed.util.MagicInitializer;
 
 /**
  *
  */
+public final class DomainSetup {
 
-// 2 typer exports + main
+    public static final MagicInitializer<DomainSetup> MI = MagicInitializer.of();
 
-public class ServiceDomainMirror extends DomainMirror<BaseExtension> {
+    public final BeanOwner owner;
 
-    public Map<Key<?>, Collection<ServiceBindingMirror>> bindings() {
-        throw new UnsupportedOperationException();
-    }
+    public final ExtensionSetup root;
 
-    public ServiceContract contract() {
-        throw new UnsupportedOperationException();
+    public final PackedDomainTemplate<?> template;
+
+    public final String name = "main";
+
+    public DomainSetup(PackedDomainTemplate<?> template, ExtensionSetup root, BeanOwner owner) {
+        this.template = template;
+        this.root = root;
+        this.owner = owner;
     }
 }

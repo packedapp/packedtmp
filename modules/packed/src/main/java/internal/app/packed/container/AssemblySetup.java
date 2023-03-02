@@ -74,8 +74,11 @@ public final class AssemblySetup implements BeanOwner {
      *
      * @param builder
      *            the container builder
+     * @param assembly
+     *            the assembly instance
      */
     public AssemblySetup(AbstractContainerBuilder builder, Assembly assembly) {
+        assert (!(assembly instanceof DelegatingAssembly));
         this.assembly = assembly;
         this.model = AssemblyModel.of(assembly.getClass());
         this.delegatingAssemblies = builder.delegatingAssemblies == null ? List.of() : List.copyOf(builder.delegatingAssemblies);
@@ -106,7 +109,7 @@ public final class AssemblySetup implements BeanOwner {
 
     /** {@return a mirror for this assembly.} */
     public AssemblyMirror mirror() {
-        AssemblyMirror mirror = ClassUtil.mirrorHelper(AssemblyMirror.class, AssemblyMirror::new, null);
+        AssemblyMirror mirror = ClassUtil.newMirror(AssemblyMirror.class, AssemblyMirror::new, null);
 
         // Initialize AssemblyMirror by calling AssemblyMirror#initialize(AssemblySetup)
         try {

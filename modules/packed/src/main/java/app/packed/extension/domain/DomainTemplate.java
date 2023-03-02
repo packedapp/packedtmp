@@ -15,14 +15,25 @@
  */
 package app.packed.extension.domain;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
+
+import app.packed.container.DomainMirror;
+import internal.app.packed.container.PackedDomainTemplate;
 
 /**
  *
  */
+
+// A default domain is applicationWide...
+
 public interface DomainTemplate<T extends ExtensionDomain<?>> {
 
+    // Taenker maaske man skal kunne foersporge paa det.
+    // Give me all domains of typeX
+    <D extends DomainMirror<?>> DomainTemplate<T> mirrorType(Class<D> mirrorType, Function<? super T, ? extends D> mirrorSuppliers);
+
     static <T extends ExtensionDomain<?>> DomainTemplate<T> of(Supplier<T> supplier) {
-        return null;
+        return PackedDomainTemplate.of(supplier);
     }
 }

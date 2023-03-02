@@ -39,6 +39,11 @@ public @interface CliCommand {
      */
     String[] name() default {};
 
+    /**
+     * A builder that allows for programmatically constructing commands.
+     *
+     * @see CliExtension#addCommand(String...)
+     */
     public interface Builder {
 
         CliCommandMirror build();

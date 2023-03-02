@@ -24,7 +24,7 @@ import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint;
 import app.packed.extension.container.ContainerHolderService;
-import app.packed.extension.container.ExtensionLink;
+import app.packed.extension.container.ContainerLifetimeTunnel;
 import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Key;
@@ -163,7 +163,7 @@ record ProgramImplementation(@ContainerHolderService String name, @ContainerHold
         // System.out.println(services.keys());
     }
 
-    static ExtensionLink EL = ExtensionLink.builder(MethodHandles.lookup(), Ele.MyE.class, "doo").expose(Long.class).build();
+    static ContainerLifetimeTunnel EL = ContainerLifetimeTunnel.builder(MethodHandles.lookup(), Ele.MyE.class, "doo").expose(Long.class).build();
 
     /** An driver for creating App instances. */
     static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ProgramImplementation.class, c -> {

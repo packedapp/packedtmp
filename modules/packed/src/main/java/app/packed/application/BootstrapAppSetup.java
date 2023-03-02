@@ -23,7 +23,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.container.Wirelet;
-import app.packed.util.Nullable;
 import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.CompositeWirelet;
 import internal.app.packed.container.PackedContainerTemplate;
@@ -32,7 +31,7 @@ import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The internal representation of a bootstrap app. */
-final class BootstrapAppApplicationSetup {
+final class BootstrapAppSetup {
 
     /** The method handle used for creating new application instances. */
     // We need more info for bootstrap mirrors
@@ -44,12 +43,7 @@ final class BootstrapAppApplicationSetup {
     /** The template for the root container. */
     public final PackedContainerTemplate template;
 
-    /** Optional (flattened) wirelets that will be applied to every application. */
-    @Nullable
-    public final Wirelet wirelet;
-
-    BootstrapAppApplicationSetup(Supplier<? extends ApplicationMirror> mirrorSupplier, PackedContainerTemplate pot, MethodHandle mh, Wirelet wirelet) {
-        this.wirelet = wirelet;
+    BootstrapAppSetup(Supplier<? extends ApplicationMirror> mirrorSupplier, PackedContainerTemplate pot, MethodHandle mh) {
         this.mhConstructor = requireNonNull(mh);
         this.mirrorSupplier = requireNonNull(mirrorSupplier);
         this.template = pot;
@@ -70,13 +64,6 @@ final class BootstrapAppApplicationSetup {
         }
     }
 
-    /** {@inheritDoc} */
-    public BootstrapAppApplicationSetup with(Wirelet... wirelets) {
-        // Skal vi checke noget med components
-        Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
-        return new BootstrapAppApplicationSetup(mirrorSupplier, template, mhConstructor, w);
-    }
-
     /**
      * Implementation of {@link ApplicationLauncher} used by {@link BootstrapApp#newImage(Assembly, Wirelet...)}.
      */
@@ -84,7 +71,7 @@ final class BootstrapAppApplicationSetup {
 
         private final AtomicReference<ReusableApplicationImage<A>> ref;
 
-        SingleShotApplicationImage(BootstrapAppApplicationSetup driver, ApplicationSetup application) {
+        SingleShotApplicationImage(BootstrapAppSetup driver, ApplicationSetup application) {
             this.ref = new AtomicReference<>(new ReusableApplicationImage<>(driver, application));
         }
 
@@ -105,7 +92,7 @@ final class BootstrapAppApplicationSetup {
     /**
      * Implementation of {@link ApplicationLauncher} used by {@link OldBootstrapApp#newImage(Assembly, Wirelet...)}.
      */
-    /* primitive */ record ReusableApplicationImage<A>(BootstrapAppApplicationSetup driver, ApplicationSetup application) implements ApplicationLauncher<A> {
+    /* primitive */ record ReusableApplicationImage<A>(BootstrapAppSetup driver, ApplicationSetup application) implements ApplicationLauncher<A> {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")

@@ -20,9 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 import java.util.function.Function;
 
-import app.packed.application.BootstrapAppApplicationSetup.MappedApplicationImage;
-import app.packed.application.BootstrapAppApplicationSetup.ReusableApplicationImage;
-import app.packed.application.BootstrapAppApplicationSetup.SingleShotApplicationImage;
+import app.packed.application.BootstrapAppSetup.MappedApplicationImage;
+import app.packed.application.BootstrapAppSetup.ReusableApplicationImage;
+import app.packed.application.BootstrapAppSetup.SingleShotApplicationImage;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.RunState;
 

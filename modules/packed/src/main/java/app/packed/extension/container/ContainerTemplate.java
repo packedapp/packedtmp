@@ -29,9 +29,12 @@ import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
 
 /**
- * A container template is
+ * A container template must be specified when creating a new container.
+ * <p>
+ * Lifetime
  *
- * Con
+ * <p>
+ *
  *
  * @see BaseExtensionPoint#containerInstaller(ContainerTemplate)
  */
@@ -43,7 +46,27 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
      * The template has no {@link #lifetimeOperations() lifetime operations} as the container is automatically created when
      * the root container in the lifetime is created.
      */
-    ContainerTemplate DEFAULT = new PackedContainerTemplate(PackedContainerKind.PARENT, void.class, List.of(), void.class);
+    // Tror maaske vi dropper at have templates'ene her. Kan ikke bruge nogle af metoderne
+    // Hvis vi flytter dem, omnavngiver vi til ContainerLifetimeTemplate
+    // Og nok det samme for BeanTemplate
+    // Det er er nok ogsaa bedre for forstaaelsen af tunnel
+    ContainerTemplate DEFAULT = new PackedContainerTemplate(PackedContainerKind.PARENT_LIFETIME);
+
+    /**
+     * A container template representing a container that exists solely within a single entry point operation.
+     * <p>
+     * The container is created. The method is executed. And the container is shutdown again
+     * <p>
+     * A container lifetime created using this template must have registered at least one entry point. Otherwise an
+     * {@link app.packed.extension.InternalExtensionException} is thrown. TODO we need a method where we can set a supplier
+     * that is executed. It is typically a user error. The specified assembly must hava at least one method that schedules
+     * shit
+     *
+     * @see app.packed.extension.BeanElement.BeanMethod#newLifetimeOperation(ContainerHandle)
+     * @see app.packed.extension.bean.BeanTemplate#Z_FROM_OPERATION
+     **/
+    // Managed vs Unmanaged???
+    ContainerTemplate GATEWAY = new PackedContainerTemplate(PackedContainerKind.GATEWAY);
 
     /**
      * A template for a container that is lazily created.
@@ -51,37 +74,20 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
      * The template has no {@link #lifetimeOperations() lifetime operations} as the container is automatically created
      * whenever it is needed by the runtime.
      */
-    // Kan man have lazy paa unmanaged????
-    ContainerTemplate LAZY = new PackedContainerTemplate(PackedContainerKind.LAZY, void.class, List.of(), void.class);
+    ContainerTemplate LAZY = new PackedContainerTemplate(PackedContainerKind.LAZY);
 
     // Cannot have managed on unmanaged
-    ContainerTemplate MANAGED = null;
+    ContainerTemplate MANAGED = new PackedContainerTemplate(PackedContainerKind.MANAGED);
 
     ContainerTemplate MANAGED_AUTOSTART = null;
 
     // Carefull with Unmanaged on Managed
-    ContainerTemplate UNMANAGED = null;
+    ContainerTemplate UNMANAGED = new PackedContainerTemplate(PackedContainerKind.UNMANAGED);
 
-    /**
-     * A container template representing a container that exists solely within a single operation.
-     * <p>
-     * The container is created. The method is executed. And the container is shutdown again
-     * <p>
-     * A container created using this template must have registered at least one spawning operation. Otherwise an
-     * {@link app.packed.extension.InternalExtensionException} is thrown. TODO we need a method where we can set a supplier
-     * that is executed. It is typically a user error. The specified assembly must hava at least one method that schedules
-     * shit
-     *
-     *
-     * @see app.packed.extension.BeanElement.BeanMethod#newLifetimeOperation(ContainerHandle)
-     * @see app.packed.extension.bean.BeanTemplate#Z_FROM_OPERATION
-     **/
-    ContainerTemplate GATEWAY = null;
+    ContainerTemplate addLink(ContainerLifetimeTunnel link);
 
-    ContainerTemplate addLink(ExtensionLink link);
-
-    default ContainerTemplate addLink(ExtensionLink... links) {
-        for (ExtensionLink l : links) {
+    default ContainerTemplate addLink(ContainerLifetimeTunnel... links) {
+        for (ContainerLifetimeTunnel l : links) {
             addLink(l);
         }
         return this;
@@ -90,17 +96,6 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
     default ContainerTemplate allowRuntimeWirelets() {
         throw new UnsupportedOperationException();
     }
-
-    /**
-     * A set of keys that are available for injection into the holder using {@link FromLifetimeChannel}.
-     * <p>
-     * This method is mainly used for informational purposes.
-     *
-     * @return the set of keys available for injection
-     *
-     * @see From
-     */
-    Set<Key<?>> holderKeys();
 
     /**
      * Creates a new template that We need to set the holder type. Otherwise we cannot calculate
@@ -116,6 +111,17 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
      */
     ContainerTemplate holder(Class<?> guest);
 
+    /**
+     * A set of keys that are available for injection into the holder using {@link FromLifetimeChannel}.
+     * <p>
+     * This method is mainly used for informational purposes.
+     *
+     * @return the set of keys available for injection
+     *
+     * @see From
+     */
+    Set<Key<?>> holderKeys();
+
     default <T> ContainerTemplate holderProvideConstant(Class<T> key, T arg) {
         return holderProvideConstant(Key.of(key), arg);
     }
@@ -130,7 +136,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
     // Har kun visibility for the installing extension
     ContainerTemplate lifetimeOperationAddContext(int index, ContextTemplate template);
 
-    /** {@return a list of the lifetime operation templates for this template.} */
+    /** {@return a list of the lifetime operation templates.} */
     List<OperationTemplate> lifetimeOperations();
 }
 

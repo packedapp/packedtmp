@@ -39,7 +39,7 @@ import app.packed.extension.BeanHook.AnnotatedBindingHook;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @AnnotatedBindingHook(extension = BaseExtension.class)
-// Maybe a less friendly name
+// Maybe a more leet name
 // Alternative @ConjectInject paa contexten...
 public @interface ContextValue {
 

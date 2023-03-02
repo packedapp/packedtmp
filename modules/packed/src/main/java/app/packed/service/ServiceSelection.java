@@ -23,8 +23,9 @@ import java.util.stream.Stream;
 import app.packed.operation.Provider;
 
 /**
- * A specialization of {@link ServiceLocator} where all service instances have some kind of common super type
- * {@code <S>}. Instances of this interface are normally created via the various select methods on ServiceLocator.
+ * A specialization of {@link ServiceLocator} where all service instances have a common super type {@code <S>}.
+ * <p>
+ * Instances of this interface are normally created via the various select methods on ServiceLocator.
  *
  * @see ServiceLocator#selectAll()
  * @see ServiceLocator#selectAssignableTo(Class)
@@ -32,10 +33,10 @@ import app.packed.operation.Provider;
 public interface ServiceSelection<S> extends ServiceLocator {
 
     /**
-     * Acquires a service instance for each service in this selection and performs the specified action.
+     * Performs the specified action for each service in this selection.
      *
      * @param action
-     *            the action to perform on each instance
+     *            the action to perform on each service instance
      */
     default void forEachInstance(Consumer<? super S> action) {
         requireNonNull(action, "action is null");

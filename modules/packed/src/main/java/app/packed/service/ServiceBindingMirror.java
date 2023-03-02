@@ -40,7 +40,7 @@ import internal.app.packed.service.ServiceBindingSetup;
 //// missing but Optional
 //// missing but default
 
-
+// Maaske er ServiceBinding altid en service, og det andet er en manuel binding
 public class ServiceBindingMirror extends BindingMirror {
 
     /** The service binding */
@@ -48,6 +48,11 @@ public class ServiceBindingMirror extends BindingMirror {
 
     public ServiceBindingMirror(@SuppressWarnings("exports") ServiceBindingSetup binding) {
         this.binding = requireNonNull(binding);
+    }
+
+    /** {@return the domain this service is provided from.} */
+    public ServiceDomainMirror domain() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@return whether or not the service is required.} */
@@ -74,7 +79,7 @@ public class ServiceBindingMirror extends BindingMirror {
 
     // non null if resolvedx
     // Der er noget med en sti til servicen.
-    public Optional<ProvidedServiceMirror> providedVia() {
+    public Optional<ServiceMirror> providingService() {
         throw new UnsupportedOperationException();
     }
 }

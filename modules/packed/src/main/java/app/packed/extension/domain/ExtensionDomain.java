@@ -17,8 +17,10 @@ package app.packed.extension.domain;
 
 import java.util.Set;
 
+import app.packed.container.DomainMirror;
 import app.packed.extension.Extension;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.DomainSetup;
 
 /**
  *
@@ -26,22 +28,24 @@ import internal.app.packed.container.ContainerSetup;
  */
 public abstract class ExtensionDomain<E extends Extension<E>> {
 
-    DomainSetup domain;
-
-    DomainSetup domain() {
-        return domain;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected E root() {
-        return (E) domain().root.instance();
-    }
+    /** The domain configuration. */
+    private final DomainSetup domain = DomainSetup.MI.initialize();
 
     Set<ContainerSetup> containers() {
         return Set.of();
     }
 
+    public final boolean isInApplicationLifetime(Extension<?> extension) {
+        return true;
+    }
+
     public DomainMirror<E> mirror() {
         return new DomainMirror<E>();
+    }
+
+    /** {@return the root extension of this domain.} */
+    @SuppressWarnings("unchecked")
+    public final E root() {
+        return (E) domain.root.instance();
     }
 }

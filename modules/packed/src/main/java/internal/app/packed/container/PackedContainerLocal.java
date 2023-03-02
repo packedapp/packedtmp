@@ -44,7 +44,7 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public T get(PackedContainerBuilder contianer) {
+    public T get(LeafContainerBuilder contianer) {
         if (initialValueSupplier == null) {
             return (T) contianer.locals.get(this);
         } else {

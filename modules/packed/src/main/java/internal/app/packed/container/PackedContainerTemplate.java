@@ -15,27 +15,33 @@
  */
 package internal.app.packed.container;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import app.packed.container.Wirelet;
+import app.packed.extension.container.ContainerLifetimeTunnel;
 import app.packed.extension.container.ContainerTemplate;
-import app.packed.extension.container.ExtensionLink;
 import app.packed.extension.context.ContextTemplate;
 import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.Key;
-import internal.app.packed.lifetime.PackedExtensionLink;
+import app.packed.util.Nullable;
 
-/**
- *
- */
-public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, List<PackedExtensionLink> links, Class<?> resultType)
+/** Implementation of {@link ContainerTemplate}. */
+public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, PackedContainerLifetimeTunnelSet links, Class<?> resultType)
         implements ContainerTemplate {
+
+    public PackedContainerTemplate(PackedContainerKind kind) {
+        this(kind, void.class);
+    }
+
+    public PackedContainerTemplate(PackedContainerKind kind, Class<?> holderType) {
+        this(kind, holderType, new PackedContainerLifetimeTunnelSet(List.of()), void.class);
+    }
 
     /** {@inheritDoc} */
     @Override
     public Set<Key<?>> holderKeys() {
-        throw new UnsupportedOperationException();
+        return links.keys();
     }
 
     /** {@inheritDoc} */
@@ -54,15 +60,15 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
     public PackedContainerTemplate holder(Class<?> guest) {
         // I don't think we are going to do any checks here?
         // Well not interface, annotation, abstract class, ...
+        // All lifetime operation will change...
         return new PackedContainerTemplate(kind, guest, links, resultType);
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedContainerTemplate addLink(ExtensionLink channel) {
-        ArrayList<PackedExtensionLink> l = new ArrayList<>(links);
-        l.add((PackedExtensionLink) channel);
-        return new PackedContainerTemplate(kind, holderClass, List.copyOf(l), resultType);
+    public PackedContainerTemplate addLink(ContainerLifetimeTunnel channel) {
+        PackedContainerLifetimeTunnelSet tunnels = links.add((PackedContainerLifetimeTunnel) channel);
+        return new PackedContainerTemplate(kind, holderClass, tunnels, resultType);
     }
 
     public PackedContainerTemplate withKind(PackedContainerKind kind) {
@@ -73,5 +79,14 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
     @Override
     public PackedContainerTemplate lifetimeOperationAddContext(int index, ContextTemplate template) {
         throw new UnsupportedOperationException();
+    }
+
+    public PackedContainerTemplate withWirelets(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nullable
+    public Wirelet wirelet() {
+        return null;
     }
 }

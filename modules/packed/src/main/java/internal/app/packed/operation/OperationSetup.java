@@ -150,7 +150,7 @@ public sealed abstract class OperationSetup {
     public final OperationMirror mirror() {
         // debug();
         // new Exception().printStackTrace();
-        OperationMirror mirror = ClassUtil.mirrorHelper(OperationMirror.class, OperationMirror::new, mirrorSupplier);
+        OperationMirror mirror = ClassUtil.newMirror(OperationMirror.class, OperationMirror::new, mirrorSupplier);
 
         // Initialize OperationMirror by calling OperationMirror#initialize(OperationSetup)
         try {

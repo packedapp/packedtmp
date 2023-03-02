@@ -17,7 +17,6 @@ package app.packed.cli;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.bean.BeanInstallationException;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
@@ -32,22 +31,15 @@ import app.packed.extension.container.ContainerBuilder;
 import app.packed.extension.container.ContainerHandle;
 import app.packed.extension.container.ContainerTemplate;
 import app.packed.extension.domain.DomainTemplate;
-import app.packed.extension.operation.OperationHandle;
-import app.packed.extension.operation.OperationTemplate;
 
 /**
- *
+ * An extension that
  */
-
-// Must be in main lifetime
 public class CliExtension extends FrameworkExtension<CliExtension> {
 
-    static final DomainTemplate<CliExtensionDomain> DOMAIN_TEMPLATE = DomainTemplate.of(CliExtensionDomain::new);
-
-    // Hmm, vi har 2 thingies here
-
-    // Hvis den er lavet i application lifetime er det hele fint
-    static final ContainerLocal<CliExtensionDomain> DOMAIN = ContainerLocal.ofApplication(CliExtensionDomain::new);
+    // Vi har 1 per application.. Vi kan fx stadig injecte globalle parameters i enhver lifetime.
+    // Det er bare commands der ikke fungere
+    static final DomainTemplate<CliExtensionDomain> DOMAIN = DomainTemplate.of(CliExtensionDomain::new);
 
     static final ContainerLocal<Boolean> LAUNCHED = ContainerLocal.ofContainer();
 
@@ -55,7 +47,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
     CliExtension() {}
 
     public CliCommand.Builder addCommand(String... names) {
-        throw new UnsupportedOperationException();
+        return domain(DOMAIN).addCommand(names);
     }
 
     public <T> InstanceBeanConfiguration<T> newBean(Class<T> beanClass) {
@@ -74,23 +66,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
             @Override
             public void hookOnAnnotatedMethod(Annotation hook, BeanMethod method) {
                 if (hook instanceof CliCommand c) {
-                    CliExtensionDomain domain = DOMAIN.get(this);
-                    OperationHandle h = null;
-                    if (isInApplicationLifetime()) {
-                        h = method.newOperation(OperationTemplate.defaults());
-
-                        // check Launched
-                    } else {
-
-                        // EntryPoint.LaunchLifetime
-                    }
-
-                    var cd = new CliExtensionDomain.CliC(c, h);
-                    if (domain.commands.putIfAbsent(c.name()[0], cd) != null) {
-                        throw new BeanInstallationException("Multiple cli commands with the same name, name = " + c.name());
-                    }
-
-                    // OT.DEFAULTS.entryPoint();
+                    domain(DOMAIN).process(CliExtension.this, c, method);
                 } else {
                     super.hookOnAnnotatedMethod(hook, method);
                 }
@@ -120,7 +96,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
     @Override
     protected void onApplicationClose() {
-        System.out.println("Have commands for " + DOMAIN.get(this).commands.keySet());
+        System.out.println("Have commands for " + domain(DOMAIN).commands.keySet());
 
         super.onApplicationClose();
     }

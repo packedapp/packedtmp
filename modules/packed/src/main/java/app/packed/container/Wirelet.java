@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.extension.ContainerLocal;
 import internal.app.packed.container.CompositeWirelet;
-import internal.app.packed.container.PackedContainerBuilder.OverrideNameWirelet;
+import internal.app.packed.container.LeafContainerBuilder.OverrideNameWirelet;
 import internal.app.packed.container.WireletModel;
 import internal.app.packed.util.StackWalkerUtil;
 

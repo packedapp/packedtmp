@@ -15,6 +15,8 @@
  */
 package internal.app.packed.util;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.function.Supplier;
 
 /**
@@ -36,11 +38,33 @@ import java.util.function.Supplier;
 
 public final class MagicInitializer<T> {
 
-    public T get() {
-        throw new UnsupportedOperationException();
+    final ThreadLocal<Holder<T>> TL = new ThreadLocal<>();
+
+    public T initialize() {
+        Holder<T> holder = TL.get();
+        T t = requireNonNull(holder.t);
+        holder.t = null;
+        return t;
     }
 
-    public <S> S init(Supplier<S> supplier, T value) {
-        return supplier.get();
+    public <S> S run(Supplier<S> supplier, T value) {
+        Holder<T> h = new Holder<>();
+        h.t = value;
+        TL.set(h);
+        try {
+            return supplier.get();
+        } finally {
+            TL.remove();
+        }
+    }
+
+    private static class Holder<T> {
+        private T t;
+    }
+
+    // Take a get class for better error messages?
+    // Or maybe even an error message
+    public static <T> MagicInitializer<T> of() {
+        return new MagicInitializer<>();
     }
 }

@@ -13,28 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.cli;
 
-import java.util.Collection;
-import java.util.Map;
-
-import app.packed.container.DomainMirror;
-import app.packed.extension.BaseExtension;
-import app.packed.util.Key;
+import app.packed.application.App;
+import app.packed.container.Assembly;
 
 /**
  *
  */
+public class CliApp {
+//    Like App but calls system exit and prints stack
+//    traces to system.err
 
-// 2 typer exports + main
-
-public class ServiceDomainMirror extends DomainMirror<BaseExtension> {
-
-    public Map<Key<?>, Collection<ServiceBindingMirror>> bindings() {
-        throw new UnsupportedOperationException();
-    }
-
-    public ServiceContract contract() {
-        throw new UnsupportedOperationException();
+    public static void run(Assembly assembly, String... args) {
+        App.run(assembly);
     }
 }

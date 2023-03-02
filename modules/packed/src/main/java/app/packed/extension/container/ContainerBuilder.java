@@ -25,10 +25,10 @@ import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.ContainerLocal;
 import app.packed.extension.context.ContextTemplate;
 import app.packed.util.Key;
-import internal.app.packed.container.PackedContainerBuilder;
+import internal.app.packed.container.LeafContainerBuilder;
 
 /**
- * A builder for containers. All containers are either directly or indirectly added via a ContainerBuilder.
+ * A builder for containers. All containers are either directly or indirectly created via a ContainerBuilder.
  * <p>
  *
  * @see BaseExtensionPoint#addCodeGenerated(BeanConfiguration, Class, Supplier)
@@ -36,7 +36,7 @@ import internal.app.packed.container.PackedContainerBuilder;
  *      app.packed.extension.ExtensionPoint.UseSite)
  */
 // TODO move back to BaseExtensionPoint
-public sealed interface ContainerBuilder permits PackedContainerBuilder {
+public sealed interface ContainerBuilder permits LeafContainerBuilder {
 
     /**
      * Creates a new container using the specified assembly.
@@ -55,7 +55,7 @@ public sealed interface ContainerBuilder permits PackedContainerBuilder {
     ContainerHandle build(Assembly assembly, Wirelet... wirelets);
 
     /**
-     * Creates a new container.
+     * Creates a new configurable container.
      *
      * @param wirelets
      *            optional wirelets
@@ -65,15 +65,12 @@ public sealed interface ContainerBuilder permits PackedContainerBuilder {
      */
     ContainerHandle build(Wirelet... wirelets);
 
-    // Does not work with assembly
-    // useThis
     /**
-     * Creates the new container and adds this extension to the container.
+     * Creates the new container and adds this extension to the new container.
      * <p>
-     * The extension in the container can be obtained by calling {@link Extension#fromHandle(ContainerHandle)}
-     * <p>
+     * The extension in new the container can be obtained by calling {@link Extension#fromHandle(ContainerHandle)}
      *
-     * @return
+     * @return a container handle representing the new container
      *
      * @see app.packed.extension.Extension#fromHandle(ContainerHandle)
      */
@@ -106,9 +103,6 @@ public sealed interface ContainerBuilder permits PackedContainerBuilder {
      *
      * @see ExtensionLink#ofConstant(Class, Object)
      */
-    // Kan den overlappe lidt, hvis det lykkes os at lave initialization constants?
-    // Nej fordi det her er paa enkelte instans niveau. overrideService er for alle
-    // instanser af en given bean
     default <T> ContainerBuilder holderConstant(Class<T> key, T constant) {
         return holderConstant(Key.of(key), constant);
     }
@@ -116,9 +110,7 @@ public sealed interface ContainerBuilder permits PackedContainerBuilder {
     /**
      * @see FromLifetimeChannel
      */
-    default <T> ContainerBuilder holderConstant(Key<T> key, T constant) {
-        throw new UnsupportedOperationException();
-    }
+    <T> ContainerBuilder holderConstant(Key<T> key, T constant);
 
     /**
      * <p>
@@ -156,7 +148,7 @@ public sealed interface ContainerBuilder permits PackedContainerBuilder {
      * @apiNote the specified supplier may be called multiple times for the same bean. In which case an equivalent mirror
      *          must be returned
      */
-    void specializeMirror(Supplier<? extends ContainerMirror> supplier);
+    ContainerBuilder specializeMirror(Supplier<? extends ContainerMirror> supplier);
 
     // The application will fail to build if the installing extension
     // is not used by. Is only applicable for new(Assembly)

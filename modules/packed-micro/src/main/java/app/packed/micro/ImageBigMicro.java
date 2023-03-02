@@ -41,7 +41,7 @@ import app.packed.micro.Letters.NeedsA;
 @State(Scope.Benchmark)
 public class ImageBigMicro {
 
-    static final App.Launcher INSTALL31 = App.newImage(new BaseAssembly() {
+    static final App.Launcher INSTALL31 = App.imageOf(new BaseAssembly() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());
@@ -60,7 +60,7 @@ public class ImageBigMicro {
         }
     });
 
-    static final App.Launcher INSTALL253 = App.newImage(new BaseAssembly() {
+    static final App.Launcher INSTALL253 = App.imageOf(new BaseAssembly() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());
@@ -96,7 +96,7 @@ public class ImageBigMicro {
             }
         }
     });
-    static final App.Launcher INSTALL253_NOS = App.newImage(new BaseAssembly() {
+    static final App.Launcher INSTALL253_NOS = App.imageOf(new BaseAssembly() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());

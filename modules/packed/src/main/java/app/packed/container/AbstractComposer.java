@@ -17,18 +17,15 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.VarHandle;
 
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AbstractContainerBuilder;
 import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.PackedContainerBuilder;
+import internal.app.packed.container.LeafContainerBuilder;
 import internal.app.packed.container.PackedContainerHandle;
-import internal.app.packed.util.LookupUtil;
 
 /**
  * A composer is
@@ -36,9 +33,6 @@ import internal.app.packed.util.LookupUtil;
 
 // Operere vi pa Extensions? eller Extenpoints??
 public abstract class AbstractComposer {
-
-    /** A var handle that can update the {@link #configuration} field in this class. */
-    private static final VarHandle VH_CONFIGURATION = LookupUtil.findVarHandleOwn(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);
 
     /**
      * The configuration of the container that this composer defines.
@@ -143,38 +137,37 @@ public abstract class AbstractComposer {
          * Invoked by the runtime (via a MethodHandle). This method is mostly machinery that makes sure that the assembly is not
          * used more than once.
          *
-         * @param assembly
-         *            the realm used to call container hooks
-         * @param configuration
+         * @param builder
          *            the configuration to use for the assembling process
          */
         @Override
         AssemblySetup build(AbstractContainerBuilder builder) {
-            if (builder instanceof PackedContainerBuilder installer) {
+            if (builder instanceof LeafContainerBuilder installer) {
                 throw new IllegalArgumentException("Cannot link an instance of " + ComposerAssembly.class + ", assembly must extend "
                         + BuildableAssembly.class.getSimpleName() + " instead");
             }
 
-            AssemblySetup a = new AssemblySetup(builder, this);
-            ContainerConfiguration configuration = new ContainerConfiguration(new PackedContainerHandle(a.container));
-            // Do we really need to guard against concurrent usage of an assembly?
-            Object existing = VH_CONFIGURATION.compareAndExchange(composer, null, configuration);
+            Object existing = composer.configuration;
             if (existing == null) {
+                AssemblySetup a = new AssemblySetup(builder, this);
+                ContainerConfiguration cc = composer.configuration = new ContainerConfiguration(new PackedContainerHandle(a.container));
                 try {
                     composer.preCompose();
 
                     // Run AssemblyHook.onPreBuild if hooks are present
-                    a.model.preBuild(configuration);
+                    a.model.preBuild(cc);
 
                     // Call actions build method with this composer
                     action.build(composer);
 
                     // Run AssemblyHook.onPostBuild if hooks are present
-                    a.model.postBuild(configuration);
+                    a.model.postBuild(cc);
                 } finally {
                     // Sets #configuration to a marker object that indicates the assembly has been used
-                    VH_CONFIGURATION.setVolatile(composer, ContainerConfiguration.USED);
+                    composer.configuration = ContainerConfiguration.USED;
                 }
+                a.postBuild();
+                return a;
             } else if (existing == ContainerConfiguration.USED) {
                 // Assembly has already been used (successfully or unsuccessfully)
                 throw new IllegalStateException("This assembly has already been used, assembly = " + getClass());
@@ -182,8 +175,6 @@ public abstract class AbstractComposer {
                 // Assembly is in the process of being used. Typically happens, if an assembly is linked recursively.
                 throw new IllegalStateException("This assembly is currently being used elsewhere, assembly = " + getClass());
             }
-            a.postBuild();
-            return a;
         }
     }
 }

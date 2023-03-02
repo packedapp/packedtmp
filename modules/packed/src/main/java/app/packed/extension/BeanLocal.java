@@ -15,13 +15,12 @@
  */
 package app.packed.extension;
 
-import static internal.app.packed.bean.BeanSetup.crack;
-
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.extension.bean.BeanHandle;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanLocal;
 
 /**
@@ -48,7 +47,7 @@ import internal.app.packed.bean.PackedBeanLocal;
  */
 // get, use, remove..
 @SuppressWarnings("rawtypes")
-public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
+public sealed abstract class BeanLocal<T> permits ContainerLocal, PackedBeanLocal {
 
     public final T get(BeanConfiguration configuration) {
         return get(BeanSetup.crack(configuration));
@@ -59,7 +58,7 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
     }
 
     public final T get(BeanIntrospector introspector) {
-        return get(BeanSetup.crack(introspector));
+        return get(introspector.bean());
     }
 
     protected abstract T get(BeanSetup bean);
@@ -75,7 +74,7 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
      *             if the bean local has an initial value. As this is always a usage error
      */
     public final boolean isPresent(BeanConfiguration configuration) {
-        return isPresent(crack(configuration));
+        return isPresent(BeanSetup.crack(configuration));
     }
 
     public final boolean isPresent(BeanHandle<?> handle) {
@@ -83,7 +82,7 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
     }
 
     public final boolean isPresent(BeanIntrospector introspector) {
-        return isPresent(crack(introspector));
+        return isPresent(introspector.bean());
     }
 
     protected abstract boolean isPresent(BeanSetup bean);
@@ -98,12 +97,12 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
     }
 
     public final <B extends BeanIntrospector> B set(B introspector, T value) {
-        set(crack(introspector), value);
+        set(introspector.bean(), value);
         return introspector;
     }
 
     public final <B extends BeanConfiguration> B set(B configuration, T value) {
-        set(crack(configuration), value);
+        set(BeanSetup.crack(configuration), value);
         return configuration;
     }
 
@@ -124,6 +123,10 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
     }
 
     protected abstract void set(BeanSetup bean, T value);
+
+    private static BeanSetup crack(BeanHandle<?> handle) {
+        return ((PackedBeanHandle<?>) handle).bean();
+    }
 
     /**
      * Creates a bean local without any initial value.

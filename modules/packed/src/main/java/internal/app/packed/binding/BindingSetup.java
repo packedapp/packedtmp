@@ -67,7 +67,7 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
 
     /** {@return a new mirror.} */
     public BindingMirror mirror() {
-        BindingMirror mirror = ClassUtil.mirrorHelper(BindingMirror.class, BindingMirror::new, mirrorSupplier);
+        BindingMirror mirror = ClassUtil.newMirror(BindingMirror.class, BindingMirror::new, mirrorSupplier);
 
         // Initialize BindingMirror by calling BindingMirror#initialize(BindingSetup)
         try {

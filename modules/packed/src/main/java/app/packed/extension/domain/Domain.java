@@ -13,28 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
-
-import java.util.Collection;
-import java.util.Map;
-
-import app.packed.container.DomainMirror;
-import app.packed.extension.BaseExtension;
-import app.packed.util.Key;
+package app.packed.extension.domain;
 
 /**
  *
  */
-
-// 2 typer exports + main
-
-public class ServiceDomainMirror extends DomainMirror<BaseExtension> {
-
-    public Map<Key<?>, Collection<ServiceBindingMirror>> bindings() {
-        throw new UnsupportedOperationException();
-    }
-
-    public ServiceContract contract() {
-        throw new UnsupportedOperationException();
-    }
+public @interface Domain {
+    String value() default "main";
 }

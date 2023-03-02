@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.domain;
+package app.packed.service;
 
-import internal.app.packed.container.ExtensionSetup;
+import app.packed.util.Key;
 
 /**
  *
  */
-class DomainSetup {
+public interface ServiceMirror {
 
-    final ExtensionSetup root;
+    Key<?> key();
 
-    DomainSetup(ExtensionSetup root) {
-        this.root = root;
-    }
+    ServiceDomainMirror domain();
 }

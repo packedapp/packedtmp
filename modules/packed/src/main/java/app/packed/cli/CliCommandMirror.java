@@ -15,6 +15,8 @@
  */
 package app.packed.cli;
 
+import java.util.List;
+
 import app.packed.operation.OperationMirror;
 
 /**
@@ -22,4 +24,18 @@ import app.packed.operation.OperationMirror;
  */
 public class CliCommandMirror extends OperationMirror {
 
+    final CliC command;
+
+    CliCommandMirror(CliC command) {
+        this.command = command;
+    }
+
+    /** {@return the domain this command is part of.} */
+    public CliDomainMirror domain() {
+        return command.domain().mirror();
+    }
+
+    public List<String> names() {
+        return List.of(command.command().name());
+    }
 }

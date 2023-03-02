@@ -121,7 +121,7 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(OperationTemplate template, AccessMode accessMode) {
+    public OperationHandle newOperation(OperationTemplate template, VarHandle.AccessMode accessMode) {
         checkConfigurable();
         VarHandle varHandle = extension.scanner.unreflectVarHandle(field);
         MethodHandle mh = varHandle.toMethodHandle(accessMode);

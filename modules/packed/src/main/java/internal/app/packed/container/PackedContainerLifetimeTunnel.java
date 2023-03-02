@@ -13,28 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime;
+package internal.app.packed.container;
 
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.extension.Extension;
-import app.packed.extension.container.ExtensionLink;
+import app.packed.extension.container.ContainerLifetimeTunnel;
 import app.packed.util.Key;
-import internal.app.packed.container.PackedContainerBuilder;
 
 /**
  * Represent a communication channel between a parent container lifetime and a child container lifetime. This class is
  * exposed as {@link ContainerLifetimeChannel}.
  */
-public record PackedExtensionLink(Class<? extends Extension<?>> extensionClass, Consumer<? super PackedContainerBuilder> onUse,
-        Set<Key<?>> keys) implements ExtensionLink {
+public record PackedContainerLifetimeTunnel(Class<? extends Extension<?>> extensionClass, Consumer<? super LeafContainerBuilder> onUse,
+        Set<Key<?>> keys) implements AbstractContainerLifetimeTunnel {
 
     // is used in the (unlikely) scenario with multiple links
     // that each provide something with the same key
     @Override
-    public ExtensionLink rekey(Key<?> from, Key<?> to) {
+    public ContainerLifetimeTunnel rekey(Key<?> from, Key<?> to) {
         // from key must exist
         // Advanced operation
         // no case checks are performed
@@ -45,11 +44,12 @@ public record PackedExtensionLink(Class<? extends Extension<?>> extensionClass, 
      * @param type
      * @return
      */
-    public PackedExtensionLink addInvocationArgument(Class<?> type) {
+    public PackedContainerLifetimeTunnel addInvocationArgument(Class<?> type) {
         return null;
     }
 
-    public void use(PackedContainerBuilder builder) {
+    @Override
+    public void build(LeafContainerBuilder builder) {
         if (onUse != null) {
             onUse.accept(builder);
         }

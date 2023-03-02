@@ -158,7 +158,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
 
     /** {@return a new container mirror.} */
     public ContainerMirror mirror() {
-        ContainerMirror mirror = ClassUtil.mirrorHelper(ContainerMirror.class, ContainerMirror::new, specializedMirror);
+        ContainerMirror mirror = ClassUtil.newMirror(ContainerMirror.class, ContainerMirror::new, specializedMirror);
 
         // Initialize ContainerMirror by calling ContainerMirror#initialize(ContainerSetup)
         try {

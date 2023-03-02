@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 
 import app.packed.container.Realm;
 import app.packed.extension.BeanIntrospector;
@@ -16,6 +15,7 @@ import internal.app.packed.bean.BeanOwner;
 import internal.app.packed.service.ServiceManager;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -27,6 +27,8 @@ import internal.app.packed.util.ThrowableUtil;
  * container.
  */
 public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> implements BeanOwner , Comparable<ExtensionSetup> {
+
+    public static final MagicInitializer<ExtensionSetup> MI = MagicInitializer.of();
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class,
@@ -46,9 +48,6 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "onNew", void.class);
-
-    /** A handle for setting the private field Extension#setup. */
-    private static final VarHandle VH_EXTENSION_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), Extension.class, "extension", ExtensionSetup.class);
 
     /** The container where the extension is used. */
     public final ContainerSetup container;
@@ -212,30 +211,6 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     @Override
     public String toString() {
         return "Extension: " + extensionType.getCanonicalName();
-    }
-
-    /**
-     * Returns Extension#setup, is mainly used for core extensions that need special functionality
-     *
-     * @param extension
-     *            the extension to crack
-     * @return the extension setup
-     */
-    public static ExtensionSetup crack(Extension<?> extension) {
-        return (ExtensionSetup) VH_EXTENSION_SETUP.get(extension);
-    }
-
-    public static ExtensionSetup initalizeExtension(Extension<?> instance) {
-        ExtensionModel.Wrapper wrapper = ExtensionModel.CONSTRUCT.get();
-        if (wrapper == null) {
-            throw new UnsupportedOperationException("An extension instance cannot be created outside of use(Class<? extends Extension> extensionClass)");
-        }
-        ExtensionSetup s = wrapper.setup;
-        if (s == null) {
-            throw new IllegalStateException();
-        }
-        wrapper.setup = null;
-        return s;
     }
 
     /**

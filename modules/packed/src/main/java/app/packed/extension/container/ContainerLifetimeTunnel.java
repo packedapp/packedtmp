@@ -25,19 +25,24 @@ import java.util.function.Consumer;
 import app.packed.extension.ContainerLocal;
 import app.packed.extension.Extension;
 import app.packed.util.Key;
-import internal.app.packed.container.PackedContainerBuilder;
-import internal.app.packed.lifetime.PackedExtensionLink;
+import internal.app.packed.container.AbstractContainerLifetimeTunnel;
+import internal.app.packed.container.AbstractContainerLifetimeTunnel.ConstantContainerLifetimeTunnel;
+import internal.app.packed.container.LeafContainerBuilder;
+import internal.app.packed.container.PackedContainerLifetimeTunnel;
 
 // A link has
+
 //// A (possible empty) set of keys that are provided under @ContainerHolderService
 //// ContainerLocal operations
+//// Constants
 //// Rekey
 //// (Future) actions to execute if the extension is not installed
+
 /**
- * An extension lifetime channel allows extensions to communicate across containers with different lifetimes.
+ * An container lifetime channel allows extensions to communicate across containers with different lifetimes.
  * <p>
- * At one end there is the parent container lifetime. And in the other end there is the child container lifetime.
- *
+ * At one end there is the parent container lifetime. And in the other end there is a distinct lifetime for a child
+ * container.
  * <p>
  * The framework comes with a number of commonly used channel types:
  *
@@ -48,9 +53,9 @@ import internal.app.packed.lifetime.PackedExtensionLink;
 
 // Or just ContainerTemplate.ExtensionLink
 // Hvad med mesh
-public sealed interface ExtensionLink permits PackedExtensionLink {
+public sealed interface ContainerLifetimeTunnel permits AbstractContainerLifetimeTunnel {
 
-    /** {@return the extension that defined the channel.} */
+    /** {@return the extension that defined the tunnel.} */
     Class<? extends Extension<?>> extensionClass();
 
 //   // Context injection???
@@ -77,7 +82,7 @@ public sealed interface ExtensionLink permits PackedExtensionLink {
 
     // is used in the (unlikely) scenario with multiple links
     // that each provide something with the same key
-    ExtensionLink rekey(Key<?> from, Key<?> to);
+    ContainerLifetimeTunnel rekey(Key<?> from, Key<?> to);
 
     /**
      * Returns a new container lifetime channel builder for the specified extension.
@@ -90,22 +95,20 @@ public sealed interface ExtensionLink permits PackedExtensionLink {
      *            the type of extension
      * @return the builder
      */
-    static ExtensionLink.Builder builder(MethodHandles.Lookup caller, Class<? extends Extension<?>> extensionType, String name) {
+    static ContainerLifetimeTunnel.Builder builder(MethodHandles.Lookup caller, Class<? extends Extension<?>> extensionType, String name) {
         if (!caller.hasFullPrivilegeAccess()) {
             throw new IllegalArgumentException("caller must have full privilege access");
         } else if (caller.lookupClass().getModule() != extensionType.getModule()) {
             throw new IllegalArgumentException("extension type must be in the same module as the caller");
         }
-        return new ExtensionLink.Builder(new PackedExtensionLink(extensionType, null, Set.of()));
+        return new ContainerLifetimeTunnel.Builder(new PackedContainerLifetimeTunnel(extensionType, null, Set.of()));
     }
-
-    // Alternativ ContainerLifetimeTemplate.withConstant()
 
     /**
      * Returns a simple link that simply provides a constant value for the specified key which can be accessed using
      * {@link ContainerHolderService}.
      * <p>
-     * The returned extension link will return {@code BaseExtension.class} for {@link #extensionClass()}.
+     * The returned extension link will return {@code BaseExtension.class} from {@link #extensionClass()}.
      *
      * @param <T>
      *            the type of constant
@@ -113,16 +116,14 @@ public sealed interface ExtensionLink permits PackedExtensionLink {
      *            the key under which to make the constant available
      * @param constant
      *            the constant
-     * @return the link
+     * @return the tunnel
      */
-    static <T> ExtensionLink ofConstant(Class<T> key, T constant) {
+    static <T> ContainerLifetimeTunnel ofConstant(Class<T> key, T constant) {
         return ofConstant(Key.of(key), constant);
     }
 
-    static <T> ExtensionLink ofConstant(Key<T> key, T arg) {
-        // Det er er fint a BaseExtension staar som afsender
-        // builder().expose(Op.ofConstant(Key.toVariable, arg).build()
-        throw new UnsupportedOperationException();
+    static <T> ContainerLifetimeTunnel ofConstant(Key<T> key, T constant) {
+        return new ConstantContainerLifetimeTunnel(key, constant);
     }
 
     /** A builder for {@link ExtensionLink}. */
@@ -132,9 +133,9 @@ public sealed interface ExtensionLink permits PackedExtensionLink {
         // We need this builder. Because it has methods that should be exposed to
         // users of the built product.
         /** The internal channel. */
-        private PackedExtensionLink channel;
+        private PackedContainerLifetimeTunnel channel;
 
-        private Builder(PackedExtensionLink channel) {
+        private Builder(PackedContainerLifetimeTunnel channel) {
             this.channel = requireNonNull(channel);
         }
 
@@ -144,18 +145,18 @@ public sealed interface ExtensionLink permits PackedExtensionLink {
          *
          * @return the new link
          */
-        public ExtensionLink build() {
+        public ContainerLifetimeTunnel build() {
             return channel;
         }
 
         // Hvis extensionen ikke er installeret (eller eksportere den)
         // exposeOrAlternative(Key<T>, T alternative)
 
-        public <T> ExtensionLink.Builder consumeLocal(ContainerLocal<T> local, Consumer<T> action) {
+        public <T> ContainerLifetimeTunnel.Builder consumeLocal(ContainerLocal<T> local, Consumer<T> action) {
             return useBuilder(c -> c.consumeLocal(local, action));
         }
 
-        public ExtensionLink.Builder expose(Class<?>... keys) {
+        public ContainerLifetimeTunnel.Builder expose(Class<?>... keys) {
             return expose(Key.ofAll(keys));
         }
 
@@ -170,22 +171,22 @@ public sealed interface ExtensionLink permits PackedExtensionLink {
          */
         // Tror bare det skal vaere almindelige provisions
         // Ser ikke nogen grund til at bl.a. exports into it
-        public ExtensionLink.Builder expose(Key<?>... keys) {
-            PackedExtensionLink c = channel;
+        public ContainerLifetimeTunnel.Builder expose(Key<?>... keys) {
+            PackedContainerLifetimeTunnel c = channel;
             HashSet<Key<?>> s = new HashSet<>(c.keys());
             s.addAll(Set.of(keys));
-            channel = new PackedExtensionLink(c.extensionClass(), c.onUse(), Set.copyOf(s));
+            channel = new PackedContainerLifetimeTunnel(c.extensionClass(), c.onUse(), Set.copyOf(s));
             return this;
         }
 
         // Maybe we want a ContainerRef? ApplicationPath
         // Difficult to throw an exception with a good message here
-        ExtensionLink.Builder onNoUse(Runnable action) {
+        ContainerLifetimeTunnel.Builder onNoUse(Runnable action) {
             // An action that will be executed in the target container
             return this;
         }
 
-        public <T> ExtensionLink.Builder setLocal(ContainerLocal<T> local, T value) {
+        public <T> ContainerLifetimeTunnel.Builder setLocal(ContainerLocal<T> local, T value) {
             return useBuilder(c -> c.setLocal(local, value));
         }
 
@@ -201,9 +202,9 @@ public sealed interface ExtensionLink permits PackedExtensionLink {
          * @return this builder
          */
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        ExtensionLink.Builder useBuilder(Consumer<? super PackedContainerBuilder> action) {
-            channel = new PackedExtensionLink(channel.extensionClass(),
-                    channel.onUse() == null ? action : channel.onUse().andThen((Consumer) action), channel.keys());
+        ContainerLifetimeTunnel.Builder useBuilder(Consumer<? super LeafContainerBuilder> action) {
+            channel = new PackedContainerLifetimeTunnel(channel.extensionClass(), channel.onUse() == null ? action : channel.onUse().andThen((Consumer) action),
+                    channel.keys());
             return this;
         }
     }

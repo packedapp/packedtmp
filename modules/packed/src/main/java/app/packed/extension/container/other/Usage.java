@@ -28,6 +28,7 @@ import app.packed.service.ServiceLocator;
  *
  */
 public class Usage extends Extension<Usage> {
+
     private static final ContainerTemplate CT = ContainerTemplate.GATEWAY.holder(Guest.class).addLink(BaseExtensionPoint.EXPORTED_SERVICE_LOCATOR);
 
     public ContainerConfiguration automaticHolder() {

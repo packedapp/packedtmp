@@ -15,7 +15,6 @@
  */
 package app.packed.container;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.application.BuildException;
@@ -42,33 +41,33 @@ import internal.app.packed.container.AssemblySetup;
  */
 public non-sealed abstract class DelegatingAssembly extends Assembly {
 
-    /** {@return the assembly to delegate to.} */
-    protected abstract Assembly delegateTo();
-
+    /** {@inheritDoc} */
     @Override
     AssemblySetup build(AbstractContainerBuilder containerBuilder) {
-        // Check that this assembly does not use AssemblyHooks
-        AssemblyModel.of(getClass());
+        AssemblyModel.of(getClass()); // Check that this assembly does not use AssemblyHooks
 
-        ArrayList<Class<? extends DelegatingAssembly>> delegatingAssemblies = containerBuilder.delegatingAssemblies;
-        if (delegatingAssemblies == null) {
-            delegatingAssemblies = containerBuilder.delegatingAssemblies = new ArrayList<>(1);
-        } else if (delegatingAssemblies.size() == 100) {
-            // Maybe stack overflow is fine
-            throw new BuildException(
-                    "Inifite loop suspected, cannot have more than 100 delegating assemblies, assemblyClass = " + getClass().getCanonicalName());
+        // Problem with relying on StackOverflowException is that you cannot really what assembly
+        // is causing the problems
+        if (containerBuilder.delegatingAssemblies.size() == 99) {
+            throw new BuildException("Inifite loop suspected, cannot have more than " + containerBuilder.delegatingAssemblies.size()
+                    + " delegating assemblies, assemblyClass = " + getClass().getCanonicalName());
         }
 
-        Assembly a = delegateTo();
-        if (a == null) {
+        Assembly assembly = delegateTo();
+        if (assembly == null) {
             throw new BuildException(
                     "Delagating assembly: " + getClass() + " cannot return null from " + DelegatingAssembly.class.getSimpleName() + "::delegateTo");
         }
-        delegatingAssemblies.add(getClass());
+
+        // Add this assembly to the list of delegating assemblies
+        containerBuilder.delegatingAssemblies.add(getClass());
 
         // Process the assembly that was delegated to
-        return a.build(containerBuilder);
+        return assembly.build(containerBuilder);
     }
+
+    /** {@return the assembly to delegate to.} */
+    protected abstract Assembly delegateTo();
 
     /**
      * Constructs a delegating assembly that will prefix all usage of the specified assembly with specified wirelets
@@ -84,27 +83,33 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
         return new WireletDelegatingAssembly(assembly, wirelets);
     }
 
+    /**
+     * A special type of delegating assembly that allows to prefix wirelets.
+     */
     private static class WireletDelegatingAssembly extends DelegatingAssembly {
+
+        /** The assembly to delegate to. */
         private final Assembly assembly;
-        private final List<Wirelet> wirelets;
+
+        /** Wirelets that should be processed. */
+        private final Wirelet[] wirelets;
 
         private WireletDelegatingAssembly(Assembly assembly, Wirelet[] wirelets) {
             this.assembly = assembly;
-            this.wirelets = List.of(wirelets);
+            this.wirelets = List.of(wirelets).toArray(i -> new Wirelet[i]);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        AssemblySetup build(AbstractContainerBuilder containerBuilder) {
+            containerBuilder.processWirelets(wirelets);
+            return assembly.build(containerBuilder);
         }
 
         /** {@inheritDoc} */
         @Override
         protected Assembly delegateTo() {
             return assembly;
-        }
-
-        @Override
-        AssemblySetup build(AbstractContainerBuilder containerBuilder) {
-            for (Wirelet w : wirelets) {
-                containerBuilder.processWirelet(w);
-            }
-            return assembly.build(containerBuilder);
         }
     }
 }

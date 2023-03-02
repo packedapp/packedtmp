@@ -23,7 +23,6 @@ import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.mirror.DependenciesMirror;
-import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.container.Mirror;
@@ -41,8 +40,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
      * The internal configuration of the bean we are mirroring. Is initially null but populated via
      * {@link #initialize(BeanSetup)}.
      */
-    @Nullable
-    private BeanSetup bean;
+    private final BeanSetup bean = BeanSetup.MIRROR_INITILIZER.initialize();
 
     /** Create a new bean mirror. */
     public BeanMirror() {}
@@ -145,7 +143,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
         if (this.bean != null) {
             throw new IllegalStateException("This mirror has already been initialized.");
         }
-        this.bean = bean;
+//        this.bean = bean;
     }
 
     /**

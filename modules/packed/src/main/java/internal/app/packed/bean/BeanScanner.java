@@ -45,6 +45,7 @@ import internal.app.packed.operation.OperationMemberTarget.OperationConstructorT
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -60,8 +61,10 @@ public final class BeanScanner {
     private static final Module JAVA_BASE_MODULE = Object.class.getModule();
 
     /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
-    private static final MethodHandle MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class,
+    private static final MethodHandle MH_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class,
             "initialize", void.class, BeanScannerExtension.class);
+
+    public static final MagicInitializer<BeanScannerExtension> MI = MagicInitializer.of();
 
     private final OpenClass accessor;
 
@@ -80,7 +83,7 @@ public final class BeanScanner {
     /** The hook model for the bean. */
     final BeanHookModel hookModel;
 
-    public final ArrayDeque<OperationSetup> unBoundOperations = new ArrayDeque<>();
+    boolean isConfigurable;
 
     // Vi har lidt det her besvaer med at lukke ting in order her ogsaa.
     // Hvis man f.x. kalder OH.manuallyBindingable.bind(new Op0<ExoticExtension>(){})
@@ -102,7 +105,7 @@ public final class BeanScanner {
     // WebEP.addFakeOp(BeanIntrospector bi);
     // WebEP.addFakeOp(BeanHandle bi)
 
-    boolean isConfigurable;
+    public final ArrayDeque<OperationSetup> unBoundOperations = new ArrayDeque<>();
 
     BeanScanner(BeanSetup bean) {
         this.bean = bean;
@@ -130,7 +133,7 @@ public final class BeanScanner {
 
             // Call BeanIntrospector#initialize(BeanScannerExtension)
             try {
-                MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, bse);
+                MH_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, bse);
             } catch (Throwable t) {
                 throw ThrowableUtil.orUndeclared(t);
             }

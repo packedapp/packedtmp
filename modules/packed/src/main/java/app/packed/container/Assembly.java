@@ -22,10 +22,9 @@ import internal.app.packed.container.AssemblySetup;
 /**
  * An assembly is the basic building block for creating applications in Packed.
  * <p>
- * An assembly provides the fundamental instructions for creating an application, and every application in Packed is
- * constructed either directly or indirectly from an assembly. A single assembly can either comprise the entire
- * application or serve as the root of an assembly hierarchy in which each node is responsible for building a specific
- * portion of the application.
+ * An assembly provides the instructions for creating an application, and every application in Packed is constructed
+ * either directly or indirectly from an assembly. A single assembly can either comprise the entire application or serve
+ * as the root of an assembly hierarchy in which each node is responsible for building a part of the application.
  * <p>
  * Assemblies provide a simply way to package components and build modular application. This is useful, for example,
  * for:
@@ -55,5 +54,12 @@ import internal.app.packed.container.AssemblySetup;
 @SuppressWarnings("rawtypes") // Eclipse bug
 public sealed abstract class Assembly permits BuildableAssembly, DelegatingAssembly, ComposerAssembly {
 
-    abstract AssemblySetup build(AbstractContainerBuilder containerBuilder);
+    /**
+     * Invoked by the runtime (via a MethodHandle) to build the assembly.
+     *
+     * @param builder
+     *            a builder for the root container of the assembly
+     * @return an assembly configuration object
+     */
+    abstract AssemblySetup build(AbstractContainerBuilder builder);
 }

@@ -30,19 +30,19 @@ import app.packed.container.Assembly;
 // Kan kun tilfoejes saa laenge en assembly er aaben
 public final class ApplicationChild {
 
-    final PackedContainerBuilder parent;
+    final LeafContainerBuilder parent;
 
     final FutureTask<ApplicationSetup> task;
 
     final Assembly assembly;
 
     // IDK vi skal nok have en specielt builder
-    ApplicationChild(PackedContainerBuilder parent, Assembly assembly) {
+    ApplicationChild(LeafContainerBuilder parent, Assembly assembly) {
         this.parent = parent;
         this.assembly = assembly;
         Callable<ApplicationSetup> c = () -> {
-            AssemblySetup s = parent.build(assembly);
-            return s.container.application;
+            ContainerSetup s = parent.buildFromAssembly(assembly);
+            return s.application;
         };
         this.task = new FutureTask<ApplicationSetup>(c);
     }

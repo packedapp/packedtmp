@@ -29,12 +29,12 @@ import app.packed.extension.Extension;
 import app.packed.extension.container.ContainerBuilder;
 import app.packed.extension.container.ContainerTemplate;
 import app.packed.lifetime.LifetimeKind;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
-import internal.app.packed.lifetime.PackedExtensionLink;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /** Implementation of {@link ContainerBuilder}. */
-public final class PackedContainerBuilder extends AbstractContainerBuilder implements ContainerBuilder {
+public final class LeafContainerBuilder extends AbstractContainerBuilder implements ContainerBuilder {
 
     /** The extension that is installing the container. */
     final Class<? extends Extension<?>> installedBy;
@@ -44,7 +44,7 @@ public final class PackedContainerBuilder extends AbstractContainerBuilder imple
     boolean newApplication;
 
     // Cannot take ExtensionSetup, as BaseExtension is not instantiated for a root container
-    private PackedContainerBuilder(ContainerTemplate template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
+    private LeafContainerBuilder(PackedContainerTemplate template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
             @Nullable ContainerSetup parent) {
         super(template);
         this.parent = parent;
@@ -54,14 +54,33 @@ public final class PackedContainerBuilder extends AbstractContainerBuilder imple
     /** {@inheritDoc} */
     @Override
     public PackedContainerHandle build(Assembly assembly, Wirelet... wirelets) {
-        checkIsConfigurable();
         checkNotUsed();
+        checkIsConfigurable();
 
-        // Create a new assembly, which call into #containerInstall
+        ContainerSetup container = buildFromAssembly(assembly, wirelets);
+        return new PackedContainerHandle(container);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedContainerHandle build(Wirelet... wirelets) {
+        checkNotUsed();
+        checkIsConfigurable();
+
+        // Be careful if moving into newContainer, some tests
+        // can fail easily
         processWirelets(wirelets);
-        AssemblySetup as = build(assembly);
 
-        return new PackedContainerHandle(as.container);
+        ContainerSetup container = newContainer(parent.application, parent.assembly);
+        return new PackedContainerHandle(container);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedContainerHandle buildAndUseThisExtension(Wirelet... wirelets) {
+        PackedContainerHandle handle = build(wirelets);
+        handle.container().useExtension(installedBy, null);
+        return handle;
     }
 
     /**
@@ -74,25 +93,12 @@ public final class PackedContainerBuilder extends AbstractContainerBuilder imple
             throw new IllegalStateException("This assembly is no longer configurable");
         }
     }
-    /** {@inheritDoc} */
-    @Override
-    public PackedContainerHandle build(Wirelet... wirelets) {
-        checkNotUsed();
-        checkIsConfigurable();
 
-        processWirelets(wirelets);
-        ContainerSetup container = newContainer(parent.application, parent.assembly);
-        return new PackedContainerHandle(container);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public PackedContainerHandle buildAndUseThisExtension(Wirelet... wirelets) {
-        PackedContainerHandle h = build(wirelets);
-        h.container().useExtension(installedBy, null);
-        return h;
-    }
-
+    /**
+     * Checks that the builder has not been used.
+     * <p>
+     * The main problem with using
+     */
     private void checkNotUsed() {
 
     }
@@ -108,6 +114,12 @@ public final class PackedContainerBuilder extends AbstractContainerBuilder imple
     @Override
     public BuildGoal goal() {
         return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> ContainerBuilder holderConstant(Key<T> key, T constant) {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -132,16 +144,16 @@ public final class PackedContainerBuilder extends AbstractContainerBuilder imple
 
     /** {@inheritDoc} */
     @Override
-    public void specializeMirror(Supplier<? extends ContainerMirror> supplier) {
+    public ContainerBuilder specializeMirror(Supplier<? extends ContainerMirror> supplier) {
         throw new UnsupportedOperationException();
     }
 
-    public static PackedContainerBuilder of(ContainerTemplate template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
+    public static LeafContainerBuilder of(ContainerTemplate template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
             @Nullable ContainerSetup parent) {
-        PackedContainerBuilder pcb = new PackedContainerBuilder(template, installedBy, application, parent);
+        LeafContainerBuilder pcb = new LeafContainerBuilder((PackedContainerTemplate) template, installedBy, application, parent);
 
-        for (PackedExtensionLink b : pcb.template.links()) {
-            b.use(pcb);
+        for (PackedContainerLifetimeTunnel b : pcb.template.links().tunnels) {
+            b.build(pcb);
         }
         return pcb;
     }
@@ -154,7 +166,7 @@ public final class PackedContainerBuilder extends AbstractContainerBuilder imple
             if (installer.parent == null) {
                 throw new Error("This wirelet cannot be used when creating a new application");
             }
-         //   installer.newApplication = true;
+            // installer.newApplication = true;
         }
 
     }

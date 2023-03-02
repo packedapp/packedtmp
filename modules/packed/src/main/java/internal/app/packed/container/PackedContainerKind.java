@@ -30,12 +30,13 @@ public enum PackedContainerKind {
     // Lazy lifetime as parent
     LAZY,
 
-    MANY_UNMANAGED,
-    MANY_MANAGED,
+    UNMANAGED,
+
+    MANAGED,
 
     // A container lifetime that must define 1 or more entry points
     GATEWAY,
 
     // Same lifetime as parent
-    PARENT;
+    PARENT_LIFETIME;
 }

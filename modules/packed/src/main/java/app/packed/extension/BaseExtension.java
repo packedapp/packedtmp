@@ -62,7 +62,7 @@ import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.bean.PackedBeanWrappedVariable;
 import internal.app.packed.binding.BindingResolution.FromOperation;
-import internal.app.packed.container.PackedContainerBuilder;
+import internal.app.packed.container.LeafContainerBuilder;
 import internal.app.packed.entrypoint.OldEntryPointSetup;
 import internal.app.packed.entrypoint.OldEntryPointSetup.MainThreadOfControl;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
@@ -126,6 +126,16 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         var.bindGeneratedConstant(supplier);
     }
 
+    public void applicationLink(Assembly assembly, Wirelet... wirelets) {
+        // Syntes den er maerkelig hvis vi havde ApplicationWirelet.NEW_APPLICATION
+        // Den her er klarere
+        linkNewContainerBuilder().build(assembly, wirelets);
+    }
+
+//    public void provideAll(ServiceLocator locator, Consumer<ServiceTransformer> transformer) {
+//        // ST.contract throws UOE
+//    }
+
     // One of 3 models...
     // Fails on other exports
     // Ignores other exports
@@ -167,10 +177,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
         extension.container.sm.exportAll = true;
     }
-
-//    public void provideAll(ServiceLocator locator, Consumer<ServiceTransformer> transformer) {
-//        // ST.contract throws UOE
-//    }
 
     /**
      * Installs a bean of the specified type. A single instance of the specified class will be instantiated when the
@@ -267,16 +273,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         h.exportAs(Key.of(ServiceLocator.class)); // @Export(as = ServiceLocator.class) on PSL, I mean if Qualifier will work on class
     }
 
-    private ContainerBuilder link() {
-        return PackedContainerBuilder.of(ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application, extension.container);
-    }
-
-    public void applicationLink(Assembly assembly, Wirelet... wirelets) {
-        // Syntes den er maerkelig hvis vi havde ApplicationWirelet.NEW_APPLICATION
-        // Den her er klarere
-        link().build(assembly, wirelets);
-    }
-
     /**
      * Creates a new child container by linking the specified assembly.
      *
@@ -286,7 +282,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      *            optional wirelets
      */
     public void link(Assembly assembly, Wirelet... wirelets) {
-        link().build(assembly, wirelets);
+        linkNewContainerBuilder().build(assembly, wirelets);
     }
 
     /**
@@ -297,8 +293,13 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return configuration for the new container
      */
     public ContainerConfiguration link(Wirelet... wirelets) {
-        ContainerHandle handle = link().build(wirelets);
+        ContainerHandle handle = linkNewContainerBuilder().build(wirelets);
         return new ContainerConfiguration(handle);
+    }
+
+    /** {@return a new container builder used for linking.} */
+    private ContainerBuilder linkNewContainerBuilder() {
+        return LeafContainerBuilder.of(ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application, extension.container);
     }
 
     /**
@@ -390,7 +391,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             /** Handles {@link Inject}, {@link OnInitialize}, {@link OnStart} and {@link OnStop}. */
             @Override
             public void hookOnAnnotatedMethod(Annotation annotation, BeanMethod method) {
-                BeanSetup bean = BeanSetup.crack(method);
+                BeanSetup bean = bean();
 
                 if (annotation instanceof Inject) {
                     OperationHandle handle = checkNotStaticBean(Inject.class, method);
@@ -461,8 +462,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                         v.bindOp(new Op1<@ContextValue(ApplicationLaunchContext.class) ApplicationLaunchContext, ManagedLifetimeController>(
                                 a -> a.cr.runtime) {});
                     } else if (va.rawType().equals(ServiceLocator.class)) {
-                        v.bindOp(new Op1<@ContextValue(ApplicationLaunchContext.class) ApplicationLaunchContext, ServiceLocator>(
-                                a -> a.serviceLocator()) {});
+                        v.bindOp(new Op1<@ContextValue(ApplicationLaunchContext.class) ApplicationLaunchContext, ServiceLocator>(a -> a.serviceLocator()) {});
                     } else {
                         throw new UnsupportedOperationException("va " + va.rawType());
                     }
