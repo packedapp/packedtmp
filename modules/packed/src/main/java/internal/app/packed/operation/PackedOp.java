@@ -23,7 +23,6 @@ import java.lang.invoke.MethodType;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.CapturingOp;
 import app.packed.operation.Op;
 import app.packed.util.FunctionType;
@@ -34,6 +33,7 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.IntermediateOp.BoundOp;
 import internal.app.packed.operation.IntermediateOp.PeekingOp;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
+import sandbox.extension.operation.OperationTemplate;
 
 /** The internal implementation of Op. */
 @SuppressWarnings("rawtypes")

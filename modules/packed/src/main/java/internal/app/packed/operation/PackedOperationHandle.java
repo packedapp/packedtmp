@@ -27,8 +27,6 @@ import java.util.function.Supplier;
 import app.packed.extension.BeanVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ContainerContext;
-import app.packed.extension.operation.OperationHandle;
-import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
@@ -36,6 +34,8 @@ import app.packed.util.FunctionType;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.PackedBindableVariable;
+import sandbox.extension.operation.OperationHandle;
+import sandbox.extension.operation.OperationTemplate;
 
 /**
  * An operation handle is direct reference to an underlying method, constructor, field, or similar low-level operation.

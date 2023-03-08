@@ -19,8 +19,8 @@ import java.util.concurrent.Future;
 
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.extension.container.ContainerHolderService;
 import app.packed.util.Result;
+import sandbox.extension.container.ContainerHolderService;
 
 /**
  * Must have a main in a bean with application lifetime.
@@ -28,21 +28,35 @@ import app.packed.util.Result;
  * @see app.packed.lifetime.Main
  */
 
+//// 3 active result wise
+// ContainerLifetime <- a base result type (can never be overridden, usually Object.class)
+// Assembly,
+//// Completable
+//// Entrypoint
+// result check
+
+
+// async / result / checked exception
+
 // Error handling kommer ogsaa ind her...
 // Skal vi catche or returnere???
 // Det vil jeg bootstrap app'en skal tage sig af...
 public final class JobApp {
 
     /** The bootstrap app. */
-    private static final BootstrapApp<F> BOOTSTRAP = BootstrapApp.of(F.class, c -> c.managedLifetime().expectsResult(Object.class));
+    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(Holder.class, c -> c.managedLifetime().expectsResult(Object.class));
 
     @SuppressWarnings("unchecked")
     public static <T> Result<T> compute(Class<T> resultType, Assembly assembly, Wirelet... wirelets) {
         return (Result<T>) Result.ofFuture(BOOTSTRAP.launch(assembly, wirelets).result);
     }
 
+    public static <T> ApplicationLauncher<T> imageOf(Class<T> resultType, Assembly assembly, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
     public static <T> T run(Class<T> resultType, Assembly assembly, Wirelet... wirelets) {
-        F result = BOOTSTRAP.expectsResult(resultType).launch(assembly, wirelets);
+        Holder result = BOOTSTRAP.expectsResult(resultType).launch(assembly, wirelets);
         Object t = result.result.resultNow();
         return resultType.cast(t);
     }
@@ -51,5 +65,5 @@ public final class JobApp {
         throw new UnsupportedOperationException();
     }
 
-    record F(@ContainerHolderService Future<?> result) {}
+    record Holder(@ContainerHolderService Future<?> result) {}
 }

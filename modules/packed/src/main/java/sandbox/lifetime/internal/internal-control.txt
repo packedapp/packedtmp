@@ -1,0 +1,5 @@
+Hvordan kan man paavirke en container lifetime indefra
+
+Har man lyst til at lukke en session indefra??? Hmmm IDK
+
+Jeg taenker alle som udgangspunkt har lov til at lukke applicationen...

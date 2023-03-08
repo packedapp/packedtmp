@@ -22,9 +22,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
 import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.extension.operation.DelegatingOperationHandle;
-import app.packed.extension.operation.OperationHandle;
-import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.Key;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
@@ -32,6 +29,9 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.operation.PackedDelegatingOperationHandle;
 import internal.app.packed.util.PackedAnnotationList;
+import sandbox.extension.operation.DelegatingOperationHandle;
+import sandbox.extension.operation.OperationHandle;
+import sandbox.extension.operation.OperationTemplate;
 
 /** Internal implementation of BeanMethod. Discard after use. */
 public final class PackedBeanMethod extends PackedBeanExecutable<Method> implements BeanMethod {

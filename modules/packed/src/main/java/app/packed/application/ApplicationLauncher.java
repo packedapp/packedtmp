@@ -20,11 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 import java.util.function.Function;
 
-import app.packed.application.BootstrapAppSetup.MappedApplicationImage;
-import app.packed.application.BootstrapAppSetup.ReusableApplicationImage;
-import app.packed.application.BootstrapAppSetup.SingleShotApplicationImage;
+import app.packed.application.BootstrapApp.MappedApplicationImage;
+import app.packed.application.BootstrapApp.ReusableApplicationImage;
+import app.packed.application.BootstrapApp.SingleShotApplicationImage;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.RunState;
+import app.packed.util.Result;
 
 /**
  * An application image is a pre-built application that can be launched at a later time.
@@ -62,6 +63,20 @@ import app.packed.lifetime.RunState;
 @SuppressWarnings("rawtypes")
 public sealed interface ApplicationLauncher<A> permits SingleShotApplicationImage, ReusableApplicationImage, MappedApplicationImage {
 
+    default Result<A> compute() {
+        throw new UnsupportedOperationException();
+    }
+
+    default Result<A> compute(String[] args) {
+        throw new UnsupportedOperationException();
+    }
+    default Result<A> compute(String[] args, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    default Result<A> compute(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
     /**
      * Launches an instance of the application that this image represents.
      *
@@ -142,8 +157,6 @@ interface Zimgbox<A> {
         return true;
     }
 
-    Optional<ApplicationMirror> mirror();
-
     /**
      * Returns the launch mode of application(s) created by this image.
      *
@@ -151,6 +164,8 @@ interface Zimgbox<A> {
      *
      */
     RunState launchMode(); // usageMode??
+
+    Optional<ApplicationMirror> mirror();
 
     // Hmmmmmmm IDK
     // Could do sneaky throws instead

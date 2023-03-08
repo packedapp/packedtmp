@@ -106,8 +106,8 @@ import internal.app.packed.util.types.Types;
  * </ul>
  *
  * <p>
- * This class is heavily inspired by the similar named class in the
- * <a href="https://google.github.io/guice/api-docs/latest/javadoc/com/google/inject/Key.html">Guice</a> project.
+ * This class is heavily inspired by the similar named class in
+ * <a href="https://google.github.io/guice/api-docs/latest/javadoc/com/google/inject/Key.html">Guice</a>.
  */
 
 //Created by user a.la
@@ -115,18 +115,9 @@ import internal.app.packed.util.types.Types;
 //Created while parsing a bean a.la.
 //public void foo(@SomeInvalidQualifier Void k)
 
-// Key (Source)
-//// TypeCapture (Super class of Key)
-//// ofClass (null)
-//// fromField (Field, BeanField)
-//// fromMethodReturnType (Method, BeanMethod)
-//// fromVariable (Variable)
-//// fromClass (OperationalClass or class?)
-
-// Tror vi kan supportere nogenlunde det hele
-
 // Open questions
 // how does adding qualifiers work. Replace vs fail on already existing qualifier
+@SuppressWarnings("unused")
 public abstract class Key<T> {
 
     /** A cache of keys created by {@link #Key()}. */
@@ -141,8 +132,8 @@ public abstract class Key<T> {
             // We first convert it to a variable, as it contains both the type and any annotations
             Variable v = EXTRACTOR.extractVariable(implementation, e -> new InvalidKeyException(e));
 
-            Type type = convertType(v.type(), this);
-            PackedAnnotationList annotations = qualifiersConvertExplicit(v.annotations().toArray(), this);
+            Type type = convertType(v.type(), TYPE_CAPTURE, this);
+            PackedAnnotationList annotations = convertQualifiers(v.annotations().toArray(), true, TYPE_CAPTURE, this);
             return new CanonicalizedKey<>(type, annotations);
         }
     };
@@ -153,14 +144,27 @@ public abstract class Key<T> {
         /** {@inheritDoc} */
         @Override
         protected Key<?> computeValue(Class<?> key) {
-            Type type = convertType(key, null);
+            Type type = convertType(key, OF_CLASS, null);
             return new CanonicalizedKey<>(type, PackedAnnotationList.EMPTY);
         }
     };
-
     /** Various classes that are not allowed as the type part of a key. */
     private static final Set<Class<?>> FORBIDDEN_TYPES = Set.of(Optional.class, OptionalDouble.class, OptionalInt.class, OptionalLong.class, Void.class,
             Provider.class, Key.class);
+    private static final int FROM_BEAN_CLASS = 4;
+    private static final int FROM_BEAN_FIELD = 6;
+    private static final int FROM_BEAN_METHOD_RETURN_TYPE = 8;
+    private static final int FROM_BEAN_VARIABLE = 10;
+    private static final int FROM_CLASS = 3;
+    private static final int FROM_FIELD = 5;
+    private static final int FROM_METHOD_RETURN_TYPE = 7;
+    private static final int FROM_VARIABLE = 9;
+
+    private static final int LATER_CONVERSION = 0;
+
+    private static final int OF_CLASS = 2;
+
+    private static final int TYPE_CAPTURE = 1;
 
     /** We eagerly compute the hash code, as we assume most keys are going to be used in a hash table of some kind. */
     private final int hash;
@@ -335,17 +339,22 @@ public abstract class Key<T> {
         return type;
     }
 
-    public final Key<T> withoutName() {
-        return withoutQualifierOfType(Tag.class);
-    }
-
+    /**
+     * Returns a key without a qualifier of the specified type.
+     * <p>
+     * This method return this if no qualifier of the specified type is present on the key.
+     *
+     * @param qualifierType
+     *            the type of qualifier
+     * @return a key without a qualifier of the specified type
+     */
     public final Key<T> withoutQualifierOfType(Class<? extends Annotation> qualifierType) {
         requireNonNull(qualifierType, "qualifierType");
         Annotation[] annotations = qualifiers.annotations();
         for (int i = 0; i < annotations.length; i++) {
             if (annotations[i].annotationType() == qualifierType) {
                 if (annotations.length == 1) {
-                    return withoutQualifiers();
+                    return new CanonicalizedKey<>(type, PackedAnnotationList.EMPTY);
                 }
                 Annotation[] newAnnotations = new Annotation[annotations.length - 1];
                 for (int j = 0; j < i; j++) {
@@ -357,12 +366,13 @@ public abstract class Key<T> {
                 return new CanonicalizedKey<>(type, new PackedAnnotationList(newAnnotations));
             }
         }
-        return this; // we don't fail if qualifier type is not present
+        return this;
     }
 
     /**
-     * Returns a key with no qualifier but retaining the type of this key. If this key has no qualifiers
-     * ({@code isQualified() == false}), returns this key.
+     * Returns a key with no qualifier but retaining the type of this key.
+     * <p>
+     * If this key has no qualifiers ({@code isQualified() == false}), returns this key.
      *
      * @return this key without qualifiers
      */
@@ -379,19 +389,16 @@ public abstract class Key<T> {
      * @throws IllegalArgumentException
      *             if the specified annotation is not annotated with {@link Qualifier}.
      */
-    // repeatable annotations??? forbidden? or overwrite.
-    // We are not going to multiple qualifiers of the same type
-    // Taenker det er er fint man ikke kan tilfoeje repeatable annoteringer...
-
-    // rename to with?
-    // with(Annotation... qualifiers) altsaa hvor tit har man brug for det?????
     public final Key<T> withQualifier(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
-        qualifiersCheckQualifierAnnotationPresent(qualifier);
-
+        if (!isQualifierAnnotationPresent(qualifier)) {
+            throw new IllegalArgumentException(
+                    "@" + StringFormatter.format(qualifier.getClass()) + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
+        }
         if (!isQualified()) {
             return new CanonicalizedKey<>(type, new PackedAnnotationList(new Annotation[] { qualifier }));
         }
+        // Check if we are just replacing an existing qualifier.
         for (int i = 0; i < qualifierCount(); i++) {
             if (qualifiers.annotations()[i].annotationType() == qualifier.annotationType()) {
                 if (qualifiers.annotations()[i].equals(qualifier)) {
@@ -403,9 +410,10 @@ public abstract class Key<T> {
                 }
             }
         }
+
         Annotation[] an = Arrays.copyOf(qualifiers.annotations(), qualifierCount() + 1);
         an[an.length - 1] = qualifier;
-        return new CanonicalizedKey<>(type, new PackedAnnotationList(an));
+        return new CanonicalizedKey<>(type, convertQualifiers(an, false /* already checked */, 0, this));
     }
 
     /**
@@ -419,16 +427,14 @@ public abstract class Key<T> {
      *             if the specified qualifier type does not have default values for every attribute. Or if the specified
      *             qualifier type is not annotated with {@link Qualifier}.
      */
-    final Key<T> withQualifier(Class<? extends Annotation> qualifierType) {
+    // The problem is instantiating them. We need a MethodHandles.Lookup...
+    final Key<T> withQualifier(Class<? extends Annotation> qualifierType /* , Map<String, Object> attributes */) {
         requireNonNull(qualifierType, "qualifierType is null");
         AnnotationUtil.validateRuntimeRetentionPolicy(qualifierType);
         if (!qualifierType.isAnnotationPresent(Qualifier.class)) {
             throw new IllegalArgumentException(
                     "@" + qualifierType.getSimpleName() + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
         }
-        // Problemet er hvordan vi instantiere den...
-        // Hvis Packed nu ikke kan laese annoteringen...
-        //
         throw new UnsupportedOperationException();
     }
 
@@ -445,46 +451,121 @@ public abstract class Key<T> {
         return withQualifier(new TaggedAnno(Tag.class, name));
     }
 
+    /**
+     * Returns a new key where the type part of this key is replaced by the specified class.
+     *
+     * @param type
+     *            the class type of the new key
+     * @return the new key
+     * @throws InvalidKeyException
+     *             if the specified class cannot be used as the type part of a key
+     * @see #withType(Type)
+     */
     public final <E> Key<E> withType(Class<E> type) {
         requireNonNull(type, "type is null");
-        return new CanonicalizedKey<>(convertType(type, null), qualifiers);
+        return new CanonicalizedKey<>(convertType(type, LATER_CONVERSION, null), qualifiers);
     }
 
     /**
+     * Returns a new key where the type part of this key is replaced by the specified type.
+     *
      * @param type
-     *            the type part of the new key
+     *            the type of the new key
      * @return the new key
      * @throws InvalidKeyException
-     *             if the specified type is not valid as the type part of a key
+     *             if the specified type cannot be used as the type part of a key
+     * @see #withType(Class)
      */
-    // Hmm, Ville naesten syntes at IAE er bedre en IKE
     public final Key<?> withType(Type type) {
         requireNonNull(type, "type is null");
-        return new CanonicalizedKey<>(convertType(type, null), qualifiers);
+        return new CanonicalizedKey<>(convertType(type, LATER_CONVERSION, null), qualifiers);
     }
 
-    private static Key<?> convert(Type type, Annotation[] annotations, boolean ignoreNonQualifyingAnnotations, Object source) {
-        Type t = convertType(type, source);
-        PackedAnnotationList apl;
-        if (!ignoreNonQualifyingAnnotations) {
-            apl = qualifiersConvertExplicit(annotations, source);
-        } else {
-            apl = qualifiersConvert(annotations, source);
-        }
+    private static Key<?> convert(Type type, Annotation[] annotations, boolean onlyQualifierAnnotationsAllowed, int sourceKind, Object source) {
+        Type t = convertType(type, sourceKind, source);
+        PackedAnnotationList apl = convertQualifiers(annotations, onlyQualifierAnnotationsAllowed, sourceKind, source);
         return new CanonicalizedKey<>(t, apl);
     }
 
-    // How do we support adding qualifiers?
-    // Maybe it is a separate method
-
-    // If source == null we are creating the key directly (new Key<>(), or Off);
-    // And we filter non-qualifyign annotations instead of failing on the them
-
-    public static Key<?> convert(Type type, Annotation[] annotations, Object source) {
-        return Key.convert(type, annotations, true, source);
+    /**
+     * Sorts the array of qualifiers while at same time checking some invariants.
+     *
+     * @param sourceKind
+     *            the source kind
+     * @param source
+     *            the type of source
+     * @param annotations
+     *            the annotations to sort
+     * @return the sorted annotations
+     * @throws InvalidKeyException
+     *             if the specified array contains multiple qualifiers of the same type or with the same canonical name
+     */
+    private static PackedAnnotationList convertQualifiers(Annotation[] annotations, boolean onlyQualifierAnnotationsAllowed, int sourceKind, Object source) {
+        return switch (annotations.length) {
+        case 0 -> PackedAnnotationList.EMPTY;
+        case 1 -> {
+            PackedAnnotationList result = PackedAnnotationList.EMPTY;
+            if (isQualifierAnnotationPresent(annotations[0])) {
+                yield new PackedAnnotationList(annotations);
+            } else if (onlyQualifierAnnotationsAllowed) {
+                throw new InvalidKeyException(makeMsg(sourceKind, source, "Only annotations with @Qualifier allowed for this method"));
+            } else {
+                yield PackedAnnotationList.EMPTY;
+            }
+        }
+        default -> {
+            if (onlyQualifierAnnotationsAllowed) {
+                for (Annotation a : annotations) {
+                    if (!isQualifierAnnotationPresent(a)) {
+                        throw new InvalidKeyException("asdasd");
+                    }
+                }
+            } else {
+                int count = 0;
+                for (int i = 0; i < annotations.length; i++) {
+                    // Array is safe to modify. Or is it?
+                    // I think we are sharing it
+                    Annotation a = annotations[i];
+                    if (isQualifierAnnotationPresent(a)) {
+                        if (count > 0) {
+                            annotations[i - count] = a;
+                        }
+                    } else {
+                        count++;
+                    }
+                }
+                if (count > 0) {
+                    annotations = Arrays.copyOf(annotations, annotations.length - count);
+                }
+            }
+            // Sort any qualifiers
+            Arrays.sort(annotations, (a1, a2) -> {
+                Class<? extends Annotation> a1t = a1.annotationType();
+                Class<? extends Annotation> a2t = a2.annotationType();
+                if (a1t == a2t) {
+                    // We do not allow multiple qualifiers of the same type.
+                    // Because we want a total order of the qualifiers based on their name
+                    throw new InvalidKeyException(makeMsg(sourceKind, source, "Cannot use multiple qualifiers of the same type"));
+                }
+                int c = a1t.getSimpleName().compareTo(a2t.getSimpleName());
+                if (c != 0) {
+                    return c;
+                }
+                c = a1t.getCanonicalName().compareTo(a2t.getCanonicalName());
+                if (c != 0) {
+                    return c;
+                }
+                // We do not allow multiple qualifiers with different class loaders but with the same canonical name.
+                // This is mainly to allow have a total order between qualifiers
+                // This is only ever a problem if manually constructing the key
+                throw new InvalidKeyException(makeMsg(sourceKind, source, "Cannot use multiple qualifiers with the same canonical name"));
+            });
+            yield new PackedAnnotationList(annotations);
+        }
+        };
     }
 
-    private static Type convertType(Type t, Object source) {
+    private static Type convertType(Type t, int conversionType, Object source) {
         if (t instanceof Class<?> cl) {
             if (cl.isPrimitive()) {
                 t = ClassUtil.wrap(cl);
@@ -500,10 +581,9 @@ public abstract class Key<T> {
                     + "> defined: " + TypeUtil.typeVariableNamesOf(t));
         }
 
-        return convertType0(source, t, t);
         // TODO reduce wildcards
 
-        // return t;
+        return convertType0(source, t, t);
     }
 
     static Type convertType0(Object source, Type originalType, Type type) {
@@ -553,9 +633,23 @@ public abstract class Key<T> {
         }
     }
 
+    /**
+     *
+     * <p>
+     * The main distinction between this method and {@link #of(Class)} is that these method also reads any qualifier
+     * annotations on the specified class.
+     *
+     * @param <T>
+     *            the type of key
+     * @param clazz
+     *            the clazz to convert to a key
+     * @return the new key
+     *
+     * @see #of(Class)
+     */
     @SuppressWarnings("unchecked")
     public static <T> Key<T> fromClass(Class<T> clazz) {
-        return (Key<T>) convert(clazz, clazz.getAnnotations(), true, clazz);
+        return (Key<T>) convert(clazz, clazz.getAnnotations(), false, FROM_CLASS, clazz);
     }
 
     /**
@@ -566,7 +660,7 @@ public abstract class Key<T> {
     // Here for now, might move it somewhere else when we have finalized it
     public static Key<?> fromField(BeanField field) {
         requireNonNull(field, "field is null");
-        return convert(field.field().getGenericType(), field.field().getAnnotations(), true, field);
+        return convert(field.field().getGenericType(), field.field().getAnnotations(), false, FROM_FIELD, field);
     }
 
     /**
@@ -582,12 +676,12 @@ public abstract class Key<T> {
      */
     public static Key<?> fromField(Field field) {
         requireNonNull(field, "field is null");
-        return convert(field.getGenericType(), field.getAnnotations(), true, field);
+        return convert(field.getGenericType(), field.getAnnotations(), false, FROM_FIELD, field);
     }
 
     public static Key<?> fromMethodReturnType(BeanMethod method) {
         PackedBeanMethod pbm = (PackedBeanMethod) method;
-        return convert(pbm.method().getGenericReturnType(), pbm.method().getAnnotations(), true, method);
+        return convert(pbm.method().getGenericReturnType(), pbm.method().getAnnotations(), false, FROM_BEAN_METHOD_RETURN_TYPE, method);
     }
 
     /**
@@ -604,16 +698,25 @@ public abstract class Key<T> {
      */
     public static Key<?> fromMethodReturnType(Method method) {
         requireNonNull(method, "method is null");
-        return convert(method.getGenericReturnType(), method.getAnnotations(), method);
+        return convert(method.getGenericReturnType(), method.getAnnotations(), false, FROM_METHOD_RETURN_TYPE, method);
     }
 
     public static Key<?> fromVariable(BeanVariable variable) {
         PackedBindableVariable v = (PackedBindableVariable) variable;
-        return convert(v.variable().type(), v.variable().annotations().toArray(), v);
+        return convert(v.variable().type(), v.variable().annotations().toArray(), false, FROM_BEAN_VARIABLE, v);
     }
 
     public static Key<?> fromVariable(Variable variable) {
-        return convert(variable.type(), variable.annotations().toArray(), variable);
+        return convert(variable.type(), variable.annotations().toArray(), false, FROM_VARIABLE, variable);
+    }
+
+    private static boolean isQualifierAnnotationPresent(Annotation a) {
+        // Is here because we might use a ClassValue at some point
+        return a.annotationType().isAnnotationPresent(Qualifier.class);
+    }
+
+    private static String makeMsg(int sourceKind, Object source, String msg) {
+        return msg;
     }
 
     /**
@@ -626,7 +729,8 @@ public abstract class Key<T> {
      * @return a key matching the specified class with no qualifiers
      *
      * @throws InvalidKeyException
-     *             if the specified class does not represent a valid key
+     *             if the specified class does not represent a valid key\\
+     * @see #fromClass(Class)
      */
     @SuppressWarnings("unchecked")
     public static <T> Key<T> of(Class<T> key) {
@@ -637,7 +741,7 @@ public abstract class Key<T> {
     static <T> Key<T> of(Class<T> key, Annotation... qualifiers) {
         // maybe just have of(key).withQualifiers(...)
         Key<T> k = of(key);
-        PackedAnnotationList pal = qualifiersConvertExplicit(qualifiers.clone(), null);
+        PackedAnnotationList pal = convertQualifiers(qualifiers.clone(), true, FROM_CLASS, null);
         return new CanonicalizedKey<>(k.type, pal);
     }
 
@@ -656,94 +760,7 @@ public abstract class Key<T> {
         return result;
     }
 
-    private static void qualifiersCheckQualifierAnnotationPresent(Annotation e) {
-        Class<?> annotationType = e.annotationType();
-        // TODO check also withQualifier
-        // TODO is class value faster?
-        if (annotationType.isAnnotationPresent(Qualifier.class)) {
-            return;
-        }
-        // Har maaske nogle steder jeg hellere vil have IllegalArgumentException...
-        // InjectExtension??? I think that's better...
-        throw new IllegalArgumentException(
-                "@" + StringFormatter.format(annotationType) + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
-    }
-
-    private static PackedAnnotationList qualifiersConvert(Annotation[] annotations, Object source) {
-        return switch (annotations.length) {
-        case 0 -> PackedAnnotationList.EMPTY;
-        case 1 -> {
-            yield qualifiersIsAnnotationPresent(annotations[0]) ? new PackedAnnotationList(annotations) : PackedAnnotationList.EMPTY;
-        }
-        default -> {
-            int count = 0;
-            for (int i = 0; i < annotations.length; i++) {
-                // Array is safe to modify. Or is it?
-                // I think we are sharing it
-                Annotation a = annotations[i];
-                if (qualifiersIsAnnotationPresent(a)) {
-                    if (count > 0) {
-                        annotations[i - count] = a;
-                    }
-                } else {
-                    count++;
-                }
-            }
-            if (count > 0) {
-                annotations = Arrays.copyOf(annotations, annotations.length - count);
-            }
-            yield new PackedAnnotationList(qualifiersSort(annotations));
-        }
-        };
-    }
-
-    private static PackedAnnotationList qualifiersConvertExplicit(Annotation[] annotations, Object source) {
-        return switch (annotations.length) {
-        case 0 -> PackedAnnotationList.EMPTY;
-        case 1 -> {
-            if (qualifiersIsAnnotationPresent(annotations[0])) {
-                yield new PackedAnnotationList(annotations);
-            } else {
-                throw new InvalidKeyException("");
-            }
-        }
-        default -> {
-            for (Annotation a : annotations) {
-                if (!qualifiersIsAnnotationPresent(a)) {
-                    throw new InvalidKeyException("asdasd");
-                }
-            }
-            yield new PackedAnnotationList(qualifiersSort(annotations));
-        }
-        };
-    }
-
-    private static boolean qualifiersIsAnnotationPresent(Annotation a) {
-        return a.annotationType().isAnnotationPresent(Qualifier.class);
-    }
-
-    private static Annotation[] qualifiersSort(Annotation[] annotations) {
-        Arrays.sort(annotations, (a1, a2) -> {
-            Class<? extends Annotation> a1t = a1.annotationType();
-            Class<? extends Annotation> a2t = a2.annotationType();
-            if (a1t == a2t) {
-                throw new InvalidKeyException("Cannot use multiple qualifiers of the same type");
-            }
-            int c = a1t.getSimpleName().compareTo(a2t.getSimpleName());
-            if (c != 0) {
-                return c;
-            }
-            c = a1t.getCanonicalName().compareTo(a2t.getCanonicalName());
-            if (c != 0) {
-                return c;
-            }
-            throw new InvalidKeyException("Cannot use multiple qualifiers with the same canonical name");
-        });
-        // Fails on qualifiers with same name
-        return annotations;
-    }
-
-    /** See {@link CanonicalizedGenericType}. */
+    /** A key that has not been explicitly constructed using {@link Key#Key()}. */
     private static final class CanonicalizedKey<T> extends Key<T> {
 
         /**
@@ -763,6 +780,43 @@ public abstract class Key<T> {
         }
     }
 }
+///**
+// * Sorts the array of qualifiers while at same time checking some invariants.
+// *
+// * @param sourceKind
+// *            the source kind
+// * @param source
+// *            the type of source
+// * @param annotations
+// *            the annotations to sort
+// * @return the sorted annotations
+// * @throws InvalidKeyException
+// *             if the specified array contains multiple qualifiers of the same type or with the same canonical name
+// */
+//private static Annotation[] qualifiersSort(Annotation[] annotations, int sourceKind, Object source) {
+//    Arrays.sort(annotations, (a1, a2) -> {
+//        Class<? extends Annotation> a1t = a1.annotationType();
+//        Class<? extends Annotation> a2t = a2.annotationType();
+//        if (a1t == a2t) {
+//            // We do not allow multiple qualifiers of the same type.
+//            // Because we want a total order of the qualifiers based on their name
+//            throw new InvalidKeyException(makeMsg(sourceKind, source, "Cannot use multiple qualifiers of the same type"));
+//        }
+//        int c = a1t.getSimpleName().compareTo(a2t.getSimpleName());
+//        if (c != 0) {
+//            return c;
+//        }
+//        c = a1t.getCanonicalName().compareTo(a2t.getCanonicalName());
+//        if (c != 0) {
+//            return c;
+//        }
+//        // We do not allow multiple qualifiers with different class loaders but with the same canonical name.
+//        // This is mainly to allow have a total order between qualifiers
+//        // This is only ever a problem if manually constructing the key
+//        throw new InvalidKeyException(makeMsg(sourceKind, source, "Cannot use multiple qualifiers with the same canonical name"));
+//    });
+//    return annotations;
+//}
 
 //New Qualifier support
 //Vi bliver noedt til at have en strategi for

@@ -18,7 +18,7 @@ package app.packed.container;
 import java.util.List;
 
 import app.packed.application.BuildException;
-import internal.app.packed.container.AbstractContainerBuilder;
+import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.AssemblyModel;
 import internal.app.packed.container.AssemblySetup;
 
@@ -43,7 +43,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
 
     /** {@inheritDoc} */
     @Override
-    AssemblySetup build(AbstractContainerBuilder containerBuilder) {
+    AssemblySetup build(PackedContainerBuilder containerBuilder) {
         AssemblyModel.of(getClass()); // Check that this assembly does not use AssemblyHooks
 
         // Problem with relying on StackOverflowException is that you cannot really what assembly
@@ -101,7 +101,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
 
         /** {@inheritDoc} */
         @Override
-        AssemblySetup build(AbstractContainerBuilder containerBuilder) {
+        AssemblySetup build(PackedContainerBuilder containerBuilder) {
             containerBuilder.processWirelets(wirelets);
             return assembly.build(containerBuilder);
         }

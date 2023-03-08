@@ -37,7 +37,6 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InaccessibleMemberException;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
-import app.packed.extension.operation.OperationTemplate;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.framework.devtools.PackedDevToolsIntegration;
@@ -48,6 +47,7 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.ThrowableUtil;
+import sandbox.extension.operation.OperationTemplate;
 
 /**
  * This class represents a single bean being introspected.

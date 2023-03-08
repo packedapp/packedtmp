@@ -20,12 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
-import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.FunctionType;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
+import sandbox.extension.operation.OperationTemplate;
 
 /** A terminal op. */
 public abstract sealed class TerminalOp<R> extends PackedOp<R> {

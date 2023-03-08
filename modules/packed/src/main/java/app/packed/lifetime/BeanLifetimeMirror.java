@@ -47,21 +47,10 @@ public final class BeanLifetimeMirror extends LifetimeMirror {
         return lifetime().bean.mirror();
     }
 
-    /** {@return the container lifetime this bean is contained within.} */
-    public ContainerLifetimeMirror containerLifetime() {
+    /** {@return the lifetime of the container this bean is contained within.} */
+    // Forvirre den mere end den gavner? Hvad er use casen?
+    ContainerLifetimeMirror containerLifetime() {
         return lifetime().parent().mirror();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(Object other) {
-        return this == other || other instanceof BeanLifetimeMirror m && lifetime() == m.lifetime();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return lifetime().hashCode();
     }
 
     /**
@@ -83,7 +72,8 @@ public final class BeanLifetimeMirror extends LifetimeMirror {
      * @throws IllegalStateException
      *             if {@link #initialize(ApplicationSetup)} has not been called.
      */
-    private BeanLifetimeSetup lifetime() {
+    @Override
+    BeanLifetimeSetup lifetime() {
         BeanLifetimeSetup l = lifetime;
         if (l == null) {
             throw new IllegalStateException(

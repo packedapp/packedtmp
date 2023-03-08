@@ -32,12 +32,12 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Realm;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
-import app.packed.extension.operation.OperationHandle;
-import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.BindingKind;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.OperationMirror;
-import tools.H;
+import sandbox.extension.operation.OperationHandle;
+import sandbox.extension.operation.OperationTemplate;
+import tools.TestApp;
 
 /**
  * Tests direct injection of various mirrors
@@ -72,7 +72,7 @@ public class MirrorInjection {
             }
         }
 
-        H t = H.of(c -> {
+        TestApp t = TestApp.of(c -> {
             c.onAnnotatedFieldHook((l, b) -> {
                 OperationHandle h = b.newGetOperation(OperationTemplate.defaults());
                 c.generate(h);
@@ -86,7 +86,7 @@ public class MirrorInjection {
     public void unknownMirror() {
         @BindingTypeHook(extension = BaseExtension.class)
         record MirrorAlien() {}
-        H.assertThrows(BeanInstallationException.class, c -> {
+        TestApp.assertThrows(BeanInstallationException.class, c -> {
             c.onAnnotatedFieldHook((l, b) -> b.newGetOperation(OperationTemplate.defaults()));
             record Foo(MirrorAlien alien) {}
             c.install(Foo.class);

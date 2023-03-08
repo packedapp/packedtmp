@@ -25,8 +25,6 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Realm;
-import app.packed.extension.bean.BeanHandle;
-import app.packed.extension.operation.OperationHandle;
 import app.packed.operation.Op;
 import app.packed.util.Key;
 import internal.app.packed.binding.BindingResolution.FromConstant;
@@ -34,6 +32,8 @@ import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.service.InternalServiceUtil;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceSetup;
+import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.operation.OperationHandle;
 
 /** Implementation of {@link BeanHandle}. */
 public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {

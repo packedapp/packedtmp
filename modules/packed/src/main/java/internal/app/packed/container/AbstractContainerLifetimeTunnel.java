@@ -19,8 +19,8 @@ import java.util.Set;
 
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.extension.container.ContainerLifetimeTunnel;
 import app.packed.util.Key;
+import sandbox.extension.container.ContainerLifetimeTunnel;
 
 /**
  *

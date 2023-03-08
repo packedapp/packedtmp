@@ -232,6 +232,12 @@ public abstract class Wirelet {
     // Hvad hvis extension ikke bliver brugt...
     // Men ellers er den smart nok...
     // Kan vi have noget onConsumed paa locals?
+
+    // Tror faktisk den er noedvendig for at vi kan give informationer til
+    // builderen.
+
+    // En usecase hvor vi gerne vil sige at den her session er unmanaged
+    // Dvs. i holder bare information... Den er ikke levende...
     static class SetLocalBuildableWirelet<T> extends BuildableWirelet {
         ContainerLocal<T> local;
         T initializeWith;

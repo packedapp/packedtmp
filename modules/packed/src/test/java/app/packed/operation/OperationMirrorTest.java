@@ -29,10 +29,10 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.extension.operation.OperationHandle;
-import app.packed.extension.operation.OperationTemplate;
+import sandbox.extension.operation.OperationHandle;
+import sandbox.extension.operation.OperationTemplate;
 import tools.AnnoOnField.InstanceField;
-import tools.H;
+import tools.TestApp;
 import tools.HExtension;
 
 /**
@@ -54,7 +54,7 @@ public class OperationMirrorTest {
     /** Tests a simple OperationMirror */
     @Test
     public void simple() {
-        ApplicationMirror t = H.mirrorOf(c -> {
+        ApplicationMirror t = TestApp.mirrorOf(c -> {
             c.onAnnotatedFieldHook((l, b) -> {
                 OperationHandle h = b.newGetOperation(OperationTemplate.defaults());
                 c.generate(h);
@@ -88,7 +88,7 @@ public class OperationMirrorTest {
     @Test
     public void customOperationMirror() {
         class MyOpMirror extends OperationMirror {}
-        ApplicationMirror t = H.mirrorOf(c -> {
+        ApplicationMirror t = TestApp.mirrorOf(c -> {
             c.onAnnotatedFieldHook((l, b) -> {
                 OperationHandle h = b.newGetOperation(OperationTemplate.defaults());
                 h.specializeMirror(() -> new MyOpMirror());

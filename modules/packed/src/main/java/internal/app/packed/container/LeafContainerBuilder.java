@@ -26,15 +26,15 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.ContainerLocal;
 import app.packed.extension.Extension;
-import app.packed.extension.container.ContainerBuilder;
-import app.packed.extension.container.ContainerTemplate;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
+import sandbox.extension.container.ContainerBuilder;
+import sandbox.extension.container.ContainerTemplate;
 
-/** Implementation of {@link ContainerBuilder}. */
-public final class LeafContainerBuilder extends AbstractContainerBuilder implements ContainerBuilder {
+/** Implementation of {@link ContainerBuilder} for a leaf container. */
+public final class LeafContainerBuilder extends PackedContainerBuilder implements ContainerBuilder {
 
     /** The extension that is installing the container. */
     final Class<? extends Extension<?>> installedBy;
@@ -118,7 +118,7 @@ public final class LeafContainerBuilder extends AbstractContainerBuilder impleme
 
     /** {@inheritDoc} */
     @Override
-    public <T> ContainerBuilder holderConstant(Key<T> key, T constant) {
+    public <T> ContainerBuilder lifetimeHolderProvideConstant(Key<T> key, T constant) {
         throw new UnsupportedOperationException();
     }
 
@@ -162,7 +162,7 @@ public final class LeafContainerBuilder extends AbstractContainerBuilder impleme
 
         /** {@inheritDoc} */
         @Override
-        public void onInstall(AbstractContainerBuilder installer) {
+        public void onInstall(PackedContainerBuilder installer) {
             if (installer.parent == null) {
                 throw new Error("This wirelet cannot be used when creating a new application");
             }
@@ -195,7 +195,7 @@ public final class LeafContainerBuilder extends AbstractContainerBuilder impleme
 
         /** {@inheritDoc} */
         @Override
-        public void onInstall(AbstractContainerBuilder installer) {
+        public void onInstall(PackedContainerBuilder installer) {
             installer.nameFromWirelet = name;// has already been validated
         }
     }

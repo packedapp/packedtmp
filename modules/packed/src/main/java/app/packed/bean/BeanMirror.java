@@ -22,11 +22,11 @@ import app.packed.extension.ContainerLocal;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.mirror.DependenciesMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup;
+import sandbox.operation.mirror.DependenciesMirror;
 
 /**
  * A mirror of a bean.
@@ -34,6 +34,7 @@ import internal.app.packed.operation.OperationSetup;
  * Instances of this class is typically obtained from calls to {@link ApplicationMirror} or {@link ContainerMirror}.
  */
 @BindingTypeHook(extension = BaseExtension.class)
+@SuppressWarnings("exports") // uses sandbox classes
 public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirror {
 
     /**

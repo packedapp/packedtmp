@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.AnnotatedMethodHook;
-import app.packed.lifetime.LifetimeOrder;
+import app.packed.lifetime.LifecycleOrder;
 
 /**
  * Indicates that the annotated method should be executed as part of the target bean's initialization.
@@ -65,7 +65,7 @@ public @interface OnInitialize {
      *         initialized.
      */
     // Hvordan fungere lazy?
-    LifetimeOrder order() default LifetimeOrder.BEFORE_DEPENDENCIES;
+    LifecycleOrder order() default LifecycleOrder.BEFORE_DEPENDENCIES;
 }
 
 // int priorityOnBean() default 0;

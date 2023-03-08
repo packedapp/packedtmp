@@ -5,8 +5,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodType;
 
 import app.packed.extension.ContainerContext;
-import app.packed.extension.context.ContextTemplate;
-import app.packed.extension.operation.OperationTemplate;
+import sandbox.extension.context.ContextTemplate;
+import sandbox.extension.operation.OperationTemplate;
 
 public final class PackedOperationTemplate implements OperationTemplate {
 

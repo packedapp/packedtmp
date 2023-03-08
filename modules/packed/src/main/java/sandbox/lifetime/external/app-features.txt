@@ -1,0 +1,30 @@
+Inside/Outside
+
+Query
+  RunState
+  Exceptions
+  await
+Control
+
+Result Yes/No
+
+Restartable - New Instance/Not
+
+Completable/Cancellable <-- Must be elsewhere?
+JobContext?
+
+Listener
+
+
+---- Not defaults,
+History -> EventDriven???? Maa folk sgu selv implementere
+
+
+CurrentState
+TransitionanalState (ExtendedState)
+History
+
+
+//// Hmm internal...
+//// Vil man nogensinde stop blocking???
+//// Eller kalde start blocking? Den er jo kun interesa

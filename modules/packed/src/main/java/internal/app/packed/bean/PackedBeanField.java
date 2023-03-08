@@ -26,8 +26,6 @@ import java.lang.reflect.Modifier;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanHook.AnnotatedFieldHook;
 import app.packed.extension.Extension;
-import app.packed.extension.operation.OperationHandle;
-import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.AnnotationList;
 import app.packed.util.FunctionType;
 import app.packed.util.Nullable;
@@ -38,6 +36,8 @@ import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.operation.PackedOperationHandle;
 import internal.app.packed.util.PackedAnnotationList;
 import internal.app.packed.util.PackedVariable;
+import sandbox.extension.operation.OperationHandle;
+import sandbox.extension.operation.OperationTemplate;
 
 /** Implementation of {@link BeanField}. */
 // Previous we had a PackedBeanMember, but there are actually only 2-3 common operations. So don't go there again.

@@ -26,12 +26,6 @@ import app.packed.extension.BeanElement.BeanClass;
 import app.packed.extension.BeanElement.BeanConstructor;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.extension.bean.BeanHandle;
-import app.packed.extension.container.ContainerHandle;
-import app.packed.extension.operation.DelegatingOperationHandle;
-import app.packed.extension.operation.OperationHandle;
-import app.packed.extension.operation.OperationTemplate;
-import app.packed.extension.sandbox.ApplicationHandle;
 import app.packed.util.AnnotationList;
 import app.packed.util.FunctionType;
 import app.packed.util.Key;
@@ -39,6 +33,12 @@ import app.packed.util.Variable;
 import internal.app.packed.bean.PackedBeanConstructor;
 import internal.app.packed.bean.PackedBeanField;
 import internal.app.packed.bean.PackedBeanMethod;
+import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.container.ContainerHandle;
+import sandbox.extension.operation.DelegatingOperationHandle;
+import sandbox.extension.operation.OperationHandle;
+import sandbox.extension.operation.OperationTemplate;
+import sandbox.extension.sandbox.ApplicationHandle;
 
 /**
  *

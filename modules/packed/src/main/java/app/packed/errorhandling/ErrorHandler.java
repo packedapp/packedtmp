@@ -16,18 +16,13 @@
 package app.packed.errorhandling;
 
 /**
- *
+ * Just a place holder for now.
  */
 
-// Ideen er selvfoelige
+// Will probably work in some nested way.
 
 // Application <- Container <- Bean <- Operation <- Interceptor
 
+// Is it only used for operations that fail
 
-// Naar man haandtere ting. Skal man vide om man har en parent der kan haandtere det
-
-
-// Er det altid en operation der fejler???
-public class ErrorHandler {
-
-}
+public class ErrorHandler {}

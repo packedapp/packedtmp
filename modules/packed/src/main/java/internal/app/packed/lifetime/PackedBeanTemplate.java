@@ -16,11 +16,11 @@
 package internal.app.packed.lifetime;
 
 import app.packed.bean.BeanKind;
-import app.packed.extension.bean.BeanTemplate;
-import app.packed.extension.context.ContextTemplate;
-import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.PackedBeanBuilder;
+import sandbox.extension.bean.BeanTemplate;
+import sandbox.extension.context.ContextTemplate;
+import sandbox.extension.operation.OperationTemplate;
 
 /**
  *

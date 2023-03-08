@@ -270,7 +270,9 @@ public final class InternalDependency {
         }
         // TL is free from Optional
 
-        Key<?> key = Key.convert(t, v.annotations().toArray(), rawType);
+        Variable newV = Variable.of(t, v.annotations().toArray());
+        Key<?> key = Key.fromVariable(newV);
+//        Key<?> key = Key.convert(t, v.annotations().toArray(), 123, rawType);
         return new InternalDependency(v.rawType(), key, optionallaity);
     }
 

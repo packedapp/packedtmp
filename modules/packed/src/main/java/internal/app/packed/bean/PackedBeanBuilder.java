@@ -29,10 +29,6 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.extension.BeanLocal;
 import app.packed.extension.InternalExtensionException;
-import app.packed.extension.bean.BeanBuilder;
-import app.packed.extension.bean.BeanHandle;
-import app.packed.extension.bean.BeanTemplate;
-import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.Provider;
 import app.packed.util.Key;
@@ -43,6 +39,10 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
+import sandbox.extension.bean.BeanBuilder;
+import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.bean.BeanTemplate;
+import sandbox.extension.operation.OperationTemplate;
 
 /**
  * This class is responsible for installing new beans.

@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import tools.H;
+import tools.TestApp;
 import tools.TestAppMirror;
 
 /**
@@ -31,7 +31,7 @@ public class BeanInstallTest {
 
     @Test
     public void install() {
-        TestAppMirror m = H.mirrorOf(c -> c.install(R.class));
+        TestAppMirror m = TestApp.mirrorOf(c -> c.install(R.class));
         BeanMirror b = m.bean();
         assertEquals(R.class, b.beanClass());
         assertEquals(BeanSourceKind.CLASS, b.beanSourceKind());

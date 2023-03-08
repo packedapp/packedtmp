@@ -5,6 +5,7 @@ import java.util.List;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.util.Nullable;
+import internal.app.packed.operation.OperationSetup;
 
 /** The internal configuration of a Lifetime. */
 
@@ -23,6 +24,12 @@ import app.packed.util.Nullable;
 //Application.Many -> image
 
 public sealed interface LifetimeSetup permits ContainerLifetimeSetup, BeanLifetimeSetup {
+
+    default List<OperationSetup> entryPoints() {
+        throw new UnsupportedOperationException();
+    }
+
+    Class<?> resultType();
 
     LifetimeKind lifetimeKind();
 

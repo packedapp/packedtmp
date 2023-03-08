@@ -13,19 +13,8 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.extension.BeanHook.AnnotatedBindingHook;
-import app.packed.extension.bean.BeanBuilder;
-import app.packed.extension.bean.BeanHandle;
-import app.packed.extension.bean.BeanTemplate;
-import app.packed.extension.container.ContainerBuilder;
-import app.packed.extension.container.ContainerHolderConfiguration;
-import app.packed.extension.container.ContainerTemplate;
-import app.packed.extension.container.ContainerLifetimeTunnel;
-import app.packed.extension.operation.DelegatingOperationHandle;
-import app.packed.extension.operation.OperationHandle;
-import app.packed.extension.operation.OperationTemplate;
-import app.packed.lifetime.LifetimeOrder;
+import app.packed.lifetime.LifecycleOrder;
 import app.packed.lifetime.RunState;
-import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
 import app.packed.service.ServiceLocator;
@@ -38,6 +27,17 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.LeafContainerBuilder;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.PackedOperationHandle;
+import sandbox.extension.bean.BeanBuilder;
+import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.bean.BeanTemplate;
+import sandbox.extension.container.ContainerBuilder;
+import sandbox.extension.container.ContainerHolderConfiguration;
+import sandbox.extension.container.ContainerLifetimeTunnel;
+import sandbox.extension.container.ContainerTemplate;
+import sandbox.extension.operation.DelegatingOperationHandle;
+import sandbox.extension.operation.OperationHandle;
+import sandbox.extension.operation.OperationTemplate;
+import sandbox.lifetime.external.LifecycleController;
 
 /** An {@link ExtensionPoint extension point} for {@link BaseExtension}. */
 public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
@@ -50,7 +50,8 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     // Altsaa fx naar vi naar hen til application.
     // Vi kan jo ikke installere den i extensionen...
-    public static ContainerLifetimeTunnel CONTAINER_MIRROR = ContainerLifetimeTunnel.builder(MethodHandles.lookup(), BaseExtension.class, "ContainerMirror").build();
+    public static ContainerLifetimeTunnel CONTAINER_MIRROR = ContainerLifetimeTunnel.builder(MethodHandles.lookup(), BaseExtension.class, "ContainerMirror")
+            .build();
 
     /** A bridge that makes the name of the container available. */
     public static final ContainerLifetimeTunnel CONTAINER_NAME = null;
@@ -66,7 +67,8 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     // check that we have a managed lifetime. Maybe PackedManagedBeanController is already installed
     // baseExtension.managedLifetimeBean.export(); // maybe it is already exported
 
-    public static final ContainerLifetimeTunnel MANAGED_LIFETIME_CONTROLLER = baseBuilder("ManagedLifetimeController").expose(ManagedLifetimeController.class).build();
+    public static final ContainerLifetimeTunnel MANAGED_LIFETIME_CONTROLLER = baseBuilder("ManagedLifetimeController")
+            .expose(LifecycleController.class).build();
 
     /** Creates a new base extension point. */
     BaseExtensionPoint() {}
@@ -248,7 +250,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         return new FunctionalBeanConfiguration(handle);
     }
 
-    public OperationConfiguration runOnBean(RunState state, DelegatingOperationHandle h, LifetimeOrder ordering) {
+    public OperationConfiguration runLifecycleOperation(DelegatingOperationHandle operation, RunState state, LifecycleOrder ordering) {
         throw new UnsupportedOperationException();
     }
 
@@ -273,7 +275,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 //        throw new UnsupportedOperationException();
 //    }
 
-    public OperationConfiguration runOnBeanInitialization(DelegatingOperationHandle h, LifetimeOrder ordering) {
+    public OperationConfiguration runOnBeanInitialization(DelegatingOperationHandle h, LifecycleOrder ordering) {
         requireNonNull(ordering, "ordering is null");
         OperationHandle handle = h.newOperation(OperationTemplate.defaults(), context());
         ((PackedOperationHandle) handle).operation().bean.addLifecycleOperation(BeanLifecycleOrder.fromInitialize(ordering), handle);
@@ -293,17 +295,17 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         handle.operation().bean.addLifecycleOperation(BeanLifecycleOrder.INJECT, handle);
         return new OperationConfiguration(handle);
     }
-
-    public OperationConfiguration runOnBeanStart(DelegatingOperationHandle h, LifetimeOrder ordering) {
-        // What if I want to fork it??? on OC??
-        // Or do I need to call it immediately
-        // runOnLifecycle(RunState runstate, LifecycleOrder ordering)
-        throw new UnsupportedOperationException();
-    }
-
-    public OperationConfiguration runOnBeanStop(DelegatingOperationHandle h, LifetimeOrder ordering) {
-        throw new UnsupportedOperationException();
-    }
+//
+//    public OperationConfiguration runOnBeanStart(DelegatingOperationHandle h, LifecycleOrder ordering) {
+//        // What if I want to fork it??? on OC??
+//        // Or do I need to call it immediately
+//        // runOnLifecycle(RunState runstate, LifecycleOrder ordering)
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public OperationConfiguration runOnBeanStop(DelegatingOperationHandle h, LifecycleOrder ordering) {
+//        throw new UnsupportedOperationException();
+//    }
 
     private static ContainerLifetimeTunnel.Builder baseBuilder(String name) {
         return ContainerLifetimeTunnel.builder(MethodHandles.lookup(), BaseExtension.class, name);

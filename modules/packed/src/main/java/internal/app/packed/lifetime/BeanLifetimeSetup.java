@@ -52,6 +52,12 @@ public final class BeanLifetimeSetup implements LifetimeSetup {
 
     /** {@inheritDoc} */
     @Override
+    public LifetimeKind lifetimeKind() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public List<FuseableOperation> lifetimes() {
         return lifetimes;
     }
@@ -78,7 +84,7 @@ public final class BeanLifetimeSetup implements LifetimeSetup {
 
     /** {@inheritDoc} */
     @Override
-    public LifetimeKind lifetimeKind() {
-        throw new UnsupportedOperationException();
+    public Class<?> resultType() {
+        return void.class;
     }
 }

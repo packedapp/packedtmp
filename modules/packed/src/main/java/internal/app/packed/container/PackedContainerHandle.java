@@ -21,8 +21,8 @@ import java.util.Set;
 import app.packed.application.ApplicationPath;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.Extension;
-import app.packed.extension.container.ContainerHandle;
-import app.packed.extension.operation.OperationHandle;
+import sandbox.extension.container.ContainerHandle;
+import sandbox.extension.operation.OperationHandle;
 
 /** Implementation of {@link ContainerHandle}. */
 public record PackedContainerHandle(ContainerSetup container) implements ContainerHandle {

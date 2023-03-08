@@ -1,0 +1,30 @@
+
+OnInitialize
+  Vi ved hvor vi kommer fra.
+  Er enten paa vej mod initialized eller running (desiredState) 
+  FromEarly -> RunOnLater (Otherwise UOE)
+  
+OnStart
+  Ved vi kommer fra Initialized
+OnRunning (I thinK this is always fork!)
+OnStop
+
+
+
+-----------------------------------
+Uninitialized
+  Giver ingen mening
+Initializing
+ Yes
+Initialized
+  Nah
+Starting
+
+Running
+
+Stopping
+
+- Terminated
+Har ingen umiddelbare usecases som ikke kan klare fra Stopping
+
+---- Saa dem der er interessant

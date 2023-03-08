@@ -18,21 +18,22 @@ package app.packed.operation;
 import java.util.Optional;
 
 import app.packed.container.Realm;
-import app.packed.operation.mirror.BindingProviderKind;
-import app.packed.operation.mirror.BindingTarget;
-import app.packed.operation.mirror.DependenciesMirror;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.Mirror;
+import sandbox.operation.mirror.BindingProviderKind;
+import sandbox.operation.mirror.BindingTarget;
+import sandbox.operation.mirror.DependenciesMirror;
 
 /**
  * A mirror representing the bound parameter of an operation.
  *
  * @see OperationMirror#bindings()
  */
+@SuppressWarnings("exports") // Uses sandbox classes
 public class BindingMirror implements Mirror {
 
     /**

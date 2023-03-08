@@ -25,12 +25,12 @@ import java.lang.invoke.VarHandle.AccessMode;
 import org.junit.jupiter.api.Test;
 
 import app.packed.extension.ContainerContext;
-import app.packed.extension.operation.OperationHandle;
-import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.OperationTarget;
+import sandbox.extension.operation.OperationHandle;
+import sandbox.extension.operation.OperationTemplate;
 import tools.AnnoOnField.InstanceField;
 import tools.AnnoOnField.StaticField;
-import tools.H;
+import tools.TestApp;
 import tools.HExtension;
 
 /**
@@ -40,7 +40,7 @@ public class OnAnnotatedFieldTest {
 
     @Test
     public void instanceFieldGet() throws Throwable {
-        H t = H.of(c -> {
+        TestApp t = TestApp.of(c -> {
             c.onAnnotatedFieldHook((l, b) -> {
                 InstanceField.validateFoo(l, b);
 
@@ -67,7 +67,7 @@ public class OnAnnotatedFieldTest {
 
     @Test
     public void instanceFieldGetSet() throws Throwable {
-        H t = H.of(c -> {
+        TestApp t = TestApp.of(c -> {
             c.onAnnotatedFieldHook((l, b) -> {
                 c.generate(b.newGetOperation(OperationTemplate.defaults()));
 //                OperationHandle h = b.newSetOperation(OperationTemplate.defaults().withArg(String.class));
@@ -91,7 +91,7 @@ public class OnAnnotatedFieldTest {
 
     @Test
     public void staticFieldGet() throws Throwable {
-        H t = H.of(c -> {
+        TestApp t = TestApp.of(c -> {
             c.onAnnotatedFieldHook((l, b) -> {
                 c.generate(b.newGetOperation(OperationTemplate.defaults()));
             });

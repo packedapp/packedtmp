@@ -25,11 +25,11 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
-import app.packed.extension.domain.ExtensionDomain;
 import app.packed.util.Nullable;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
+import sandbox.extension.domain.ExtensionDomain;
 
 /**
  * Internal configuration of an application.
@@ -81,7 +81,7 @@ public final class ApplicationSetup {
      * @param assembly
      *            the assembly that defines the application
      */
-    public ApplicationSetup(AbstractContainerBuilder containerBuilder, AssemblySetup assembly) {
+    public ApplicationSetup(PackedContainerBuilder containerBuilder, AssemblySetup assembly) {
         this.goal = containerBuilder.goal();
         this.codegenActions = goal.isCodeGenerating() ? new ArrayList<>() : null;
         this.mirrorSupplier = containerBuilder.applicationMirrorSupplier;

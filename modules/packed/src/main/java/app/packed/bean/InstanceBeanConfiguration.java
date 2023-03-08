@@ -18,11 +18,11 @@ package app.packed.bean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.extension.bean.BeanHandle;
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
 import app.packed.util.Key;
 import internal.app.packed.bean.BeanSetup;
+import sandbox.extension.bean.BeanHandle;
 
 /**
  * The configuration of a bean that deals with beans that are instantiated.

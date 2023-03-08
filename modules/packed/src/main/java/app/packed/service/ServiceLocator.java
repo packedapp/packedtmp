@@ -34,13 +34,13 @@ import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
-import app.packed.extension.container.ContainerHolderService;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.operation.Provider;
 import app.packed.util.Key;
 import internal.app.packed.lifetime.runtime.PackedContainerContext;
 import internal.app.packed.service.PackedServiceLocator;
+import sandbox.extension.container.ContainerHolderService;
 
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.

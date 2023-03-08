@@ -16,8 +16,35 @@
 package app.packed.lifetime;
 
 /**
+ * Packed operates with two kinds of lifetime:
+ *
+ * Unmanaged: A lifetime kind that is solely destroyed by the GC.
+ * Managed: A lifetime that must be destroyed explicitly
+ *
+ * Unmanaged is a HashMap, Managed is something you can close (A resource is an object that must be closed after the
+ * program is finished with it.) https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html
+ * <p>
+ * <ul>
+ * <li>An unmanaged lifetime cannot explicitly be destroyed, instead it relies on the GC to clean it up.</li>
+ * <li>An unmanaged lifetime has no active threads running besides for the thread that creates the lifetime. Outside can
+ * call in though</li>
+ * <li>The state of an unmanaged lifetime is never directly observable.</li>
+ * <li>Beans in an unmanaged lifetime never goes through a starting or stopping phase. Trying to annotations such as
+ * {@link app.packed.bean.OnStart} or {@link app.packed.bean.OnStart} on a bean in an unmanaged lifetime will fail at
+ * build time</li>
+ * <li>It is unitialized to initiazling to initialzized</li>
+ * </ul>
+ *
  *
  */
+
+// Unmanaged Container - Unmanaged Application
+// Unmanaged Container - Managed Application (Det er vel det en bootstrap app laver)
+// Unmanaged Container - Unmanaged Container (OK)
+// Unmanaged Container - Managed Container (?)
+// Unmanaged Container - Unmanaged Bean (OK)
+// Unmanaged Container - Managed Bean (FAIL)
+
 // LifetimeManagement bare?
 // Maaske ender det bare med en boolean
 
@@ -33,18 +60,7 @@ public enum LifetimeKind {
 
     /**
      * Represents a bean or container who either have no run-state (static) or whose run-state is not tracked by any
-     * extension.
-     * <p>
-     * Beans that have stateless lifetime. Will be contained in the container's lifetime. Meaning that they can be used as
-     * long as the container they are installed in is running.
-     *
-     * @see app.packed.bean.BeanKind#STATIC
-     * @see app.packed.bean.BeanKind#FOREIGN
-     **/
-    STATELESS,
-
-    /**
-     * A lifetime that can only be initialized and not stopped. Cleanup relies only on the garbage collector.
+     * extension. A lifetime that can only be initialized and not stopped. Cleanup relies only on the garbage collector.
      * <p>
      * A typical example is prototype services. Once created they are no longer tracked.
      *
@@ -64,6 +80,18 @@ public enum LifetimeKind {
      **/
     MANAGED; // has start/stop
 }
+
+///**
+//* Represents a bean or container who either have no run-state (static) or whose run-state is not tracked by any
+//* extension.
+//* <p>
+//* Beans that have stateless lifetime. Will be contained in the container's lifetime. Meaning that they can be used as
+//* long as the container they are installed in is running.
+//*
+//* @see app.packed.bean.BeanKind#STATIC
+//* @see app.packed.bean.BeanKind#FOREIGN
+//**/
+//STATELESS,
 
 //
 //enum AlternativeNaming {

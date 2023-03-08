@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
-import internal.app.packed.container.AbstractContainerBuilder;
+import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.LeafContainerBuilder;
 import internal.app.packed.container.PackedContainerHandle;
@@ -141,7 +141,7 @@ public abstract class AbstractComposer {
          *            the configuration to use for the assembling process
          */
         @Override
-        AssemblySetup build(AbstractContainerBuilder builder) {
+        AssemblySetup build(PackedContainerBuilder builder) {
             if (builder instanceof LeafContainerBuilder installer) {
                 throw new IllegalArgumentException("Cannot link an instance of " + ComposerAssembly.class + ", assembly must extend "
                         + BuildableAssembly.class.getSimpleName() + " instead");

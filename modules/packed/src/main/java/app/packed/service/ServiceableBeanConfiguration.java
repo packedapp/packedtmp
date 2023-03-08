@@ -16,8 +16,8 @@
 package app.packed.service;
 
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.extension.bean.BeanHandle;
 import app.packed.util.Key;
+import sandbox.extension.bean.BeanHandle;
 
 /**
  * A configuration of a container bean.

@@ -16,11 +16,11 @@
 package app.packed.lifetime;
 
 /**
- * An enum containing all valid states of a typically an application, container or bean.
+ * An enum containing all valid states of an application, container or bean.
  *
  * There are 4 <b>steady</b> states: {@link #UNINITIALIZED}, {@link #INITIALIZED}, {@link #RUNNING} and {@link #TERMINATED}.
  *
- * There are 3 <b>intermediate</b> states: {@link #UNINITIALIZED}, {@link #STARTING} and {@link #STOPPING}.
+ * There are 3 <b>intermediate</b> states: {@link #INITIALIZING}, {@link #STARTING} and {@link #STOPPING}.
  *
  * Steady states normally requires external stimuli to transition to a new state. For example, that the user invokes a
  * {@code start} function of some kind on the object. Which results in the object transitioning from
@@ -58,7 +58,7 @@ public enum RunState {
      * If the guest is successfully finishes the initialization phase, it will move to the {@link #INITIALIZED} state. If it
      * fails, it will move to the {@link #TERMINATED} state.
      */
-    // Ideen er vist lidt at lazy can rapportere denne state
+    // Ideen er vist lidt at en lazy container can rapportere denne state
     UNINITIALIZED,
 
     /**

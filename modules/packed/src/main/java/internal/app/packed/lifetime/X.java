@@ -45,7 +45,7 @@ public class X extends BaseAssembly {
     }
     public static void main(String[] args) {
         Program p = Program.start(new X());
-        System.out.println(p.runtime().state());
+        System.out.println(p.runtime().currentState());
     }
 
     public static class F {

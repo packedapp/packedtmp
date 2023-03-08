@@ -17,9 +17,9 @@ package internal.app.packed.binding;
 
 import java.util.function.Supplier;
 
-import app.packed.operation.mirror.BindingProviderKind;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
+import sandbox.operation.mirror.BindingProviderKind;
 
 /** Provides values for bindings. */
 public sealed interface BindingResolution {

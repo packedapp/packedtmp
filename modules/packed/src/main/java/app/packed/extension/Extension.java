@@ -29,9 +29,6 @@ import app.packed.application.ApplicationPath;
 import app.packed.application.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
-import app.packed.extension.container.ContainerHandle;
-import app.packed.extension.domain.DomainTemplate;
-import app.packed.extension.domain.ExtensionDomain;
 import app.packed.service.ServiceableBeanConfiguration;
 import internal.app.packed.container.DomainSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -41,6 +38,9 @@ import internal.app.packed.container.PackedWireletSelection;
 import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
+import sandbox.extension.container.ContainerHandle;
+import sandbox.extension.domain.DomainTemplate;
+import sandbox.extension.domain.ExtensionDomain;
 
 /**
  * Extensions are main mechanism by which the framework can be extended with new features.

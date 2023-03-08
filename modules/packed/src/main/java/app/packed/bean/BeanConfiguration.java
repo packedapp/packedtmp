@@ -7,9 +7,9 @@ import java.util.Set;
 import app.packed.application.ApplicationPath;
 import app.packed.container.Realm;
 import app.packed.context.Context;
-import app.packed.extension.bean.BeanHandle;
 import app.packed.util.Key;
 import internal.app.packed.bean.PackedBeanHandle;
+import sandbox.extension.bean.BeanHandle;
 
 /** The configuration of a bean, typically returned from the installation site of a bean. */
 public class BeanConfiguration {

@@ -26,7 +26,6 @@ import app.packed.bean.BeanInstallationException;
 import app.packed.context.Context;
 import app.packed.extension.BeanVariable;
 import app.packed.extension.Extension;
-import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
 import app.packed.util.AnnotationList;
@@ -44,6 +43,7 @@ import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
+import sandbox.extension.operation.OperationTemplate;
 import internal.app.packed.operation.PackedOp;
 
 /** Implementation of {@link BindableVariable}. */

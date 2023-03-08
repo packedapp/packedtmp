@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
 import app.packed.container.Realm;
-import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import app.packed.util.FunctionType;
 import internal.app.packed.bean.BeanSetup;
@@ -31,6 +30,7 @@ import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
 import internal.app.packed.util.LookupUtil;
+import sandbox.extension.operation.OperationTemplate;
 
 /** An intermediate (non-terminal) op. */
 abstract sealed class IntermediateOp<R> extends PackedOp<R> {

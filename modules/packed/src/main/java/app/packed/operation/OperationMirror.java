@@ -32,13 +32,13 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.operation.mirror.DependenciesMirror;
 import app.packed.util.FunctionType;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup;
+import sandbox.operation.mirror.DependenciesMirror;
 
 /**
  * A mirror for an operation on a bean.

@@ -26,22 +26,22 @@ import java.util.Set;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.extension.ContainerContext;
-import app.packed.extension.operation.OperationTemplate;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.RunState;
-import app.packed.lifetime.sandbox.ManagedLifetime;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanLifecycleOperation;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.container.AbstractContainerBuilder;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.entrypoint.OldContainerEntryPointManager;
 import internal.app.packed.lifetime.runtime.PackedContainerContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
+import sandbox.extension.operation.OperationTemplate;
+import sandbox.lifetime.ManagedLifetime;
 
 /**
  * The lifetime of the root container in an application. Or a container whose lifetime is independent of its parent
@@ -88,7 +88,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
      * @param origin
      * @param parent
      */
-    public ContainerLifetimeSetup(AbstractContainerBuilder installer, ContainerSetup newContainer, @Nullable ContainerLifetimeSetup parent) {
+    public ContainerLifetimeSetup(PackedContainerBuilder installer, ContainerSetup newContainer, @Nullable ContainerLifetimeSetup parent) {
         super(parent);
         this.lifetimes = FuseableOperation.of(List.of(OperationTemplate.defaults())); // obviously wrong
         this.initialization = new FuseableOperation(OperationTemplate.defaults());
@@ -247,6 +247,12 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         }
         PackedContainerContext pec = (PackedContainerContext) ec;
         pec.storeObject(bean.lifetimeStoreIndex, instance);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> resultType() {
+        return resultType;
     }
 }
 

@@ -30,8 +30,6 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanFactoryMirror;
 import app.packed.bean.BeanKind;
 import app.packed.bean.NonStaticMemberException;
-import app.packed.extension.operation.OperationHandle;
-import app.packed.extension.operation.OperationTemplate;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.util.FunctionType;
@@ -48,6 +46,8 @@ import internal.app.packed.service.ServiceProviderSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
+import sandbox.extension.operation.OperationHandle;
+import sandbox.extension.operation.OperationTemplate;
 
 /** Represents an operation on a bean. */
 public sealed abstract class OperationSetup {

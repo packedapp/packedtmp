@@ -7,11 +7,11 @@ import java.util.function.Consumer;
 
 import app.packed.application.ApplicationPath;
 import app.packed.extension.Extension;
-import app.packed.extension.container.ContainerHandle;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedContainerHandle;
+import sandbox.extension.container.ContainerHandle;
 
 /**
  * The configuration of a container.

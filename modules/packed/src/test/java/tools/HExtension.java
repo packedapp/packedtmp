@@ -22,7 +22,6 @@ import java.util.function.BiConsumer;
 
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.BeanElement.BeanField;
-import app.packed.extension.operation.OperationHandle;
 import app.packed.extension.Extension;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.ContainerContext;
@@ -30,6 +29,7 @@ import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.util.AnnotationList;
 import app.packed.util.Key;
 import internal.app.packed.util.CollectionUtil;
+import sandbox.extension.operation.OperationHandle;
 
 /**
  *

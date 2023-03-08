@@ -1,0 +1,18 @@
+Problemet er alle de underlige lifetime operationes
+
+RestartLifetime
+SuspendLifetime / ResumeLifetime
+MoveLifetime
+
+
+--------
+
+Suspend -> Runnable <- resumable
+
+StopOption.suspend(byte[] array, Consumer<Runnable>)
+
+
+
+------ This is always on the application level
+UpdateLifetime (Upgrade/Downgrade)
+

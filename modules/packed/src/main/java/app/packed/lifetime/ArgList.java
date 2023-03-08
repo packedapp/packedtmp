@@ -15,6 +15,11 @@
  */
 package app.packed.lifetime;
 
+import java.util.List;
+
+import app.packed.extension.BaseExtension;
+import app.packed.extension.BeanHook.BindingTypeHook;
+
 /**
  *
  */
@@ -27,7 +32,15 @@ package app.packed.lifetime;
 // MainArgs... Men det er vel ikke kun Main den virker sammen med?
 // Eller maaske er det. Nej fordi vi vil gerne kunne bruge
 // ApplicationImage.use("fsdfsdf") <- uaghaendig af extension
-// Det kan vi vel egentlig ogsaa...
+// Det kan vi vel egentlig ogsaa..
+
+// Kan ikke se det giver mening ikke at giver adgang til den.
+// Kan jo altid laese parameterene fra System properties
+
+// Hvad goere vi med child lifetimes? Maaske er den kun til gaeneglig i app lifetimen...
+// Det tror jeg faktisk
+
+@BindingTypeHook(extension = BaseExtension.class)
 public /* primitive */ class ArgList {
     private final String[] args;
 
@@ -37,5 +50,14 @@ public /* primitive */ class ArgList {
 
     public int argumentCount() {
         return args.length;
+    }
+
+    public ArgList of() {
+        return new ArgList(new String[] {});
+    }
+
+    public ArgList of(String... args) {
+        List.of(args); // checks for null
+        return new ArgList(args.clone());
     }
 }

@@ -24,10 +24,10 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import app.packed.lifetime.RunState;
-import app.packed.lifetime.sandbox.ManagedLifetimeController;
-import app.packed.lifetime.sandbox.StopOption;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.entrypoint.OldEntryPointSetup;
+import sandbox.lifetime.external.LifecycleController;
+import sandbox.lifetime.external.StopOption;
 
 /**
  *
@@ -37,7 +37,7 @@ import internal.app.packed.entrypoint.OldEntryPointSetup;
 /// Error bit (data =
 // Desired state + Mask
 // Extra data... Startup/Initialization exception
-public final class PackedManagedLifetime implements ManagedLifetimeController {
+public final class PackedManagedLifetime implements LifecycleController {
 
     /**
      * A lock used for lifecycle control of the component. If components are arranged in a hierarchy and multiple components
@@ -68,7 +68,7 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
         lock.lock();
         try {
             for (;;) {
-                if (state.ordinal() <= state().ordinal()) {
+                if (state.ordinal() <= currentState().ordinal()) {
                     return;
                 }
                 lockAwaitState.await();
@@ -86,7 +86,7 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
         lock.lock();
         try {
             for (;;) {
-                if (state.ordinal() <= state().ordinal()) {
+                if (state.ordinal() <= currentState().ordinal()) {
                     return true;
                 } else if (nanos <= 0) {
                     return false;
@@ -206,7 +206,7 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
 
     /** {@inheritDoc} */
     @Override
-    public RunState state() {
+    public RunState currentState() {
         return state;
     }
 
@@ -222,7 +222,7 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
 
     // Tag T istedet for container...
     public <T> CompletionStage<T> whenAt(RunState state, T object) {
-        if (state().ordinal() >= state.ordinal()) {
+        if (currentState().ordinal() >= state.ordinal()) {
             return CompletableFuture.completedFuture(object);
         }
         final ReentrantLock lock = this.lock;

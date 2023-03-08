@@ -23,11 +23,11 @@ import app.packed.application.BootstrapApp;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint;
-import app.packed.extension.container.ContainerHolderService;
-import app.packed.extension.container.ContainerLifetimeTunnel;
-import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Key;
+import sandbox.extension.container.ContainerHolderService;
+import sandbox.extension.container.ContainerLifetimeTunnel;
+import sandbox.lifetime.external.LifecycleController;
 
 /**
  * An App (application) is a type of artifact provided by Packed.
@@ -55,7 +55,7 @@ interface Program extends AutoCloseable {
      *
      * @return this application's host.
      */
-    ManagedLifetimeController runtime();
+    LifecycleController runtime();
 
     /**
      * Returns this app's service locator.
@@ -157,7 +157,7 @@ interface Program extends AutoCloseable {
 
 /** The default implementation of {@link Program}. */
 record ProgramImplementation(@ContainerHolderService String name, @ContainerHolderService ServiceLocator services,
-        @ContainerHolderService ManagedLifetimeController runtime) implements Program {
+        @ContainerHolderService LifecycleController runtime) implements Program {
 
     ProgramImplementation {
         // System.out.println(services.keys());
@@ -175,6 +175,6 @@ record ProgramImplementation(@ContainerHolderService String name, @ContainerHold
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "App[name = " + name() + ", state = " + runtime.state() + "] ";
+        return "App[name = " + name() + ", state = " + runtime.currentState() + "] ";
     }
 }

@@ -20,12 +20,12 @@ import static java.util.Objects.requireNonNull;
 import app.packed.container.Wirelet;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;
+import sandbox.lifetime.external.LifecycleController;
 
 /**
  * A temporary context object that is created whenever we launch an application.
@@ -56,7 +56,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
         return name;
     }
 
-    ManagedLifetimeController runtime() {
+    LifecycleController runtime() {
         if (cr.runtime != null) {
             return cr.runtime;
         }

@@ -21,11 +21,9 @@ import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.extension.Extension;
-import app.packed.lifetime.sandbox.ContainerLifetimeHostBeanMirror;
-import app.packed.operation.OperationMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
+import sandbox.lifetime.ContainerLifetimeCarrierMirror;
 
 /**
  * This mirror represents the lifetime of a container.
@@ -39,62 +37,19 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
     @Nullable
     private ContainerLifetimeSetup lifetime;
 
-    /**
-     * Create a new operation mirror.
-     * <p>
-     * Subclasses should have a single package-protected constructor.
-     */
+    /** Creates a new lifetime mirror. */
     public ContainerLifetimeMirror() {}
 
     /**
-     * All the beans contained with the lifetime of this container.
-     * This include static, container. What about lazy?
+     * Returns all the beans that contained with this lifetime in dependency order.
+     * <p>
+     * This include static, container, lazy.
      *
-     * @return a list of beans
+     * @return all the beans that contained with this lifetime
      */
+    // Containers can be optained from elements
     public /* Ordered */ Collection<BeanMirror> beans() {
         throw new UnsupportedOperationException();
-    }
-
-    /** {@return the container that is the root of the lifetime.} */
-    public ContainerMirror container() {
-        return lifetime().container.mirror();
-    }
-
-    // Vil egentlig jo bare godt have en Tree her?
-    public Map<ContainerMirror, /* Ordered */ Collection<BeanMirror>> elements() {
-        // beanKind.isInContainerLifetime()
-        // alternative BiStream
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * If the lifetime has any entry points. This method returns the extension that is responsible for choosing the right
-     * entry point. This is typically also the extension that manages the lifetime's container. Except for the root
-     * containers which always is BaseExtension but may be taken over by another extension.
-     * <p>
-     *
-     * @return
-     */
-    @Override
-    public Optional<Class<? extends Extension<?>>> entryPointDispatcher() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns a collection of entry points in this lifetime.
-     *
-     * @return a collection of entry points in this lifetime
-     */
-    @Override
-    public Collection<OperationMirror> entryPoints() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(Object other) {
-        return this == other || other instanceof ContainerLifetimeMirror m && lifetime() == m.lifetime();
     }
 
     /**
@@ -105,14 +60,32 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
      *
      * @return
      */
-    public Optional<ContainerLifetimeHostBeanMirror> guest() { // Do we need a ContainerWrapperBeanMirror?
+    public Optional<ContainerLifetimeCarrierMirror> carrier() {
         return Optional.empty();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return lifetime().hashCode();
+    // Vil egentlig jo bare godt have en Tree her?
+    // Men et tree er jo Tree<T> og vi har brug Tree<T, C>
+    // Det er et tree hvor leafs and internals node are 2 different types
+    // ComponentTree a tree where leads!= internal nodes
+    // Maaske har vi bare nogle tools til at visualisere trees
+
+    /** {@return the container that is the root of the lifetime.} */
+    public ContainerMirror container() {
+        return lifetime().container.mirror();
+    }
+
+    /**
+     * A map of all the containers contained in this lifetime as keys. And a collection for each container for their
+     * respectively beans that are included in the lifetime.
+     *
+     * @return
+     */
+    // Ordered in one way? Depth first?
+    public /* Ordered */ Map<ContainerMirror, /* Ordered */ Collection<BeanMirror>> elements() {
+        // beanKind.isInContainerLifetime()
+        // alternative BiStream
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -128,12 +101,9 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
         this.lifetime = lifetime;
     }
 
-    public boolean isRoot() {
+    // What about app-on-app?
+    public boolean isApplicationRoot() {
         return lifetime().parent() == null;
-    }
-
-    public LifetimeKind kind() {
-        return LifetimeKind.MANAGED;
     }
 
     /**
@@ -142,7 +112,8 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
      * @throws IllegalStateException
      *             if {@link #initialize(ApplicationSetup)} has not been called.
      */
-    private ContainerLifetimeSetup lifetime() {
+    @Override
+    ContainerLifetimeSetup lifetime() {
         ContainerLifetimeSetup a = lifetime;
         if (a == null) {
             throw new IllegalStateException(
@@ -157,15 +128,6 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
         return Optional.ofNullable(lifetime().treeParent).map(e -> e.mirror());
     }
 
-    /**
-     * If the lifetime needs to produce a result.
-     *
-     * @return {@code void.class} if this lifetime does not produce a result, otherwise the type of result the lifetime
-     *         produces
-     */
-    public Class<?> resultType() {
-        return lifetime().resultType;
-    }
 }
 ///** {@return the root of the tree.} */
 // LifetimeOriginMirror root(); // Optional<CM> if we have empty trees. Which we probably have with filtering

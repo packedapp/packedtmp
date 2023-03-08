@@ -107,7 +107,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      * @param assembly
      *            the assembly the defines the container
      */
-    ContainerSetup(AbstractContainerBuilder builder, ApplicationSetup application,  AssemblySetup assembly) {
+    ContainerSetup(PackedContainerBuilder builder, ApplicationSetup application,  AssemblySetup assembly) {
         super(builder.parent);
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);

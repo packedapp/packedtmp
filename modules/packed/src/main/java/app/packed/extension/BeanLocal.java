@@ -18,10 +18,10 @@ package app.packed.extension;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
-import app.packed.extension.bean.BeanHandle;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanLocal;
+import sandbox.extension.bean.BeanHandle;
 
 /**
  * This class provides bean-local variables. Think of them as {@link ThreadLocal thread locals}, but for a single bean

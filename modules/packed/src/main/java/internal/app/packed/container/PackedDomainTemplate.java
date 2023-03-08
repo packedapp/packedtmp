@@ -19,8 +19,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.container.DomainMirror;
-import app.packed.extension.domain.DomainTemplate;
-import app.packed.extension.domain.ExtensionDomain;
+import sandbox.extension.domain.DomainTemplate;
+import sandbox.extension.domain.ExtensionDomain;
 
 /**
  *

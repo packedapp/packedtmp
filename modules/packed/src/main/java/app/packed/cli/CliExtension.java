@@ -25,12 +25,12 @@ import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.ContainerLocal;
 import app.packed.extension.FrameworkExtension;
-import app.packed.extension.bean.BeanHandle;
-import app.packed.extension.bean.BeanTemplate;
-import app.packed.extension.container.ContainerBuilder;
-import app.packed.extension.container.ContainerHandle;
-import app.packed.extension.container.ContainerTemplate;
-import app.packed.extension.domain.DomainTemplate;
+import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.bean.BeanTemplate;
+import sandbox.extension.container.ContainerBuilder;
+import sandbox.extension.container.ContainerHandle;
+import sandbox.extension.container.ContainerTemplate;
+import sandbox.extension.domain.DomainTemplate;
 
 /**
  * An extension that

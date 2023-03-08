@@ -19,12 +19,12 @@ import java.util.List;
 import java.util.Set;
 
 import app.packed.container.Wirelet;
-import app.packed.extension.container.ContainerLifetimeTunnel;
-import app.packed.extension.container.ContainerTemplate;
-import app.packed.extension.context.ContextTemplate;
-import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import sandbox.extension.container.ContainerLifetimeTunnel;
+import sandbox.extension.container.ContainerTemplate;
+import sandbox.extension.context.ContextTemplate;
+import sandbox.extension.operation.OperationTemplate;
 
 /** Implementation of {@link ContainerTemplate}. */
 public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, PackedContainerLifetimeTunnelSet links, Class<?> resultType)
@@ -40,7 +40,7 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
 
     /** {@inheritDoc} */
     @Override
-    public Set<Key<?>> holderKeys() {
+    public Set<Key<?>> lifetimeCarrierKeys() {
         return links.keys();
     }
 
@@ -57,7 +57,7 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
 
     /** {@inheritDoc} */
     @Override
-    public PackedContainerTemplate holder(Class<?> guest) {
+    public PackedContainerTemplate lifetimeCarrier(Class<?> guest) {
         // I don't think we are going to do any checks here?
         // Well not interface, annotation, abstract class, ...
         // All lifetime operation will change...

@@ -5,9 +5,6 @@ package app.packed.bean;
  */
 public enum BeanKind {
 
-    // A bean processed by packed but whose run-state is not tracked by any extensions.
-    FOREIGN,
-
     /**
      * A container bean is a stateful bean with a single instance in the container in which it is registered
      * <p>
@@ -18,6 +15,10 @@ public enum BeanKind {
      *
      */
     CONTAINER,
+
+    // A bean processed by packed but whose run-state is not tracked by any extensions.
+    // Lifecycleless
+    FOREIGN,
 
     /**
      * A lazy bean is a special type of container bean that is lazily created if needed.
@@ -30,12 +31,12 @@ public enum BeanKind {
     MANYTON,
 
     /**
-     * A static bean is stateless (is never instantiated) bean with a custom bean class.
+     * A static bean is a bean with no runtime instances.
      * <p>
      * Since static beans are stateless, they have no lifecycle as this is always bound a bean instance. Trying to use
-     * lifecycle annotations such as {@link Inject} or {@link OnStart} will fail with
+     * lifecycle annotations such as {@link Inject} or {@link OnStart} will fail with a {@link BeanInstallationException}.
      * <p>
-     * Functional beans are always bound to the lifetime of the container in which they are registered.
+     * Static beans are always bound to the lifetime of their container.
      *
      * @see BaseExtension#installStatic(Class)
      **/

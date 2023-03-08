@@ -16,10 +16,8 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.LifecycleOperationMirror;
+import app.packed.bean.LifecycleTransitionOperationMirror;
 import app.packed.container.Realm;
-import app.packed.extension.operation.OperationHandle;
-import app.packed.extension.operation.OperationTemplate;
 import app.packed.util.FunctionType;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingResolution;
@@ -40,6 +38,8 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.types.ClassUtil;
+import sandbox.extension.operation.OperationHandle;
+import sandbox.extension.operation.OperationTemplate;
 
 /** The internal configuration of a bean. */
 public final class BeanSetup {
@@ -136,7 +136,7 @@ public final class BeanSetup {
 
     public void addLifecycleOperation(BeanLifecycleOrder runOrder, OperationHandle operation) {
         lifecycleOperations.add(new BeanLifecycleOperation(runOrder, operation));
-        operation.specializeMirror(() -> new LifecycleOperationMirror());
+        operation.specializeMirror(() -> new LifecycleTransitionOperationMirror());
     }
 
     public BindingResolution beanInstanceBindingProvider() {

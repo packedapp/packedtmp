@@ -4,12 +4,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import app.packed.bean.BeanMirror;
 import app.packed.extension.Extension;
 import app.packed.operation.NestedOperationMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.container.Mirror;
+import internal.app.packed.lifetime.LifetimeSetup;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  * A mirror of a lifetime.
@@ -38,25 +41,42 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
      *
      * @return
      */
+    // Maaske skal vi tillade at man overtager Root Application??
+    // Maaske skal man bruge CliApp... Nej vi vil gerne have mulighed for at teste
+    // med en TestApp
+    // Hvad hvis man har en Completer... Saa har vi ingen entry points
     public Optional<Class<? extends Extension<?>>> entryPointDispatcher() {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Returns a collection of entry points in this lifetime.
-     *
-     * @return a collection of entry points in this lifetime
-     */
-    public Collection<OperationMirror> entryPoints() {
-        throw new UnsupportedOperationException();
+    /** {@return a collection of any entry points this lifetime may have.} */
+    public final Collection<OperationMirror> entryPoints() {
+        return lifetime().entryPoints().stream().map(OperationSetup::mirror).collect(Collectors.toUnmodifiableList());
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean equals(Object other) {
+        return this == other || other instanceof LifetimeMirror m && lifetime() == m.lifetime();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final int hashCode() {
+        return lifetime().hashCode();
+    }
+
+    /** {@return the lifetime kind.} */
+    public final LifetimeKind kind() {
+        return lifetime().lifetimeKind();
+    }
+
+    abstract LifetimeSetup lifetime();
 
     /**
      * empty for statelss (or BootstrapApps)
      *
-     * 1 for unmananged
-     *TBe
-     * 1 or 2 for managed
+     * 1 for unmananged TBe 1 or 2 for managed
      *
      * <p>
      * If this method returns more than 1 lifetime operation mirror. The returned operations will always be defined on the
@@ -71,6 +91,15 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
     /** {@return any parent lifetime this lifetime is contained within.} */
     public abstract Optional<ContainerLifetimeMirror> parent();
 
+    /**
+     * If the lifetime needs to produce a result.
+     *
+     * @return {@code void.class} if this lifetime does not produce a result, otherwise the type of result the lifetime
+     *         produces
+     */
+    public final Class<?> resultType() {
+        return lifetime().resultType();
+    }
 }
 
 // If has a holder

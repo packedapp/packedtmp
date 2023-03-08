@@ -15,8 +15,6 @@
  */
 package app.packed.application;
 
-import java.util.Optional;
-
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 
@@ -40,21 +38,6 @@ public final class App {
     /** Not today Satan, not today. */
     private App() {}
 
-    /**
-     * Builds an application and returns a mirror representing it.
-     *
-     * @param assembly
-     *            the application's assembly
-     * @param wirelets
-     *            optional wirelets
-     * @return a mirror representing the application
-     * @throws RuntimeException
-     *             if the application could not be build
-     */
-    public static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        return BOOTSTRAP.mirrorOf(assembly, wirelets);
-    }
-
     public static App.Launcher imageOf(Assembly assembly, Wirelet... wirelets) {
         return new Launcher(BOOTSTRAP.newImage(assembly, wirelets));
     }
@@ -71,8 +54,23 @@ public final class App {
      *            optional wirelets
      * @return a launcher that can be used to launch a single instance of the application
      */
-    public static App.Launcher newLauncher(Assembly assembly, Wirelet... wirelets) {
+    public static App.Launcher imageSingleOf(Assembly assembly, Wirelet... wirelets) {
         return new Launcher(BOOTSTRAP.newLauncher(assembly, wirelets));
+    }
+
+    /**
+     * Builds an application and returns a mirror representing it.
+     *
+     * @param assembly
+     *            the application's assembly
+     * @param wirelets
+     *            optional wirelets
+     * @return a mirror representing the application
+     * @throws RuntimeException
+     *             if the application could not be build
+     */
+    public static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
+        return BOOTSTRAP.mirrorOf(assembly, wirelets);
     }
 
     static void print(Assembly assembly, Object printDetails, Wirelet... wirelets) {
@@ -119,8 +117,6 @@ public final class App {
         BOOTSTRAP.verify(assembly, wirelets);
     }
 
-
-
     /** An application launcher for App. */
     public static final class Launcher {
 
@@ -149,17 +145,6 @@ public final class App {
 // ApplicationLauncher? launcherOf?
 
 // Den fungere ikke super godt med fx DaemonApp. Som jo mere er en slags Future
-interface SandboxAppResult<A> {
-    Optional<Throwable> cause();
-
-    int exitCode(); // or is this cliApp???
-
-    boolean isFailed();
-
-    boolean isSuccess();
-
-    A result();
-}
 
 class Usage {
 
@@ -170,6 +155,11 @@ class Usage {
     static Usage.Customizer customize() {
         throw new UnsupportedOperationException();
     }
+
+    public static void main(String[] args) {
+        Usage.customize().restartable().run(null);
+    }
+
     // Idk, det er vel bare wirelets det hele
     // class probably... no need for an interface. Noone is going to call in
     interface Customizer {
@@ -180,8 +170,5 @@ class Usage {
         Customizer restartable();
 
         void run(Assembly assembly, Wirelet... wirelets);
-    }
-    public static void main(String[] args) {
-        Usage.customize().restartable().run(null);
     }
 }

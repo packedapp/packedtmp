@@ -17,11 +17,11 @@ package app.packed.extension;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.extension.bean.BeanHandle;
-import app.packed.extension.operation.DelegatingOperationHandle;
-import app.packed.extension.operation.OperationHandle;
 import app.packed.util.FunctionType;
 import app.packed.util.Key;
+import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.operation.DelegatingOperationHandle;
+import sandbox.extension.operation.OperationHandle;
 
 /**
  * Represents a bean that can have multiple functions attached.

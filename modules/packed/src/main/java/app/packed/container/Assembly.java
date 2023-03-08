@@ -16,7 +16,7 @@
 package app.packed.container;
 
 import app.packed.container.AbstractComposer.ComposerAssembly;
-import internal.app.packed.container.AbstractContainerBuilder;
+import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.AssemblySetup;
 
 /**
@@ -61,5 +61,5 @@ public sealed abstract class Assembly permits BuildableAssembly, DelegatingAssem
      *            a builder for the root container of the assembly
      * @return an assembly configuration object
      */
-    abstract AssemblySetup build(AbstractContainerBuilder builder);
+    abstract AssemblySetup build(PackedContainerBuilder builder);
 }

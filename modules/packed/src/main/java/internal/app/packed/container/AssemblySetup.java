@@ -77,7 +77,7 @@ public final class AssemblySetup implements BeanOwner {
      * @param assembly
      *            the assembly instance
      */
-    public AssemblySetup(AbstractContainerBuilder builder, Assembly assembly) {
+    public AssemblySetup(PackedContainerBuilder builder, Assembly assembly) {
         assert (!(assembly instanceof DelegatingAssembly));
         this.assembly = assembly;
         this.model = AssemblyModel.of(assembly.getClass());

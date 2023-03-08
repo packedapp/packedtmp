@@ -31,17 +31,7 @@ import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.extension.bean.BeanBuilder;
-import app.packed.extension.bean.BeanHandle;
-import app.packed.extension.bean.BeanTemplate;
-import app.packed.extension.container.ContainerBuilder;
-import app.packed.extension.container.ContainerHandle;
-import app.packed.extension.container.ContainerHolderService;
-import app.packed.extension.container.ContainerTemplate;
-import app.packed.extension.operation.OperationHandle;
-import app.packed.extension.operation.OperationTemplate;
 import app.packed.lifetime.Main;
-import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.operation.OperationConfiguration;
@@ -52,7 +42,6 @@ import app.packed.service.Provide;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceableBeanConfiguration;
-import app.packed.service.sandbox.transform.ServiceExportsTransformer;
 import app.packed.util.Key;
 import app.packed.util.Variable;
 import internal.app.packed.bean.BeanLifecycleOrder;
@@ -70,6 +59,17 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.PackedServiceLocator;
 import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.MethodHandleUtil;
+import sandbox.extension.bean.BeanBuilder;
+import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.bean.BeanTemplate;
+import sandbox.extension.container.ContainerBuilder;
+import sandbox.extension.container.ContainerHandle;
+import sandbox.extension.container.ContainerHolderService;
+import sandbox.extension.container.ContainerTemplate;
+import sandbox.extension.operation.OperationHandle;
+import sandbox.extension.operation.OperationTemplate;
+import sandbox.lifetime.external.LifecycleController;
+import sandbox.service.transform.ServiceExportsTransformer;
 
 /**
  * An extension that defines the foundational APIs for managing beans, services, containers and applications.
@@ -232,12 +232,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     public <T> ServiceableBeanConfiguration<T> installPrototype(Class<T> implementation) {
-        BeanHandle<T> handle = newBeanInstaller(BeanTemplate.UNMANAGED).install(implementation);
+        BeanHandle<T> handle = newBeanInstaller(BeanTemplate.PROTOTYPE).install(implementation);
         return new ServiceableBeanConfiguration<>(handle);
     }
 
     public <T> ServiceableBeanConfiguration<T> installPrototype(Op<T> op) {
-        BeanHandle<T> handle = newBeanInstaller(BeanTemplate.UNMANAGED).install(op);
+        BeanHandle<T> handle = newBeanInstaller(BeanTemplate.PROTOTYPE).install(op);
         return new ServiceableBeanConfiguration<>(handle);
     }
 
@@ -458,8 +458,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     if (va.rawType().equals(String.class)) {
                         // Burde vel vaere en generics BeanInvocationContext her???
                         v.bindOp(new Op1<@ContextValue(ApplicationLaunchContext.class) ApplicationLaunchContext, String>(a -> a.name()) {});
-                    } else if (va.rawType().equals(ManagedLifetimeController.class)) {
-                        v.bindOp(new Op1<@ContextValue(ApplicationLaunchContext.class) ApplicationLaunchContext, ManagedLifetimeController>(
+                    } else if (va.rawType().equals(LifecycleController.class)) {
+                        v.bindOp(new Op1<@ContextValue(ApplicationLaunchContext.class) ApplicationLaunchContext, LifecycleController>(
                                 a -> a.cr.runtime) {});
                     } else if (va.rawType().equals(ServiceLocator.class)) {
                         v.bindOp(new Op1<@ContextValue(ApplicationLaunchContext.class) ApplicationLaunchContext, ServiceLocator>(a -> a.serviceLocator()) {});

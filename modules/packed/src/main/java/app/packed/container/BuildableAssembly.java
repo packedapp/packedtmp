@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.util.Nullable;
-import internal.app.packed.container.AbstractContainerBuilder;
+import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerHandle;
 
@@ -78,7 +78,7 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
 
     /** {@inheritDoc} */
     @Override
-    AssemblySetup build(AbstractContainerBuilder builder) {
+    AssemblySetup build(PackedContainerBuilder builder) {
         Object existing = configuration;
         if (existing == null) {
             AssemblySetup assembly = new AssemblySetup(builder, this);

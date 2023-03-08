@@ -20,9 +20,9 @@ import java.util.LinkedHashMap;
 import app.packed.bean.BeanInstallationException;
 import app.packed.cli.CliCommand.Builder;
 import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.extension.domain.ExtensionDomain;
-import app.packed.extension.operation.OperationHandle;
-import app.packed.extension.operation.OperationTemplate;
+import sandbox.extension.domain.ExtensionDomain;
+import sandbox.extension.operation.OperationHandle;
+import sandbox.extension.operation.OperationTemplate;
 
 /**
  * A CLI domain is a domain where all CLI commands are unique. Typically there is never more than one per application.

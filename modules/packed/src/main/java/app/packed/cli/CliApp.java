@@ -25,7 +25,15 @@ public class CliApp {
 //    Like App but calls system exit and prints stack
 //    traces to system.err
 
+    //
+
+    // Always exits with System.exit if errorneous
     public static void run(Assembly assembly, String... args) {
         App.run(assembly);
+    }
+
+    public static int runWithExitCode(Assembly assembly, String... args) {
+        App.run(assembly);
+        return 0;
     }
 }

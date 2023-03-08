@@ -20,31 +20,34 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.application.BootstrapAppSetup.ReusableApplicationImage;
-import app.packed.application.BootstrapAppSetup.SingleShotApplicationImage;
 import app.packed.bean.BeanKind;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.FrameworkExtension;
-import app.packed.extension.bean.BeanBuilder;
-import app.packed.extension.bean.BeanHandle;
-import app.packed.extension.bean.BeanTemplate;
-import app.packed.extension.container.ContainerLifetimeTunnel;
-import app.packed.extension.context.ContextTemplate;
-import app.packed.extension.operation.OperationTemplate;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
-import internal.app.packed.container.AbstractContainerBuilder;
 import internal.app.packed.container.ApplicationSetup;
+import internal.app.packed.container.CompositeWirelet;
+import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
+import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
+import internal.app.packed.util.ThrowableUtil;
+import sandbox.extension.bean.BeanBuilder;
+import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.bean.BeanTemplate;
+import sandbox.extension.container.ContainerLifetimeTunnel;
+import sandbox.extension.context.ContextTemplate;
+import sandbox.extension.operation.OperationTemplate;
 
 /**
  * A bootstrap app is a special type of application that can be used to create other (non-bootstrap) application. They
@@ -113,7 +116,7 @@ public final /* primitive */ class BootstrapApp<A> {
         // Launch the application
         ApplicationLaunchContext aic = ApplicationLaunchContext.launch(application, null);
 
-        // Create an return an instance of the application interface
+        // Create and return an instance of the application interface
         return (A) setup.newHolder(aic);
     }
 
@@ -251,6 +254,30 @@ public final /* primitive */ class BootstrapApp<A> {
         return new BootstrapApp<>(a);
     }
 
+    /** A container builder for creating {@link app.packed.application.BootstrapApp bootstrap applications}. */
+    private static final class BootstrapAppBuilder extends PackedContainerBuilder {
+
+        /** The container template used for {@link BootstrapApp}. */
+        private static final PackedContainerTemplate TEMPLATE = new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION, BootstrapApp.class);
+
+        /** Create new bootstrap builder with a fixed template. */
+        public BootstrapAppBuilder() {
+            super(TEMPLATE);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public BuildGoal goal() {
+            return BuildGoal.LAUNCH_NOW;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public LifetimeKind lifetimeKind() {
+            return LifetimeKind.UNMANAGED;
+        }
+    }
+
     private static class BootstrapAppExtension extends FrameworkExtension<BootstrapAppExtension> {
 
         static final ContextTemplate CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationLaunchContext.class, ApplicationLaunchContext.class);
@@ -275,30 +302,6 @@ public final /* primitive */ class BootstrapApp<A> {
             // We need the attachment, because ContainerGuest is on
             BeanBuilder bi = base().beanBuilder(ZBLT);
             newApplication(bi.install(guestBean));
-        }
-    }
-
-    /** A container builder for creating {@link app.packed.application.BootstrapApp bootstrap applications}. */
-    private static final class BootstrapAppBuilder extends AbstractContainerBuilder {
-
-        /** The container template used for {@link BootstrapApp}. */
-        private static final PackedContainerTemplate TEMPLATE = new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION, BootstrapApp.class);
-
-        /** Create new bootstrap builder with a fixed template. */
-        public BootstrapAppBuilder() {
-            super(TEMPLATE);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public BuildGoal goal() {
-            return BuildGoal.LAUNCH_NOW;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public LifetimeKind lifetimeKind() {
-            return LifetimeKind.STATELESS;
         }
     }
 
@@ -346,11 +349,10 @@ public final /* primitive */ class BootstrapApp<A> {
 
         /**
          * Application produced by the driver are executable. And will be launched by the specified launch mode by default.
-         * <p>
-         * The default launchState can be overridden at later point by using XYZ
          *
          * @return this builder
          */
+        // Sportsmaalet er hvad default er? Maaske unmanaged...
         public Composer managedLifetime() {
             this.template = template.withKind(PackedContainerKind.ROOT_MANAGED);
             return this;
@@ -392,15 +394,15 @@ public final /* primitive */ class BootstrapApp<A> {
     }
 
     /** Used by {@link BootstrapApp} to build a single root application. */
-    static final class RootApplicationBuilder extends AbstractContainerBuilder {
+    static final class RootApplicationBuilder extends PackedContainerBuilder {
 
         /** The build goal. */
         private final BuildGoal goal;
 
         RootApplicationBuilder(BootstrapAppSetup bootstrapApp, BuildGoal goal) {
-            super(bootstrapApp.template);
+            super(bootstrapApp.template());
             this.goal = goal;
-            this.applicationMirrorSupplier = bootstrapApp.mirrorSupplier;
+            this.applicationMirrorSupplier = bootstrapApp.mirrorSupplier();
         }
 
         /** {@inheritDoc} */
@@ -416,4 +418,89 @@ public final /* primitive */ class BootstrapApp<A> {
         }
     }
 
+    /**
+     * Implementation of {@link ApplicationLauncher} used by {@link BootstrapApp#newImage(Assembly, Wirelet...)}.
+     */
+    static final class SingleShotApplicationImage<A> implements ApplicationLauncher<A> {
+
+        private final AtomicReference<ReusableApplicationImage<A>> ref;
+
+        SingleShotApplicationImage(BootstrapAppSetup driver, ApplicationSetup application) {
+            this.ref = new AtomicReference<>(new ReusableApplicationImage<>(driver, application));
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public A launch(Wirelet... wirelets) {
+            ReusableApplicationImage<A> img = ref.getAndSet(null);
+            if (img == null) {
+                throw new IllegalStateException("This image has already been used");
+            }
+            // Not sure we can GC anything here
+            // Think we need to extract a launcher and call it
+            return img.launch(wirelets);
+        }
+
+    }
+
+    /**
+     * Implementation of {@link ApplicationLauncher} used by {@link OldBootstrapApp#newImage(Assembly, Wirelet...)}.
+     */
+    /* primitive */ record ReusableApplicationImage<A>(BootstrapAppSetup driver, ApplicationSetup application) implements ApplicationLauncher<A> {
+
+        /** {@inheritDoc} */
+        @SuppressWarnings("unchecked")
+        @Override
+        public A launch(Wirelet... wirelets) {
+            requireNonNull(wirelets, "wirelets is null");
+
+            // If launching an image, the user might have specified additional runtime wirelets
+            WireletWrapper wrapper = null;
+            if (wirelets.length > 0) {
+                wrapper = new WireletWrapper(CompositeWirelet.flattenAll(wirelets));
+            }
+            ApplicationLaunchContext aic = ApplicationLaunchContext.launch(application, wrapper);
+
+            return (A) driver.newHolder(aic);
+        }
+    }
+
+    /** The internal representation of a bootstrap app. */
+    record BootstrapAppSetup(Supplier<? extends ApplicationMirror> mirrorSupplier, PackedContainerTemplate template, MethodHandle mh) {
+
+        /**
+         * Create a new application interface using the specified launch context.
+         *
+         * @param context
+         *            the launch context to use for creating the application instance
+         * @return the new application instance
+         */
+        public Object newHolder(ApplicationLaunchContext context) {
+            try {
+                return mh.invokeExact(context);
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
+        }
+    }
+
+    /** A application launcher that maps the result of the launch. */
+    /* primitive */ record MappedApplicationImage<A, F>(ApplicationLauncher<F> image, Function<? super F, ? extends A> mapper)
+            implements ApplicationLauncher<A> {
+
+        /** {@inheritDoc} */
+        @Override
+        public A launch(Wirelet... wirelets) {
+            F result = image.launch(wirelets);
+            return mapper.apply(result);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public <E> ApplicationLauncher<E> map(Function<? super A, ? extends E> mapper) {
+            requireNonNull(mapper, "mapper is null");
+            Function<? super F, ? extends E> andThen = this.mapper.andThen(mapper);
+            return new MappedApplicationImage<>(image, andThen);
+        }
+    }
 }
