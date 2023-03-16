@@ -117,6 +117,8 @@ public final class App {
         BOOTSTRAP.verify(assembly, wirelets);
     }
 
+    // The idea behind a launcher is that every root application can provide
+    // methods with their own names.
     /** An application launcher for App. */
     public static final class Launcher {
 

@@ -69,6 +69,7 @@ public class ApplicationMirror implements Mirror {
         return application().container.mirror();
     }
 
+    /** {@return a collection of any entry points the application may have.} */
     public Collection<OperationMirror> entryPoints() {
         return container().lifetime().entryPoints();
     }

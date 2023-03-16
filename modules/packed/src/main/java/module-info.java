@@ -1,19 +1,18 @@
 module app.packed {
     requires transitive jdk.jfr;
-//    requires jdk.incubator.concurrent;
+    //  requires jdk.incubator.concurrent; // Sometimes test
 
     exports app.packed.application;
     exports app.packed.bean;
-    exports app.packed.context;
+    exports app.packed.cli;
     exports app.packed.container;
+    exports app.packed.context;
     exports app.packed.errorhandling;
     exports app.packed.extension;
     exports app.packed.lifetime;
     exports app.packed.operation;
     exports app.packed.service;
     exports app.packed.util;
-
-    // Essential extensions
 
     // temporary sandbox thingies
     exports sandbox.lifetime;
@@ -23,7 +22,7 @@ module app.packed {
     exports sandbox.extension.operation;
     exports sandbox.extension.sandbox;
 
-    /* Special support for packed-devtoolks */
+    /* Special support for packed-devtools */
     uses internal.app.packed.framework.devtools.PackedDevToolsIntegration;
     exports internal.app.packed.framework.devtools to app.packed.devtools;
 }
