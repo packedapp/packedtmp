@@ -18,9 +18,9 @@ package app.packed.container;
 import java.util.List;
 
 import app.packed.application.BuildException;
-import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.AssemblyModel;
 import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.container.PackedContainerBuilder;
 
 /**
  * A special assembly type that delegates all calls to another assembly.
@@ -66,6 +66,31 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
         return assembly.build(containerBuilder);
     }
 
+    Assembly extract(PackedContainerBuilder containerBuilder) {
+        AssemblyModel.of(getClass()); // Check that this assembly does not use AssemblyHooks
+
+        // Problem with relying on StackOverflowException is that you cannot really what assembly
+        // is causing the problems
+        if (containerBuilder.delegatingAssemblies.size() == 99) {
+            throw new BuildException("Inifite loop suspected, cannot have more than " + containerBuilder.delegatingAssemblies.size()
+                    + " delegating assemblies, assemblyClass = " + getClass().getCanonicalName());
+        }
+
+        Assembly assembly = delegateTo();
+        if (assembly == null) {
+            throw new BuildException(
+                    "Delagating assembly: " + getClass() + " cannot return null from " + DelegatingAssembly.class.getSimpleName() + "::delegateTo");
+        }
+
+        // Add this assembly to the list of delegating assemblies
+        containerBuilder.delegatingAssemblies.add(getClass());
+
+        if (assembly instanceof DelegatingAssembly da) {
+            return da.extract(containerBuilder);
+        }
+        return assembly;
+    }
+
     /** {@return the assembly to delegate to.} */
     protected abstract Assembly delegateTo();
 
@@ -80,13 +105,13 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
      */
     // Maybe on Wirelet?
     public static Assembly wireWith(Assembly assembly, Wirelet... wirelets) {
-        return new WireletDelegatingAssembly(assembly, wirelets);
+        return new WireletPrefixDelegatingAssembly(assembly, wirelets);
     }
 
     /**
      * A special type of delegating assembly that allows to prefix wirelets.
      */
-    private static class WireletDelegatingAssembly extends DelegatingAssembly {
+    private static class WireletPrefixDelegatingAssembly extends DelegatingAssembly {
 
         /** The assembly to delegate to. */
         private final Assembly assembly;
@@ -94,7 +119,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
         /** Wirelets that should be processed. */
         private final Wirelet[] wirelets;
 
-        private WireletDelegatingAssembly(Assembly assembly, Wirelet[] wirelets) {
+        private WireletPrefixDelegatingAssembly(Assembly assembly, Wirelet[] wirelets) {
             this.assembly = assembly;
             this.wirelets = List.of(wirelets).toArray(i -> new Wirelet[i]);
         }
@@ -102,8 +127,16 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
         /** {@inheritDoc} */
         @Override
         AssemblySetup build(PackedContainerBuilder containerBuilder) {
-            containerBuilder.processWirelets(wirelets);
+            containerBuilder.processBuildWirelet(wirelets);
             return assembly.build(containerBuilder);
+        }
+
+
+
+        @Override
+        Assembly extract(PackedContainerBuilder containerBuilder) {
+            containerBuilder.processBuildWirelet(wirelets);
+            return super.extract(containerBuilder);
         }
 
         /** {@inheritDoc} */

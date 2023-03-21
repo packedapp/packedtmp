@@ -33,9 +33,13 @@ public abstract class InternalWirelet extends Wirelet {
     protected final ApplicationSetup checkIsApplication(ContainerSetup container) {
         ApplicationSetup application = container.application;
         if (application.container != container) {
-            throw new IllegalArgumentException("This wirelet can only be specified when wiring the root container of an application, wirelet = " + this);
+            throw new IllegalArgumentException("This wirelet can only be specified for the root container of an application, wirelet = " + this);
         }
         return application;
+    }
+
+    protected final void checkIsApplication(PackedContainerBuilder builder, Wirelet wirelet) {
+        //throw new IllegalArgumentException("This wirelet can only be specified for the root container of an application, wirelet = " + this);
     }
 
     public void onImageInstantiation(ContainerSetup component, ApplicationLaunchContext context) {
@@ -49,7 +53,7 @@ public abstract class InternalWirelet extends Wirelet {
      * @param installer
      *            an installer for the container
      */
-    public abstract void onInstall(PackedContainerBuilder installer);
+    public abstract void onInstall(PackedContainerBuilder builder);
 
     /** {@inheritDoc} */
     @Override

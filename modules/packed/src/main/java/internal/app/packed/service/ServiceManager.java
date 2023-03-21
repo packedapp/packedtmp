@@ -62,7 +62,7 @@ public final class ServiceManager {
         // Bridges
         this.parent = parent;
 
-        if (container != null && container.treeParent == null) {
+        if (container != null && container.isApplicationRoot()) {
             container.application.addCodegenAction(() -> exportedServices = exportedServices());
         }
     }

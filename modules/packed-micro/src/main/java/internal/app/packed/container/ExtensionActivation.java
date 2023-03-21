@@ -47,7 +47,7 @@ import app.packed.extension.Extension;
 public class ExtensionActivation {
 
     @Benchmark
-    public App.Launcher empty() {
+    public App.Image empty() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {}
@@ -56,7 +56,7 @@ public class ExtensionActivation {
     }
 
     @Benchmark
-    public App.Launcher useExtension() {
+    public App.Image useExtension() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
@@ -67,7 +67,7 @@ public class ExtensionActivation {
     }
 
     @Benchmark
-    public App.Launcher install() {
+    public App.Image install() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
@@ -78,7 +78,7 @@ public class ExtensionActivation {
     }
 
     @Benchmark
-    public App.Launcher newExtensionUseInstall() {
+    public App.Image newExtensionUseInstall() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
@@ -90,7 +90,7 @@ public class ExtensionActivation {
     }
 
     @Benchmark
-    public App.Launcher newExtensionAutoActivate() {
+    public App.Image newExtensionAutoActivate() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {

@@ -17,9 +17,12 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.extension.ContainerLocal;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
+
+import app.packed.util.Nullable;
 import internal.app.packed.container.CompositeWirelet;
-import internal.app.packed.container.LeafContainerBuilder.OverrideNameWirelet;
+import internal.app.packed.container.LeafContainerOrApplicationBuilder.OverrideNameWirelet;
 import internal.app.packed.container.WireletModel;
 import internal.app.packed.util.StackWalkerUtil;
 
@@ -225,7 +228,24 @@ public abstract class Wirelet {
         throw new UnsupportedOperationException();
     }
 
-    static abstract class BuildableWirelet extends Wirelet {
+
+    Wirelet guardBy(BooleanSupplier supplier) {
+        // ReadSystemProperty
+        throw new UnsupportedOperationException();
+    }
+
+    // Nullable -> ignore
+    // Skal den evalueres paa build time eller runtime???
+    // Maaske 2 forskellige metoder
+    public static Wirelet delayed(Supplier<@Nullable Wirelet> supplier) {
+        throw new UnsupportedOperationException();
+    }
+
+    // A wirelet that is only applied
+    // guardBySystemProperty
+
+    // A wirelet that can be used both at runtime
+    public static abstract class RuntimeWirelet extends Wirelet {
 
     }
 
@@ -236,12 +256,6 @@ public abstract class Wirelet {
     // Tror faktisk den er noedvendig for at vi kan give informationer til
     // builderen.
 
-    // En usecase hvor vi gerne vil sige at den her session er unmanaged
-    // Dvs. i holder bare information... Den er ikke levende...
-    static class SetLocalBuildableWirelet<T> extends BuildableWirelet {
-        ContainerLocal<T> local;
-        T initializeWith;
-    }
 }
 
 /**

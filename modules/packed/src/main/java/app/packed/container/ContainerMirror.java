@@ -281,6 +281,7 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
 
         return mirrorClass.cast(mirror);
     }
+
 }
 //// Taken from ComponentMirror
 // Now that we have parents...

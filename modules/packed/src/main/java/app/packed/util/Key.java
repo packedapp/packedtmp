@@ -149,8 +149,9 @@ public abstract class Key<T> {
         }
     };
     /** Various classes that are not allowed as the type part of a key. */
-    private static final Set<Class<?>> FORBIDDEN_TYPES = Set.of(Optional.class, OptionalDouble.class, OptionalInt.class, OptionalLong.class, Void.class,
+    private static final Set<Class<?>> FORBIDDEN_KEY_TYPES = Set.of(Optional.class, OptionalDouble.class, OptionalInt.class, OptionalLong.class, Void.class,
             Provider.class, Key.class);
+
     private static final int FROM_BEAN_CLASS = 4;
     private static final int FROM_BEAN_FIELD = 6;
     private static final int FROM_BEAN_METHOD_RETURN_TYPE = 8;
@@ -203,13 +204,14 @@ public abstract class Key<T> {
     }
 
     /**
-     * When constructing a key using type capture
+     * Canonicalizes the key.
      * <p>
-     * As an end-user there is rarely any no reason to use this method. All extensions that takes keys must canonicalize
-     * them is storing them
+     * When constructing a key using type capture the compiler might choose to capture an enclosing instance of the key's
+     * declaring class. This method creates a new key instance without any reference to the instance that defined the
+     * anonymous class.
      * <p>
-     * To avoid accidentally holding on to any instance that defines this key as an anonymous class. This method creates a
-     * new key instance without any reference to the instance that defined the anonymous class.
+     * As an end-user there is rarely any no reason to use this method. However, extensions that plans to maintain
+     * references to keys for a long time should always call this method before storing the key.
      *
      * @return the canonicalized key
      */
@@ -370,7 +372,7 @@ public abstract class Key<T> {
     }
 
     /**
-     * Returns a key with no qualifier but retaining the type of this key.
+     * Returns a key with same type as this key but with no qualifiers.
      * <p>
      * If this key has no qualifiers ({@code isQualified() == false}), returns this key.
      *
@@ -572,7 +574,7 @@ public abstract class Key<T> {
             }
         }
         Class<?> rawType = TypeUtil.rawTypeOf(t);
-        if (FORBIDDEN_TYPES.contains(rawType)) {
+        if (FORBIDDEN_KEY_TYPES.contains(rawType)) {
             throw new InvalidKeyException(t + " ");
         }
 
@@ -665,6 +667,9 @@ public abstract class Key<T> {
 
     /**
      * Returns a key matching the type of the specified field and any qualifiers that may be present on the field.
+     * <p>
+     * The type of the returned key is determined by {@link Field#getType()} and qualifiers are read from
+     * {@link Field#getAnnotations()}. Ignoring any annotations that do not have a {@link Qualifier} meta annotation.
      *
      * @param field
      *            the field to return a key for
@@ -672,7 +677,8 @@ public abstract class Key<T> {
      * @throws InvalidKeyException
      *             if the field does not represent a valid key. For example, if the field's type is an optional type such as
      *             {@link Optional} or {@link OptionalInt}.
-     * @see Field#getAnnotatedType()
+     * @see Field#getType()
+     * @see Field#getAnnotations()
      */
     public static Key<?> fromField(Field field) {
         requireNonNull(field, "field is null");

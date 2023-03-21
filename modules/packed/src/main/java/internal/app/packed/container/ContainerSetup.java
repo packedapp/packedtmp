@@ -31,6 +31,7 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Realm;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
@@ -107,17 +108,25 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      * @param assembly
      *            the assembly the defines the container
      */
-    ContainerSetup(PackedContainerBuilder builder, ApplicationSetup application,  AssemblySetup assembly) {
+    ContainerSetup(PackedContainerBuilder builder, ApplicationSetup application, AssemblySetup assembly) {
         super(builder.parent);
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
         this.specializedMirror = builder.containerMirrorSupplier;
         this.name = builder.name;
         this.locals = builder.locals;
-        this.lifetime = builder.newLifetime(this);
+
+        if (builder.template.kind() == PackedContainerKind.PARENT_LIFETIME) {
+            this.lifetime = treeParent.lifetime;
+        } else {
+            this.lifetime = new ContainerLifetimeSetup(builder, this, null);
+        }
         this.sm = new ServiceManager(null, this);
         // If a name has been set using a wirelet, we ignore calls to #named(String)
         this.ignoreRename = builder.nameFromWirelet != null;
+
+        // TODO copy Locals from builder
+
     }
 
     /** {@return a unmodifiable view of all extension types that are in used in no particular order.} */
@@ -128,6 +137,10 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     /** {@return whether or not the container is the root container in the application.} */
     public boolean isApplicationRoot() {
         return treeParent == null;
+    }
+
+    public BaseExtension base() {
+        return (BaseExtension) useExtension(BaseExtension.class, null).instance();
     }
 
     public boolean isAssemblyRoot() {

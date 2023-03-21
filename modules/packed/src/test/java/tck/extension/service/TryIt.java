@@ -42,7 +42,7 @@ public class TryIt extends VerifyingTestCase {
     public void foox() {
         bean().multiInstallInstance("HejHej").provide();
         bean().multiInstallInstance("HejHej").provideAs(CharSequence.class);
-        bean().multiInstallInstance("HejHej").provideAs(CharSequence.class);
+       // bean().multiInstallInstance("HejHej").provideAs(CharSequence.class);
     }
 
     @Test

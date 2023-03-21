@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.service;
+package sandbox.program;
 
 import app.packed.container.BaseAssembly;
-import internal.app.packed.lifetime.sandbox.Program;
 
 /**
  *
@@ -30,6 +29,6 @@ public class Ptest extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        Program.start(new Ptest());
+        ProgramX.start(new Ptest());
     }
 }

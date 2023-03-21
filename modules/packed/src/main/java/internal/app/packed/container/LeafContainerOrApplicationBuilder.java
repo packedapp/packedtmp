@@ -33,8 +33,9 @@ import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import sandbox.extension.container.ContainerBuilder;
 import sandbox.extension.container.ContainerTemplate;
 
-/** Implementation of {@link ContainerBuilder} for a leaf container. */
-public final class LeafContainerBuilder extends PackedContainerBuilder implements ContainerBuilder {
+// Would love
+/** Implementation of {@link ContainerBuilder} for a non-root container. */
+public final class LeafContainerOrApplicationBuilder extends NonBootstrapBuilder implements ContainerBuilder {
 
     /** The extension that is installing the container. */
     final Class<? extends Extension<?>> installedBy;
@@ -44,7 +45,7 @@ public final class LeafContainerBuilder extends PackedContainerBuilder implement
     boolean newApplication;
 
     // Cannot take ExtensionSetup, as BaseExtension is not instantiated for a root container
-    private LeafContainerBuilder(PackedContainerTemplate template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
+    private LeafContainerOrApplicationBuilder(PackedContainerTemplate template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
             @Nullable ContainerSetup parent) {
         super(template);
         this.parent = parent;
@@ -57,7 +58,9 @@ public final class LeafContainerBuilder extends PackedContainerBuilder implement
         checkNotUsed();
         checkIsConfigurable();
 
-        ContainerSetup container = buildFromAssembly(assembly, wirelets);
+        processBuildWirelet(wirelets);
+
+        ContainerSetup container = buildNow(assembly);
         return new PackedContainerHandle(container);
     }
 
@@ -69,7 +72,7 @@ public final class LeafContainerBuilder extends PackedContainerBuilder implement
 
         // Be careful if moving into newContainer, some tests
         // can fail easily
-        processWirelets(wirelets);
+        processBuildWirelet(wirelets);
 
         ContainerSetup container = newContainer(parent.application, parent.assembly);
         return new PackedContainerHandle(container);
@@ -145,18 +148,22 @@ public final class LeafContainerBuilder extends PackedContainerBuilder implement
     /** {@inheritDoc} */
     @Override
     public ContainerBuilder specializeMirror(Supplier<? extends ContainerMirror> supplier) {
-        throw new UnsupportedOperationException();
+        this.containerMirrorSupplier = supplier;
+        return this;
     }
 
-    public static LeafContainerBuilder of(ContainerTemplate template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
+    public static LeafContainerOrApplicationBuilder of(ContainerTemplate template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
             @Nullable ContainerSetup parent) {
-        LeafContainerBuilder pcb = new LeafContainerBuilder((PackedContainerTemplate) template, installedBy, application, parent);
+        LeafContainerOrApplicationBuilder pcb = new LeafContainerOrApplicationBuilder((PackedContainerTemplate) template, installedBy, application, parent);
 
         for (PackedContainerLifetimeTunnel b : pcb.template.links().tunnels) {
             b.build(pcb);
         }
         return pcb;
     }
+
+    // Problemet er at vi kan foerst finde ud af sent om vi er en application nu.
+    // Dvs vi skal loebe alle wirelets igennem foerst for at checke denne.
 
     public static final class NewApplicationWirelet extends InternalWirelet {
 

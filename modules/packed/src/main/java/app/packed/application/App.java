@@ -38,24 +38,19 @@ public final class App {
     /** Not today Satan, not today. */
     private App() {}
 
-    public static App.Launcher imageOf(Assembly assembly, Wirelet... wirelets) {
-        return new Launcher(BOOTSTRAP.newImage(assembly, wirelets));
-    }
-
     /**
      * Builds an application and returns a launcher that can be used to launch a <b>single</b> instance of the application.
      * <p>
-     * If you need to launch multiple instances of the same application use {@link #newImage(Assembly, Wirelet...)}. Or
-     * maybe use that Application wirelet... I don't really think it is that common
+     * If you need to launch multiple instances of the same application specify {@code ApplicationImageWirelets.resuable()}.
      *
      * @param assembly
      *            the application's assembly
      * @param wirelets
      *            optional wirelets
-     * @return a launcher that can be used to launch a single instance of the application
+     * @return an application image that can be used to launch a single instance of the application
      */
-    public static App.Launcher imageSingleOf(Assembly assembly, Wirelet... wirelets) {
-        return new Launcher(BOOTSTRAP.newLauncher(assembly, wirelets));
+    public static App.Image imageOf(Assembly assembly, Wirelet... wirelets) {
+        return new Image(BOOTSTRAP.imageOf(assembly, wirelets));
     }
 
     /**
@@ -73,19 +68,22 @@ public final class App {
         return BOOTSTRAP.mirrorOf(assembly, wirelets);
     }
 
-    static void print(Assembly assembly, Object printDetails, Wirelet... wirelets) {
-        // printDetails=Container, Assemblies,////
-        mirrorOf(assembly, wirelets).print();
-    }
-
     public static void print(Assembly assembly, Wirelet... wirelets) {
         // not in final version I think IDK, why not...
         // I think it is super usefull
         //// Maybe have something like enum PrintDetail (Minimal, Normal, Full)
         // ApplicationPrinter.Full, ApplicationPrinter.Normal
+
+//      static void print(Assembly assembly, Object printDetails, Wirelet... wirelets) {
+//      // printDetails=Container, Assemblies,////
+//      mirrorOf(assembly, wirelets).print();
+//  }
         mirrorOf(assembly, wirelets).print();
     }
 
+    public static void run(Assembly assembly) {
+        run(assembly, new Wirelet[0]);
+    }
     /**
      * Builds and executes an application from the specified assembly and optional wirelets.
      * <p>
@@ -117,60 +115,30 @@ public final class App {
         BOOTSTRAP.verify(assembly, wirelets);
     }
 
-    // The idea behind a launcher is that every root application can provide
-    // methods with their own names.
-    /** An application launcher for App. */
-    public static final class Launcher {
+    /** An application image for App. */
+    public static final class Image {
 
-        private final ApplicationLauncher<?> original;
+        /** The bootstrap image we are delegating to */
+        private final BootstrapApp.Image<?> image;
 
-        private Launcher(ApplicationLauncher<?> original) {
-            this.original = original;
+        private Image(BootstrapApp.Image<?> image) {
+            this.image = image;
         }
 
+        /** Runs the application represented by this image. */
         public void run() {
-            original.launch();
+            image.launch();
         }
 
+        /**
+         * Runs the application represented by this image.
+         *
+         * @param wirelets
+         *            optional wirelets
+         */
         public void run(Wirelet... wirelets) {
-            original.launch(wirelets);
+            image.launch(wirelets);
         }
     }
 }
 
-// Tror godt vi kan vaere et naested interface...
-// man kalder altid .app
-// I don't think we catch BuildException here
-
-// Integration with CompletableFuture and other futures
-
-// ApplicationLauncher? launcherOf?
-
-// Den fungere ikke super godt med fx DaemonApp. Som jo mere er en slags Future
-
-class Usage {
-
-    /**
-     *
-     * @return
-     */
-    static Usage.Customizer customize() {
-        throw new UnsupportedOperationException();
-    }
-
-    public static void main(String[] args) {
-        Usage.customize().restartable().run(null);
-    }
-
-    // Idk, det er vel bare wirelets det hele
-    // class probably... no need for an interface. Noone is going to call in
-    interface Customizer {
-        ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets);
-
-        // exception application panic/build strategy
-
-        Customizer restartable();
-
-        void run(Assembly assembly, Wirelet... wirelets);
-    }
-}

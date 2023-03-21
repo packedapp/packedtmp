@@ -74,7 +74,7 @@ public final class AssemblyMirror implements Mirror {
 
     private ArrayList<AssemblyMirror> children(AssemblySetup assembly, ContainerSetup cs, ArrayList<AssemblyMirror> list) {
         if (assembly == cs.assembly) {
-            for (var e = cs.treeFirstChild; e != null; e = e.treeNextSiebling) {
+            for (var e = cs.treeFirstChild; e != null; e = e.treeNextSibling) {
                 children(assembly, e, list);
             }
         } else {
@@ -125,7 +125,7 @@ public final class AssemblyMirror implements Mirror {
 
     /** @return whether or not this assembly defines the root container in the application.} */
     public boolean isRoot() {
-        return assembly().container.treeParent == null;
+        return assembly().container.isApplicationRoot();
     }
 
     /**

@@ -24,7 +24,7 @@ import java.util.function.Function;
 import app.packed.util.Nullable;
 
 /**
- *
+ * A node in a tree.
  */
 public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
 
@@ -38,7 +38,7 @@ public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
 
     /** The (nullable) sibling of the node. */
     @Nullable
-    public T treeNextSiebling;
+    public T treeNextSibling;
 
     /** Any parent this node may have. Only the root node does not have a parent. */
     @Nullable
@@ -52,7 +52,7 @@ public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
             if (treeParent.treeFirstChild == null) {
                 treeParent.treeFirstChild = (T) this;
             } else {
-                treeParent.treeLastChild.treeNextSiebling = (T) this;
+                treeParent.treeLastChild.treeNextSibling = (T) this;
             }
             treeParent.treeLastChild = (T) this;
         }
@@ -66,11 +66,34 @@ public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
         return depth;
     }
 
-    /** A pre-order iterator for a rooted extension tree. */
-    public static final class MappedPreOrderIterator<T extends AbstractTreeNode<T>, R> implements Iterator<R> {
+    /**
+     * Returns a pre-order iterator that uses the specified mapper to map each node to a result.
+     *
+     * @param <R>
+     *            the type of result to map the node to
+     * @param mapper
+     *            the node mapper
+     * @return a pre-order iterator
+     */
+    @SuppressWarnings("unchecked")
+    public final <R> Iterator<R> iterator(Function<? super T, ? extends R> mapper) {
+        return new MappedPreOrderIterator<T, R>((T) this, mapper);
+    }
+
+    public final T root() {
+        @SuppressWarnings("unchecked")
+        T t = (T) this;
+        while (t.treeParent != null) {
+            t = t.treeParent;
+        }
+        return t;
+    }
+
+    /** A pre-order iterator for a rooted tree. */
+    private static final class MappedPreOrderIterator<T extends AbstractTreeNode<T>, R> implements Iterator<R> {
 
         /** A mapper that is applied to each node. */
-        private final Function<T, R> mapper;
+        private final Function<? super T, ? extends R> mapper;
 
         /** The next extension, null if there are no next. */
         @Nullable
@@ -79,7 +102,7 @@ public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
         /** The root extension. */
         private final T root;
 
-        public MappedPreOrderIterator(T root, Function<T, R> mapper) {
+        private MappedPreOrderIterator(T root, Function<? super T, ? extends R> mapper) {
             this.root = this.next = root;
             this.mapper = mapper;
         }
@@ -109,8 +132,8 @@ public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
 
         private T next(T current) {
             requireNonNull(current);
-            if (current.treeNextSiebling != null) {
-                return current.treeNextSiebling;
+            if (current.treeNextSibling != null) {
+                return current.treeNextSibling;
             }
             T parent = current.treeParent;
             if (parent == root || parent == null) {

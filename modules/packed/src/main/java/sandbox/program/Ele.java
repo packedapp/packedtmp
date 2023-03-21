@@ -13,35 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testutil.util;
+package sandbox.program;
 
-import static java.util.Objects.requireNonNull;
-
-import app.packed.application.BootstrapApp.Image;
 import app.packed.container.BaseAssembly;
-import app.packed.container.Wirelet;
-import sandbox.program.ProgramX;
+import app.packed.extension.Extension;
 
 /**
  *
  */
-public class ImageTester {
+public class Ele extends BaseAssembly {
 
-    private final Image<ProgramX> image;
-
-    public ImageTester(BaseAssembly source, Wirelet... wirelets) {
-        this(ProgramX.imageOf(source, wirelets));
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {
+        provide(Foo.class).export();
+        use(MyE.class);
     }
 
-    public AppTester newApp(Wirelet... wirelets) {
-        return new AppTester(image, wirelets);
+    public static void main(String[] args) {
+        ProgramY.start(new Ele());
     }
 
-    public ImageTester(Image<ProgramX> image) {
-        this.image = requireNonNull(image);
+    public static class MyE extends Extension<MyE> {
+        MyE() {}
     }
 
-    public ImageTester nameIs(String expected) {
-        return this;
+    record Foo() {
+        Foo {
+            System.out.println("Foox");
+        }
     }
 }

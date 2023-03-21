@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.service;
+package sandbox.program;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
+import app.packed.application.BootstrapApp.Image;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint;
@@ -34,7 +34,7 @@ import sandbox.lifetime.external.LifecycleController;
  */
 // Skal have et
 // Maaske bliver den sgu app igen
-interface Program extends AutoCloseable {
+interface ProgramY extends AutoCloseable {
 
     /**
      * Closes the app (synchronously). Calling this method is equivalent to calling {@code host().stop()}, but this method
@@ -125,8 +125,8 @@ interface Program extends AutoCloseable {
      * @see ApplicationImageWirelets
      * @see BootstrapApp#newImage(Assembly, Wirelet...)
      */
-    static ApplicationLauncher<Program> imageOf(Assembly assembly, Wirelet... wirelets) {
-        return driver().newLauncher(assembly, wirelets).map(e -> e);
+    static Image<ProgramY> imageOf(Assembly assembly, Wirelet... wirelets) {
+        return driver().imageOf(assembly, wirelets).map(e -> e);
     }
 
     static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
@@ -150,14 +150,14 @@ interface Program extends AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be build, initialized or started
      */
-    static Program start(Assembly assembly, Wirelet... wirelets) {
+    static ProgramY start(Assembly assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }
 }
 
 /** The default implementation of {@link Program}. */
 record ProgramImplementation(@ContainerHolderService String name, @ContainerHolderService ServiceLocator services,
-        @ContainerHolderService LifecycleController runtime) implements Program {
+        @ContainerHolderService LifecycleController runtime) implements ProgramY {
 
     ProgramImplementation {
         // System.out.println(services.keys());

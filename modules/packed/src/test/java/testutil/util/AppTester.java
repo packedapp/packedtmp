@@ -18,27 +18,27 @@ package testutil.util;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import app.packed.application.ApplicationLauncher;
+import app.packed.application.BootstrapApp.Image;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import internal.app.packed.lifetime.sandbox.Program;
+import sandbox.program.ProgramX;
 
 /**
  *
  */
 public class AppTester {
 
-    private final Program app;
+    private final ProgramX app;
 
-    public AppTester(Program app) {
+    public AppTester(ProgramX app) {
         this.app = requireNonNull(app);
     }
 
     public AppTester(Assembly  source, Wirelet... wirelets) {
-        this(Program.start(source, wirelets));
+        this(ProgramX.start(source, wirelets));
     }
 
-    public AppTester(ApplicationLauncher<Program> img, Wirelet... wirelets) {
+    public AppTester(Image<ProgramX> img, Wirelet... wirelets) {
         this(img.launch(wirelets));
     }
 

@@ -24,11 +24,11 @@ import app.packed.extension.BaseExtension;
  */
 public class VariousImages {
 
-    public static final App.Launcher EMPTY_IMAGE = App.imageOf(of(0));
-    public static final App.Launcher ONE_BEAN_IMAGE = App.imageOf(of(1));
-    public static final App.Launcher FIVE_BEAN_IMAGE = App.imageOf(of(5));
-    public static final App.Launcher FIFTY_BEAN_IMAGE = App.imageOf(of(50));
-    public static final App.Launcher FIVEHUNDRED_BEAN_IMAGE = App.imageOf(of(500));
+    public static final App.Image EMPTY_IMAGE = App.imageOf(of(0));
+    public static final App.Image ONE_BEAN_IMAGE = App.imageOf(of(1));
+    public static final App.Image FIVE_BEAN_IMAGE = App.imageOf(of(5));
+    public static final App.Image FIFTY_BEAN_IMAGE = App.imageOf(of(50));
+    public static final App.Image FIVEHUNDRED_BEAN_IMAGE = App.imageOf(of(500));
 
     public static BaseAssembly of(int beanCount) {
         return new BaseAssembly() {

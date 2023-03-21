@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Assertions;
 import app.packed.application.BootstrapApp;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
-import app.packed.container.AbstractComposer.ComposerAssembly;
+import app.packed.container.AbstractComposer.ComposableAssembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BaseExtensionPoint;
@@ -138,7 +138,7 @@ public class TestApp {
         }
     }
 
-    static class ServiceLocatorAssembly extends ComposerAssembly<Composer> {
+    static class ServiceLocatorAssembly extends ComposableAssembly<Composer> {
 
         ServiceLocatorAssembly(ComposerAction<? super Composer> action) {
             super(new Composer(), action);

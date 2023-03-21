@@ -16,35 +16,58 @@
 package internal.app.packed.container;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
+import app.packed.application.BuildException;
 import app.packed.container.Assembly;
 
 /**
  * Represents the child of an application.
  */
 
+// Vi har brug for at representere an application der enten er bygget.
+// Eller ikke faerdig bygget
+
 // ParentType = LiveApplication | ApplicationSetup
 // ChildType = ApplicationSetup | FutureApplicationSetup
 
 // Kan kun tilfoejes saa laenge en assembly er aaben
-public final class ApplicationChild {
+public final class FutureApplicationSetup {
 
-    final LeafContainerBuilder parent;
-
-    final FutureTask<ApplicationSetup> task;
+    /** The result of a successful application build. */
+    private volatile ApplicationSetup application;
 
     final Assembly assembly;
 
+    final NonBootstrapBuilder parent;
+
+    final FutureTask<ApplicationSetup> task;
+
     // IDK vi skal nok have en specielt builder
-    ApplicationChild(LeafContainerBuilder parent, Assembly assembly) {
+    public FutureApplicationSetup(NonBootstrapBuilder parent, Assembly assembly) {
         this.parent = parent;
         this.assembly = assembly;
         Callable<ApplicationSetup> c = () -> {
-            ContainerSetup s = parent.buildFromAssembly(assembly);
-            return s.application;
+            ContainerSetup s = parent.buildNow(assembly);
+            return application = s.application;
         };
         this.task = new FutureTask<ApplicationSetup>(c);
+    }
+
+    public ApplicationSetup application() {
+        ApplicationSetup a = application;
+        if (a == null) {
+            task.run();
+            try {
+                a = task.get();
+            } catch (InterruptedException e) {
+                throw new BuildException("Application build was interrupted", e);
+            } catch (ExecutionException e) {
+                throw new BuildException("Application failed to build lazily", e.getCause());
+            }
+        }
+        return a;
     }
 
     // 4 states

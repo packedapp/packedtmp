@@ -247,7 +247,6 @@ public sealed interface BeanElement permits BeanClass, BeanField, BeanConstructo
         DelegatingOperationHandle newDelegatingOperation();
 
         // IDK if we need a separate one. Or this can be encoded in the BOT
-
         default OperationHandle newLifetimeOperation(BeanHandle<?> handle) {
             throw new UnsupportedOperationException();
         }

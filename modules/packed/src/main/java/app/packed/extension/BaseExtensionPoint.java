@@ -24,7 +24,7 @@ import internal.app.packed.bean.BeanLifecycleOrder;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanBuilder;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.LeafContainerBuilder;
+import internal.app.packed.container.LeafContainerOrApplicationBuilder;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.PackedOperationHandle;
 import sandbox.extension.bean.BeanBuilder;
@@ -162,7 +162,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     public ContainerBuilder containerBuilder(ContainerTemplate template) {
         // Kan only use channels that are direct dependencies of the usage extension
         ExtensionSetup es = contextUse().usedBy();
-        return LeafContainerBuilder.of(template, es.extensionType, es.container.application, es.container);
+        return LeafContainerOrApplicationBuilder.of(template, es.extensionType, es.container.application, es.container);
     }
 
 //    // Contexts

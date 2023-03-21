@@ -15,6 +15,7 @@
  */
 package app.packed.container;
 
+import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
 import java.util.ServiceLoader;
 import java.util.function.Consumer;
@@ -22,7 +23,35 @@ import java.util.function.Consumer;
 /**
  *
  */
+// Mode : Standalone or from Assembly
+// PathMode : Classpath, Modulepath
+// cardinality : findAny, findOne, findAll
+
+// Delt op i tre.
+//// 1. Hvor kigger vi
+//// 2. Filtre
+//// 3. En terminal operation
+
+
+
+// Where to Look
+//// Paths
+
+// Filters (filterOnType, filterOnModuleName)
+//// type/moduleName/className
+
+// Terminals
+//// find one/all
+//// link one/all
+//// forEach
+
+
+// Future
+//// Taenk over hvordan man maaske vil kunne supportere mere komplekse layouts i fremtiden
+//// Eller det er maaske JLink images?
 public interface AssemblyFinder {
+
+    AssemblyFinder addModuleLayer(ModuleLayer moduleLayer);
 
     /**
      * <p>
@@ -35,22 +64,14 @@ public interface AssemblyFinder {
      */
     AssemblyFinder classLoader(ClassLoader classLoader);
 
-    AssemblyFinder addModuleLayer(ModuleLayer moduleLayer);
-
-    void forEach(Consumer<? super Assembly> action);
-
-    default AssemblyFinder paths(String... paths) {
-        for (String s : paths) {
-            paths(Path.of(s));
-        }
-        return this;
+    // finders can ikke laengere modificeres
+    default AssemblyFinder compose(AssemblyFinder... finders) {
+        throw new UnsupportedOperationException();
     }
 
-    AssemblyFinder paths(Path... paths);
+    Assembly findOne(ServiceLoader<? super Assembly> loader);
 
-    Assembly assembly(ServiceLoader<? super Assembly> loader);
-
-    Assembly assembly(String className); // ?
+    Assembly findOne(String className);
 
     /**
      * @param moduleName
@@ -61,7 +82,47 @@ public interface AssemblyFinder {
      * @throws UnsupportedOperationException
      *             if this finder operates on the classpath
      */
-    Assembly assembly(String moduleName, String className);
+    Assembly findOne(String moduleName, String className);
+
+    void forEach(Consumer<? super Assembly> action);
+
+    default void linkOne(String moduleName, String className, Wirelet... wirelets) {
+
+    }
+
+    /**
+     * Links all matching assemblies by calling {@link app.packed.extension.BaseExtension#link(Assembly, Wirelet...)} for
+     * every assembly.
+     *
+     * @param wirelets
+     *            optional wirelets to apply for each assembly
+     *
+     * @throws UnsupportedOperationException
+     *             if used in stand-alone mode.
+     */
+    void linkAll(Wirelet... wirelets);
+
+    AssemblyFinder paths(Path... paths);
+
+    default AssemblyFinder paths(String... paths) {
+        for (String s : paths) {
+            paths(Path.of(s));
+        }
+        return this;
+    }
+
+    static AssemblyFinder onClassPath() {
+        throw new UnsupportedOperationException();
+    }
+
+    // Looks on System
+    static AssemblyFinder onModulePath() {
+        throw new UnsupportedOperationException();
+    }
+
+    static AssemblyFinder onModulePath(MethodHandles.Lookup caller) {
+        throw new UnsupportedOperationException();
+    }
 
     // default mode er fra Assembly.getModule==Unamanaged ? classpath : modulepath
     enum Mode {

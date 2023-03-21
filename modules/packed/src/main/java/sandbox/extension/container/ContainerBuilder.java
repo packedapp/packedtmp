@@ -24,7 +24,7 @@ import app.packed.context.ContextSpan;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.ContainerLocal;
 import app.packed.util.Key;
-import internal.app.packed.container.LeafContainerBuilder;
+import internal.app.packed.container.LeafContainerOrApplicationBuilder;
 import sandbox.extension.context.ContextTemplate;
 
 /**
@@ -36,7 +36,7 @@ import sandbox.extension.context.ContextTemplate;
  *      app.packed.extension.ExtensionPoint.UseSite)
  */
 // TODO move back to BaseExtensionPoint
-public sealed interface ContainerBuilder permits LeafContainerBuilder {
+public sealed interface ContainerBuilder permits LeafContainerOrApplicationBuilder {
 
     /**
      * Creates a new container using the specified assembly.

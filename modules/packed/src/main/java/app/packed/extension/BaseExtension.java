@@ -51,7 +51,7 @@ import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.bean.PackedBeanWrappedVariable;
 import internal.app.packed.binding.BindingResolution.FromOperation;
-import internal.app.packed.container.LeafContainerBuilder;
+import internal.app.packed.container.LeafContainerOrApplicationBuilder;
 import internal.app.packed.entrypoint.OldEntryPointSetup;
 import internal.app.packed.entrypoint.OldEntryPointSetup.MainThreadOfControl;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
@@ -299,7 +299,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /** {@return a new container builder used for linking.} */
     private ContainerBuilder linkNewContainerBuilder() {
-        return LeafContainerBuilder.of(ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application, extension.container);
+        return LeafContainerOrApplicationBuilder.of(ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application, extension.container);
     }
 
     /**

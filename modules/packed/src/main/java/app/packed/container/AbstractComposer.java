@@ -22,9 +22,9 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
-import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.LeafContainerBuilder;
+import internal.app.packed.container.LeafContainerOrApplicationBuilder;
+import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.PackedContainerHandle;
 
 /**
@@ -106,21 +106,8 @@ public abstract class AbstractComposer {
         return configuration().use(extensionClass);
     }
 
-    /** Represents an operation that operates on a composer. */
-    @FunctionalInterface
-    public interface ComposerAction<C extends AbstractComposer> {
-
-        /**
-         * Builds an application using the given composer.
-         *
-         * @param composer
-         *            the composer
-         */
-        void build(C composer);
-    }
-
-    /** A special type of assembly that a composer must use to wrap the composer and its action. */
-    public static abstract non-sealed class ComposerAssembly<C extends AbstractComposer> extends Assembly {
+    /** A special type of assembly that a composer and a composer action to configure an application. */
+    public static abstract non-sealed class ComposableAssembly<C extends AbstractComposer> extends Assembly {
 
         /** The action to run. */
         private final ComposerAction<? super C> action;
@@ -128,7 +115,7 @@ public abstract class AbstractComposer {
         /** The composer argument to the action */
         private final C composer;
 
-        protected ComposerAssembly(C composer, ComposerAction<? super C> action) {
+        protected ComposableAssembly(C composer, ComposerAction<? super C> action) {
             this.composer = requireNonNull(composer, "composer is null");
             this.action = requireNonNull(action, "action is null");
         }
@@ -142,8 +129,8 @@ public abstract class AbstractComposer {
          */
         @Override
         AssemblySetup build(PackedContainerBuilder builder) {
-            if (builder instanceof LeafContainerBuilder installer) {
-                throw new IllegalArgumentException("Cannot link an instance of " + ComposerAssembly.class + ", assembly must extend "
+            if (builder instanceof LeafContainerOrApplicationBuilder installer) {
+                throw new IllegalArgumentException("Cannot link an instance of " + ComposableAssembly.class + ", assembly must extend "
                         + BuildableAssembly.class.getSimpleName() + " instead");
             }
 
@@ -176,5 +163,18 @@ public abstract class AbstractComposer {
                 throw new IllegalStateException("This assembly is currently being used elsewhere, assembly = " + getClass());
             }
         }
+    }
+
+    /** Represents an operation that operates on a composer. */
+    @FunctionalInterface
+    public interface ComposerAction<C extends AbstractComposer> {
+
+        /**
+         * Builds an application using the given composer.
+         *
+         * @param composer
+         *            the composer
+         */
+        void build(C composer);
     }
 }

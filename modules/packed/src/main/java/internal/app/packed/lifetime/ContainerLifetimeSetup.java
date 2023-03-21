@@ -98,7 +98,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         this.container = newContainer;
         this.resultType = installer.template.resultType();
 
-        if (newContainer.treeParent == null) {
+        if (newContainer.isApplicationRoot()) {
             reserve(ManagedLifetime.class);
         }
     }

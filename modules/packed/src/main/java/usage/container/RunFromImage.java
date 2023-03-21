@@ -13,34 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.service;
+package usage.container;
 
+import app.packed.application.App;
 import app.packed.container.BaseAssembly;
-import app.packed.extension.Extension;
 
 /**
  *
  */
-public class Ele extends BaseAssembly {
+public class RunFromImage extends BaseAssembly {
+
+    private static final App.Image IMG = App.imageOf(new RunFromImage());
 
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        provide(Foo.class).export();
-        use(MyE.class);
+        installInstance("foo");
     }
 
     public static void main(String[] args) {
-        Program.start(new Ele());
-    }
-
-    public static class MyE extends Extension<MyE> {
-        MyE() {}
-    }
-
-    record Foo() {
-        Foo {
-            System.out.println("Foox");
-        }
+        IMG.run();
     }
 }

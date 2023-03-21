@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime;
+package sandbox.program;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,7 +22,6 @@ import app.packed.bean.OnStart;
 import app.packed.bean.OnStop;
 import app.packed.container.BaseAssembly;
 import app.packed.lifetime.Main;
-import internal.app.packed.lifetime.sandbox.Program;
 
 /**
  *
@@ -33,7 +32,7 @@ public class X extends BaseAssembly {
     @Override
     protected void build() {
         provide(NeedsF.class);
-        providePrototype(F.class);
+        provide(F.class);
     }
 
     public static class Xa {
@@ -44,7 +43,7 @@ public class X extends BaseAssembly {
 
     }
     public static void main(String[] args) {
-        Program p = Program.start(new X());
+        ProgramX p = ProgramX.start(new X());
         System.out.println(p.runtime().currentState());
     }
 

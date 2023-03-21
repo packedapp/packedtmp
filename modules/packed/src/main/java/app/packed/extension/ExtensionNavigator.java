@@ -22,7 +22,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.util.AbstractTreeNode;
 
 /**
  * Represents a rooted tree of extensions of the same type with a single node as the origin.
@@ -82,7 +81,7 @@ public final /* primitive */ class ExtensionNavigator<E extends Extension<E>> im
     /** {@inheritDoc} */
     @Override
     public Iterator<E> iterator() {
-        return new AbstractTreeNode.MappedPreOrderIterator<>(origin, e -> extensionType.cast(e.instance()));
+        return origin.iterator(e -> extensionType.cast(e.instance()));
     }
 
 //    /** {@return the root of the tree.} */
@@ -96,11 +95,7 @@ public final /* primitive */ class ExtensionNavigator<E extends Extension<E>> im
      * @return
      */
     public E root() {
-        ExtensionSetup s = origin;
-        while (s.treeParent != null) {
-            s = s.treeParent;
-        }
-        return extensionType.cast(s.instance());
+        return extensionType.cast(origin.root().instance());
     }
 
     public Stream<E> stream() {

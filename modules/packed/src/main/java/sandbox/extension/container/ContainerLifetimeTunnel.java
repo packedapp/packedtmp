@@ -27,7 +27,7 @@ import app.packed.extension.Extension;
 import app.packed.util.Key;
 import internal.app.packed.container.AbstractContainerLifetimeTunnel;
 import internal.app.packed.container.AbstractContainerLifetimeTunnel.ConstantContainerLifetimeTunnel;
-import internal.app.packed.container.LeafContainerBuilder;
+import internal.app.packed.container.LeafContainerOrApplicationBuilder;
 import internal.app.packed.container.PackedContainerLifetimeTunnel;
 
 // A link has
@@ -50,6 +50,8 @@ import internal.app.packed.container.PackedContainerLifetimeTunnel;
  */
 // Extra functionality
 //// Contexts, invocation arguments, key rewriting
+
+// ContainerLifetimeFeature? Maaske man vil switch paa dem i wirelets
 
 // Or just ContainerTemplate.ExtensionLink
 // Hvad med mesh
@@ -202,7 +204,7 @@ public sealed interface ContainerLifetimeTunnel permits AbstractContainerLifetim
          * @return this builder
          */
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        ContainerLifetimeTunnel.Builder useBuilder(Consumer<? super LeafContainerBuilder> action) {
+        ContainerLifetimeTunnel.Builder useBuilder(Consumer<? super LeafContainerOrApplicationBuilder> action) {
             channel = new PackedContainerLifetimeTunnel(channel.extensionClass(), channel.onUse() == null ? action : channel.onUse().andThen((Consumer) action),
                     channel.keys());
             return this;

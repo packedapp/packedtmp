@@ -24,12 +24,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.container.AbstractComposer;
+import app.packed.container.AbstractComposer.ComposableAssembly;
 import app.packed.container.AbstractComposer.ComposerAction;
-import app.packed.container.AbstractComposer.ComposerAssembly;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
@@ -208,14 +207,6 @@ public interface ServiceLocator {
         }
     }
 
-    default Map<Key<?>, Provider<?>> toProviderMap() {
-        HashMap<Key<?>, Provider<?>> map = new HashMap<>();
-        for (Key<?> key : keys()) {
-            map.put(key, findProvider(key).get());
-        }
-        return Map.copyOf(map);
-    }
-
     /** {@return true if this locator provides any services, otherwise false} */
     default boolean isEmpty() {
         return keys().isEmpty();
@@ -258,6 +249,14 @@ public interface ServiceLocator {
     /** {@return the number of services provided by this locator} */
     default int size() {
         return keys().size();
+    }
+
+    default Map<Key<?>, Provider<?>> toProviderMap() {
+        HashMap<Key<?>, Provider<?>> map = new HashMap<>();
+        for (Key<?> key : keys()) {
+            map.put(key, findProvider(key).get());
+        }
+        return Map.copyOf(map);
     }
 
     /**
@@ -315,30 +314,15 @@ public interface ServiceLocator {
     }
 
     /**
-     * Returns an application driver that can be used to create standalone service locator instances.
-     *
-     * @return an application driver
-     * @see #newLauncher(Assembly, Wirelet...)
-     * @see #of(Consumer)
-     * @see #of(Assembly, Wirelet...)
+     * Returns the bootstrap app. If interfaces allowed non-public fields we would have stored it in a field instead of this
+     * method.
      */
-    private static BootstrapApp<ServiceLocator> driver() {
-        class ServiceLocatorAssembly {
-            private static final BootstrapApp<ServiceLocator> DRIVER = BootstrapApp.of(new Op1<@ContainerHolderService ServiceLocator, ServiceLocator>(e -> e) {},
+    private static BootstrapApp<ServiceLocator> bootstrap() {
+        class ServiceLocatorBootstrap {
+            private static final BootstrapApp<ServiceLocator> APP = BootstrapApp.of(new Op1<@ContainerHolderService ServiceLocator, ServiceLocator>(e -> e) {},
                     c -> {});
         }
-        return ServiceLocatorAssembly.DRIVER;
-    }
-
-//    // maaske har vi launcher og Image...
-//
-//    static <T> T lookup(Class<T> type, Assembly assembly, Wirelet... wirelets) {
-//        // Hvad med empty
-//        throw new UnsupportedOperationException();
-//    }
-
-    static ApplicationLauncher<ServiceLocator> newImage(Assembly assembly, Wirelet... wirelets) {
-        return driver().newImage(assembly, wirelets);
+        return ServiceLocatorBootstrap.APP;
     }
 
     /**
@@ -351,12 +335,12 @@ public interface ServiceLocator {
      * @return the new image
      * @see #driver()
      */
-    static ApplicationLauncher<ServiceLocator> newLauncher(Assembly assembly, Wirelet... wirelets) {
-        return driver().newLauncher(assembly, wirelets);
+    static ServiceLocator.Image imageOf(Assembly assembly, Wirelet... wirelets) {
+        return new ServiceLocator.Image(bootstrap().imageOf(assembly, wirelets));
     }
 
     static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        return driver().mirrorOf(assembly, wirelets);
+        return bootstrap().mirrorOf(assembly, wirelets);
     }
 
     /** {@return a service locator that provides no services.} */
@@ -374,18 +358,22 @@ public interface ServiceLocator {
      * @return a new service locator
      */
     static ServiceLocator of(Assembly assembly, Wirelet... wirelets) {
-        return driver().launch(assembly, wirelets);
+        return bootstrap().launch(assembly, wirelets);
     }
 
     static ServiceLocator of(ComposerAction<? super Composer> action, Wirelet... wirelets) {
-        class ServiceLocatorAssembly extends ComposerAssembly<Composer> {
+        class ServiceLocatorAssembly extends ComposableAssembly<Composer> {
 
             ServiceLocatorAssembly(ComposerAction<? super Composer> action) {
                 super(new Composer(), action);
             }
         }
 
-        return driver().launch(new ServiceLocatorAssembly(action), wirelets);
+        return bootstrap().launch(new ServiceLocatorAssembly(action), wirelets);
+    }
+
+    static void verify(Assembly assembly, Wirelet... wirelets) {
+        bootstrap().verify(assembly, wirelets);
     }
 
     /**
@@ -401,11 +389,6 @@ public interface ServiceLocator {
 
         /** For internal use only. */
         private Composer() {}
-
-        @Override
-        protected void preCompose() {
-            base().exportAll();
-        }
 
         public <T> ServiceableBeanConfiguration<T> install(Class<T> op) {
             return base().install(op);
@@ -427,6 +410,11 @@ public interface ServiceLocator {
          */
         public void link(Assembly assembly, Wirelet... wirelets) {
             base().link(assembly, wirelets);
+        }
+
+        @Override
+        protected void preCompose() {
+            base().exportAll();
         }
 
         /**
@@ -547,6 +535,32 @@ public interface ServiceLocator {
 
         public <T> ServiceableBeanConfiguration<T> providePrototype(Op<T> factory) {
             return use(BaseExtension.class).installPrototype(factory).provide();
+        }
+    }
+
+    /** An application image for App. */
+    public static final class Image {
+
+        /** The bootstrap image we are delegating to */
+        private final BootstrapApp.Image<ServiceLocator> image;
+
+        private Image(BootstrapApp.Image<ServiceLocator> image) {
+            this.image = image;
+        }
+
+        /** Runs the application represented by this image. */
+        public ServiceLocator create() {
+            return image.launch();
+        }
+
+        /**
+         * Runs the application represented by this image.
+         *
+         * @param wirelets
+         *            optional wirelets
+         */
+        public ServiceLocator create(Wirelet... wirelets) {
+            return image.launch(wirelets);
         }
     }
 }

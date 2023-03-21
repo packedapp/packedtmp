@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.application.BuildException;
+import app.packed.extension.BaseExtension;
 import internal.app.packed.container.AssemblySetup;
 
 /**
@@ -53,19 +54,19 @@ public class PackedAssemblyFinder implements AssemblyFinder {
 
     /** {@inheritDoc} */
     @Override
-    public Assembly assembly(ServiceLoader<? super Assembly> loader) {
+    public Assembly findOne(ServiceLoader<? super Assembly> loader) {
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Assembly assembly(String className) {
+    public Assembly findOne(String className) {
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Assembly assembly(String moduleName, String className) {
+    public Assembly findOne(String moduleName, String className) {
         ModuleLayer layer = loadLayer(moduleName);
         Class<?> c;
         try {
@@ -122,5 +123,14 @@ public class PackedAssemblyFinder implements AssemblyFinder {
         ModuleFinder existing = mf;
         this.mf = mf == null ? m : ModuleFinder.compose(existing, m);
         return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void linkAll(Wirelet... wirelets) {
+        BaseExtension base = as.container.base();
+        forEach(assembly -> {
+            base.link(assembly, wirelets);
+        });
     }
 }

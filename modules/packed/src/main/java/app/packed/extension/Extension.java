@@ -104,11 +104,7 @@ public abstract class Extension<E extends Extension<E>> {
      */
     @SuppressWarnings("unchecked")
     protected final E applicationRoot() {
-        ExtensionSetup s = extension;
-        while (s.treeParent != null) {
-            s = s.treeParent;
-        }
-        return (E) s.instance();
+        return (E) extension.root().instance();
     }
 
     /** {@return the base extension point.} */
@@ -271,7 +267,7 @@ public abstract class Extension<E extends Extension<E>> {
     // Hmm InternalExtensionException hvis det er brugerens skyld??
     protected void onApplicationClose() {
         // childCursor
-        for (ExtensionSetup e = extension.treeFirstChild; e != null; e = e.treeNextSiebling) {
+        for (ExtensionSetup e = extension.treeFirstChild; e != null; e = e.treeNextSibling) {
             e.instance().onApplicationClose();
         }
     }
@@ -302,7 +298,7 @@ public abstract class Extension<E extends Extension<E>> {
     // When the realm in which the extension's container is located is closed
     protected void onAssemblyClose() {
         ExtensionSetup s = extension;
-        for (ExtensionSetup c = s.treeFirstChild; c != null; c = c.treeNextSiebling) {
+        for (ExtensionSetup c = s.treeFirstChild; c != null; c = c.treeNextSibling) {
             if (c.container.assembly == s.container.assembly) {
                 c.instance().onAssemblyClose();
             }

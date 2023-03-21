@@ -28,8 +28,6 @@ import internal.app.packed.util.ThrowableUtil;
  */
 public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> implements BeanOwner , Comparable<ExtensionSetup> {
 
-    public static final MagicInitializer<ExtensionSetup> MI = MagicInitializer.of();
-
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class,
             "newBeanIntrospector", BeanIntrospector.class);
@@ -48,6 +46,8 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "onNew", void.class);
+
+    public static final MagicInitializer<ExtensionSetup> MI = MagicInitializer.of();
 
     /** The container where the extension is used. */
     public final ContainerSetup container;
@@ -105,13 +105,15 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
     private void closeApplication0() {
         // Close all children first
-        for (ExtensionSetup child = treeFirstChild; child != null; child = child.treeNextSiebling) {
+        // TODO: What if we add containers on shutdowns? I think it should be okay
+        for (ExtensionSetup child = treeFirstChild; child != null; child = child.treeNextSibling) {
             child.closeApplication0();
         }
 
         sm.verify();
     }
 
+    /** Call {@link Extension#onAssemblyClose()}. */
     public void closeAssembly() {
         try {
             MH_EXTENSION_ON_ASSEMBLY_CLOSE.invokeExact(instance);
@@ -135,7 +137,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
                 d = model.fullName().compareTo(otherModel.fullName());
                 if (d == 0) {
                     // Same canonical name but different class loaders.
-                    // sort in order of use
+                    // sort in order of usage
                     d = tree.applicationExtensionId - o.tree.applicationExtensionId;
                 }
             }
@@ -165,9 +167,9 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     }
 
     /**
-     * Call into {@link Extension#newBeanIntrospector()} to generate a new {@link BeanIntrospector}.
+     * Call {@link Extension#newBeanIntrospector()} to generate a new {@link BeanIntrospector}.
      *
-     * @return the introspector
+     * @return the new introspector
      */
     public BeanIntrospector newBeanIntrospector() {
         BeanIntrospector bi;
@@ -225,8 +227,8 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
      * @return the new extension
      */
     static ExtensionSetup install(Class<? extends Extension<?>> extensionType, ContainerSetup container, @Nullable ExtensionSetup requestedByExtension) {
-        // First, we must install the extension recursively into all ancestors (if not already installed)
-        ExtensionSetup extensionParent = container.treeParent == null ? null : container.treeParent.useExtension(extensionType, requestedByExtension);
+        // Install the extension recursively into all ancestors in the same application (if not already installed)
+        ExtensionSetup extensionParent = container.isApplicationRoot() ? null : container.treeParent.useExtension(extensionType, requestedByExtension);
 
         ExtensionSetup extension = new ExtensionSetup(extensionParent, container, extensionType);
 
@@ -252,7 +254,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     private static final class ExtensionTree {
 
         /**
-         * The extension id, this id may be used when ordering extensions. If there are multiple extensions with the same
+         * The extension id. This id may be used when ordering extensions if there are multiple extensions with the same
          * canonically name and extension depth.
          */
         private final int applicationExtensionId;

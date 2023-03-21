@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.util.Nullable;
-import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.PackedContainerHandle;
 
 /**
@@ -62,7 +62,7 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
     @Nullable
     private ContainerConfiguration configuration;
 
-    /** {@return an assembly finder that can used to find assemblies on the class- or module-path.} */
+    /** {@return an assembly finder that can be used to find assemblies on the class- or module-path.} */
     protected final AssemblyFinder assemblyFinder() {
         return new PackedAssemblyFinder(getClass(), container().handle.container().assembly);
     }

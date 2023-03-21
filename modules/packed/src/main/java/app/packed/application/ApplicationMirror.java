@@ -122,11 +122,15 @@ public class ApplicationMirror implements Mirror {
     }
 
     public void print() {
+        // Maybe return ApplicationPrinter???
+        // to(PrintStream ps);
+        // asJSON();
+        // verbose();
         print0(application.container);
     }
 
     private void print0(ContainerSetup cs) {
-        for (var e = cs.treeFirstChild; e != null; e = e.treeNextSiebling) {
+        for (var e = cs.treeFirstChild; e != null; e = e.treeNextSibling) {
             print0(e);
         }
         for (var b = cs.beanFirst; b != null; b = b.beanSiblingNext) {
@@ -169,4 +173,3 @@ public class ApplicationMirror implements Mirror {
         throw new UnsupportedOperationException();
     }
 }
-

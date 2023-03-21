@@ -16,24 +16,84 @@
 package app.packed.cli;
 
 import app.packed.application.App;
+import app.packed.application.BootstrapApp;
 import app.packed.container.Assembly;
+import app.packed.container.Wirelet;
 
 /**
  *
  */
-public class CliApp {
-//    Like App but calls system exit and prints stack
-//    traces to system.err
+//Like App but calls system exit and prints stack
+//traces to system.err
 
-    //
+public final class CliApp {
 
-    // Always exits with System.exit if errorneous
-    public static void run(Assembly assembly, String... args) {
+    /** Nope. */
+    private CliApp() {}
+
+    public static void run(Assembly assembly, String[] args, Wirelet... wirelets) {
         App.run(assembly);
     }
 
-    public static int runWithExitCode(Assembly assembly, String... args) {
+    public static void run(Assembly assembly, Wirelet... wirelets) {
+        App.run(assembly);
+    }
+
+    public static void mirrorOf(Assembly assembly, String[] args, Wirelet... wirelets) {
+        bootstrap().mirrorOf(assembly, Wirelet.mainArgs(args).andThen(wirelets));
+    }
+
+    public static int runWithExitCode(Assembly assembly, String[] args) {
         App.run(assembly);
         return 0;
+    }
+
+    public static void verify(Assembly assembly, String[] args) {
+        bootstrap().verify(assembly);
+    }
+
+    /**
+     * Returns the bootstrap app. If interfaces allowed non-public fields we would have stored it in a field instead of this
+     * method.
+     */
+    private static BootstrapApp<Void> bootstrap() {
+        class ServiceLocatorBootstrap {
+            private static final BootstrapApp<Void> APP = BootstrapApp.of(Void.class, c -> {});
+        }
+        return ServiceLocatorBootstrap.APP;
+    }
+
+    public static final class Result {
+
+    }
+
+    /** An application image for App. */
+    public static final class Image {
+
+        /** The bootstrap image we are delegating to */
+        private final BootstrapApp.Image<?> image;
+
+        private Image(BootstrapApp.Image<?> image) {
+            this.image = image;
+        }
+
+        /** Runs the application represented by this image. */
+        public void run() {
+            image.launch();
+        }
+
+        /**
+         * Runs the application represented by this image.
+         *
+         * @param wirelets
+         *            optional wirelets
+         */
+        public void run(Wirelet... wirelets) {
+            image.launch(wirelets);
+        }
+    }
+
+    public class Launcher {
+
     }
 }

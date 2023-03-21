@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Supplier;
 
+import app.packed.container.Wirelet;
 import app.packed.extension.ContainerLocal;
 import app.packed.util.Nullable;
 
@@ -44,7 +45,7 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public T get(LeafContainerBuilder contianer) {
+    public T get(LeafContainerOrApplicationBuilder contianer) {
         if (initialValueSupplier == null) {
             return (T) contianer.locals.get(this);
         } else {
@@ -64,5 +65,17 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
 
     public static <T> PackedContainerLocal<T> of(@Nullable Supplier<? extends T> initialValueSupplier) {
         return new PackedContainerLocal<>(initialValueSupplier);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Wirelet wireletSetter(T value) {
+        return new InternalWirelet() {
+
+            @Override
+            public void onInstall(PackedContainerBuilder installer) {
+                installer.locals.put(PackedContainerLocal.this, value);
+            }
+        };
     }
 }

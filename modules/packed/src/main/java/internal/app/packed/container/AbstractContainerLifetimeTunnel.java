@@ -27,7 +27,7 @@ import sandbox.extension.container.ContainerLifetimeTunnel;
  */
 public non-sealed interface AbstractContainerLifetimeTunnel extends ContainerLifetimeTunnel {
 
-    void build(LeafContainerBuilder builder);
+    void build(LeafContainerOrApplicationBuilder builder);
 
     public record ConstantContainerLifetimeTunnel(Key<?> key, Object constant) implements AbstractContainerLifetimeTunnel {
 
@@ -58,7 +58,7 @@ public non-sealed interface AbstractContainerLifetimeTunnel extends ContainerLif
 
         /** {@inheritDoc} */
         @Override
-        public void build(LeafContainerBuilder builder) {
+        public void build(LeafContainerOrApplicationBuilder builder) {
 
         }
     }

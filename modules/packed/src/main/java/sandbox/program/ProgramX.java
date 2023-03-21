@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime.sandbox;
+package sandbox.program;
 
-import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
+import app.packed.application.BootstrapApp.Image;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint;
@@ -31,7 +31,7 @@ import sandbox.lifetime.external.LifecycleController;
  */
 // Skal have et
 // Maaske bliver den sgu app igen
-public interface Program extends AutoCloseable {
+public interface ProgramX extends AutoCloseable {
 
     /**
      * Closes the app (synchronously). Calling this method is equivalent to calling {@code host().stop()}, but this method
@@ -104,8 +104,8 @@ public interface Program extends AutoCloseable {
      *
      * @return an artifact driver for App
      */
-    private static BootstrapApp<ProgramImplementation> driver() {
-        return ProgramImplementation.DRIVER;
+    private static BootstrapApp<ProgramImplementationX> driver() {
+        return ProgramImplementationX.DRIVER;
     }
 
     /**
@@ -122,8 +122,8 @@ public interface Program extends AutoCloseable {
      * @see ApplicationImageWirelets
      * @see BootstrapApp#newImage(Assembly, Wirelet...)
      */
-    static ApplicationLauncher<Program> imageOf(Assembly assembly, Wirelet... wirelets) {
-        return driver().newLauncher(assembly, wirelets).map(e -> e);
+    static Image<ProgramX> imageOf(Assembly assembly, Wirelet... wirelets) {
+        return driver().imageOf(assembly, wirelets).map(e -> e);
     }
 
     static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
@@ -147,21 +147,21 @@ public interface Program extends AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be build, initialized or started
      */
-    static Program start(Assembly assembly, Wirelet... wirelets) {
+    static ProgramX start(Assembly assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementation(@ContainerHolderService String name, @ContainerHolderService ServiceLocator services,
-        @ContainerHolderService LifecycleController runtime) implements Program {
+record ProgramImplementationX(@ContainerHolderService String name, @ContainerHolderService ServiceLocator services,
+        @ContainerHolderService LifecycleController runtime) implements ProgramX {
 
-    ProgramImplementation {
+    ProgramImplementationX {
         // System.out.println(services.keys());
     }
 
     /** An driver for creating App instances. */
-    static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ProgramImplementation.class, c -> {
+    static final BootstrapApp<ProgramImplementationX> DRIVER = BootstrapApp.of(ProgramImplementationX.class, c -> {
         c.managedLifetime();
         c.addChannel(BaseExtensionPoint.EXPORTED_SERVICE_LOCATOR);
     });

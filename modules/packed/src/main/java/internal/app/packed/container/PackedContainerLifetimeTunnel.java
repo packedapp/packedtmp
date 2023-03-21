@@ -27,7 +27,7 @@ import sandbox.extension.container.ContainerLifetimeTunnel;
  * Represent a communication channel between a parent container lifetime and a child container lifetime. This class is
  * exposed as {@link ContainerLifetimeChannel}.
  */
-public record PackedContainerLifetimeTunnel(Class<? extends Extension<?>> extensionClass, Consumer<? super LeafContainerBuilder> onUse,
+public record PackedContainerLifetimeTunnel(Class<? extends Extension<?>> extensionClass, Consumer<? super LeafContainerOrApplicationBuilder> onUse,
         Set<Key<?>> keys) implements AbstractContainerLifetimeTunnel {
 
     // is used in the (unlikely) scenario with multiple links
@@ -49,7 +49,7 @@ public record PackedContainerLifetimeTunnel(Class<? extends Extension<?>> extens
     }
 
     @Override
-    public void build(LeafContainerBuilder builder) {
+    public void build(LeafContainerOrApplicationBuilder builder) {
         if (onUse != null) {
             onUse.accept(builder);
         }

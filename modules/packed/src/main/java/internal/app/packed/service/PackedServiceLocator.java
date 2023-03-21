@@ -23,16 +23,14 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
-import app.packed.operation.Provider;
 import app.packed.extension.ContainerContext;
+import app.packed.operation.Provider;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceSelection;
 import app.packed.util.Key;
 import internal.app.packed.util.ThrowableUtil;
 
-/**
- *
- */
+/** Default implementation of ServiceLocator. */
 public record PackedServiceLocator(ContainerContext context, @CodeGenerated Map<Key<?>, MethodHandle> entries) implements ServiceLocator {
 
     /** {@inheritDoc} */
@@ -52,11 +50,15 @@ public record PackedServiceLocator(ContainerContext context, @CodeGenerated Map<
     public <T> Optional<T> findInstance(Key<T> key) {
         requireNonNull(key, "key is null");
         MethodHandle provider = entries.get(key);
+
+        // Test if a provider was found that matches the specified key
         if (provider == null) {
             return Optional.empty();
         }
+
         T t;
         try {
+            // Call the provider
             t = (T) provider.invokeExact(context);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);

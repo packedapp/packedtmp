@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import internal.app.packed.container.Packlet;
-import internal.app.packed.lifetime.sandbox.Program;
+import sandbox.program.ProgramX;
 import testutil.util.AbstractApplicationTest;
 
 /** Tests that we can automatically activate an extension using a annotated field or method. */
@@ -37,7 +37,7 @@ public class ExtensionActivationTest extends AbstractApplicationTest {
 
     @Test
     public void instanceMethod() {
-        Program.start(new BaseAssembly() {
+        ProgramX.start(new BaseAssembly() {
             @Override
             public void build() {
                 assertThat(container().extensionTypes()).isEmpty();
@@ -51,7 +51,7 @@ public class ExtensionActivationTest extends AbstractApplicationTest {
 
     @Test
     public void staticField() {
-        Program.start(new BaseAssembly() {
+        ProgramX.start(new BaseAssembly() {
             @Override
             public void build() {
                 assertThat(container().extensionTypes()).isEmpty();
@@ -63,7 +63,7 @@ public class ExtensionActivationTest extends AbstractApplicationTest {
 
     @Test
     public void instanceField() {
-        Program.start(new BaseAssembly() {
+        ProgramX.start(new BaseAssembly() {
             @Override
             public void build() {
                 assertThat(container().extensionTypes()).isEmpty();
@@ -75,7 +75,7 @@ public class ExtensionActivationTest extends AbstractApplicationTest {
 
     @Test
     public void staticMethod() {
-        Program.start(new BaseAssembly() {
+        ProgramX.start(new BaseAssembly() {
             @Override
             public void build() {
                 assertThat(container().extensionTypes()).isEmpty();

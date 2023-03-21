@@ -44,7 +44,7 @@ public final class ApplicationSetup {
             void.class, ApplicationSetup.class);
 
     /** Any (statically defined) children this application has. */
-    final ArrayList<ApplicationChild> children = new ArrayList<>();
+    final ArrayList<FutureApplicationSetup> children = new ArrayList<>();
 
     /** A list of actions that will be executed doing the code generating phase. Or null if code generation is disabled. */
     @Nullable

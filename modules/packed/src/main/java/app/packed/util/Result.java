@@ -27,6 +27,9 @@ import java.util.function.Supplier;
  *
  */
 // https://www.reddit.com/r/Kotlin/comments/oi9rh2/so_glad_that_result_is_finalized_in_15/
+
+// ApplicationResult? Take a RunState as well
+// BuildException
 public final /* primitive */ class Result<T> {
 
     /** The result, or an exception if completed exceptional. */

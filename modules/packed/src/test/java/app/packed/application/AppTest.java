@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.extension.BaseExtension;
-import internal.app.packed.lifetime.sandbox.Program;
+import sandbox.program.ProgramX;
 
 /** Tests {@link Program} (PackedApp). */
 public class AppTest {
@@ -34,7 +34,7 @@ public class AppTest {
     @Test
     public void emptyApp() {
         AtomicReference<ContainerConfiguration> ar = new AtomicReference<>();
-        Program app = Program.start(new BaseAssembly() {
+        ProgramX app = ProgramX.start(new BaseAssembly() {
             @Override
             public void build() {
                 ar.set(container());

@@ -125,7 +125,7 @@ public final class AssemblySetup implements BeanOwner {
         // Cleanup after the assembly has been build successfully.
 
         // We have two paths depending on weather or not the container is the root in an application
-        if (container.treeParent == null) {
+        if (container.isApplicationRoot()) {
             // We maintain an (ordered) list of extensions in the order they where closed.
             // Extensions might install other extensions while closing which is why we keep
             // polling

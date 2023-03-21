@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
-import internal.app.packed.lifetime.sandbox.Program;
+import sandbox.program.ProgramX;
 import testutil.util.AbstractApplicationTest;
 
 /** Various Assembly tests. */
@@ -33,8 +33,8 @@ public class BaseAssemblyTest extends AbstractApplicationTest {
             protected void build() {}
         };
 
-        Program.start(empty);
-        assertThatThrownBy(() -> Program.start(empty)).isExactlyInstanceOf(IllegalStateException.class);
+        ProgramX.start(empty);
+        assertThatThrownBy(() -> ProgramX.start(empty)).isExactlyInstanceOf(IllegalStateException.class);
     }
 
     /** Tests that a assembly cannot be reused. */
@@ -46,6 +46,6 @@ public class BaseAssemblyTest extends AbstractApplicationTest {
                 link(this);
             }
         };
-        assertThatThrownBy(() -> Program.start(b)).isExactlyInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> ProgramX.start(b)).isExactlyInstanceOf(IllegalStateException.class);
     }
 }

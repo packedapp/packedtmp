@@ -15,7 +15,7 @@
  */
 package app.packed.container;
 
-import app.packed.container.AbstractComposer.ComposerAssembly;
+import app.packed.container.AbstractComposer.ComposableAssembly;
 import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.AssemblySetup;
 
@@ -52,7 +52,7 @@ import internal.app.packed.container.AssemblySetup;
  * This class cannot be extended directly, instead you should typically extend {@link BaseAssembly} instead.
  */
 @SuppressWarnings("rawtypes") // Eclipse bug
-public sealed abstract class Assembly permits BuildableAssembly, DelegatingAssembly, ComposerAssembly {
+public sealed abstract class Assembly permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
 
     /**
      * Invoked by the runtime (via a MethodHandle) to build the assembly.

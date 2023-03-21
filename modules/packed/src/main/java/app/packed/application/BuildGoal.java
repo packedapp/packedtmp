@@ -23,23 +23,23 @@ public enum BuildGoal {
     /**
      * The goal is to build an application image that can be launched a single time at a later point.
      *
-     * @see App#newLauncher(Assembly, Wirelet...)
+     * @see App#imageOf(Assembly, Wirelet...)
      */
-    LAUNCH_LATER,
+    IMAGE,
 
     /**
      * The goal is to build an application and then immediately launch it.
      *
-     * @see App#launch(Assembly, Wirelet...)
+     * @see App#run(Assembly, Wirelet...)
      */
     LAUNCH_NOW,
 
-    /**
-     * The goal is to build an application image that can be launched multiple times.
-     *
-     * @see App#newImage(Assembly, Wirelet...)
-     */
-    LAUNCH_REPEATABLE,
+//    /**
+//     * The goal is to build an application image that can be launched multiple times.
+//     *
+//     * @see App#newImage(Assembly, Wirelet...)
+//     */
+//    LAUNCH_REPEATABLE,
 
     /**
      * The goal is to build an {@link ApplicationMirror}.
@@ -57,6 +57,6 @@ public enum BuildGoal {
 
     /** {@return whether or not code will be generated doing the build task.} */
     public boolean isCodeGenerating() {
-        return this == LAUNCH_NOW || this == LAUNCH_LATER || this == LAUNCH_REPEATABLE;
+        return this == LAUNCH_NOW || this == IMAGE;
     }
 }

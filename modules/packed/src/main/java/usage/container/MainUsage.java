@@ -16,24 +16,41 @@
 package usage.container;
 
 import app.packed.application.App;
+import app.packed.application.ApplicationWirelets;
 import app.packed.container.BaseAssembly;
+import app.packed.lifetime.Main;
 
 /**
  *
  */
-public class AssemblyFinderUsage extends BaseAssembly {
+public class MainUsage extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        assemblyFinder().paths("/Users/kaspernielsen/packed-workspace/packed-usage-on-modulepath/bin").linkOne("app.packed.usage",
-                "app.packed.application.usage.HelloWorldAssembly");
-        // beanFinder
-        link(assemblyFinder().paths("/Users/kaspernielsen/packed-workspace/packed-usage-on-modulepath/bin").findOne("app.packed.usage",
-                "app.packed.application.usage.HelloWorldAssembly"));
+        install(MyBean.class);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        //throw new Error();
     }
 
     public static void main(String[] args) {
-        App.run(new AssemblyFinderUsage());
+        long l = System.nanoTime();
+        App.Image i = App.imageOf(new MainUsage(), ApplicationWirelets.lazyBuild());
+        System.out.println(System.nanoTime() - l);
+        i.run();
+
+    }
+
+    public static class MyBean {
+
+        @Main
+        public void hello() {
+            System.out.println("HelloWorld ");
+        }
     }
 }
