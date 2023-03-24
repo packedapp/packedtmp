@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.lifetime.advancedlifecycle;
-
-import app.packed.context.Context;
-import app.packed.extension.BaseExtension;
+package sandbox.lifetime.old;
 
 /**
  *
  */
-public interface InitializeContext extends Context<BaseExtension> {
-    // If restarting why.
+// Taenkt paa man kan faa injected internt
+// Hvem er ejeren? BeanExtension vel??
+
+// Man har aldrig behov for at starte en application internt.
+// Kun lukke den
+public class ApplicationInternalShutdowner {
+
 }

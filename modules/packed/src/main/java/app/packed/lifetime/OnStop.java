@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.lifetime;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -24,7 +24,6 @@ import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.AnnotatedMethodHook;
-import app.packed.lifetime.LifecycleOrder;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
@@ -48,6 +47,9 @@ import app.packed.lifetime.LifecycleOrder;
 // Do the actual shutdown
 // Notifaction again: Shit has been shutdown
 public @interface OnStop {
+
+//    // What is the usecase?
+//    boolean onlyOnApplicationStop() default false;
 
     boolean fork() default false;
 

@@ -37,7 +37,7 @@ public class VariousImages {
             public void build() {
                 BaseExtension b = base();
                 for (int i = 0; i < beanCount; i++) {
-                   b.multiInstallInstance("foo");
+                   b.installInstance("foo").allowMultiClass();
                 }
             }
         };

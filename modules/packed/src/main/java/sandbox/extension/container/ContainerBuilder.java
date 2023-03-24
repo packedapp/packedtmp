@@ -154,6 +154,7 @@ public sealed interface ContainerBuilder permits LeafContainerOrApplicationBuild
 
     // The application will fail to build if the installing extension
     // is not used by. Is only applicable for new(Assembly)
+    // Maaske er det fint bare en wirelet der kan tage en custom besked?
     default ContainerBuilder zBuildAndRequiresThisExtension(Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }

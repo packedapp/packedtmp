@@ -17,13 +17,14 @@ package internal.app.packed.container;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 import app.packed.application.BuildException;
 import app.packed.container.Assembly;
 
 /**
- * Represents the child of an application.
+ * Represents an application that can be build lazily or in another thread.
  */
 
 // Vi har brug for at representere an application der enten er bygget.
@@ -38,29 +39,39 @@ public final class FutureApplicationSetup {
     /** The result of a successful application build. */
     private volatile ApplicationSetup application;
 
-    final Assembly assembly;
-
     final NonBootstrapBuilder parent;
 
-    final FutureTask<ApplicationSetup> task;
+    /** A task for building the application. */
+    private final FutureTask<ApplicationSetup> buildTask;
 
     // IDK vi skal nok have en specielt builder
     public FutureApplicationSetup(NonBootstrapBuilder parent, Assembly assembly) {
         this.parent = parent;
-        this.assembly = assembly;
+
         Callable<ApplicationSetup> c = () -> {
             ContainerSetup s = parent.buildNow(assembly);
             return application = s.application;
         };
-        this.task = new FutureTask<ApplicationSetup>(c);
+        this.buildTask = new FutureTask<ApplicationSetup>(c);
     }
 
-    public ApplicationSetup application() {
+    public Future.State state() {
+        return buildTask.state();
+    }
+
+    /**
+     * Lazily builds the application.
+     *
+     * @return the application
+     * @throws BuildException
+     *             if the application failed to build
+     */
+    public ApplicationSetup lazyBuild() {
         ApplicationSetup a = application;
         if (a == null) {
-            task.run();
+            buildTask.run();
             try {
-                a = task.get();
+                a = buildTask.get();
             } catch (InterruptedException e) {
                 throw new BuildException("Application build was interrupted", e);
             } catch (ExecutionException e) {

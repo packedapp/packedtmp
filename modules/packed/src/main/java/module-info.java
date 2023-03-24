@@ -15,7 +15,6 @@ module app.packed {
     exports app.packed.util;
 
     // temporary sandbox thingies
-    exports sandbox.lifetime;
     exports sandbox.extension.bean;
     exports sandbox.extension.container;
     exports sandbox.extension.context;

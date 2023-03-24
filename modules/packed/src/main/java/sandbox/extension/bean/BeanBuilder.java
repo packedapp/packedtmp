@@ -32,15 +32,15 @@ import internal.app.packed.bean.PackedBeanBuilder;
  * @see BaseExtensionPoint#newBean(BeanKind)
  * @see BaseExtensionPoint#newBeanForExtension(BeanKind, app.packed.extension.ExtensionPoint.UseSite)
  */
-// Put it back on BEP when done.
 public sealed interface BeanBuilder permits PackedBeanBuilder {
 
     /**
      * Installs the bean using the specified class as the bean source.
      *
      * @param <T>
-     *            the
+     *            the type of bean
      * @param beanClass
+     *            the bean class
      * @return a bean handle representing the installed bean
      *
      * @see app.packed.bean.BeanSourceKind#CLASS
@@ -72,7 +72,7 @@ public sealed interface BeanBuilder permits PackedBeanBuilder {
     <T> BeanBuilder setLocal(BeanLocal<T> local, T value);
 
     /**
-     * Sets a supplier that creates a special bean mirror instead of the generic {@code BeanMirror} when requested.
+     * Sets a supplier that creates a special bean mirror instead of the generic {@code BeanMirror} when a mirror is needed.
      *
      * @param supplier
      *            the supplier used to create the bean mirror

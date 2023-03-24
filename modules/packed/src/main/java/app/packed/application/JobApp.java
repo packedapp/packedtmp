@@ -28,6 +28,18 @@ import sandbox.extension.container.ContainerHolderService;
  *
  * @see app.packed.lifetime.Main
  */
+/// retur typer
+
+// App
+// * void
+// * Result<void>
+// * Daemon
+
+//Job
+// * R        (or exception)
+// * Result<R>
+// * Job<R>
+
 
 //// 3 active result wise
 // ContainerLifetime <- a base result type (can never be overridden, usually Object.class)

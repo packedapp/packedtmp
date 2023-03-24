@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.lifetime;
 
-import app.packed.lifetime.LifecycleOrder;
-import app.packed.lifetime.LifetimeMirror;
-import app.packed.lifetime.RunState;
+import java.util.List;
+
 import app.packed.operation.OperationMirror;
 
 /**
- * An operation that is invoked doing lifecycle events on the bean.
+ * An operation that is invoked doing lifecycle events on the bean. Typically from the usage of {@link OnInitialize},
+ * {@link OnStart}, or {@link OnStop}.
  */
 
 // Is a factory a lifecycle operation? I don't think so. No. Ordering makes no sense
 // Inject isn't a lifecycle operation either
-public class LifecycleTransitionOperationMirror extends OperationMirror {
+public class LifecycleOperationMirror extends OperationMirror {
 
     /**
      * The lifetime the operation is run in.
@@ -38,7 +38,7 @@ public class LifecycleTransitionOperationMirror extends OperationMirror {
     }
 
     public LifecycleOrder isNaturalOrder() {
-       throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     /** {@return the lifetime operation this operation is a part of.} */
@@ -58,13 +58,22 @@ public class LifecycleTransitionOperationMirror extends OperationMirror {
         return "<<instantiate>>";
     }
 
+    public List<OperationMirror> previousLifetime() {
+        // IDeen er at kunne printe alle operationer der bliver koert foer den her operation i den samme
+        // lifetime
+
+        // Skal naturligvis ogsaa have en efter
+
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * A mirror for an operation that creates a new instance of a bean.
      * <p>
      * The operator of this operation is always {@link BaseExtension}.
      */
     // IDK know if we want this
-    public static class BeanInstantiationOperationMirror extends LifecycleTransitionOperationMirror {}
+    public static class BeanInstantiationOperationMirror extends LifecycleOperationMirror {}
 
     // Hvis jeg register en instance har min bean ikke en
     // Men factory og non-static class har altid en

@@ -32,14 +32,7 @@ public enum BuildGoal {
      *
      * @see App#run(Assembly, Wirelet...)
      */
-    LAUNCH_NOW,
-
-//    /**
-//     * The goal is to build an application image that can be launched multiple times.
-//     *
-//     * @see App#newImage(Assembly, Wirelet...)
-//     */
-//    LAUNCH_REPEATABLE,
+    LAUNCH,
 
     /**
      * The goal is to build an {@link ApplicationMirror}.
@@ -57,6 +50,12 @@ public enum BuildGoal {
 
     /** {@return whether or not code will be generated doing the build task.} */
     public boolean isCodeGenerating() {
-        return this == LAUNCH_NOW || this == IMAGE;
+        return this == LAUNCH || this == IMAGE;
     }
 }
+///**
+//* The goal is to build an application image that can be launched multiple times.
+//*
+//* @see App#newImage(Assembly, Wirelet...)
+//*/
+//LAUNCH_REPEATABLE,

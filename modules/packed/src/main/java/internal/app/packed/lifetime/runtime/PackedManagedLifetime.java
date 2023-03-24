@@ -27,7 +27,7 @@ import app.packed.lifetime.RunState;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.entrypoint.OldEntryPointSetup;
 import sandbox.lifetime.external.LifecycleController;
-import sandbox.lifetime.external.StopOption;
+import sandbox.lifetime.stop.StopOption;
 
 /**
  *

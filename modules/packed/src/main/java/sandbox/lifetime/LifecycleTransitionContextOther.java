@@ -1,14 +1,14 @@
-package internal.app.packed.lifetime.sandbox;
+package sandbox.lifetime;
 
-public interface LifecycleTransitionContext {
+public interface LifecycleTransitionContextOther {
 
     void awaitIfPresent(WaitToken token);
 
-    static interface WaitToken {}
+    interface WaitToken {}
 
     // Gemmer den i en statisk felt...
     //
-    static interface TokenHolder {
+    interface TokenHolder {
         WaitToken wt();
 
         void release();
@@ -23,7 +23,7 @@ public interface LifecycleTransitionContext {
 
     // Applet... -> Bound to the lifecycle of the application
     // There is a single
-    public interface InitializationContext {
-
-    }
+//    public interface InitializationContext {
+//
+//    }
 }

@@ -27,4 +27,4 @@ Stopping
 - Terminated
 Har ingen umiddelbare usecases som ikke kan klare fra Stopping
 
----- Saa dem der er interessant
+---- Saa dem der er interessant er Initializing, Starting, Stopping

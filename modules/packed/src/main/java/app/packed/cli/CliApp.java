@@ -26,6 +26,11 @@ import app.packed.container.Wirelet;
 //Like App but calls system exit and prints stack
 //traces to system.err
 
+// CliApp er maaske i virkeligheden mere noget der har praecist mest 1 entrypoint.
+
+// Er ikke noedvendigvis managed. Eller det kan den jo ligesaa godt eftersom vi ikke
+// har start/stop. Alt koere indefor en operation
+
 public final class CliApp {
 
     /** Nope. */
@@ -93,7 +98,14 @@ public final class CliApp {
         }
     }
 
+
     public class Launcher {
 
+        // Tror faktisk vi er chatty som default
+        // Sgu da ikke hvis vi er en CLI. Det vil jeg da vaere ret traet af.
+        // CliApp.launcher().silent().run();
+        Launcher silent() {
+            return this;
+        }
     }
 }

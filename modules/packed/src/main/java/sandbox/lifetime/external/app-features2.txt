@@ -11,8 +11,6 @@ Suspend -> Runnable <- resumable
 
 StopOption.suspend(byte[] array, Consumer<Runnable>)
 
-
-
 ------ This is always on the application level
 UpdateLifetime (Upgrade/Downgrade)
 

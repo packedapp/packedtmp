@@ -23,7 +23,7 @@ import static testutil.util.MemberFinder.findField;
 import java.lang.reflect.Field;
 
 import app.packed.bean.Inject;
-import app.packed.bean.OnInitialize;
+import app.packed.lifetime.OnInitialize;
 import testutil.stubs.Letters.A;
 
 /**

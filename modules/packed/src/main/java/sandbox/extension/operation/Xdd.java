@@ -16,8 +16,8 @@
 package sandbox.extension.operation;
 
 import app.packed.application.App;
-import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
+import app.packed.lifetime.OnInitialize;
 import app.packed.service.ServiceContract;
 
 /**

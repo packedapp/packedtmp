@@ -27,6 +27,17 @@ import java.util.function.Consumer;
 // PathMode : Classpath, Modulepath
 // cardinality : findAny, findOne, findAll
 
+// kind: Static vs Dynamic (Dynamic meaning deployiesh)
+
+/// Stoerste problem er Classpath vs Modulepath. Kan vi klare os med en klasse?
+// Og man har jo fx /lib1 , lib2, hvor man gerne vil loade alle jars i lib1
+// ind i det samme moduleLayer, hvilket hmm ikke er lige noget vi kan.
+// Og jo som saadan ikke har noget med assembly finder at goere
+// Maaske en Seperate ModuleLayout klasse?
+// Vi kan ikke klare os med en ihvertfald
+
+// Tror det er en god demo. Men hmm, tror vi skal noget andet paa lang sigt...
+
 // Delt op i tre.
 //// 1. Hvor kigger vi
 //// 2. Filtre
@@ -115,11 +126,7 @@ public interface AssemblyFinder {
         throw new UnsupportedOperationException();
     }
 
-    // Looks on System
-    static AssemblyFinder onModulePath() {
-        throw new UnsupportedOperationException();
-    }
-
+    // caller is needed to instantiate assemblies
     static AssemblyFinder onModulePath(MethodHandles.Lookup caller) {
         throw new UnsupportedOperationException();
     }

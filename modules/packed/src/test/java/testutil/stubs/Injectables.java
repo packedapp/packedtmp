@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Optional;
 
 import app.packed.bean.Inject;
-import app.packed.bean.OnInitialize;
+import app.packed.lifetime.OnInitialize;
 import testutil.stubs.Letters.A;
 
 /**

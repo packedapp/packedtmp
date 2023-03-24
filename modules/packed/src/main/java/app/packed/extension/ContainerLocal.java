@@ -70,6 +70,11 @@ public abstract sealed class ContainerLocal<T> extends BeanLocal<T> permits Pack
     // Returns a wirelet that sets value of the container local to the specified value
     public abstract Wirelet wireletSetter(T value);
 
+
+    public Wirelet wireletConditionalGetter(T expectedValue, Wirelet wirelet) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Creates a bean local without any initial value.
      *

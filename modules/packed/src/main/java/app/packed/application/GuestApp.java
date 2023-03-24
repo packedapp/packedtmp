@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.lifetime.advancedlifecycle;
-
-import app.packed.context.Context;
-import app.packed.extension.BaseExtension;
+package app.packed.application;
 
 /**
  *
  */
-public interface StopContext extends Context<BaseExtension>{
+// Hmm, vi har jo nok ikke
+//BootStrapApp->RootApp->GuestApp->SomeGuestApp men istedet
+//BootStrapApp->RootApp->AppHost->SomeGuestApp
+public class GuestApp<A> {
 
 }

@@ -69,6 +69,9 @@ public final class AssemblySetup implements BeanOwner {
     /** A model of the assembly. */
     public final AssemblyModel model;
 
+    public final long assemblyStart = System.nanoTime();
+    public long assemblyFinished;
+
     /**
      * Create a new assembly setup.
      *
@@ -146,6 +149,7 @@ public final class AssemblySetup implements BeanOwner {
             // Check application dependency cycles. Or wait???
             CircularServiceDependencyChecker.dependencyCyclesFind(container);
 
+            assemblyFinished = System.nanoTime();
             // The application has been built successfully, generate code if needed
             container.application.close();
 
@@ -155,6 +159,7 @@ public final class AssemblySetup implements BeanOwner {
                 e.closeAssembly();
             }
             isConfigurable = false;
+            assemblyFinished = System.nanoTime();
         }
     }
 

@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.lifetime.advancedlifecycle;
+package sandbox.lifetime;
 
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.lifetime.LifecycleOrder;
 import app.packed.lifetime.RunState;
-import sandbox.lifetime.external.StopReason;
+import sandbox.lifetime.stop.StopReason;
 
 /**
  * A context that is available to all lifecycle transition operations.

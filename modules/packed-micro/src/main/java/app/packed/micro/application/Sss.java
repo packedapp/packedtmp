@@ -16,8 +16,8 @@
 package app.packed.micro.application;
 
 import app.packed.application.App;
-import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
+import app.packed.lifetime.OnInitialize;
 
 /**
  *
@@ -41,7 +41,7 @@ public class Sss {
             public void build() {
                // long start = System.nanoTime();
                 for (int i = 0; i < beanCount; i++) {
-                    base().multiInstallInstance(new MyClass());
+                    base().installInstance(new MyClass()).allowMultiClass();
                 }
                // System.out.println((System.nanoTime() - start) / C);
             }

@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.lifetime.advancedlifecycle;
+package sandbox.lifetime.old;
 
-import app.packed.context.Context;
-import app.packed.extension.BaseExtension;
+import app.packed.application.BootstrapApp;
 
 /**
  *
  */
-public interface StartContext extends Context<BaseExtension>{
+public interface RestartableApplicationHost {
 
+    static void restartImmediately(BootstrapApp<?> driver) {
+
+    }
 }

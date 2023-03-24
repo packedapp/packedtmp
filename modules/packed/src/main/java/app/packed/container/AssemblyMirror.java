@@ -1,5 +1,6 @@
 package app.packed.container;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,8 +26,8 @@ import internal.app.packed.container.Mirror;
 public final class AssemblyMirror implements Mirror {
 
     /**
-     * The internal configuration of the application we are mirrored. Is initially null but populated via
-     * {@link #initialize(ApplicationSetup)}.
+     * The internal configuration of the application we are mirrored. Is initially {@code null} but populated via
+     * {@link #initialize(ApplicationSetup)}
      */
     @Nullable
     private AssemblySetup assembly;
@@ -56,6 +57,22 @@ public final class AssemblyMirror implements Mirror {
                     "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
         }
         return a;
+    }
+
+    /**
+     * Returns the duration of the assemble phase for this assembly. This is roughly the time spent in the build method.
+     * Added with time spend for each extension to calculate stuff.
+     * <p>
+     * The duration reported by this method never include time spent on generating code. Code generation is always done on a
+     * per application basis. And cannot be tracked on a per-assembly basis.
+     * <p>
+     * Durations reported when starting up a JVM is typically dominated by time spend loading classes.
+     *
+     * @return how must time was spend assembling.
+     */
+    public Duration assemblyDuration() {
+        AssemblySetup a = assembly();
+        return Duration.ofNanos(Math.max(0, a.assemblyFinished - a.assemblyStart));
     }
 
     /** {@return the assembly class.} */

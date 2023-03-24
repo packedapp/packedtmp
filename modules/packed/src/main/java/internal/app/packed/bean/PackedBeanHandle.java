@@ -132,7 +132,16 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
 
         // TODO we should go through all bindings and see if have some where the type matches.
         // But is not resolved as a service
+
+        // Also if we override twice, would be nice with something like. Already overridden
         throw new IllegalArgumentException("Bean does not have any service dependencies on " + key);
+    }
+
+    /**
+     *
+     */
+    public void allowMultiClass() {
+
     }
 }
 

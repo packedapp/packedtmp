@@ -174,7 +174,7 @@ public final /* primitive */ class BootstrapApp<A> {
      */
     @SuppressWarnings("unchecked")
     public A launch(Assembly assembly, Wirelet... wirelets) {
-        RootApplicationBuilder builder = new RootApplicationBuilder(holder, BuildGoal.LAUNCH_NOW);
+        RootApplicationBuilder builder = new RootApplicationBuilder(holder, BuildGoal.LAUNCH);
 
         builder.processBuildWirelet(wirelets);
 
@@ -323,7 +323,7 @@ public final /* primitive */ class BootstrapApp<A> {
         /** {@inheritDoc} */
         @Override
         public BuildGoal goal() {
-            return BuildGoal.LAUNCH_NOW;
+            return BuildGoal.LAUNCH;
         }
 
         /** {@inheritDoc} */
@@ -339,7 +339,7 @@ public final /* primitive */ class BootstrapApp<A> {
 
         static final OperationTemplate ot = OperationTemplate.raw().withContext(CIT).returnTypeObject();
 
-        static final BeanTemplate ZBLT = new PackedBeanTemplate(BeanKind.MANYTON).withOperationTemplate(ot);
+        static final BeanTemplate BT = new PackedBeanTemplate(BeanKind.MANYTON).withOperationTemplate(ot);
 
         MethodHandle mh;
 
@@ -349,13 +349,13 @@ public final /* primitive */ class BootstrapApp<A> {
 
         <T> void newApplication(Class<T> guestBean) {
             // We need the attachment, because ContainerGuest is on
-            BeanBuilder bi = base().beanBuilder(ZBLT);
+            BeanBuilder bi = base().beanBuilder(BT);
             newApplication(bi.install(guestBean));
         }
 
         <T> void newApplication(Op<T> guestBean) {
             // We need the attachment, because ContainerGuest is on
-            BeanBuilder bi = base().beanBuilder(ZBLT);
+            BeanBuilder bi = base().beanBuilder(BT);
             newApplication(bi.install(guestBean));
         }
     }
@@ -609,7 +609,7 @@ public final /* primitive */ class BootstrapApp<A> {
             if (wirelets.length > 0) {
                 wrapper = new WireletWrapper(CompositeWirelet.flattenAll(wirelets));
             }
-            ApplicationLaunchContext aic = ApplicationLaunchContext.launch(application.application(), wrapper);
+            ApplicationLaunchContext aic = ApplicationLaunchContext.launch(application.lazyBuild(), wrapper);
 
             return (A) holder.newHolder(aic);
         }

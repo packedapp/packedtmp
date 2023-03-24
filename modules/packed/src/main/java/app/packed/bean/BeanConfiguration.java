@@ -27,11 +27,19 @@ public class BeanConfiguration {
         this.handle = (PackedBeanHandle<?>) requireNonNull(handle, "handle is null");
     }
 
-    /** {@return the bean class.} */
-    public final BeanConfiguration allowMultiClass() {
+    /**
+     * Allows to install multiple beans with the same bean class in a container.
+     * <p>
+     * Beans that have void bean class are automatically multi class
+     *
+     * @return this configuration
+     * @throws UnsupportedOperationException
+     *             if void bean class
+     */
+    public BeanConfiguration allowMultiClass() {
+        handle.allowMultiClass();
         return this;
     }
-
 
     /** {@return the bean class.} */
     public final Class<?> beanClass() {

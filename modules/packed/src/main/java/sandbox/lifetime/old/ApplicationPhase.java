@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.lifetime.external;
+package sandbox.lifetime.old;
 
-/**
- *
- */
-//
-public record StopReason(String reason) {
-
-    public static final StopReason NORMAL = new StopReason("Normal");
-
-    public static final StopReason FAILED_INTERNALLY = new StopReason("Failed");
-
-    public static final StopReason RESTARTING = new StopReason("Restarting");
-
+/** The phase in the lifecycle of an application. */
+// Another name than
+// Taenkt som naar man bygger ting og fx bruger IO.
+// Saa er det maaske fint an indikere hvornaar man goer hvad.
+public enum ApplicationPhase {
+    BUILD_TIME, RUNTIME;
 }
+// Build_Time
+//// Compose
+//// Code generation
+// Run_time
+//    [RunState]

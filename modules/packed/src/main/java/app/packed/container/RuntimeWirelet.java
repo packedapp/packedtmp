@@ -20,8 +20,8 @@ package app.packed.container;
  */
 // Jeg tror det er en launcher... Som man skal have konfigureret
 // Saa vi kan lave en ny af den
-interface RuntimeWirelet<L> {
-    void apply(L launcher);
+public abstract class RuntimeWirelet extends Wirelet {
+
 }
 
 // @Meta(runtimeWireletLauncher = Doo.class);

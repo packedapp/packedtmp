@@ -40,17 +40,16 @@ import sandbox.extension.operation.OperationTemplate;
 public sealed interface BeanTemplate permits PackedBeanTemplate {
 
     /**
-     * Represents a bean whose lifetime is identical to that of its container.
+     * Represents a bean whose lifetime is that of its container. This means it will always be created and destroyed
+     * together with its container.
      * <p>
      * A single instance of the bean will be created (if the instance was not already provided when installing the bean)
      * when the container is instantiated. Where after its lifecycle will follow that of the container.
      * <p>
      * Beans that are part of the container's lifecycle
      * <p>
-     * A bean created using this template never has has any lifetime operations. As the lifetime of the bean is completely
-     * controlled by the container in which is installed into.
-     * <p>
-     * If a container is {@link app.packed.lifetime.LifetimeKind#UNMANAGED} the new bean will be unmanaged.
+     * A bean created using this template never has has any {@link BeanHandle#lifetimeOperations() lifetime operations}. As
+     * the lifetime of the bean is completely controlled by the container in which is installed into.
      */
     BeanTemplate CONTAINER = new PackedBeanTemplate(BeanKind.CONTAINER);
 
@@ -81,7 +80,7 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     BeanTemplate MANAGED = new PackedBeanTemplate(BeanKind.MANYTON);
 
     /**
-     * A bean with no instances.
+     * Represents a bean that no instances.
      * <p>
      * And hence no lifecycle then bean instance can go through.
      * <p>
@@ -89,8 +88,9 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
      * <p>
      * Never has any lifetime operations.
      * <p>
-     * Beans that use this template must either use a bean class source or no bean source. Attempting to use an Op or an
-     * instance when installing the bean will fail with {@link app.packed.bean.BeanInstallationException}.
+     * Beans that use this template must always be created using {@link BeanSourceKind#CLASS a class} or
+     * {@link BeanSourceKind#SOURCELESS without a source.}. Attempting to use an Op or an instance when installing the bean
+     * will always fail with {@link app.packed.bean.BeanInstallationException}.
      *
      * @see BeanInstaller#install(Class)
      * @see BeanInstaller#installIfAbsent(Class, java.util.function.Consumer)
@@ -101,7 +101,6 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     // An unmanaged bean will always return the bean instance.
     BeanTemplate PROTOTYPE = new PackedBeanTemplate(BeanKind.MANYTON);
 
-
     // The bean is created by an operation
     // There are no lifetime operations on the bean
     // But the OperationHandle returned from BeanMethod.newLifetimeOperation.
@@ -109,7 +108,6 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     // TODO skal vi baade have managed og unmanged operationer???
     // Fx @Provide paa en prototypeBean (giver vel ikke mening)
     BeanTemplate GATEWAY = new PackedBeanTemplate(BeanKind.MANYTON);
-
 
     /**
      * Specifies the return type signature of the lifetime operation that creates the bean.

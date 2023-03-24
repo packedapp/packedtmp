@@ -40,8 +40,8 @@ public class TryIt extends VerifyingTestCase {
 
     @Test
     public void foox() {
-        bean().multiInstallInstance("HejHej").provide();
-        bean().multiInstallInstance("HejHej").provideAs(CharSequence.class);
+        bean().installInstance("HejHej").allowMultiClass().provide();
+        bean().installInstance("HejHej").allowMultiClass().provideAs(CharSequence.class);
        // bean().multiInstallInstance("HejHej").provideAs(CharSequence.class);
     }
 
@@ -54,7 +54,7 @@ public class TryIt extends VerifyingTestCase {
                 throw new UnsupportedOperationException();
             }
         }
-        bean().multiInstall(MyX.class).provide();
+        bean().install(MyX.class).allowMultiClass().provide();
         // bean().multiInstallInstance("HejHej").provide();
     }
 

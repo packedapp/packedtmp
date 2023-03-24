@@ -23,8 +23,6 @@ import java.util.function.Supplier;
 import app.packed.util.Nullable;
 import internal.app.packed.container.CompositeWirelet;
 import internal.app.packed.container.LeafContainerOrApplicationBuilder.OverrideNameWirelet;
-import internal.app.packed.container.WireletModel;
-import internal.app.packed.util.StackWalkerUtil;
 
 /**
  * A wirelet is a small piece of "glue code" that can be specified when wiring a container.
@@ -137,33 +135,6 @@ public abstract class Wirelet {
         return CompositeWirelet.of(combine(wirelets), this);
     }
 
-//    /** Attempting to wire a non-container component with this wirelet will fail. */
-//    // Well
-//    protected static final void $requireContainer() {}
-    /**
-     * A static initializer method that indicates that the wirelet must be specified at build-time.
-     *
-     * <p>
-     * Wirelets cannot be specified at runtime. This prohibits the wirelet from being specified when using an image.
-     *
-     * <p>
-     * If this method is called from an inheritable wirelet. All subclasses of the wirelet will retain build-time only
-     * status. Invoking this method on subclasses with a super class that have already invoked it. Will fail with an
-     * exception(or error).
-     * <p>
-     * I think you can only have wirelets injected at build-time if they are build-time only... Nej, vi skal fx
-     * bruge @Provide naar vi linker assemblies...
-     */
-    // Den giver ogsaa meningen for brugere iff de kan faa fat i den fra en assembly
-    // selectWirelets(Ssss.class).
-    //// Den giver kun mening specifikt for container wirelets. Da fx Beanwirelets aldrig
-    // bliver specificeret paa runtime
-
-    // Tror maaske vi aendrer det til support runtime...
-    protected static final void $buildtimeOnly() {
-        WireletModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).buildtimeOnly();
-    }
-
     /**
      * // * Attempting to wire a non-container component or a container component that is not the root with this wirelet
      * will // * fail. //
@@ -237,7 +208,7 @@ public abstract class Wirelet {
     // Nullable -> ignore
     // Skal den evalueres paa build time eller runtime???
     // Maaske 2 forskellige metoder
-    public static Wirelet delayed(Supplier<@Nullable Wirelet> supplier) {
+    public static Wirelet lazy(Supplier<@Nullable Wirelet> supplier) {
         throw new UnsupportedOperationException();
     }
 
@@ -245,9 +216,7 @@ public abstract class Wirelet {
     // guardBySystemProperty
 
     // A wirelet that can be used both at runtime
-    public static abstract class RuntimeWirelet extends Wirelet {
 
-    }
 
     // Hvad hvis extension ikke bliver brugt...
     // Men ellers er den smart nok...
@@ -281,6 +250,35 @@ public abstract class Wirelet {
  * @see Extension#selectWirelets(Class)
  * @see Assembly#selectWirelets(Class)
  */
+
+
+///** Attempting to wire a non-container component with this wirelet will fail. */
+//// Well
+//protected static final void $requireContainer() {}
+/**
+* A static initializer method that indicates that the wirelet must be specified at build-time.
+*
+* <p>
+* Wirelets cannot be specified at runtime. This prohibits the wirelet from being specified when using an image.
+*
+* <p>
+* If this method is called from an inheritable wirelet. All subclasses of the wirelet will retain build-time only
+* status. Invoking this method on subclasses with a super class that have already invoked it. Will fail with an
+* exception(or error).
+* <p>
+* I think you can only have wirelets injected at build-time if they are build-time only... Nej, vi skal fx
+* bruge @Provide naar vi linker assemblies...
+*/
+// Den giver ogsaa meningen for brugere iff de kan faa fat i den fra en assembly
+// selectWirelets(Ssss.class).
+//// Den giver kun mening specifikt for container wirelets. Da fx Beanwirelets aldrig
+// bliver specificeret paa runtime
+
+// Tror maaske vi aendrer det til support runtime...
+//protected static final void $buildtimeOnly() {
+//  WireletModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).buildtimeOnly();
+//}
+
 // The way ContainerWirelets can be received depends on whether or not is an extension or user code
 
 // Buildtime -> selectWirelets from Extension/Assembly (ikke Composer fordi den mapper ikke til en component)

@@ -25,10 +25,10 @@ import internal.app.packed.bean.BeanSetup;
 import sandbox.extension.bean.BeanHandle;
 
 /**
- * The configuration of a bean that deals with beans that are instantiated.
+ * The configuration of beans that have instances at runtime.
  *
  * @param <T>
- *            the type of the bean instances
+ *            the type of the bean instance
  */
 public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 
@@ -40,6 +40,13 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
      */
     public InstanceBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public InstanceBeanConfiguration<T> allowMultiClass() {
+        super.allowMultiClass();
+        return this;
     }
 
     /** {@inheritDoc} */
@@ -120,7 +127,6 @@ class InstanceBeanConfigurationSandbox<T> {
 
     // Teanker ogsaa det er en fejl. Hvis den ikke overrider noget
 
-
     /**
      * <p>
      * The decorator must return a non-null bean instance that is assignable to {@link #beanClass()}. Failure do to so will
@@ -139,7 +145,7 @@ class InstanceBeanConfigurationSandbox<T> {
         throw new UnsupportedOperationException();
     }
 
-    public <K> InstanceBeanConfiguration<T> initializeWith(Op<?> op) {
+    <K> InstanceBeanConfiguration<T> initializeWith(Op<?> op) {
         throw new UnsupportedOperationException();
     }
 

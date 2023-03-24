@@ -60,6 +60,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
      *
      * @return
      */
+    @SuppressWarnings("exports")
     public Optional<ContainerLifetimeCarrierMirror> carrier() {
         return Optional.empty();
     }

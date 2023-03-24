@@ -15,7 +15,7 @@
  */
 package app.packed.bean;
 
-/** This enum represents the various type of sources that can be used when installing a bean. */
+/** This enum represents the various type of bean sources that can be used when installing a bean. */
 public enum BeanSourceKind {
 
     /**

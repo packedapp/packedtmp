@@ -81,9 +81,6 @@ public final class App {
         mirrorOf(assembly, wirelets).print();
     }
 
-    public static void run(Assembly assembly) {
-        run(assembly, new Wirelet[0]);
-    }
     /**
      * Builds and executes an application from the specified assembly and optional wirelets.
      * <p>

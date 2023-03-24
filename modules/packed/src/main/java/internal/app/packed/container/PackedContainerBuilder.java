@@ -63,6 +63,9 @@ public abstract class PackedContainerBuilder {
     /** Locals that the container is initialized with. */
     public final IdentityHashMap<PackedContainerLocal<?>, Object> locals = new IdentityHashMap<>();
 
+    // I would like to time stuff. But I have no idea on how to do it reliable with all the laziness
+    long creationNanos;
+
     String name;
 
     @Nullable

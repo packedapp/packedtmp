@@ -35,7 +35,9 @@ import app.packed.application.BuildException;
 // LifetimeNotManagedException. The lifetime of x bean is not managed by the container after it has been created
 // Must rely on GC
 
-// UnmanagedLifetimeException,
+// BeanNotManagedException?
+// IDK kan vi bruge den til containere?
+
 public class UnmanagedLifetimeException extends BuildException {
 
     private static final long serialVersionUID = 1L;

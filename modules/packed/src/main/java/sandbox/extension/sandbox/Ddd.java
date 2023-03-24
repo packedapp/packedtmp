@@ -23,13 +23,13 @@ import java.lang.annotation.Target;
 
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.OnInitialize;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanHook.AnnotatedMethodHook;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifecycleOrder;
+import app.packed.lifetime.OnInitialize;
 import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.container.ContainerTemplate;

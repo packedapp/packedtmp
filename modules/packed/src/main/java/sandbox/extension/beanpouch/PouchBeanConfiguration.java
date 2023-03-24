@@ -24,6 +24,11 @@ import sandbox.extension.bean.BeanHandle;
 /**
  *
  */
+
+// Pouch er det om at supportere alle mulige annoteringer paa andet end
+// container beans
+
+
 // For a single bean, or for multiple beans in the same container lifetime
 // Always a managed container bean
 

@@ -19,9 +19,6 @@ import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.Inject;
-import app.packed.bean.OnInitialize;
-import app.packed.bean.OnStart;
-import app.packed.bean.OnStop;
 import app.packed.bean.UnmanagedLifetimeException;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
@@ -32,6 +29,9 @@ import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.lifetime.Main;
+import app.packed.lifetime.OnInitialize;
+import app.packed.lifetime.OnStart;
+import app.packed.lifetime.OnStop;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.operation.OperationConfiguration;
@@ -302,36 +302,36 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return LeafContainerOrApplicationBuilder.of(ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application, extension.container);
     }
 
-    /**
-     * @see BeanKind#CONTAINER
-     * @see BeanSourceKind#CLASS
-     * @see BeanHandle.InstallOption#multi()
-     */
-    public <T> ServiceableBeanConfiguration<T> multiInstall(Class<T> implementation) {
-        BeanHandle<T> handle = newBeanInstaller(BeanTemplate.CONTAINER).multi().install(implementation);
-        return new ServiceableBeanConfiguration<>(handle);
-    }
-
-    public <T> ServiceableBeanConfiguration<T> multiInstall(Op<T> op) {
-        BeanHandle<T> handle = newBeanInstaller(BeanTemplate.CONTAINER).multi().install(op);
-        return new ServiceableBeanConfiguration<>(handle);
-    }
-
-    public <T> ServiceableBeanConfiguration<T> multiInstallInstance(T instance) {
-        BeanHandle<T> handle = newBeanInstaller(BeanTemplate.CONTAINER).multi().installInstance(instance);
-        return new ServiceableBeanConfiguration<>(handle);
-    }
-
-    // Skriv usecases naeste gang. Taenker over det hver gang
-    public <T> ServiceableBeanConfiguration<T> multiInstallLazy(Class<T> implementation) {
-        BeanHandle<T> handle = newBeanInstaller(BeanTemplate.LAZY).multi().install(implementation);
-        return new ServiceableBeanConfiguration<>(handle); // Providable???
-    }
-
-    public <T> ServiceableBeanConfiguration<T> multiInstallLazy(Op<T> op) {
-        BeanHandle<T> handle = newBeanInstaller(BeanTemplate.LAZY).multi().install(op);
-        return new ServiceableBeanConfiguration<>(handle); // Providable???
-    }
+//    /**
+//     * @see BeanKind#CONTAINER
+//     * @see BeanSourceKind#CLASS
+//     * @see BeanHandle.InstallOption#multi()
+//     */
+//    public <T> ServiceableBeanConfiguration<T> multiInstall(Class<T> implementation) {
+//        BeanHandle<T> handle = newBeanInstaller(BeanTemplate.CONTAINER).multi().install(implementation);
+//        return new ServiceableBeanConfiguration<>(handle);
+//    }
+//
+//    public <T> ServiceableBeanConfiguration<T> multiInstall(Op<T> op) {
+//        BeanHandle<T> handle = newBeanInstaller(BeanTemplate.CONTAINER).multi().install(op);
+//        return new ServiceableBeanConfiguration<>(handle);
+//    }
+//
+//    public <T> ServiceableBeanConfiguration<T> multiInstallInstance(T instance) {
+//        BeanHandle<T> handle = newBeanInstaller(BeanTemplate.CONTAINER).multi().installInstance(instance);
+//        return new ServiceableBeanConfiguration<>(handle);
+//    }
+//
+//    // Skriv usecases naeste gang. Taenker over det hver gang
+//    public <T> ServiceableBeanConfiguration<T> multiInstallLazy(Class<T> implementation) {
+//        BeanHandle<T> handle = newBeanInstaller(BeanTemplate.LAZY).multi().install(implementation);
+//        return new ServiceableBeanConfiguration<>(handle); // Providable???
+//    }
+//
+//    public <T> ServiceableBeanConfiguration<T> multiInstallLazy(Op<T> op) {
+//        BeanHandle<T> handle = newBeanInstaller(BeanTemplate.LAZY).multi().install(op);
+//        return new ServiceableBeanConfiguration<>(handle); // Providable???
+//    }
 
     // add multiInstall prototype
 

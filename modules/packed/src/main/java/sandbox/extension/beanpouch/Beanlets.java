@@ -19,7 +19,7 @@ package sandbox.extension.beanpouch;
  *
  */
 // Ideen er lidt at liste her, hvad vi kan bruge dem til
-
+// Vi snakker om alternativ til Wirelets bare for beans
 
 public class Beanlets {
 

@@ -53,7 +53,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
     // Allign with Key
     public static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
 
-    /** The container the bean is being installed into. */
+    /** The container the bean will belong to. */
     final ContainerSetup container;
 
     /** The extension that is installing the bean */
@@ -62,8 +62,6 @@ public final class PackedBeanBuilder implements BeanBuilder {
     // TODO: If an installer should be reusable we need to copy locals
     // Right now we just store this map in BeanSetup
     final IdentityHashMap<PackedBeanLocal<?>, Object> locals = new IdentityHashMap<>();
-
-    boolean multiInstall;
 
     String namePrefix;
 
@@ -156,32 +154,6 @@ public final class PackedBeanBuilder implements BeanBuilder {
         return newBean(void.class, BeanSourceKind.SOURCELESS, null);
     }
 
-
-    /**
-     * Allows multiple beans of the same type in a container.
-     * <p>
-     * By default, a container only allows a single bean of particular type if non-void.
-     *
-     * @return this builder
-     * @throws UnsupportedOperationException
-     *             if bean kind is {@link BeanKind#FUNCTIONAL} or {@link BeanKind#STATIC}
-     */
-    // I don't see this not living on BeanTemplate
-    // IDK det er en af de ting
-    // allowClones?
-
-    // Den fungere bare andre steder end paa BeanConfiguration
-
-    // Lad os sige vi vil have SE.schedule og SE.scheduleMulti...
-    // Det giver ingen mening. Den skal vaere paa BeanConfiguration
-    public BeanBuilder multi() {
-        if (template.kind() == BeanKind.STATIC) {
-            throw new InternalExtensionException("multiInstall is not supported for static beans");
-        }
-        multiInstall = true;
-        return this;
-    }
-
     /** {@inheritDoc} */
     @Override
     public BeanBuilder namePrefix(String prefix) {
@@ -223,6 +195,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
 
         BeanClassKey key = new BeanClassKey(owner.realm(), beanClass);
         if (beanClass != void.class) {
+            boolean multiInstall = false;
             if (multiInstall) {
                 MuInst i = (MuInst) container.beanClassMap.compute(key, (c, o) -> {
                     if (o == null) {

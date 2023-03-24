@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.lifetime.external;
+package sandbox.lifetime.stop;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-/** Various options that can be used when stopping a component. */
+/** Various options that can be used when stopping a lifetime. */
 // Panic vs non-panic, a panic signals a non-normal shutdown
 
 // interrupt vs non-interrupt

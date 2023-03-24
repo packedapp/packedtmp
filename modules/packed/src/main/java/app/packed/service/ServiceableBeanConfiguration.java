@@ -35,6 +35,15 @@ public class ServiceableBeanConfiguration<T> extends InstanceBeanConfiguration<T
         super(handle);
     }
 
+
+    /** {@inheritDoc} */
+    @Override
+    public ServiceableBeanConfiguration<T> allowMultiClass() {
+        super.allowMultiClass();
+        return this;
+    }
+
+
     /** {@return the default key that services will be provided as.} */
     public Key<T> defaultKey() {
         return instanceHandle().defaultKey();
