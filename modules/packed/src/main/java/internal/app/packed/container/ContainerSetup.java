@@ -28,7 +28,6 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationPath;
 import app.packed.container.ContainerMirror;
-import app.packed.container.OldWireletSelection;
 import app.packed.container.Realm;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
@@ -95,11 +94,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
 
     /** Supplies a mirror for the container. */
     private final Supplier<? extends ContainerMirror> specializedMirror;
-
-    /** Wirelets that were specified when creating the component. */
-    // As an alternative non-final, and then nulled out whenever the last wirelet is consumed
-    @Nullable
-    public WireletWrapper wirelets;
 
     /**
      * Create a new container.
@@ -242,17 +236,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
       throw new UnsupportedOperationException();
   }
 
-
-    public <T extends Wirelet> OldWireletSelection<T> selectWireletsOld(Class<T> wireletClass) {
-//        WireletWrapper wirelets = extension.container.wirelets;
-//        if (wirelets == null || wirelets.unconsumed() == 0) {
-//            return WireletSelection.of();
-//        }
-//
-//        return new BuildtimeWireletSelection<>(wirelets, wireletClass);
-
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * If an extension of the specified type has not already been installed, installs it. Returns the extension's context.

@@ -44,7 +44,7 @@ import internal.app.packed.container.NonBootstrapBuilder;
 import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
-import internal.app.packed.container.WireletWrapper;
+import internal.app.packed.container.WireletSelectionArray;
 import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.util.ThrowableUtil;
@@ -586,9 +586,9 @@ public final /* primitive */ class BootstrapApp<A> {
             requireNonNull(wirelets, "wirelets is null");
 
             // If launching an image, the user might have specified additional runtime wirelets
-            WireletWrapper wrapper = null;
+            WireletSelectionArray<?> wrapper = null;
             if (wirelets.length > 0) {
-                wrapper = new WireletWrapper(CompositeWirelet.flattenAll(wirelets));
+                wrapper = WireletSelectionArray.of(CompositeWirelet.flattenAll(wirelets));
             }
             ApplicationLaunchContext aic = ApplicationLaunchContext.launch(application, wrapper);
 
@@ -605,9 +605,9 @@ public final /* primitive */ class BootstrapApp<A> {
             requireNonNull(wirelets, "wirelets is null");
 
             // If launching an image, the user might have specified additional runtime wirelets
-            WireletWrapper wrapper = null;
+            WireletSelectionArray<?> wrapper = null;
             if (wirelets.length > 0) {
-                wrapper = new WireletWrapper(CompositeWirelet.flattenAll(wirelets));
+                wrapper = WireletSelectionArray.of(CompositeWirelet.flattenAll(wirelets));
             }
             ApplicationLaunchContext aic = ApplicationLaunchContext.launch(application.lazyBuild(), wrapper);
 

@@ -28,7 +28,7 @@ import java.util.Optional;
 import app.packed.application.ApplicationPath;
 import app.packed.application.BuildGoal;
 import app.packed.container.Wirelet;
-import app.packed.container.OldWireletSelection;
+import app.packed.container.WireletSelection;
 import app.packed.service.ServiceableBeanConfiguration;
 import internal.app.packed.container.DomainSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -364,7 +364,7 @@ public abstract class Extension<E extends Extension<E>> {
      *             if the specified class is not located in the same module as the extension itself. Or if the specified
      *             wirelet class is not a proper subclass of ContainerWirelet.
      */
-    protected final <T extends Wirelet> OldWireletSelection<T> selectWirelets(Class<T> wireletClass) {
+    protected final <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         // Check that we are a proper subclass of ExtensionWirelet
         ClassUtil.checkProperSubclass(Wirelet.class, wireletClass, "wireletClass");
 
@@ -378,7 +378,7 @@ public abstract class Extension<E extends Extension<E>> {
         // Find the containers wirelet wrapper and return early if no wirelets have been specified, or all of them have already
         // been consumed
 
-        return extension.container.selectWireletsOld(wireletClass);
+        return extension.container.selectWirelets(wireletClass);
     }
 
     /**

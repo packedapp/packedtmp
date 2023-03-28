@@ -38,7 +38,11 @@ public final class WireletSelectionArray<W extends Wirelet> implements WireletSe
         this.wirelets = wirelets;
     }
 
-    static <W extends Wirelet> WireletSelectionArray<W> ofTrusted(W[] wirelets) {
+    public static <W extends Wirelet> WireletSelectionArray<W> of(W[] wirelets) {
+        return new WireletSelectionArray<>(List.of(wirelets));
+    }
+
+    public static <W extends Wirelet> WireletSelectionArray<W> ofTrusted(W[] wirelets) {
         return new WireletSelectionArray<>(List.of(wirelets));
     }
 

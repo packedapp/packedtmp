@@ -24,7 +24,7 @@ import app.packed.service.ServiceLocator;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.InternalBuildWirelet;
-import internal.app.packed.container.WireletWrapper;
+import internal.app.packed.container.WireletSelectionArray;
 import sandbox.lifetime.external.LifecycleController;
 
 /**
@@ -42,9 +42,9 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
 
     /** Wirelets specified if instantiating an image. */
     @Nullable
-    private final WireletWrapper wirelets;
+    private final WireletSelectionArray<?> wirelets;
 
-    private ApplicationLaunchContext(ApplicationSetup application, WireletWrapper wirelets) {
+    private ApplicationLaunchContext(ApplicationSetup application, WireletSelectionArray<?> wirelets) {
         this.application = application;
         this.wirelets = wirelets;
         this.name = requireNonNull(application.container.name);
@@ -86,14 +86,14 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
      *            optional wirelets is always null if not launched from an image
      * @return the application instance
      */
-    public static ApplicationLaunchContext launch(ApplicationSetup application, @Nullable WireletWrapper wirelets) {
+    public static ApplicationLaunchContext launch(ApplicationSetup application, @Nullable WireletSelectionArray<?> wirelets) {
 
         // Create a launch context
         ApplicationLaunchContext context = new ApplicationLaunchContext(application, wirelets);
 
         // Apply all internal wirelets
         if (wirelets != null) {
-            for (Wirelet w : wirelets.wirelets) {
+            for (Wirelet w : wirelets) {
                 if (w instanceof InternalBuildWirelet iw) {
                     iw.onImageInstantiation(application.container, context);
                 }
