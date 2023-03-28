@@ -21,7 +21,6 @@ import java.util.function.Supplier;
 
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
-import internal.app.packed.container.LeafContainerOrApplicationBuilder.OverrideNameWirelet;
 
 /**
  * Wirelets that can only be specified when building an application.
@@ -39,7 +38,7 @@ public final class BuildWirelets {
     // This means we need to invocations for AssemblySetup.build
     // And filter the stack frames
     static Wirelet compressedBuildtimeExceptions() {
-        return new OverrideNameWirelet("SDSD");
+        throw new UnsupportedOperationException();
     }
 
     public static Wirelet alwaysThrowBuildException() {

@@ -22,13 +22,13 @@ import app.packed.util.Nullable;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 
 /**
- * A bean lifetime represents a bean whose lifetime is independent of its container's lifetime.
+ * Represents a bean whose lifetime is independent of its container's lifetime.
  * <p>
- * A bean lifetime always has a container lifetime as a parent
- *
+ * The parent lifetime of a bean lifetime is always the lifetime of the container in which is installed.
  * <p>
- * Static and functional beans never have their own lifetime but will always their containers lifetime. As they are
- * valid as long as the container exists.
+ * Beans without a lifecycle, such as static beans, or those with an externally managed lifecycle, will never have their
+ * own bean lifetime. Instead, they are always part of their container's lifetime, signifying that the bean can only be
+ * used as long as the container exists.
  */
 public final class BeanLifetimeMirror extends LifetimeMirror {
 
@@ -48,29 +48,29 @@ public final class BeanLifetimeMirror extends LifetimeMirror {
     }
 
     /** {@return the lifetime of the container this bean is contained within.} */
-    // Forvirre den mere end den gavner? Hvad er use casen?
+    // Does this method confuse more than it helps?
     ContainerLifetimeMirror containerLifetime() {
         return lifetime().parent().mirror();
     }
 
     /**
-     * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the extension.
+     * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the mirro.
      *
-     * @param owner
-     *            the internal configuration of the extension to mirror
+     * @param lifetime
+     *            the internal configuration of lifetime
      */
-    void initialize(BeanLifetimeSetup operation) {
+    void initialize(BeanLifetimeSetup lifetime) {
         if (this.lifetime != null) {
             throw new IllegalStateException("This mirror has already been initialized.");
         }
-        this.lifetime = operation;
+        this.lifetime = lifetime;
     }
 
     /**
-     * {@return the internal configuration of operation.}
+     * {@return the internal configuration of the lifetime.}
      *
      * @throws IllegalStateException
-     *             if {@link #initialize(ApplicationSetup)} has not been called.
+     *             if {@link #initialize(BeanLifetimeSetup)} has not been called.
      */
     @Override
     BeanLifetimeSetup lifetime() {

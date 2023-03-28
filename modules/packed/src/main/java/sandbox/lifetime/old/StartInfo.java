@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.domain;
+package sandbox.lifetime.old;
 
 /**
  *
  */
-public @interface Domain {
-    String value() default "main";
-}
+// Why was the lifetime started?
+// Request came in..
+// IDK, not for starters
+public interface StartInfo {
 
-// InDomain();
+}

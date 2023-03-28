@@ -24,10 +24,12 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.AnnotatedMethodHook;
 
 /**
- * Indicates that the annotated method should be invoked as part of the annotated bean's initialization.
+ * Indicates that the annotated method should be invoked as part of the targeted bean's initialization.
  * <p>
- * Methods that use this annotation will operate within a {@link InitializationContext} which can be injected as per
- * usual.
+ * Like most other operations annotated methods Methods that use this annotation will operate within a
+ * {@link InitializationContext} which can be injected as per usual.
+ * <p>
+ * The annotated method may return a value. However, the value is always ignored by the runtime.
  * <p>
  * If a bean throws an exception during initialization the bean will fail to be put into action. Depending on the type
  * of bean this might result in the bean's container not being initializable.
@@ -35,13 +37,14 @@ import app.packed.extension.BeanHook.AnnotatedMethodHook;
  * Methods (or fields) annotated with {@link Inject} on the same bean are always executed before methods annotated with
  * {@code OnInitialize}.
  * <p>
- * This annotation may only be used on beans that have an actual lifecycle. Using it on, for example, static beans will
- * fail with {@link UnavailableLifecycleException} when installing the bean.
+ * Attempting install a bean (that uses this annotation) that do not have a lifecycle, for example, a static bean. Will
+ * fail with {@link UnavailableLifecycleException}.
  * <p>
- * Operations created using annotation are represented by a {@link LifecycleOperationMirror} in the mirror API.
+ * Any method using this annotated will be represented by a {@link LifecycleOperationMirror} with
+ * {@link RunState#INITIALIZING} in the mirror API.
  * <p>
- * If there are multiple methods using this annotation on a single bean with the same value of the {@link #order()}
- * attribute. The framework provides no guarantees about the invocation sequence of these methods.
+ * If there are multiple methods on a single bean that uses this annotations and have the same value for the
+ * {@link #order()} attribute. The framework may choose to invoke them in any sequence.
  *
  * @see InitializationContext
  * @see Inject
@@ -55,12 +58,12 @@ import app.packed.extension.BeanHook.AnnotatedMethodHook;
 public @interface OnInitialize {
 
     /**
-     * This attribute can be used to control the order in which dependent beans are initialized in the same container
-     * lifetime.
+     * Controls the order in which beans in the same container lifetime that depend on each other are initialized.
      * <p>
-     * The default value is to invoke the method <strong>before</before> any dependent beans are initialized.
+     * The default order is to invoke the annotated method <strong>before</strong> any other beans that depends on the
+     * targeted bean are initialized.
      * <p>
-     * This attribute has no effect if the annotated bean is in its own bean lifetime.
+     * This attribute has no effect if the annotated bean has its own bean lifetime.
      *
      * @return whether or not the annotated method should be run before or after dependent beans in the same lifetime are
      *         initialized.

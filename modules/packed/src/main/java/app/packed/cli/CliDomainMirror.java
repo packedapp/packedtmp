@@ -15,11 +15,18 @@
  */
 package app.packed.cli;
 
+import java.util.Collection;
+import java.util.List;
+
 import app.packed.container.DomainMirror;
 
 /**
- *
+ * Represents a CLI domain
  */
 public class CliDomainMirror extends DomainMirror<CliExtension> {
 
+    /** {@return all commands in the CLI domain.} */
+    public Collection<CliCommandMirror> commands() {
+        return List.of();
+    }
 }

@@ -31,12 +31,13 @@ public class DomainMirror<E extends Extension<E>> {
         return domain.root.extensionType;
     }
 
-    /** {@return the name of the domain.} */
-    public String domainName() {
+    /** {@return the name of this domain.} */
+    public final String domainName() {
         return domain.name;
     }
 
-    public Realm domainOwner() {
+    /** {@return the owner of this domain instance.} */
+    public final Realm domainOwner() {
         return domain.owner.realm();
     }
 

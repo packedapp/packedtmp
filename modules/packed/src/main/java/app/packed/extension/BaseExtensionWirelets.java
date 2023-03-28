@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.domain;
+package app.packed.extension;
+
+import app.packed.container.Wirelet;
 
 /**
  *
  */
-public @interface Domain {
-    String value() default "main";
-}
+public class BaseExtensionWirelets {
 
-// InDomain();
+    public static Wirelet mainArgs(String... args) {
+        throw new UnsupportedOperationException();
+    }
+
+}

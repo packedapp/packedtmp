@@ -70,12 +70,13 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
     /** {@inheritDoc} */
     @Override
     public Wirelet wireletSetter(T value) {
-        return new InternalWirelet() {
+        final class ContainerSetLocalWirelet extends InternalBuildWirelet {
 
             @Override
-            public void onInstall(PackedContainerBuilder installer) {
+            protected void onInstall(PackedContainerBuilder installer) {
                 installer.locals.put(PackedContainerLocal.this, value);
             }
-        };
+        }
+        return new ContainerSetLocalWirelet();
     }
 }

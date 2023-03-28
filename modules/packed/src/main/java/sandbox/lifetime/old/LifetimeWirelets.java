@@ -5,7 +5,7 @@ import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.container.Wirelet;
-import sandbox.lifetime.stop.StopOption;
+import app.packed.lifetime.StopOption;
 
 /**
  * Application runtime wirelet that can be specified when building or launching an application that includes the

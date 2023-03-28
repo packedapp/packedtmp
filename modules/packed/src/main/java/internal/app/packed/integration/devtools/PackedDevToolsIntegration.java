@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.framework.devtools;
+package internal.app.packed.integration.devtools;
 
 import java.lang.reflect.Member;
 

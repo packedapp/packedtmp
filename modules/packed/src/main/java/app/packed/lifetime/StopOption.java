@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.lifetime.stop;
+package app.packed.lifetime;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -27,6 +27,10 @@ import java.util.function.Supplier;
 // Den burde ikke have semantics indvirkning paa hvad der sker efter stop
 
 // Move to top level c
+
+// Hvis vi fx for en Tag() saa kan man jo kun bruge det naar man lukker ned foerste gang.
+// Ellers bliver de ignoreret. Kan jo ikke rigtig fejle, hvis lukker ned parallelt pga en fejl
+// Men okay det er jo det samme fail, o.s.v.
 public interface StopOption {
 
     static StopOption fail(Supplier<Throwable> cause) {

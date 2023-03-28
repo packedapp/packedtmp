@@ -207,6 +207,8 @@ public abstract class BaseAssembly extends BuildableAssembly {
     }
 
     /**
+     * Selects all wirelets that available and {@link Class#isAssignableFrom(Class) assignable} to the specified wirelet
+     * class.
      *
      * @param <W>
      *            the type of wirelets to select
@@ -215,7 +217,7 @@ public abstract class BaseAssembly extends BuildableAssembly {
      * @return a wirelet selection
      * @see ContainerConfiguration#selectWirelets(Class)
      */
-    protected final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
+    protected final <W extends ApplicationWirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
         return container().selectWirelets(wireletClass);
     }
 

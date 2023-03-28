@@ -90,7 +90,6 @@ import sandbox.service.transform.ServiceExportsTransformer;
 
 // Bean
 //// install
-//// multiInstall
 
 // Container
 //// link

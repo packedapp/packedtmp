@@ -24,10 +24,10 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import app.packed.lifetime.RunState;
+import app.packed.lifetime.StopOption;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.entrypoint.OldEntryPointSetup;
 import sandbox.lifetime.external.LifecycleController;
-import sandbox.lifetime.stop.StopOption;
 
 /**
  *

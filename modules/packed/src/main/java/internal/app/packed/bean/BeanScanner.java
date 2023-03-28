@@ -39,7 +39,7 @@ import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.framework.devtools.PackedDevToolsIntegration;
+import internal.app.packed.integration.devtools.PackedDevToolsIntegration;
 import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;

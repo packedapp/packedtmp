@@ -28,6 +28,7 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationPath;
 import app.packed.container.ContainerMirror;
+import app.packed.container.OldWireletSelection;
 import app.packed.container.Realm;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
@@ -231,6 +232,25 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     }
 
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
+//      WireletWrapper wirelets = extension.container.wirelets;
+//      if (wirelets == null || wirelets.unconsumed() == 0) {
+//          return WireletSelection.of();
+//      }
+//
+//      return new BuildtimeWireletSelection<>(wirelets, wireletClass);
+
+      throw new UnsupportedOperationException();
+  }
+
+
+    public <T extends Wirelet> OldWireletSelection<T> selectWireletsOld(Class<T> wireletClass) {
+//        WireletWrapper wirelets = extension.container.wirelets;
+//        if (wirelets == null || wirelets.unconsumed() == 0) {
+//            return WireletSelection.of();
+//        }
+//
+//        return new BuildtimeWireletSelection<>(wirelets, wireletClass);
+
         throw new UnsupportedOperationException();
     }
 

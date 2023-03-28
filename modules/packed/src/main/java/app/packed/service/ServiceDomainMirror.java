@@ -23,14 +23,21 @@ import app.packed.extension.BaseExtension;
 import app.packed.util.Key;
 
 /**
- *
+ * A service domain.
+ * <p>
+ * A service domain
+ * <p>
+ * In
  */
-
 // 2 typer exports + main
-
 public class ServiceDomainMirror extends DomainMirror<BaseExtension> {
 
     public Map<Key<?>, Collection<ServiceBindingMirror>> bindings() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@return a map of all provided services in the domain.} */
+    public Map<Key<?>, ProvidedServiceMirror> providers() {
         throw new UnsupportedOperationException();
     }
 

@@ -17,7 +17,6 @@ package app.packed.lifetime;
 
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import sandbox.lifetime.stop.StopInfo;
 
 /**
  *
@@ -31,7 +30,6 @@ public interface StopContext extends Context<BaseExtension> {
     boolean isApplicationStopping();
 
     /** {@return Information about why the containing lifetime was stopped.} */
-    @SuppressWarnings("exports")
     StopInfo info();
     // isApplicationStopping();
 }

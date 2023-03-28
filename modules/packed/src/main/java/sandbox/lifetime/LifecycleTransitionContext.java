@@ -19,7 +19,7 @@ import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.lifetime.LifecycleOrder;
 import app.packed.lifetime.RunState;
-import sandbox.lifetime.stop.StopReason;
+import app.packed.lifetime.StopInfo.Reason;
 
 /**
  * A context that is available to all lifecycle transition operations.
@@ -45,13 +45,13 @@ public interface LifecycleTransitionContext extends Context<BaseExtension> {
 
     LifecycleOrder order();
 
-    StopReason startReason();
+    Reason startReason();
 
     /**
      * @return
      * @throws UnsupportedOperationException
      *             if the current state is different from Stopping or Terminated
      */
-    StopReason stopReason();
+    Reason stopReason();
     // Something about stoppage?
 }

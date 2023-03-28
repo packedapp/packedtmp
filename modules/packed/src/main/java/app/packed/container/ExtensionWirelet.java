@@ -13,14 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.lifetime.stop;
+package app.packed.container;
+
+import app.packed.extension.Extension;
 
 /**
  *
  */
-// Why was the lifetime started?
-// Request came in..
-// IDK, not for starters
-public interface StartInfo {
+// Jeg tror det er en launcher... Som man skal have konfigureret
+// Saa vi kan lave en ny af den
+// IDK about
+public non-sealed abstract class ExtensionWirelet<E extends Extension<E>> extends Wirelet {}
 
-}
+// @Meta(runtimeWireletLauncher = Doo.class);
+// Ahh saa kan alle jo kalde den... hvis det er et interface
+
+// Hmm problemet er hvis brugere ogsaa skal bruge dem...

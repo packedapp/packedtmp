@@ -1,149 +1,49 @@
+/*
+ * Copyright (c) 2008 Kasper Nielsen.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package app.packed.container;
-
-import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
-import internal.app.packed.container.PackedWireletSelection;
+import internal.app.packed.container.WireletSelectionArray;
 
 /**
- * An ordered selection of wirelets with a common base type ({@code <W>}).
- * <p>
- * If there are multiple wirelets in the selection, they will ordered accordingly to the following rules:
- * <ul>
- * <li><b>driver</b> fooo</li>
- * <li><b>Build-time / wire-time</b></li>
- * <li><b>component driver</b></li>
- * <li><b>launch</b>Finally, wirelets specified at application launch time</li>
- * </ul>
- * <p>
- * Skal vi have wildcard? {@code extends SSSfoo> eller supportere vi ogsaa SelectWirelets}, jeg ville
- * mene vi supportere begge.
- *
- * Maaske selecter vi differently??? ... exact type for SelectWirelet, eller alle super klasser for
- *
  *
  * <p>
- * The selecting class must be in the same module as the type of wirelet selected
- * <p>
- * There a couple of ways to select wirelets. For extension space wirelets
- *
- * at buildtime:. ExtensionConfiguration#selectWirelets, ExtensionselectWirelets Hook injection?? Could make sense for
- * some class hooks
- *
- * at runtime: SelectWirelet<> on an extension Runtime class
- *
- * For user space wirelets: BaseAssembly..
- * <p>
- * Note: Invoking this method remove every wirelet from this selection. But will also make the wirelet as well as any
- * other selections of the same container (or component) instance. Maaske det her skal staa i den gennerelle
- * dokumentation. Build-wirelets bliver jo proceseret paa et andet tidspunkt. Saa der er vel 2 regler..
- *
- *
- * <p>
- * It is consider an error to invoke more than a single method for a single instance. Unless the peek methods. Where you
- * can do what you want
- *
- * @param <W>
- *            the type of wirelets in this selection
- *
- * @implNote We expect the number of wirelets for a single component to be small in practice. So the current
- *           implementation will iterate through every wirelet specified when wiring the component on every operation on
- *           this interface. This is unlikely to effect performance.
+ * The framework provides no way to guard against use of multiple wirelets of the same type. This is easier done on the
+ * wirelet consumer side (this selection)
  */
-
-// selects but does not process the wirelets
-
-// Hvordan fungere method foo(SelectWirelets<InjectWirelet> sw1, SelectWirelets<InjectWirelet> sw2)
-// De skal ikke vaere i sw2... Eller hvad hvis man kalder sw2 foerst???
-// Jo maaske er det bare den der iterere foerst... Ja selvf. Hvis man ikke kalder metoder sker
-// der jo ikke noget alligevel, saa lav en test.
-
-// Was SelectWirelets
-
-// Problemet med at have en onX on wireletten..
-// Er at vi ikke kan finalize noget i constructeren... fordi den vil tage en constructed Extensor i onExtensor()
-// Vi vil rigtig gerne have wireletten i constructoren paa extensoren...
 @SuppressWarnings("rawtypes")
-public sealed interface WireletSelection<W extends Wirelet> permits PackedWireletSelection {
+public sealed interface WireletSelection<W extends Wirelet> extends Iterable<W> permits WireletSelectionArray {
 
-    // l.orElse(w->w.launchMode, defaultLaunchmode);
-    /**
-     *
-     * Typically for extract a value for a wirelet and using that if present
-     *
-     * @param <E>
-     * @param mapper
-     *            a mapper
-     * @param orElse
-     * @return
-     */
-    // shortcut for findLast().map(mapper).orElse(orElse)
+    Optional<W> first();
 
-    default List<W> peekAll() {
-        throw new UnsupportedOperationException();
-    }
+    boolean isEmpty();
 
-    /**
-     * Performs the given action for each wirelet in the selection. Unlike {@link #processEach(Consumer)} this method does
-     * not remove the wirelet from this selection or any other selection.
-     *
-     * @param action
-     *            the action to perform
-     */
-    void peekEach(Consumer<? super W> action);
+    Optional<W> last();
 
-    /** {@return whether or not this source contains any unconsumed wirelets. Does not consume} */
-    boolean peekIsEmpty();
+    // IDK
+    Optional<W> last(Class<? extends W> wireletClass);
 
-    /** {@return the number of unconsumed wirelets in this source, consuming each wirelet in the process} */
-    int peekSize();
+    <E> E lastOrElse(Function<? super W, ? extends E> mapper, E ifEmpty);
 
-    /** {@return every wirelet in this source as a list, consuming each wirelet in the process.} */
-    default List<W> processAll() {
-        throw new UnsupportedOperationException();
-    }
+    int size();
 
-    /**
-     * Performs the given action for each wirelet in this selection. Removing each wirelet from this selection as well as
-     * any other selection.
-     *
-     * @param action
-     *            the action to perform
-     * @see #peekEach(Consumer)
-     */
-    void processEach(Consumer<? super W> action); // return boolean = if any elements selected?
-
-    /**
-     *
-     * @param <E>
-     * @param mapper
-     *            the mapper to apply (if non-empty) to the last wirelet before returning the result
-     * @param ifEmpty
-     *            the value to return if the selection is empty
-     * @return stuff
-     */
-    default <E> E processFindLastOrElse(Function<? super W, ? extends E> mapper, E ifEmpty) {
-        requireNonNull(mapper, "mapper is null");
-        Optional<W> result = processReturnLast();
-        return result.isEmpty() ? ifEmpty : mapper.apply(result.get());
-    }
-
-    /**
-     * Returns the last wirelet in this selection or empty {@code Optional}, if no wirelets are present.
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">consumable operation</a>.
-     *
-     * @return the last wirelet in this selection or empty {@code Optional}, if no wirelets are present
-     */
-    // consumeAllReturnLast
-    // processReturnLast();
-    // processReturnAll();
-    // processForEach();
-    Optional<W> processReturnLast();
+    List<W> toList();
 
     /**
      * Returns an empty selection of wirelets.
@@ -152,14 +52,12 @@ public sealed interface WireletSelection<W extends Wirelet> permits PackedWirele
      *            the type of wirelets in the selection
      * @return an empty wirelet selection
      */
-    public static <W extends Wirelet> WireletSelection<W> of() {
+    static <W extends Wirelet> WireletSelection<W> of() {
         @SuppressWarnings("unchecked")
-        WireletSelection<W> ws = (WireletSelection<W>) PackedWireletSelection.EMPTY;
+        WireletSelection<W> ws = (WireletSelection<W>) WireletSelectionArray.EMPTY;
         return ws;
     }
 
-    // Hvad skal vi bruge den her til??? Testing primaert ville jeg mene...
-    // Hvad med dem der ikke bliver consumet? skal vi have en WireletHandle.peekCount()???
     /**
      * This method is mainly used for testing purposes.
      *
@@ -172,62 +70,9 @@ public sealed interface WireletSelection<W extends Wirelet> permits PackedWirele
      * @return the selection
      */
     @SafeVarargs
-    public static <W extends Wirelet> WireletSelection<W> of(Class<? extends W> wireletClass, Wirelet... wirelets) {
-        return PackedWireletSelection.of(wireletClass, wirelets);
+    static <W extends Wirelet> WireletSelection<W> of(W... wirelets) {
+        wirelets = wirelets.clone();
+        // check for nulls, copy array;
+        throw new UnsupportedOperationException();
     }
 }
-
-//Hvorfor lige WireletList og ikke f.eks. List eller en annotering
-//Fordi der er en masse special metoder... Som kun kan bruges her
-
-//Vi dropper consume foran alt. Da det giver for lange navne.
-//Istedet consumer alle metoder paanaer dem der starter med peek
-
-//@DynamicInject
-
-//Okay... Saa kan entent tage
-//ExtensionSetup
-//ComponentSetup
-//Component
-//WireletReceiver
-//WireletContainer/WireletHolder/WireletBag
-
-//Do we want to have partial consumes at all??? I cannot think of any usecase.
-//When it is not handled
-
-//TODO
-//Implement iterator
-//Must have matching peek versions of everything (not sure, maybe just a single peek )
-
-//ConsumeAll -> returns whether or not we have any match, useful for boolean is present wirelets
-//ConsumeAll -> returns latest
-//ConsumeAll -> Fails if more than 1.. (or is this in extension model... probably bad in extensions model.. We need to iterate though all every time then
-
-//WireletSource
-//Collect, Receive, Accept, Consume
-
-//Grunden til jeg ikke kan lide WireletInject er den kan puttes paa en parameter...
-//Men det kan @Inject ikke.
-//@Nullable, Optional, List
-//VarHandle, MethodHandle doesn't really work with WireletHandle...
-//methods are conditional invoked.....
-
-//Hmm Hvad hvis jeg har foo(Optional<EEE>)
-
-//Skal den virkelig invokes alligevel???
-//
-//@WireletLink...  Nah @WireletLink Optional<>
-
-//Den her doede fordi vi ikke kan lide UseWirelet..
-
-//// Det her var den helt gamle maade hvor vi angav paa wireletten
-//
-////cannot be consumed individually. Only as either
-////List or Set....
-////Must be a super type of this wirelet type
-////Is inherited
-////Can only be a part of one aggregate type...
-////And can only be injected as an aggregate type
-//protected static final void $aggregateAs(Class<? extends Wirelet> wireletType) {
-//WireletModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).stackBy(wireletType);
-//}

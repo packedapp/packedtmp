@@ -45,6 +45,9 @@ import sandbox.extension.bean.BeanHandle;
  * @see app.packed.bean.BeanMirror#getLocal(BeanLocal)
  * @see ContainerLocal
  */
+
+// Jeg ved ikke om vi vil have en default vaerdi
+
 // get, use, remove..
 @SuppressWarnings("rawtypes")
 public sealed abstract class BeanLocal<T> permits ContainerLocal, PackedBeanLocal {

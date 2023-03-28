@@ -18,6 +18,7 @@ package internal.app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.util.IdentityHashMap;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -59,9 +60,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
     /** The extension that is installing the bean */
     final ExtensionSetup installingExtension;
 
-    // TODO: If an installer should be reusable we need to copy locals
-    // Right now we just store this map in BeanSetup
-    final IdentityHashMap<PackedBeanLocal<?>, Object> locals = new IdentityHashMap<>();
+    IdentityHashMap<PackedBeanLocal<?>, Object> locals = new IdentityHashMap<>();
 
     String namePrefix;
 
@@ -90,6 +89,16 @@ public final class PackedBeanBuilder implements BeanBuilder {
         this.installingExtension = requireNonNull(installingExtension);
         this.owner = requireNonNull(owner);
         this.template = (PackedBeanTemplate) requireNonNull(template, "template is null");
+    }
+
+    /**
+     * Checks that the builder has not been used to create a new bean.
+     * <p>
+     * There is technically no reason to not allow this. But we will need to make a copy of the locals if we want to support
+     * this.
+     */
+    private void checkNotUsed() {
+
     }
 
     /** {@inheritDoc} */
@@ -193,6 +202,24 @@ public final class PackedBeanBuilder implements BeanBuilder {
 
         BeanSetup bean = new BeanSetup(this, beanClass, sourceKind, source);
 
+        // Copy any bean locals that have been set
+        if (locals != null) {
+            for (Entry<PackedBeanLocal<?>, Object> e : locals.entrySet()) {
+                container.application.beanLocals.put(e.getKey().keyOf(bean), e.getValue());
+            }
+        }
+
+        // Saa smid ind i map der lazy laver et array naar der kommer flere end 1 bean.
+
+        // I Assembly/Container? Har vi saa en liste vi vedligholder af container+beanClass der lige skal checkes
+        // Den bliver opdateret foerste gang vvi konvertere BEanSetup->List
+        // Tror faktisk vi checker naar vi tilfoejer at den er sidste er multi.
+        // Vi checker ogsaa paa close at all multi sidstnerer
+        //// Saa kommer der en generisk hvis man glemmer en enkelt.
+        // Men man har altid mindst haft en multi success.
+
+        // Tror vi simpelt har et side map af multi ting.
+        // Som vi saa loeber over til sidst...
         BeanClassKey key = new BeanClassKey(owner.realm(), beanClass);
         if (beanClass != void.class) {
             boolean multiInstall = false;
@@ -284,16 +311,6 @@ public final class PackedBeanBuilder implements BeanBuilder {
         checkNotUsed();
         this.supplier = supplier;
         return this;
-    }
-
-    /**
-     * Checks that the builder has not been used to create a new bean.
-     * <p>
-     * There is technically no reason to not allow this. But we will need to make a copy of the locals if we want to support
-     * this.
-     */
-    private void checkNotUsed() {
-
     }
 
     static class MuInst {

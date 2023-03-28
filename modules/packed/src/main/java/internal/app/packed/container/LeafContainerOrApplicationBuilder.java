@@ -29,7 +29,6 @@ import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import sandbox.extension.container.ContainerBuilder;
 import sandbox.extension.container.ContainerTemplate;
 
@@ -161,49 +160,21 @@ public final class LeafContainerOrApplicationBuilder extends NonBootstrapBuilder
         }
         return pcb;
     }
-
-    // Problemet er at vi kan foerst finde ud af sent om vi er en application nu.
-    // Dvs vi skal loebe alle wirelets igennem foerst for at checke denne.
-
-    public static final class NewApplicationWirelet extends InternalWirelet {
-
-        /** {@inheritDoc} */
-        @Override
-        public void onInstall(PackedContainerBuilder installer) {
-            if (installer.parent == null) {
-                throw new Error("This wirelet cannot be used when creating a new application");
-            }
-            // installer.newApplication = true;
-        }
-
-    }
-
-    /** A wirelet that will set the name of the component. Used by {@link Wirelet#named(String)}. */
-    public static final class OverrideNameWirelet extends InternalWirelet {
-
-        /** The (validated) name to override with. */
-        private final String name;
-
-        /**
-         * Creates a new name wirelet
-         *
-         * @param name
-         *            the name to override any existing container name with
-         */
-        public OverrideNameWirelet(String name) {
-            this.name = NameCheck.checkComponentName(name); // throws IAE
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public void onImageInstantiation(ContainerSetup c, ApplicationLaunchContext ic) {
-            ic.name = name;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public void onInstall(PackedContainerBuilder installer) {
-            installer.nameFromWirelet = name;// has already been validated
-        }
-    }
 }
+
+// Problemet er at vi kan foerst finde ud af sent om vi er en application nu.
+// Dvs vi skal loebe alle wirelets igennem foerst for at checke denne.
+
+// Cannot change anything regarding the template
+// That is fixed
+//public static final class NewApplicationWirelet extends InternalBuildWirelet {
+//
+//    /** {@inheritDoc} */
+//    @Override
+//    public void onInstall(PackedContainerBuilder installer) {
+//        if (installer.parent == null) {
+//            throw new Error("This wirelet cannot be used when creating a new application");
+//        }
+//        // installer.newApplication = true;
+//    }
+//}

@@ -11,7 +11,7 @@ import app.packed.container.Wirelet;
  *
  * @see Wirelet
  */
-public final class CompositeWirelet extends Wirelet {
+public final class CompositeWirelet extends FrameworkWirelet {
 
     /** An empty wirelet array. */
     static final Wirelet[] EMPTY = new Wirelet[0];
@@ -151,7 +151,7 @@ public final class CompositeWirelet extends Wirelet {
      * @see Wirelet#andThen(Wirelet...)
      * @see Wirelet#beforeThis(Wirelet...)
      */
-    public final static Wirelet of(Wirelet wirelet, Wirelet other) {
+    public static Wirelet of(Wirelet wirelet, Wirelet other) {
         return new CompositeWirelet(CompositeWirelet.flatten2(wirelet, other));
     }
 }

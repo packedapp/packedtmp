@@ -157,8 +157,10 @@ public final class ContainerConfiguration {
         return handle.path();
     }
 
-    // never selects extension wirelets...
-    public <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
+    public <W extends ApplicationWirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
+        if (!ApplicationWirelet.class.isAssignableFrom(wireletClass)) {
+            throw new IllegalArgumentException("Must specify an instance of " + wireletClass.getSimpleName());
+        }
         return handle.container().selectWirelets(wireletClass);
     }
 

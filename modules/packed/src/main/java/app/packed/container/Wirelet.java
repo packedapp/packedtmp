@@ -17,15 +17,19 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import app.packed.util.Nullable;
 import internal.app.packed.container.CompositeWirelet;
-import internal.app.packed.container.LeafContainerOrApplicationBuilder.OverrideNameWirelet;
+import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.FrameworkWirelet;
+import internal.app.packed.container.InternalBuildWirelet;
+import internal.app.packed.container.NameCheck;
+import internal.app.packed.container.PackedContainerBuilder;
+import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /**
- * A wirelet is a small piece of "glue code" that can be specified when wiring a container.
+ * A wirelet is a small piece of "glue code" that can be specified when wiring containers.
  * <p>
  * Wirelets are typically used to debug foobar, sdsd.
  *
@@ -61,32 +65,16 @@ import internal.app.packed.container.LeafContainerOrApplicationBuilder.OverrideN
  * Extension Wirelets: Wirelets that are defined by extensions and typically available via public static methods in a
  * XWirelet class.
  *
+ *
  * There are 2 addition internal wirelet types which cannot be extended by users:
  *
  * User Wirelets: Wirelets that are defined by end-users
  *
+ * @implNote In addition to the two wirelet types discussed. There is a third wirelet type: FrameworkWirelet which is
+ *           internal to the wirelet.
  */
-// Hvis vi kraever at alle SelectWirelets
-// kun kan tage final eller sealed wirelets som parameter
-// Saa kan vi sikre os at ogsaa runtime wirelets bliver analyseret
-// Og saa ville vi kunne bruge annoteringer...
-// Men det fungere bare ikke godt hvis vi vil lave noget i constructor af en extension bean
-
-// Kunne godt taenke mig vi fandt en anden loesning for beans...
-
-// Options
-// * Runtime vs Buildtime
-// * Root vs non-root (root having no realm)  (Hvis vi vel og maerke gemmer)
-// * * Jeg tror man skal loese det via noget med at finde en parent extension, som man saa kan installere noget i
-
-// Det der taeller for at have en RuntimeWirelet classe... Er at det er meget lettere at teste.
-// Istedet for at skulle slaa en WireletModel op, som man ville skulle for $buildtimeOnly
-
-// Linklet
-// sealed -> ExtensionWirelet<E>, UserWirelet, InternalWirelet
-// Maybe even add RuntimeExtensionWirelet, UserRuntimeWirelet
-// Maybe sealed and then we have a couple of abstracts on this class
-public abstract class Wirelet {
+@SuppressWarnings("rawtypes")
+public sealed abstract class Wirelet permits ApplicationWirelet, ExtensionWirelet, FrameworkWirelet {
 
     /**
      * Returns a combined wirelet that behaves, in sequence, as this wirelet followed by the {@code after} wirelet.
@@ -180,6 +168,13 @@ public abstract class Wirelet {
         return CompositeWirelet.of(wirelets);
     }
 
+    // Nullable -> ignore
+    // Skal den evalueres paa build time eller runtime???
+    // Maaske 2 forskellige metoder
+    public static Wirelet lazy(Supplier<@Nullable Wirelet> supplier) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns a wirelet that will set the name of the component to the specified name.
      * <p>
@@ -192,31 +187,41 @@ public abstract class Wirelet {
      */
     // String intrapolation?
     public static Wirelet named(String name) {
-        return new OverrideNameWirelet(name);
-    }
+        final class ContainerOverrideNameWirelet extends InternalBuildWirelet {
 
-    public static Wirelet mainArgs(String... args) {
-        throw new UnsupportedOperationException();
-    }
+            /** The (validated) name to override with. */
+            private final String name;
 
+            /**
+             * Creates a new name wirelet
+             *
+             * @param name
+             *            the name to override any existing container name with
+             */
+            public ContainerOverrideNameWirelet(String name) {
+                this.name = NameCheck.checkComponentName(name); // throws IAE
+            }
 
-    Wirelet guardBy(BooleanSupplier supplier) {
-        // ReadSystemProperty
-        throw new UnsupportedOperationException();
-    }
+            /** {@inheritDoc} */
+            @Override
+            public void onImageInstantiation(ContainerSetup c, ApplicationLaunchContext ic) {
+                ic.name = name;
+            }
 
-    // Nullable -> ignore
-    // Skal den evalueres paa build time eller runtime???
-    // Maaske 2 forskellige metoder
-    public static Wirelet lazy(Supplier<@Nullable Wirelet> supplier) {
-        throw new UnsupportedOperationException();
+            /** {@inheritDoc} */
+            @Override
+            protected void onInstall(PackedContainerBuilder installer) {
+                installer.nameFromWirelet = name;// has already been validated
+            }
+        }
+
+        return new ContainerOverrideNameWirelet(name);
     }
 
     // A wirelet that is only applied
     // guardBySystemProperty
 
     // A wirelet that can be used both at runtime
-
 
     // Hvad hvis extension ikke bliver brugt...
     // Men ellers er den smart nok...
@@ -251,24 +256,41 @@ public abstract class Wirelet {
  * @see Assembly#selectWirelets(Class)
  */
 
-
 ///** Attempting to wire a non-container component with this wirelet will fail. */
 //// Well
 //protected static final void $requireContainer() {}
 /**
-* A static initializer method that indicates that the wirelet must be specified at build-time.
-*
-* <p>
-* Wirelets cannot be specified at runtime. This prohibits the wirelet from being specified when using an image.
-*
-* <p>
-* If this method is called from an inheritable wirelet. All subclasses of the wirelet will retain build-time only
-* status. Invoking this method on subclasses with a super class that have already invoked it. Will fail with an
-* exception(or error).
-* <p>
-* I think you can only have wirelets injected at build-time if they are build-time only... Nej, vi skal fx
-* bruge @Provide naar vi linker assemblies...
-*/
+ * A static initializer method that indicates that the wirelet must be specified at build-time.
+ *
+ * <p>
+ * Wirelets cannot be specified at runtime. This prohibits the wirelet from being specified when using an image.
+ *
+ * <p>
+ * If this method is called from an inheritable wirelet. All subclasses of the wirelet will retain build-time only
+ * status. Invoking this method on subclasses with a super class that have already invoked it. Will fail with an
+ * exception(or error).
+ * <p>
+ * I think you can only have wirelets injected at build-time if they are build-time only... Nej, vi skal fx
+ * bruge @Provide naar vi linker assemblies...
+ */
+
+//Hvis vi kraever at alle SelectWirelets
+//kun kan tage final eller sealed wirelets som parameter
+//Saa kan vi sikre os at ogsaa runtime wirelets bliver analyseret
+//Og saa ville vi kunne bruge annoteringer...
+//Men det fungere bare ikke godt hvis vi vil lave noget i constructor af en extension bean
+
+//Kunne godt taenke mig vi fandt en anden loesning for beans...
+
+//Options
+//* Runtime vs Buildtime
+//* Root vs non-root (root having no realm)  (Hvis vi vel og maerke gemmer)
+//* * Jeg tror man skal loese det via noget med at finde en parent extension, som man saa kan installere noget i
+
+//Linklet
+//sealed -> ExtensionWirelet<E>, UserWirelet, InternalWirelet
+//Maybe even add RuntimeExtensionWirelet, UserRuntimeWirelet
+//Maybe sealed and then we have a couple of abstracts on this class
 // Den giver ogsaa meningen for brugere iff de kan faa fat i den fra en assembly
 // selectWirelets(Ssss.class).
 //// Den giver kun mening specifikt for container wirelets. Da fx Beanwirelets aldrig

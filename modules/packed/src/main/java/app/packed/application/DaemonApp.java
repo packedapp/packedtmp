@@ -20,8 +20,8 @@ import java.util.concurrent.TimeUnit;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.RunState;
+import app.packed.lifetime.StopOption;
 import sandbox.lifetime.external.LifecycleController;
-import sandbox.lifetime.stop.StopOption;
 
 /**
  * Similar to App with the extra features that you can

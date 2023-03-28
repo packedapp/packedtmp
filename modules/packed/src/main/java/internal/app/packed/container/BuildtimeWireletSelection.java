@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.container.Wirelet;
-import app.packed.container.WireletSelection;
+import app.packed.container.OldWireletSelection;
 
 // Lige nu bliver den brugt 3 steder fra.
 // WireletHandle.of <- mainly for test
@@ -14,10 +14,10 @@ import app.packed.container.WireletSelection;
 // RuntimeSetup
 
 /** Implementation of {@link WireletSelection}. */
-public final /* primitive */ class PackedWireletSelection<W extends Wirelet> implements WireletSelection<W> {
+public final /* primitive */ class BuildtimeWireletSelection<W extends Wirelet> implements OldWireletSelection<W> {
 
     /** An empty selection used by {@link WireletSelection#of()}. */
-    public static final PackedWireletSelection<?> EMPTY = new PackedWireletSelection<>();
+    public static final BuildtimeWireletSelection<?> EMPTY = new BuildtimeWireletSelection<>();
 
     /** The wirelet wrapper containing the actual wirelets */
     private final WireletWrapper wirelets;
@@ -27,12 +27,12 @@ public final /* primitive */ class PackedWireletSelection<W extends Wirelet> imp
 
     /** Creates a new empty selection. */
     @SuppressWarnings("unchecked")
-    private PackedWireletSelection() {
+    private BuildtimeWireletSelection() {
         this.wirelets = WireletWrapper.EMPTY;
         this.wireletType = (Class<? extends W>) Wirelet.class;
     }
 
-    public PackedWireletSelection(WireletWrapper wirelets, Class<? extends W> wireletType) {
+    public BuildtimeWireletSelection(WireletWrapper wirelets, Class<? extends W> wireletType) {
         this.wirelets = wirelets;
         // We should check all public wirelet types here
         this.wireletType = requireNonNull(wireletType, "wireletType is null");
@@ -123,9 +123,9 @@ public final /* primitive */ class PackedWireletSelection<W extends Wirelet> imp
         }
     }
 
-    public static <T extends Wirelet> WireletSelection<T> of(Class<? extends T> wireletClass, Wirelet... wirelets) {
+    public static <T extends Wirelet> OldWireletSelection<T> of(Class<? extends T> wireletClass, Wirelet... wirelets) {
         requireNonNull(wireletClass, "wireletClass is null");
         WireletWrapper wp = new WireletWrapper(CompositeWirelet.flattenAll(wirelets));
-        return new PackedWireletSelection<>(wp, wireletClass);
+        return new BuildtimeWireletSelection<>(wp, wireletClass);
     }
 }

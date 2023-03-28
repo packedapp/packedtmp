@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.domain;
+package app.packed.container;
 
 /**
- *
+ * A wirelet that is usable by the application.
  */
-public @interface Domain {
-    String value() default "main";
-}
-
-// InDomain();
+public non-sealed abstract class ApplicationWirelet extends Wirelet {}

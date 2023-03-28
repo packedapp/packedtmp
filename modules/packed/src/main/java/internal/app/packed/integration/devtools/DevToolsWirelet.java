@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package internal.app.packed.integration.devtools;
+
+import internal.app.packed.container.FrameworkWirelet;
 
 /**
  *
  */
-// Jeg tror det er en launcher... Som man skal have konfigureret
-// Saa vi kan lave en ny af den
-public abstract class RuntimeWirelet extends Wirelet {
+// IDK, skal sikkert bruge en internal build ting
+// Det taenker jeg
+public abstract non-sealed class DevToolsWirelet extends FrameworkWirelet {
 
 }
-
-// @Meta(runtimeWireletLauncher = Doo.class);
-// Ahh saa kan alle jo kalde den... hvis det er et interface
-
-// Hmm problemet er hvis brugere ogsaa skal bruge dem...

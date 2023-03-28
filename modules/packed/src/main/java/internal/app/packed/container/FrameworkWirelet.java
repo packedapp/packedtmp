@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.domain;
+package internal.app.packed.container;
 
-/**
- *
- */
-public @interface Domain {
-    String value() default "main";
-}
+import app.packed.container.Wirelet;
+import internal.app.packed.integration.devtools.DevToolsWirelet;
 
-// InDomain();
+/** Special wirelets that are defined by the framework. */
+public abstract sealed class FrameworkWirelet extends Wirelet permits CompositeWirelet, InternalBuildWirelet, DevToolsWirelet {}

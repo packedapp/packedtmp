@@ -24,7 +24,7 @@ import internal.app.packed.container.DomainSetup;
 
 /**
  *
- * Instances of this class should not be exposed outside of the extension.
+ * Extensions should never expose instances of this class to non-trusted code.
  */
 public abstract class ExtensionDomain<E extends Extension<E>> {
 

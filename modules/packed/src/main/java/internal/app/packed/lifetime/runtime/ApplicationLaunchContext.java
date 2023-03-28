@@ -23,7 +23,7 @@ import app.packed.extension.BaseExtension;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ApplicationSetup;
-import internal.app.packed.container.InternalWirelet;
+import internal.app.packed.container.InternalBuildWirelet;
 import internal.app.packed.container.WireletWrapper;
 import sandbox.lifetime.external.LifecycleController;
 
@@ -94,7 +94,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
         // Apply all internal wirelets
         if (wirelets != null) {
             for (Wirelet w : wirelets.wirelets) {
-                if (w instanceof InternalWirelet iw) {
+                if (w instanceof InternalBuildWirelet iw) {
                     iw.onImageInstantiation(application.container, context);
                 }
             }

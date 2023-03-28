@@ -19,9 +19,9 @@ import java.util.function.Function;
 
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeKind;
-import internal.app.packed.container.InternalWirelet;
+import app.packed.lifetime.StopOption;
+import internal.app.packed.container.InternalBuildWirelet;
 import internal.app.packed.container.PackedContainerBuilder;
-import sandbox.lifetime.stop.StopOption;
 
 /**
  * Wirelets that can be used when building an application.
@@ -52,17 +52,20 @@ public final class ApplicationWirelets {
 
     // Hah, hvad med application mirror...
     public static Wirelet lazyBuild() {
-        class LazyApplicationBuild extends InternalWirelet {
-            static final LazyApplicationBuild INSTANCE = new LazyApplicationBuild();
+        // Hmm I'm not super stocked, on the other hand explosion of methods
+        // I think we might want an ApplicationBuilder???
+        // Kan jo ikke bare bruge den med fx Entrypoints...
+        final class ApplicationBuildLazilyWirelet extends InternalBuildWirelet {
+            private static final ApplicationBuildLazilyWirelet INSTANCE = new ApplicationBuildLazilyWirelet();
 
             /** {@inheritDoc} */
             @Override
-            public void onInstall(PackedContainerBuilder builder) {
+            protected void onInstall(PackedContainerBuilder builder) {
                 checkIsApplication(builder, this); // maybe explicit error msg
                 builder.optionBuildApplicationLazy = true;
             }
         }
-        return LazyApplicationBuild.INSTANCE;
+        return ApplicationBuildLazilyWirelet.INSTANCE;
     }
 
     // spawn 10 threads, that creates method handles...
@@ -91,17 +94,17 @@ public final class ApplicationWirelets {
         // Vi har droppet at lave flere metoder imageOf, imageResuableOf
         // Vi laver et image eagerly, og det kan launches 1 gang.
         // Saa faar vi fail-faster vi hvis vi proever fx at launche twice
-        class ReusableApplicationImage extends InternalWirelet {
-            static final ReusableApplicationImage INSTANCE = new ReusableApplicationImage();
+        final class ApplicationReusableImageWirelet extends InternalBuildWirelet {
+            private static final ApplicationReusableImageWirelet INSTANCE = new ApplicationReusableImageWirelet();
 
             /** {@inheritDoc} */
             @Override
-            public void onInstall(PackedContainerBuilder builder) {
+            protected void onInstall(PackedContainerBuilder builder) {
                 checkIsApplication(builder, this); // maybe explicit error msg
                 builder.optionBuildReusableImage = true;
             }
         }
-        return ReusableApplicationImage.INSTANCE;
+        return ApplicationReusableImageWirelet.INSTANCE;
     }
 
     /**
@@ -115,11 +118,16 @@ public final class ApplicationWirelets {
      * @return a shutdown hook wirelet
      * @see Runtime#addShutdownHook(Thread)
      */
-    @SuppressWarnings("exports")
     public static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, StopOption... options) {
         // When should we install it? Just after we have been fully initilized?
         // I think so, alternative is as the first operation when starting
-        throw new UnsupportedOperationException();
+        final class ApplicationShutdownHookWirelet extends InternalBuildWirelet {
+
+            /** {@inheritDoc} */
+            @Override
+            protected void onInstall(PackedContainerBuilder installer) {}
+        }
+        return new ApplicationShutdownHookWirelet();
         // return new ShutdownHookWirelet();
     }
 
@@ -143,7 +151,6 @@ public final class ApplicationWirelets {
     // Multiple shutdown hooks? I don't think we should do any checks.
     // Problem is if we have ApplicationConfiguration.installShutdownHook()
     // And CliApp uses a wirelet at the same time
-    @SuppressWarnings("exports")
     public static Wirelet shutdownHook(StopOption... options) {
         // https://www.baeldung.com/spring-boot-shutdown
         return shutdownHook(r -> new Thread(r), options);

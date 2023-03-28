@@ -19,6 +19,7 @@ import app.packed.application.App;
 import app.packed.application.BootstrapApp;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.extension.BaseExtensionWirelets;
 
 /**
  *
@@ -45,7 +46,7 @@ public final class CliApp {
     }
 
     public static void mirrorOf(Assembly assembly, String[] args, Wirelet... wirelets) {
-        bootstrap().mirrorOf(assembly, Wirelet.mainArgs(args).andThen(wirelets));
+        bootstrap().mirrorOf(assembly, BaseExtensionWirelets.mainArgs(args).andThen(wirelets));
     }
 
     public static int runWithExitCode(Assembly assembly, String[] args) {

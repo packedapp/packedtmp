@@ -43,7 +43,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
     static final ContainerLocal<Boolean> LAUNCHED = ContainerLocal.ofContainer();
 
-    /** No */
+    /** No. */
     CliExtension() {}
 
     public CliCommand.Builder addCommand(String... names) {

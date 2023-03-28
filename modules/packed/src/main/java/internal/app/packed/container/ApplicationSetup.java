@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
 import app.packed.util.Nullable;
+import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
@@ -42,6 +43,9 @@ public final class ApplicationSetup {
     /** A MethodHandle for invoking {@link ApplicationMirror#initialize(ApplicationSetup)}. */
     private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ApplicationMirror.class, "initialize",
             void.class, ApplicationSetup.class);
+
+    /** This map maintains every {@link app.packed.extension.BeanLocal} for the application. */
+    public final HashMap<PackedBeanLocal.PairKey, Object> beanLocals = new HashMap<>();
 
     /** Any (statically defined) children this application has. */
     final ArrayList<FutureApplicationSetup> children = new ArrayList<>();
@@ -89,8 +93,8 @@ public final class ApplicationSetup {
     }
 
     /**
-     * Registers an action that will be called in the code generation phase. The action is executed for goals
-     * {@link BuildGoal#MIRROR} or {@link BuildGoal#VERIFY}.
+     * Registers an action that will be called in the code generation phase. The action ignored for build goals
+     * {@link BuildGoal#MIRROR} and {@link BuildGoal#VERIFY}.
      *
      * @param action
      *            the action to run

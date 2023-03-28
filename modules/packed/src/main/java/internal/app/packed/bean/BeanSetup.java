@@ -6,7 +6,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -84,9 +83,6 @@ public final class BeanSetup {
     /** An index into a container lifetime store, or -1. */
     public final int lifetimeStoreIndex;
 
-    /** A bean local map. */
-    public final IdentityHashMap<PackedBeanLocal<?>, Object> locals;
-
     /** Supplies a specialized mirror for the operation. */
     @Nullable
     private final Supplier<? extends BeanMirror> mirrorSupplier;
@@ -118,8 +114,6 @@ public final class BeanSetup {
         this.owner = requireNonNull(installer.owner);
 
         this.mirrorSupplier = installer.supplier;
-
-        this.locals = installer.locals;
 
         // Set the lifetime of the bean
         ContainerLifetimeSetup containerLifetime = container.lifetime;

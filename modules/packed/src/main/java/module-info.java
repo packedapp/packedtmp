@@ -22,6 +22,6 @@ module app.packed {
     exports sandbox.extension.sandbox;
 
     /* Special support for packed-devtools */
-    uses internal.app.packed.framework.devtools.PackedDevToolsIntegration;
-    exports internal.app.packed.framework.devtools to app.packed.devtools;
+    uses internal.app.packed.integration.devtools.PackedDevToolsIntegration;
+    exports internal.app.packed.integration.devtools to app.packed.devtools;
 }

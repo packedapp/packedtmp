@@ -65,13 +65,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
         return Optional.empty();
     }
 
-    // Vil egentlig jo bare godt have en Tree her?
-    // Men et tree er jo Tree<T> og vi har brug Tree<T, C>
-    // Det er et tree hvor leafs and internals node are 2 different types
-    // ComponentTree a tree where leads!= internal nodes
-    // Maaske har vi bare nogle tools til at visualisere trees
-
-    /** {@return the container that is the root of the lifetime.} */
+    /** {@return the container that is the root of this lifetime.} */
     public ContainerMirror container() {
         return lifetime().container.mirror();
     }
@@ -82,6 +76,11 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
      *
      * @return
      */
+    // Vil egentlig jo bare godt have en Tree her?
+    // Men et tree er jo Tree<T> og vi har brug Tree<T, C>
+    // Det er et tree hvor leafs and internals node are 2 different types
+    // ComponentTree a tree where leads!= internal nodes
+    // Maaske har vi bare nogle tools til at visualisere trees
     // Ordered in one way? Depth first?
     public /* Ordered */ Map<ContainerMirror, /* Ordered */ Collection<BeanMirror>> elements() {
         // beanKind.isInContainerLifetime()

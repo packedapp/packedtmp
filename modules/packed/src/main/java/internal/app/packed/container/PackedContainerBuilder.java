@@ -69,7 +69,7 @@ public abstract class PackedContainerBuilder {
     String name;
 
     @Nullable
-    String nameFromWirelet;
+    public String nameFromWirelet;
 
     /** The parent of the new container. Or <code>null</code> if a root container. */
     @Nullable
@@ -115,6 +115,7 @@ public abstract class PackedContainerBuilder {
     public FutureApplicationSetup buildLazy(Assembly assembly) {
         throw new UnsupportedOperationException();
     }
+
     public abstract BuildGoal goal();
 
     public abstract LifetimeKind lifetimeKind();
@@ -194,23 +195,22 @@ public abstract class PackedContainerBuilder {
     public void processBuildWirelet(Wirelet[] wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         for (Wirelet w : wirelets) {
-            processBuildWirelet(w);
+            processWireletOnBuild(w);
         }
     }
 
-    void processBuildWirelet(Wirelet w) {
+    void processWireletOnBuild(Wirelet w) {
         requireNonNull(w);
         if (w instanceof CompositeWirelet cw) {
             for (Wirelet ww : cw.wirelets) {
-                processBuildWirelet(ww);
+                processWireletOnBuild(ww);
             }
-        } else if (w instanceof InternalWirelet iw) {
-            iw.onInstall(this);
+        } else if (w instanceof InternalBuildWirelet ibw) {
+            ibw.onInstall(this);
         } else {
             unconsumedWirelets.add(w);
         }
     }
-
 
 }
 //@Deprecated
