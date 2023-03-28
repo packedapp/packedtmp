@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import app.packed.application.ApplicationPath;
 import app.packed.application.BuildGoal;
+import app.packed.container.ExtensionWirelet;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.service.ServiceableBeanConfiguration;
@@ -362,21 +363,19 @@ public abstract class Extension<E extends Extension<E>> {
      * @return a selection of all container wirelets of the specified type that have not already been processed
      * @throws IllegalArgumentException
      *             if the specified class is not located in the same module as the extension itself. Or if the specified
-     *             wirelet class is not a proper subclass of ContainerWirelet.
+     *             wirelet class is not a proper subclass of ExtensionWirelet.
      */
     protected final <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         // Check that we are a proper subclass of ExtensionWirelet
-        ClassUtil.checkProperSubclass(Wirelet.class, wireletClass, "wireletClass");
+        ClassUtil.checkProperSubclass(ExtensionWirelet.class, wireletClass, "wireletClass");
 
         // We only allow selection of wirelets in the same module as the extension itself
         // Otherwise people could do wirelets(ServiceWirelet.provide(..).getClass())...
+        // Would probably be test the wirelet that defines <E> Then people could have an abstract shared wirelet.
         if (getClass().getModule() != wireletClass.getModule()) {
             throw new IllegalArgumentException("The specified wirelet class is not in the same module (" + getClass().getModule().getName() + ") as '"
                     + /* simple extension name */ extension.model.name() + ", wireletClass.getModule() = " + wireletClass.getModule());
         }
-
-        // Find the containers wirelet wrapper and return early if no wirelets have been specified, or all of them have already
-        // been consumed
 
         return extension.container.selectWirelets(wireletClass);
     }

@@ -11,6 +11,7 @@ import app.packed.lifetime.LifetimeKind;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedContainerHandle;
+import internal.app.packed.util.types.ClassUtil;
 import sandbox.extension.container.ContainerHandle;
 
 /**
@@ -158,9 +159,7 @@ public final class ContainerConfiguration {
     }
 
     public <W extends ApplicationWirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
-        if (!ApplicationWirelet.class.isAssignableFrom(wireletClass)) {
-            throw new IllegalArgumentException("Must specify an instance of " + wireletClass.getSimpleName());
-        }
+        ClassUtil.checkProperSubclass(ApplicationWirelet.class, wireletClass, "wireletClass");
         return handle.container().selectWirelets(wireletClass);
     }
 
