@@ -156,6 +156,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         return extensions.containsKey(extensionClass);
     }
 
+
     /** {@return whether or not this container is the root of its lifetime.} */
     public boolean isLifetimeRoot() {
         return this == lifetime.container;

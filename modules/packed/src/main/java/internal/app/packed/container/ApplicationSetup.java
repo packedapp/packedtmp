@@ -46,7 +46,7 @@ public final class ApplicationSetup {
             void.class, ApplicationSetup.class);
 
     /** This map maintains every {@link app.packed.extension.BeanLocal} for the application. */
-    public final HashMap<PackedBeanLocal.PairKey, Object> beanLocals = new HashMap<>();
+    public final HashMap<PackedBeanLocal.BeanLocalKey, Object> beanLocals = new HashMap<>();
 
     /** Any (statically defined) children this application has. */
     final ArrayList<FutureApplicationSetup> children = new ArrayList<>();
@@ -145,6 +145,10 @@ public final class ApplicationSetup {
 
         // The application was build successfully
         phase = ApplicationBuildPhase.COMPLETED;
+    }
+
+    public ApplicationSetup checkWriteToLocals() {
+        return this;
     }
 
     /** {@return a mirror that can be exposed to end-users.} */

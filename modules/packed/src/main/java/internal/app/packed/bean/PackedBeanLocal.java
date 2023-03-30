@@ -22,10 +22,7 @@ import java.util.function.Supplier;
 import app.packed.extension.BeanLocal;
 import app.packed.util.Nullable;
 
-/**
- * Implementation of {@link BeanLocal}. Internally we use this to allow querying using BeanSetup instance.
- */
-// TODO, don't think we should allow updates after the application has been assembled.
+/** Implementation of {@link BeanLocal}. */
 public final class PackedBeanLocal<T> extends BeanLocal<T> {
 
     private final @Nullable Supplier<? extends T> initialValueSupplier;
@@ -34,40 +31,54 @@ public final class PackedBeanLocal<T> extends BeanLocal<T> {
         this.initialValueSupplier = initialValueSupplier;
     }
 
-    public PairKey keyOf(BeanSetup bean) {
-        return new PairKey(bean, this);
-    }
-
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @apiNote this method is public, because we use it internally.
+     */
     @Override
     @SuppressWarnings("unchecked")
     public T get(BeanSetup bean) {
         if (initialValueSupplier == null) {
-            return (T) bean.container.application.beanLocals.get(keyOf(bean));
+            return (T) bean.container.application.beanLocals.get(toKey(bean));
         } else {
-            return (T) bean.container.application.beanLocals.computeIfAbsent(keyOf(bean), e -> e.beanLocal.initialValueSupplier.get());
+            return (T) bean.container.application.beanLocals.computeIfAbsent(toKey(bean), e -> e.beanLocal.initialValueSupplier.get());
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isPresent(BeanSetup setup) {
-        return setup.container.application.beanLocals.containsKey(keyOf(setup));
+        return setup.container.application.beanLocals.containsKey(toKey(setup));
     }
 
     /** {@inheritDoc} */
     @Override
     public void set(BeanSetup bean, T value) {
+        requireNonNull(bean);
         requireNonNull(value);
-        // We don't have the extension so can't check
-        // OMG, power users can actually use this as well.
-        bean.container.application.beanLocals.put(keyOf(bean), value);
+        bean.container.application.checkWriteToLocals().beanLocals.put(toKey(bean), value);
+    }
+
+    /**
+     * {@return a new bean local key}
+     *
+     * @param bean
+     *            the bean to create the key for
+     */
+    BeanLocalKey toKey(BeanSetup bean) {
+        return new BeanLocalKey(bean, this);
     }
 
     public static <T> PackedBeanLocal<T> of(@Nullable Supplier<? extends T> initialValueSupplier) {
         return new PackedBeanLocal<>(initialValueSupplier);
     }
 
-    /** We have a single bean local map for an application, this is the key in the map. */
-    public record PairKey(BeanSetup bean, PackedBeanLocal<?> beanLocal) {}
+    /**
+     * For space efficiency reasons we store all bean locals in a single map per-application using an instance of this class
+     * as the key.
+     *
+     * @see internal.app.packed.container.ApplicationSetup#beanLocals
+     */
+    public /* primitive */ record BeanLocalKey(BeanSetup bean, PackedBeanLocal<?> beanLocal) {}
 }

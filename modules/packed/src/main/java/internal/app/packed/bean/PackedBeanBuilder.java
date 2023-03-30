@@ -60,7 +60,8 @@ public final class PackedBeanBuilder implements BeanBuilder {
     /** The extension that is installing the bean */
     final ExtensionSetup installingExtension;
 
-    IdentityHashMap<PackedBeanLocal<?>, Object> locals = new IdentityHashMap<>();
+    /** Temporary map, that stores bean locals */
+    final IdentityHashMap<PackedBeanLocal<?>, Object> locals = new IdentityHashMap<>();
 
     String namePrefix;
 
@@ -203,9 +204,10 @@ public final class PackedBeanBuilder implements BeanBuilder {
         BeanSetup bean = new BeanSetup(this, beanClass, sourceKind, source);
 
         // Copy any bean locals that have been set
+        // We need to set this before introspection
         if (locals != null) {
             for (Entry<PackedBeanLocal<?>, Object> e : locals.entrySet()) {
-                container.application.beanLocals.put(e.getKey().keyOf(bean), e.getValue());
+                container.application.beanLocals.put(e.getKey().toKey(bean), e.getValue());
             }
         }
 
@@ -300,6 +302,9 @@ public final class PackedBeanBuilder implements BeanBuilder {
     /** {@inheritDoc} */
     @Override
     public <T> BeanBuilder setLocal(BeanLocal<T> local, T value) {
+        requireNonNull(local);
+        requireNonNull(value);
+        checkNotUsed();
         locals.put((PackedBeanLocal<?>) local, value);
         return this;
     }
