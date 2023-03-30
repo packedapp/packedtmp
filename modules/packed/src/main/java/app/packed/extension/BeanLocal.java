@@ -19,14 +19,14 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanLocal;
 import sandbox.extension.bean.BeanHandle;
 
 /**
- * This class provides bean-local variables. Think of them as {@link ThreadLocal thread locals}, but for a single bean
- * instead of a single thread.
+ * This class provides bean-local variables. Think of them as {@link ThreadLocal thread locals}, but for a single bean.
  * <p>
+ * Bean locals are typically used for sharing per-bean data between different components while building the application.
+ *
  * There are number where a BeanLocal be used:
  *
  * Before creating a bean a value can be set using
@@ -34,6 +34,9 @@ import sandbox.extension.bean.BeanHandle;
  *
  *
  * Finally, a bean local can be used from a {@link app.packed.bean.BeanMirror}
+ * <p>
+ * While bean locals are primarily targeted extension developers, there are no reasons that power users could not use
+ * them.
  * <p>
  * Bean locals should generally not be shared outside of the extension that created them.
  * <p>
@@ -46,6 +49,8 @@ import sandbox.extension.bean.BeanHandle;
  * @see ContainerLocal
  */
 
+// Tilfoej BeanElement, BeanMirror?
+
 // Jeg ved ikke om vi vil have en default vaerdi
 
 // get, use, remove..
@@ -57,7 +62,7 @@ public sealed abstract class BeanLocal<T> permits ContainerLocal, PackedBeanLoca
     }
 
     public final T get(BeanHandle<?> handle) {
-        return get(crack(handle));
+        return get(BeanSetup.crack(handle));
     }
 
     public final T get(BeanIntrospector introspector) {
@@ -81,7 +86,7 @@ public sealed abstract class BeanLocal<T> permits ContainerLocal, PackedBeanLoca
     }
 
     public final boolean isPresent(BeanHandle<?> handle) {
-        return isPresent(crack(handle));
+        return isPresent(BeanSetup.crack(handle));
     }
 
     public final boolean isPresent(BeanIntrospector introspector) {
@@ -99,18 +104,55 @@ public sealed abstract class BeanLocal<T> permits ContainerLocal, PackedBeanLoca
         }
     }
 
+    /**
+     * Sets the value of this local for the bean represented by the specified bean introspector.
+     *
+     * @param <B>
+     *            the type of bean introspector
+     * @param handle
+     *            the bean introspector that represents the bean
+     * @param value
+     *            the value to set
+     * @return the specified bean introspector
+     */
+    public final <B extends BeanElement> B set(B element, T value) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Sets the value of this local for the bean represented by the specified bean introspector.
+     *
+     * @param <B>
+     *            the type of bean introspector
+     * @param handle
+     *            the bean introspector that represents the bean
+     * @param value
+     *            the value to set
+     * @return the specified bean introspector
+     */
     public final <B extends BeanIntrospector> B set(B introspector, T value) {
         set(introspector.bean(), value);
         return introspector;
     }
 
+    /**
+     * Sets the value of this local for the bean represented by the specified bean configuration.
+     *
+     * @param <B>
+     *            the type of bean configuration
+     * @param handle
+     *            the bean configuration that represents the bean
+     * @param value
+     *            the value to set
+     * @return the specified bean configuration
+     */
     public final <B extends BeanConfiguration> B set(B configuration, T value) {
         set(BeanSetup.crack(configuration), value);
         return configuration;
     }
 
     /**
-     * Sets the value of t
+     * Sets the value of this local for the bean represented by the specified bean handle.
      *
      * @param <B>
      *            the type of bean handle
@@ -121,15 +163,19 @@ public sealed abstract class BeanLocal<T> permits ContainerLocal, PackedBeanLoca
      * @return the specified bean handle
      */
     public final <B extends BeanHandle<?>> B set(B handle, T value) {
-        set(crack(handle), value);
+        set(BeanSetup.crack(handle), value);
         return handle;
     }
 
+    /**
+     * Sets the value of this local for the specified bean.
+     *
+     * @param bean
+     *            the bean
+     * @param value
+     *            the value to set
+     */
     protected abstract void set(BeanSetup bean, T value);
-
-    private static BeanSetup crack(BeanHandle<?> handle) {
-        return ((PackedBeanHandle<?>) handle).bean();
-    }
 
     /**
      * Creates a bean local without any initial value.

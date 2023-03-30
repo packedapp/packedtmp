@@ -25,8 +25,10 @@ import internal.app.packed.operation.OperationSetup;
 
 public final class EntryPointSetup {
 
+    /** The lifetime the entry point creates. */
     public final LifetimeSetup lifetime;
 
+    /** The operation of this entry point. */
     public final OperationSetup operation;
 
     // Har vi brug for en counter, Kan vi smide den paa lifetime setup

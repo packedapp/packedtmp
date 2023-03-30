@@ -36,7 +36,6 @@ public class PackedDomainTemplate<T extends ExtensionDomain<?>> implements Domai
     @Override
     public <D extends DomainMirror<?>> DomainTemplate<T> mirrorType(Class<D> mirrorType, Function<? super T, ? extends D> mirrorSuppliers) {
         throw new UnsupportedOperationException();
-
     }
 
     public static <T extends ExtensionDomain<?>> PackedDomainTemplate<T> of(Supplier<T> supplier) {

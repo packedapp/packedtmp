@@ -50,17 +50,14 @@ import sandbox.lifetime.ManagedLifetime;
 public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLifetimeSetup> implements LifetimeSetup {
 
     /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
-    private static final MethodHandle MH_INVOKE_INITIALIZER = LookupUtil.findStaticOwn(MethodHandles.lookup(), "invokeInitializer", void.class, BeanSetup.class,
-            MethodHandle.class, ContainerContext.class);
-
-    /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
     private static final MethodHandle MH_CONTAINER_LIFETIME_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ContainerLifetimeMirror.class,
             "initialize", void.class, ContainerLifetimeSetup.class);
 
-    /** Beans that have independent lifetime of all the container's in this lifetime. */
-    private final ArrayList<BeanLifetimeSetup> beanLifetimes = new ArrayList<>(); // what are using this for??
+    /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
+    private static final MethodHandle MH_INVOKE_INITIALIZER = LookupUtil.findStaticOwn(MethodHandles.lookup(), "invokeInitializer", void.class, BeanSetup.class,
+            MethodHandle.class, ContainerContext.class);
 
-    /** All beans that are in this lifetime, in order of installation. */
+    /** All beans in this container lifetime, in the order they where installed. */
     public final ArrayList<BeanSetup> beans = new ArrayList<>();
 
     /** The root container of the lifetime. */
@@ -73,7 +70,10 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     public final List<FuseableOperation> lifetimes;
 
-    LinkedHashSet<BeanSetup> orderedBeans = new LinkedHashSet<>();
+    LinkedHashSet<BeanSetup> dependencyOrderedBeans = new LinkedHashSet<>();
+
+    // Er ikke noedvendigvis fra et entrypoint, kan ogsaa vaere en completer
+    public final Class<?> resultType;
 
     public final FuseableOperation shutdown;
 
@@ -82,8 +82,6 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     public final FuseableOperation startup;
 
-    // Er ikke noedvendigvis fra et entrypoint, kan ogsaa vaere en completer
-    public final Class<?> resultType;
     /**
      * @param origin
      * @param parent
@@ -109,12 +107,6 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
             return reserve(bean.beanClass);
         }
         return -1;
-    }
-
-    public BeanLifetimeSetup addDetachedChildBean(BeanLifetimeSetup lifetime) {
-        // I don't know what we use this method for
-        beanLifetimes.add(lifetime);
-        return lifetime;
     }
 
     /** {@inheritDoc} */
@@ -153,7 +145,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
             orderBeans(b);
         }
 
-        if (orderedBeans.add(bean)) {
+        if (dependencyOrderedBeans.add(bean)) {
             // System.out.println("Codegen " + bean.path());
             processBean(bean);
             // addFactory, that installs the bean into Object[]
@@ -203,6 +195,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
                 initialization.operations.add(lop.handle());
                 bean.container.application.addCodegenAction(() -> {
                     MethodHandle mh = lop.handle().generateMethodHandle();
+                    // won't work with multiple concurrent threads, or any change to order
                     initialization.methodHandles.add(mh);
                 });
             } else if (lop.runOrder().runState == RunState.STARTING) {
@@ -232,6 +225,12 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         return size++;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> resultType() {
+        return resultType;
+    }
+
     public static void invokeInitializer(BeanSetup bean, MethodHandle mh, ContainerContext ec) {
         Object instance;
         try {
@@ -248,13 +247,10 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         PackedContainerContext pec = (PackedContainerContext) ec;
         pec.storeObject(bean.lifetimeStoreIndex, instance);
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<?> resultType() {
-        return resultType;
-    }
 }
+
+///** Beans that have independent lifetime of all the container's in this lifetime. */
+//private final ArrayList<BeanLifetimeSetup> beanLifetimes = new ArrayList<>(); // what are using this for??
 
 //Vi kan sagtens folde bedste foraeldre ind ogsaa...
 //Altsaa bruger man kun et enkelt object kan vi jo bare folde det ind...

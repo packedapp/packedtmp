@@ -23,9 +23,9 @@ import java.util.function.Predicate;
 
 import app.packed.container.Wirelet;
 import app.packed.service.ServiceContract;
+import app.packed.service.ServiceIncomingTransformer;
+import app.packed.service.ServiceOutgoingTransformer;
 import app.packed.util.Key;
-import sandbox.service.transform.ServiceExportsTransformer;
-import sandbox.service.transform.ServiceRequirementsTransformer;
 
 /**
  * This class provide wirelets that can be used to transform and filter services being pull and pushed into containers.
@@ -52,7 +52,7 @@ public final class ServiceWirelets {
     // Fordi der laver jo bare filtrering paa de services vi ikke
     // skal bruge
 
-    public static Wirelet anchor(Class<?> ... keys) {
+    public static Wirelet anchor(Class<?>... keys) {
         return anchor(Key.ofAll(keys));
     }
 
@@ -79,6 +79,12 @@ public final class ServiceWirelets {
         throw new UnsupportedOperationException();
     }
 
+    public static Wirelet contractCheckCompatible(Consumer<? super ServiceContract> action) {
+        requireNonNull(action, "action is null");
+        throw new UnsupportedOperationException();
+        // return transformIn(t -> action.accept(t.contract()));
+    }
+
     /**
      * Returns a wirelet that will invoke the specified action with the service contract of the container that is being
      * wired. The wirelet it typically use to check the contents of.
@@ -97,16 +103,10 @@ public final class ServiceWirelets {
     // was peekContract, but arguments were identical
     // verifyContract throws Verification exception
     // maybe even just verify... or validate
-    public static Wirelet checkExactContract(Consumer<? super ServiceContract> action) {
+    public static Wirelet contractCheckExact(Consumer<? super ServiceContract> action) {
         requireNonNull(action, "action is null");
         // return transformIn(t -> action.accept(t.contract()));
         throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet checkCompatibleContract(Consumer<? super ServiceContract> action) {
-        requireNonNull(action, "action is null");
-        throw new UnsupportedOperationException();
-        // return transformIn(t -> action.accept(t.contract()));
     }
 
     public static <T> Wirelet provideInstance(Class<T> key, T instance) {
@@ -126,6 +126,7 @@ public final class ServiceWirelets {
     public static <T> Wirelet provideInstance(Key<T> key, T instance) {
         requireNonNull(key, "key is null");
         requireNonNull(instance, "instance is null");
+        // Transform is not available at runtime
         return transformRequirements(t -> t.provideInstance(key, instance));
     }
 
@@ -148,12 +149,12 @@ public final class ServiceWirelets {
      *            the transformation to perform
      * @return the transforming wirelet
      */
-    public static Wirelet transformExports(Consumer<? super ServiceExportsTransformer> transformation) {
+    public static Wirelet transformExports(Consumer<? super ServiceOutgoingTransformer> transformation) {
         requireNonNull(transformation, "transformation is null");
         throw new UnsupportedOperationException();
     }
 
-    public static Wirelet transformRequirements(Consumer<? super ServiceRequirementsTransformer> transformation) {
+    public static Wirelet transformRequirements(Consumer<? super ServiceIncomingTransformer> transformation) {
         requireNonNull(transformation, "transformation is null");
         throw new UnsupportedOperationException();
 //        return new Service2ndPassWirelet() {
@@ -188,13 +189,11 @@ class ServiceWSandbox {
 
     // Second pass
 
-    // Omvendt vil vi godt have en loesning til config. Da vi ikke vil
-    // have elementer (som default) som vi ikke ved hvordan skal behandles
-    static Wirelet ignoreUnrequiredServices() {
+    static Wirelet anchor(Key<?>... keys) {
         throw new UnsupportedOperationException();
     }
 
-    static Wirelet anchor(Key<?>... keys) {
+    static Wirelet exportTransitiveAll() {
         throw new UnsupportedOperationException();
     }
 
@@ -203,11 +202,13 @@ class ServiceWSandbox {
     // Altsaa de er jo lidt ligegyldige...
     // Kan bruge extensionen
 
-    static Wirelet exportTransitiveAll() {
+    static Wirelet exportTransitiveIf(Predicate<?> filter) {
         throw new UnsupportedOperationException();
     }
 
-    static Wirelet exportTransitiveIf(Predicate<?> filter) {
+    // Omvendt vil vi godt have en loesning til config. Da vi ikke vil
+    // have elementer (som default) som vi ikke ved hvordan skal behandles
+    static Wirelet ignoreUnrequiredServices() {
         throw new UnsupportedOperationException();
     }
 

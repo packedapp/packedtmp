@@ -49,7 +49,12 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
         throw new UnsupportedOperationException();
     }
 
-    /** {@return a collection of any entry points this lifetime may have.} */
+    /**
+     * {@return a collection of any entry points this lifetime may have.}
+     *
+     * An entry point may be located in a child lifetime of this lifetime. In which case the child lifetime is created on
+     * the condition that the particular entry point is taken.
+     */
     public final Collection<OperationMirror> entryPoints() {
         return lifetime().entryPoints().stream().map(OperationSetup::mirror).collect(Collectors.toUnmodifiableList());
     }

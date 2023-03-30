@@ -15,7 +15,12 @@
  */
 package internal.app.packed.container;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanOwner;
+import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.MagicInitializer;
 
 /**
@@ -37,5 +42,23 @@ public final class DomainSetup {
         this.template = template;
         this.root = root;
         this.owner = owner;
+    }
+
+    // Must search up until root to find local names
+    final Map<ContainerSetup, String> localNames = new HashMap<>();
+
+    // Tror maaske vi har nogle strategies
+    // AllApplication-> No nodes
+
+    // Vi vil helst avoid node
+    static class DomainNode extends AbstractTreeNode<DomainNode> {
+
+        /**
+         * @param treeParent
+         */
+        protected DomainNode(@Nullable DomainNode treeParent) {
+            super(treeParent);
+        }
+
     }
 }

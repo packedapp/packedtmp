@@ -17,6 +17,7 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Map;
 import java.util.function.Supplier;
 
 import app.packed.container.Wirelet;
@@ -28,19 +29,30 @@ import app.packed.util.Nullable;
  */
 public final class PackedContainerLocal<T> extends ContainerLocal<T> {
 
+    final Scope scope;
+
     private final @Nullable Supplier<? extends T> initialValueSupplier;
 
-    private PackedContainerLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
+    private PackedContainerLocal(Scope scope, @Nullable Supplier<? extends T> initialValueSupplier) {
+        this.scope = requireNonNull(scope);
         this.initialValueSupplier = initialValueSupplier;
+    }
+
+    public Map.Entry<PackedContainerLocal<?>, Object> keyOf(ContainerSetup container) {
+        return Map.entry(this, switch (scope) {
+        case APPLICATION -> container.application;
+        case CONTAINER_LIFETIME -> container.lifetime;
+        case CONTAINER -> container;
+        });
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public T get(ContainerSetup contianer) {
+    public T get(ContainerSetup container) {
         if (initialValueSupplier == null) {
-            return (T) contianer.locals.get(this);
+            return (T) container.application.containerLocals.get(keyOf(container));
         } else {
-            return (T) contianer.locals.computeIfAbsent(this, e -> e.initialValueSupplier.get());
+            return (T) container.application.containerLocals.computeIfAbsent(keyOf(container), k -> k.getKey().initialValueSupplier.get());
         }
     }
 
@@ -55,16 +67,20 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
 
     @Override
     public boolean isPresent(ContainerSetup container) {
-        return container.locals.containsKey(this);
+        return container.application.containerLocals.containsKey(keyOf(container));
     }
 
-    public void set(ContainerSetup bean, T container) {
+    public void set(ContainerSetup container, T value) {
         requireNonNull(container);
-        bean.locals.put(this, container);
+        container.application.containerLocals.put(keyOf(container), value);
     }
 
-    public static <T> PackedContainerLocal<T> of(@Nullable Supplier<? extends T> initialValueSupplier) {
-        return new PackedContainerLocal<>(initialValueSupplier);
+    public static <T> PackedContainerLocal<T> of(Scope scope) {
+        return new PackedContainerLocal<>(scope, null);
+    }
+
+    public static <T> PackedContainerLocal<T> of(Scope scope, @Nullable Supplier<? extends T> initialValueSupplier) {
+        return new PackedContainerLocal<>(scope, initialValueSupplier);
     }
 
     /** {@inheritDoc} */
@@ -78,5 +94,9 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
             }
         }
         return new ContainerSetLocalWirelet();
+    }
+
+    public enum Scope {
+        CONTAINER, CONTAINER_LIFETIME, APPLICATION;
     }
 }

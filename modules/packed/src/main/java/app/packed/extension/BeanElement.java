@@ -31,6 +31,7 @@ import app.packed.util.FunctionType;
 import app.packed.util.Key;
 import app.packed.util.Variable;
 import internal.app.packed.bean.PackedBeanConstructor;
+import internal.app.packed.bean.PackedBeanElement;
 import internal.app.packed.bean.PackedBeanField;
 import internal.app.packed.bean.PackedBeanMethod;
 import sandbox.extension.bean.BeanHandle;
@@ -47,7 +48,7 @@ import sandbox.extension.sandbox.ApplicationHandle;
 // Checks container lifetime
 // Checks own extension or container lifetime
 // service.provide -> isContainerLifetime or prot
-public sealed interface BeanElement permits BeanClass, BeanField, BeanConstructor, BeanMethod, BeanVariable {
+public sealed interface BeanElement permits PackedBeanElement, BeanClass, BeanField, BeanConstructor, BeanMethod, BeanVariable {
 
     /** {@return a list of annotations on the element.} */
     AnnotationList annotations();
@@ -61,6 +62,10 @@ public sealed interface BeanElement permits BeanClass, BeanField, BeanConstructo
      */
     default void failWith(String message) {
         throw new BeanInstallationException(message);
+    }
+
+    default <T> void localSet(BeanLocal<T> local, T value) {
+        throw new UnsupportedOperationException();
     }
 
     /**

@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -83,9 +82,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     /** The lifetime the container is a part of. */
     public final ContainerLifetimeSetup lifetime;
 
-    /** A container local map. */
-    final IdentityHashMap<PackedContainerLocal<?>, Object> locals;
-
     /** The name of the container. */
     public String name;
 
@@ -109,7 +105,8 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         this.assembly = requireNonNull(assembly);
         this.specializedMirror = builder.containerMirrorSupplier;
         this.name = builder.name;
-        this.locals = builder.locals;
+
+        builder.locals.forEach((p, o) -> application.containerLocals.put(p.keyOf(this), o));
 
         if (builder.template.kind() == PackedContainerKind.PARENT_LIFETIME) {
             this.lifetime = treeParent.lifetime;
@@ -233,9 +230,8 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
 //
 //      return new BuildtimeWireletSelection<>(wirelets, wireletClass);
 
-      throw new UnsupportedOperationException();
-  }
-
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * If an extension of the specified type has not already been installed, installs it. Returns the extension's context.

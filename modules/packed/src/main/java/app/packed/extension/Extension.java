@@ -27,7 +27,6 @@ import java.util.Optional;
 
 import app.packed.application.ApplicationPath;
 import app.packed.application.BuildGoal;
-import app.packed.container.ExtensionWirelet;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.service.ServiceableBeanConfiguration;
@@ -376,6 +375,7 @@ public abstract class Extension<E extends Extension<E>> {
             throw new IllegalArgumentException("The specified wirelet class is not in the same module (" + getClass().getModule().getName() + ") as '"
                     + /* simple extension name */ extension.model.name() + ", wireletClass.getModule() = " + wireletClass.getModule());
         }
+        // At runtime we have already checked T when building the application
 
         return extension.container.selectWirelets(wireletClass);
     }

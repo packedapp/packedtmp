@@ -80,7 +80,7 @@ public final class ApplicationWirelets {
 
     /**
      * By default images created using {@link App#imageOf(app.packed.container.Assembly, Wirelet...)} and similar methods
-     * can only be used a single time. Once launched, the
+     * can only be used a single time. Once launched, the reference to
      * <p>
      * By specifying this wirelet when creating an application image. The image can be used any number of times.
      * <p>

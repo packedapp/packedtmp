@@ -13,14 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.container;
 
 /**
- * An exception that is typically thrown during the code generating phase of an application.
+ * An exception that is thrown if attempting to use a wirelet at runtime that is only intended to be used when building
+ * the application.
  */
-public class CodegenException extends BuildException {
+// Hmm maybe a generic wirelet exception?
+// *) Buildtime wirelet used at runtime (Other name without Build?)
+// *) Wirelet specified but no consumers. (UnconsumedWireletException) (UnusedWireletException)
+// *) Wirelet specified but not appropiated for specific use site (ApplicationWirelet on leaf container)
 
-    private static final long serialVersionUID = -9153170517785461951L;
+// *) BuildException, try to inject WireSelection<SomeApplicationWirelet> for an extensionBean
+public class NotARuntimeWireletException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates a new exception with the specified detailed message. The cause is not initialized, and may subsequently be
@@ -30,7 +37,7 @@ public class CodegenException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public CodegenException(String message) {
+    public NotARuntimeWireletException(String message) {
         super(message);
     }
 
@@ -44,7 +51,7 @@ public class CodegenException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public CodegenException(String message, Throwable cause) {
+    public NotARuntimeWireletException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -26,7 +26,7 @@ import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
- *
+ * An op
  */
 public final class FuseableOperation {
 

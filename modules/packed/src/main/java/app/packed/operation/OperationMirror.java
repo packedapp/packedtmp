@@ -87,6 +87,10 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
         return List.of(hooks);
     }
 
+    /**
+     * {@return any lifetime this operation is an entry point in. Or empty if this operation is not an entry point
+     * operation.}
+     */
     public Optional<LifetimeMirror> entryPointIn() {
         return Optional.ofNullable(operation().entryPoint).map(s -> s.lifetime.mirror());
     }

@@ -28,8 +28,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.bean.InaccessibleMemberException;
-import app.packed.util.Nullable;
 import app.packed.util.FunctionType;
+import app.packed.util.Nullable;
 import internal.app.packed.operation.PackedOp;
 
 /**
@@ -91,7 +91,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
      * @return a new operation
      *
      * @throws ClassCastException
-     *             if the argument does not match the leading variable type.
+     *             if the argument does not match the type of the leading variable.
      * @throws IndexOutOfBoundsException
      *             if the operation does not have a leading variable
      * @throws NullPointerException

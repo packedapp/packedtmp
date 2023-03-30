@@ -93,6 +93,17 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
         // size, isEmpty, is going to get a bit slower.
     }
 
+    public Stream<BeanMirror> beansInSameLifetime() {
+        // not technically a view but will do for now
+        ArrayList<BeanMirror> beans = new ArrayList<>();
+        for (var b = container().beanFirst; b != null; b = b.beanSiblingNext) {
+            if (b.lifetime == container.lifetime) {
+                beans.add(b.mirror());
+            }
+        }
+        return List.copyOf(beans).stream();
+    }
+
     /** {@return an unmodifiable view of all of the children of this component.} */
     public Stream<ContainerMirror> children() {
         // childIterable?
@@ -175,11 +186,6 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
         return container().isApplicationRoot();
     }
 
-    /** {@return whether or not this container is the root container in this container's lifetime.} */
-    public boolean isLifetimeRoot() {
-        return container().isLifetimeRoot();
-    }
-
     /**
      * Returns whether or not an extension of the specified type is in use by the container.
      *
@@ -190,6 +196,11 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
      */
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return container().isExtensionUsed(extensionType);
+    }
+
+    /** {@return whether or not this container is the root container in this container's lifetime.} */
+    public boolean isLifetimeRoot() {
+        return container().isLifetimeRoot();
     }
 
     /** {@return the containers's lifetime.} */

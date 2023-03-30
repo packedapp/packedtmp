@@ -22,7 +22,7 @@ import internal.app.packed.util.PackedAnnotationList;
 
 /** The super class of operational members. The inheritance hierarchy follows that of {@link Member}. */
 @SuppressWarnings("rawtypes")
-abstract sealed class PackedBeanMember<M extends Member> permits PackedBeanExecutable {
+abstract sealed class PackedBeanMember<M extends Member> extends PackedBeanElement permits PackedBeanExecutable {
 
     /** Annotations on the member. */
     private final PackedAnnotationList annotations;
@@ -40,6 +40,7 @@ abstract sealed class PackedBeanMember<M extends Member> permits PackedBeanExecu
     }
 
     /** {@return a list of annotations on the member.} */
+    @Override
     public final AnnotationList annotations() {
         return annotations;
     }
@@ -52,6 +53,7 @@ abstract sealed class PackedBeanMember<M extends Member> permits PackedBeanExecu
     }
 
     /** {@return the modifiers of the member.} */
+    @Override
     public final int modifiers() {
         return member.getModifiers();
     }

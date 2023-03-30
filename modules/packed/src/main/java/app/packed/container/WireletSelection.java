@@ -19,21 +19,27 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import app.packed.extension.BaseExtension;
+import app.packed.extension.BeanHook.BindingTypeHook;
 import internal.app.packed.container.WireletSelectionArray;
 
 /**
- *
+ * A selection of wirelets of a specific type (W).
  * <p>
  * The framework provides no way to guard against use of multiple wirelets of the same type. This is easier done on the
  * wirelet consumer side (this selection)
  */
 @SuppressWarnings("rawtypes")
+@BindingTypeHook(extension = BaseExtension.class)
 public sealed interface WireletSelection<W extends Wirelet> extends Iterable<W> permits WireletSelectionArray {
 
+    /** {@return the first wirelet in this selection or empty {@code Optional}, if no wirelets are present} */
     Optional<W> first();
 
+    /** {@return whether or not this selection contains any wirelets.} */
     boolean isEmpty();
 
+    /** {@return the last wirelet in this selection or empty {@code Optional}, if no wirelets are present} */
     Optional<W> last();
 
     // IDK
@@ -41,8 +47,10 @@ public sealed interface WireletSelection<W extends Wirelet> extends Iterable<W> 
 
     <E> E lastOrElse(Function<? super W, ? extends E> mapper, E ifEmpty);
 
+    /** {@return the number of wirelets in this selection} */
     int size();
 
+    /** {@return the wirelets in a list} */
     List<W> toList();
 
     /**
@@ -50,7 +58,7 @@ public sealed interface WireletSelection<W extends Wirelet> extends Iterable<W> 
      *
      * @param <W>
      *            the type of wirelets in the selection
-     * @return an empty wirelet selection
+     * @return an empty selection of wirelets
      */
     static <W extends Wirelet> WireletSelection<W> of() {
         @SuppressWarnings("unchecked")
@@ -59,15 +67,15 @@ public sealed interface WireletSelection<W extends Wirelet> extends Iterable<W> 
     }
 
     /**
+     * Returns a selection of the specified wirelets.
+     * <p>
      * This method is mainly used for testing purposes.
      *
      * @param <W>
      *            the type of wirelets in the selection
-     * @param wireletClass
-     *            the type of wirelets in the selection
      * @param wirelets
-     *            the wirelets to include in the selection if they are assignable to the specified {@code wireletClass}.
-     * @return the selection
+     *            the wirelets to include in the selection
+     * @return the wirelet selection
      */
     @SafeVarargs
     static <W extends Wirelet> WireletSelection<W> of(W... wirelets) {

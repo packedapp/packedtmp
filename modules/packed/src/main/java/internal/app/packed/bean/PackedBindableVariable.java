@@ -47,7 +47,7 @@ import sandbox.extension.operation.OperationTemplate;
 import internal.app.packed.operation.PackedOp;
 
 /** Implementation of {@link BindableVariable}. */
-public final class PackedBindableVariable implements BeanVariable {
+public final class PackedBindableVariable extends PackedBeanElement implements BeanVariable {
 
     /** Whether or not allow binding of static fields. */
     private boolean allowStaticFieldBinding;

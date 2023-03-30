@@ -21,26 +21,22 @@ import app.packed.extension.Extension;
  * A static context. By static we mean that is can be determined at runtime whether or not a given context is available
  * in a container, bean or operation.
  *
- *
  * @param <E>
- *            the extension the runtime context is a part of
+ *            the extension the context is a part of
  */
-
-// A context has a
-//// ContextClass
-//// ContextSpan (Variable)
-
-// er requiresContext hard paa hook annotation?
-// dvs kan man kun se de contexts der er til raadighed
-
-
+//Ved ikke om det er problematisk at tage E med paa runtime...
+//Den er jo ikke super needed. Og bliver jo encoded i klassen
+// Det samme for wirelets, men der skal vi jo saa bruge det for nogle checks
 public interface Context<E extends Extension<E>> {}
+
+//A context has a
+////ContextClass
+////ContextSpan (Variable)
+
+//er requiresContext hard paa hook annotation?
+//dvs kan man kun se de contexts der er til raadighed
 
 // Protected typeClass for configuration...
 
-
 // Kan extension beans have it injected???? I don't think so....
 // Only the owner of the ContextuablizedElement
-
-// Ved ikke om det er problematisk at tage E med paa runtime...
-// Den er jo ikke super needed. Og bliver jo encoded i klassen

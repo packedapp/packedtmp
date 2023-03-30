@@ -20,6 +20,6 @@ import app.packed.extension.BeanElement.BeanClass;
 /**
  *
  */
-public abstract class PackedBeanClass implements BeanClass {
+public non-sealed abstract class PackedBeanClass extends PackedBeanElement implements BeanClass {
 
 }

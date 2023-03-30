@@ -16,7 +16,6 @@
 package internal.app.packed.container;
 
 import app.packed.container.Wirelet;
-import internal.app.packed.integration.devtools.DevToolsWirelet;
 
 /** Special wirelets that are defined by the framework. */
-public abstract sealed class FrameworkWirelet extends Wirelet permits CompositeWirelet, InternalBuildWirelet, DevToolsWirelet {}
+public abstract sealed class FrameworkWirelet extends Wirelet permits CompositeWirelet, InternalBuildWirelet {}

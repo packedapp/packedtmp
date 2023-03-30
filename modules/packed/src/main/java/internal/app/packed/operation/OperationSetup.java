@@ -57,7 +57,7 @@ public sealed abstract class OperationSetup {
             OperationSetup.class);
 
     /** An empty array of {@code BindingSetup}. */
-    private static final BindingSetup[] NO_BINDINGS = new BindingSetup[0];
+    private static final BindingSetup[] NO_BINDINGS = {};
 
     /** The bean this operation belongs to. */
     public final BeanSetup bean;

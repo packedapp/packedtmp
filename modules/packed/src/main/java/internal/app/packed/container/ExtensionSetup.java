@@ -47,6 +47,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "onNew", void.class);
 
+    /** Used for initializing {@link Extension}. */
     public static final MagicInitializer<ExtensionSetup> MI = MagicInitializer.of();
 
     /** The container where the extension is used. */
@@ -127,13 +128,15 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     public int compareTo(ExtensionSetup o) {
         ExtensionModel otherModel = o.model;
 
-        // We need to have a total deterministic ordering of extensions
+        // We need a total deterministic ordering of extensions
 
         // First we compare the depth of each extension
         int d = model.orderingDepth() - otherModel.orderingDepth();
         if (d == 0) {
+            // Then the simple name of the extension
             d = model.name().compareTo(otherModel.name());
             if (d == 0) {
+                // Then the full name of the extension
                 d = model.fullName().compareTo(otherModel.fullName());
                 if (d == 0) {
                     // Same canonical name but different class loaders.

@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationMirror;
@@ -56,6 +57,9 @@ public final class ApplicationSetup {
 
     /** The root container of the application. */
     public final ContainerSetup container;
+
+    /** This map maintains every {@link app.packed.extension.ContainerLocal} for the application. */
+    public final HashMap<Map.Entry<PackedContainerLocal<?>, Object>, Object> containerLocals = new HashMap<>();
 
     // Maybe move to container?? Or maybe a DomainManager class? IDK
     public final HashMap<PackedDomainTemplate<?>, ExtensionDomain<?>> domains = new HashMap<>();

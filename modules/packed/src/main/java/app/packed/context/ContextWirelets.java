@@ -20,19 +20,19 @@ import app.packed.container.Wirelet;
 /**
  *
  */
-public class ContextWirelets {
+ class ContextWirelets {
 
-    Wirelet propageAll() {
+    Wirelet propageAllContexts() {
         throw new UnsupportedOperationException();
     }
 
     @SuppressWarnings("unchecked")
-    static final Wirelet propagete(Class<? extends Context<?>>... contexts) {
+    static final Wirelet propageteContext(Class<? extends Context<?>>... contexts) {
         throw new UnsupportedOperationException();
     }
 
     @SuppressWarnings("unchecked")
-    static final Wirelet propageteIfPresent(Class<? extends Context<?>>... contexts) {
+    static final Wirelet propageteContextIfPresent(Class<? extends Context<?>>... contexts) {
         throw new UnsupportedOperationException();
     }
 }

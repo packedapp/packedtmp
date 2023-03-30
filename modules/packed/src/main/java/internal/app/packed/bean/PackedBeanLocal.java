@@ -38,6 +38,7 @@ public final class PackedBeanLocal<T> extends BeanLocal<T> {
         return new PairKey(bean, this);
     }
 
+    /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
     public T get(BeanSetup bean) {
@@ -58,6 +59,8 @@ public final class PackedBeanLocal<T> extends BeanLocal<T> {
     @Override
     public void set(BeanSetup bean, T value) {
         requireNonNull(value);
+        // We don't have the extension so can't check
+        // OMG, power users can actually use this as well.
         bean.container.application.beanLocals.put(keyOf(bean), value);
     }
 

@@ -37,6 +37,7 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.types.ClassUtil;
+import sandbox.extension.bean.BeanHandle;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 
@@ -70,11 +71,14 @@ public final class BeanSetup {
     /** The container this bean is installed in. */
     public final ContainerSetup container;
 
-    public ContextSetup contexts;
-
     /** The extension that installed the bean. */
     public final ExtensionSetup installedBy;
 
+    /**
+     * All lifecycle operations for the bean. Is initially unsorted as operations can be added in any order. But in the end
+     * the list will be sorted in the order of execution. With {@link app.packed.lifetime.RunState#INITIALIZING} lifecycle
+     * operations first, and {@link app.packed.lifetime.RunState#STOPPING} lifecycle operations last.
+     */
     public final ArrayList<BeanLifecycleOperation> lifecycleOperations = new ArrayList<>();
 
     /** The lifetime the component is a part of. */
@@ -96,11 +100,15 @@ public final class BeanSetup {
     /** The owner of the bean. */
     public final BeanOwner owner;
 
-    // ???
-    public boolean providingOperationsVisited;
-
     /** A list of services provided by the bean, used for circular dependency checks. */
     public final List<ServiceProviderSetup> serviceProviders = new ArrayList<>();
+
+    // ???
+    // Er vi recursive??
+    @Nullable
+    public ContextSetup contexts;
+
+    public boolean providingOperationsVisited;
 
     /** Create a new bean. */
     BeanSetup(PackedBeanBuilder installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
@@ -124,7 +132,7 @@ public final class BeanSetup {
             BeanLifetimeSetup bls = new BeanLifetimeSetup(this, installer);
             this.lifetime = bls;
             this.lifetimeStoreIndex = -1;
-            containerLifetime.addDetachedChildBean(bls);
+           // containerLifetime.addDetachedChildBean(bls);
         }
     }
 
@@ -215,5 +223,9 @@ public final class BeanSetup {
     public static BeanSetup crack(BeanConfiguration configuration) {
         PackedBeanHandle<?> handle = (PackedBeanHandle<?>) VH_BEAN_CONFIGURATION_TO_HANDLE.get(configuration);
         return handle.bean();
+    }
+
+    public static BeanSetup crack(BeanHandle<?> handle) {
+        return ((PackedBeanHandle<?>) handle).bean();
     }
 }

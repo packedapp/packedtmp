@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.container;
 
 /**
- * An exception that is typically thrown during the code generating phase of an application.
+ * Indicates that a specified wirelet was not used anywhere. This can happen, for example, if a wirelet for a specific
+ * extension is specified but the extension itself is never used.
+ * <p>
+ * The reason for always checking that a wirelet has been used, is to fail-fast and avoid frustrating users more than
+ * necessary.
  */
-public class CodegenException extends BuildException {
+public class UnusedWireletException extends RuntimeException {
 
-    private static final long serialVersionUID = -9153170517785461951L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates a new exception with the specified detailed message. The cause is not initialized, and may subsequently be
@@ -30,7 +34,7 @@ public class CodegenException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public CodegenException(String message) {
+    public UnusedWireletException(String message) {
         super(message);
     }
 
@@ -44,7 +48,7 @@ public class CodegenException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public CodegenException(String message, Throwable cause) {
+    public UnusedWireletException(String message, Throwable cause) {
         super(message, cause);
     }
 }

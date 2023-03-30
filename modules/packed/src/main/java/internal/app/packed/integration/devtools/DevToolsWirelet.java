@@ -15,13 +15,11 @@
  */
 package internal.app.packed.integration.devtools;
 
-import internal.app.packed.container.FrameworkWirelet;
+import internal.app.packed.container.InternalBuildWirelet;
 
 /**
  *
  */
-// IDK, skal sikkert bruge en internal build ting
-// Det taenker jeg
-public abstract non-sealed class DevToolsWirelet extends FrameworkWirelet {
+public abstract class DevToolsWirelet extends InternalBuildWirelet {
 
 }

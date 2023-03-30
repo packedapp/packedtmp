@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package internal.app.packed.bean;
 
-import app.packed.container.Wirelet;
+import app.packed.extension.BeanElement;
 
 /**
  *
  */
-public class BaseExtensionWirelets {
+@SuppressWarnings("rawtypes")
+public sealed abstract class PackedBeanElement implements BeanElement permits PackedBeanClass, PackedBeanMember, PackedBindableVariable {
 
-    public static Wirelet mainArgs(String... args) {
-        throw new UnsupportedOperationException();
-    }
 
 }

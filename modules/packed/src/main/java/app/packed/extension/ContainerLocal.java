@@ -23,6 +23,15 @@ import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerLocal;
 
 /**
+ * <p>
+ * Container locals support 4 different scopes
+ * <ul>
+ * <li>Container scope: 1 value per container</li>
+ * <li>Container Lifetime scope: 1 value per container lifetime</li>
+ * <li>Application Scope: 1 value are application</li>
+ * <li>Family Scope: 1 value per family, values</li>
+ * </ul>
+ *
  * @see app.packed.extension.container.ExtensionLink.Builder#consumeLocal(ContainerLocal, java.util.function.Consumer)
  * @see app.packed.extension.container.ExtensionLink.Builder#setLocal(ContainerLocal, Object)
  * @see app.packed.extension.container.ContainerBuilder#setLocal(ContainerLocal, Object)
@@ -41,6 +50,11 @@ public abstract sealed class ContainerLocal<T> extends BeanLocal<T> permits Pack
         return get(bean.container);
     }
 
+    /**
+     * @param container
+     *            the container to return the value for
+     * @return the value
+     */
     protected abstract T get(ContainerSetup container);
 
     public T get(Extension<?> extension) {
@@ -67,23 +81,25 @@ public abstract sealed class ContainerLocal<T> extends BeanLocal<T> permits Pack
         throw new UnsupportedOperationException();
     }
 
-    // Returns a wirelet that sets value of the container local to the specified value
-    public abstract Wirelet wireletSetter(T value);
-
-
     public Wirelet wireletConditionalGetter(T expectedValue, Wirelet wirelet) {
         throw new UnsupportedOperationException();
     }
 
+    // Returns a wirelet that sets value of the container local to the specified value
+    public abstract Wirelet wireletSetter(T value);
+
     /**
-     * Creates a bean local without any initial value.
+     * Creates a new container local with application scope.
+     * <p>
+     * Application scope means that <strong>all containers in the same application</strong> will always see the same value
+     * for the specific container local.
      *
      * @param <T>
-     *            the type of the bean local's value
-     * @return a new bean local
+     *            the type of value to store
+     * @return the new container local
      */
-    public static <T> ContainerLocal<T> of() {
-        return PackedContainerLocal.of(null);
+    public static <T> ContainerLocal<T> ofApplication() {
+        return PackedContainerLocal.of(PackedContainerLocal.Scope.APPLICATION);
     }
 
     /**
@@ -97,29 +113,47 @@ public abstract sealed class ContainerLocal<T> extends BeanLocal<T> permits Pack
      * @return a new bean local
      *
      */
-    public static <T> ContainerLocal<T> of(Supplier<? extends T> initialValueSupplier) {
-        return PackedContainerLocal.of(initialValueSupplier);
-    }
 
     public static <T> ContainerLocal<T> ofApplication(Supplier<? extends T> initialValueSupplier) {
-        return PackedContainerLocal.of(initialValueSupplier);
+        return PackedContainerLocal.of(PackedContainerLocal.Scope.APPLICATION, initialValueSupplier);
     }
 
+    /**
+     * Creates a new container local with container scope.
+     * <p>
+     * Container scope means that a separate value is stored for every container
+     *
+     * @param <T>
+     *            the type of value to store
+     * @return the new container local
+     */
     public static <T> ContainerLocal<T> ofContainer() {
-        return PackedContainerLocal.of(null);
+        return PackedContainerLocal.of(PackedContainerLocal.Scope.CONTAINER);
     }
 
-    static <T> ContainerLocal<T> ofContainerFan() {
-        throw new UnsupportedOperationException();
+    public static <T> ContainerLocal<T> ofContainer(Supplier<? extends T> initialValueSupplier) {
+        return PackedContainerLocal.of(PackedContainerLocal.Scope.CONTAINER, initialValueSupplier);
     }
 
+    /**
+     * Creates a new container local with container lifetime scope.
+     * <p>
+     * Application scope means that <strong>all containers in the same lifetime</strong> will always see the same value for
+     * the specific container local.
+     *
+     * @param <T>
+     *            the type of value to store
+     * @return the new container local
+     */
     static <T> ContainerLocal<T> ofContainerLifetime() {
-        throw new UnsupportedOperationException();
+        return PackedContainerLocal.of(PackedContainerLocal.Scope.CONTAINER_LIFETIME);
     }
 
     public static <T> ContainerLocal<T> ofContainerLifetime(Supplier<? extends T> initialValueSupplier) {
-        return PackedContainerLocal.of(initialValueSupplier);
+        return PackedContainerLocal.of(PackedContainerLocal.Scope.CONTAINER_LIFETIME, initialValueSupplier);
     }
 
-    // ofApplicationTree
+    static <T> ContainerLocal<T> ofFamily() {
+        throw new UnsupportedOperationException();
+    }
 }

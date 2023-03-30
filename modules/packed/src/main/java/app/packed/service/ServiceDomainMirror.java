@@ -32,6 +32,7 @@ import app.packed.util.Key;
 // 2 typer exports + main
 public class ServiceDomainMirror extends DomainMirror<BaseExtension> {
 
+    // Where is my exported services used
     public Map<Key<?>, Collection<ServiceBindingMirror>> bindings() {
         throw new UnsupportedOperationException();
     }

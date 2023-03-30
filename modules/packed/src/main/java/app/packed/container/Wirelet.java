@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Supplier;
 
+import app.packed.extension.ExtensionWirelet;
 import app.packed.util.Nullable;
 import internal.app.packed.container.CompositeWirelet;
 import internal.app.packed.container.ContainerSetup;
@@ -29,16 +30,16 @@ import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /**
- * A wirelet is a small piece of "glue code" that can be specified when wiring containers.
+ * Wirelets are a small pieces of "glue code" that can be specified when wiring containers.
  * <p>
  * Wirelets are typically used to debug foobar, sdsd.
  *
  * , that is used to wire together the components that make up your program. connect, wire, instantiate, debug your
  * applications.
- *
- * As a rule of thumb wirelets are evaluated in order. For example, Wirelet.name("ffff"), Wirelet.name("sdsdsd"). Will
- * first the change the name to ffff, and then change it to sdsds. Maybe an example with.noStart + start_await it
- * better.
+ * <p>
+ * As a rule of thumb wirelets are evaluated in the order they are specified. For example,
+ * {@code Wirelet.named("foobar"), Wirelet.named("boofar")}. Will first the change the name to {@code "foobar"} and then
+ * change it to {@code "boofar"}.
  * <p>
  * You should never expose wirelet classes to the outside. As this
  *
@@ -53,18 +54,18 @@ import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
  *
  * Operations is order Example with rebind
  * <p>
- * Wirelet implementations must be immutable and safe to access by multiple concurrent threads. Unless otherwise
- * specified wirelets are reusable.
- *
- *
+ * As a general rule, wirelet implementations must be immutable and safe to access by multiple concurrent threads.
+ * Unless otherwise specified wirelets are reusable.
  * <p>
- * Wirelets are divided into 2 main types:
+ * Wirelets are divided into 3 main types:
  *
- * Packed Wirelet: These wirelets are defined by Packed itself can typically needs access to Packed's internal APIs.
+ * Application Wirelet: These wirelets are defined by Packed itself can typically needs access to Packed's internal
+ * APIs.
  *
  * Extension Wirelets: Wirelets that are defined by extensions and typically available via public static methods in a
  * XWirelet class.
  *
+ * Framework wirelets: Special wirelets, Application wirelets
  *
  * There are 2 addition internal wirelet types which cannot be extended by users:
  *
@@ -72,9 +73,19 @@ import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
  *
  * @implNote In addition to the two wirelet types discussed. There is a third wirelet type: FrameworkWirelet which is
  *           internal to the wirelet.
+ *
+ * @see ContainerConfiguration#selectWirelets(Class)
  */
+
+// Configuration
+/// Buildtime only
+/// Shared -> Is the wirelet consumed (maybe Consumable)
+/// TargetSite -> Where it can be used
+/// Scope -> Visibility of the wirelet
 @SuppressWarnings("rawtypes")
 public sealed abstract class Wirelet permits ApplicationWirelet, ExtensionWirelet, FrameworkWirelet {
+
+    final int flags = 0;
 
     /**
      * Returns a combined wirelet that behaves, in sequence, as this wirelet followed by the {@code after} wirelet.
@@ -171,19 +182,20 @@ public sealed abstract class Wirelet permits ApplicationWirelet, ExtensionWirele
     // Nullable -> ignore
     // Skal den evalueres paa build time eller runtime???
     // Maaske 2 forskellige metoder
-    public static Wirelet lazy(Supplier<@Nullable Wirelet> supplier) {
+    // Hvad er usecasen?
+    static Wirelet lazy(Supplier<@Nullable Wirelet> supplier) {
         throw new UnsupportedOperationException();
     }
 
     /**
-     * Returns a wirelet that will set the name of the component to the specified name.
+     * Returns a wirelet that will set the name of the container to the specified name.
      * <p>
      * This wirelet override any name that might previously have been set, for example, via
-     * {@link BeanConfiguration#named(String)}.
+     * {@link ContainerConfiguration#named(String)}.
      *
      * @param name
      *            the name of the component
-     * @return a wirelet that can be used to set the name of the component
+     * @return a wirelet that can be used to override the name of a container
      */
     // String intrapolation?
     public static Wirelet named(String name) {
@@ -198,7 +210,7 @@ public sealed abstract class Wirelet permits ApplicationWirelet, ExtensionWirele
              * @param name
              *            the name to override any existing container name with
              */
-            public ContainerOverrideNameWirelet(String name) {
+            ContainerOverrideNameWirelet(String name) {
                 this.name = NameCheck.checkComponentName(name); // throws IAE
             }
 
@@ -218,19 +230,28 @@ public sealed abstract class Wirelet permits ApplicationWirelet, ExtensionWirele
         return new ContainerOverrideNameWirelet(name);
     }
 
-    // A wirelet that is only applied
-    // guardBySystemProperty
+    static Wirelet ignoreUnused(Wirelet wirelet) {
+        // Easier said then done I think. If composite wirelet.
+        // We much apply to each
 
-    // A wirelet that can be used both at runtime
-
-    // Hvad hvis extension ikke bliver brugt...
-    // Men ellers er den smart nok...
-    // Kan vi have noget onConsumed paa locals?
-
-    // Tror faktisk den er noedvendig for at vi kan give informationer til
-    // builderen.
-
+        // But other than that it is a kind of flag we need to carry around.
+        // When apply the wirelet, not trivial. We can't just change flags
+        // on the wirelet instance
+        throw new UnsupportedOperationException();
+    }
 }
+
+// A wirelet that is only applied
+// guardBySystemProperty
+
+// A wirelet that can be used both at runtime
+
+// Hvad hvis extension ikke bliver brugt...
+// Men ellers er den smart nok...
+// Kan vi have noget onConsumed paa locals?
+
+// Tror faktisk den er noedvendig for at vi kan give informationer til
+// builderen.
 
 /**
  * A container wirelet is a type of wirelet that can be specified when wiring a container.

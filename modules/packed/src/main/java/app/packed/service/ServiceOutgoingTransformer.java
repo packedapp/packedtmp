@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.service.transform;
+package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,7 +24,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.operation.Op;
-import app.packed.service.ServiceContract;
 import app.packed.util.Key;
 
 /**
@@ -68,8 +67,9 @@ import app.packed.util.Key;
 // Nested class paa ServiceWirelets if that is the only place it is going to be used
 
 // Naeste gang vi implementere den. Bygger vi den langsom...
-public interface ServiceExportsTransformer {
+public interface ServiceOutgoingTransformer {
 
+    // Only if process requirements first
    default ServiceContract contract() {
        throw new UnsupportedOperationException();
    }
@@ -371,7 +371,7 @@ public interface ServiceExportsTransformer {
      * @param factory
      *            the factory
      */
-    public abstract void replace(Op<?> factory);
+    void replace(Op<?> factory);
 
     default void retain(Class<?>... keys) {
         retain(Key.ofAll(keys));

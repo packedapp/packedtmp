@@ -41,6 +41,7 @@ import app.packed.service.Export;
 import app.packed.service.Provide;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
+import app.packed.service.ServiceOutgoingTransformer;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Variable;
@@ -69,7 +70,6 @@ import sandbox.extension.container.ContainerTemplate;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 import sandbox.lifetime.external.LifecycleController;
-import sandbox.service.transform.ServiceExportsTransformer;
 
 /**
  * An extension that defines the foundational APIs for managing beans, services, containers and applications.
@@ -86,6 +86,7 @@ import sandbox.service.transform.ServiceExportsTransformer;
  * {@link app.packed.application.ApplicationMirror}.
  *
  * @see app.packed.container.BaseAssembly#base()
+ * @see BaseWirelets
  */
 
 // Bean
@@ -105,7 +106,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     /** A key map with providers for use together with {@link app.packed.extension.BaseExtensionPoint.CodeGenerated}. */
     static final PackedBeanLocal<Map<Key<?>, BeanVariable>> CODEGEN = PackedBeanLocal.of(() -> new HashMap<>());
 
-    static final ContainerLocal<FromLinks> FROM_LINKS = ContainerLocal.of(FromLinks::new);
+    static final ContainerLocal<FromLinks> FROM_LINKS = ContainerLocal.ofContainer(FromLinks::new);
 
     final ArrayList<BeanVariable> varsToResolve = new ArrayList<>();
 
@@ -722,6 +723,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
 class ZServiceSandbox {
 
+    public void resolveFirst(Key<?> key) {}
+
     // Validates the outward facing contract
     public void checkContract(Consumer<? super ServiceContract> validator) {}
 
@@ -729,7 +732,7 @@ class ZServiceSandbox {
     // checkContract(Service(c->c.checkExact(sc));// ContractChecker.exact(sc));
     public void checkContractExact(ServiceContract sc) {}
 
-    public void exportsTransform(Consumer<? super ServiceExportsTransformer> s) {
+    public void exportsTransform(Consumer<? super ServiceOutgoingTransformer> s) {
 
     }
 
