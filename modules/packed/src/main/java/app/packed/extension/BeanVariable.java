@@ -31,6 +31,10 @@ import app.packed.util.Variable;
  * A bindable variable
  */
 
+// Something about being embedded
+// For example, deep down, we cannot resolve something. And we need to
+// throw an exception. But we need to include the original method that could not
+// be resolved.
 public non-sealed interface BeanVariable extends BeanElement {
 
     /**
@@ -44,6 +48,12 @@ public non-sealed interface BeanVariable extends BeanElement {
      */
     BeanVariable allowStaticFieldBinding();
 
+    /**
+     * <p>
+     * This method has only informational purposes.
+     *
+     * @return
+     */
     default Map<Class<? extends Context<?>>, List<Class<?>>> availableContexts() {
         return Map.of();
     }
@@ -76,6 +86,7 @@ public non-sealed interface BeanVariable extends BeanElement {
      * @throws app.packed.context.ContextNotAvailableException
      *             if the context is not available
      */
+    // Do you ever want to do this yourself??? Maybe if you want to do some checks
     void bindContextValue(Class<? extends Context<?>> fromContext);
 
     /**

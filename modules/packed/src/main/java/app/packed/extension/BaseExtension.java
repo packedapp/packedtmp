@@ -53,7 +53,6 @@ import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.bean.PackedBeanWrappedVariable;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.container.LeafContainerOrApplicationBuilder;
-import internal.app.packed.context.publish.ContextValue;
 import internal.app.packed.entrypoint.OldEntryPointSetup;
 import internal.app.packed.entrypoint.OldEntryPointSetup.MainThreadOfControl;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
@@ -71,7 +70,6 @@ import sandbox.extension.container.ContainerTemplate;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 import sandbox.lifetime.external.LifecycleController;
-import sandbox.lifetime.old.ApplicationContext;
 
 /**
  * An extension that defines the foundational APIs for managing beans, services, containers and applications.
@@ -449,22 +447,15 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             /** Handles {@link ContainerGuest}, {@link InvocationArgument} and {@link CodeGenerated}. */
             @Override
             public void hookOnAnnotatedVariable(Annotation annotation, BeanVariable v) {
-                if (annotation instanceof ContextValue cv) {
-                    if (cv.value() == ApplicationLaunchContext.class) {
-                        v.bindContextValue(ApplicationLaunchContext.class);
-                    } else {
-                        throw new UnsupportedOperationException();
-                    }
-                } else if (annotation instanceof ContainerHolderService) {
+                if (annotation instanceof ContainerHolderService) {
                     Variable va = v.variable();
                     if (va.rawType().equals(String.class)) {
                         // Burde vel vaere en generics BeanInvocationContext her???
-                        v.bindOp(new Op1<@ContextValue(ApplicationLaunchContext.class) ApplicationLaunchContext, String>(a -> a.name()) {});
+                        v.bindOp(new Op1<ApplicationLaunchContext, String>(a -> a.name()) {});
                     } else if (va.rawType().equals(LifecycleController.class)) {
-                        v.bindOp(new Op1<@ContextValue(ApplicationLaunchContext.class) ApplicationLaunchContext, LifecycleController>(
-                                a -> a.runner.runtime) {});
+                        v.bindOp(new Op1<ApplicationLaunchContext, LifecycleController>(a -> a.runner.runtime) {});
                     } else if (va.rawType().equals(ServiceLocator.class)) {
-                        v.bindOp(new Op1<@ContextValue(ApplicationLaunchContext.class) ApplicationLaunchContext, ServiceLocator>(a -> a.serviceLocator()) {});
+                        v.bindOp(new Op1<ApplicationLaunchContext, ServiceLocator>(a -> a.serviceLocator()) {});
                     } else {
                         throw new UnsupportedOperationException("va " + va.rawType());
                     }
@@ -490,13 +481,11 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             public void hookOnVariableType(Class<?> hook, BeanWrappedVariable binding) {
                 OperationSetup operation = ((PackedBeanWrappedVariable) binding).v.operation;
 
-                if (ApplicationContext.class.isAssignableFrom(hook)) {
-                   // binding.bindContextValue(ApplicationLaunchContext.class);
-                }
-
-                if (hook == ExtensionContext.class) {
+                if (ApplicationLaunchContext.class.isAssignableFrom(hook)) {
+                    binding.bindContextValue(ApplicationLaunchContext.class);
+                } else if (hook == ExtensionContext.class) {
                     if (beanAuthor().isApplication()) {
-                        binding.failWith("ContainerContext can only be injected into extensions");
+                        binding.failWith(hook.getSimpleName() + " can only be injected into extensions");
                     }
                     if (binding.availableInvocationArguments().isEmpty() || binding.availableInvocationArguments().get(0) != ExtensionContext.class) {
                         // throw new Error(v.availableInvocationArguments().toString());

@@ -160,19 +160,20 @@ public @interface BeanHook {
     @BeanHook
     public @interface BindingTypeHook {
 
-        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
+        /** The extension this hook is a part of. Must be located in the same module as the annotated type. */
         Class<? extends Extension<?>> extension();
 
         /**
-         * Contexts that are required in order to use the binding class or annotation.
+         * Contexts that are required in order to use the binding class.
          * <p>
-         * If this binding is attempted to be used without the context being available a {@link OutOfContextException} will be
-         * thrown.
+         * If this binding is attempted to be used without the context being available a
+         * {@link app.packed.context.NotInContextException} will be thrown.
          * <p>
+         *
          * If this method returns multiple contexts they will <strong>all</strong> be required.
          *
-         * @return stuff
+         * @return required contexts
          */
-        Class<? extends Context<?>>[] requiresContext() default { ExtensionContext.class };
+        Class<? extends Context<?>>[] requiresContext() default {};
     }
 }

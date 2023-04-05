@@ -15,7 +15,9 @@
  */
 package internal.app.packed.context;
 
+import app.packed.context.Context;
 import app.packed.context.ContextualizedElementMirror;
+import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.operation.OperationSetup;
@@ -25,6 +27,11 @@ public sealed interface ContextualizedElementSetup permits OperationSetup, BeanS
 
     /** {@return a mirror for the element.} */
     ContextualizedElementMirror mirror();
+
+    @Nullable
+   default ContextSetup findContext(Class<? extends Context<?>> contextClass) {
+        throw new UnsupportedOperationException();
+    }
 }
 
 //Implementerings muligheder

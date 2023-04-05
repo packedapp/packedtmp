@@ -37,7 +37,7 @@ import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.operation.Provider;
 import app.packed.util.Key;
-import internal.app.packed.lifetime.runtime.PackedContainerContext;
+import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.service.PackedServiceLocator;
 import sandbox.extension.container.ContainerHolderService;
 
@@ -345,7 +345,7 @@ public interface ServiceLocator {
 
     /** {@return a service locator that provides no services.} */
     static ServiceLocator of() {
-        return new PackedServiceLocator(PackedContainerContext.EMPTY, Map.of());
+        return new PackedServiceLocator(PackedExtensionContext.EMPTY, Map.of());
     }
 
     /**

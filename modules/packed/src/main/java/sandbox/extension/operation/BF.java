@@ -27,6 +27,7 @@ public interface BF {
 
     // if Static Bean -> Takes no BeanInstance, If NonStaticBean takes instance
     // Omvendt kunne det vaere rart at droppe
+
     void newVarHandleOperation(ContextList list);
 
     void newGetOperation(Class<?> invocationType, ContextList list);

@@ -21,7 +21,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.AnnotatedFieldHook;
 import app.packed.extension.BeanHook.AnnotatedMethodHook;
@@ -29,8 +28,8 @@ import app.packed.extension.BeanHook.AnnotatedMethodHook;
 /**
  * Ideen er at provide context fra en bean. Typisk container brug.
  *
- * Ved ikke hvordan vi ellers skal provide context info. Fra en non-lifetime
- * root container. Hvor vi ikke tager argument med
+ * Ved ikke hvordan vi ellers skal provide context info. Fra en non-lifetime root container. Hvor vi ikke tager argument
+ * med
  * <p>
  * Tror ikke man baade kan specificere context arguments og bruge denne annotering.
  * <p>
@@ -48,7 +47,8 @@ import app.packed.extension.BeanHook.AnnotatedMethodHook;
 @Documented
 @AnnotatedMethodHook(extension = BaseExtension.class, allowInvoke = true)
 @AnnotatedFieldHook(extension = BaseExtension.class, allowGet = true)
+// Skal returnere implementationen
 public @interface ContainerContextProvide {
     // Det kan vi vel extracte fra metode/field signaturen
-    Class<? extends Context<?>> context(); // context.extension must be identical to owner
+    // Class<? extends Context<?>> context(); // context.extension must be identical to owner
 }

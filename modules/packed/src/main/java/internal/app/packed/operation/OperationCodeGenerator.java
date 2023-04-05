@@ -27,7 +27,7 @@ import internal.app.packed.binding.BindingResolution.FromInvocationArgument;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.BindingSetup;
-import internal.app.packed.lifetime.runtime.PackedContainerContext;
+import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 
 /**
@@ -91,7 +91,7 @@ final class OperationCodeGenerator {
             return mh;
         } else if (p instanceof FromLifetimeArena fla) {
             permuters.add(0); // ExtensionContext is always 0
-            MethodHandle tmp = MethodHandles.insertArguments(PackedContainerContext.MH_CONSTANT_POOL_READER, 1, fla.index());
+            MethodHandle tmp = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, fla.index());
 
             // (LifetimePool)Object -> (LifetimePool)type
             tmp = tmp.asType(tmp.type().changeReturnType(fla.type()));

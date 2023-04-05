@@ -35,7 +35,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.entrypoint.OldContainerEntryPointManager;
-import internal.app.packed.lifetime.runtime.PackedContainerContext;
+import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
@@ -136,7 +136,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     }
 
     public ExtensionContext newRuntimePool() {
-        return PackedContainerContext.create(size);
+        return PackedExtensionContext.create(size);
     }
 
     private void orderBeans(BeanSetup bean) {
@@ -246,7 +246,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         if (!bean.beanClass.isInstance(instance)) {
             throw new Error("Expected " + bean.beanClass + ", was " + instance.getClass());
         }
-        PackedContainerContext pec = (PackedContainerContext) ec;
+        PackedExtensionContext pec = (PackedExtensionContext) ec;
         pec.storeObject(bean.lifetimeStoreIndex, instance);
     }
 }

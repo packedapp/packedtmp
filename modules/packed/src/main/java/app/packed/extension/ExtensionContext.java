@@ -17,16 +17,19 @@ package app.packed.extension;
 
 import app.packed.context.Context;
 import app.packed.extension.BeanHook.BindingTypeHook;
-import internal.app.packed.lifetime.runtime.PackedContainerContext;
+import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 
 /**
  * All beans that are owned by an extension operates within an ExtensionContext.
  * <p>
  * An instance of this class is typically required when invoking operations.
  */
+
+// A context or not. Hvis det er en context. Skal den med i alle metoder der ligesom siger hvad er hvad.
+
 // Maaske er det kun med container lifetime, og maaske er det kun constructeren
 @BindingTypeHook(extension = BaseExtension.class)
-public sealed interface ExtensionContext extends Context<BaseExtension> permits PackedContainerContext {}
+public sealed interface ExtensionContext extends Context<BaseExtension> permits PackedExtensionContext {}
 
 //Vil mene det ikke er en Context. Syntes span fungere daarligt
 //Saa maaske er Context skidt

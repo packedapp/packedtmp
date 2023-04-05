@@ -33,7 +33,7 @@ import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.lifetime.runtime.PackedContainerContext;
+import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.util.CollectionUtil;
@@ -106,7 +106,7 @@ public final class ServiceManager {
                 mh = MethodHandles.constant(Object.class, o.bean.beanSource);
                 mh = MethodHandles.dropArguments(mh, 0, ExtensionContext.class);
             } else if (accessor >= 0) {
-                mh = MethodHandles.insertArguments(PackedContainerContext.MH_CONSTANT_POOL_READER, 1, accessor);
+                mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, accessor);
             } else {
                 mh = o.generateMethodHandle();
             }

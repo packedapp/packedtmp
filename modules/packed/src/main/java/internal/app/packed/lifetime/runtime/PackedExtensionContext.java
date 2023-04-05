@@ -30,7 +30,7 @@ import internal.app.packed.util.LookupUtil;
  */
 // Long term, this might just be an Object[] array. But for now its a class, in case we need stuff that isn't stored in the array.
 @BindingTypeHook(extension = BaseExtension.class)
-public final /* primitive */ class PackedContainerContext implements ExtensionContext {
+public final /* primitive */ class PackedExtensionContext implements ExtensionContext {
 
     /** A method handle for calling {@link #read(int)} at runtime. */
     public static final MethodHandle MH_CONSTANT_POOL_READER;
@@ -41,11 +41,11 @@ public final /* primitive */ class PackedContainerContext implements ExtensionCo
         MH_CONSTANT_POOL_READER = m.asType(mt);
     }
 
-    public static final ExtensionContext EMPTY = new PackedContainerContext(0);
+    public static final ExtensionContext EMPTY = new PackedExtensionContext(0);
 
     final Object[] objects;
 
-    private PackedContainerContext(int size) {
+    private PackedExtensionContext(int size) {
         objects = new Object[size];
     }
 
@@ -53,7 +53,7 @@ public final /* primitive */ class PackedContainerContext implements ExtensionCo
         if (size == 0) {
             return EMPTY;
         } else {
-            return new PackedContainerContext(size);
+            return new PackedExtensionContext(size);
         }
     }
 

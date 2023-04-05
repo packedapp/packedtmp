@@ -23,6 +23,11 @@ import internal.app.packed.context.PackedContextTemplate;
 
 /**
  *
+ * <p>
+ * There are no technical reasons why extensions cannot create multiple templates with different implementations.
+ * However, great care must be taken to assure that the right implementations are referenced.
+ * <p>
+ *
  */
 // Hvad er argumentent
 // Hvem kan se contexten, ejeren selvfoelgelig
