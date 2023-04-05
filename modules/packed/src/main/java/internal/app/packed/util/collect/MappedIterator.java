@@ -13,20 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.cli;
+package internal.app.packed.util.collect;
 
-import java.util.Collection;
-import java.util.List;
-
-import app.packed.container.DomainMirror;
+import java.util.Iterator;
 
 /**
- * Represents a CLI domain
+ *
  */
-public class CliDomainMirror extends DomainMirror<CliExtension> {
+public final class MappedIterator<V, M> implements Iterator<M> {
 
-    /** {@return all commands in the CLI domain.} */
-    public Collection<CliCommandMirror> commands() {
-        return List.of();
+    final Iterator<V> iterator;
+
+    final ValueMapper<V, ? extends M> mapper;
+
+    public MappedIterator(Iterator<V> iterator, ValueMapper<V, ? extends M> mapper) {
+        this.mapper = mapper;
+        this.iterator = iterator;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasNext() {
+        return iterator.hasNext();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public M next() {
+        V next = iterator.next();
+        return mapper.mapValue(next);
     }
 }

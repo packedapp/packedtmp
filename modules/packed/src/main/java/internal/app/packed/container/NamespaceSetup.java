@@ -19,33 +19,37 @@ import java.util.HashMap;
 import java.util.Map;
 
 import app.packed.util.Nullable;
-import internal.app.packed.bean.BeanOwner;
+import internal.app.packed.bean.AuthorSetup;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.MagicInitializer;
 
 /**
  *
  */
-public final class DomainSetup {
+public final class NamespaceSetup {
 
-    public static final MagicInitializer<DomainSetup> MI = MagicInitializer.of();
+    public static final MagicInitializer<NamespaceSetup> MI = MagicInitializer.of();
 
-    public final BeanOwner owner;
+    // Must search up until root to find local names
+    final Map<ContainerSetup, String> localNames = new HashMap<>();
 
-    public final ExtensionSetup root;
-
-    public final PackedDomainTemplate<?> template;
-
+    /** The name of the namespace */
     public final String name = "main";
 
-    public DomainSetup(PackedDomainTemplate<?> template, ExtensionSetup root, BeanOwner owner) {
+    /** The owner of the name space. */
+    public final AuthorSetup owner;
+
+    /** The extension and root container of the namespace. */
+    public final ExtensionSetup root;
+
+    /** The namespace template */
+    public final PackedNamespaceTemplate<?> template;
+
+    public NamespaceSetup(PackedNamespaceTemplate<?> template, ExtensionSetup root, AuthorSetup owner) {
         this.template = template;
         this.root = root;
         this.owner = owner;
     }
-
-    // Must search up until root to find local names
-    final Map<ContainerSetup, String> localNames = new HashMap<>();
 
     // Tror maaske vi har nogle strategies
     // AllApplication-> No nodes
@@ -59,6 +63,5 @@ public final class DomainSetup {
         protected DomainNode(@Nullable DomainNode treeParent) {
             super(treeParent);
         }
-
     }
 }

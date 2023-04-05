@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -12,8 +13,11 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationPath;
 import app.packed.container.AssemblyMirror;
+import app.packed.container.Author;
 import app.packed.container.ContainerMirror;
-import app.packed.container.Realm;
+import app.packed.context.Context;
+import app.packed.context.ContextMirror;
+import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
@@ -35,7 +39,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  */
 @BindingTypeHook(extension = BaseExtension.class)
 @SuppressWarnings("exports") // uses sandbox classes
-public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirror {
+public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirror, ContextScopeMirror {
 
     /**
      * The internal configuration of the bean we are mirroring. Is initially null but populated via
@@ -231,8 +235,8 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
     }
 
     /** {@return the owner of the bean.} */
-    public Realm owner() {
-        return bean().owner();
+    public Author owner() {
+        return bean().author();
     }
 
     public ApplicationPath path() {
@@ -281,7 +285,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
             for (OperationSetup os : bean.operations) {
                 os.forEachBinding(b -> {
                     if (b.boundBy.isExtension()) {
-                        if (b.boundBy != bean.owner()) {
+                        if (b.boundBy != bean.author()) {
                             set.add((b.boundBy.extension()));
                         }
                     }
@@ -366,7 +370,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
         }
 
         public boolean isInSameRealm() {
-            return from.owner().equals(to.owner());
+            return from.author().equals(to.author());
         }
 
         /** {@return the reverse relationship.} */
@@ -378,6 +382,14 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
         public BeanMirror to() {
             return to.mirror();
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
+        // get BeanContext
+        // get ContainerContext
+        throw new UnsupportedOperationException();
     }
 }
 

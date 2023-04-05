@@ -15,8 +15,6 @@
  */
 package sandbox.lifetime;
 
-import app.packed.context.Context;
-import app.packed.extension.BaseExtension;
 import app.packed.lifetime.LifecycleOrder;
 import app.packed.lifetime.RunState;
 import app.packed.lifetime.StopInfo.Reason;
@@ -24,9 +22,13 @@ import app.packed.lifetime.StopInfo.Reason;
 /**
  * A context that is available to all lifecycle transition operations.
  */
-
 // BeanLifecycleTransitionPeriod
-public interface LifecycleTransitionContext extends Context<BaseExtension> {
+
+// Den er lidt droppet igen. Fordi deles daarligt mellem fx
+// initialize og stop.
+// Fx fork giver jo ikke mening for initialize
+
+public interface LifecycleTransitionContext {
 
     RunState currentState();
 

@@ -20,11 +20,11 @@ import java.lang.invoke.MethodHandles;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
 import internal.app.packed.container.ExtensionModel;
+import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.util.types.TypeVariableExtractor;
-import sandbox.extension.context.ContextTemplate;
 
 /** Implementation of {@link ContextTemplate}. */
-public record PackedContextTemplate(Class<? extends Extension<?>> extensionClass, Class<? extends Context<?>> contextClass, Class<?> valueClass,
+public record PackedContextTemplate(Class<? extends Extension<?>> extensionClass, Class<? extends Context<?>> contextClass, Class<?> implementationClass,
         boolean isHidden) implements ContextTemplate {
 
     /** A ContextTemplate class to Extension class mapping. */
@@ -40,8 +40,9 @@ public record PackedContextTemplate(Class<? extends Extension<?>> extensionClass
         }
     };
 
-    public static ContextTemplate of(MethodHandles.Lookup caller, boolean isHidden, Class<? extends Context<?>> contextClass, Class<?> argumentType) {
+    public static ContextTemplate of(MethodHandles.Lookup caller, boolean isHidden, Class<? extends Context<?>> contextClass, Class<?> implementation) {
         Class<? extends Extension<?>> c = PackedContextTemplate.TYPE_VARIABLE_EXTRACTOR.get(contextClass); // checks same module
-        return new PackedContextTemplate(c, contextClass, argumentType, isHidden);
+        // check implementation is same class or implement contextclass
+        return new PackedContextTemplate(c, contextClass, implementation, isHidden);
     }
 }

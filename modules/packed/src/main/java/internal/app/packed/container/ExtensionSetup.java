@@ -5,13 +5,13 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.container.Realm;
+import app.packed.container.Author;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.BeanOwner;
+import internal.app.packed.bean.AuthorSetup;
 import internal.app.packed.service.ServiceManager;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
@@ -26,7 +26,7 @@ import internal.app.packed.util.ThrowableUtil;
  * This class implements {@link Comparable} in order to provide a deterministic order between extensions in the same
  * container.
  */
-public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> implements BeanOwner , Comparable<ExtensionSetup> {
+public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> implements AuthorSetup , Comparable<ExtensionSetup> {
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class,
@@ -208,7 +208,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
     /** {@inheritDoc} */
     @Override
-    public Realm realm() {
+    public Author author() {
         return tree.model.realm();
     }
 

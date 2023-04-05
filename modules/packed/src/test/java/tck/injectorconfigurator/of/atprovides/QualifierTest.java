@@ -28,7 +28,7 @@ import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceLocator.Composer;
 import app.packed.util.Key;
-import app.packed.util.KeyAlreadyInUseException;
+import app.packed.util.KeyAlreadyUsedException;
 import testutil.stubs.annotation.StringQualifier;
 
 /**
@@ -39,16 +39,16 @@ public class QualifierTest {
     @Test
     public void cannotDefineSameProvidedKeys() {
         AbstractThrowableAssert<?, ?> at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedFieldKeys.class)));
-        at.isExactlyInstanceOf(KeyAlreadyInUseException.class);
+        at.isExactlyInstanceOf(KeyAlreadyUsedException.class);
         at.hasNoCause();
         // TODO check message
 
         at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedMethodKeys.class)));
-        at.isExactlyInstanceOf(KeyAlreadyInUseException.class);
+        at.isExactlyInstanceOf(KeyAlreadyUsedException.class);
         at.hasNoCause();
 
         at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedMemberKeys.class)));
-        at.isExactlyInstanceOf(KeyAlreadyInUseException.class);
+        at.isExactlyInstanceOf(KeyAlreadyUsedException.class);
         at.hasNoCause();
     }
 

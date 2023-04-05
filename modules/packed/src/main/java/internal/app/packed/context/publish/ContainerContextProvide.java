@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.context;
+package internal.app.packed.context.publish;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -37,13 +37,18 @@ import app.packed.extension.BeanHook.AnnotatedMethodHook;
  * Also
  */
 
-// Hvordan peger man paa bean'en?
+// En maade er at alle metoder skal have et context object med som parameter
+// En anden maade er at en metode provider et context object naar man forespoerger paa det
+// (Containers only)
+
+// Hvordan peger man paa bean'en? kan vel kun via en pouch
 
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @AnnotatedMethodHook(extension = BaseExtension.class, allowInvoke = true)
 @AnnotatedFieldHook(extension = BaseExtension.class, allowGet = true)
-public @interface ContextValueProvide {
+public @interface ContainerContextProvide {
+    // Det kan vi vel extracte fra metode/field signaturen
     Class<? extends Context<?>> context(); // context.extension must be identical to owner
 }

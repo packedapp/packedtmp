@@ -39,6 +39,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.context.ContextualizedElementSetup;
 import internal.app.packed.entrypoint.EntryPointSetup;
 import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 import internal.app.packed.service.ServiceBindingSetup;
@@ -50,7 +51,7 @@ import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 
 /** Represents an operation on a bean. */
-public sealed abstract class OperationSetup {
+public sealed abstract class OperationSetup implements ContextualizedElementSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), OperationMirror.class, "initialize", void.class,
@@ -85,11 +86,26 @@ public sealed abstract class OperationSetup {
     /** The type of this operation. */
     public final FunctionType type;
 
-    /** The name of the operation */
-    public String zName; // name = operator.simpleName + "Operation"
+    /**
+     * The name prefix of the operation.
+     * <p>
+     * Multiple operations can have the same
+     */
+    // Could also have a calculated name
+    // Record Name(int state, String name)
+    // state = 0 = generated, Integer.max = final, anywhere in between the number of
+    // operations in the bean when the name was calculated
+    // Det hele er vi ikke gider calculate et navn, med mindre det skal bruges
+    // Ved method overloading kan vi risikere at 2 operationer med samme navn
+    // Hvilket ikke fungere hvis vi vil have component path operationer
+    String namePrefix; // name = operator.simpleName + "Operation"
 
     @Nullable
     public final EntryPointSetup entryPoint;
+
+    public String namePrefix() {
+        return "op" + namePrefix;
+    }
 
     private OperationSetup(ExtensionSetup operator, BeanSetup bean, FunctionType type, OperationTemplate template,
             @Nullable EmbeddedIntoOperation embeddedInto) {
@@ -105,6 +121,10 @@ public sealed abstract class OperationSetup {
         } else {
             this.entryPoint = null;
         }
+    }
+
+    public String name() {
+        return bean.operationNames().get(this);
     }
 
     public final Set<BeanSetup> dependsOn() {
@@ -147,6 +167,7 @@ public sealed abstract class OperationSetup {
     abstract MethodHandle methodHandle();
 
     /** {@return a new mirror.} */
+    @Override
     public final OperationMirror mirror() {
         // debug();
         // new Exception().printStackTrace();
@@ -200,7 +221,7 @@ public sealed abstract class OperationSetup {
          */
         public BeanAccessOperationSetup(ExtensionSetup operator, BeanSetup bean, FunctionType operationType, OperationTemplate template) {
             super(operator, bean, operationType, template, null);
-            zName = "InstantAccess";
+            namePrefix = "InstantAccess";
         }
 
         /** {@inheritDoc} */
@@ -278,7 +299,7 @@ public sealed abstract class OperationSetup {
             this.target = requireNonNull(member);
             this.methodHandle = requireNonNull(methodHandle);
             if (member instanceof OperationConstructorTarget) {
-                zName = "constructor";
+                namePrefix = "constructor";
                 mirrorSupplier = BeanFactoryMirror::new;
             }
         }

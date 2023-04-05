@@ -22,7 +22,7 @@ import app.packed.container.ContainerMirror;
 import app.packed.operation.OperationMirror;
 
 /**
- * An element that can operate within one or more {@link Context contexts}.
+ * An element that can operate within a {@link Context context}.
  * <p>
  * Something operates within a static context.
  * <p>
@@ -32,9 +32,7 @@ import app.packed.operation.OperationMirror;
 public sealed interface ContextualizedElementMirror permits ContainerMirror, BeanMirror, OperationMirror {
 
     /** {@return an immutable set of all the contexts that the element operates within.} */
-    default Map<Class<? extends Context<?>>, ContextMirror> contexts() {
-        return Map.of();
-    }
+    Map<Class<? extends Context<?>>, ContextMirror> contexts();
 }
 
 ///** {@return a set of keys that are available to all operations within this component.} */

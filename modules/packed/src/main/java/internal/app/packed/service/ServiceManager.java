@@ -23,12 +23,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import app.packed.bean.BeanSourceKind;
-import app.packed.extension.ContainerContext;
+import app.packed.extension.ExtensionContext;
 import app.packed.service.ExportedServiceMirror;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Key;
-import app.packed.util.KeyAlreadyInUseException;
+import app.packed.util.KeyAlreadyUsedException;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution;
@@ -82,7 +82,7 @@ public final class ServiceManager {
         ExportedService existing = exports.putIfAbsent(es.key, es);
         if (existing != null) {
             // A service with the key has already been exported
-            throw new KeyAlreadyInUseException("Jmm " + es.key);
+            throw new KeyAlreadyUsedException("Jmm " + es.key);
         }
         es.operation.mirrorSupplier = () -> new ExportedServiceMirror(es);
         return es;
@@ -104,14 +104,14 @@ public final class ServiceManager {
             if (!(o instanceof MemberOperationSetup) && o.bean.beanSourceKind == BeanSourceKind.INSTANCE) {
                 // It is a a constant
                 mh = MethodHandles.constant(Object.class, o.bean.beanSource);
-                mh = MethodHandles.dropArguments(mh, 0, ContainerContext.class);
+                mh = MethodHandles.dropArguments(mh, 0, ExtensionContext.class);
             } else if (accessor >= 0) {
                 mh = MethodHandles.insertArguments(PackedContainerContext.MH_CONSTANT_POOL_READER, 1, accessor);
             } else {
                 mh = o.generateMethodHandle();
             }
             mh = mh.asType(mh.type().changeReturnType(Object.class));
-            assert (mh.type().equals(MethodType.methodType(Object.class, ContainerContext.class)));
+            assert (mh.type().equals(MethodType.methodType(Object.class, ExtensionContext.class)));
             return mh;
         });
         return result;
@@ -138,7 +138,7 @@ public final class ServiceManager {
         return builder.build();
     }
 
-    public ServiceLocator newExportedServiceLocator(ContainerContext context) {
+    public ServiceLocator newExportedServiceLocator(ExtensionContext context) {
         Map<Key<?>, MethodHandle> m = exportedServices;
         if (m == null) {
             throw new UnsupportedOperationException("Exported services not available");

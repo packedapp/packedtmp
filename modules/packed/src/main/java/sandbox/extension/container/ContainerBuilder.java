@@ -20,12 +20,11 @@ import java.util.function.Supplier;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
-import app.packed.context.ContextSpan;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.ContainerLocal;
 import app.packed.util.Key;
 import internal.app.packed.container.LeafContainerOrApplicationBuilder;
-import sandbox.extension.context.ContextTemplate;
+import internal.app.packed.context.publish.ContextTemplate;
 
 /**
  * A builder for containers. All containers are either directly or indirectly created via a ContainerBuilder.
@@ -160,7 +159,7 @@ public sealed interface ContainerBuilder permits LeafContainerOrApplicationBuild
     }
 
     // ditch beanBlass, and just make sure there is a bean that can do it
-    default ContainerBuilder zContextFromBean(Class<?> beanClass, ContextTemplate template, ContextSpan span) {
+    default ContainerBuilder zContextFromBean(Class<?> beanClass, ContextTemplate template, ContextSpanKind span) {
         throw new UnsupportedOperationException();
     }
 

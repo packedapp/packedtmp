@@ -25,7 +25,7 @@ import java.util.Set;
 
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
-import app.packed.extension.ContainerContext;
+import app.packed.extension.ExtensionContext;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.RunState;
@@ -55,7 +55,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
     private static final MethodHandle MH_INVOKE_INITIALIZER = LookupUtil.findStaticOwn(MethodHandles.lookup(), "invokeInitializer", void.class, BeanSetup.class,
-            MethodHandle.class, ContainerContext.class);
+            MethodHandle.class, ExtensionContext.class);
 
     /** All beans in this container lifetime, in the order they where installed. */
     public final ArrayList<BeanSetup> beans = new ArrayList<>();
@@ -135,14 +135,16 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         return mirror;
     }
 
-    public ContainerContext newRuntimePool() {
+    public ExtensionContext newRuntimePool() {
         return PackedContainerContext.create(size);
     }
 
     private void orderBeans(BeanSetup bean) {
         Set<BeanSetup> dependsOn = bean.dependsOn();
         for (BeanSetup b : dependsOn) {
-            orderBeans(b);
+            if (b != bean) { // bug, don't think it should be here
+                orderBeans(b);
+            }
         }
 
         if (dependencyOrderedBeans.add(bean)) {
@@ -231,7 +233,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         return resultType;
     }
 
-    public static void invokeInitializer(BeanSetup bean, MethodHandle mh, ContainerContext ec) {
+    public static void invokeInitializer(BeanSetup bean, MethodHandle mh, ExtensionContext ec) {
         Object instance;
         try {
             instance = mh.invokeExact(ec);

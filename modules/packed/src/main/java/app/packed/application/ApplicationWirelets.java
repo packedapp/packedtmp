@@ -37,7 +37,8 @@ public final class ApplicationWirelets {
         throw new UnsupportedOperationException();
     }
 
-    public static Wirelet conditionalApplicationLifetimeKind(LifetimeKind kind, Wirelet w) {
+    // Should probably be a lifetime wirelet
+    public static Wirelet conditionalOnApplicationLifetimeKind(LifetimeKind kind, Wirelet w) {
         throw new UnsupportedOperationException();
     }
 

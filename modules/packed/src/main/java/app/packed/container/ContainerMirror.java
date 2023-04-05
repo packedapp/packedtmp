@@ -4,6 +4,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -12,6 +13,8 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationPath;
 import app.packed.bean.BeanMirror;
+import app.packed.context.Context;
+import app.packed.context.ContextMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
@@ -22,7 +25,7 @@ import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.Mirror;
+import internal.app.packed.container.TreeMirror;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
@@ -37,7 +40,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * At runtime you can have a ContainerMirror injected
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public non-sealed class ContainerMirror implements ContextualizedElementMirror , Mirror {
+public non-sealed class ContainerMirror implements ContextualizedElementMirror , TreeMirror<ContainerMirror> {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
@@ -104,14 +107,6 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
         return List.copyOf(beans).stream();
     }
 
-    /** {@return an unmodifiable view of all of the children of this component.} */
-    public Stream<ContainerMirror> children() {
-        // childIterable?
-        // does not work because container().containerChildren may be null
-        throw new UnsupportedOperationException();
-        // return CollectionUtil.unmodifiableView(container().containerChildren, c -> c.mirror());
-    }
-
     /**
      * {@return the internal configuration of the container we are mirroring.}
      *
@@ -125,15 +120,6 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
                     "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
         }
         return c;
-    }
-
-    public Stream<ContainerMirror> descendents(boolean includeThis) {
-        // Maaske have en TreeSelector
-        // Der er 3 interessant ting taenker jeg.
-        // direct children
-        // direct ancestors
-        // direct ancestors + this
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -291,6 +277,12 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
         }
 
         return mirrorClass.cast(mirror);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
+        throw new UnsupportedOperationException();
     }
 
 }

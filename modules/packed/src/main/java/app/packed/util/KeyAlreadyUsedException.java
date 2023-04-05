@@ -18,7 +18,7 @@ package app.packed.util;
 import app.packed.application.BuildException;
 
 /** An exception that is typically thrown when attempting to provide multiple services using the same key. */
-public class KeyAlreadyInUseException extends BuildException {
+public class KeyAlreadyUsedException extends BuildException {
 
     private static final long serialVersionUID = 1L;
 
@@ -30,7 +30,7 @@ public class KeyAlreadyInUseException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public KeyAlreadyInUseException(String message) {
+    public KeyAlreadyUsedException(String message) {
         super(message);
     }
 
@@ -44,7 +44,7 @@ public class KeyAlreadyInUseException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public KeyAlreadyInUseException(String message, Throwable cause) {
+    public KeyAlreadyUsedException(String message, Throwable cause) {
         super(message, cause);
     }
 }

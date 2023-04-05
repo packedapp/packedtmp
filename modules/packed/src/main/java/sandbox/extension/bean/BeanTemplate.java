@@ -20,8 +20,8 @@ import java.util.List;
 
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
+import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.lifetime.PackedBeanTemplate;
-import sandbox.extension.context.ContextTemplate;
 import sandbox.extension.operation.OperationTemplate;
 
 /**

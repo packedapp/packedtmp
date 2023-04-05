@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.ContainerContext;
+import app.packed.extension.ExtensionContext;
 import app.packed.extension.InternalExtensionException;
 import app.packed.extension.BeanHook.BindingTypeHook;
 import internal.app.packed.util.LookupUtil;
@@ -30,18 +30,18 @@ import internal.app.packed.util.LookupUtil;
  */
 // Long term, this might just be an Object[] array. But for now its a class, in case we need stuff that isn't stored in the array.
 @BindingTypeHook(extension = BaseExtension.class)
-public final /* primitive */ class PackedContainerContext implements ContainerContext {
+public final /* primitive */ class PackedContainerContext implements ExtensionContext {
 
     /** A method handle for calling {@link #read(int)} at runtime. */
     public static final MethodHandle MH_CONSTANT_POOL_READER;
 
     static {
         MethodHandle m = LookupUtil.findVirtualOwn(MethodHandles.lookup(), "read", Object.class, int.class);
-        MethodType mt = m.type().changeParameterType(0, ContainerContext.class);
+        MethodType mt = m.type().changeParameterType(0, ExtensionContext.class);
         MH_CONSTANT_POOL_READER = m.asType(mt);
     }
 
-    public static final ContainerContext EMPTY = new PackedContainerContext(0);
+    public static final ExtensionContext EMPTY = new PackedContainerContext(0);
 
     final Object[] objects;
 
@@ -49,7 +49,7 @@ public final /* primitive */ class PackedContainerContext implements ContainerCo
         objects = new Object[size];
     }
 
-    public static ContainerContext create(int size) {
+    public static ExtensionContext create(int size) {
         if (size == 0) {
             return EMPTY;
         } else {

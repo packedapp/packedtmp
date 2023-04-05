@@ -66,7 +66,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
     String namePrefix;
 
     /** The owner of the bean. */
-    final BeanOwner owner;
+    final AuthorSetup owner;
 
     /** A bean mirror supplier */
     @Nullable
@@ -85,7 +85,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
      * @param template
      *            a lifetime template for the new bean
      */
-    public PackedBeanBuilder(ExtensionSetup installingExtension, BeanOwner owner, BeanTemplate template) {
+    public PackedBeanBuilder(ExtensionSetup installingExtension, AuthorSetup owner, BeanTemplate template) {
         this.container = installingExtension.container;
         this.installingExtension = requireNonNull(installingExtension);
         this.owner = requireNonNull(owner);
@@ -123,7 +123,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
     public <T> BeanHandle<T> installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle<T>> onInstall) {
         requireNonNull(beanClass, "beanClass is null");
 
-        BeanClassKey e = new BeanClassKey(owner.realm(), beanClass);
+        BeanClassKey e = new BeanClassKey(owner.author(), beanClass);
         Object object = container.beanClassMap.get(e);
         if (object != null) {
             if (object instanceof BeanSetup b) {
@@ -184,7 +184,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
      *            the source of the bean
      * @return a handle for the bean
      */
-    private <T> BeanHandle<T> newBean(Class<T> beanClass, BeanSourceKind sourceKind, Object source) {
+    private <T> BeanHandle<T> newBean(Class<T> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
         if (sourceKind != BeanSourceKind.SOURCELESS && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
         }
@@ -222,7 +222,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
 
         // Tror vi simpelt har et side map af multi ting.
         // Som vi saa loeber over til sidst...
-        BeanClassKey key = new BeanClassKey(owner.realm(), beanClass);
+        BeanClassKey key = new BeanClassKey(owner.author(), beanClass);
         if (beanClass != void.class) {
             boolean multiInstall = false;
             if (multiInstall) {

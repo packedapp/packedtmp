@@ -15,7 +15,7 @@ import app.packed.operation.OperationMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.Mirror;
+import internal.app.packed.container.TreeMirror;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -30,7 +30,7 @@ import internal.app.packed.operation.OperationSetup;
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)}.
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public class ApplicationMirror implements Mirror {
+public class ApplicationMirror implements TreeMirror<ApplicationMirror> {
 
     /** The configuration of the application. Is initially null but populated via {@link #initialize(ApplicationSetup)}. */
     @Nullable
@@ -129,6 +129,10 @@ public class ApplicationMirror implements Mirror {
         print0(application.container);
     }
 
+    public ZonePath path() {
+        return ZonePath.ofApplication(name());
+    }
+
     private void print0(ContainerSetup cs) {
         for (var e = cs.treeFirstChild; e != null; e = e.treeNextSibling) {
             print0(e);
@@ -136,7 +140,7 @@ public class ApplicationMirror implements Mirror {
         for (var b = cs.beanFirst; b != null; b = b.beanSiblingNext) {
             StringBuilder sb = new StringBuilder();
             sb.append(b.path()).append("");
-            sb.append(" [").append(b.beanClass.getName()).append("], owner = " + b.owner());
+            sb.append(" [").append(b.beanClass.getName()).append("], owner = " + b.author());
             sb.append("\n");
             for (OperationSetup os : b.operations) {
                 // sb.append(" ".repeat(b.path().depth()));

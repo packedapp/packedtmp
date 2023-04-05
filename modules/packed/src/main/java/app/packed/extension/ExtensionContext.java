@@ -24,12 +24,12 @@ import internal.app.packed.lifetime.runtime.PackedContainerContext;
  * <p>
  * An instance of this class is typically required when invoking operations.
  */
+// Maaske er det kun med container lifetime, og maaske er det kun constructeren
 @BindingTypeHook(extension = BaseExtension.class)
-public sealed interface ContainerContext extends Context<BaseExtension> permits PackedContainerContext {}
+public sealed interface ExtensionContext extends Context<BaseExtension> permits PackedContainerContext {}
 
 //Vil mene det ikke er en Context. Syntes span fungere daarligt
 //Saa maaske er Context skidt
-
 //RuntimeExtensionHandle?
 //ContainerContext
 

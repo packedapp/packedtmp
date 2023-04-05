@@ -16,20 +16,21 @@
 package app.packed.container;
 
 import app.packed.extension.Extension;
-import internal.app.packed.container.DomainSetup;
+import internal.app.packed.container.NamespaceSetup;
 
 /**
  * A mirror of a domain.
  */
 // Kan maaske have en EventRouter? DeliveredEvent = <Domain, Event>
-public class DomainMirror<E extends Extension<E>> {
+public class NamespaceMirror<E extends Extension<E>> {
 
     /** The domain configuration. */
-    private final DomainSetup domain = DomainSetup.MI.initialize();
+    private final NamespaceSetup namespace = NamespaceSetup.MI.initialize();
 
-    // IDK
-    Class<? extends Extension<?>> domainExtension() {
-        return domain.root.extensionType;
+    // IDK, define is also a bad word
+    /** {@return the extension class that defines the namespace.} */
+    Class<? extends Extension<?>> namespaceExtension() {
+        return namespace.root.extensionType;
     }
 
     /**
@@ -42,39 +43,41 @@ public class DomainMirror<E extends Extension<E>> {
      * @throws IllegalArgumentException
      *             if this domain instance is not available in the specified container
      */
-    public final String domainLocalName(ContainerMirror container) {
+    public final String namespaceLocalName(ContainerMirror container) {
         throw new UnsupportedOperationException();
     }
 
     /** {@return the name of this domain.} */
-    public final String domainName() {
-        return domain.name;
+    public final String namespaceName() {
+        return namespace.name;
     }
 
     /** {@return the owner of this domain instance.} */
-    public final Realm domainOwner() {
-        return domain.owner.realm();
+    public final Author namespaceOwner() {
+        return namespace.owner.author();
     }
 
     /** {@return the root container of the domain.} */
-    public ContainerMirror domainRoot() {
-        return domain.root.container.mirror();
+    public ContainerMirror namespaceRoot() {
+        return namespace.root.container.mirror();
     }
 
     /** {@return a tree containing every container where this domain instance is present.} */
-    public ContainerTreeMirror domainTree() {
+    public ContainerTreeMirror namespaceTree() {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
-        return other instanceof DomainMirror<?> m && getClass() == m.getClass() && domain == m.domain;
+        return other instanceof NamespaceMirror<?> m && getClass() == m.getClass() && namespace == m.namespace;
     }
 
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return domain.hashCode();
+        return namespace.hashCode();
     }
 }
+// nameSpaceIDClass -> Nah for a database is it the table name? A class if hibernate?
+// Also, for example, for CLI both arguments and commands are unique. So 2 "keys"

@@ -31,7 +31,7 @@ public class CliCommandMirror extends OperationMirror {
     }
 
     /** {@return the domain this command is part of.} */
-    public CliDomainMirror domain() {
+    public CliNamespaceMirror domain() {
         return command.domain().mirror();
     }
 

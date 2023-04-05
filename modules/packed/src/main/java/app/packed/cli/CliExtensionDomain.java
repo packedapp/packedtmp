@@ -20,14 +20,14 @@ import java.util.LinkedHashMap;
 import app.packed.bean.BeanInstallationException;
 import app.packed.cli.CliCommand.Builder;
 import app.packed.extension.BeanElement.BeanMethod;
-import sandbox.extension.domain.ExtensionDomain;
+import sandbox.extension.domain.NamespaceOperator;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
  * A CLI domain is a domain where all CLI commands are unique. Typically there is never more than one per application.
  */
-class CliExtensionDomain extends ExtensionDomain<CliExtension> {
+class CliExtensionDomain extends NamespaceOperator<CliExtension> {
 
     /** All the commands within the domain. */
     final LinkedHashMap<String, CliC> commands = new LinkedHashMap<>();
@@ -40,8 +40,8 @@ class CliExtensionDomain extends ExtensionDomain<CliExtension> {
     }
 
     @Override
-    public CliDomainMirror mirror() {
-        return new CliDomainMirror();
+    public CliNamespaceMirror mirror() {
+        return new CliNamespaceMirror();
     }
 
     void process(CliExtension extension, CliCommand c, BeanMethod method) {

@@ -19,6 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodType;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -26,7 +27,9 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
+import app.packed.context.Context;
 import app.packed.context.ContextMirror;
+import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
@@ -52,7 +55,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * </ul>
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public non-sealed class OperationMirror implements ContextualizedElementMirror , Mirror {
+public non-sealed class OperationMirror implements ContextualizedElementMirror , Mirror, ContextScopeMirror {
 
     /**
      * The internal configuration of the operation we are mirrored. Is initially null but populated via
@@ -174,6 +177,15 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
         return operation().target();
     }
 
+    /**
+     * {@return the name of the operation.}
+     * <p>
+     * All operations for a bean has unique names.
+     */
+    public String name() {
+        return operation().name();
+    }
+
     /** {@return the type of the operation.} */
     public FunctionType type() {
         return operation().type;
@@ -187,6 +199,12 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
 
     /** {@return the dependencies this operation introduces.} */
     DependenciesMirror zDependencies() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
         throw new UnsupportedOperationException();
     }
 }

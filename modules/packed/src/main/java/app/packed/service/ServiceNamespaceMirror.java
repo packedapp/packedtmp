@@ -18,19 +18,19 @@ package app.packed.service;
 import java.util.Collection;
 import java.util.Map;
 
-import app.packed.container.DomainMirror;
+import app.packed.container.NamespaceMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.util.Key;
 
 /**
- * A service domain.
+ * A service namespace is namespace where every provided key is unique.
  * <p>
  * A service domain
  * <p>
  * In
  */
 // 2 typer exports + main
-public class ServiceDomainMirror extends DomainMirror<BaseExtension> {
+public class ServiceNamespaceMirror extends NamespaceMirror<BaseExtension> {
 
     // Where is my exported services used
     public Map<Key<?>, Collection<ServiceBindingMirror>> bindings() {

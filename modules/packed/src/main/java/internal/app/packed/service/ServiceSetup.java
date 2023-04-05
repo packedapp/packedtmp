@@ -26,7 +26,7 @@ import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.ServiceBindingMirror;
 import app.packed.service.UnsatisfiableDependencyException;
 import app.packed.util.Key;
-import app.packed.util.KeyAlreadyInUseException;
+import app.packed.util.KeyAlreadyUsedException;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution;
@@ -102,7 +102,7 @@ public final class ServiceSetup {
     ServiceProviderSetup setProvider(OperationSetup operation, BindingResolution resolution) {
         // Check if there is an existing provider for the same key, in which case we fail
         if (provider != null) {
-            throw new KeyAlreadyInUseException(makeDublicateProvideErrorMsg(provider, operation));
+            throw new KeyAlreadyUsedException(makeDublicateProvideErrorMsg(provider, operation));
         }
 
         // Create a new provider

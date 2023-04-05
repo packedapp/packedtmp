@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package internal.app.packed.context.publish;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.context.Context;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.AnnotatedBindingHook;
 
 /**
@@ -31,7 +32,7 @@ import app.packed.extension.BeanHook.AnnotatedBindingHook;
  * Context mus
  * {@link app.packed.extension.operation.OperationHandle#contextValues()}
  * <p>
- * {@link app.packed.context.OutOfContextException} is thrown if attempting to use a context that is not available.
+ * {@link app.packed.context.NotInContextException} is thrown if attempting to use a context that is not available.
  * <p>
  * This annotation can only be used by extensions.
  */
@@ -39,8 +40,7 @@ import app.packed.extension.BeanHook.AnnotatedBindingHook;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @AnnotatedBindingHook(extension = BaseExtension.class)
-// Maybe a more leet name
-// Alternative @ConjectInject paa contexten...
+// Maybe a more leet name,  Alternative @ConjectInject paa contexten...
 public @interface ContextValue {
 
     /** {@return the context type that providing the value.} */

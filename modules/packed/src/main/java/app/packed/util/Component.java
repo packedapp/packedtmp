@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
-
-import app.packed.container.Realm;
-import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.ExtensionSetup;
+package app.packed.util;
 
 /**
- * The owner of a bean. Either the application (via an assembly) or an extension instance.
+ *
  */
-public sealed interface BeanOwner permits AssemblySetup, ExtensionSetup {
+public interface Component {
 
-    /** {@return whether or not the bean is still configurable.} */
-    boolean isConfigurable();
-
-    /** {@return a realm representing the owner.} */
-    Realm realm();
+    /** {@return the path of the component.} */
+    default ComponentPath componentPath() {
+        throw new UnsupportedOperationException();
+    }
 }
+// app.packed.Component:sd:asd:asd

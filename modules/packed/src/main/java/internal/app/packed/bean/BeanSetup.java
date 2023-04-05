@@ -7,6 +7,7 @@ import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -15,7 +16,7 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.container.Realm;
+import app.packed.container.Author;
 import app.packed.lifetime.LifecycleOperationMirror;
 import app.packed.util.FunctionType;
 import app.packed.util.Nullable;
@@ -26,7 +27,7 @@ import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NameCheck;
-import internal.app.packed.context.ContextSetup;
+import internal.app.packed.context.ContextualizedElementSetup;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
@@ -42,7 +43,7 @@ import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 
 /** The internal configuration of a bean. */
-public final class BeanSetup {
+public final class BeanSetup implements ContextualizedElementSetup {
 
     /** A magic initializer for {@link BeanMirror}. */
     public static final MagicInitializer<BeanSetup> MIRROR_INITILIZER = MagicInitializer.of();
@@ -71,6 +72,11 @@ public final class BeanSetup {
     /** The container this bean is installed in. */
     public final ContainerSetup container;
 
+    // ???
+    // Er vi recursive??
+    @Nullable
+    public ContextualizedElementSetup contexts;
+
     /** The extension that installed the bean. */
     public final ExtensionSetup installedBy;
 
@@ -94,21 +100,18 @@ public final class BeanSetup {
     /** The name of this bean. Should only be updated through {@link #named(String)} */
     String name;
 
+    private volatile Map<OperationSetup, String> operationNames;
+
     /** Operations declared by the bean. */
     public final ArrayList<OperationSetup> operations = new ArrayList<>();
 
     /** The owner of the bean. */
-    public final BeanOwner owner;
+    public final AuthorSetup owner;
+
+    public boolean providingOperationsVisited;
 
     /** A list of services provided by the bean, used for circular dependency checks. */
     public final List<ServiceProviderSetup> serviceProviders = new ArrayList<>();
-
-    // ???
-    // Er vi recursive??
-    @Nullable
-    public ContextSetup contexts;
-
-    public boolean providingOperationsVisited;
 
     /** Create a new bean. */
     BeanSetup(PackedBeanBuilder installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
@@ -132,7 +135,7 @@ public final class BeanSetup {
             BeanLifetimeSetup bls = new BeanLifetimeSetup(this, installer);
             this.lifetime = bls;
             this.lifetimeStoreIndex = -1;
-           // containerLifetime.addDetachedChildBean(bls);
+            // containerLifetime.addDetachedChildBean(bls);
         }
     }
 
@@ -167,6 +170,7 @@ public final class BeanSetup {
     }
 
     /** {@return a new mirror.} */
+    @Override
     public BeanMirror mirror() {
         return MIRROR_INITILIZER.run(() -> ClassUtil.newMirror(BeanMirror.class, BeanMirror::new, mirrorSupplier), this);
     }
@@ -195,8 +199,22 @@ public final class BeanSetup {
         this.name = newName;
     }
 
-    public Realm owner() {
-        return owner.realm();
+    /**
+     * <p>
+     * We lazily calculate
+     * @return a map of operation to
+     */
+    public Map<OperationSetup, String> operationNames() {
+        Map<OperationSetup, String> m = operationNames;
+        // operationNames is only valid as
+        if (m == null || m.size() != operationNames.size()) {
+            m = operationNames = LazyNamer.calculate(operations, OperationSetup::namePrefix);
+        }
+        return m;
+    }
+
+    public Author author() {
+        return owner.author();
     }
 
     /** {@return the path of this component} */

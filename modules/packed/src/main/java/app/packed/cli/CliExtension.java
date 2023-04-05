@@ -30,7 +30,7 @@ import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.container.ContainerBuilder;
 import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.container.ContainerTemplate;
-import sandbox.extension.domain.DomainTemplate;
+import sandbox.extension.domain.NamespaceTemplate;
 
 /**
  * An extension that
@@ -39,7 +39,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
     // Vi har 1 per application.. Vi kan fx stadig injecte globalle parameters i enhver lifetime.
     // Det er bare commands der ikke fungere
-    static final DomainTemplate<CliExtensionDomain> DOMAIN = DomainTemplate.of(CliExtensionDomain::new);
+    static final NamespaceTemplate<CliExtensionDomain> DOMAIN = NamespaceTemplate.of(CliExtensionDomain::new);
 
     static final ContainerLocal<Boolean> LAUNCHED = ContainerLocal.ofContainer();
 

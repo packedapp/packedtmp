@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.container.Wirelet;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
+import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ApplicationSetup;
@@ -30,12 +31,13 @@ import sandbox.lifetime.external.LifecycleController;
 /**
  * A temporary context object that is created whenever we launch an application.
  */
+@BindingTypeHook(extension = BaseExtension.class)
 public final class ApplicationLaunchContext implements Context<BaseExtension> {
 
     /** The configuration of the application we are launching. */
     public final ApplicationSetup application;
 
-    public final ContainerRunner cr;
+    public final ContainerRunner runner;
 
     /** The name of the application. May be overridden via {@link Wirelet#named(String)} if image. */
     public String name;
@@ -48,7 +50,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
         this.application = application;
         this.wirelets = wirelets;
         this.name = requireNonNull(application.container.name);
-        this.cr = new ContainerRunner(application);
+        this.runner = new ContainerRunner(application);
     }
 
     /** {@return the name of the application} */
@@ -57,8 +59,8 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
     }
 
     LifecycleController runtime() {
-        if (cr.runtime != null) {
-            return cr.runtime;
+        if (runner.runtime != null) {
+            return runner.runtime;
         }
         throw new UnsupportedOperationException("This component does not have a runtime");
     }
@@ -70,7 +72,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
      * @return a service locator for the application
      */
     public ServiceLocator serviceLocator() {
-        return application.container.sm.newExportedServiceLocator(cr.pool());
+        return application.container.sm.newExportedServiceLocator(runner.pool());
     }
 
     /**
@@ -100,7 +102,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
             }
         }
 
-        context.cr.run(application.container);
+        context.runner.run(application.container);
 
         return context;
 

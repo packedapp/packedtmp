@@ -15,7 +15,7 @@
  */
 package internal.app.packed.binding;
 
-import app.packed.container.Realm;
+import app.packed.container.Author;
 import app.packed.operation.BindingMirror;
 import internal.app.packed.container.PackedContainerLifetimeTunnel;
 
@@ -43,7 +43,7 @@ public class CompanionBinding {
     // Kan vel kun paa ting man direkte depender paa?
 
     /** {@inheritDoc} */
-    public Realm boundBy() {
+    public Author boundBy() {
        throw new UnsupportedOperationException();
     }
 

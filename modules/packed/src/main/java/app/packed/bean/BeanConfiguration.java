@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 
 import app.packed.application.ApplicationPath;
-import app.packed.container.Realm;
+import app.packed.container.Author;
 import app.packed.context.Context;
 import app.packed.util.Key;
 import internal.app.packed.bean.PackedBeanHandle;
@@ -53,7 +53,7 @@ public class BeanConfiguration {
 
     /** {@return a set of contexts the bean is in.} */
     public final Set<Class<? extends Context<?>>> contexts() {
-        return handle.contexts(handle.owner());
+        return handle.contexts(handle.author());
     }
 
     /** {@inheritDoc} */
@@ -126,8 +126,8 @@ public class BeanConfiguration {
     }
 
     /** {@return the owner of the bean.} */
-    public final Realm owner() {
-        return handle.owner();
+    public final Author author() {
+        return handle.author();
     }
 
     /**

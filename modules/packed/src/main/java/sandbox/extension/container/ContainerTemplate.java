@@ -19,13 +19,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.context.ContextSpan;
 import app.packed.extension.Extension;
 import app.packed.operation.Op1;
 import app.packed.util.Key;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
-import sandbox.extension.context.ContextTemplate;
+import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
@@ -150,13 +149,13 @@ interface Zandbox {
     @SuppressWarnings("unchecked")
     // We have a trivial usecases where the bean is the same parameter
     // Take a record? that matches the parameters?
-    <T> Zandbox addContextFromParent(ContextTemplate template, ContextSpan span, Class<?> extensionBean, Op1<T, ?>... op);
+    <T> Zandbox addContextFromParent(ContextTemplate template, ContextSpanKind span, Class<?> extensionBean, Op1<T, ?>... op);
 
     // BeanSpan not supported
     // OperationSpan I will have to think about that
 
     // Soeger vi kun i samme lifetime?
-    Zandbox addContextFromProvide(ContextTemplate template, ContextSpan containerSpan);
+    Zandbox addContextFromProvide(ContextTemplate template, ContextSpanKind containerSpan);
 
     // I don't know what these do
     // In order to add links. This must have been set

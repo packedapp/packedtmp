@@ -13,10 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.context;
+package internal.app.packed.bean;
+
+import app.packed.container.Author;
+import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.container.ExtensionSetup;
 
 /**
- *
+ * The owner of a bean. Either the application (via an assembly) or an extension instance.
  */
-// ContainerTreeMirror, BeanMirror, OperationMirror
-public interface ContextSpanMirror {}
+public sealed interface AuthorSetup permits AssemblySetup, ExtensionSetup {
+
+    /** {@return whether or not the bean is still configurable.} */
+    boolean isConfigurable();
+
+    /** {@return a realm representing the owner.} */
+    Author author();
+}

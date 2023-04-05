@@ -29,6 +29,13 @@ import app.packed.extension.Extension;
 // Det samme for wirelets, men der skal vi jo saa bruge det for nogle checks
 public interface Context<E extends Extension<E>> {}
 
+
+// Context vs Namespaces
+//// Context er lidt mere lavet explicit paa basis af de operation man vaelger
+//// Namespaces er bare lidt mere der
+
+
+
 //A context has a
 ////ContextClass
 ////ContextSpan (Variable)

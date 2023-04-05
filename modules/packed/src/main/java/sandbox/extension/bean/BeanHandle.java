@@ -22,14 +22,14 @@ import app.packed.application.ApplicationPath;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.container.Realm;
+import app.packed.container.Author;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.util.Key;
 import internal.app.packed.bean.PackedBeanHandle;
-import sandbox.extension.context.ContextualizedElement;
+import internal.app.packed.context.publish.ContextualizedElement;
 import sandbox.extension.operation.OperationHandle;
 
 /**
@@ -134,7 +134,7 @@ public sealed interface BeanHandle<T> extends ContextualizedElement permits Pack
     /**
      * @return
      */
-    Realm owner();
+    Author author();
 
     /** {@return the path of the bean.} */
     ApplicationPath path();

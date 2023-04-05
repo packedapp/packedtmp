@@ -24,5 +24,5 @@ public interface ServiceMirror {
 
     Key<?> key();
 
-    ServiceDomainMirror domain();
+    ServiceNamespaceMirror domain();
 }

@@ -39,13 +39,13 @@ public final class FutureApplicationSetup {
     /** The result of a successful application build. */
     private volatile ApplicationSetup application;
 
-    final NonBootstrapBuilder parent;
+    final NonBootstrapContainerBuilder parent;
 
     /** A task for building the application. */
     private final FutureTask<ApplicationSetup> buildTask;
 
     // IDK vi skal nok have en specielt builder
-    public FutureApplicationSetup(NonBootstrapBuilder parent, Assembly assembly) {
+    public FutureApplicationSetup(NonBootstrapContainerBuilder parent, Assembly assembly) {
         this.parent = parent;
 
         Callable<ApplicationSetup> c = () -> {

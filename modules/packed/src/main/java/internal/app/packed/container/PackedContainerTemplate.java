@@ -21,9 +21,9 @@ import java.util.Set;
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.container.ContainerLifetimeTunnel;
 import sandbox.extension.container.ContainerTemplate;
-import sandbox.extension.context.ContextTemplate;
 import sandbox.extension.operation.OperationTemplate;
 
 /** Implementation of {@link ContainerTemplate}. */

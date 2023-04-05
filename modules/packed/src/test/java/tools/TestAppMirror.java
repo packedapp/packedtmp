@@ -17,7 +17,7 @@ package tools;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.container.Realm;
+import app.packed.container.Author;
 
 /**
  *
@@ -25,6 +25,6 @@ import app.packed.container.Realm;
 public class TestAppMirror extends ApplicationMirror {
 
     public BeanMirror bean() {
-        return container().beans().filter(b -> b.owner() == Realm.application()).findAny().get();
+        return container().beans().filter(b -> b.owner() == Author.application()).findAny().get();
     }
 }

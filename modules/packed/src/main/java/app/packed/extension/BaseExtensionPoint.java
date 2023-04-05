@@ -116,8 +116,8 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         BeanSetup b = BeanSetup.crack(bean);
         BaseExtension be = extension();
 
-        if (!bean.owner().isExtension(usedBy())) {
-            throw new IllegalArgumentException("Bean Owner " + bean.owner() + " ");
+        if (!bean.author().isExtension(usedBy())) {
+            throw new IllegalArgumentException("Bean Owner " + bean.author() + " ");
         } else if (b.container != be.extension.container) {
             throw new IllegalArgumentException(); // Hmm? maybe allow it
         }

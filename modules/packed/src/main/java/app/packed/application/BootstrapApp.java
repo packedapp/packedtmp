@@ -40,11 +40,12 @@ import app.packed.util.Result;
 import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.CompositeWirelet;
 import internal.app.packed.container.FutureApplicationSetup;
-import internal.app.packed.container.NonBootstrapBuilder;
+import internal.app.packed.container.NonBootstrapContainerBuilder;
 import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.container.WireletSelectionArray;
+import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.util.ThrowableUtil;
@@ -52,7 +53,6 @@ import sandbox.extension.bean.BeanBuilder;
 import sandbox.extension.bean.BeanHandle;
 import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.container.ContainerLifetimeTunnel;
-import sandbox.extension.context.ContextTemplate;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
@@ -548,7 +548,7 @@ public final /* primitive */ class BootstrapApp<A> {
     }
 
     /** Used by {@link BootstrapApp} to build a single root application. */
-    private static final class RootApplicationBuilder extends NonBootstrapBuilder {
+    private static final class RootApplicationBuilder extends NonBootstrapContainerBuilder {
 
         /** The build goal. */
         private final BuildGoal goal;

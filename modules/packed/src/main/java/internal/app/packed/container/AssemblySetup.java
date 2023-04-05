@@ -26,17 +26,17 @@ import java.util.TreeSet;
 
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
+import app.packed.container.Author;
 import app.packed.container.DelegatingAssembly;
-import app.packed.container.Realm;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.BeanOwner;
+import internal.app.packed.bean.AuthorSetup;
 import internal.app.packed.service.CircularServiceDependencyChecker;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
 
 /** The internal configuration of an assembly. */
-public final class AssemblySetup implements BeanOwner {
+public final class AssemblySetup implements AuthorSetup {
 
     /** A MethodHandle for invoking {@link AssemblyMirror#initialize(AssemblySetup)}. */
     private static final MethodHandle MH_ASSEMBLY_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), AssemblyMirror.class, "initialize",
@@ -70,6 +70,7 @@ public final class AssemblySetup implements BeanOwner {
     public final AssemblyModel model;
 
     public final long assemblyStart = System.nanoTime();
+
     public long assemblyFinished;
 
     /**
@@ -165,7 +166,7 @@ public final class AssemblySetup implements BeanOwner {
 
     /** {@inheritDoc} */
     @Override
-    public Realm realm() {
-        return Realm.application();
+    public Author author() {
+        return Author.application();
     }
 }

@@ -29,7 +29,7 @@ import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.container.Realm;
+import app.packed.container.Author;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.operation.BindingKind;
@@ -64,7 +64,7 @@ public class MirrorInjection {
                     assertEquals(om, bim.operation());
                     assertEquals(i, bim.operationBindingIndex());
                     assertEquals(BindingKind.HOOK, bim.bindingKind());
-                    assertSame(Realm.extension(BaseExtension.class), bim.zBoundBy());
+                    assertSame(Author.extension(BaseExtension.class), bim.zBoundBy());
                     assertTrue(bim.variable().annotations().isEmpty());
                     assertEquals(l.get(i), bim.variable().type());
                     assertEquals(l.get(i), bim.variable().rawType());

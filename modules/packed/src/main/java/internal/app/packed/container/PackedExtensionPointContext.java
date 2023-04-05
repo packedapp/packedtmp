@@ -15,7 +15,7 @@
  */
 package internal.app.packed.container;
 
-import app.packed.container.Realm;
+import app.packed.container.Author;
 import app.packed.extension.ExtensionPoint.UseSite;
 
 /**
@@ -25,7 +25,7 @@ public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSet
 
     /** {@inheritDoc} */
     @Override
-    public Realm realm() {
-        return extension.realm();
+    public Author author() {
+        return extension.author();
     }
 }

@@ -19,8 +19,8 @@ import java.lang.invoke.MethodType;
 import java.util.Map;
 
 import app.packed.context.Context;
+import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.operation.PackedOperationTemplate;
-import sandbox.extension.context.ContextTemplate;
 
 /**
  * An operation template defines the basic behaviour of an operation and is typically reused across multiple operations.

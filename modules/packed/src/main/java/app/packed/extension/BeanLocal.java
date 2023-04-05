@@ -19,6 +19,7 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.PackedBeanElement;
 import internal.app.packed.bean.PackedBeanLocal;
 import sandbox.extension.bean.BeanHandle;
 
@@ -26,6 +27,9 @@ import sandbox.extension.bean.BeanHandle;
  * This class provides bean-local variables. Think of them as {@link ThreadLocal thread locals}, but for a single bean.
  * <p>
  * Bean locals are typically used for sharing per-bean data between different components while building the application.
+ * For example, a value can be set for a bean when installing it using XXX.
+ *
+ * This value can then retrieved from a bean handle
  *
  * There are number where a BeanLocal be used:
  *
@@ -35,27 +39,22 @@ import sandbox.extension.bean.BeanHandle;
  *
  * Finally, a bean local can be used from a {@link app.packed.bean.BeanMirror}
  * <p>
- * While bean locals are primarily targeted extension developers, there are no reasons that power users could not use
+ * While bean locals are primarily developers of extensions, there are no reasons that ordinary users could not use
  * them.
  * <p>
- * Bean locals should generally not be shared outside of the extension that created them.
+ * Bean locals should generally not be shared outside outside of trusted code.
  * <p>
- * Bean locals are only intended to be used when building an application or from bean mirror subclasses. Specifically,
- * there are no support for querying a bean local at runtime.
+ * Bean locals should in general only be used while building an application. Or for querying from bean mirror
+ * subclasses. Specifically, there are no support for querying bean locals at runtime.
  *
  * @see app.packed.extension.bean.BeanBuilder#setLocal(BeanLocal, Object)
  * @see app.packed.bean.BeanMirror#isLocalPresent(BeanLocal)
  * @see app.packed.bean.BeanMirror#getLocal(BeanLocal)
  * @see ContainerLocal
  */
-
-// Tilfoej BeanElement, BeanMirror?
-
-// Jeg ved ikke om vi vil have en default vaerdi
-
-// get, use, remove..
+// Jeg ved ikke om vi vil have en default vaerdi, og hvad med null
 @SuppressWarnings("rawtypes")
-public sealed abstract class BeanLocal<T> permits ContainerLocal, PackedBeanLocal {
+public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
 
     public final T get(BeanConfiguration configuration) {
         return get(BeanSetup.crack(configuration));
@@ -105,18 +104,20 @@ public sealed abstract class BeanLocal<T> permits ContainerLocal, PackedBeanLoca
     }
 
     /**
-     * Sets the value of this local for the bean represented by the specified bean introspector.
+     * Sets the value of this local for the bean represented by the specified bean element.
      *
      * @param <B>
-     *            the type of bean introspector
+     *            the type of bean element
      * @param handle
-     *            the bean introspector that represents the bean
+     *            the bean element that represents the bean
      * @param value
      *            the value to set
-     * @return the specified bean introspector
+     * @return the specified bean element
      */
     public final <B extends BeanElement> B set(B element, T value) {
-        throw new UnsupportedOperationException();
+        PackedBeanElement e = (PackedBeanElement) element;
+        set(e.bean(), value);
+        return element;
     }
 
     /**

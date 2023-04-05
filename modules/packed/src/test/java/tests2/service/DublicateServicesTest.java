@@ -18,7 +18,7 @@ package tests2.service;
 import org.junit.jupiter.api.Test;
 
 import app.packed.util.Key;
-import app.packed.util.KeyAlreadyInUseException;
+import app.packed.util.KeyAlreadyUsedException;
 import testutil.stubs.annotation.IntQualifier;
 import tools.TestApp;
 
@@ -30,19 +30,19 @@ public class DublicateServicesTest {
     @Test
     public void dublicateKeyDifferentBeans() {
         @SuppressWarnings("unused")
-        KeyAlreadyInUseException k = TestApp.assertThrows(KeyAlreadyInUseException.class, c -> {
+        KeyAlreadyUsedException k = TestApp.assertThrows(KeyAlreadyUsedException.class, c -> {
             c.installInstance(1L).provideAs(Number.class);
             c.installInstance(1).provideAs(Number.class);
         });
 
         // TODO check message
 
-        k = TestApp.assertThrows(KeyAlreadyInUseException.class, c -> {
+        k = TestApp.assertThrows(KeyAlreadyUsedException.class, c -> {
             c.installInstance(1L).provideAs(new Key<Number>() {});
             c.installInstance(1).provideAs(Number.class);
         });
 
-        k = TestApp.assertThrows(KeyAlreadyInUseException.class, c -> {
+        k = TestApp.assertThrows(KeyAlreadyUsedException.class, c -> {
             c.installInstance(1L).provideAs(new Key<@IntQualifier Number>() {});
             c.installInstance(1).provideAs(new Key<@IntQualifier Number>() {});
         });

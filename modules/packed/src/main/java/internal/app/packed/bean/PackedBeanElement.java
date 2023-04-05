@@ -24,4 +24,5 @@ import app.packed.extension.BeanElement;
 public sealed abstract class PackedBeanElement implements BeanElement permits PackedBeanClass, PackedBeanMember, PackedBindableVariable {
 
 
+    public abstract BeanSetup bean();
 }

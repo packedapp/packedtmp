@@ -17,7 +17,7 @@ package app.packed.operation;
 
 import java.util.Optional;
 
-import app.packed.container.Realm;
+import app.packed.container.Author;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
 import internal.app.packed.binding.BindingResolution;
@@ -117,7 +117,7 @@ public class BindingMirror implements Mirror {
     }
 
     /** {@return the x who created binding.} */
-    public final Realm zBoundBy() {
+    public final Author zBoundBy() {
         return binding().boundBy;
     }
 

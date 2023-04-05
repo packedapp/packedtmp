@@ -34,7 +34,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import app.packed.container.Realm;
+import app.packed.container.Author;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
@@ -98,7 +98,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** The {@link ExtensionDescriptor#orderingDepth() depth} of this extension. */
     private final int ordringDepth;
 
-    private final Realm realm;
+    private final Author realm;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -108,7 +108,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      */
     private ExtensionModel(Builder builder) {
         this.extensionClass = builder.extensionClass;
-        this.realm = Realm.extension(extensionClass);
+        this.realm = Author.extension(extensionClass);
         this.mhConstructor = builder.mhConstructor;
         this.ordringDepth = builder.depth;
         this.dependencies = Set.copyOf(builder.dependencies);
@@ -241,7 +241,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return ordringDepth;
     }
 
-    public Realm realm() {
+    public Author realm() {
         return realm;
     }
 

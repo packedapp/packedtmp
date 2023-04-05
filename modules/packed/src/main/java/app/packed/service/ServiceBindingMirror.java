@@ -51,7 +51,7 @@ public class ServiceBindingMirror extends BindingMirror {
     }
 
     /** {@return the domain this service is provided from.} */
-    public ServiceDomainMirror domain() {
+    public ServiceNamespaceMirror domain() {
         throw new UnsupportedOperationException();
     }
 

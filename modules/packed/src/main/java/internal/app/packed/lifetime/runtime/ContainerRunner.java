@@ -17,7 +17,7 @@ package internal.app.packed.lifetime.runtime;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.extension.ContainerContext;
+import app.packed.extension.ExtensionContext;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
@@ -29,7 +29,7 @@ import internal.app.packed.util.ThrowableUtil;
 public class ContainerRunner {
 
     /** The runtime component node we are building. */
-    private ContainerContext pool;
+    private ExtensionContext pool;
 
     /** If the application is stateful, the applications runtime. */
     @Nullable
@@ -50,7 +50,7 @@ public class ContainerRunner {
     /**
      * @return
      */
-    public ContainerContext pool() {
+    public ExtensionContext pool() {
         return pool;
     }
 

@@ -15,38 +15,95 @@
  */
 package internal.app.packed.context;
 
-import java.util.IdentityHashMap;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 
 import app.packed.context.Context;
+import app.packed.context.ContextMirror;
+import app.packed.context.ContextScopeMirror;
+import app.packed.extension.Extension;
+import app.packed.operation.OperationMirror;
+import app.packed.util.Nullable;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.container.ContainerTreeSetup;
+import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.util.collect.MappedMap;
+import internal.app.packed.util.collect.ValueMapper;
 
-// Implementerings muligheder
-//// With parent
-////
-
-//// Hvad med nested operations??? Er de i context???????
-//// Embedded operations er selvfoelgelig
-
-// Der er forskel paa invocation context, og de contexts man er i.
-
-/**
- *
- */
-// All contexts skal vel saettes i templates???
-
-// BeanLifetimeOperationContext er vel i virkeligheden en context operation.
-// Som er til raadighed for dens nested boern
-
-// ContainerContext er til raadighed for alle dependencies (alle depender on BaseExtension, lol)
-// Samtidig kan alle invoke med den..
+/** Represents a context. */
 public final class ContextSetup {
 
-    private final IdentityHashMap<Class<? extends Context<?>>, ContextEntry> m = new IdentityHashMap<>();
+    /** The template used when creating the context. */
+    public final PackedContextTemplate template;
 
-    public boolean isInContext(Class<? extends Context<?>> contextClass) {
-        return m.containsKey(contextClass);
+    /** The root of the context. */
+    public final ContextualizedElementSetup root;
+
+    // Maaske er den final alligevel
+    @Nullable
+    ContainerTreeSetup containerTree;
+
+    public ContextSetup(PackedContextTemplate template, ContextualizedElementSetup root) {
+        this.template = template;
+        this.root = root;
     }
 
-    static class ContextEntry {
+    public static <K> Map<K, ContextMirror> map(Map<K, ContextSetup> map) {
+        return new MappedMap<>(map, ContextSetupToContextMirrorValueMapper.INSTANCE);
+    }
 
+    /** Implementation of {@link ContextMirror}. */
+    private record PackedContextMirror(ContextSetup context) implements ContextMirror {
+
+        /** {@inheritDoc} */
+        @Override
+        public Class<? extends Context<?>> contextClass() {
+            return context.template.contextClass();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Class<? extends Extension<?>> extensionClass() {
+            return context.template.extensionClass();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Collection<OperationMirror> initiatingOperations() {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ContextScopeMirror scope() {
+            if (context.root instanceof OperationSetup os) {
+                return os.mirror();
+            } else if (context.root instanceof BeanSetup bs) {
+                return bs.mirror();
+            } else {
+                return context.containerTree.mirror();
+            }
+        }
+    }
+
+    private static final class ContextSetupToContextMirrorValueMapper implements ValueMapper<ContextSetup, ContextMirror> {
+
+        private static final ContextSetupToContextMirrorValueMapper INSTANCE = new ContextSetupToContextMirrorValueMapper();
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<Object> forValueSearch(Object object) {
+            if (object instanceof PackedContextMirror m) {
+                return Optional.of(m.context());
+            }
+            return Optional.empty();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ContextMirror mapValue(ContextSetup context) {
+            return new PackedContextMirror(context);
+        }
     }
 }

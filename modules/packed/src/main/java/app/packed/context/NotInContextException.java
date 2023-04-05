@@ -13,20 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package app.packed.context;
+
+import app.packed.application.BuildException;
 
 /**
  *
  */
+// Hmm StaticContextUnavilable?
+// TransactionContext.get()
 
-//not sure its useful actually
-public abstract class NonBootstrapBuilder extends PackedContainerBuilder {
+// ContextNotAvailable
+// ProvisionException
+// ContextUnavailable
+// OutOfContextException
+public class NotInContextException extends BuildException {
+
+    private static final long serialVersionUID = 1L;
 
     /**
-     * @param template
+     * @param message
      */
-    protected NonBootstrapBuilder(PackedContainerTemplate template) {
-        super(template);
+    public NotInContextException(String message) {
+        super(message);
     }
-
 }

@@ -24,6 +24,11 @@ import internal.app.packed.util.PackedAnnotationList;
 @SuppressWarnings("rawtypes")
 abstract sealed class PackedBeanMember<M extends Member> extends PackedBeanElement permits PackedBeanExecutable {
 
+    @Override
+    public BeanSetup bean() {
+        return extension.scanner.bean;
+    }
+
     /** Annotations on the member. */
     private final PackedAnnotationList annotations;
 

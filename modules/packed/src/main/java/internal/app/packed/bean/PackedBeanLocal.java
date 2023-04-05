@@ -46,6 +46,11 @@ public final class PackedBeanLocal<T> extends BeanLocal<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public T remove(BeanSetup bean) {
+        return (T) bean.container.application.beanLocals.remove(toKey(bean));
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean isPresent(BeanSetup setup) {

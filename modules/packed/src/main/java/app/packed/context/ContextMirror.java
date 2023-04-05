@@ -25,6 +25,10 @@ import internal.app.packed.container.Mirror;
  *
  */
 
+// En operation context er kun til raadighed for ejeren af operationen
+// En bean context er kun raadighed for ejeren af beanen
+// Container context er kun til raadighed for applications ejeren
+
 // En context laver ikke en ny bean. Men en ny bean lifetime
 
 // En operation kan vaere i en context
@@ -43,11 +47,19 @@ import internal.app.packed.container.Mirror;
 // @Schedule
 public interface ContextMirror extends Mirror {
 
+//    default Author author() {
+//        ContextScopeMirror m = scope();
+//        if (m instanceof OperationMirror om) {
+//            return om.bean().owner();
+//        } else if (m instanceof BeanMirror bm) {
+//            return bm.owner();
+//        } else {
+//            return Author.application();
+//        }
+//    }
+
     /** {@return the context.} */
     Class<? extends Context<?>> contextClass();
-
-    /** {@return the root element of the context. */
-    ContextualizedElementMirror root();
 
     /** {@return the extension that defines the context.} */
     Class<? extends Extension<?>> extensionClass();
@@ -57,7 +69,14 @@ public interface ContextMirror extends Mirror {
      *
      * @return
      */
+
+    // Er context lavet i forbindelse med en LifetimeOperation
+    // Kan kun vaere bean eller container
+
+    //// Hmm, er det entry points, and if yes is an operation its own entry point
+    // Lad os sige det er sessions context...
+    // Lad os sige det er en
     Collection<OperationMirror> initiatingOperations();
 
-    ContextSpan span();
+    ContextScopeMirror scope();
 }

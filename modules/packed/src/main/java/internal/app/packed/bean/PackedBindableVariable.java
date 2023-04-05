@@ -43,8 +43,8 @@ import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
-import sandbox.extension.operation.OperationTemplate;
 import internal.app.packed.operation.PackedOp;
+import sandbox.extension.operation.OperationTemplate;
 
 /** Implementation of {@link BindableVariable}. */
 public final class PackedBindableVariable extends PackedBeanElement implements BeanVariable {
@@ -101,7 +101,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
 
     private void bind(BindingResolution provider) {
         assert (operation.bindings[index] == null);
-        operation.bindings[index] = new HookBindingSetup(operation, index, bindingExtension.realm(), provider);
+        operation.bindings[index] = new HookBindingSetup(operation, index, bindingExtension.author(), provider);
     }
 
     /** {@inheritDoc} */
@@ -221,5 +221,11 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
     @Override
     public Variable variable() {
         return variable;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanSetup bean() {
+        return scanner.bean;
     }
 }

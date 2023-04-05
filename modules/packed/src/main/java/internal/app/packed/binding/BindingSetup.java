@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
-import app.packed.container.Realm;
+import app.packed.container.Author;
 import app.packed.operation.BindingKind;
 import app.packed.operation.BindingMirror;
 import app.packed.util.Nullable;
@@ -45,7 +45,7 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
      * <p>
      * May be the application itself if using {@link app.packed.operation.Op#bind(Object)} or similar.
      */
-    public final Realm boundBy;
+    public final Author boundBy;
 
     /** Supplies a mirror for the binding */
     public Supplier<? extends BindingMirror> mirrorSupplier;
@@ -56,7 +56,7 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
     /** The index into {@link OperationSetup#bindings}. */
     public final int operationBindingIndex;
 
-    protected BindingSetup(OperationSetup operation, int operationBindingIndex, Realm boundBy) {
+    protected BindingSetup(OperationSetup operation, int operationBindingIndex, Author boundBy) {
         this.operation = requireNonNull(operation);
         this.operationBindingIndex = operationBindingIndex;
         this.boundBy = requireNonNull(boundBy);
@@ -91,7 +91,7 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
         /** Provider for the binding. */
         public final BindingResolution provider;
 
-        public HookBindingSetup(OperationSetup operation, int index, Realm user, BindingResolution provider) {
+        public HookBindingSetup(OperationSetup operation, int index, Author user, BindingResolution provider) {
             super(operation, index, user);
             this.provider = requireNonNull(provider);
         }
@@ -126,7 +126,7 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
          * @param index
          * @param user
          */
-        public ManualBindingSetup(OperationSetup operation, int index, Realm user, BindingResolution provider) {
+        public ManualBindingSetup(OperationSetup operation, int index, Author user, BindingResolution provider) {
             super(operation, index, user);
             this.provider = provider;
         }

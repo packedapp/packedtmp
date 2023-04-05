@@ -25,8 +25,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.extension.BeanVariable;
+import app.packed.extension.ExtensionContext;
 import app.packed.extension.Extension;
-import app.packed.extension.ContainerContext;
 import app.packed.operation.Op;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
@@ -143,7 +143,7 @@ public final record PackedOperationHandle(OperationSetup operation, @Nullable Be
     public void named(String name) {
         requireNonNull(name, "name is null");
         checkConfigurable();
-        operation.zName = name;
+        operation.namePrefix = name;
     }
 
     /** {@inheritDoc} */
@@ -238,7 +238,7 @@ interface ZandboxOH {
     // Hmm, kan jo ikke bare tage en tilfaeldig...
     default void invokeFromAncestor(Extension<?> extension) {}
 
-    default void invokeFromAncestor(ContainerContext context) {}
+    default void invokeFromAncestor(ExtensionContext context) {}
 
     // Can be used to optimize invocation...
     // Very advanced though

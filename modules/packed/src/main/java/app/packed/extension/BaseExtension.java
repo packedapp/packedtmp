@@ -53,6 +53,7 @@ import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.bean.PackedBeanWrappedVariable;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.container.LeafContainerOrApplicationBuilder;
+import internal.app.packed.context.publish.ContextValue;
 import internal.app.packed.entrypoint.OldEntryPointSetup;
 import internal.app.packed.entrypoint.OldEntryPointSetup.MainThreadOfControl;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
@@ -70,6 +71,7 @@ import sandbox.extension.container.ContainerTemplate;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 import sandbox.lifetime.external.LifecycleController;
+import sandbox.lifetime.old.ApplicationContext;
 
 /**
  * An extension that defines the foundational APIs for managing beans, services, containers and applications.
@@ -460,14 +462,14 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                         v.bindOp(new Op1<@ContextValue(ApplicationLaunchContext.class) ApplicationLaunchContext, String>(a -> a.name()) {});
                     } else if (va.rawType().equals(LifecycleController.class)) {
                         v.bindOp(new Op1<@ContextValue(ApplicationLaunchContext.class) ApplicationLaunchContext, LifecycleController>(
-                                a -> a.cr.runtime) {});
+                                a -> a.runner.runtime) {});
                     } else if (va.rawType().equals(ServiceLocator.class)) {
                         v.bindOp(new Op1<@ContextValue(ApplicationLaunchContext.class) ApplicationLaunchContext, ServiceLocator>(a -> a.serviceLocator()) {});
                     } else {
                         throw new UnsupportedOperationException("va " + va.rawType());
                     }
                 } else if (annotation instanceof CodeGenerated cg) {
-                    if (beanOwner().isApplication()) {
+                    if (beanAuthor().isApplication()) {
                         throw new BeanInstallationException("@" + CodeGenerated.class.getSimpleName() + " can only be used by extensions");
                     }
                     // Create the key
@@ -488,14 +490,18 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             public void hookOnVariableType(Class<?> hook, BeanWrappedVariable binding) {
                 OperationSetup operation = ((PackedBeanWrappedVariable) binding).v.operation;
 
-                if (hook == ContainerContext.class) {
-                    if (beanOwner().isApplication()) {
+                if (ApplicationContext.class.isAssignableFrom(hook)) {
+                   // binding.bindContextValue(ApplicationLaunchContext.class);
+                }
+
+                if (hook == ExtensionContext.class) {
+                    if (beanAuthor().isApplication()) {
                         binding.failWith("ContainerContext can only be injected into extensions");
                     }
-                    if (binding.availableInvocationArguments().isEmpty() || binding.availableInvocationArguments().get(0) != ContainerContext.class) {
+                    if (binding.availableInvocationArguments().isEmpty() || binding.availableInvocationArguments().get(0) != ExtensionContext.class) {
                         // throw new Error(v.availableInvocationArguments().toString());
                     }
-                    binding.bindContextValue(ContainerContext.class);
+                    binding.bindContextValue(ExtensionContext.class);
                 } else if (hook == ApplicationMirror.class) {
                     binding.bindConstant(operation.bean.container.application.mirror());
                 } else if (hook == ContainerMirror.class) {
@@ -508,7 +514,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     binding.bindConstant(operation.mirror());
                 } else {
                     // will always fail
-                    binding.checkAssignableTo(ContainerContext.class, ApplicationMirror.class, ContainerMirror.class, AssemblyMirror.class, BeanMirror.class,
+                    binding.checkAssignableTo(ExtensionContext.class, ApplicationMirror.class, ContainerMirror.class, AssemblyMirror.class, BeanMirror.class,
                             OperationMirror.class);
                 }
             }

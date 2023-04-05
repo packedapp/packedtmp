@@ -13,28 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.context;
+package internal.app.packed.util.collect;
 
-import app.packed.application.BuildException;
+import java.util.AbstractCollection;
 
 /**
  *
  */
-// Hmm StaticContextUnavilable?
-// TransactionContext.get()
+public abstract class ImmutableCollection<E> extends AbstractCollection<E> {
 
-// ContextNotAvailable
-// ProvisionException
-// ContextUnavailable
-// OutOfContextException
-public class ContextNotAvailableException extends BuildException {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * @param message
-     */
-    public ContextNotAvailableException(String message) {
-        super(message);
-    }
 }

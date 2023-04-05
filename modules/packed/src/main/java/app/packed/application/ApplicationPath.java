@@ -49,6 +49,35 @@ import internal.app.packed.util.PackedNamespacePath;
 // ApplicationElementPath
 // Foo:dfsdfdsf/sdfsdf:BeanName
 
+//HelloWorld <- Applicationen HelloWorld
+//HelloWorld: <-- root containeren in application HelloWorld
+//HelloWorld::MyBean <-- A bean in the root container of HelloWorld
+//HelloWorld:foo:MyBean:BeanFactory (An operation?)
+
+// Application:HelloWorld
+// Container:HelloWorld:/
+// Assembly:HelloWorld:/
+
+// ContainerLifetime:HelloWorld:/
+// BeanLifetime:App:Container:Bean
+// Bean
+
+// Operation (Operations are lazily calculated deterministic
+// Binding App:Container:Bean:Operation:1.1.1 <- param (embedded)
+
+//// Fungere ikke godt fordi de er baseret paa en class (key) og ikke en streng
+// Vi kan lazy lave dem ligesom operationer.. Og saa bare Added #1, #2
+// Extension
+// Context: <-- nah fungere ikke super godt context for XContext
+// Namespace?
+// Service -> Service:App:Container:Main:@Foo_ffdf
+
+//// Operation names are lazily calculated for a whole bean...
+//// I think they are only used for mirrors
+
+
+// Extension? App:Container:FullClassName <--- Tror ikke vi har denne
+
 // foo <- represents an application
 // foo:/ <- resents a a container
 // foo:/: <- resents a a bean
@@ -60,7 +89,7 @@ import internal.app.packed.util.PackedNamespacePath;
 public interface ApplicationPath extends Comparable<ApplicationPath>, /* , Iterable<ComponentPath>, */ CharSequence {
 
     /** A path representing the root resource of a namespace. */
-    static final ApplicationPath ROOT = PackedNamespacePath.ROOT;
+    ApplicationPath ROOT = PackedNamespacePath.ROOT;
 
     ApplicationPath add(ApplicationPath other);
 
@@ -112,7 +141,7 @@ public interface ApplicationPath extends Comparable<ApplicationPath>, /* , Itera
      * @throws IllegalArgumentException
      *             if the specified path string cannot be converted to a {@code ComponentPath}
      */
-    public static ApplicationPath of(String first, String... more) {
+    static ApplicationPath of(String first, String... more) {
         throw new UnsupportedOperationException();
     }
 

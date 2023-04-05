@@ -24,7 +24,7 @@ import app.packed.application.ApplicationPath;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.container.Realm;
+import app.packed.container.Author;
 import app.packed.operation.Op;
 import app.packed.util.Key;
 import internal.app.packed.binding.BindingResolution.FromConstant;
@@ -80,8 +80,8 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
 
     /** {@inheritDoc} */
     @Override
-    public Realm owner() {
-        return bean.owner();
+    public Author author() {
+        return bean.author();
     }
 
     /** {@inheritDoc} */
@@ -123,7 +123,7 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
             List<ServiceBindingSetup> l = ss.removeBindingsForBean(bean);
             if (!l.isEmpty()) {
                 for (ServiceBindingSetup s : l) {
-                    s.operation.bindings[s.operationBindingIndex] = new ManualBindingSetup(s.operation, s.operationBindingIndex, s.operation.bean.owner(),
+                    s.operation.bindings[s.operationBindingIndex] = new ManualBindingSetup(s.operation, s.operationBindingIndex, s.operation.bean.author(),
                             new FromConstant(instance.getClass(), instance));
                 }
                 return;

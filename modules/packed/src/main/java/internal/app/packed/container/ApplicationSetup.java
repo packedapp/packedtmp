@@ -31,7 +31,7 @@ import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
-import sandbox.extension.domain.ExtensionDomain;
+import sandbox.extension.domain.NamespaceOperator;
 
 /**
  * Internal configuration of an application.
@@ -62,7 +62,7 @@ public final class ApplicationSetup {
     public final HashMap<Map.Entry<PackedContainerLocal<?>, Object>, Object> containerLocals = new HashMap<>();
 
     // Maybe move to container?? Or maybe a DomainManager class? IDK
-    public final HashMap<PackedDomainTemplate<?>, ExtensionDomain<?>> domains = new HashMap<>();
+    public final HashMap<PackedNamespaceTemplate<?>, NamespaceOperator<?>> domains = new HashMap<>();
 
     /**
      * All extensions used in an application has a unique instance id attached. This is used in case we have multiple

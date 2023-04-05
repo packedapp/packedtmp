@@ -24,20 +24,19 @@ import internal.app.packed.util.types.ClassUtil;
 /// XIdentity
 
 // Player, Operator, Partner (maybe like Operator best)
-public /* primitive */ final class Realm {
+public /* primitive */ final class Author {
 
-    // ROOT? SYSTEM?
-    /** The application realm. */
-    private static final Realm APPLICATION = new Realm(Extension.class);
+    /** An application author. */
+    private static final Author APPLICATION = new Author(Extension.class);
 
     /** Interned realm. */
     // Until we get primitives in which case it is always interned
-    static final ClassValue<Realm> INTERNED = new ClassValue<Realm>() {
+    static final ClassValue<Author> INTERNED = new ClassValue<Author>() {
 
         @Override
-        protected Realm computeValue(Class<?> extensionClass) {
+        protected Author computeValue(Class<?> extensionClass) {
             ClassUtil.checkProperSubclass(Extension.class, extensionClass, "extensionClass");
-            return new Realm(extensionClass);
+            return new Author(extensionClass);
         }
     };
 
@@ -45,7 +44,7 @@ public /* primitive */ final class Realm {
     @SuppressWarnings("rawtypes")
     private final Class extensionClass;
 
-    private Realm(@SuppressWarnings("rawtypes") Class extensionClass) {
+    private Author(@SuppressWarnings("rawtypes") Class extensionClass) {
         this.extensionClass = requireNonNull(extensionClass);
     }
 
@@ -58,17 +57,18 @@ public /* primitive */ final class Realm {
     @SuppressWarnings("unchecked")
     public Class<? extends Extension<?>> extension() {
         if (extensionClass == Extension.class) {
-            throw new NoSuchElementException("Cannot call this method on the application realm");
+            throw new NoSuchElementException("Cannot call this method on an application author");
         }
         return extensionClass;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return extensionClass.hashCode();
     }
 
-    /** {@return true if this realm represents the application realm, otherwise false.} */
+    /** {@return true if this author represents author or the application, otherwise false.} */
     public boolean isApplication() {
         return extensionClass == Extension.class;
     }
@@ -88,13 +88,13 @@ public /* primitive */ final class Realm {
         return isApplication() ? "Application" : extensionClass.getSimpleName();
     }
 
-    /** {@return the application realm.} */
-    public static Realm application() {
+    /** {@return the application author.} */
+    public static Author application() {
         return APPLICATION;
     }
 
     /**
-     * Returns a realm for the specified extension.
+     * Returns a author representing the specified extension.
      *
      * @param extensionClass
      *            the type of extension to return a realm for
@@ -102,7 +102,7 @@ public /* primitive */ final class Realm {
      * @throws IllegalArgumentException
      *             if the specified class is not a proper subclass of Extension
      */
-    public static Realm extension(Class<? extends Extension<?>> extensionClass) {
+    public static Author extension(Class<? extends Extension<?>> extensionClass) {
         return INTERNED.get(extensionClass);
     }
 }

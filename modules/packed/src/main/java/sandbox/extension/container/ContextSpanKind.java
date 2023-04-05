@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.context;
+package sandbox.extension.container;
 
 /**
  *
@@ -22,21 +22,15 @@ package app.packed.context;
 
 // Tror baade vi skal have for hvem og span.
 // For hvem er jo kun interessant for containere
-
-public enum ContextSpan {
-
-    // Maaske er det i virkeligheden en setting naar man laver en ContainerTemplate?
-    // Denne context, skal automatisk propagate til alle sub containers
-    CONTAINER_TREE,
-
-    CONTAINER_LIFETIME,
-
-    CONTAINER,
+public enum ContextSpanKind {
 
     /**
      * The context is available from all operation within a single bean.
      */
     BEAN,
+
+    /** 1 or more containers. */
+    CONTAINER_TREE,
 
     /**
      * The context is available from within a single operation.
@@ -49,8 +43,6 @@ public enum ContextSpan {
 // For container maaske er de inherited per default...
 // Men man kan ContextWirelets.removeAllContext();
 // Men man kan ContextWirelets.removeContexts(SessionContext.class);
-
 // alternativt ContextWirelets.propagateContexts(SessionContext.class);
-
 // Hmm hvis vi propagater contexts bryder vi jo lidt i en container...
 // Just saying... Det er mest det med at resolve keys Hvor man lige pludselig kan injecte ting...

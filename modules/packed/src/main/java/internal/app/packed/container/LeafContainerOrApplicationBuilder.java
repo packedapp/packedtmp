@@ -34,7 +34,7 @@ import sandbox.extension.container.ContainerTemplate;
 
 // Would love
 /** Implementation of {@link ContainerBuilder} for a non-root container. */
-public final class LeafContainerOrApplicationBuilder extends NonBootstrapBuilder implements ContainerBuilder {
+public final class LeafContainerOrApplicationBuilder extends NonBootstrapContainerBuilder implements ContainerBuilder {
 
     /** The extension that is installing the container. */
     final Class<? extends Extension<?>> installedBy;

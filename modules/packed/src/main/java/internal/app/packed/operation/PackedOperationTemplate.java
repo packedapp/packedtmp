@@ -4,13 +4,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodType;
 
-import app.packed.extension.ContainerContext;
-import sandbox.extension.context.ContextTemplate;
+import app.packed.extension.ExtensionContext;
+import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.operation.OperationTemplate;
 
 public final class PackedOperationTemplate implements OperationTemplate {
 
-    public static PackedOperationTemplate DEFAULTS = new PackedOperationTemplate(0, -1, MethodType.methodType(void.class, ContainerContext.class), false);
+    public static PackedOperationTemplate DEFAULTS = new PackedOperationTemplate(0, -1, MethodType.methodType(void.class, ExtensionContext.class), false);
     final int beanInstanceIndex;
     final int extensionContext;
 
@@ -74,6 +74,6 @@ public final class PackedOperationTemplate implements OperationTemplate {
     /** {@inheritDoc} */
     @Override
     public OperationTemplate withContext(ContextTemplate context) {
-        return withArg(context.valueClass());
+        return withArg(context.implementationClass());
     }
 }

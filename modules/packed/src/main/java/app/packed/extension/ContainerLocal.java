@@ -39,13 +39,8 @@ import internal.app.packed.container.PackedContainerLocal;
  * @see BeanLocal
  */
 @SuppressWarnings("rawtypes")
-// Tror vi biholder at have 2 type ContainerLocal and BeanLocal
-// En extension har altid sin ExtensionInstance
+public abstract sealed class ContainerLocal<T> permits PackedContainerLocal {
 
-// extends BeanLocal????? Nahh vi goere det nu. Men vi caster BeanLocal en masse steder
-public abstract sealed class ContainerLocal<T> extends BeanLocal<T> permits PackedContainerLocal {
-
-    @Override
     protected T get(BeanSetup bean) {
         return get(bean.container);
     }
@@ -61,7 +56,6 @@ public abstract sealed class ContainerLocal<T> extends BeanLocal<T> permits Pack
         return get(extension.extension.container);
     }
 
-    @Override
     protected boolean isPresent(BeanSetup bean) {
         return isPresent(bean.container);
     }
@@ -72,7 +66,6 @@ public abstract sealed class ContainerLocal<T> extends BeanLocal<T> permits Pack
         return isPresent(extension.extension.container);
     }
 
-    @Override
     protected void set(BeanSetup bean, T value) {
         throw new UnsupportedOperationException();
     }
@@ -92,7 +85,7 @@ public abstract sealed class ContainerLocal<T> extends BeanLocal<T> permits Pack
      * Creates a new container local with application scope.
      * <p>
      * Application scope means that <strong>all containers in the same application</strong> will always see the same value
-     * for the specific container local.
+     * for a specific container local.
      *
      * @param <T>
      *            the type of value to store
@@ -138,14 +131,14 @@ public abstract sealed class ContainerLocal<T> extends BeanLocal<T> permits Pack
     /**
      * Creates a new container local with container lifetime scope.
      * <p>
-     * Application scope means that <strong>all containers in the same lifetime</strong> will always see the same value for
-     * the specific container local.
+     * Container-lifetime scope means that <strong>all containers in the same lifetime</strong> will always see the same value for
+     * a specific container local.
      *
      * @param <T>
      *            the type of value to store
      * @return the new container local
      */
-    static <T> ContainerLocal<T> ofContainerLifetime() {
+    public static <T> ContainerLocal<T> ofContainerLifetime() {
         return PackedContainerLocal.of(PackedContainerLocal.Scope.CONTAINER_LIFETIME);
     }
 

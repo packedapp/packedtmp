@@ -18,8 +18,8 @@ package sandbox.extension.domain;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.container.DomainMirror;
-import internal.app.packed.container.PackedDomainTemplate;
+import app.packed.container.NamespaceMirror;
+import internal.app.packed.container.PackedNamespaceTemplate;
 
 /**
  *
@@ -27,13 +27,13 @@ import internal.app.packed.container.PackedDomainTemplate;
 
 // A default domain is applicationWide...
 
-public interface DomainTemplate<T extends ExtensionDomain<?>> {
+public interface NamespaceTemplate<T extends NamespaceOperator<?>> {
 
     // Taenker maaske man skal kunne foersporge paa det.
     // Give me all domains of typeX
-    <D extends DomainMirror<?>> DomainTemplate<T> mirrorType(Class<D> mirrorType, Function<? super T, ? extends D> mirrorSuppliers);
+    <N extends NamespaceMirror<?>> NamespaceTemplate<T> mirrorType(Class<N> mirrorType, Function<? super T, ? extends N> mirrorSuppliers);
 
-    static <T extends ExtensionDomain<?>> DomainTemplate<T> of(Supplier<T> supplier) {
-        return PackedDomainTemplate.of(supplier);
+    static <T extends NamespaceOperator<?>> NamespaceTemplate<T> of(Supplier<T> supplier) {
+        return PackedNamespaceTemplate.of(supplier);
     }
 }

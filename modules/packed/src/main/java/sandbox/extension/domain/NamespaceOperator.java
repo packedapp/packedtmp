@@ -17,35 +17,45 @@ package sandbox.extension.domain;
 
 import java.util.Set;
 
-import app.packed.container.DomainMirror;
+import app.packed.container.NamespaceMirror;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionNavigator;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.DomainSetup;
+import internal.app.packed.container.NamespaceSetup;
 
 /**
  *
  * Extensions should never expose instances of this class to non-trusted code.
  */
-public abstract class ExtensionDomain<E extends Extension<E>> {
+public abstract class NamespaceOperator<E extends Extension<E>> {
 
     /** The domain configuration. */
-    private final DomainSetup domain = DomainSetup.MI.initialize();
+    private final NamespaceSetup namespace = NamespaceSetup.MI.initialize();
 
     Set<ContainerSetup> containers() {
         return Set.of();
+    }
+
+    /**
+     * Returns a navigator for all extensions in the namespace.
+     *
+     * @return a navigator for all extensions in the namespace
+     */
+    public ExtensionNavigator<E> navigator() {
+        throw new UnsupportedOperationException();
     }
 
     public final boolean isInApplicationLifetime(Extension<?> extension) {
         return true;
     }
 
-    public DomainMirror<E> mirror() {
-        return new DomainMirror<E>();
+    public NamespaceMirror<E> mirror() {
+        return new NamespaceMirror<E>();
     }
 
     /** {@return the root extension of this domain.} */
     @SuppressWarnings("unchecked")
     public final E root() {
-        return (E) domain.root.instance();
+        return (E) namespace.root.instance();
     }
 }

@@ -25,8 +25,8 @@ import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.util.FunctionType;
+import internal.app.packed.context.publish.ContextualizedElement;
 import internal.app.packed.operation.PackedOperationHandle;
-import sandbox.extension.context.ContextualizedElement;
 
 /**
  * A handle for an operation.

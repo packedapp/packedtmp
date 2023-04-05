@@ -21,12 +21,12 @@ import java.lang.invoke.MethodHandles;
 import app.packed.bean.BeanKind;
 import app.packed.extension.FrameworkExtension;
 import app.packed.operation.Op;
+import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import sandbox.extension.bean.BeanBuilder;
 import sandbox.extension.bean.BeanHandle;
 import sandbox.extension.bean.BeanTemplate;
-import sandbox.extension.context.ContextTemplate;
 import sandbox.extension.operation.OperationTemplate;
 
 /**

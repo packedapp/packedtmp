@@ -26,14 +26,15 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationPath;
+import app.packed.container.Author;
 import app.packed.container.ContainerMirror;
-import app.packed.container.Realm;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.context.ContextualizedElementSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.service.ServiceManager;
 import internal.app.packed.util.AbstractTreeNode;
@@ -43,7 +44,7 @@ import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
 
 /** The internal configuration of a container. */
-public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
+public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> implements ContextualizedElementSetup {
 
     /** A MethodHandle for invoking {@link ContainerMirror#initialize(ContainerSetup)}. */
     private static final MethodHandle MH_CONTAINER_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ContainerMirror.class, "initialize",
@@ -163,6 +164,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     }
 
     /** {@return a new container mirror.} */
+    @Override
     public ContainerMirror mirror() {
         ContainerMirror mirror = ClassUtil.newMirror(ContainerMirror.class, ContainerMirror::new, specializedMirror);
 
@@ -286,5 +288,5 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         return extension;
     }
 
-    public /* primitive */ record BeanClassKey(Realm realm, Class<?> beanClass) {}
+    public /* primitive */ record BeanClassKey(Author realm, Class<?> beanClass) {}
 }

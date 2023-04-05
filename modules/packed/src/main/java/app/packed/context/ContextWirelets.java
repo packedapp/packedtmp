@@ -20,7 +20,8 @@ import app.packed.container.Wirelet;
 /**
  *
  */
- class ContextWirelets {
+// Build wirelets
+class ContextWirelets {
 
     Wirelet propageAllContexts() {
         throw new UnsupportedOperationException();

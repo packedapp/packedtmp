@@ -57,7 +57,7 @@ final class BeanScannerBindingResolver {
         InternalDependency ia = InternalDependency.fromVariable(v);
 
         BeanSetup bean = operation.bean;
-        BeanOwner owner = operation.bean.owner;
+        AuthorSetup owner = operation.bean.owner;
 
         Class<? extends Extension<?>> e = owner instanceof ExtensionSetup es ? es.extensionType : null;
         if (operation.embeddedInto != null) {

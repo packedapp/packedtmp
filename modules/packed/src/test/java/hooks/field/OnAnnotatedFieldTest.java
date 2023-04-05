@@ -24,7 +24,7 @@ import java.lang.invoke.VarHandle.AccessMode;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.extension.ContainerContext;
+import app.packed.extension.ExtensionContext;
 import app.packed.operation.OperationTarget;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
@@ -45,7 +45,7 @@ public class OnAnnotatedFieldTest {
                 InstanceField.validateFoo(l, b);
 
                 OperationHandle h = b.newGetOperation(OperationTemplate.defaults());
-                assertEquals(MethodType.methodType(String.class, ContainerContext.class), h.invocationType());
+                assertEquals(MethodType.methodType(String.class, ExtensionContext.class), h.invocationType());
                 assertSame(HExtension.class, h.operator());
 
                 if (h.target() instanceof OperationTarget.OfField f) {

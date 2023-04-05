@@ -42,7 +42,6 @@ public sealed interface WireletSelection<W extends Wirelet> extends Iterable<W> 
     /** {@return the last wirelet in this selection or empty {@code Optional}, if no wirelets are present} */
     Optional<W> last();
 
-    // IDK
     Optional<W> last(Class<? extends W> wireletClass);
 
     <E> E lastOrElse(Function<? super W, ? extends E> mapper, E ifEmpty);

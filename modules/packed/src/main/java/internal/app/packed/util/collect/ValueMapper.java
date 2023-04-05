@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.domain;
+package internal.app.packed.util.collect;
+
+import java.util.Optional;
 
 /**
  *
  */
-public @interface Domain {
-    String value() default "main";
-}
+public interface ValueMapper<F, T> {
 
-// InDomain();
+   Optional<Object> forValueSearch(Object object);
+
+   T mapValue(F from);
+}

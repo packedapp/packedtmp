@@ -20,7 +20,7 @@ import java.lang.annotation.Annotation;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
-import app.packed.container.Realm;
+import app.packed.container.Author;
 import app.packed.extension.BeanElement.BeanClass;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
@@ -101,8 +101,8 @@ public abstract class BeanIntrospector {
     }
 
     /** {@return the owner of the bean.} */
-    public final Realm beanOwner() {
-        return bean().owner();
+    public final Author beanAuthor() {
+        return bean().author();
     }
 
     /** {@return the bean source kind.} */

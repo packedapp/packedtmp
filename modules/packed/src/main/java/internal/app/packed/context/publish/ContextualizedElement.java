@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.context;
+package internal.app.packed.context.publish;
 
 import java.util.Map;
 import java.util.Set;
 
-import app.packed.container.Realm;
+import app.packed.container.Author;
 import app.packed.context.Context;
 
 /**
@@ -41,7 +41,7 @@ public interface ContextualizedElement {
 
     /** {@return a set of the contexts available for this bean.} */
     // This method is mainly used for informational purposes.
-    default Set<Class<? extends Context<?>>> contexts(Realm realm) {
+    default Set<Class<? extends Context<?>>> contexts(Author realm) {
         throw new UnsupportedOperationException();
     }
 

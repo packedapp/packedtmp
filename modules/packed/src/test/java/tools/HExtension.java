@@ -24,7 +24,7 @@ import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.Extension;
 import app.packed.extension.BeanIntrospector;
-import app.packed.extension.ContainerContext;
+import app.packed.extension.ExtensionContext;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.util.AnnotationList;
 import app.packed.util.Key;
@@ -39,7 +39,7 @@ public class HExtension extends Extension<HExtension> {
     // Tmp hack until channels work better
     static Map<Integer, MethodHandle> M = new HashMap<>();
 
-    static ContainerContext EC;
+    static ExtensionContext EC;
 
     ServiceableBeanConfiguration<MyBean> install;
 
@@ -94,10 +94,10 @@ public class HExtension extends Extension<HExtension> {
     }
 
     static class MyBean {
-        final ContainerContext ec;
+        final ExtensionContext ec;
         final Map<Integer, MethodHandle> mh;
 
-        MyBean(ContainerContext ec, @CodeGenerated Map<Integer, MethodHandle> mh) throws Throwable {
+        MyBean(ExtensionContext ec, @CodeGenerated Map<Integer, MethodHandle> mh) throws Throwable {
             this.mh = mh;
             this.ec = EC = ec;
         }

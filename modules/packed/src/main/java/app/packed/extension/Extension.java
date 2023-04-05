@@ -30,15 +30,15 @@ import app.packed.application.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.service.ServiceableBeanConfiguration;
-import internal.app.packed.container.DomainSetup;
+import internal.app.packed.container.NamespaceSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedContainerHandle;
-import internal.app.packed.container.PackedDomainTemplate;
+import internal.app.packed.container.PackedNamespaceTemplate;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
 import sandbox.extension.container.ContainerHandle;
-import sandbox.extension.domain.DomainTemplate;
-import sandbox.extension.domain.ExtensionDomain;
+import sandbox.extension.domain.NamespaceTemplate;
+import sandbox.extension.domain.NamespaceOperator;
 
 /**
  * Extensions are main mechanism by which the framework can be extended with new features.
@@ -128,12 +128,12 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     @SuppressWarnings("unchecked")
-    protected final <D extends ExtensionDomain<E>> D domain(DomainTemplate<D> template) {
-        PackedDomainTemplate<D> t = (PackedDomainTemplate<D>) template;
-        HashMap<PackedDomainTemplate<?>, ExtensionDomain<?>> m = extension.container.application.domains;
+    protected final <D extends NamespaceOperator<E>> D domain(NamespaceTemplate<D> template) {
+        PackedNamespaceTemplate<D> t = (PackedNamespaceTemplate<D>) template;
+        HashMap<PackedNamespaceTemplate<?>, NamespaceOperator<?>> m = extension.container.application.domains;
         return (D) m.computeIfAbsent(t, e -> {
-            DomainSetup ds = new DomainSetup(t, extension, extension);
-            return DomainSetup.MI.run(t.supplier, ds);
+            NamespaceSetup ds = new NamespaceSetup(t, extension, extension);
+            return NamespaceSetup.MI.run(t.supplier, ds);
         });
     }
 

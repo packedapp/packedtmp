@@ -173,6 +173,6 @@ public @interface BeanHook {
          *
          * @return stuff
          */
-        Class<? extends Context<?>>[] requiresContext() default { ContainerContext.class };
+        Class<? extends Context<?>>[] requiresContext() default { ExtensionContext.class };
     }
 }

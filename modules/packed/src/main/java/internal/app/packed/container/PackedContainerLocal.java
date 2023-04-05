@@ -24,28 +24,21 @@ import app.packed.container.Wirelet;
 import app.packed.extension.ContainerLocal;
 import app.packed.util.Nullable;
 
-/**
- *
- */
+/** Implementation of {@link ContainerLocal}. */
+// Tror foerst vi skal beslutte os om vi har initial value
 public final class PackedContainerLocal<T> extends ContainerLocal<T> {
 
-    final Scope scope;
-
     private final @Nullable Supplier<? extends T> initialValueSupplier;
+
+    /** The scope of this container local. */
+    private final Scope scope;
 
     private PackedContainerLocal(Scope scope, @Nullable Supplier<? extends T> initialValueSupplier) {
         this.scope = requireNonNull(scope);
         this.initialValueSupplier = initialValueSupplier;
     }
 
-    public Map.Entry<PackedContainerLocal<?>, Object> keyOf(ContainerSetup container) {
-        return Map.entry(this, switch (scope) {
-        case APPLICATION -> container.application;
-        case CONTAINER_LIFETIME -> container.lifetime;
-        case CONTAINER -> container;
-        });
-    }
-
+    /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
     public T get(ContainerSetup container) {
@@ -65,22 +58,23 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isPresent(ContainerSetup container) {
         return container.application.containerLocals.containsKey(keyOf(container));
     }
 
+    public Map.Entry<PackedContainerLocal<?>, Object> keyOf(ContainerSetup container) {
+        return Map.entry(this, switch (scope) {
+        case APPLICATION -> container.application;
+        case CONTAINER_LIFETIME -> container.lifetime;
+        case CONTAINER -> container;
+        });
+    }
+
     public void set(ContainerSetup container, T value) {
         requireNonNull(container);
         container.application.containerLocals.put(keyOf(container), value);
-    }
-
-    public static <T> PackedContainerLocal<T> of(Scope scope) {
-        return new PackedContainerLocal<>(scope, null);
-    }
-
-    public static <T> PackedContainerLocal<T> of(Scope scope, @Nullable Supplier<? extends T> initialValueSupplier) {
-        return new PackedContainerLocal<>(scope, initialValueSupplier);
     }
 
     /** {@inheritDoc} */
@@ -96,7 +90,15 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
         return new ContainerSetLocalWirelet();
     }
 
+    public static <T> PackedContainerLocal<T> of(Scope scope) {
+        return new PackedContainerLocal<>(scope, null);
+    }
+
+    public static <T> PackedContainerLocal<T> of(Scope scope, @Nullable Supplier<? extends T> initialValueSupplier) {
+        return new PackedContainerLocal<>(scope, initialValueSupplier);
+    }
+
     public enum Scope {
-        CONTAINER, CONTAINER_LIFETIME, APPLICATION;
+        APPLICATION, CONTAINER_LIFETIME, CONTAINER;
     }
 }

@@ -18,27 +18,27 @@ package internal.app.packed.container;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.container.DomainMirror;
-import sandbox.extension.domain.DomainTemplate;
-import sandbox.extension.domain.ExtensionDomain;
+import app.packed.container.NamespaceMirror;
+import sandbox.extension.domain.NamespaceOperator;
+import sandbox.extension.domain.NamespaceTemplate;
 
 /**
  *
  */
-public class PackedDomainTemplate<T extends ExtensionDomain<?>> implements DomainTemplate<T> {
+public final class PackedNamespaceTemplate<T extends NamespaceOperator<?>> implements NamespaceTemplate<T> {
     public final Supplier<T> supplier;
 
-    private PackedDomainTemplate(Supplier<T> supplier) {
+    private PackedNamespaceTemplate(Supplier<T> supplier) {
         this.supplier = supplier;
     }
 
     /** {@inheritDoc} */
     @Override
-    public <D extends DomainMirror<?>> DomainTemplate<T> mirrorType(Class<D> mirrorType, Function<? super T, ? extends D> mirrorSuppliers) {
+    public <D extends NamespaceMirror<?>> NamespaceTemplate<T> mirrorType(Class<D> mirrorType, Function<? super T, ? extends D> mirrorSuppliers) {
         throw new UnsupportedOperationException();
     }
 
-    public static <T extends ExtensionDomain<?>> PackedDomainTemplate<T> of(Supplier<T> supplier) {
-        return new PackedDomainTemplate<>(supplier);
+    public static <T extends NamespaceOperator<?>> PackedNamespaceTemplate<T> of(Supplier<T> supplier) {
+        return new PackedNamespaceTemplate<>(supplier);
     }
 }
