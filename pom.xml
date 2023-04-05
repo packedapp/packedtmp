@@ -12,9 +12,9 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <version.plugin.clean>3.2.0</version.plugin.clean>
     <version.plugin.bundle>5.1.7</version.plugin.bundle>
-    <version.plugin.compiler>3.10.1</version.plugin.compiler>
+    <version.plugin.compiler>3.11.0</version.plugin.compiler>
     <version.plugin.install>3.1.0</version.plugin.install>
-    <version.plugin.deploy>3.1.0</version.plugin.deploy>
+    <version.plugin.deploy>3.1.1</version.plugin.deploy>
     <version.plugin.staging>1.6.13</version.plugin.staging>
     <version.plugin.versions>2.11.0</version.plugin.versions>
     <version.plugin.javadoc>3.5.0</version.plugin.javadoc>
@@ -22,21 +22,21 @@
     <version.plugin.shade>3.4.1</version.plugin.shade>
     <version.plugin.gpg>3.0.1</version.plugin.gpg>
     <version.plugin.jxr>3.2.0</version.plugin.jxr>
-    <version.plugin.invoker>3.5.0</version.plugin.invoker>
+    <version.plugin.invoker>3.5.1</version.plugin.invoker>
     <version.plugin.buildhelper>3.3.0</version.plugin.buildhelper>
     <version.plugin.jar>3.3.0</version.plugin.jar>
-    <version.plugin.site>4.0.0-M5</version.plugin.site>
+    <version.plugin.site>4.0.0-M6</version.plugin.site>
     <version.plugin.exec>3.1.0</version.plugin.exec>
     <version.plugin.plugin>3.6.4</version.plugin.plugin>
     <version.plugin.release>2.5.3</version.plugin.release>
-    <version.plugin.resources>3.3.0</version.plugin.resources>
+    <version.plugin.resources>3.3.1</version.plugin.resources>
     <version.plugin.assembly>3.4.2</version.plugin.assembly>
     <version.plugin.dependency>3.3.0</version.plugin.dependency>
     <version.plugin.help>3.2.0</version.plugin.help>
-    <version.plugin.surefire>3.0.0-M9</version.plugin.surefire>
+    <version.plugin.surefire>3.0.0</version.plugin.surefire>
     <version.plugin.pitest>1.9.2</version.plugin.pitest>
     <version.plugin.animal-sniffer>1.21</version.plugin.animal-sniffer>
-    <version.plugin.enforcer>3.2.1</version.plugin.enforcer>
+    <version.plugin.enforcer>3.3.0</version.plugin.enforcer>
     <version.plugin.jacoco>0.8.8</version.plugin.jacoco>
     <version.plugin.coveralls>4.3.0</version.plugin.coveralls>
     <version.plugin.checkstyle>3.1.2</version.plugin.checkstyle>
