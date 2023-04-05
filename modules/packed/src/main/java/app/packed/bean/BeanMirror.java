@@ -388,7 +388,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
     /** {@inheritDoc} */
     @Override
     public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
-        return ContextSetup.allMirrors(bean());
+        return ContextSetup.allMirrorsFor(bean());
     }
 }
 

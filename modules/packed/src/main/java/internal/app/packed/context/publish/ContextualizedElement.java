@@ -35,13 +35,23 @@ import app.packed.context.Context;
 
 public interface ContextualizedElement {
 
-    default Set<Class<? extends Context<?>>> contexts() {
+    // These are the context available to me
+    // Maybe include implementations?
+    // So a.la. contextClasses
+    default Set<Class<? extends Context<?>>> availableContextsSelf() {
+        throw new UnsupportedOperationException();
+    }
+
+    // These are the contexts the author or the operation will see
+    // I don't know what the exact use case is though?
+    default Set<Class<? extends Context<?>>> availableContextsAuthor() {
         throw new UnsupportedOperationException();
     }
 
     /** {@return a set of the contexts available for this bean.} */
     // This method is mainly used for informational purposes.
-    default Set<Class<? extends Context<?>>> contexts(Author realm) {
+    // Kan ikke se man har brug for andet en
+    default Set<Class<? extends Context<?>>> availableContexts(Author author) {
         throw new UnsupportedOperationException();
     }
 
@@ -54,6 +64,12 @@ public interface ContextualizedElement {
     default Map<Class<? extends Context<?>>, Class<?>> contextValues() {
         throw new UnsupportedOperationException();
     }
+
+    //
+//  // Available to the extension? or Available to the user?
+//  default Set<Class<? extends Context<?>>> contexts() {
+//      throw new UnsupportedOperationException();
+//  }
 }
 
 // OperationContext = All embedded operations

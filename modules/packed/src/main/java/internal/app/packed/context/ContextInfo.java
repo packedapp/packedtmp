@@ -28,6 +28,8 @@ public class ContextInfo {
 
     // isSubClass();
 
+    // I think this is the only thing we want?
+    //
     public static Class<? extends Context<?>> normalize(Class<? extends Context<?>> contextClass) {
         return contextClass;
     }

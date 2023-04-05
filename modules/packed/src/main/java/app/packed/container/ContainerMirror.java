@@ -283,7 +283,7 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     /** {@inheritDoc} */
     @Override
     public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
-        return ContextSetup.allMirrors(container());
+        return ContextSetup.allMirrorsFor(container());
     }
 }
 //// Taken from ComponentMirror

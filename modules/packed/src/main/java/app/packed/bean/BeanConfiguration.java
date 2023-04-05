@@ -41,6 +41,11 @@ public class BeanConfiguration {
         return this;
     }
 
+    /** {@return the owner of the bean.} */
+    public final Author author() {
+        return handle.author();
+    }
+
     /** {@return the bean class.} */
     public final Class<?> beanClass() {
         return handle.beanClass();
@@ -51,9 +56,17 @@ public class BeanConfiguration {
         return handle.beanKind();
     }
 
-    /** {@return a set of contexts the bean is in.} */
+    /**
+     * {@return set of contexts this bean operates within.}
+     * <p>
+     * The returned set will not only contexts that are specific to the bean. But also any contexts that are available all
+     * throughout the bean's container.
+     * <p>
+     * This method is primarily used for informational purposes.
+     */
     public final Set<Class<? extends Context<?>>> contexts() {
-        return handle.contexts(handle.author());
+        // Need to filter hidden
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -64,7 +77,6 @@ public class BeanConfiguration {
 
     /** {@return the bean handle that was used to create this configuration.} */
     protected final BeanHandle<?> handle() {
-        // Maybe have an instanceHandle... instead of overridding this method
         return handle;
     }
 
@@ -123,11 +135,6 @@ public class BeanConfiguration {
     public <K> BeanConfiguration overrideService(Key<K> key, K constant) {
         handle.overrideService(key, constant);
         return this;
-    }
-
-    /** {@return the owner of the bean.} */
-    public final Author author() {
-        return handle.author();
     }
 
     /**

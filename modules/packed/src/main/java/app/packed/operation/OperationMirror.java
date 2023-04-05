@@ -206,7 +206,7 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
     /** {@inheritDoc} */
     @Override
     public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
-        return ContextSetup.allMirrors(operation());
+        return ContextSetup.allMirrorsFor(operation());
     }
 }
 

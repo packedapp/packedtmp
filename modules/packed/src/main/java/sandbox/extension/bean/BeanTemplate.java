@@ -156,16 +156,9 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
      * @see BeanLifetimeOperationContext
      * @see app.packed.extension.context.ContextValue
      */
+    // Have no idea what this method does
     BeanTemplate lifetimeOperationContext(int index, ContextTemplate template);
-}
 
-interface Sandbox {
-
-    /** {@return a list of the various lifetime operations for this bean template.} */
-    // Maybe just MethodType???
-    default List<OperationTemplate> lifetimeOperations() {
-        return List.of();
-    }
 
     /**
      * Sets a context for the whole bean
@@ -176,8 +169,18 @@ interface Sandbox {
      */
     // Man skal vel angive hvordan context fungere.
     // Er den stored, eller skal den med til alle operation?
-    default BeanTemplate beanContext(ContextTemplate context) {
+    default BeanTemplate withContext(ContextTemplate context) {
         throw new UnsupportedOperationException();
+    }
+
+}
+
+interface Sandbox {
+
+    /** {@return a list of the various lifetime operations for this bean template.} */
+    // Maybe just MethodType???
+    default List<OperationTemplate> lifetimeOperations() {
+        return List.of();
     }
 
     /**

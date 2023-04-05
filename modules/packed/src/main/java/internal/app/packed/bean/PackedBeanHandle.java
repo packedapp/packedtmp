@@ -141,7 +141,8 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
      *
      */
     public void allowMultiClass() {
-
+        // Previously this was not on the configuration. But specific installation methods.
+        // However this lead to a bit of method explosion
     }
 }
 

@@ -36,32 +36,52 @@ import internal.app.packed.util.collect.ValueMapper;
 
 public final class ContextSetup {
 
-    /** The template used when creating the context. */
-    public final PackedContextTemplate template;
-
-    /** The root of the context. */
-    public final ContextualizedElementSetup root;
+    // Maaske er den final alligevel
+    @Nullable
+    ContainerTreeSetup containerTree;
 
     // Either Argument or @ContainerContextProvide
     Object howToAccessToTheContext;
 
-    // Maaske er den final alligevel
-    @Nullable
-    ContainerTreeSetup containerTree;
+    /** The root of the context. */
+    public final ContextualizedElementSetup root;
+
+    /** The template used when creating the context. */
+    public final PackedContextTemplate template;
 
     public ContextSetup(PackedContextTemplate template, ContextualizedElementSetup root) {
         this.template = template;
         this.root = root;
     }
 
-    public static Map<Class<? extends Context<?>>, ContextSetup> allSetups(ContextualizedElementSetup element) {
+    public static Map<Class<? extends Context<?>>, ContextSetup> allContextsFor(ContextualizedElementSetup element) {
         HashMap<Class<? extends Context<?>>, ContextSetup> map = new HashMap<>();
         element.forEachContext((c, cs) -> map.putIfAbsent(c, cs));
         return map;
     }
 
-    public static Map<Class<? extends Context<?>>, ContextMirror> allMirrors(ContextualizedElementSetup map) {
-        return new MappedMap<>(allSetups(map), ContextSetupToContextMirrorValueMapper.INSTANCE);
+    public static Map<Class<? extends Context<?>>, ContextMirror> allMirrorsFor(ContextualizedElementSetup element) {
+        return new MappedMap<>(allContextsFor(element), ContextSetupToContextMirrorValueMapper.INSTANCE);
+    }
+
+    private static final class ContextSetupToContextMirrorValueMapper implements ValueMapper<ContextSetup, ContextMirror> {
+
+        private static final ContextSetupToContextMirrorValueMapper INSTANCE = new ContextSetupToContextMirrorValueMapper();
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<Object> forValueSearch(Object object) {
+            if (object instanceof PackedContextMirror m) {
+                return Optional.of(m.context());
+            }
+            return Optional.empty();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ContextMirror mapValue(ContextSetup context) {
+            return new PackedContextMirror(context);
+        }
     }
 
     /** Implementation of {@link ContextMirror}. */
@@ -97,30 +117,10 @@ public final class ContextSetup {
             }
         }
 
+        /** {@inheritDoc} */
         @Override
         public String toString() {
             return "ContextMirror: " + contextClass().getSimpleName();
-        }
-
-    }
-
-    private static final class ContextSetupToContextMirrorValueMapper implements ValueMapper<ContextSetup, ContextMirror> {
-
-        private static final ContextSetupToContextMirrorValueMapper INSTANCE = new ContextSetupToContextMirrorValueMapper();
-
-        /** {@inheritDoc} */
-        @Override
-        public Optional<Object> forValueSearch(Object object) {
-            if (object instanceof PackedContextMirror m) {
-                return Optional.of(m.context());
-            }
-            return Optional.empty();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ContextMirror mapValue(ContextSetup context) {
-            return new PackedContextMirror(context);
         }
     }
 }
