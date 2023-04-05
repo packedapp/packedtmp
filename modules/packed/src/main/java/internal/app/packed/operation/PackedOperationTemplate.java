@@ -3,21 +3,33 @@ package internal.app.packed.operation;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodType;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
+import app.packed.context.Context;
 import app.packed.extension.ExtensionContext;
+import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.operation.OperationTemplate;
 
 public final class PackedOperationTemplate implements OperationTemplate {
 
-    public static PackedOperationTemplate DEFAULTS = new PackedOperationTemplate(0, -1, MethodType.methodType(void.class, ExtensionContext.class), false);
+    public static PackedOperationTemplate DEFAULTS = new PackedOperationTemplate(Map.of(), 0, -1, MethodType.methodType(void.class, ExtensionContext.class),
+            false);
+
     final int beanInstanceIndex;
+
+    public final Map<Class<? extends Context<?>>, PackedContextTemplate> contexts;
+
     final int extensionContext;
 
-    final MethodType methodType;
     boolean ignoreReturn;
+    final MethodType methodType;
 
-    public PackedOperationTemplate(int extensionContext, int beanInstanceIndex, MethodType methodType, boolean ignoreReturn) {
+    public PackedOperationTemplate(Map<Class<? extends Context<?>>, PackedContextTemplate> contexts, int extensionContext, int beanInstanceIndex,
+            MethodType methodType, boolean ignoreReturn) {
+        this.contexts = contexts;
         this.extensionContext = extensionContext;
         this.beanInstanceIndex = beanInstanceIndex;
         if (ignoreReturn) {
@@ -35,25 +47,21 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
     /** {@inheritDoc} */
     @Override
-    public MethodType invocationType() {
-        return methodType;
-    }
-
-    public OperationTemplate withArg(Class<?> type) {
-        requireNonNull(type, "type is null");
-        MethodType mt = methodType.appendParameterTypes(type);
-        return new PackedOperationTemplate(extensionContext, beanInstanceIndex, mt, ignoreReturn);
+    public Set<Class<? extends Context<?>>> contexts() {
+        return contexts.keySet();
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationTemplate withBeanInstance(Class<?> beanClass) {
-        requireNonNull(beanClass, "beanClass is null");
-        if (beanInstanceIndex != -1) {
-            throw new UnsupportedOperationException("Already has a bean instance at index " + beanInstanceIndex);
-        }
-        int index = extensionContext == -1 ? 0 : 1;
-        return new PackedOperationTemplate(extensionContext, index, methodType, ignoreReturn);
+    public MethodType invocationType() {
+        return methodType;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public OperationTemplate returnIgnore() {
+        MethodType mt = methodType.changeReturnType(void.class);
+        return new PackedOperationTemplate(contexts, extensionContext, beanInstanceIndex, mt, true);
     }
 
     /** {@inheritDoc} */
@@ -61,19 +69,35 @@ public final class PackedOperationTemplate implements OperationTemplate {
     public OperationTemplate returnType(Class<?> returnType) {
         requireNonNull(returnType, "returnType is null");
         MethodType mt = methodType.changeReturnType(returnType);
-        return new PackedOperationTemplate(extensionContext, beanInstanceIndex, mt, ignoreReturn);
+        return new PackedOperationTemplate(contexts, extensionContext, beanInstanceIndex, mt, ignoreReturn);
+    }
+
+    public PackedOperationTemplate withArg(Class<?> type) {
+        requireNonNull(type, "type is null");
+        MethodType mt = methodType.appendParameterTypes(type);
+        return new PackedOperationTemplate(contexts, extensionContext, beanInstanceIndex, mt, ignoreReturn);
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationTemplate returnIgnore() {
-        MethodType mt = methodType.changeReturnType(void.class);
-        return new PackedOperationTemplate(extensionContext, beanInstanceIndex, mt, true);
+    public PackedOperationTemplate withBeanInstance(Class<?> beanClass) {
+        requireNonNull(beanClass, "beanClass is null");
+        if (beanInstanceIndex != -1) {
+            throw new UnsupportedOperationException("Already has a bean instance at index " + beanInstanceIndex);
+        }
+        int index = extensionContext == -1 ? 0 : 1;
+        return new PackedOperationTemplate(contexts, extensionContext, index, methodType, ignoreReturn);
     }
 
     /** {@inheritDoc} */
     @Override
     public OperationTemplate withContext(ContextTemplate context) {
-        return withArg(context.implementationClass());
+        Map<Class<? extends Context<?>>, PackedContextTemplate> m = new HashMap<>(contexts);
+        if (m.putIfAbsent(context.contextClass(), (PackedContextTemplate) context) != null) {
+            throw new IllegalArgumentException("This template already contains the context " + context.contextClass());
+        }
+        m = Map.copyOf(m);
+        MethodType mt = methodType.appendParameterTypes(context.implementationClass());
+        return new PackedOperationTemplate(m, extensionContext, beanInstanceIndex, mt, ignoreReturn);
     }
 }

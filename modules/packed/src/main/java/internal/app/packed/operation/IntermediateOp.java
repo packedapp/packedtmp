@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 
 import app.packed.container.Author;
 import app.packed.util.Nullable;
-import app.packed.util.FunctionType;
+import app.packed.util.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
@@ -44,7 +44,7 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
      * @param type
      * @param operation
      */
-    private IntermediateOp(PackedOp<?> nextOp, FunctionType type, MethodHandle operation) {
+    private IntermediateOp(PackedOp<?> nextOp, OperationType type, MethodHandle operation) {
         super(type, operation);
         this.nextOp = requireNonNull(nextOp);
     }
@@ -66,7 +66,7 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
 
         final int[] indexes = new int[0];
 
-        BoundOp(FunctionType type, MethodHandle methodHandle, PackedOp<R> delegate, int index, Object[] arguments) {
+        BoundOp(OperationType type, MethodHandle methodHandle, PackedOp<R> delegate, int index, Object[] arguments) {
             super(delegate, type, methodHandle);
             this.index = index;
             this.arguments = arguments;

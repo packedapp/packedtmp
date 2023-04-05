@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 
 import app.packed.operation.CapturingOp;
 import app.packed.operation.Op;
-import app.packed.util.FunctionType;
+import app.packed.util.OperationType;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
 import internal.app.packed.bean.BeanSetup;
@@ -43,9 +43,9 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
     public final MethodHandle mhOperation;
 
     /** The type of this op. */
-    public final FunctionType type;
+    public final OperationType type;
 
-    PackedOp(FunctionType type, MethodHandle operation) {
+    PackedOp(OperationType type, MethodHandle operation) {
         this.type = requireNonNull(type, "type is null");
         this.mhOperation = requireNonNull(operation);
     }
@@ -71,7 +71,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
         for (int i = position; i < vars.length; i++) {
             vars[i] = type.parameter(i + len);
         }
-        FunctionType newType = FunctionType.of(type.returnVariable(), vars);
+        OperationType newType = OperationType.of(type.returnVariable(), vars);
 
         // Populate argument array
         Object[] args = new Object[len];
@@ -115,7 +115,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
 
     /** {@inheritDoc} */
     @Override
-    public final FunctionType type() {
+    public final OperationType type() {
         return type;
     }
 

@@ -24,7 +24,7 @@ import app.packed.extension.BeanVariable;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
-import app.packed.util.FunctionType;
+import app.packed.util.OperationType;
 import internal.app.packed.context.publish.ContextualizedElement;
 import internal.app.packed.operation.PackedOperationHandle;
 
@@ -122,7 +122,7 @@ public sealed interface OperationHandle extends ContextualizedElement permits Pa
     OperationTarget target();
 
     /** {@return the type of this operation.} */
-    FunctionType type();
+    OperationType type();
 }
 
 interface Zandbox {

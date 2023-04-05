@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
-import app.packed.util.FunctionType;
+import app.packed.util.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -34,7 +34,7 @@ public abstract sealed class TerminalOp<R> extends PackedOp<R> {
      * @param type
      * @param operation
      */
-    private TerminalOp(FunctionType type, MethodHandle operation) {
+    private TerminalOp(OperationType type, MethodHandle operation) {
         super(type, operation);
     }
 
@@ -47,7 +47,7 @@ public abstract sealed class TerminalOp<R> extends PackedOp<R> {
         /** The single abstract method type of the function. */
         private final SamType samType;
 
-        public FunctionInvocationOp(FunctionType type, MethodHandle methodHandle, SamType samType, Method implementationMethod) {
+        public FunctionInvocationOp(OperationType type, MethodHandle methodHandle, SamType samType, Method implementationMethod) {
             super(type, methodHandle);
             this.samType = requireNonNull(samType);
             this.implementationMethod = requireNonNull(implementationMethod);
@@ -68,7 +68,7 @@ public abstract sealed class TerminalOp<R> extends PackedOp<R> {
     static final class MethodHandleInvoke<R> extends TerminalOp<R> {
 
         MethodHandleInvoke(MethodHandle methodHandle) {
-            super(FunctionType.fromMethodType(methodHandle.type()), methodHandle);
+            super(OperationType.fromMethodType(methodHandle.type()), methodHandle);
         }
 
         /** {@inheritDoc} */

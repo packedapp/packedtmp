@@ -16,6 +16,7 @@
 package internal.app.packed.context;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,6 +33,7 @@ import internal.app.packed.util.collect.MappedMap;
 import internal.app.packed.util.collect.ValueMapper;
 
 /** Represents a context. */
+
 public final class ContextSetup {
 
     /** The template used when creating the context. */
@@ -39,6 +41,9 @@ public final class ContextSetup {
 
     /** The root of the context. */
     public final ContextualizedElementSetup root;
+
+    // Either Argument or @ContainerContextProvide
+    Object howToAccessToTheContext;
 
     // Maaske er den final alligevel
     @Nullable
@@ -49,8 +54,14 @@ public final class ContextSetup {
         this.root = root;
     }
 
-    public static <K> Map<K, ContextMirror> map(Map<K, ContextSetup> map) {
-        return new MappedMap<>(map, ContextSetupToContextMirrorValueMapper.INSTANCE);
+    public static Map<Class<? extends Context<?>>, ContextSetup> allSetups(ContextualizedElementSetup element) {
+        HashMap<Class<? extends Context<?>>, ContextSetup> map = new HashMap<>();
+        element.forEachContext((c, cs) -> map.putIfAbsent(c, cs));
+        return map;
+    }
+
+    public static Map<Class<? extends Context<?>>, ContextMirror> allMirrors(ContextualizedElementSetup map) {
+        return new MappedMap<>(allSetups(map), ContextSetupToContextMirrorValueMapper.INSTANCE);
     }
 
     /** Implementation of {@link ContextMirror}. */
@@ -85,6 +96,12 @@ public final class ContextSetup {
                 return context.containerTree.mirror();
             }
         }
+
+        @Override
+        public String toString() {
+            return "ContextMirror: " + contextClass().getSimpleName();
+        }
+
     }
 
     private static final class ContextSetupToContextMirrorValueMapper implements ValueMapper<ContextSetup, ContextMirror> {

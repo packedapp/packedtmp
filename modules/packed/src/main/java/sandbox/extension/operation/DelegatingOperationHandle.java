@@ -18,7 +18,7 @@ package sandbox.extension.operation;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
 import app.packed.operation.OperationTarget;
-import app.packed.util.FunctionType;
+import app.packed.util.OperationType;
 import internal.app.packed.operation.PackedDelegatingOperationHandle;
 
 /**
@@ -43,5 +43,5 @@ public sealed interface DelegatingOperationHandle permits PackedDelegatingOperat
     OperationTarget target();
 
     /** {@return the type of the operation.} */
-    FunctionType type();
+    OperationType type();
 }

@@ -38,6 +38,7 @@ import java.util.stream.Stream;
  */
 public class CollectionUtil {
 
+
     public static <K, V, W> Map<K, W> copyOf(Map<? extends K, ? extends V> map, Function<? super V, ? extends W> transformer) {
         HashMap<K, W> tmp = new HashMap<>();
         for (Entry<? extends K, ? extends V> e : map.entrySet()) {
@@ -332,7 +333,7 @@ public class CollectionUtil {
 
         @Override
         public Iterator<T> iterator() {
-            record MappedUnmodifiableIterator<F, T> (Iterator<? extends F> iterator, Function<? super F, ? extends T> mapper) implements Iterator<T> {
+            record MappedUnmodifiableIterator<F, T>(Iterator<? extends F> iterator, Function<? super F, ? extends T> mapper) implements Iterator<T> {
 
                 @Override
                 public final boolean hasNext() {

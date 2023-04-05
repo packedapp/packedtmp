@@ -22,24 +22,30 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanFactoryMirror;
 import app.packed.bean.BeanKind;
 import app.packed.bean.NonStaticMemberException;
+import app.packed.context.Context;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
-import app.packed.util.FunctionType;
 import app.packed.util.Nullable;
+import app.packed.util.OperationType;
 import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.context.ContextInfo;
+import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
+import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.entrypoint.EntryPointSetup;
 import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 import internal.app.packed.service.ServiceBindingSetup;
@@ -66,9 +72,15 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
     /** Bindings for this operation. */
     public final BindingSetup[] bindings;
 
+    /** The contexts on the bean. Is HashMap now we because it uses less memory when empty. */
+    private HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
+
     /** Any operation this operation is embedded into. */
     @Nullable
     public final EmbeddedIntoOperation embeddedInto;
+
+    @Nullable
+    public final EntryPointSetup entryPoint;
 
     /** The generated method handle. */
     @Nullable
@@ -76,15 +88,6 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
 
     /** Supplies a mirror for the operation */
     public Supplier<? extends OperationMirror> mirrorSupplier;
-
-    /** The operator of the operation. */
-    public final ExtensionSetup operator;
-
-    /** The operation's template. */
-    public final PackedOperationTemplate template;
-
-    /** The type of this operation. */
-    public final FunctionType type;
 
     /**
      * The name prefix of the operation.
@@ -100,14 +103,16 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
     // Hvilket ikke fungere hvis vi vil have component path operationer
     String namePrefix; // name = operator.simpleName + "Operation"
 
-    @Nullable
-    public final EntryPointSetup entryPoint;
+    /** The operator of the operation. */
+    public final ExtensionSetup operator;
 
-    public String namePrefix() {
-        return "op" + namePrefix;
-    }
+    /** The operation's template. */
+    public final PackedOperationTemplate template;
 
-    private OperationSetup(ExtensionSetup operator, BeanSetup bean, FunctionType type, OperationTemplate template,
+    /** The type of this operation. */
+    public final OperationType type;
+
+    private OperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type, OperationTemplate template,
             @Nullable EmbeddedIntoOperation embeddedInto) {
         this.operator = requireNonNull(operator);
         this.bean = requireNonNull(bean);
@@ -121,10 +126,11 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
         } else {
             this.entryPoint = null;
         }
-    }
-
-    public String name() {
-        return bean.operationNames().get(this);
+        if (!this.template.contexts.isEmpty()) {
+            for (PackedContextTemplate t : this.template.contexts.values()) {
+                contexts.put(t.contextClass(), new ContextSetup(t, this));
+            }
+        }
     }
 
     public final Set<BeanSetup> dependsOn() {
@@ -141,6 +147,17 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
         return result;
     }
 
+    @Override
+    @Nullable
+    public ContextSetup findContext(Class<? extends Context<?>> contextClass) {
+        Class<? extends Context<?>> cl = ContextInfo.normalize(contextClass);
+        ContextSetup cs = contexts.get(cl);
+        if (cs != null) {
+            return cs;
+        }
+        return bean.findContext(cl);
+    }
+
     // readOnly. Will not work if for example, resolving a binding
     public final void forEachBinding(Consumer<? super BindingSetup> binding) {
         for (BindingSetup bs : bindings) {
@@ -150,6 +167,12 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
             }
             binding.accept(bs);
         }
+    }
+
+    @Override
+    public void forEachContext(BiConsumer<? super Class<? extends Context<?>>, ? super ContextSetup> action) {
+        contexts.forEach(action);
+        bean.forEachContext(action);
     }
 
     public final MethodHandle generateMethodHandle() {
@@ -182,6 +205,14 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
         return mirror;
     }
 
+    public String name() {
+        return bean.operationNames().get(this);
+    }
+
+    public String namePrefix() {
+        return "op" + namePrefix;
+    }
+
     /** {@return the target of the operation.} */
     public OperationTarget target() {
         return (OperationTarget) this;
@@ -197,7 +228,7 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
     }
 
     /** {@return the type of operation.} */
-    public final FunctionType type() {
+    public final OperationType type() {
         return type;
     }
 
@@ -219,7 +250,7 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
          * @param operator
          * @param site
          */
-        public BeanAccessOperationSetup(ExtensionSetup operator, BeanSetup bean, FunctionType operationType, OperationTemplate template) {
+        public BeanAccessOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template) {
             super(operator, bean, operationType, template, null);
             namePrefix = "InstantAccess";
         }
@@ -246,7 +277,7 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
          * @param operator
          * @param site
          */
-        public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, FunctionType operationType, OperationTemplate template,
+        public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
                 @Nullable EmbeddedIntoOperation nestedParent, MethodHandle methodHandle, SamType samType, Method implementationMethod) {
             super(operator, bean, operationType, template, nestedParent);
             this.methodHandle = requireNonNull(methodHandle);
@@ -290,7 +321,7 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
         // MH -> mirror - no gen
         // MH -> Gen - With caching (writethrough to whereever the bean cache it)
         // MH -> LazyGen - With caching
-        public MemberOperationSetup(ExtensionSetup operator, BeanSetup bean, FunctionType operationType, OperationTemplate template,
+        public MemberOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
                 OperationMemberTarget<?> member, MethodHandle methodHandle) {
             super(operator, bean, operationType, template, null);
             if (bean.beanKind == BeanKind.STATIC && !Modifier.isStatic(member.modifiers())) {
@@ -329,7 +360,7 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
          * @param operator
          * @param site
          */
-        public MethodHandleOperationSetup(ExtensionSetup operator, BeanSetup bean, FunctionType operationType, OperationTemplate template,
+        public MethodHandleOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
                 @Nullable EmbeddedIntoOperation embeddedInto, MethodHandle methodHandle) {
             super(operator, bean, operationType, template, embeddedInto);
             this.methodHandle = requireNonNull(methodHandle);

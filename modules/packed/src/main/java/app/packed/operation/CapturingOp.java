@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-import app.packed.util.FunctionType;
+import app.packed.util.OperationType;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
 import internal.app.packed.binding.InternalDependency;
@@ -82,7 +82,7 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
 
             Variable last = types[types.length - 1];
 
-            FunctionType ot = FunctionType.of(last, Arrays.copyOf(types, types.length - 1));
+            OperationType ot = OperationType.of(last, Arrays.copyOf(types, types.length - 1));
 
             return new Top(b, ot);
         }
@@ -134,7 +134,7 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
 
     /** {@inheritDoc} */
     @Override
-    public final FunctionType type() {
+    public final OperationType type() {
         return op.type();
     }
 
@@ -156,9 +156,9 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
         @SuppressWarnings("unused")
         final List<InternalDependency> deps;
 
-        final FunctionType ot;
+        final OperationType ot;
 
-        Top(Base base, FunctionType ot) {
+        Top(Base base, OperationType ot) {
             this.base = base;
             this.ot = ot;
             this.deps = InternalDependency.fromOperationType(ot);

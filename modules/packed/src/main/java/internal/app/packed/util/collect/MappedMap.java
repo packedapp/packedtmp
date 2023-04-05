@@ -91,6 +91,33 @@ public final class MappedMap<K, V, M> extends ImmutableMap<K, M> {
         return new MappedCollection<>(map.values(), mapper);
     }
 
+    @Override
+    public String toString() {
+        Iterator<Entry<K, M>> iter = entrySet().iterator();
+        if (!iter.hasNext()) { // empty map
+            return "{}";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append('{');
+        for (;;) {
+            Entry<K, M> entry = iter.next();
+
+            K key = entry.getKey();
+            sb.append(key == this ? "(this Map)" : key);
+            sb.append('=');
+
+            M value = entry.getValue();
+            sb.append(value == this ? "(this Map)" : value);
+
+            if (!iter.hasNext()) {
+                return sb.append('}').toString();
+            }
+
+            sb.append(", ");
+        }
+    }
+
     private static /* value */ class MappedEntrySet<K, V, M> extends ImmutableSet<Map.Entry<K, M>> {
 
         private final MappedMap<K, V, M> mappedMap;

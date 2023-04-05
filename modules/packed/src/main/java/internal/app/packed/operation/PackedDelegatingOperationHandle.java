@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint.UseSite;
 import app.packed.operation.OperationTarget;
-import app.packed.util.FunctionType;
+import app.packed.util.OperationType;
 import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -45,7 +45,7 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
     public final MethodHandle methodHandle;
 
     /** The type of the operation */
-    public final FunctionType operationType;
+    public final OperationType operationType;
 
     /** The target of the operation. */
     public final OperationMemberTarget<?> target;
@@ -53,7 +53,7 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
     final BeanScanner scanner;
 
     public PackedDelegatingOperationHandle(BeanScanner scanner, ExtensionSetup delegatedFrom, BeanSetup bean, OperationMemberTarget<?> target,
-            FunctionType operationType, MethodHandle methodHandle) {
+            OperationType operationType, MethodHandle methodHandle) {
         this.scanner = requireNonNull(scanner);
         this.target = requireNonNull(target);
         this.delegatedFrom = requireNonNull(delegatedFrom);
@@ -91,7 +91,7 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
 
     /** {@inheritDoc} */
     @Override
-    public FunctionType type() {
+    public OperationType type() {
         return operationType;
     }
 }

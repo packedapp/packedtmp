@@ -13,26 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.context;
-
-import app.packed.context.Context;
+package internal.app.packed.operation;
 
 /**
  *
  */
-public class ContextInfo {
+public class ContextMap {
 
-    // Class<? extends Context> contextClass();
-
-    // implementation
-
-    // isSubClass();
-
-    public static Class<? extends Context<?>> normalize(Class<? extends Context<?>> contextClass) {
-        return contextClass;
-    }
-
-    static ContextInfo of(Class<? extends Context<?>> contextClass) {
-        throw new UnsupportedOperationException();
-    }
 }

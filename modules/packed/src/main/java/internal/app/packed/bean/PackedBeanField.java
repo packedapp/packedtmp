@@ -27,7 +27,7 @@ import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanHook.AnnotatedFieldHook;
 import app.packed.extension.Extension;
 import app.packed.util.AnnotationList;
-import app.packed.util.FunctionType;
+import app.packed.util.OperationType;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
@@ -129,7 +129,7 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
     }
 
     private PackedOperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
-        FunctionType ft = FunctionType.fromField(field, accessMode);
+        OperationType ft = OperationType.fromField(field, accessMode);
         OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, ft, template,
                 new OperationFieldTarget(field, accessMode), mh);
         extension.scanner.unBoundOperations.add(operation);

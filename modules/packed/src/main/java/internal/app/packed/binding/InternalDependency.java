@@ -27,7 +27,7 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.application.BuildException;
-import app.packed.util.FunctionType;
+import app.packed.util.OperationType;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
@@ -212,7 +212,7 @@ public final class InternalDependency {
         return optionality.wrapIfOptional(requireNonNull(object, "object is null"));
     }
 
-    public static List<InternalDependency> fromOperationType(FunctionType t) {
+    public static List<InternalDependency> fromOperationType(OperationType t) {
         Variable[] parameters = t.parameterArray();
         return switch (parameters.length) {
         case 0 -> List.of();

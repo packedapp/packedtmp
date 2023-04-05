@@ -15,6 +15,8 @@
  */
 package internal.app.packed.context;
 
+import java.util.function.BiConsumer;
+
 import app.packed.context.Context;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.util.Nullable;
@@ -22,37 +24,22 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.operation.OperationSetup;
 
-/** A element that operate within a context. */
+/** An element that may operate within a context. */
 public sealed interface ContextualizedElementSetup permits OperationSetup, BeanSetup, ContainerSetup {
+
+    @Nullable
+    ContextSetup findContext(Class<? extends Context<?>> contextClass);
+
+    void forEachContext(BiConsumer<? super Class<? extends Context<?>>, ? super ContextSetup> action);
 
     /** {@return a mirror for the element.} */
     ContextualizedElementMirror mirror();
-
-    @Nullable
-   default ContextSetup findContext(Class<? extends Context<?>> contextClass) {
-        throw new UnsupportedOperationException();
-    }
 }
-
-//Implementerings muligheder
-////With parent
-////
 
 ////Hvad med nested operations??? Er de i context???????
 ////Embedded operations er selvfoelgelig
+// Men nested, altsaa med mindre vi supportere det paa en eller anden maade
 
 //Der er forskel paa invocation context, og de contexts man er i.
 
 //All contexts skal vel saettes i templates???
-
-//BeanLifetimeOperationContext er vel i virkeligheden en context operation.
-//Som er til raadighed for dens nested boern
-
-//ContainerContext er til raadighed for alle dependencies (alle depender on BaseExtension, lol)
-//Samtidig kan alle invoke med den..
-
-//private IdentityHashMap<Class<? extends Context<?>>, ContextSetup> m = new IdentityHashMap<>();
-//
-//boolean isInContext(Class<? extends Context<?>> contextClass) {
-//  return m.containsKey(contextClass);
-//}

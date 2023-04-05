@@ -5,10 +5,12 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationPath;
@@ -17,9 +19,10 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.container.Author;
+import app.packed.context.Context;
 import app.packed.lifetime.LifecycleOperationMirror;
-import app.packed.util.FunctionType;
 import app.packed.util.Nullable;
+import app.packed.util.OperationType;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
@@ -27,6 +30,8 @@ import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NameCheck;
+import internal.app.packed.context.ContextInfo;
+import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
@@ -72,10 +77,24 @@ public final class BeanSetup implements ContextualizedElementSetup {
     /** The container this bean is installed in. */
     public final ContainerSetup container;
 
-    // ???
-    // Er vi recursive??
+    @Override
     @Nullable
-    public ContextualizedElementSetup contexts;
+    public ContextSetup findContext(Class<? extends Context<?>> contextClass) {
+        Class<? extends Context<?>> cl = ContextInfo.normalize(contextClass);
+        ContextSetup cs = contexts.get(cl);
+        if (cs != null) {
+            return cs;
+        }
+        return container.findContext(cl);
+    }
+
+    private HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
+
+    @Override
+    public void forEachContext(BiConsumer<? super Class<? extends Context<?>>, ? super ContextSetup> action) {
+        contexts.forEach(action);
+        container.forEachContext(action);
+    }
 
     /** The extension that installed the bean. */
     public final ExtensionSetup installedBy;
@@ -166,7 +185,7 @@ public final class BeanSetup implements ContextualizedElementSetup {
     // Relative to x
     public OperationSetup instanceAccessOperation() {
         OperationTemplate template = OperationTemplate.defaults().returnType(beanClass);
-        return new BeanAccessOperationSetup(installedBy, this, FunctionType.of(beanClass), template);
+        return new BeanAccessOperationSetup(installedBy, this, OperationType.of(beanClass), template);
     }
 
     /** {@return a new mirror.} */
@@ -202,6 +221,7 @@ public final class BeanSetup implements ContextualizedElementSetup {
     /**
      * <p>
      * We lazily calculate
+     *
      * @return a map of operation to
      */
     public Map<OperationSetup, String> operationNames() {
@@ -246,4 +266,5 @@ public final class BeanSetup implements ContextualizedElementSetup {
     public static BeanSetup crack(BeanHandle<?> handle) {
         return ((PackedBeanHandle<?>) handle).bean();
     }
+
 }

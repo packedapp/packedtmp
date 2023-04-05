@@ -28,7 +28,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.bean.InaccessibleMemberException;
-import app.packed.util.FunctionType;
+import app.packed.util.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.operation.PackedOp;
 
@@ -111,7 +111,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
     Op<R> peek(Consumer<? super R> action);
 
     /** {@return the type of this operation.} */
-    FunctionType type();
+    OperationType type();
 
     /**
      * Creates a new operation that will invoke the specified constructor.

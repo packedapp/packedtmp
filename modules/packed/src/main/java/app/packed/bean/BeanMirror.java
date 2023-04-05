@@ -29,6 +29,7 @@ import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.container.Mirror;
+import internal.app.packed.context.ContextSetup;
 import internal.app.packed.operation.OperationSetup;
 import sandbox.operation.mirror.DependenciesMirror;
 
@@ -387,9 +388,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
     /** {@inheritDoc} */
     @Override
     public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
-        // get BeanContext
-        // get ContainerContext
-        throw new UnsupportedOperationException();
+        return ContextSetup.allMirrors(bean());
     }
 }
 

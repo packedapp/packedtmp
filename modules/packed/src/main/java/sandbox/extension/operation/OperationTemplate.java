@@ -17,6 +17,7 @@ package sandbox.extension.operation;
 
 import java.lang.invoke.MethodType;
 import java.util.Map;
+import java.util.Set;
 
 import app.packed.context.Context;
 import internal.app.packed.context.publish.ContextTemplate;
@@ -64,9 +65,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
 
     int beanInstanceIndex();
 
-    default /* Ordered */ Map<Class<? extends Context<?>>, Class<?>> contexts() {
-        throw new UnsupportedOperationException();
-    }
+    Set<Class<? extends Context<?>>> contexts();
 
     default boolean newLifetime() {
         return false;
@@ -94,12 +93,13 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
 
     OperationTemplate withBeanInstance(Class<?> beanClass);
 
+    // Hvad sker der naar den er i andre lifetimes?
     OperationTemplate withContext(ContextTemplate context);
 
-    default OperationTemplate withoutContext(Class<? extends Context<?>> contextClass) {
-        // Den eneste usecase er at fjerne ContainerContext
-        return this;
-    }
+//    default OperationTemplate withoutContext(Class<? extends Context<?>> contextClass) {
+//        // Den eneste usecase er at fjerne ContainerContext
+//        return this;
+//    }
 
     // Takes EBC returns void
 
@@ -114,7 +114,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
 //  }
 
     static OperationTemplate raw() {
-        return new PackedOperationTemplate(-1, -1, MethodType.methodType(void.class), false);
+        return new PackedOperationTemplate(Map.of(), -1, -1, MethodType.methodType(void.class), false);
     }
 //
 //    enum ArgumentKind {

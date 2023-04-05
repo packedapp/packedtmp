@@ -35,11 +35,12 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.util.FunctionType;
+import app.packed.util.OperationType;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.Mirror;
+import internal.app.packed.context.ContextSetup;
 import internal.app.packed.operation.OperationSetup;
 import sandbox.operation.mirror.DependenciesMirror;
 
@@ -55,7 +56,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * </ul>
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public non-sealed class OperationMirror implements ContextualizedElementMirror , Mirror, ContextScopeMirror {
+public non-sealed class OperationMirror implements ContextualizedElementMirror , Mirror , ContextScopeMirror {
 
     /**
      * The internal configuration of the operation we are mirrored. Is initially null but populated via
@@ -187,7 +188,7 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
     }
 
     /** {@return the type of the operation.} */
-    public FunctionType type() {
+    public OperationType type() {
         return operation().type;
     }
 
@@ -205,7 +206,7 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
     /** {@inheritDoc} */
     @Override
     public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
-        throw new UnsupportedOperationException();
+        return ContextSetup.allMirrors(operation());
     }
 }
 

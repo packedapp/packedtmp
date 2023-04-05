@@ -27,7 +27,7 @@ import app.packed.extension.BeanElement.BeanConstructor;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.util.AnnotationList;
-import app.packed.util.FunctionType;
+import app.packed.util.OperationType;
 import app.packed.util.Key;
 import app.packed.util.Variable;
 import internal.app.packed.bean.PackedBeanConstructor;
@@ -145,7 +145,7 @@ public sealed interface BeanElement permits PackedBeanElement, BeanClass, BeanFi
         OperationHandle newOperation(OperationTemplate template);
 
         /** {@return a factory type for this method.} */
-        FunctionType operationType();
+        OperationType operationType();
     }
 
     /**
@@ -286,7 +286,7 @@ public sealed interface BeanElement permits PackedBeanElement, BeanClass, BeanFi
         OperationHandle newOperation(OperationTemplate template);
 
         /** {@return the default type of operation that will be created.} */
-        FunctionType operationType();
+        OperationType operationType();
 
         /** {@inheritDoc} */
         @Override

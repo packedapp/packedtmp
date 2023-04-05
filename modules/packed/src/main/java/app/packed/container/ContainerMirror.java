@@ -26,6 +26,7 @@ import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.TreeMirror;
+import internal.app.packed.context.ContextSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
@@ -282,9 +283,8 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     /** {@inheritDoc} */
     @Override
     public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
-        throw new UnsupportedOperationException();
+        return ContextSetup.allMirrors(container());
     }
-
 }
 //// Taken from ComponentMirror
 // Now that we have parents...

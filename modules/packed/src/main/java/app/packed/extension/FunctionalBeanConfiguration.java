@@ -17,7 +17,7 @@ package app.packed.extension;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.util.FunctionType;
+import app.packed.util.OperationType;
 import app.packed.util.Key;
 import sandbox.extension.bean.BeanHandle;
 import sandbox.extension.operation.DelegatingOperationHandle;
@@ -27,9 +27,12 @@ import sandbox.extension.operation.OperationHandle;
  * Represents a bean that can have multiple functions attached.
  * <p>
  * Instances of this bean can only created via {@link BaseExtensionPoint#installFunctional()}.
+ * <p>
+ * Instances of this class should never be exposed outside of the extension.
  *
  * @see BaseExtensionPoint#installFunctional()
  */
+// Hmm, den skal jo aldrig exposes til brugere
 public class FunctionalBeanConfiguration extends BeanConfiguration {
 
     /**
@@ -41,7 +44,8 @@ public class FunctionalBeanConfiguration extends BeanConfiguration {
 
     // Maaske vi har en FunctionTemplate der pakker interface + operation type + prefix
 
-    public OperationHandle addFunction(Class<?> functionalInterface, Object function, FunctionType operationType) {
+    // Hvorfor er det ikke operation?
+    public OperationHandle addOperation(OperationType operationType, Class<?> functionalInterface, Object function) {
         throw new UnsupportedOperationException();
     }
 
@@ -51,7 +55,7 @@ public class FunctionalBeanConfiguration extends BeanConfiguration {
     // Maaske bare stripper annoteringer...
     // Men okay vi kan stadig fx bruge Logger som jo stadig skulle
     // supplies uden et hook
-    public OperationHandle addFunction(InstanceBeanConfiguration<?> operator, Class<?> functionalInterface, FunctionType type, Object functionInstance) {
+    public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, Class<?> functionalInterface, OperationType type, Object functionInstance) {
         // I think we can ignore the operator now.
 
         // Function, OpType.of(void.class, HttpRequest.class, HttpResponse.class), someFunc)
@@ -65,7 +69,7 @@ public class FunctionalBeanConfiguration extends BeanConfiguration {
         return this;
     }
 
-    public DelegatingOperationHandle newDelegationFunctionalOperation(Class<?> functionalInterface, Object function, FunctionType operationType) {
+    public DelegatingOperationHandle newDelegationFunctionalOperation(Class<?> functionalInterface, Object function, OperationType operationType) {
         // We only take public exported types
         throw new UnsupportedOperationException();
     }

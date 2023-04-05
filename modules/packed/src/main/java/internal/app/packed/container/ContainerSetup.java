@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationPath;
@@ -30,10 +31,13 @@ import app.packed.container.Author;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
+import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.context.ContextInfo;
+import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.service.ServiceManager;
@@ -286,6 +290,21 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
             extension = ExtensionSetup.install(extensionClass, this, requestedByExtension);
         }
         return extension;
+    }
+
+
+    @Override
+    @Nullable
+    public ContextSetup findContext(Class<? extends Context<?>> contextClass) {
+        Class<? extends Context<?>> cl = ContextInfo.normalize(contextClass);
+        return contexts.get(cl);
+    }
+
+    private HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
+
+    @Override
+    public void forEachContext(BiConsumer<? super Class<? extends Context<?>>, ? super ContextSetup> action) {
+        contexts.forEach(action);
     }
 
     public /* primitive */ record BeanClassKey(Author realm, Class<?> beanClass) {}
