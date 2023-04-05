@@ -203,8 +203,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
 
         BeanSetup bean = new BeanSetup(this, beanClass, sourceKind, source);
 
-        // Copy any bean locals that have been set
-        // We need to set this before introspection
+        // Copy any bean locals that have been set, we need to set this before introspection
         if (locals != null) {
             for (Entry<PackedBeanLocal<?>, Object> e : locals.entrySet()) {
                 container.application.beanLocals.put(e.getKey().toKey(bean), e.getValue());
@@ -240,7 +239,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
                 if (next > 0) {
                     n = prefix + next;
                 }
-                while (container.children.putIfAbsent(n, bean) != null) {
+                while (container.namedChildren.putIfAbsent(n, bean) != null) {
                     n = prefix + ++next;
                     i.counter = next;
                 }
@@ -258,7 +257,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
                 });
                 // Not multi install, so should be able to add it first time
                 int size = 0;
-                while (container.children.putIfAbsent(n, bean) != null) {
+                while (container.namedChildren.putIfAbsent(n, bean) != null) {
                     n = prefix + ++size;
                 }
             }

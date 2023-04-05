@@ -72,7 +72,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
     public BeanSetup beanLast;
 
     /** Maintains unique names for beans and child containers. */
-    public final HashMap<String, Object> children = new HashMap<>();
+    public final HashMap<String, Object> namedChildren = new HashMap<>();
 
     /** Extensions used by this container. We keep them in a LinkedHashMap so that we can return a deterministic view. */
     // Or maybe extension types are always sorted??
@@ -203,10 +203,10 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
 
         // Unless we are the root container. We need to insert or update this container in the parent container
         if (treeParent != null) {
-            if (treeParent.children.putIfAbsent(newName, this) != null) {
+            if (treeParent.namedChildren.putIfAbsent(newName, this) != null) {
                 throw new IllegalArgumentException("A bean or container with the specified name '" + newName + "' already exists");
             }
-            treeParent.children.remove(currentName);
+            treeParent.namedChildren.remove(currentName);
         }
         name = newName;
     }

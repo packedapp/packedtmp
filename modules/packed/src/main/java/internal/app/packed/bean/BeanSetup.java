@@ -67,7 +67,7 @@ public final class BeanSetup implements ContextualizedElementSetup {
     @Nullable
     public BeanSetup beanSiblingNext;
 
-    /** The source ({@code null}, {@link Class}, {@link PackedOp}, otherwise an instance) */
+    /** The source ({@code null}, {@link Class}, {@link PackedOp}, otherwise the bean instance) */
     @Nullable
     public final Object beanSource;
 
@@ -76,6 +76,8 @@ public final class BeanSetup implements ContextualizedElementSetup {
 
     /** The container this bean is installed in. */
     public final ContainerSetup container;
+
+    boolean allowMultiClass;
 
     @Override
     @Nullable
@@ -208,13 +210,13 @@ public final class BeanSetup implements ContextualizedElementSetup {
         // Issue should be the container which should probably work identical
         // And I do think we should have it as the first thing
 
-        if (container.children.putIfAbsent(newName, this) != null) {
+        if (container.namedChildren.putIfAbsent(newName, this) != null) {
             if (newName.equals(name)) { // tried to set the current name which is okay i guess?
                 return;
             }
             throw new IllegalArgumentException("A bean or container with the specified name '" + newName + "' already exists");
         }
-        container.children.remove(name);
+        container.namedChildren.remove(name);
         this.name = newName;
     }
 

@@ -154,7 +154,7 @@ public abstract class PackedContainerBuilder {
 
         String n = nn;
         if (parent != null) {
-            HashMap<String, Object> c = parent.children;
+            HashMap<String, Object> c = parent.namedChildren;
             if (c.size() == 0) {
                 c.put(n, this);
             } else {
