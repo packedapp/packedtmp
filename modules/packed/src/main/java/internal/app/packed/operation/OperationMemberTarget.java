@@ -41,6 +41,10 @@ public sealed abstract class OperationMemberTarget<M extends Member> {
         return member.getModifiers();
     }
 
+    public String name() {
+        return member.getName();
+    }
+
     public static final class OperationConstructorTarget extends OperationMemberTarget<Constructor<?>> implements OperationTarget.OfConstructor {
 
         /**

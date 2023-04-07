@@ -27,7 +27,7 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.application.BuildException;
-import app.packed.util.OperationType;
+import app.packed.operation.OperationType;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;

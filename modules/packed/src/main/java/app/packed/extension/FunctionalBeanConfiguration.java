@@ -17,7 +17,7 @@ package app.packed.extension;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.util.OperationType;
+import app.packed.operation.OperationType;
 import app.packed.util.Key;
 import sandbox.extension.bean.BeanHandle;
 import sandbox.extension.operation.DelegatingOperationHandle;

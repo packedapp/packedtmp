@@ -18,7 +18,7 @@ package internal.app.packed.bean;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Executable;
 
-import app.packed.util.OperationType;
+import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.util.PackedAnnotationList;
 

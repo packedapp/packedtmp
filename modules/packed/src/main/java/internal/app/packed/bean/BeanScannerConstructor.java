@@ -20,7 +20,7 @@ import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
 import app.packed.bean.Inject;
-import app.packed.util.OperationType;
+import app.packed.operation.OperationType;
 import internal.app.packed.util.StringFormatter;
 
 /**

@@ -162,6 +162,6 @@ public final class AssemblyMirror implements TreeMirror<AssemblyMirror> {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "Assembly";
+        return "Assembly:" + application().name() + ":/";
     }
 }

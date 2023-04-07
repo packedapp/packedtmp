@@ -18,8 +18,8 @@ package app.packed.cli;
 import app.packed.application.App;
 import app.packed.application.BootstrapApp;
 import app.packed.container.Assembly;
+import app.packed.container.BaseWirelets;
 import app.packed.container.Wirelet;
-import app.packed.extension.BaseWirelets;
 
 /**
  *

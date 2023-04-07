@@ -18,7 +18,7 @@ package internal.app.packed.util;
 import static internal.app.packed.util.StringFormatter.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static testutil.assertj.Assertions.npe;
+import static testutil.Assertions.npe;
 import static testutil.stubs.TypeStubs.LIST_STRING;
 import static testutil.stubs.TypeStubs.LIST_STRING_ARRAY;
 import static testutil.stubs.TypeStubs.LIST_STRING_ARRAY_ARRAY;

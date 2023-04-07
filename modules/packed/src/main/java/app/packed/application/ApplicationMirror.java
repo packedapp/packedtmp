@@ -24,6 +24,9 @@ import internal.app.packed.operation.OperationSetup;
  * An application mirror instance is typically obtained by calling application mirror factory methods such as
  * {@link App#mirrorOf(Assembly, Wirelet...)}.
  * <p>
+ * Instances of this class should never be created directly as the framework needs to initialize it before it can be
+ * used.
+ * <p>
  * Instances of ApplicationMirror can be injected at runtime simply by declaring a dependency on it.
  * <p>
  * Like many other mirrors classes the type of application mirror being returned can be specialized using
@@ -129,8 +132,8 @@ public class ApplicationMirror implements TreeMirror<ApplicationMirror> {
         print0(application.container);
     }
 
-    public ZonePath path() {
-        return ZonePath.ofApplication(name());
+    public ApplicationPath path() {
+        return ApplicationPath.ofApplication(name());
     }
 
     private void print0(ContainerSetup cs) {
@@ -155,7 +158,7 @@ public class ApplicationMirror implements TreeMirror<ApplicationMirror> {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "Application";
+        return "Application:" + name();
     }
 
     /**

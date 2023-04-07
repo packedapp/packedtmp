@@ -18,7 +18,7 @@ package sandbox.extension.bean;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import app.packed.application.ApplicationPath;
+import app.packed.application.OldApplicationPath;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
@@ -137,7 +137,7 @@ public sealed interface BeanHandle<T> extends ContextualizedElement permits Pack
     Author author();
 
     /** {@return the path of the bean.} */
-    ApplicationPath path();
+    OldApplicationPath path();
 
     /**
      * Provides of the bean as a service.

@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-import app.packed.util.OperationType;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
 import internal.app.packed.binding.InternalDependency;
@@ -79,7 +78,6 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
             Base b = BASE.get(baseClass);
 
             Variable[] types = b.tve.extractAllVariables(type, IllegalArgumentException::new);
-
             Variable last = types[types.length - 1];
 
             OperationType ot = OperationType.of(last, Arrays.copyOf(types, types.length - 1));

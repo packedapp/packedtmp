@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 
 import app.packed.operation.CapturingOp;
 import app.packed.operation.Op;
-import app.packed.util.OperationType;
+import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
 import internal.app.packed.bean.BeanSetup;

@@ -34,6 +34,7 @@ final class BeanScannerBindingResolver {
         // Extracts the variable we want to resolve
         Variable v = operation.type.parameter(index);
 
+
         // First, see if there are AnnotatedVariableHooks on the variable
         if (tryResolveWithBindingAnnotation(iBean, v, operation, index)) {
             return;
@@ -43,6 +44,7 @@ final class BeanScannerBindingResolver {
 
         // Next, see if there are any VariableTypeHooks on the variable
         ParameterType hook = iBean.hookModel.testParameterType(v.rawType());
+
         if (hook != null) {
             BeanScannerExtension contributor = iBean.computeContributor(hook.extensionType());
             PackedBindableVariable h = new PackedBindableVariable(iBean, operation, index, contributor.extension, v);

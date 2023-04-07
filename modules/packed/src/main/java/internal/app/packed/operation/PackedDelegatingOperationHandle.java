@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint.UseSite;
 import app.packed.operation.OperationTarget;
-import app.packed.util.OperationType;
+import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;

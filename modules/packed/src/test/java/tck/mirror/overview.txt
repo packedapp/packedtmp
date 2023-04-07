@@ -1,0 +1,11 @@
+En HelloWorld app vi tester alt på
+
+
++ Udover basal funktion skal vi teste custom mirrors paa det der tillader det
+
+
+
+- Equals virker ikke selvom vi bygger identiske application, det ville være for kompliceret.
+  Især fordi vi har mange relationer.
+  
+  

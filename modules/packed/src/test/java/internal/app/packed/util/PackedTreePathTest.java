@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.application.ApplicationPath;
+import app.packed.application.OldApplicationPath;
 
 /**
  *
@@ -34,7 +34,7 @@ public class PackedTreePathTest {
         checkPath(new PackedNamespacePath("Foo", "Boo"), "/Foo/Boo");
     }
 
-    private static void checkPath(ApplicationPath p, String expected) {
+    private static void checkPath(OldApplicationPath p, String expected) {
 
         ///////// Object
         // hashCode

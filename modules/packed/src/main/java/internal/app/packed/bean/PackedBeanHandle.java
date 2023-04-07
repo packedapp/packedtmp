@@ -20,7 +20,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.application.ApplicationPath;
+import app.packed.application.OldApplicationPath;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
@@ -86,7 +86,7 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationPath path() {
+    public OldApplicationPath path() {
         return bean.path();
     }
 

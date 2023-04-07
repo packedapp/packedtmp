@@ -26,8 +26,8 @@ import app.packed.extension.BeanElement.BeanClass;
 import app.packed.extension.BeanElement.BeanConstructor;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
+import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
-import app.packed.util.OperationType;
 import app.packed.util.Key;
 import app.packed.util.Variable;
 import internal.app.packed.bean.PackedBeanConstructor;
@@ -44,6 +44,9 @@ import sandbox.extension.sandbox.ApplicationHandle;
 /**
  *
  */
+
+// CheckRealmIsApplication
+// CheckRealmIsExtension
 // Checks Static non static bean
 // Checks container lifetime
 // Checks own extension or container lifetime
@@ -62,10 +65,6 @@ public sealed interface BeanElement permits PackedBeanElement, BeanClass, BeanFi
      */
     default void failWith(String message) {
         throw new BeanInstallationException(message);
-    }
-
-    default <T> void localSet(BeanLocal<T> local, T value) {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -96,8 +95,6 @@ public sealed interface BeanElement permits PackedBeanElement, BeanClass, BeanFi
      */
     Key<?> toKey();
 
-    // CheckRealmIsApplication
-    // CheckRealmIsExtension
     /**
      *
      * <p>
@@ -214,12 +211,6 @@ public sealed interface BeanElement permits PackedBeanElement, BeanClass, BeanFi
          * @see Lookup#unreflectSetter(Field)
          */
         OperationHandle newSetOperation(OperationTemplate template);
-
-        /** {@inheritDoc} */
-        @Override
-        default Key<?> toKey() {
-            return Key.fromField(this);
-        }
 
         /**
          * {@return the underlying field represented as a {@code Variable}.}

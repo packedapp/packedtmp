@@ -21,10 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
 
-import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.context.Context;
@@ -35,8 +32,6 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.util.OperationType;
-import app.packed.util.Key;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.Mirror;
@@ -91,6 +86,12 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
         return List.of(hooks);
     }
 
+    /** {@return an unchangeable set view of all the contexts that the operation operates within.} */
+    @Override
+    public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
+        return ContextSetup.allMirrorsFor(operation());
+    }
+
     /**
      * {@return any lifetime this operation is an entry point in. Or empty if this operation is not an entry point
      * operation.}
@@ -129,12 +130,15 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
         return operation().operator.extensionType;
     }
 
-    ContainerMirror invokedFromContainer() {
-        throw new UnsupportedOperationException();
+    /**
+     * {@return the name of the operation.}
+     * <p>
+     * The name of an operation is always unique among other operations on the same bean.
+     */
+    public String name() {
+        return operation().name();
     }
 
-    // Composites, What about services???
-    // Services no, because one operation may be used multiple places
     /**
      * If this operation is a nested operation. Returns the binding the operation is used by. Otherwise
      * {@link Optional#empty()}.
@@ -160,53 +164,14 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
         return o;
     }
 
-//    // The returned set of keys may contains key that result in a cycle.
-//    // For example, if a bean is provided as a service. Calling this method on any of the
-//    // operations on the bean will include the key under which the bean is being provided.
-//    public Set<Key<?>> keys() {
-//        HashSet<Key<?>> result = new HashSet<>();
-//        for (ServiceManagerEntry e : operation().bean.container.sm.entries.values()) {
-//            if (e.provider() != null) {
-//                result.add(e.key);
-//            }
-//        }
-//        return Set.copyOf(result);
-//    }
-
     /** {@return the operation site.} */
     public OperationTarget target() {
         return operation().target();
     }
 
-    /**
-     * {@return the name of the operation.}
-     * <p>
-     * All operations for a bean has unique names.
-     */
-    public String name() {
-        return operation().name();
-    }
-
     /** {@return the type of the operation.} */
     public OperationType type() {
         return operation().type;
-    }
-
-    /** {@return a set of any contexts initiated by invoking the operation.} */
-    // Context root?
-    public Set<ContextMirror> zCreatesContexts() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@return the dependencies this operation introduces.} */
-    DependenciesMirror zDependencies() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
-        return ContextSetup.allMirrorsFor(operation());
     }
 }
 
@@ -217,8 +182,29 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
 //Does an operation always introduce a dependency between two beans???
 class ZandboxOM {
 
-    /** {@return the services that are available at this injection site.} */
-    final Set<Key<?>> availableServices() {
+//  // The returned set of keys may contains key that result in a cycle.
+//  // For example, if a bean is provided as a service. Calling this method on any of the
+//  // operations on the bean will include the key under which the bean is being provided.
+//  public Set<Key<?>> keys() {
+//      HashSet<Key<?>> result = new HashSet<>();
+//      for (ServiceManagerEntry e : operation().bean.container.sm.entries.values()) {
+//          if (e.provider() != null) {
+//              result.add(e.key);
+//          }
+//      }
+//      return Set.copyOf(result);
+//  }
+
+    // Composites, What about services???
+    // Services no, because one operation may be used multiple places
+//  /** {@return a set of any contexts initiated by invoking the operation.} */
+//  // Context root?
+//  public Set<ContextMirror> zCreatesContexts() {
+//      // contexts().values().scope = Operation
+//      throw new UnsupportedOperationException();
+//  }
+
+    ContainerMirror invokedFromContainer() {
         throw new UnsupportedOperationException();
     }
 
@@ -252,6 +238,11 @@ class ZandboxOM {
 
         throw new UnsupportedOperationException();
     }
+
+//    /** {@return the services that are available at this injection site.} */
+//    final Set<Key<?>> availableServices() {
+//        throw new UnsupportedOperationException();
+//    }
 
     // Synchronous/Asynchronous
     final boolean createsNewThread() {
@@ -302,24 +293,6 @@ class ZandboxOM {
         throw new UnsupportedOperationException();
     }
 
-    final String name() {
-        // Maaske maa operationer godt have det samme navn????
-
-        // Altsaa webGet1 + webGet2 giver jo ikke rigtig noget information...
-        // Saa kan vi ligesaa godt have webGet + webGet
-
-        //// Vi har vel 3 interessante navne
-        // Name
-        // BeanExtension#name
-        // BeanExtension.longClass#name
-
-        // Kan vi have noget container path
-
-        // zerviceExport, convertValue
-        // webGet
-        return "";
-    }
-
     final void printBindings() {
         // Det er jo bare en trae af ServiceDependency
 
@@ -368,14 +341,19 @@ class ZandboxOM {
         return void.class;
     }
 
-    public static <T extends OperationMirror> Stream<T> findAll(ApplicationMirror application, Class<T> operationType) {
+    /** {@return the dependencies this operation introduces.} */
+    public DependenciesMirror zDependencies() {
         throw new UnsupportedOperationException();
     }
 
-    public static void main(String[] args) {
-//        SandboxOp.findAll(null, BeanLifecycleMirror.class).filter(m -> m.state() == RunState.INITIALIZED).count();
-
-    }
+//    public static <T extends OperationMirror> Stream<T> findAll(ApplicationMirror application, Class<T> operationType) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public static void main(String[] args) {
+////        SandboxOp.findAll(null, BeanLifecycleMirror.class).filter(m -> m.state() == RunState.INITIALIZED).count();
+//
+//    }
 
 }
 //A bean constructor is _not_ an operation... Or maybe

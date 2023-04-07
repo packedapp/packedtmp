@@ -106,6 +106,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     /** A key map with providers for use together with {@link app.packed.extension.BaseExtensionPoint.CodeGenerated}. */
     static final PackedBeanLocal<Map<Key<?>, BeanVariable>> CODEGEN = PackedBeanLocal.of(() -> new HashMap<>());
 
+    // We use an initial value for now, because we share FromLinks and the boolean fields
+    // But right now we only have a single field
     static final ContainerLocal<FromLinks> FROM_LINKS = ContainerLocal.ofContainer(FromLinks::new);
 
     final ArrayList<BeanVariable> varsToResolve = new ArrayList<>();

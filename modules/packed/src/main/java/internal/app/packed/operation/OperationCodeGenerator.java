@@ -39,16 +39,16 @@ final class OperationCodeGenerator {
 
     MethodHandle generate(OperationSetup operation, MethodHandle initial) {
         MethodHandle mh = initial;
-        // debug("%s %s", operation.bean.path(), initial.type());
+        //debug("%s: %s -> %s", operation.bean.path(), initial.type(), operation.template.invocationType());
 
         // instance fields and methods, needs a bean instance
         boolean requiresBeanInstance = operation instanceof MemberOperationSetup s && s.needsBeanInstance();
         if (requiresBeanInstance) {
-            mh = provide(mh, operation.bean.beanInstanceBindingProvider());
+            mh = provide(operation, mh, operation.bean.beanInstanceBindingProvider());
         }
-
+       // debug(mh.type());
         for (BindingSetup binding : operation.bindings) {
-            mh = provide(mh, binding.resolver());
+            mh = provide(operation, mh, binding.resolver());
         }
 
         int[] result = new int[permuters.size()];
@@ -57,12 +57,19 @@ final class OperationCodeGenerator {
         }
         MethodType mt = operation.template.invocationType();
 
-        // Nested operations normally needs to return a value
+        // Embedded operations normally needs to return a value
         if (operation.embeddedInto != null) {
             mt = mt.changeReturnType(operation.type.returnRawType());
         }
-        mh = MethodHandles.permuteArguments(mh, mt, result);
 
+        try {
+            mh = MethodHandles.permuteArguments(mh, mt, result);
+        } catch (Exception e) {
+            System.err.println("Permuter array " + permuters);
+            result[1] = 1;
+            mh = MethodHandles.permuteArguments(mh, mt, result);
+//            throw e;
+        }
         if (!mh.type().equals(mt)) {
             System.err.println("OperationType " + operation.type.toString());
             System.err.println("Expected " + operation.template.methodType);
@@ -72,7 +79,7 @@ final class OperationCodeGenerator {
         return mh;
     }
 
-    private MethodHandle provide(MethodHandle mh, BindingResolution p) {
+    private MethodHandle provide(OperationSetup operation, MethodHandle mh, BindingResolution p) {
         if (p instanceof FromConstant c) {
             return MethodHandles.insertArguments(mh, permuters.size(), c.constant());
         } else if (p instanceof FromCodeGenerated g) {
@@ -97,7 +104,7 @@ final class OperationCodeGenerator {
             tmp = tmp.asType(tmp.type().changeReturnType(fla.type()));
             return MethodHandles.collectArguments(mh, 0, tmp);
         } else {
-            throw new UnsupportedOperationException("" + p);
+            throw new UnsupportedOperationException("" + p + " " + operation.target());
         }
     }
 }

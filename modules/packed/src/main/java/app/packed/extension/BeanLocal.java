@@ -56,6 +56,12 @@ import sandbox.extension.bean.BeanHandle;
 @SuppressWarnings("rawtypes")
 public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
 
+    // Is useful, if we delegate operation creation to other extensions
+    // As they will not have access to BeanIntrospector
+    final T get(BeanElement element) {
+        throw new UnsupportedOperationException();
+    }
+
     public final T get(BeanConfiguration configuration) {
         return get(BeanSetup.crack(configuration));
     }

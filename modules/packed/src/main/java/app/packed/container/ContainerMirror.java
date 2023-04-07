@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ApplicationPath;
+import app.packed.application.OldApplicationPath;
 import app.packed.bean.BeanMirror;
 import app.packed.context.Context;
 import app.packed.context.ContextMirror;
@@ -214,7 +214,7 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     }
 
     /** {@return the path of the container.} */
-    public ApplicationPath path() {
+    public OldApplicationPath path() {
         return container().path();
     }
 

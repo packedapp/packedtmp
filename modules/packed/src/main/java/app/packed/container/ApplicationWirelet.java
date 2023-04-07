@@ -16,6 +16,7 @@
 package app.packed.container;
 
 /**
- * A wirelet that is usable by the application.
+ * A wirelet that can be used by application developers.
  */
+// ApplicationWirelets er jo ikke saerlig fed... Naar vi har den her
 public non-sealed abstract class ApplicationWirelet extends Wirelet {}

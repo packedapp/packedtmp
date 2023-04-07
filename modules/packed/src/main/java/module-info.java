@@ -1,3 +1,4 @@
+// is open because of Eclipse Junit
 module app.packed {
     requires transitive jdk.jfr;
     //  requires jdk.incubator.concurrent; // Sometimes test

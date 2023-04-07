@@ -15,9 +15,15 @@
  */
 package app.packed.operation;
 
-import static testutil.assertj.Assertions.checkThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.lang.annotation.Annotation;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import app.packed.util.Variable;
+import testutil.stubs.Qualifiers.IntQualifier;
 
 /** Tests {@link Op1}. */
 public class Op1Test {
@@ -26,19 +32,32 @@ public class Op1Test {
      * Tests that we can capture information about a simple factory producing {@link Integer} instances.
      */
     @Test
-    public void toInteger() {
-
+    public void simple() {
         Op1<String, Integer> f = new Op1<>(Integer::valueOf) {};
+        assertEquals(OperationType.of(Integer.class, String.class), f.type());
 
-        // Make an abstract op test?
-        // Maybe just asssert.
-        // assertKeyEquals(key, Class);
-
-        checkThat(f).is(Integer.class);
-        // These would only be non-empty if we had made the factory from Factory.ofMethod(Integer.class, "valueOf",
-        // String.class)
-        //assertThat(d.variable()).isEmpty();
     }
 
-    // TODO test that we can capture annotations
+    @Test
+    @Disabled
+    public void qaulifier() {
+        Op1<String, Integer> ff = new Op1<@IntQualifier(123) String, Integer>(Integer::valueOf) {};
+
+        // Capturing annotations is whacked...
+        Variable v = Variable.of(String.class, new IntQualifier() {
+
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return IntQualifier.class;
+            }
+
+            @Override
+            public int value() {
+                return 123;
+            }
+        });
+        System.out.println(ff.type());
+        assertEquals(OperationType.of(Variable.of(Integer.class), v), ff.type());
+
+    }
 }

@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
 
-import app.packed.application.ApplicationPath;
+import app.packed.application.OldApplicationPath;
 import app.packed.container.Author;
 import app.packed.context.Context;
 import app.packed.util.Key;
@@ -152,7 +152,7 @@ public class BeanConfiguration {
      */
     // I'm not sure we want to expose midt build? IDK
     // If only for user... Maybe is nice for debugging
-    public final ApplicationPath path() {
+    public final OldApplicationPath path() {
         return handle.path();
     }
 

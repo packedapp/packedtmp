@@ -25,9 +25,10 @@ import java.lang.reflect.Modifier;
 
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanHook.AnnotatedFieldHook;
+import app.packed.operation.OperationType;
 import app.packed.extension.Extension;
 import app.packed.util.AnnotationList;
-import app.packed.util.OperationType;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
@@ -107,6 +108,12 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
     @Override
     public int modifiers() {
         return field.getModifiers();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Key<?> toKey() {
+        return Key.fromField(this);
     }
 
     /** {@inheritDoc} */

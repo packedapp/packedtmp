@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import app.packed.application.ApplicationPath;
+import app.packed.application.OldApplicationPath;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
@@ -21,8 +21,8 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.container.Author;
 import app.packed.context.Context;
 import app.packed.lifetime.LifecycleOperationMirror;
+import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
-import app.packed.util.OperationType;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
@@ -240,7 +240,7 @@ public final class BeanSetup implements ContextualizedElementSetup {
     }
 
     /** {@return the path of this component} */
-    public ApplicationPath path() {
+    public OldApplicationPath path() {
         int size = container.depth();
         String[] paths = new String[size + 1];
         paths[size] = name;

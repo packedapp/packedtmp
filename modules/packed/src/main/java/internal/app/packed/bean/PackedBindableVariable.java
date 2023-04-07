@@ -18,14 +18,17 @@ package internal.app.packed.bean;
 import static java.util.Objects.checkIndex;
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanInstallationException;
 import app.packed.context.Context;
+import app.packed.context.NotInContextException;
 import app.packed.extension.BeanVariable;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionContext;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
 import app.packed.util.AnnotationList;
@@ -39,6 +42,7 @@ import internal.app.packed.binding.BindingResolution.FromInvocationArgument;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.binding.BindingSetup.HookBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.context.ContextSetup;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
@@ -130,7 +134,17 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
     /** {@inheritDoc} */
     @Override
     public void bindContextValue(Class<? extends Context<?>> context) {
-        bindInvocationArgument(0);
+        // todo normalize
+        if (context != ExtensionContext.class) {
+            ContextSetup findContext = operation.findContext(context);
+            if (findContext == null) {
+                throw new NotInContextException("oops " + context);
+            }
+        }
+        MethodType mt = operation.template.invocationType();
+        int indexOf = mt.parameterList().indexOf(context);
+        // TODO fix. We need to look up the
+        bindInvocationArgument(indexOf);
     }
 
     /** {@inheritDoc} */

@@ -16,8 +16,8 @@
 package usage.container;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationWirelets;
 import app.packed.container.BaseAssembly;
+import app.packed.container.BaseWirelets;
 import app.packed.lifetime.Main;
 
 /**
@@ -40,7 +40,7 @@ public class MainUsage extends BaseAssembly {
 
     public static void main(String[] args) {
         long l = System.nanoTime();
-        App.Image i = App.imageOf(new MainUsage(), ApplicationWirelets.lazyBuild());
+        App.Image i = App.imageOf(new MainUsage(), BaseWirelets.lazyBuild());
         System.out.println(System.nanoTime() - l);
         i.run();
 

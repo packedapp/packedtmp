@@ -3,7 +3,7 @@ package sandbox.extension.container;
 import java.util.List;
 import java.util.Set;
 
-import app.packed.application.ApplicationPath;
+import app.packed.application.OldApplicationPath;
 import app.packed.extension.Extension;
 import internal.app.packed.container.PackedContainerHandle;
 import sandbox.extension.operation.OperationHandle;
@@ -80,5 +80,5 @@ public sealed interface ContainerHandle permits PackedContainerHandle {
      *
      * @return the path of this configuration.
      */
-    ApplicationPath path();
+    OldApplicationPath path();
 }

@@ -18,14 +18,13 @@ package testutil.stubs;
 import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static testutil.util.MemberFinder.findField;
+import static testutil.MemberFinder.findFieldOnThisClass;
 
 import java.lang.reflect.Field;
 
 import app.packed.bean.Inject;
 import app.packed.lifetime.OnInitialize;
 import testutil.stubs.Letters.A;
-
 /**
  *
  */
@@ -34,7 +33,7 @@ public class Fields {
     @SuppressWarnings("unused")
     private static String FINAL_FIELD$ = "ff";
 
-    public static Field FINAL_FIELD = findField("FINAL_FIELD$");
+    public static Field FINAL_FIELD = findFieldOnThisClass("FINAL_FIELD$");
 
     public static class InjectAConstructor {
 

@@ -1,0 +1,7 @@
+This packages tests naming of everything that can have an ApplicationPath.
+
+This include both Naming and Application Path
+
+Applications, Containers, Beans, Operations, 
+
+Bsaically 

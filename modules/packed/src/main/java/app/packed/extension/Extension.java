@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 import java.util.HashMap;
 import java.util.Optional;
 
-import app.packed.application.ApplicationPath;
+import app.packed.application.OldApplicationPath;
 import app.packed.application.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
@@ -138,7 +138,7 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /** {@return the path of the container that this extension belongs to.} */
-    protected final ApplicationPath containerPath() {
+    protected final OldApplicationPath containerPath() {
         return extension.container.path();
     }
 

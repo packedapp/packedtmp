@@ -24,7 +24,7 @@ import app.packed.extension.BeanVariable;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
-import app.packed.util.OperationType;
+import app.packed.operation.OperationType;
 import internal.app.packed.context.publish.ContextualizedElement;
 import internal.app.packed.operation.PackedOperationHandle;
 

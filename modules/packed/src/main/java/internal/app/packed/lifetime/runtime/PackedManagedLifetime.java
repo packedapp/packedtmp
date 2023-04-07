@@ -143,6 +143,7 @@ public final class PackedManagedLifetime implements LifecycleController {
             lock.unlock();
         }
     }
+
     void shutdown(ContainerSetup container, ContainerRunner cr) {
         final ReentrantLock lock = this.lock;
         lock.lock();
@@ -165,6 +166,7 @@ public final class PackedManagedLifetime implements LifecycleController {
             lock.unlock();
         }
     }
+
     public void launch(ContainerSetup container, ContainerRunner cr) {
         initialize(container, cr); // may throw
 
@@ -212,7 +214,9 @@ public final class PackedManagedLifetime implements LifecycleController {
 
     /** {@inheritDoc} */
     @Override
-    public void stop(StopOption... options) {}
+    public void stop(StopOption... options) {
+
+    }
 
     /** {@inheritDoc} */
     @Override

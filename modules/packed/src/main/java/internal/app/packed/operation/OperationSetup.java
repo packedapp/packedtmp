@@ -35,8 +35,8 @@ import app.packed.bean.NonStaticMemberException;
 import app.packed.context.Context;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
+import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
-import app.packed.util.OperationType;
 import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution.FromOperation;
@@ -210,7 +210,7 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
     }
 
     public String namePrefix() {
-        return "op" + namePrefix;
+        return namePrefix;
     }
 
     /** {@return the target of the operation.} */
@@ -329,8 +329,9 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
             }
             this.target = requireNonNull(member);
             this.methodHandle = requireNonNull(methodHandle);
+            namePrefix = member.name();
             if (member instanceof OperationConstructorTarget) {
-                namePrefix = "constructor";
+
                 mirrorSupplier = BeanFactoryMirror::new;
             }
         }

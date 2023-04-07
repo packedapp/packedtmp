@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.application.ApplicationPath;
+import app.packed.application.OldApplicationPath;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.util.Nullable;
@@ -154,7 +154,7 @@ public final class ContainerConfiguration {
      *
      * @return the path of this configuration.
      */
-    public ApplicationPath path() {
+    public OldApplicationPath path() {
         return handle.path();
     }
 

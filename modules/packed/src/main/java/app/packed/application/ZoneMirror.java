@@ -21,7 +21,7 @@ import internal.app.packed.container.Mirror;
  *
  */
 
-// Cluster|Node? < Java Process < Zone < Application < Container < Bean < Operation < Binding | Interceptor
+// Cluster|Node? < Java Process < Zone? < Application < Container < Bean < Operation < Binding | Interceptor
 
 //// Den har ikke et navn. Fordi vi er jo ikke unik per Java Process
 // Namespace

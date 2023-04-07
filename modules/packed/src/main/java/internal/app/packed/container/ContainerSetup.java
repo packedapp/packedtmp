@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import app.packed.application.ApplicationPath;
+import app.packed.application.OldApplicationPath;
 import app.packed.container.Author;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
@@ -212,10 +212,10 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
     }
 
     /** {@return the path of this container} */
-    public ApplicationPath path() {
+    public OldApplicationPath path() {
         int depth = depth();
         return switch (depth) {
-        case 0 -> ApplicationPath.ROOT;
+        case 0 -> OldApplicationPath.ROOT;
         case 1 -> new PackedNamespacePath(name);
         default -> {
             String[] paths = new String[depth];

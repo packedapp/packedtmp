@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ApplicationPath;
+import app.packed.application.OldApplicationPath;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.Author;
 import app.packed.container.ContainerMirror;
@@ -240,7 +240,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
         return bean().author();
     }
 
-    public ApplicationPath path() {
+    public OldApplicationPath path() {
         return bean().path();
     }
 

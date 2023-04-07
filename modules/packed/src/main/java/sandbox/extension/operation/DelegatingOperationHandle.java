@@ -18,7 +18,7 @@ package sandbox.extension.operation;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
 import app.packed.operation.OperationTarget;
-import app.packed.util.OperationType;
+import app.packed.operation.OperationType;
 import internal.app.packed.operation.PackedDelegatingOperationHandle;
 
 /**

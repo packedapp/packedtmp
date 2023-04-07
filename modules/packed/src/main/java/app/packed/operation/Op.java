@@ -28,7 +28,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.bean.InaccessibleMemberException;
-import app.packed.util.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.operation.PackedOp;
 

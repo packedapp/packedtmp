@@ -36,9 +36,7 @@ import internal.app.packed.operation.OperationSetup.MethodHandleOperationSetup;
 public sealed interface OperationTarget {
 
     /** Represents an operation that invokes other operations. */
-    non-sealed interface OfNested extends OperationTarget {
-
-    }
+    non-sealed interface OfNested extends OperationTarget {}
 
     /** Represents an operation that invokes a {@link Constructor constructor}. */
     sealed interface OfConstructor extends OperationTarget permits OperationConstructorTarget {

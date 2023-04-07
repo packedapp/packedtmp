@@ -1,0 +1,49 @@
+Tests
+
+Questions: 
+
+// Bruger vi interne APIs? I saa fald er det jo ikke rigtig en TCK
+
+
+---
+
+Everything in Packed is very connected. It is basically impossible to, for example, create an operation.
+Without instantiating a whole application. As a consequence we mainly to whole application tests. Which
+are all located in this package and sub packages. 
+
+A lot of the functionality overlap between the different packages. And 
+
+Because everything is so interconnected it is difficult to test only parts of Packed.
+
+
+--- Types of tests
+Structural tests
+
+
+
+
+
+tck.apps <- test DaemonApp, App, ServiceLocator
+
+
+tck.bean.hooks
+
+tck.naming <- all about naming and paths
+
+tck.mirrors
+
+tck.service?
+
+tck.runtime
+
+tck.image <-- Running applications created from an image (Uses BootstrapApp?)
+
+tck.wirelets <- build-time + runtime + All non-extension wirelets
+
+Non-Mirrors <- Configurations?
+
+Mirrors <- structural.
+  Kan evt. cracke mirrors
+  
+
+Runtime behavior

@@ -52,7 +52,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
 
     /** A list ofIllegal bean classes. Void is technically allowed but {@link #installWithoutSource()} needs to used. */
     // Allign with Key
-    public static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
+    public static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Class.class, Key.class, Op.class, Optional.class, Provider.class);
 
     /** The container the bean will belong to. */
     final ContainerSetup container;

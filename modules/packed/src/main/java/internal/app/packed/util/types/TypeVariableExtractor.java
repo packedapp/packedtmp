@@ -27,8 +27,10 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.StringJoiner;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
+import app.packed.operation.Op0;
 import app.packed.operation.Op1;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
@@ -89,9 +91,20 @@ public final class TypeVariableExtractor {
 
         TypeVariableExtractor tve = TypeVariableExtractor.of(Op1.class);
 
+    //    Op0<Integer> ox = new Intermediate<String, Integer, Long>(() -> 1) {};
+
+//        TypeVariableExtractor tvex = TypeVariableExtractor.of(CapturingOp);
+//        tvex.extractAllTypes(, null)
+
         System.out.println(tve.extractAllVariables(o.getClass(), Error::new)[0]);
         System.out.println(tve.extractAllVariables(o.getClass(), Error::new)[1]);
+    }
 
+    /** Check that we can have an intermediate abstract class. */
+    static abstract class Intermediate<S, T, R> extends Op0<T> {
+        protected Intermediate(Supplier<T> supplier) {
+            super(supplier);
+        }
     }
 
     private <T extends Throwable> Type[] extractAllTypes(Class<?> from, ErrorProcessor<T> ep) throws T {

@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import app.packed.util.OperationType;
+import app.packed.operation.OperationType;
 
 /**
  *

@@ -74,11 +74,19 @@ public abstract sealed class ContainerLocal<T> permits PackedContainerLocal {
         throw new UnsupportedOperationException();
     }
 
-    public Wirelet wireletConditionalGetter(T expectedValue, Wirelet wirelet) {
+    Wirelet wireletConditionalGetter(T expectedValue, Wirelet wirelet) {
         throw new UnsupportedOperationException();
     }
 
-    // Returns a wirelet that sets value of the container local to the specified value
+    /**
+     * Returns a wirelet that can set the value of this bean local.
+     * <p>
+     * The returned wirelet cannot be used at runtime.
+     *
+     * @param value
+     *            the value to set the local to
+     * @return the new wirelet
+     */
     public abstract Wirelet wireletSetter(T value);
 
     /**
@@ -106,10 +114,10 @@ public abstract sealed class ContainerLocal<T> permits PackedContainerLocal {
      * @return a new bean local
      *
      */
-
-    public static <T> ContainerLocal<T> ofApplication(Supplier<? extends T> initialValueSupplier) {
-        return PackedContainerLocal.of(PackedContainerLocal.Scope.APPLICATION, initialValueSupplier);
-    }
+//
+//    public static <T> ContainerLocal<T> ofApplication(Supplier<? extends T> initialValueSupplier) {
+//        return PackedContainerLocal.of(PackedContainerLocal.Scope.APPLICATION, initialValueSupplier);
+//    }
 
     /**
      * Creates a new container local with container scope.
@@ -131,8 +139,8 @@ public abstract sealed class ContainerLocal<T> permits PackedContainerLocal {
     /**
      * Creates a new container local with container lifetime scope.
      * <p>
-     * Container-lifetime scope means that <strong>all containers in the same lifetime</strong> will always see the same value for
-     * a specific container local.
+     * Container-lifetime scope means that <strong>all containers in the same lifetime</strong> will always see the same
+     * value for a specific container local.
      *
      * @param <T>
      *            the type of value to store
@@ -142,10 +150,29 @@ public abstract sealed class ContainerLocal<T> permits PackedContainerLocal {
         return PackedContainerLocal.of(PackedContainerLocal.Scope.CONTAINER_LIFETIME);
     }
 
-    public static <T> ContainerLocal<T> ofContainerLifetime(Supplier<? extends T> initialValueSupplier) {
-        return PackedContainerLocal.of(PackedContainerLocal.Scope.CONTAINER_LIFETIME, initialValueSupplier);
+//    public static <T> ContainerLocal<T> ofContainerLifetime(Supplier<? extends T> initialValueSupplier) {
+//        return PackedContainerLocal.of(PackedContainerLocal.Scope.CONTAINER_LIFETIME, initialValueSupplier);
+//    }
+
+    static <T> ContainerLocal<T> ofApplicationLink() {
+        throw new UnsupportedOperationException();
     }
 
+    // Vi mangler nok en local der tillader at rekursive leder efter vaerdier...
+    // Hvor man kan overskrive det per container.
+    // Den giver nok mest mening per application og per family.
+
+    // Use casen er fx FileExtension.defaultDomain() paa tvaers af applicationen.
+    // Vi saetter det jo i roden og det kan overskrives per container..
+    // Saa enten skal extensionen selv vedligeholde det. Eller ogsaa skal vi bruge container locals.
+
+    // Det er nok taet knyttet til Namespaces/Domains som jo ogsaa en slags nested locals.
+
+    // ContainerBuilder.setLocal kommer noget af vejen. Men
+
+    // Her skal vi pakke den ind i en WeakReference. Fordi vi saadan set maaske kan unloade containere
+    // Der bruger den.
+    // Vi skal nok ogsaa gemme dem i en CHM fordi vi ikke rigtig ved hvornaar der bliver skrevet til den.
     static <T> ContainerLocal<T> ofFamily() {
         throw new UnsupportedOperationException();
     }

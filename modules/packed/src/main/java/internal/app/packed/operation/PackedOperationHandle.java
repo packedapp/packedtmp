@@ -30,7 +30,7 @@ import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
-import app.packed.util.OperationType;
+import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.PackedBindableVariable;

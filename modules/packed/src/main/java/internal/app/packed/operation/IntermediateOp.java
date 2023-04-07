@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
 import app.packed.container.Author;
+import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
-import app.packed.util.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
