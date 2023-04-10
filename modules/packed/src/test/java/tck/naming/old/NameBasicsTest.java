@@ -23,7 +23,7 @@ import app.packed.container.Wirelet;
 /**
  * Various basic test for naming of components.
  */
-// These are basically container names, and not component names
+// There is a lot of runtime thingsies here
 public class NameBasicsTest extends AbstractApplicationTest {
 
     @Test

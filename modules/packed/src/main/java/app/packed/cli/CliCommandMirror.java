@@ -24,18 +24,19 @@ import app.packed.operation.OperationMirror;
  */
 public class CliCommandMirror extends OperationMirror {
 
-    final CliC command;
+    /** The command being mirrored. */
+    final PackedCliCommand command;
 
-    CliCommandMirror(CliC command) {
+    CliCommandMirror(PackedCliCommand command) {
         this.command = command;
-    }
-
-    /** {@return the domain this command is part of.} */
-    public CliNamespaceMirror domain() {
-        return command.domain().mirror();
     }
 
     public List<String> names() {
         return List.of(command.command().name());
+    }
+
+    /** {@return the namespace this command is part of.} */
+    public CliNamespaceMirror namespace() {
+        return command.namespace().mirror();
     }
 }

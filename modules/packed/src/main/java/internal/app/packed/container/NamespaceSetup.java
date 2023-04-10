@@ -26,15 +26,19 @@ import internal.app.packed.util.MagicInitializer;
 /**
  *
  */
+// Is an application a namespace for Components???
 public final class NamespaceSetup {
+
+    /** The default name of a namespace. */
+    public static final String DEFAULT_NAME = "main";
 
     public static final MagicInitializer<NamespaceSetup> MI = MagicInitializer.of();
 
     // Must search up until root to find local names
     final Map<ContainerSetup, String> localNames = new HashMap<>();
 
-    /** The name of the namespace */
-    public final String name = "main";
+    /** The name of the namespace. */
+    public final String name = DEFAULT_NAME;
 
     /** The owner of the name space. */
     public final AuthorSetup owner;
@@ -51,16 +55,17 @@ public final class NamespaceSetup {
         this.owner = owner;
     }
 
+    public record NamespaceKey(Class<?> namespaceKind, String name) {}
     // Tror maaske vi har nogle strategies
     // AllApplication-> No nodes
 
     // Vi vil helst avoid node
-    static class DomainNode extends AbstractTreeNode<DomainNode> {
+    static class NamespaceNode extends AbstractTreeNode<NamespaceNode> {
 
         /**
          * @param treeParent
          */
-        protected DomainNode(@Nullable DomainNode treeParent) {
+        protected NamespaceNode(@Nullable NamespaceNode treeParent) {
             super(treeParent);
         }
     }

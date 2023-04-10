@@ -19,11 +19,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import app.packed.container.BaseWirelets;
 import app.packed.container.Wirelet;
+import tck.AppAppTest;
 
 /**
  *
  */
-public class ApplicationShutdownWireletTest {
+public class ApplicationShutdownWireletTest extends AppAppTest {
 
     public void test() {
         AtomicReference<Thread> ar = new AtomicReference<>();
@@ -32,12 +33,14 @@ public class ApplicationShutdownWireletTest {
             ar.set(t);
             return t;
         });
+
+        prep().wirelets(w);
         // prep(W).
 
         // It is registered when we start the application
         // test img, launch
 
-        System.out.println(w);
+                System.out.println(w);
         // Not ready to be implemented yet, as we still need
 //        App.imageOf(null, null)
     }

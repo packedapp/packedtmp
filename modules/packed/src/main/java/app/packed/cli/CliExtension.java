@@ -39,7 +39,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
     // Vi har 1 per application.. Vi kan fx stadig injecte globalle parameters i enhver lifetime.
     // Det er bare commands der ikke fungere
-    static final NamespaceTemplate<CliExtensionDomain> DOMAIN = NamespaceTemplate.of(CliExtensionDomain::new);
+    static final NamespaceTemplate<CliExtensionNamespace> DOMAIN = NamespaceTemplate.of(CliExtensionNamespace::new);
 
     static final ContainerLocal<Boolean> LAUNCHED = ContainerLocal.ofContainer();
 

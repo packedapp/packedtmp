@@ -27,10 +27,10 @@ import sandbox.extension.operation.OperationTemplate;
 /**
  * A CLI domain is a domain where all CLI commands are unique. Typically there is never more than one per application.
  */
-class CliExtensionDomain extends NamespaceOperator<CliExtension> {
+class CliExtensionNamespace extends NamespaceOperator<CliExtension> {
 
     /** All the commands within the domain. */
-    final LinkedHashMap<String, CliC> commands = new LinkedHashMap<>();
+    final LinkedHashMap<String, PackedCliCommand> commands = new LinkedHashMap<>();
 
     /**
      * @param names
@@ -55,7 +55,7 @@ class CliExtensionDomain extends NamespaceOperator<CliExtension> {
             // EntryPoint.LaunchLifetime
         }
 
-        CliC cd = new CliC(this, c, h);
+        PackedCliCommand cd = new PackedCliCommand(this, c, h);
         if (commands.putIfAbsent(c.name()[0], cd) != null) {
             throw new BeanInstallationException("Multiple cli commands with the same name, name = " + c.name());
         }

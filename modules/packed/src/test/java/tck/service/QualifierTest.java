@@ -13,25 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tck.service.old3;
+package tck.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.lang.invoke.MethodHandles;
-import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
 import app.packed.service.Provide;
-import app.packed.service.ServiceLocator;
-import app.packed.service.ServiceLocator.Composer;
 import app.packed.util.Key;
+import tck.ServiceLocatorAppTest;
 import testutil.stubs.Qualifiers.StringQualifier;
 
 /**
  *
  */
-public class QualifierTest {
+public class QualifierTest extends ServiceLocatorAppTest {
 
     @Test
     public void multipleFields() {
@@ -39,19 +35,21 @@ public class QualifierTest {
         Stub.B = 1L;
         Stub.C = 1L;
         Stub.L = 1L;
-        ServiceLocator i = create(c -> {
-            c.provide(Stub.class);
 
-        });
+        base().exportAll();
+        install(Stub.class);
+        assertThat(app().use(new Key<@StringQualifier("B") Long>() {})).isEqualTo(1L);
+        assertThat(app().use(new Key<@StringQualifier("C") Long>() {})).isEqualTo(1L);
+        assertThat(app().use(new Key<Long>() {})).isEqualTo(1L);
         // Stub.A = 2L;
         Stub.B = 2L;
         Stub.C = 2L;
         Stub.L = 2L;
 
         // assertThat(i.use(new Key<@StringQualifier("A") Long>() {})).isEqualTo(2L);
-        assertThat(i.use(new Key<@StringQualifier("B") Long>() {})).isEqualTo(2L);
-        assertThat(i.use(new Key<@StringQualifier("C") Long>() {})).isEqualTo(2L);
-        assertThat(i.use(new Key<Long>() {})).isEqualTo(2L);
+        assertThat(app().use(new Key<@StringQualifier("B") Long>() {})).isEqualTo(2L);
+        assertThat(app().use(new Key<@StringQualifier("C") Long>() {})).isEqualTo(2L);
+        assertThat(app().use(new Key<Long>() {})).isEqualTo(2L);
 
         // Stub.A = 3L;
         Stub.B = 3L;
@@ -59,18 +57,10 @@ public class QualifierTest {
         Stub.L = 3L;
 
         // assertThat(i.use(new Key<@StringQualifier("A") Long>() {})).isEqualTo(2L);
-        assertThat(i.use(new Key<@StringQualifier("B") Long>() {})).isEqualTo(3L);
-        assertThat(i.use(new Key<@StringQualifier("C") Long>() {})).isEqualTo(3L);
-        assertThat(i.use(new Key<Long>() {})).isEqualTo(3L);
+        assertThat(app().use(new Key<@StringQualifier("B") Long>() {})).isEqualTo(3L);
+        assertThat(app().use(new Key<@StringQualifier("C") Long>() {})).isEqualTo(3L);
+        assertThat(app().use(new Key<Long>() {})).isEqualTo(3L);
     }
-
-    private static ServiceLocator create(Consumer<? super Composer> consumer) {
-        return ServiceLocator.of(c -> {
-            c.lookup(MethodHandles.lookup());
-            consumer.accept(c);
-        });
-    }
-
 
     public static class Stub {
 

@@ -31,6 +31,7 @@ public interface NamespaceTemplate<T extends NamespaceOperator<?>> {
 
     // Taenker maaske man skal kunne foersporge paa det.
     // Give me all domains of typeX
+
     <N extends NamespaceMirror<?>> NamespaceTemplate<T> mirrorType(Class<N> mirrorType, Function<? super T, ? extends N> mirrorSuppliers);
 
     static <T extends NamespaceOperator<?>> NamespaceTemplate<T> of(Supplier<T> supplier) {

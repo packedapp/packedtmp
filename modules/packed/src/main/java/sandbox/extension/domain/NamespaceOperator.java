@@ -41,6 +41,8 @@ public abstract class NamespaceOperator<E extends Extension<E>> {
      *
      * @return a navigator for all extensions in the namespace
      */
+    // Ogsaa containere hvor den ikke noedvendig er brugt890[]\
+
     public ExtensionNavigator<E> navigator() {
         throw new UnsupportedOperationException();
     }

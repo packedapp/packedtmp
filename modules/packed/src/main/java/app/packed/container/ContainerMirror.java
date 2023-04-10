@@ -207,6 +207,11 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
         return container().name;
     }
 
+    /** {@return all the namespaces this container operates within.} */
+    public Stream<NamespaceMirror<?>> namespaces() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return the parent container of this container. Or empty if the root container in an application.} */
     public Optional<ContainerMirror> parent() {
         ContainerSetup p = container().treeParent;

@@ -130,7 +130,7 @@ public abstract class Extension<E extends Extension<E>> {
     @SuppressWarnings("unchecked")
     protected final <D extends NamespaceOperator<E>> D domain(NamespaceTemplate<D> template) {
         PackedNamespaceTemplate<D> t = (PackedNamespaceTemplate<D>) template;
-        HashMap<PackedNamespaceTemplate<?>, NamespaceOperator<?>> m = extension.container.application.domains;
+        HashMap<PackedNamespaceTemplate<?>, NamespaceOperator<?>> m = extension.container.application.namespaces;
         return (D) m.computeIfAbsent(t, e -> {
             NamespaceSetup ds = new NamespaceSetup(t, extension, extension);
             return NamespaceSetup.MI.run(t.supplier, ds);

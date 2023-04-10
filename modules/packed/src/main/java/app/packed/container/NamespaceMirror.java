@@ -19,9 +19,13 @@ import app.packed.extension.Extension;
 import internal.app.packed.container.NamespaceSetup;
 
 /**
- * A mirror of a domain.
+ * A mirror of a namespace.
  */
 // Kan maaske have en EventRouter? DeliveredEvent = <Domain, Event>
+// Namespace:Cli:main
+// CliExtension.CliCommand:...
+
+// ServiceNamespace::/:main
 public class NamespaceMirror<E extends Extension<E>> {
 
     /** The domain configuration. */
@@ -58,12 +62,12 @@ public class NamespaceMirror<E extends Extension<E>> {
     }
 
     /** {@return the root container of the domain.} */
-    public ContainerMirror namespaceRoot() {
+    public final ContainerMirror namespaceRoot() {
         return namespace.root.container.mirror();
     }
 
     /** {@return a tree containing every container where this domain instance is present.} */
-    public ContainerTreeMirror namespaceTree() {
+    public final ContainerTreeMirror namespaceTree() {
         throw new UnsupportedOperationException();
     }
 

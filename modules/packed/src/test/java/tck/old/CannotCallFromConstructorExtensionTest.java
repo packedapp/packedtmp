@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tck.extension.old;
+package tck.old;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
@@ -24,10 +24,10 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
 
 /** Tests basic functionality of a {@link Extension}. */
-public class OldBasicExtensionTest  {
+@Disabled // this is okay now
+public class CannotCallFromConstructorExtensionTest  {
 
     /** Checks that we cannot call certain methods from the constructor of an extension. */
-    @Disabled // this is okay now
     @Test
     public void cannotCallUseExtensionFromConstructor() {
     }

@@ -23,7 +23,7 @@ import app.packed.extension.BaseExtension;
 import app.packed.util.Key;
 
 /**
- * A service namespace is namespace where every provided key is unique.
+ * A service namespace represents a namespace where every provided key is unique.
  * <p>
  * A service domain
  * <p>

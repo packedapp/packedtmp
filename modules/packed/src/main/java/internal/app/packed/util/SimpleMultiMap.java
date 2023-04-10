@@ -13,29 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tck.service.old3;
+package internal.app.packed.util;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.lang.invoke.MethodHandles;
-
-import org.junit.jupiter.api.Test;
-
-import app.packed.service.ServiceLocator;
-import testutil.stubs.Letters.A;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 /**
- * Tests various things that do not have their own test class.
+ *
  */
-public class InjectorGetServiceTest {
+public final class SimpleMultiMap<K, V> {
 
-    @Test
-    public void isRuntimeServices() {
-        ServiceLocator i = ServiceLocator.of(c -> {
-            c.lookup(MethodHandles.lookup());
-            c.provide(A.class);
-        });
+    private final HashMap<K, List<V>> map = new HashMap<>();
 
-        assertThat(i.findInstance(A.class).get()).isInstanceOf(A.class);
+    public boolean containsKey(Object key) {
+        return map.containsKey(key);
+    }
+
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
+
+    public Set<K> keySet() {
+        return map.keySet();
+    }
+
+    public int size() {
+        return map.size();
     }
 }
