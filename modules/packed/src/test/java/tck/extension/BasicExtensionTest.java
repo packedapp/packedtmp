@@ -15,10 +15,80 @@
  */
 package tck.extension;
 
-/**
- *
- */
-public class BasicExtensionTest {
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-    // Can
+import org.junit.jupiter.api.Test;
+
+import app.packed.container.ContainerConfiguration;
+import app.packed.extension.BaseExtension;
+import app.packed.extension.Extension;
+import tck.AppAppTest;
+
+/** Tests {@link ContainerConfiguration#extensionTypes()} and {@link ContainerConfiguration#use(Class)}. */
+public class BasicExtensionTest extends AppAppTest {
+
+    /** Tests basic use of {@link ContainerConfiguration#use(Class)}. */
+    @Test
+    public void use() {
+        assertFalse(configuration().isExtensionUsed(TestExtension1.class));
+        TestExtension1 e = configuration().use(TestExtension1.class);
+        assertTrue(configuration().isExtensionUsed(TestExtension1.class));
+
+        assertThat(e).isNotNull();
+        assertThat(e).isExactlyInstanceOf(TestExtension1.class);
+        // Return the same instance every time
+        assertThat(e).isSameAs(configuration().use(TestExtension1.class));
+        assertThat(e).isSameAs(configuration().use(TestExtension1.class));
+    }
+
+    /** Tests basic use of {@link ContainerConfiguration#extensionTypes()}. */
+    @Test
+    public void extensions() {
+        assertThat(configuration().extensionTypes()).containsExactly(BaseExtension.class);
+        configuration().use(TestExtension1.class);
+        assertThat(configuration().extensionTypes()).containsExactlyInAnyOrder(BaseExtension.class, TestExtension1.class);
+        configuration().use(TestExtension1.class);
+        assertThat(configuration().extensionTypes()).containsExactlyInAnyOrder(BaseExtension.class, TestExtension1.class);
+        configuration().use(TestExtension2.class);
+        assertThat(configuration().extensionTypes()).containsExactlyInAnyOrder(BaseExtension.class, TestExtension1.class, TestExtension2.class);
+    }
+
+    /**
+     * Tests what happens if people try to use any of the extension methods outside of the configure of the defining
+     * assembly. We allow invoking {@link ContainerConfiguration#extensionTypes()} and allow
+     * {@link ContainerConfiguration#use(Class)} for extension that have already been installed. Calling
+     * {@link ContainerConfiguration#use(Class)} with an extension that have not previously been installed will throw an
+     * {@link IllegalStateException}.
+     */
+    @Test
+    public void unconfigurable() {
+        ContainerConfiguration cc = configuration();
+
+        launch();
+
+        // Test empty
+        assertThat(cc.extensionTypes()).containsExactly(BaseExtension.class);
+        assertThatIllegalStateException().isThrownBy(() -> cc.use(TestExtension1.class));
+
+        reset();
+
+        ContainerConfiguration cc2 = configuration();
+        TestExtension1 t1 = cc2.use(TestExtension1.class);
+        launch();
+
+        assertThat(cc2.extensionTypes()).contains(TestExtension1.class);
+        assertThat(cc2.use(TestExtension1.class)).isSameAs(t1);
+        assertThatIllegalStateException().isThrownBy(() -> cc2.use(TestExtension2.class));
+    }
+
+    public static final class TestExtension1 extends Extension<TestExtension1> {
+        TestExtension1() {}
+    }
+
+    public static final class TestExtension2 extends Extension<TestExtension2> {
+        TestExtension2() {}
+    }
 }

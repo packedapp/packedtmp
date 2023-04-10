@@ -15,16 +15,8 @@
  */
 package tck.mirror;
 
-import app.packed.application.ApplicationMirror;
-import app.packed.bean.BeanMirror;
-import testutil.tools.AnnoOnField.FieldPrivateInstanceString;
-
 /**
  *
  */
 public class MirrorHelpers {
-
-    public static BeanMirror beanMirror(ApplicationMirror a, Class<?> beanClass) {
-        return a.container().beans().filter(c -> c.beanClass() == FieldPrivateInstanceString.class).findFirst().get();
-    }
 }

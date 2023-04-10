@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tck.mirror;
+package tck.assembly;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.container.AssemblyMirror;
 import tck.TckAssemblies;
+import tck.mirror.AbstractMirrorTest;
 
 /** Basic tests for {@link AssemblyMirror}. */
 public class AssemblyMirrorTest extends AbstractMirrorTest {

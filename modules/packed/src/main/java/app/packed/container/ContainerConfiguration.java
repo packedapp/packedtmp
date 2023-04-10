@@ -132,7 +132,7 @@ public final class ContainerConfiguration {
      *            the action to invoke
      */
     // Skal vi have en version der tager en [Runnable alternative] hvis den ikke bliver installeret?
-    public <E extends Extension<E>> void onFirstUse(Class<E> extensionType, Consumer<? super E> action) {
+    <E extends Extension<E>> void onFirstUse(Class<E> extensionType, Consumer<? super E> action) {
         // bruger assignable
         // onFirstUse(Extension.class, ()-> Extension isUsed);
         // Taenker jeg kunne vaere brugbart i rooten....

@@ -21,17 +21,20 @@ import app.packed.context.Context;
 import app.packed.extension.BeanHook.BindingTypeHook;
 import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.operation.OperationTemplate;
-import testutil.tools.TckExtension;
 
 /** Various context class and their templates that can be used where applicable. */
 public class TckContexts {
 
-    @BindingTypeHook(extension = TckExtension.class)
-    public record NoImplContext(int i) implements Context<TckExtension> {
+    @BindingTypeHook(extension = HookExtension.class)
+    public record NoImplContext(int i) implements Context<HookExtension> {
         /** A template. */
         public static final ContextTemplate CT = ContextTemplate.of(MethodHandles.lookup(), NoImplContext.class, NoImplContext.class);
 
         /** A simple operation with the context, that ignores return values. */
         public static final OperationTemplate OT = OperationTemplate.defaults().withContext(NoImplContext.CT).returnIgnore();
+
+        /** A simple operation with the context, that ignores return values. */
+        public static final OperationTemplate OTINT = OperationTemplate.defaults().withContext(NoImplContext.CT).returnType(int.class);
+
     }
 }

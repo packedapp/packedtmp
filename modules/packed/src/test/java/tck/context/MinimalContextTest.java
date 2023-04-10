@@ -20,39 +20,40 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import sandbox.extension.operation.OperationHandle;
+import tck.AppAppTest;
+import tck.HookExtension.MethodHook;
 import tck.TckContexts;
 import tck.TckContexts.NoImplContext;
-import testutil.tools.AnnoOnMethod;
-import testutil.tools.TckApp;
 
 /**
  *
  */
-public class MinimalContextTest {
+public class MinimalContextTest extends AppAppTest {
 
     @Test
     public void testIt() throws Throwable {
         record BeanX() {
 
-            @AnnoOnMethod
-            public void foo(NoImplContext sc, NoImplContext sc2) {
-                assertEquals(123, sc.i());
+            @MethodHook
+            public int foo(NoImplContext sc) {
+                return sc.i();
             }
         }
 
-        TckApp t = TckApp.of(c -> {
-            c.hookOnVariableType((cl, v) -> {
-                assert (cl == NoImplContext.class);
-                v.bindContextValue(NoImplContext.class);
-            });
-            c.onAnnotatedMethodHook((l, b) -> {
-                OperationHandle h = b.newOperation(TckContexts.NoImplContext.OT);
-                c.generate(h);
-            });
-            c.provide(BeanX.class);
+        hooks().onVariableType((cl, v) -> {
+            assert (cl == NoImplContext.class);
+            v.bindContextValue(NoImplContext.class);
         });
 
-        t.invoke(new NoImplContext(123));
+        hooks().onAnnotatedMethod((l, b) -> {
+            OperationHandle h = b.newOperation(TckContexts.NoImplContext.OTINT);
+            add(h);
+        });
+        install(BeanX.class);
+
+       assertEquals(123, (Integer) invoker().invoke(new NoImplContext(123)));
+       assertEquals(3434, (Integer) invoker().invoke(new NoImplContext(3434)));
+
     }
 
 }

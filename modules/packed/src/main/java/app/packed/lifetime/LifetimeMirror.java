@@ -89,6 +89,9 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
      *
      * @return a list of this lifetime's lifetime operations
      */
+    // Fungere ikke specielt godt vil jeg mene. Vi vil jo gerne vide hvad der
+    // bliver koert i de forskellige lifetime. Det skal jo ikke aendre sig
+    // fordi vi bruger en anden Bootstrap App
     public List<NestedOperationMirror> operations() {
         throw new UnsupportedOperationException();
     }

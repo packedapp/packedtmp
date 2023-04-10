@@ -18,6 +18,7 @@ package tck.mirror;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -36,12 +37,12 @@ import app.packed.operation.BindingKind;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.OperationMirror;
 import sandbox.extension.operation.OperationTemplate;
-import testutil.tools.TckApp;
+import tck.ServiceLocatorAppTest;
 
 /**
  * Tests direct injection of various mirrors
  */
-public class RuntimeMirrorInjectionTest {
+public class RuntimeMirrorInjectionTest extends ServiceLocatorAppTest {
 
     @Test
     public void instanceFieldGet() throws Throwable {
@@ -72,20 +73,19 @@ public class RuntimeMirrorInjectionTest {
             }
         }
 
-        TckApp t = TckApp.of(c -> {
-            c.provide(Into.class).export();
-        });
-        assertNotNull(t.use(Into.class));
+        install(Into.class).export();
+
+        assertNotNull(app().use(Into.class));
     }
 
     @Test
     public void unknownMirror() {
         @BindingTypeHook(extension = BaseExtension.class)
         record MirrorAlien() {}
-        TckApp.assertThrows(BeanInstallationException.class, c -> {
-            c.onAnnotatedFieldHook((l, b) -> b.newGetOperation(OperationTemplate.defaults()));
-            record Foo(MirrorAlien alien) {}
-            c.install(Foo.class);
-        });
+
+        hooks().onAnnotatedField((l, b) -> b.newGetOperation(OperationTemplate.defaults()));
+        record Foo(MirrorAlien alien) {}
+
+        assertThrows(BeanInstallationException.class, () -> install(Foo.class));
     }
 }

@@ -24,7 +24,7 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
 
 /** Tests basic functionality of a {@link Extension}. */
-public class BasicExtensionTest  {
+public class OldBasicExtensionTest  {
 
     /** Checks that we cannot call certain methods from the constructor of an extension. */
     @Disabled // this is okay now

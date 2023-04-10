@@ -28,76 +28,71 @@ import app.packed.extension.ExtensionContext;
 import app.packed.operation.OperationTarget;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
-import testutil.tools.TckApp;
-import testutil.tools.TckExtension;
-import testutil.tools.AnnoOnField.FieldPrivateInstanceString;
-import testutil.tools.AnnoOnField.FieldPrivateStaticString;
+import tck.AppAppTest;
+import tck.HookExtension;
+import tck.HookExtension.FieldHook.FieldPrivateInstanceString;
+import tck.HookExtension.FieldHook.FieldPrivateStaticString;
 
 /**
  *
  */
-public class OnAnnotatedFieldTest {
+public class OnAnnotatedFieldTest extends AppAppTest {
 
     @Test
     public void instanceFieldGet() throws Throwable {
-        TckApp t = TckApp.of(c -> {
-            c.onAnnotatedFieldHook((l, b) -> {
+        hooks().onAnnotatedField((l, b) -> {
 
-                OperationHandle h = b.newGetOperation(OperationTemplate.defaults());
-                assertEquals(MethodType.methodType(String.class, ExtensionContext.class), h.invocationType());
-                assertSame(TckExtension.class, h.operator());
+            OperationHandle h = b.newGetOperation(OperationTemplate.defaults());
+            assertEquals(MethodType.methodType(String.class, ExtensionContext.class), h.invocationType());
+            assertSame(HookExtension.class, h.operator());
 
-                if (h.target() instanceof OperationTarget.OfField f) {
-                    assertEquals(FieldPrivateInstanceString.FOO_FIELD, f.field());
-                    assertSame(AccessMode.GET, f.accessMode());
-                } else {
-                    fail();
-                }
+            if (h.target() instanceof OperationTarget.OfField f) {
+                assertEquals(FieldPrivateInstanceString.FOO_FIELD, f.field());
+                assertSame(AccessMode.GET, f.accessMode());
+            } else {
+                fail();
+            }
 
-                // TODO fix
-               // assertEquals(h.type(), FunctionType.of(String.class));
-                c.generate(h);
-            });
-            c.provide(FieldPrivateInstanceString.class);
+            // TODO fix
+            // assertEquals(h.type(), FunctionType.of(String.class));
+            add(h);
         });
+        install(FieldPrivateInstanceString.class);
 
-        assertEquals("instance", t.invoke());
+        assertEquals("instance", invoker().invoke());
     }
 
     @Test
     public void instanceFieldGetSet() throws Throwable {
-        TckApp t = TckApp.of(c -> {
-            c.onAnnotatedFieldHook((l, b) -> {
-                c.generate(b.newGetOperation(OperationTemplate.defaults()));
+        hooks().onAnnotatedField((l, b) -> {
+            add(b.newGetOperation(OperationTemplate.defaults()));
 //                OperationHandle h = b.newSetOperation(OperationTemplate.defaults().withArg(String.class));
-  //              assertEquals(MethodType.methodType(void.class, ExtensionContext.class, String.class), h.invocationType());
+            // assertEquals(MethodType.methodType(void.class, ExtensionContext.class, String.class), h.invocationType());
 
-                // Hvordan fungere det med set, replace osv
+            // Hvordan fungere det med set, replace osv
 
-                // Vi laver ikke forskellige template alt efter volatile, non-volatile.
+            // Vi laver ikke forskellige template alt efter volatile, non-volatile.
 
-                // Vil helst hellere ikke have 2 forskellige template for @Provide field og method
+            // Vil helst hellere ikke have 2 forskellige template for @Provide field og method
 
-                // Men hvordan mapper vi saa fx CompareAndSet til de rigtige argumenter
+            // Men hvordan mapper vi saa fx CompareAndSet til de rigtige argumenter
 
-                // c.generate(h);
-            });
-            c.provide(FieldPrivateInstanceString.class);
+            // c.generate(h);
         });
+        install(FieldPrivateInstanceString.class);
 
-        assertEquals("instance", t.invoke());
+        assertEquals("instance", invoker().invoke());
     }
 
     @Test
     public void staticFieldGet() throws Throwable {
-        TckApp t = TckApp.of(c -> {
-            c.onAnnotatedFieldHook((l, b) -> {
-                c.generate(b.newGetOperation(OperationTemplate.defaults()));
-            });
-            c.provide(FieldPrivateStaticString.class);
+        hooks().onAnnotatedField((l, b) -> {
+            add(b.newGetOperation(OperationTemplate.defaults()));
         });
 
-        assertEquals("static", t.invoke());
+        install(FieldPrivateStaticString.class);
+
+        assertEquals("static", invoker().invoke());
     }
 
 }

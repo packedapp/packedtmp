@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tck.extension.old;
+package tck.extension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,11 +28,10 @@ import tck.AppAppTest;
 /**
  *
  */
-public class ExtensionDependenciesTest extends AppAppTest {
+public class OnNewInstallExtensionTest extends AppAppTest {
 
-    /** Test that we can depend on an uninstalled extension via. */
     @Test
-    public void testCanCallUseFromOnExtensionAdded() {
+    public void testCanCallUseFromOnExtensionNew() {
         configuration().use(Ex1.class);
         assertThat(configuration().extensionTypes()).containsExactlyInAnyOrder(BaseExtension.class, Ex3.class, Ex2.class, Ex1.class);
     }

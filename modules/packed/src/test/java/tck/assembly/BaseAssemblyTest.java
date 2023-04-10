@@ -19,25 +19,31 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.application.App;
 import app.packed.container.BaseAssembly;
-import sandbox.program.ProgramX;
+import tck.AppAppTest;
+import tck.TckAssemblies.HelloWorldAssembly;
 
 /** Various Assembly tests. */
-public class BaseAssemblyTest {
+public class BaseAssemblyTest extends AppAppTest {
 
     /** Tests that a assembly cannot be reused. */
     @Test
     public void notReusable() {
-        BaseAssembly empty = new BaseAssembly() {
-            @Override
-            protected void build() {}
-        };
-
-        ProgramX.start(empty);
-        assertThatThrownBy(() -> ProgramX.start(empty)).isExactlyInstanceOf(IllegalStateException.class);
+        HelloWorldAssembly hwa = new HelloWorldAssembly();
+        App.run(hwa);
+        assertThatThrownBy(() -> App.run(hwa)).isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    /** Tests that a assembly cannot be reused. */
+    /** Tests that a assembly cannot link a used assembly. */
+    @Test
+    public void notResuableLink() {
+        HelloWorldAssembly hwa = new HelloWorldAssembly();
+        App.run(hwa);
+        assertThatThrownBy(() -> link(hwa)).isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    /** Tests that a assembly cannot link itself. */
     @Test
     public void cannotLinkSelf() {
         BaseAssembly b = new BaseAssembly() {
@@ -46,6 +52,6 @@ public class BaseAssemblyTest {
                 link(this);
             }
         };
-        assertThatThrownBy(() -> ProgramX.start(b)).isExactlyInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> App.run(b)).isExactlyInstanceOf(IllegalStateException.class);
     }
 }

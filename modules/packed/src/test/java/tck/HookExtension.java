@@ -15,22 +15,37 @@
  */
 package tck;
 
+import static java.util.Objects.requireNonNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 
+import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanHook.AnnotatedFieldHook;
+import app.packed.extension.BeanHook.AnnotatedMethodHook;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.BeanWrappedVariable;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionContext;
 import app.packed.util.AnnotationList;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
+import internal.app.packed.util.CollectionUtil;
+import sandbox.extension.operation.OperationHandle;
+import tck.AbstractAppTest.TestStore;
 import testutil.MemberFinder;
 
 /**
@@ -82,6 +97,19 @@ public class HookExtension extends Extension<HookExtension> {
         };
     }
 
+    private Map<String, OperationHandle> ink = new HashMap<>();
+
+    void generate(String name, OperationHandle oh) {
+        requireNonNull(name);
+        ink.putIfAbsent(name, oh);
+
+        base().installIfAbsent(HookBean.class, b -> {
+            base().addCodeGenerated(b, new Key<Map<String, MethodHandle>>() {}, () -> {
+                return CollectionUtil.copyOf(ink, v -> v.generateMethodHandle());
+            });
+        });
+    }
+
     public HookExtension onAnnotatedField(BiConsumer<? super AnnotationList, ? super BeanField> consumer) {
         onAnnotatedField = consumer;
         return this;
@@ -122,6 +150,54 @@ public class HookExtension extends Extension<HookExtension> {
 
             @FieldHook
             private static String foo = "static";
+        }
+    }
+
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @AnnotatedMethodHook(extension = HookExtension.class)
+    public @interface MethodHook {
+
+        public static class InstanceMethodNoParamsVoid {
+            public static final Method FOO = MemberFinder.findMethod("foo");
+
+            public static void validateFoo(AnnotationList hooks, BeanMethod m) {
+                // validate annotations
+                assertEquals(FOO, m.method());
+                assertEquals(FOO.getModifiers(), m.modifiers());
+                m.toKey(); // should fail
+                assertEquals(Key.of(String.class), m.toKey());
+            }
+
+            @MethodHook
+            void foo() {}
+        }
+
+    }
+
+    public static class HB {
+        public HB() {
+            System.out.println("HMMM");
+        }
+    }
+
+    static class HookBean {
+        final ExtensionContext ec;
+        final Map<String, MethodHandle> mh;
+
+        HookBean(ExtensionContext ec, @CodeGenerated Map<String, MethodHandle> mh) {
+            this.mh = mh;
+            TestStore ts = AbstractAppTest.ts();
+            for (Entry<String, MethodHandle> e : mh.entrySet()) {
+                MethodHandle m = e.getValue();
+                Object[] args = {};
+                if (m.type().parameterCount() > 0 && m.type().parameterType(0) == ExtensionContext.class) {
+                    args = new Object[] { ec };
+                }
+                ts.invokers.put(e.getKey(), new Invoker(e.getKey(), m, args));
+            }
+            this.ec = ec;
         }
     }
 }

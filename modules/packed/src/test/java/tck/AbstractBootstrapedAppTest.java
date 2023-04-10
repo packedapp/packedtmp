@@ -18,16 +18,21 @@ package tck;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.function.Executable;
+
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.bean.BeanMirror;
+import app.packed.container.Assembly;
 import app.packed.container.Author;
+import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.Op;
@@ -57,6 +62,14 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         return appSetup().mirror();
     }
 
+    protected static final void frameworkMustInitialize(Executable e) {
+        assertThrows(IllegalStateException.class, e);
+    }
+
+    protected final void link(Assembly assembly, Wirelet... wirelets) {
+        base().link(assembly, wirelets);
+    }
+
     protected final void assertIdenticalMirror(Object expected, Object actual) {
         assertEquals(expected, actual);
     }
@@ -67,7 +80,11 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
 
     /** {@return a bean mirror for the a single application bean.} */
     protected final BeanMirror findSingleApplicationBean() {
-        List<BeanMirror> beans = appMirror().container().beans().filter(b -> b.owner() == Author.application()).toList();
+        return findSingleBean(appMirror().container());
+    }
+
+    protected final BeanMirror findSingleBean(ContainerMirror c) {
+        List<BeanMirror> beans = c.beans().filter(b -> b.owner() == Author.application()).toList();
         assertThat(beans).hasSize(1);
         return beans.get(0);
     }
@@ -88,6 +105,7 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         return base().installInstance(instance);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     protected final A app() {
         State3Build b = stateBuild();

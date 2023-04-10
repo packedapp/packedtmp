@@ -20,29 +20,27 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static tck.mirror.MirrorHelpers.beanMirror;
 
 import java.lang.invoke.VarHandle.AccessMode;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
-import testutil.tools.TckApp;
-import testutil.tools.TckExtension;
-import testutil.tools.AnnoOnField.FieldPrivateInstanceString;
+import tck.AppAppTest;
+import tck.HookExtension;
+import tck.HookExtension.FieldHook.FieldPrivateInstanceString;
 
 /**
  * Tests {@link OperationMirror}.
  * <p>
  * It is difficult to test OperationMirror directly. So instead we create an operation via standard APIs and test it.
  */
-public class OldOperationMirrorTest {
+public class OldOperationMirrorTest extends AppAppTest {
 
     /**
      * Must call {@link OperationMirror#initialize(internal.app.packed.operation.OperationSetup)} before any other
@@ -56,25 +54,23 @@ public class OldOperationMirrorTest {
     /** Tests a simple OperationMirror */
     @Test
     public void simple() {
-        ApplicationMirror t = TckApp.mirrorOf(c -> {
-            c.onAnnotatedFieldHook((l, b) -> {
-                OperationHandle h = b.newGetOperation(OperationTemplate.defaults());
-                c.generate(h);
-            });
-            c.provideInstance(new FieldPrivateInstanceString());
+        hooks().onAnnotatedField((l, b) -> {
+            OperationHandle h = b.newGetOperation(OperationTemplate.defaults());
+            add(h);
         });
+        installInstance(new FieldPrivateInstanceString());
 
-        BeanMirror bm = beanMirror(t, FieldPrivateInstanceString.class);
+        BeanMirror bm = findSingleApplicationBean();
         List<OperationMirror> l = bm.operations().toList();
         assertEquals(1, l.size());
 
         OperationMirror m = l.get(0);
         assertEquals(bm, m.bean());
-        assertEquals(TckExtension.class, m.invokedBy());
+        assertEquals(HookExtension.class, m.invokedBy());
         assertTrue(m.nestedIn().isEmpty());
 
         assertTrue(m.bindings().isEmpty());
-        //assertTrue(m.contexts().isEmpty());
+        // assertTrue(m.contexts().isEmpty());
 
         if (m.target() instanceof OperationTarget.OfField f) {
             assertEquals(FieldPrivateInstanceString.FOO_FIELD, f.field());
@@ -90,16 +86,15 @@ public class OldOperationMirrorTest {
     @Test
     public void customOperationMirror() {
         class MyOpMirror extends OperationMirror {}
-        ApplicationMirror t = TckApp.mirrorOf(c -> {
-            c.onAnnotatedFieldHook((l, b) -> {
-                OperationHandle h = b.newGetOperation(OperationTemplate.defaults());
-                h.specializeMirror(() -> new MyOpMirror());
-                c.generate(h);
-            });
-            c.provideInstance(new FieldPrivateInstanceString());
-        });
 
-        OperationMirror om = beanMirror(t, FieldPrivateInstanceString.class).operations().findFirst().get();
+        hooks().onAnnotatedField((l, b) -> {
+            OperationHandle h = b.newGetOperation(OperationTemplate.defaults());
+            h.specializeMirror(() -> new MyOpMirror());
+            add(h);
+        });
+        installInstance(new FieldPrivateInstanceString());
+
+        OperationMirror om = findSingleApplicationBean().operations().findFirst().get();
         assertTrue(om instanceof MyOpMirror);
     }
 }

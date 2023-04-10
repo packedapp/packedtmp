@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tck.mirror;
+package tck.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,15 +22,23 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import org.junit.jupiter.api.Test;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.application.BootstrapApp;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BaseExtensionMirror;
 import tck.AppAppTest;
+import tck.TckAssemblies.HelloWorldAssembly;
 import tck.TckBeans.HelloMainBean;
 
 /**
  *
  */
-public class NewApplicationMirrorTest extends AppAppTest {
+public class ApplicationMirrorTest extends AppAppTest {
+
+    /** We cannot create a usable mirror ourselves. */
+    @Test
+    public void frameworkMustInitializeMirror() {
+        frameworkMustInitialize(() -> new ApplicationMirror().assembly());
+    }
 
     @Test
     public void test() {
@@ -55,5 +63,16 @@ public class NewApplicationMirrorTest extends AppAppTest {
         assertEquals("Assembly", m.name());
 
         assertEquals(m.toString(), "Application:Assembly");
+    }
+
+    /** Test that we an specialize an application mirror */
+    @Test
+    public void specializeApplicationMirror() {
+        BootstrapApp<Void> ba = BootstrapApp.of(c -> c.managedLifetime());
+        assertThat(ba.mirrorOf(new HelloWorldAssembly())).isExactlyInstanceOf(ApplicationMirror.class);
+
+        class MyAppMirror extends ApplicationMirror {}
+        ba = BootstrapApp.of(c -> c.specializeMirror(MyAppMirror::new).managedLifetime());
+        assertThat(ba.mirrorOf(new HelloWorldAssembly())).isExactlyInstanceOf(MyAppMirror.class);
     }
 }

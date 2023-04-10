@@ -19,9 +19,12 @@ import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import app.packed.application.BuildGoal;
@@ -35,6 +38,7 @@ import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
+import sandbox.extension.operation.OperationHandle;
 import tck.AbstractAppTest.State.State1Prepping;
 import tck.AbstractAppTest.State.State2Building;
 import tck.AbstractAppTest.State.State3Build;
@@ -44,19 +48,25 @@ import tck.AbstractAppTest.State.State3Build;
  */
 abstract class AbstractAppTest<A> {
 
+    private static final ThreadLocal<TestStore> TL = new ThreadLocal<>();
     static {
         // Eclipse needs this as it does not open super classes of tests.
         Class<?> c = AbstractAppTest.class;
         c.getModule().addOpens(c.getPackageName(), c.getClassLoader().getUnnamedModule());
     }
+
     private AtomicBoolean B = new AtomicBoolean();
     private State state;
 
-    protected final void trigger() {
-        B.set(true);
+    AbstractAppTest() {}
+
+    protected final void add(OperationHandle h) {
+        add("main", h);
     }
 
-    AbstractAppTest() {}
+    protected final void add(String name, OperationHandle h) {
+        configuration().use(HookExtension.class).generate(name, h);
+    }
 
     final ApplicationSetup appSetup() {
         return stateBuild().application;
@@ -64,6 +74,11 @@ abstract class AbstractAppTest<A> {
 
     protected final void assertTriggered() {
         assertTrue(B.get());
+    }
+
+    @AfterEach
+    void clear() {
+        TL.remove();
     }
 
     /** {@return the configuration of the container.} */
@@ -81,6 +96,22 @@ abstract class AbstractAppTest<A> {
         }
     }
 
+    public Invoker invoker() {
+        return invoker("main");
+    }
+
+    protected abstract A app();
+    public Invoker invoker(String name) {
+        app();
+        Map<String, Invoker> m = ts().invokers;
+        requireNonNull(m);
+        Invoker invoker = m.get(name);
+        if (invoker == null) {
+            throw new AssertionError("No such invoker '" + name + "', available" + m.keySet());
+        }
+        return invoker;
+    }
+
     /**
      * {@return a prepping object.}
      */
@@ -95,6 +126,7 @@ abstract class AbstractAppTest<A> {
 
     @BeforeEach
     protected final void reset() {
+        TL.set(new TestStore());
         B.set(false);
         state = new State1Prepping();
     }
@@ -110,6 +142,14 @@ abstract class AbstractAppTest<A> {
         } else {
             return (State3Build) state;
         }
+    }
+
+    protected final void trigger() {
+        B.set(true);
+    }
+
+    static TestStore ts() {
+        return TL.get();
     }
 
     public interface Prep {
@@ -193,9 +233,10 @@ abstract class AbstractAppTest<A> {
 
         final class State3Build implements State {
 
+            Object app;
+
             final ApplicationSetup application;
 
-            Object app;
             State3Build(State2Building sb) {
                 sb.b.assembly.postBuild();
                 this.application = sb.b.assembly.container.application;
@@ -204,6 +245,6 @@ abstract class AbstractAppTest<A> {
     }
 
     static class TestStore {
-
+        final Map<String, Invoker> invokers = new HashMap<>();
     }
 }

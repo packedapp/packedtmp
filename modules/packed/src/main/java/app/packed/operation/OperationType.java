@@ -33,7 +33,7 @@ import internal.app.packed.util.PackedAnnotationList;
 import internal.app.packed.util.PackedVariable;
 
 /**
- * An function type represents the arguments and return variable for an operation.
+ * An operation type represents the arguments and return variable for an operation.
  *
  * @apiNote This class is modelled after {@link MethodType}. But uses {@link Variable} instead of {@link Class} as the
  *          element type. This means that both detailed {@link Type} information and annotations are available.
@@ -49,7 +49,7 @@ public final /* primitive */ class OperationType {
     /** The return variable. */
     private final Variable returnVar;
 
-    /** Annotations on the function. */
+    /** Annotations on the operation. */
     private final AnnotationList annotations;
 
     private OperationType(Variable returnVar, Variable... variables) {
@@ -62,7 +62,7 @@ public final /* primitive */ class OperationType {
         this.parameterVars = requireNonNull(variables);
     }
 
-    /** {@return a list of annotations on the function.} */
+    /** {@return a list of annotations on the operation.} */
     public AnnotationList annotations() {
         return annotations;
     }
@@ -99,7 +99,7 @@ public final /* primitive */ class OperationType {
      * It is defined to be the same as the hash code of a List whose elements are the return variable followed by the
      * parameter variables.
      *
-     * @return the hash code value for this function type
+     * @return the hash code value for this operation type
      * @see Object#hashCode()
      * @see #equals(Object)
      * @see List#hashCode()
@@ -168,8 +168,8 @@ public final /* primitive */ class OperationType {
     }
 
     /**
-     * Returns a string representation of the function type, of the form {@code "(PT0,PT1...)RT"}. The string representation
-     * of a function type is a parenthesis enclosed, comma separated list of type names, followed immediately by the return
+     * Returns a string representation of the operation type, of the form {@code "(PT0,PT1...)RT"}. The string representation
+     * of a operation type is a parenthesis enclosed, comma separated list of type names, followed immediately by the return
      * variable.
      * <p>
      * Each type is represented by its {@link java.lang.Class#getSimpleName simple name}.
@@ -194,7 +194,7 @@ public final /* primitive */ class OperationType {
     }
 
     /**
-     * Returns a function type with the given return variable. The resulting function type has no parameter variables.
+     * Returns a operation type with the given return variable. The resulting operation type has no parameter variables.
      *
      * @param returnVariable
      *            the return variable
@@ -222,10 +222,10 @@ public final /* primitive */ class OperationType {
     }
 
     /**
-     * {@return an function type representing the invocation of the specified executable.}
+     * {@return an operation type representing the invocation of the specified executable.}
      *
      * @param executable
-     *            the executable to return an function type for.
+     *            the executable to return an operation type for.
      */
     public static OperationType fromExecutable(Executable executable) {
         requireNonNull(executable, "executable is null");

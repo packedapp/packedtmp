@@ -32,7 +32,7 @@ public class TckBeans {
 
         @Main
         public void hello() {
-            System.out.println("HelloWorld");
+            //System.out.println("HelloWorld");
         }
     }
 

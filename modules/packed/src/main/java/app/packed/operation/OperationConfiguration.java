@@ -55,4 +55,8 @@ public class OperationConfiguration {
     public OperationTarget target() {
         return handle.target();
     }
+
+    public OperationType type() {
+        return handle.type();
+    }
 }
