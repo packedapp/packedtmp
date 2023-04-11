@@ -17,9 +17,9 @@ package sandbox.extension.domain;
 
 import java.util.Set;
 
-import app.packed.container.NamespaceMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionNavigator;
+import app.packed.namespace.NamespaceMirror;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.NamespaceSetup;
 

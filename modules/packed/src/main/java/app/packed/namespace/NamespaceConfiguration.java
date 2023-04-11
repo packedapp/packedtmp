@@ -13,13 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.domain;
+package app.packed.namespace;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  *
  */
-public @interface Namespace {
-    String value() default "main";
-}
+public abstract class NamespaceConfiguration {
 
-// InDomain();
+    private final NamespaceHandle handle;
+
+    protected NamespaceConfiguration(NamespaceHandle handle) {
+        this.handle = requireNonNull(handle);
+    }
+
+    public String name() {
+        return handle.name();
+    }
+
+    public NamespaceConfiguration named(String name) {
+        handle.named(name);
+        return this;
+    }
+}

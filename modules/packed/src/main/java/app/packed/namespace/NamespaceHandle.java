@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.namespace;
 
-import app.packed.lifetime.LifecycleOperationMirror;
+/**
+ *
+ */
+public interface NamespaceHandle {
 
-/** A mirror for operations that create {@link #bean() bean} instances. */
-public class BeanFactoryMirror extends LifecycleOperationMirror {
+    String name();
 
-    @Override
-    public String toString() {
-        return "BeanFactory - " + super.target();
-    }
+    /**
+     * @param name
+     */
+    void named(String name);
 }

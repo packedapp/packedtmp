@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.stream.Stream;
 
-import app.packed.operation.OperationMirror;
+import app.packed.namespace.NamespaceOperationMirror;
 import app.packed.util.Key;
 import internal.app.packed.service.ServiceProviderSetup;
 
@@ -33,7 +33,7 @@ import internal.app.packed.service.ServiceProviderSetup;
 // ServiceProvisionSiteMirror
 // Maaske er export med i path'en istedet for et saelvstaendig mirror
 // Her taenker jeg fx alle de wirelets der mapper fra og til...
-public class ProvidedServiceMirror extends OperationMirror {
+public class ProvidedServiceMirror extends NamespaceOperationMirror {
 
     /** The service that is provided. */
     final ServiceProviderSetup service;
@@ -54,6 +54,12 @@ public class ProvidedServiceMirror extends OperationMirror {
      */
     public Stream<ServiceBindingMirror> useSites() {
         return service.entry.useSiteMirrors();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ServiceNamespaceMirror namespace() {
+        throw new UnsupportedOperationException();
     }
 }
 

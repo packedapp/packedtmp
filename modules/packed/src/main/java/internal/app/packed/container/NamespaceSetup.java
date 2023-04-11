@@ -38,7 +38,7 @@ public final class NamespaceSetup {
     final Map<ContainerSetup, String> localNames = new HashMap<>();
 
     /** The name of the namespace. */
-    public final String name = DEFAULT_NAME;
+    public String name = DEFAULT_NAME;
 
     /** The owner of the name space. */
     public final AuthorSetup owner;

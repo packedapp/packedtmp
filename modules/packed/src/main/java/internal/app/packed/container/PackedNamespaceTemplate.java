@@ -18,7 +18,7 @@ package internal.app.packed.container;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.container.NamespaceMirror;
+import app.packed.namespace.NamespaceMirror;
 import sandbox.extension.domain.NamespaceOperator;
 import sandbox.extension.domain.NamespaceTemplate;
 

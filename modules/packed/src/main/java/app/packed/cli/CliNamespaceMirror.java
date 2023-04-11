@@ -18,7 +18,7 @@ package app.packed.cli;
 import java.util.Collection;
 import java.util.List;
 
-import app.packed.container.NamespaceMirror;
+import app.packed.namespace.NamespaceMirror;
 
 /**
  * Represents a CLI namespace where commands and global parameters are unique

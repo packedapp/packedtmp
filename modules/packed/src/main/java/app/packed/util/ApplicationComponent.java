@@ -18,18 +18,11 @@ package app.packed.util;
 /**
  *
  */
-// A model with namespace + fragments
-// Fragment values (Object) stored in an array
+public interface ApplicationComponent {
 
-public interface ComponentPath {
-
-    Descriptor descriptor();
-
-    interface Descriptor {
-
-    }
-
-    interface Fragment {
-        Fragment APPLICATION = null;
+    /** {@return the path of the component.} */
+    default ApplicationComponentPath componentPath() {
+        throw new UnsupportedOperationException();
     }
 }
+// app.packed.Component:sd:asd:asd

@@ -44,7 +44,7 @@ public class LifecycleOperationMirror extends OperationMirror {
     /** {@return the lifetime operation this operation is a part of.} */
     // IDK, supportere vi Lifecycle events there ikke har en Lifetime operation???
     // Saa er det ikke en lifetime. Fx restart
-    public OperationMirror lifetimeOperation() {
+    public LifecycleOperationMirror lifetimeOperation() {
         throw new UnsupportedOperationException();
     }
 
@@ -58,7 +58,7 @@ public class LifecycleOperationMirror extends OperationMirror {
         return "<<instantiate>>";
     }
 
-    public List<OperationMirror> previousLifetime() {
+    public List<LifecycleOperationMirror> previousLifetime() {
         // IDeen er at kunne printe alle operationer der bliver koert foer den her operation i den samme
         // lifetime
 

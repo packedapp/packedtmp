@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.namespace;
 
+import app.packed.container.Author;
+import app.packed.container.ContainerMirror;
+import app.packed.container.ContainerTreeMirror;
 import app.packed.extension.Extension;
+import internal.app.packed.container.Mirror;
 import internal.app.packed.container.NamespaceSetup;
 
 /**
@@ -26,7 +30,7 @@ import internal.app.packed.container.NamespaceSetup;
 // CliExtension.CliCommand:...
 
 // ServiceNamespace::/:main
-public class NamespaceMirror<E extends Extension<E>> {
+public class NamespaceMirror<E extends Extension<E>> implements Mirror {
 
     /** The domain configuration. */
     private final NamespaceSetup namespace = NamespaceSetup.MI.initialize();

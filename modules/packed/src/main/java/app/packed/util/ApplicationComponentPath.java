@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.util;
 
-import app.packed.lifetime.LifecycleOperationMirror;
+/**
+ *
+ */
+// A model with namespace + fragments
+// Fragment values (Object) stored in an array
+public interface ApplicationComponentPath {
 
-/** A mirror for operations that create {@link #bean() bean} instances. */
-public class BeanFactoryMirror extends LifecycleOperationMirror {
+    Descriptor descriptor();
 
-    @Override
-    public String toString() {
-        return "BeanFactory - " + super.target();
+    interface Descriptor {
+
+    }
+
+    interface Fragment {
+        Fragment APPLICATION = null;
     }
 }

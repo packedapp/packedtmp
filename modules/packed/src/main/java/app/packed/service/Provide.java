@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.AnnotatedFieldHook;
 import app.packed.extension.BeanHook.AnnotatedMethodHook;
+import app.packed.namespace.NamespaceAnnotation;
 
 /**
  * An annotation indicating that an annotated method or field on a bean provides a service to the container in which the
@@ -53,6 +54,7 @@ import app.packed.extension.BeanHook.AnnotatedMethodHook;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@NamespaceAnnotation
 @AnnotatedMethodHook(extension = BaseExtension.class, allowInvoke = true)
 @AnnotatedFieldHook(extension = BaseExtension.class, allowGet = true)
 public @interface Provide {}

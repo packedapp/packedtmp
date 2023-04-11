@@ -18,17 +18,18 @@ package app.packed.service;
 import java.util.Collection;
 import java.util.Map;
 
-import app.packed.container.NamespaceMirror;
 import app.packed.extension.BaseExtension;
+import app.packed.namespace.NamespaceMirror;
 import app.packed.util.Key;
 
 /**
- * A service namespace represents a namespace where every provided key is unique.
+ * A service namespace represents a namespace where every service has a unique {@link Key key}.
  * <p>
  * A service domain
  * <p>
  * In
  */
+
 // 2 typer exports + main
 public class ServiceNamespaceMirror extends NamespaceMirror<BaseExtension> {
 

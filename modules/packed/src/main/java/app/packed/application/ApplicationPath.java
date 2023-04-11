@@ -20,7 +20,31 @@ import java.util.List;
 /**
  *
  */
-// Id?
+// Application:appName
+// Container:appName:/ Container:appName:/FooBar
+// Assembly:appName:/,  Assembly:appName:/MyAssembly
+// Bean:appName:/:MyBean,  Bean:appName:/MyAssembly:BooBean
+// Operation:appName:/:MyBean:getStuff
+// Binding:appName:/:MyBean:getStuff:0
+// Extension:appName:Container:ExtensionName (SimpleClassName uniqiefied)
+
+// Names, Classes, Keys, ...
+
+
+//// what about customized exports??? Det kan jo vaere den samme service
+//// Er det renames? Adaptors? idk.
+// Service:appName:Container
+
+// Problemet er alt med et class name...
+///// Context fx
+
+// Context:
+
+// Cli.Foo:
+
+///////
+// Namespace:appName:/??? Tror vi har
+
 public interface ApplicationPath {
 
     static ApplicationPath ofApplication(String applicationName) {
@@ -47,6 +71,10 @@ public interface ApplicationPath {
         return null;
     }
 
+    static ApplicationPath ofExtension(String applicationName, String[] containers, String extension) {
+        return null;
+    }
+
     enum Kind {
         APPLICATION, CONTAINER, BEAN, ASSEMBLY;
     }
@@ -58,10 +86,14 @@ public interface ApplicationPath {
 
 interface ComponentPathModel {
     String name();
+
     boolean isCustom();
+
     List<String> fragments();
+
     interface Fragment {
         String name();
+
         Class<?> type();
     }
 }

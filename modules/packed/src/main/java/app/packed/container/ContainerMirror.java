@@ -21,6 +21,7 @@ import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
+import app.packed.namespace.NamespaceMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionModel;

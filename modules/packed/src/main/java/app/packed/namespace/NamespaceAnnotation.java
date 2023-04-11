@@ -13,15 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.namespace;
 
-import app.packed.lifetime.LifecycleOperationMirror;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/** A mirror for operations that create {@link #bean() bean} instances. */
-public class BeanFactoryMirror extends LifecycleOperationMirror {
-
-    @Override
-    public String toString() {
-        return "BeanFactory - " + super.target();
-    }
+/**
+ *
+ */
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.ANNOTATION_TYPE)
+// Maybe a nested annotation on Namespace
+public @interface NamespaceAnnotation {
+    String value() default "main";
 }

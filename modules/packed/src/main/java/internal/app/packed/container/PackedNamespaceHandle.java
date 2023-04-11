@@ -13,16 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package internal.app.packed.container;
+
+import app.packed.namespace.NamespaceHandle;
 
 /**
  *
  */
-public interface Component {
+public record PackedNamespaceHandle(NamespaceSetup namespace) implements NamespaceHandle {
 
-    /** {@return the path of the component.} */
-    default ComponentPath componentPath() {
-        throw new UnsupportedOperationException();
+    @Override
+    public String name() {
+        return namespace.name;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void named(String name) {
+        namespace.name = name;
     }
 }
-// app.packed.Component:sd:asd:asd

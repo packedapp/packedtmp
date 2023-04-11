@@ -1,3 +1,9 @@
+A namespace has an id, a namespacetype, a name type, and an extend.
+
+// Namespace:Kind:Container:id
+
+// Namespace:Service:/:main
+
 Usecases
 - CLI : Application|No extension participants - Args all application, commands app lifetime or immediate 
 - Service : Container|Alle har deres egen + exports -
