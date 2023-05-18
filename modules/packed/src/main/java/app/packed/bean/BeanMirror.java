@@ -160,7 +160,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
      *             if the specified local was initialized with a value
      */
     protected final boolean isLocalPresent(BeanLocal<?> local) {
-        return ((PackedBeanLocal<?>) local).isPresent(bean());
+        return ((PackedBeanLocal<?>) local).isSet(bean());
     }
 
     /**

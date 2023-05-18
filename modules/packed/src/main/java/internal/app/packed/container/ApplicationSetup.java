@@ -22,12 +22,12 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.BuildGoal;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
@@ -45,24 +45,24 @@ public final class ApplicationSetup {
     private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ApplicationMirror.class, "initialize",
             void.class, ApplicationSetup.class);
 
-    /** This map maintains every {@link app.packed.extension.BeanLocal} for the application. */
-    public final HashMap<PackedBeanLocal.BeanLocalKey, Object> beanLocals = new HashMap<>();
-
     /** Any (statically defined) children this application has. */
     final ArrayList<FutureApplicationSetup> children = new ArrayList<>();
 
-    /** A list of actions that will be executed doing the code generating phase. Or null if code generation is disabled. */
+    /**
+     * A list of actions that will be executed doing the code generating phase. Or null if code generation is disabled or
+     * has already been performed.
+     */
     @Nullable
     private ArrayList<Runnable> codegenActions;
 
     /** The root container of the application. */
     public final ContainerSetup container;
 
-    /** This map maintains every {@link app.packed.extension.ContainerLocal} for the application. */
+    /** This map maintains every {@link app.packed.extension.ContainerLocal} for the whole application. */
     public final HashMap<Map.Entry<PackedContainerLocal<?>, Object>, Object> containerLocals = new HashMap<>();
 
-    // Maybe move to container?? Or maybe a DomainManager class? IDK
-    public final HashMap<PackedNamespaceTemplate<?>, NamespaceOperator<?>> namespaces = new HashMap<>();
+    /** The deployment the application is part of. */
+    public final DeploymentSetup deployment;
 
     /**
      * All extensions used in an application has a unique instance id attached. This is used in case we have multiple
@@ -72,11 +72,14 @@ public final class ApplicationSetup {
      */
     int extensionIdCounter;
 
-    /** The build goal. */
-    public final BuildGoal goal;
+    /** This map maintains every {@link app.packed.extension.ContainerLocal} for the whole application. */
+    private final ConcurrentHashMap<LocalKey, Object> locals = new ConcurrentHashMap<>();
 
     /** Supplies mirrors for the application. */
     private final Supplier<? extends ApplicationMirror> mirrorSupplier;
+
+    // Maybe move to container?? Or maybe a DomainManager class? IDK
+    public final HashMap<PackedNamespaceTemplate<?>, NamespaceOperator<?>> namespaces = new HashMap<>();
 
     /** The current phase of the application's build process. */
     private ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
@@ -90,8 +93,8 @@ public final class ApplicationSetup {
      *            the assembly that defines the application
      */
     public ApplicationSetup(PackedContainerBuilder containerBuilder, AssemblySetup assembly) {
-        this.goal = containerBuilder.goal();
-        this.codegenActions = goal.isCodeGenerating() ? new ArrayList<>() : null;
+        this.deployment = new DeploymentSetup(this, containerBuilder);
+        this.codegenActions = deployment.goal.isCodeGenerating() ? new ArrayList<>() : null;
         this.mirrorSupplier = containerBuilder.applicationMirrorSupplier;
         this.container = containerBuilder.newContainer(this, assembly);
     }
@@ -128,6 +131,10 @@ public final class ApplicationSetup {
         }
     }
 
+    public ApplicationSetup checkWriteToLocals() {
+        return this;
+    }
+
     /** The application has been successfully assembled. Now generate any required code. */
     public void close() {
         // Only generate code if needed
@@ -147,8 +154,48 @@ public final class ApplicationSetup {
         phase = ApplicationBuildPhase.COMPLETED;
     }
 
-    public ApplicationSetup checkWriteToLocals() {
-        return this;
+    public <T> T localGet(PackedLocal<T> local, Object key) {
+        T t = localGetNullable(local, key);
+        if (t == null) {
+            throw new NoSuchElementException("A value has not been set for the specified local");
+        }
+        return t;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> @Nullable T localGetNullable(PackedLocal<T> local, Object key) {
+        Supplier<? extends T> ivs = local.initialValueSupplier();
+        if (ivs == null) {
+            return (T) locals.get(new LocalKey(local, key));
+        } else {
+            return (T) locals.computeIfAbsent(new LocalKey(local, key), e -> local.initialValueSupplier().get());
+        }
+    }
+
+    public boolean localIsSet(PackedLocal<?> local, Object key) {
+        return locals.contains(new LocalKey(local, key));
+    }
+
+    public <T> @Nullable T localOrElse(PackedLocal<T> local, Object key, T other) {
+        T t = localGetNullable(local, key);
+        return t == null ? other : t;
+    }
+
+    public <X extends Throwable, T> @Nullable T localOrElseThrow(PackedLocal<T> local, Object key, Supplier<? extends X> exceptionSupplier) throws X {
+        T t = localGetNullable(local, key);
+        if (t == null) {
+            throw exceptionSupplier.get();
+        }
+        return t;
+    }
+
+    public <T> void localSet(PackedLocal<T> local, Object key, T value) {
+        requireNonNull(value, "value is null");
+
+        // But writing initial value is okay???
+        checkWriteToLocals();
+
+        locals.put(new LocalKey(local, key), value);
     }
 
     /** {@return a mirror that can be exposed to end-users.} */
@@ -168,4 +215,6 @@ public final class ApplicationSetup {
     private enum ApplicationBuildPhase {
         ASSEMBLE, CODEGEN, COMPLETED;
     }
+
+    private record LocalKey(PackedLocal<?> local, Object value) {}
 }

@@ -158,8 +158,8 @@ public final class ContainerConfiguration {
         return handle.path();
     }
 
-    public <W extends ApplicationWirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
-        ClassUtil.checkProperSubclass(ApplicationWirelet.class, wireletClass, "wireletClass");
+    public <W extends UserWirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
+        ClassUtil.checkProperSubclass(UserWirelet.class, wireletClass, "wireletClass");
         return handle.container().selectWirelets(wireletClass);
     }
 

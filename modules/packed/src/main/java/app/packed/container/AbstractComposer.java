@@ -32,6 +32,8 @@ import internal.app.packed.container.PackedContainerHandle;
  */
 
 // Operere vi pa Extensions? eller Extenpoints??
+// Maybe sealed for now... Until I figure out exact what is allowed
+
 public abstract class AbstractComposer {
 
     /**
@@ -107,6 +109,7 @@ public abstract class AbstractComposer {
     }
 
     /** A special type of assembly that a composer and a composer action to configure an application. */
+    // ComposingAssembly?
     public static abstract non-sealed class ComposableAssembly<C extends AbstractComposer> extends Assembly {
 
         /** The action to run. */

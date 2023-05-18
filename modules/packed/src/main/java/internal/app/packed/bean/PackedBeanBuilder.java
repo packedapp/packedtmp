@@ -184,6 +184,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
      *            the source of the bean
      * @return a handle for the bean
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private <T> BeanHandle<T> newBean(Class<T> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
         if (sourceKind != BeanSourceKind.SOURCELESS && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
@@ -206,7 +207,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
         // Copy any bean locals that have been set, we need to set this before introspection
         if (locals != null) {
             for (Entry<PackedBeanLocal<?>, Object> e : locals.entrySet()) {
-                container.application.beanLocals.put(e.getKey().toKey(bean), e.getValue());
+                container.application.localSet((PackedBeanLocal) e.getKey(), bean, e.getValue());
             }
         }
 

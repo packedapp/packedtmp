@@ -1,3 +1,11 @@
+We need namespace because stuff with ids is shared across containers.
+
+
+/// Extra namespaces
+
+// Tror ikke man som udgangspunkt kan lave namespaces lazily.
+// Altsaa man kan jo sige main er lazy. fx for eventbus
+
 A namespace has an id, a namespacetype, a name type, and an extend.
 
 // Namespace:Kind:Container:id
@@ -5,7 +13,7 @@ A namespace has an id, a namespacetype, a name type, and an extend.
 // Namespace:Service:/:main
 
 Usecases
-- CLI : Application|No extension participants - Args all application, commands app lifetime or immediate 
+- Cli : Application|No extension participants - Args all application, commands app lifetime or immediate 
 - Service : Container|Alle har deres egen + exports -
 - Metrics : Application(Family)|Alle
 - Eventbus : Application|All, IDK?

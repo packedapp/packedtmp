@@ -13,29 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
-
-import java.util.function.BiConsumer;
-import java.util.stream.Stream;
+package app.packed.container;
 
 /**
- *
+ * A wirelet that can be used by application developers.
  */
-public interface TreeMirror<N extends TreeNodeMirror<N>> extends Mirror {
+// ApplicationWirelets er jo ikke saerlig fed... Naar vi har den her
 
-    /** {@return the number of nodes in the tree.} */
-    int count();
-
-    void forEach(BiConsumer<Integer, N> action);
-
-    /** {@return the root node in the tree.} */
-    N root();
-
-    Stream<N> stream();
-
-    interface Node<N> {
-        N container();
-
-        int depth();
-    }
-}
+// Efter vi har faaet Deployment. Kan vi ikke bruge application
+// UserWirelet
+public non-sealed abstract class UserWirelet extends Wirelet {}

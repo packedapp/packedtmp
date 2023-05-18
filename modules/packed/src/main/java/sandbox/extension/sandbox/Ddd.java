@@ -43,12 +43,14 @@ public class Ddd extends BaseAssembly {
     @Override
     protected void build() {
         install(Oi.class);
-        use(MyEntityException.class).addEntityBean(String.class);
+      //  use(MyEntityException.class).addEntityBean(String.class);
     }
 
     public static void main(String[] args) {
         App.run(new Ddd());
         ApplicationMirror m = App.mirrorOf(new Ddd());
+        System.out.println(Ddd.class.getCanonicalName() + ".build(Ddd.java:44)");
+        new Exception().printStackTrace();
         m.print();
     }
 

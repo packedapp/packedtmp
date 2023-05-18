@@ -3,6 +3,7 @@ package app.packed.container;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -26,7 +27,7 @@ import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.TreeMirror;
+import internal.app.packed.container.TreeNodeMirror;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -42,7 +43,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * At runtime you can have a ContainerMirror injected
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public non-sealed class ContainerMirror implements ContextualizedElementMirror , TreeMirror<ContainerMirror> {
+public non-sealed class ContainerMirror implements ContextualizedElementMirror , TreeNodeMirror<ContainerMirror> {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
@@ -82,11 +83,13 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     }
 
     /** {@return a link Collection view of all the beans defined in the container.} */
-    // returning stream vs collection... I took a look at the methods in Collection.
-    // And size + isEmpty is the only interesting ones
-    // Arghhh den er sgu rar for Iterable...
-    // https://cr.openjdk.java.net/~smarks/reviews/8148917/IterableOnce0.html
+    // TODO change to immutable collection view
     public Stream<BeanMirror> beans() {
+        // returning stream vs collection... I took a look at the methods in Collection.
+        // And size + isEmpty is the only interesting ones
+        // Arghhh den er sgu rar for Iterable...
+        // https://cr.openjdk.java.net/~smarks/reviews/8148917/IterableOnce0.html
+
         // not technically a view but will do for now
         ArrayList<BeanMirror> beans = new ArrayList<>();
         for (var b = container().beanFirst; b != null; b = b.beanSiblingNext) {
@@ -98,6 +101,9 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
         // size, isEmpty, is going to get a bit slower.
     }
 
+    /**
+     * A view of all all of this containers beans that are in the same lifetime as the container itself.
+     */
     public Stream<BeanMirror> beansInSameLifetime() {
         // not technically a view but will do for now
         ArrayList<BeanMirror> beans = new ArrayList<>();
@@ -122,6 +128,12 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
                     "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
         }
         return c;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
+        return ContextSetup.allMirrorsFor(container());
     }
 
     /** {@inheritDoc} */
@@ -219,6 +231,38 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
         return p == null ? Optional.empty() : Optional.of(p.mirror());
     }
 
+    /** {@return a link Collection view of all the beans defined in the container.} */
+    public EnumSet<ContainerBoundaryKind> parentBoundaries() {
+        ContainerMirror p = parent().orElse(null);
+        if (p != null) {
+            ContainerSetup parent = p.container;
+            ContainerSetup c = container();
+
+            // Deployment has all
+            if (parent.application.deployment != c.application.deployment) {
+                return EnumSet.allOf(ContainerBoundaryKind.class);
+            }
+
+            ArrayList<ContainerBoundaryKind> l = new ArrayList<>();
+
+            if (parent.application == c.application) {
+                l.add(ContainerBoundaryKind.APPLICATION);
+            }
+            if (parent.lifetime == c.lifetime) {
+                l.add(ContainerBoundaryKind.LIFETIME);
+            }
+            if (parent.assembly == c.assembly) {
+                l.add(ContainerBoundaryKind.ASSEMBLY);
+            }
+
+            if (!l.isEmpty()) {
+                return EnumSet.copyOf(l);
+            }
+        }
+        return EnumSet.noneOf(ContainerBoundaryKind.class);
+
+    }
+
     /** {@return the path of the container.} */
     public OldApplicationPath path() {
         return container().path();
@@ -284,12 +328,6 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
         }
 
         return mirrorClass.cast(mirror);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
-        return ContextSetup.allMirrorsFor(container());
     }
 }
 //// Taken from ComponentMirror

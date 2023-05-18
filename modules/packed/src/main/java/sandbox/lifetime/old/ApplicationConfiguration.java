@@ -29,7 +29,7 @@ public final class ApplicationConfiguration {
     ApplicationSetup application;
 
     public BuildGoal buildGoal() {
-        return application.goal;
+        return application.deployment.goal;
     }
 
     // Den er faktisk lidt "farlig" hvis man beslutter at bruge den som en reusable application...

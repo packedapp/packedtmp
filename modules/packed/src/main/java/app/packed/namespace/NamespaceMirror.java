@@ -71,7 +71,7 @@ public class NamespaceMirror<E extends Extension<E>> implements Mirror {
     }
 
     /** {@return a tree containing every container where this domain instance is present.} */
-    public final ContainerTreeMirror namespaceTree() {
+    public final ContainerTreeMirror namespaceScope() {
         throw new UnsupportedOperationException();
     }
 

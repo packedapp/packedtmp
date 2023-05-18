@@ -22,14 +22,14 @@ import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerTreeMirror;
 import app.packed.util.Nullable;
-import internal.app.packed.container.TreeMirror;
+import internal.app.packed.container.TreeNodeMirror;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import sandbox.lifetime.ContainerLifetimeCarrierMirror;
 
 /**
  * This mirror represents the lifetime of a container.
  */
-public final class ContainerLifetimeMirror extends LifetimeMirror implements TreeMirror<ContainerLifetimeMirror> {
+public final class ContainerLifetimeMirror extends LifetimeMirror implements TreeNodeMirror<ContainerLifetimeMirror> {
 
     /**
      * The internal configuration of the operation we are mirrored. Is initially null but populated via
@@ -67,6 +67,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror implements Tre
     }
 
     /** {@return the container that is the root of this lifetime.} */
+    // Should probably be a container tree
     public ContainerMirror container() {
         return lifetime().container.mirror();
     }

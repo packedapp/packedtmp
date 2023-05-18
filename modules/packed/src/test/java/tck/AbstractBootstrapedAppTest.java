@@ -36,6 +36,7 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.Op;
+import app.packed.operation.OperationMirror;
 import app.packed.service.ServiceableBeanConfiguration;
 import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.PackedContainerTemplate;
@@ -89,7 +90,14 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         return beans.get(0);
     }
 
-    protected final HookExtension hooks() {
+    protected final OperationMirror findSingleOperation(BeanMirror c) {
+        List<OperationMirror> mirrors = c.operations().toList();
+        assertThat(mirrors).hasSize(1);
+        return mirrors.get(0);
+    }
+
+
+    public final HookExtension hooks() {
         return configuration().use(HookExtension.class);
     }
 

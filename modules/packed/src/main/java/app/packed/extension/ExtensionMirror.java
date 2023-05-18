@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 import app.packed.util.Nullable;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.TreeMirror;
+import internal.app.packed.container.TreeNodeMirror;
 
 /**
  * The base class for specialized extension mirrors.
@@ -40,7 +40,7 @@ import internal.app.packed.container.TreeMirror;
  * @see ContainerMirror#use(Class)
  * @see Extension#newExtensionMirror()
  */
-public abstract class ExtensionMirror<E extends Extension<E>> implements TreeMirror<ExtensionMirror<E>> {
+public abstract class ExtensionMirror<E extends Extension<E>> implements TreeNodeMirror<ExtensionMirror<E>> {
 
     /*
      * When naming methods in this class try to avoid using trivial names such as {@code name}, {@code type}, {@code stream}

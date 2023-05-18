@@ -24,6 +24,7 @@ package app.packed.container;
  */
 public class UnusedWireletException extends RuntimeException {
 
+    /** */
     private static final long serialVersionUID = 1L;
 
     /**

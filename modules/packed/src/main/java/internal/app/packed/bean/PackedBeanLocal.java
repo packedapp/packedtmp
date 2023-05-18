@@ -21,10 +21,12 @@ import java.util.function.Supplier;
 
 import app.packed.extension.BeanLocal;
 import app.packed.util.Nullable;
+import internal.app.packed.container.PackedLocal;
 
 /** Implementation of {@link BeanLocal}. */
-public final class PackedBeanLocal<T> extends BeanLocal<T> {
+public final class PackedBeanLocal<T> extends BeanLocal<T> implements PackedLocal<T> {
 
+    /** An optional supplier that can provide initial values for a bean local. */
     private final @Nullable Supplier<? extends T> initialValueSupplier;
 
     private PackedBeanLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
@@ -37,53 +39,39 @@ public final class PackedBeanLocal<T> extends BeanLocal<T> {
      * @apiNote this method is public, because we use it internally.
      */
     @Override
-    @SuppressWarnings("unchecked")
     public T get(BeanSetup bean) {
-        if (initialValueSupplier == null) {
-            return (T) bean.container.application.beanLocals.get(toKey(bean));
-        } else {
-            return (T) bean.container.application.beanLocals.computeIfAbsent(toKey(bean), e -> e.beanLocal.initialValueSupplier.get());
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public T remove(BeanSetup bean) {
-        return (T) bean.container.application.beanLocals.remove(toKey(bean));
+        return bean.container.application.localGet(this, bean);
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean isPresent(BeanSetup setup) {
-        return setup.container.application.beanLocals.containsKey(toKey(setup));
+    public @Nullable Supplier<? extends T> initialValueSupplier() {
+        return initialValueSupplier;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isSet(BeanSetup bean) {
+        return bean.container.application.localIsSet(this, bean);
+    }
+
+    @Override
+    public @Nullable T orElse(BeanSetup bean, T other) {
+        return bean.container.application.localOrElse(this, bean, other);
+    }
+
+    protected <X extends Throwable> T orElseThrow(BeanSetup bean, Supplier<? extends X> exceptionSupplier) throws X {
+        return bean.container.application.localOrElseThrow(this, bean, exceptionSupplier);
     }
 
     /** {@inheritDoc} */
     @Override
     public void set(BeanSetup bean, T value) {
-        requireNonNull(bean);
-        requireNonNull(value);
-        bean.container.application.checkWriteToLocals().beanLocals.put(toKey(bean), value);
-    }
-
-    /**
-     * {@return a new bean local key}
-     *
-     * @param bean
-     *            the bean to create the key for
-     */
-    BeanLocalKey toKey(BeanSetup bean) {
-        return new BeanLocalKey(bean, this);
+        requireNonNull(bean, "bean is null");
+        bean.container.application.localSet(this, bean, value);
     }
 
     public static <T> PackedBeanLocal<T> of(@Nullable Supplier<? extends T> initialValueSupplier) {
         return new PackedBeanLocal<>(initialValueSupplier);
     }
-
-    /**
-     * For space efficiency reasons we store all bean locals in a single map per-application using an instance of this class
-     * as the key.
-     *
-     * @see internal.app.packed.container.ApplicationSetup#beanLocals
-     */
-    public /* primitive */ record BeanLocalKey(BeanSetup bean, PackedBeanLocal<?> beanLocal) {}
 }

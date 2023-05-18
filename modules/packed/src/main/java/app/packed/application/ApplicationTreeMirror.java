@@ -13,29 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package app.packed.application;
 
-import java.util.function.BiConsumer;
-import java.util.stream.Stream;
+import app.packed.container.AssemblyTreeMirror;
 
 /**
  *
  */
-public interface TreeMirror<N extends TreeNodeMirror<N>> extends Mirror {
 
-    /** {@return the number of nodes in the tree.} */
-    int count();
+// Problemet med ApplicationTree er vel navngivning
 
-    void forEach(BiConsumer<Integer, N> action);
+public interface ApplicationTreeMirror {
 
-    /** {@return the root node in the tree.} */
-    N root();
+    AssemblyTreeMirror assemblies();
 
-    Stream<N> stream();
-
-    interface Node<N> {
-        N container();
-
-        int depth();
-    }
 }
+//ApplicationMirror bootstappedBy(); // nah hvad hvis det er et child som root.
+// Maa have noget paa Application som Host? Ikke parent da det ikke er en Application

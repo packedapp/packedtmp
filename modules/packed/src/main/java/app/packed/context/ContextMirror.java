@@ -37,6 +37,8 @@ import internal.app.packed.container.Mirror;
 // En Bean, Container kan vaere i en context. (Hvad med en application?)
 
 // Extendable?
+//// WebContextMirror vs WebOperationMirror
+//// Hvad kan WebContextMirror sige????
 
 // Fx BeanInitializationContext er aabenlyst OperationSpan (per bean). Fordi vi kan injecte forskellige ting...
 

@@ -57,6 +57,8 @@ public final class BeanSetup implements ContextualizedElementSetup {
     private static final VarHandle VH_BEAN_CONFIGURATION_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanConfiguration.class, "handle",
             PackedBeanHandle.class);
 
+    boolean allowMultiClass;
+
     /** The bean class, is typical void.class for functional beans. */
     public final Class<?> beanClass;
 
@@ -77,26 +79,7 @@ public final class BeanSetup implements ContextualizedElementSetup {
     /** The container this bean is installed in. */
     public final ContainerSetup container;
 
-    boolean allowMultiClass;
-
-    @Override
-    @Nullable
-    public ContextSetup findContext(Class<? extends Context<?>> contextClass) {
-        Class<? extends Context<?>> cl = ContextInfo.normalize(contextClass);
-        ContextSetup cs = contexts.get(cl);
-        if (cs != null) {
-            return cs;
-        }
-        return container.findContext(cl);
-    }
-
     private HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
-
-    @Override
-    public void forEachContext(BiConsumer<? super Class<? extends Context<?>>, ? super ContextSetup> action) {
-        contexts.forEach(action);
-        container.forEachContext(action);
-    }
 
     /** The extension that installed the bean. */
     public final ExtensionSetup installedBy;
@@ -121,6 +104,15 @@ public final class BeanSetup implements ContextualizedElementSetup {
     /** The name of this bean. Should only be updated through {@link #named(String)} */
     String name;
 
+    /**
+     * The unique name of every operation.
+     * <p>
+     * We map a operation setup to a string instead of the other way around. So that
+     * {@link app.packed.operation.OperationMirror#name()} is fast.
+     * <p>
+     * This is lazily generated primarily for use in mirrors. We generate it lazily because calculating the unique names of
+     * operations is actually a bit time consuming.
+     */
     private volatile Map<OperationSetup, String> operationNames;
 
     /** Operations declared by the bean. */
@@ -165,6 +157,10 @@ public final class BeanSetup implements ContextualizedElementSetup {
         operation.specializeMirror(() -> new LifecycleOperationMirror());
     }
 
+    public Author author() {
+        return owner.author();
+    }
+
     public BindingResolution beanInstanceBindingProvider() {
         if (beanSourceKind == BeanSourceKind.INSTANCE) {
             return new FromConstant(beanSource.getClass(), beanSource);
@@ -182,6 +178,23 @@ public final class BeanSetup implements ContextualizedElementSetup {
             result.addAll(os.dependsOn());
         }
         return result;
+    }
+
+    @Override
+    @Nullable
+    public ContextSetup findContext(Class<? extends Context<?>> contextClass) {
+        Class<? extends Context<?>> cl = ContextInfo.normalize(contextClass);
+        ContextSetup cs = contexts.get(cl);
+        if (cs != null) {
+            return cs;
+        }
+        return container.findContext(cl);
+    }
+
+    @Override
+    public void forEachContext(BiConsumer<? super Class<? extends Context<?>>, ? super ContextSetup> action) {
+        contexts.forEach(action);
+        container.forEachContext(action);
     }
 
     // Relative to x
@@ -233,10 +246,6 @@ public final class BeanSetup implements ContextualizedElementSetup {
             m = operationNames = LazyNamer.calculate(operations, OperationSetup::namePrefix);
         }
         return m;
-    }
-
-    public Author author() {
-        return owner.author();
     }
 
     /** {@return the path of this component} */

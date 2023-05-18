@@ -23,12 +23,17 @@ import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerLocal;
 
 /**
+ * This class provides container-local variables at build-time.
  * <p>
- * Container locals support 4 different scopes
+ * Container locals are typically used for sharing per-bean data between various parts of the application while building
+ * it.
+ *
+ * <p>
+ * A container local support 4 different scopes:
  * <ul>
- * <li>Container scope: 1 value per container</li>
- * <li>Container Lifetime scope: 1 value per container lifetime</li>
- * <li>Application Scope: 1 value are application</li>
+ * <li><b>Container scope</b>: A single value is stored for every container</li>
+ * <li><b>Container-Lifetime scope</b>: Every container in the same lifetime shares a single value.</li>
+ * <li><b>Application scope</b>: All containers in the same application shares a single value</li>
  * <li>Family Scope: 1 value per family, values</li>
  * </ul>
  *
@@ -79,7 +84,7 @@ public abstract sealed class ContainerLocal<T> permits PackedContainerLocal {
     }
 
     /**
-     * Returns a wirelet that can set the value of this bean local.
+     * Returns a wirelet that can be used to set the value of this bean local.
      * <p>
      * The returned wirelet cannot be used at runtime.
      *
@@ -100,7 +105,7 @@ public abstract sealed class ContainerLocal<T> permits PackedContainerLocal {
      * @return the new container local
      */
     public static <T> ContainerLocal<T> ofApplication() {
-        return PackedContainerLocal.of(PackedContainerLocal.Scope.APPLICATION);
+        return PackedContainerLocal.of(PackedContainerLocal.LocalScope.APPLICATION);
     }
 
     /**
@@ -119,6 +124,11 @@ public abstract sealed class ContainerLocal<T> permits PackedContainerLocal {
 //        return PackedContainerLocal.of(PackedContainerLocal.Scope.APPLICATION, initialValueSupplier);
 //    }
 
+    // What?
+    static <T> ContainerLocal<T> ofApplicationLink() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Creates a new container local with container scope.
      * <p>
@@ -129,11 +139,11 @@ public abstract sealed class ContainerLocal<T> permits PackedContainerLocal {
      * @return the new container local
      */
     public static <T> ContainerLocal<T> ofContainer() {
-        return PackedContainerLocal.of(PackedContainerLocal.Scope.CONTAINER);
+        return PackedContainerLocal.of(PackedContainerLocal.LocalScope.CONTAINER);
     }
 
     public static <T> ContainerLocal<T> ofContainer(Supplier<? extends T> initialValueSupplier) {
-        return PackedContainerLocal.of(PackedContainerLocal.Scope.CONTAINER, initialValueSupplier);
+        return PackedContainerLocal.of(PackedContainerLocal.LocalScope.CONTAINER, initialValueSupplier);
     }
 
     /**
@@ -146,15 +156,15 @@ public abstract sealed class ContainerLocal<T> permits PackedContainerLocal {
      *            the type of value to store
      * @return the new container local
      */
-    public static <T> ContainerLocal<T> ofContainerLifetime() {
-        return PackedContainerLocal.of(PackedContainerLocal.Scope.CONTAINER_LIFETIME);
+    static <T> ContainerLocal<T> ofContainerLifetime() {
+        return PackedContainerLocal.of(PackedContainerLocal.LocalScope.CONTAINER_LIFETIME);
     }
 
 //    public static <T> ContainerLocal<T> ofContainerLifetime(Supplier<? extends T> initialValueSupplier) {
 //        return PackedContainerLocal.of(PackedContainerLocal.Scope.CONTAINER_LIFETIME, initialValueSupplier);
 //    }
 
-    static <T> ContainerLocal<T> ofApplicationLink() {
+    public static <T> ContainerLocal<T> ofDeployment() {
         throw new UnsupportedOperationException();
     }
 
@@ -173,7 +183,8 @@ public abstract sealed class ContainerLocal<T> permits PackedContainerLocal {
     // Her skal vi pakke den ind i en WeakReference. Fordi vi saadan set maaske kan unloade containere
     // Der bruger den.
     // Vi skal nok ogsaa gemme dem i en CHM fordi vi ikke rigtig ved hvornaar der bliver skrevet til den.
-    static <T> ContainerLocal<T> ofFamily() {
+
+    public static <T> ContainerLocal<T> ofFamily() {
         throw new UnsupportedOperationException();
     }
 }

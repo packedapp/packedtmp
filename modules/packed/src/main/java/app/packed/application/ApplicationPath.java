@@ -18,7 +18,7 @@ package app.packed.application;
 import java.util.List;
 
 /**
- *
+ * Taenker den her er uundvaergelig naar vi exporter/importer some en streng
  */
 // Application:appName
 // Container:appName:/ Container:appName:/FooBar

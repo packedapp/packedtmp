@@ -31,6 +31,7 @@ import app.packed.util.Key;
  */
 
 // 2 typer exports + main
+// Maaske er det ikke et namespace...
 public class ServiceNamespaceMirror extends NamespaceMirror<BaseExtension> {
 
     // Where is my exported services used

@@ -25,20 +25,20 @@ import java.lang.annotation.Target;
 import java.util.HashMap;
 import java.util.Optional;
 
-import app.packed.application.OldApplicationPath;
 import app.packed.application.BuildGoal;
+import app.packed.application.OldApplicationPath;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.service.ServiceableBeanConfiguration;
-import internal.app.packed.container.NamespaceSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.container.NamespaceSetup;
 import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.container.PackedNamespaceTemplate;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
 import sandbox.extension.container.ContainerHandle;
-import sandbox.extension.domain.NamespaceTemplate;
 import sandbox.extension.domain.NamespaceOperator;
+import sandbox.extension.domain.NamespaceTemplate;
 
 /**
  * Extensions are main mechanism by which the framework can be extended with new features.
@@ -110,9 +110,9 @@ public abstract class Extension<E extends Extension<E>> {
         return use(BaseExtensionPoint.class);
     }
 
-    /** {@return the build goal of the application.} */
+    /** {@return the build goal.} */
     protected final BuildGoal buildGoal() {
-        return extension.container.application.goal;
+        return extension.container.application.deployment.goal;
     }
 
     /**

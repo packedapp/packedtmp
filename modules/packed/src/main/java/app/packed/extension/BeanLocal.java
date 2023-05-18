@@ -24,9 +24,9 @@ import internal.app.packed.bean.PackedBeanLocal;
 import sandbox.extension.bean.BeanHandle;
 
 /**
- * This class provides bean-local variables. Think of them as {@link ThreadLocal thread locals}, but for a single bean.
+ * This class provides bean-local variables at build-time.
  * <p>
- * Bean locals are typically used for sharing per-bean data between different components while building the application.
+ * Bean locals are typically used for sharing per-bean data between various parts of the application while building it.
  * For example, a value can be set for a bean when installing it using XXX.
  *
  * This value can then retrieved from a bean handle
@@ -52,18 +52,17 @@ import sandbox.extension.bean.BeanHandle;
  * @see app.packed.bean.BeanMirror#getLocal(BeanLocal)
  * @see ContainerLocal
  */
-// Jeg ved ikke om vi vil have en default vaerdi, og hvad med null
 @SuppressWarnings("rawtypes")
 public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
 
-    // Is useful, if we delegate operation creation to other extensions
-    // As they will not have access to BeanIntrospector
-    final T get(BeanElement element) {
-        throw new UnsupportedOperationException();
-    }
-
     public final T get(BeanConfiguration configuration) {
         return get(BeanSetup.crack(configuration));
+    }
+
+    // Is useful, if we delegate operation creation to other extensions
+    // As they will not have access to BeanIntrospector
+    public final T get(BeanElement element) {
+        throw new UnsupportedOperationException();
     }
 
     public final T get(BeanHandle<?> handle) {
@@ -74,6 +73,18 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
         return get(introspector.bean());
     }
 
+    /**
+     * <p>
+     * If this local has been created with an initial value supplier. The supplier will be used to initialize a value
+     *
+     * @param bean
+     *            the bean to return a value from
+     * @return the value of the bean local if set in the specified bean
+     *
+     * @throws java.util.NoSuchElementException
+     *             if a value has not been set previously for the bean, and no initial value supplier was specified when
+     *             creating the local
+     */
     protected abstract T get(BeanSetup bean);
 
     /**
@@ -86,44 +97,37 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
      * @throws UnsupportedOperationException
      *             if the bean local has an initial value. As this is always a usage error
      */
-    public final boolean isPresent(BeanConfiguration configuration) {
-        return isPresent(BeanSetup.crack(configuration));
+    public final boolean isSet(BeanConfiguration configuration) {
+        return isSet(BeanSetup.crack(configuration));
     }
 
-    public final boolean isPresent(BeanHandle<?> handle) {
-        return isPresent(BeanSetup.crack(handle));
+    public final boolean isSet(BeanHandle<?> handle) {
+        return isSet(BeanSetup.crack(handle));
     }
 
-    public final boolean isPresent(BeanIntrospector introspector) {
-        return isPresent(introspector.bean());
+    public final boolean isSet(BeanIntrospector introspector) {
+        return isSet(introspector.bean());
     }
 
-    protected abstract boolean isPresent(BeanSetup bean);
+    /**
+     * <p>
+     * Calling this method will not initialize the value of the local if no value has been explicitly set and a initial
+     * value supplier was specified when creating the local.
+     *
+     * @param bean
+     * @return whether or not a value has previously been expl
+     */
+    protected abstract boolean isSet(BeanSetup bean);
+
+    protected abstract T orElse(BeanSetup bean, T other);
 
     // or throws the supplied
     public final <X extends Throwable> T orElseThrow(BeanConfiguration configuration, Supplier<? extends X> exceptionSupplier) throws X {
-        if (!isPresent(configuration)) {
+        if (!isSet(configuration)) {
             throw exceptionSupplier.get();
         } else {
             return null;
         }
-    }
-
-    /**
-     * Sets the value of this local for the bean represented by the specified bean element.
-     *
-     * @param <B>
-     *            the type of bean element
-     * @param handle
-     *            the bean element that represents the bean
-     * @param value
-     *            the value to set
-     * @return the specified bean element
-     */
-    public final <B extends BeanElement> B set(B element, T value) {
-        PackedBeanElement e = (PackedBeanElement) element;
-        set(e.bean(), value);
-        return element;
     }
 
     /**
@@ -141,6 +145,7 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
         set(introspector.bean(), value);
         return introspector;
     }
+
 
     /**
      * Sets the value of this local for the bean represented by the specified bean configuration.
@@ -175,6 +180,23 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
     }
 
     /**
+     * Sets the value of this local for the bean represented by the specified bean element.
+     *
+     * @param <B>
+     *            the type of bean element
+     * @param handle
+     *            the bean element that represents the bean
+     * @param value
+     *            the value to set
+     * @return the specified bean element
+     */
+    public final void set(BeanElement element, T value) {
+        PackedBeanElement e = (PackedBeanElement) element;
+        set(e.bean(), value);
+        // return element;
+    }
+
+    /**
      * Sets the value of this local for the specified bean.
      *
      * @param bean
@@ -185,7 +207,7 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
     protected abstract void set(BeanSetup bean, T value);
 
     /**
-     * Creates a bean local without any initial value.
+     * Creates a bean local without any initial value supplier.
      *
      * @param <T>
      *            the type of the bean local's value
@@ -197,7 +219,7 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
 
     /**
      * Creates a bean local. The initial value is determined by invoking the {@code get} method on the specified
-     * {@code Supplier}.
+     * {@code Supplier}. If the specified supplier returns null, no initial value will be set.
      *
      * @param <T>
      *            the type of the bean local's value
@@ -210,6 +232,6 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
         return PackedBeanLocal.of(initialValueSupplier);
     }
 }
-//Makes no sense to have mutable operations on BeanMirror
 
+//Makes no sense to have mutable operations on BeanMirror
 //boolean hasInitialValue(), you should never need to query it

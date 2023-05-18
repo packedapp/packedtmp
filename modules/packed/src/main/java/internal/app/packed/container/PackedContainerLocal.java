@@ -26,14 +26,14 @@ import app.packed.util.Nullable;
 
 /** Implementation of {@link ContainerLocal}. */
 // Tror foerst vi skal beslutte os om vi har initial value
-public final class PackedContainerLocal<T> extends ContainerLocal<T> {
+public final class PackedContainerLocal<T> extends ContainerLocal<T> implements PackedLocal<T> {
 
     private final @Nullable Supplier<? extends T> initialValueSupplier;
 
     /** The scope of this container local. */
-    private final Scope scope;
+    private final LocalScope scope;
 
-    private PackedContainerLocal(Scope scope, @Nullable Supplier<? extends T> initialValueSupplier) {
+    private PackedContainerLocal(LocalScope scope, @Nullable Supplier<? extends T> initialValueSupplier) {
         this.scope = requireNonNull(scope);
         this.initialValueSupplier = initialValueSupplier;
     }
@@ -56,6 +56,12 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
         } else {
             return (T) contianer.locals.computeIfAbsent(this, e -> e.initialValueSupplier.get());
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public @Nullable Supplier<? extends T> initialValueSupplier() {
+        return initialValueSupplier;
     }
 
     /** {@inheritDoc} */
@@ -90,15 +96,15 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
         return new ContainerSetLocalWirelet();
     }
 
-    public static <T> PackedContainerLocal<T> of(Scope scope) {
+    public static <T> PackedContainerLocal<T> of(LocalScope scope) {
         return new PackedContainerLocal<>(scope, null);
     }
 
-    public static <T> PackedContainerLocal<T> of(Scope scope, @Nullable Supplier<? extends T> initialValueSupplier) {
+    public static <T> PackedContainerLocal<T> of(LocalScope scope, @Nullable Supplier<? extends T> initialValueSupplier) {
         return new PackedContainerLocal<>(scope, initialValueSupplier);
     }
 
-    public enum Scope {
-        APPLICATION, CONTAINER_LIFETIME, CONTAINER;
+    public enum LocalScope {
+        APPLICATION, CONTAINER, CONTAINER_LIFETIME;
     }
 }

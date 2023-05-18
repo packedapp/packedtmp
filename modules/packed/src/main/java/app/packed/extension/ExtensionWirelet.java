@@ -19,7 +19,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 
 /**
- * Extension wirelets are a specific type of wirelets that can only be defined by an extension.
+ * Extension wirelets are a specific type of wirelets that can only be defined by {@link Extension extensions}.
  * <p>
  * At build time use {@link Extension#selectWirelets(Class)}
  * <p>

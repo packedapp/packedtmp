@@ -12,7 +12,7 @@ import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.TreeMirror;
+import internal.app.packed.container.TreeNodeMirror;
 
 /**
  * A mirror of an application.
@@ -23,7 +23,7 @@ import internal.app.packed.container.TreeMirror;
  * An instance of ApplicationMirror can be injected at runtime simply by declaring a dependency on it.
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public final class AssemblyMirror implements TreeMirror<AssemblyMirror> {
+public final class AssemblyMirror implements TreeNodeMirror<AssemblyMirror> {
 
     /**
      * The internal configuration of the application we are mirrored. Is initially {@code null} but populated via
@@ -102,6 +102,7 @@ public final class AssemblyMirror implements TreeMirror<AssemblyMirror> {
     }
 
     /** {@return the container that is defined by this assembly.} */
+    // TODO Should probably be a container tree
     public ContainerMirror container() {
         return assembly().container.mirror();
     }

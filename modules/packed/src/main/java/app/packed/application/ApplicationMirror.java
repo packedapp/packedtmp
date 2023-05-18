@@ -5,17 +5,19 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.container.AssemblyMirror;
+import app.packed.container.AssemblyTreeMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
+import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.TreeMirror;
+import internal.app.packed.container.TreeNodeMirror;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -24,16 +26,16 @@ import internal.app.packed.operation.OperationSetup;
  * An application mirror instance is typically obtained by calling application mirror factory methods such as
  * {@link App#mirrorOf(Assembly, Wirelet...)}.
  * <p>
- * Instances of this class should never be created directly as the framework needs to initialize it before it can be
- * used.
+ * Instances of this class should never be created {@link #ApplicationMirror()} directly as the framework needs to
+ * perform initialization before it can be used.
  * <p>
- * Instances of ApplicationMirror can be injected at runtime simply by declaring a dependency on it.
+ * Instances of ApplicationMirror can be injected into any bean simply by declaring a dependency on this class.
  * <p>
- * Like many other mirrors classes the type of application mirror being returned can be specialized using
- * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)}.
+ * Like many other mirrors classes the type of application mirror being returned can be specialized. See
+ * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)} for details.
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public class ApplicationMirror implements TreeMirror<ApplicationMirror> {
+public class ApplicationMirror implements TreeNodeMirror<ApplicationMirror> {
 
     /** The configuration of the application. Is initially null but populated via {@link #initialize(ApplicationSetup)}. */
     @Nullable
@@ -62,9 +64,18 @@ public class ApplicationMirror implements TreeMirror<ApplicationMirror> {
         return container().assembly();
     }
 
+    /** {@return the deployment this container is a part of.} */
+    public DeploymentMirror deployment() {
+        throw new UnsupportedOperationException();
+    }
+
+    public AssemblyTreeMirror assemblies() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return the build goal that was used when building the application.} */
     public BuildGoal buildGoal() {
-        return application().goal;
+        return application().deployment.goal;
     }
 
     /** {@return a mirror of the root container in the application.} */
@@ -159,6 +170,14 @@ public class ApplicationMirror implements TreeMirror<ApplicationMirror> {
     @Override
     public String toString() {
         return "Application:" + name();
+    }
+
+    public <N extends NamespaceMirror<?>> N namespace(Class<N> type) {
+        return namespace(type, "main");
+    }
+
+    public <N extends NamespaceMirror<?>> N namespace(Class<N> type, String name) {
+        throw new UnsupportedOperationException();
     }
 
     /**

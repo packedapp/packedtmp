@@ -13,10 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package internal.app.packed.container;
+
+import java.util.function.Supplier;
+
+import app.packed.util.Nullable;
+import internal.app.packed.bean.PackedBeanLocal;
 
 /**
- * A wirelet that can be used by application developers.
+ *
  */
-// ApplicationWirelets er jo ikke saerlig fed... Naar vi har den her
-public non-sealed abstract class ApplicationWirelet extends Wirelet {}
+@SuppressWarnings("rawtypes")
+public sealed interface PackedLocal<T> permits PackedBeanLocal, PackedContainerLocal{
+
+    @Nullable Supplier<? extends T> initialValueSupplier();
+}

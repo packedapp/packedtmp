@@ -13,29 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package app.packed.extension;
 
-import java.util.function.BiConsumer;
-import java.util.stream.Stream;
+import java.util.function.Supplier;
+
+import internal.app.packed.bean.BeanSetup;
 
 /**
  *
  */
-public interface TreeMirror<N extends TreeNodeMirror<N>> extends Mirror {
 
-    /** {@return the number of nodes in the tree.} */
-    int count();
+//https://docs.oracle.com/en/java/javase/20/docs/api/jdk.incubator.concurrent/jdk/incubator/concurrent/ScopedValue.html#get()
+interface BeanLocal2<T> {
 
-    void forEach(BiConsumer<Integer, N> action);
+    T get(BeanSetup b); // throws NoSuchElement
 
-    /** {@return the root node in the tree.} */
-    N root();
+    boolean isSet();
 
-    Stream<N> stream();
+    T orElse(BeanSetup b, T other);
 
-    interface Node<N> {
-        N container();
+    <X extends Throwable> T orElseThrow(BeanSetup b, Supplier<? extends X> exceptionSupplier);
 
-        int depth();
-    }
+    void set(BeanSetup b, T value);
 }

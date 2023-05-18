@@ -20,6 +20,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.function.Consumer;
 
 import app.packed.extension.BeanHook.AnnotatedMethodHook;
 
@@ -31,9 +32,10 @@ import app.packed.extension.BeanHook.AnnotatedMethodHook;
 @Documented
 @AnnotatedMethodHook(extension = CliExtension.class)
 public @interface CliCommand {
+
     /**
-     * The name(s) of the command. If no name is specified. The name of the annotated method is used. Method names
-     * starting with underscores will automatically be renamed to hyphens.
+     * The name(s) of the command. If no name is specified. The name of the annotated method is used. Method names starting
+     * with underscores will automatically be renamed to hyphens.
      *
      * @return the name(s) of the command
      */
@@ -44,8 +46,12 @@ public @interface CliCommand {
      *
      * @see CliExtension#addCommand(String...)
      */
+    // Hvad er det praecis den skal kunne???
+    // cli.addCommand().name("foobar").execute(new Op1<MyService>(s->s.print);
     public interface Builder {
 
-        CliCommandMirror build();
+         Builder name(String... name);
+
+        void run(Consumer<CliCommandContext> action);
     }
 }

@@ -13,29 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
-
-import java.util.function.BiConsumer;
-import java.util.stream.Stream;
+package app.packed.container;
 
 /**
  *
  */
-public interface TreeMirror<N extends TreeNodeMirror<N>> extends Mirror {
 
-    /** {@return the number of nodes in the tree.} */
-    int count();
+// Maaske er det ikke en enum..
+// Maaske har har vi ogsaa Transactional,...
+// Og brugere kan lave deres egen
 
-    void forEach(BiConsumer<Integer, N> action);
-
-    /** {@return the root node in the tree.} */
-    N root();
-
-    Stream<N> stream();
-
-    interface Node<N> {
-        N container();
-
-        int depth();
-    }
+public enum ContainerBoundaryKind {
+    ASSEMBLY,
+    LIFETIME,
+    APPLICATION, // Implies Assembly? IDK
+    DEPLOYMENT // Implies -> Assembly, Lifetime, Application
 }
+// Add Family maybe? If we have a generic ContainerReleationstip

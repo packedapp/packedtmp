@@ -35,5 +35,6 @@ public class AssemblyFinderUsage extends BaseAssembly {
 
     public static void main(String[] args) {
         App.run(new AssemblyFinderUsage());
+        App.mirrorOf(new AssemblyFinderUsage()).assemblies().print();
     }
 }

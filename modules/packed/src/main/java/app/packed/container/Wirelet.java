@@ -77,13 +77,8 @@ import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
  * @see ContainerConfiguration#selectWirelets(Class)
  */
 
-// Configuration
-/// Buildtime only
-/// Shared -> Is the wirelet consumed (maybe Consumable)
-/// TargetSite -> Where it can be used
-/// Scope -> Visibility of the wirelet
 @SuppressWarnings("rawtypes")
-public sealed abstract class Wirelet permits ApplicationWirelet, ExtensionWirelet, FrameworkWirelet {
+public sealed abstract class Wirelet permits UserWirelet, ExtensionWirelet, FrameworkWirelet {
 
     final int flags = 0;
 
@@ -150,7 +145,12 @@ public sealed abstract class Wirelet permits ApplicationWirelet, ExtensionWirele
     // Vi kan nemlig ikke rigtig wrappe den.
     // Da det ikke er en statisk metode.
 
-    protected void onUnprocessed() {
+    /**
+     * Invoked by the runtime if the wirelet is not consumed. Either at build-time using
+     * {@link ContainerConfiguration#selectWirelets(Class)} or {@link app.packed.extension.Extension#selectWirelets(Class)}
+     * or at runtime using injection of {@link WireletSelection}.
+     */
+    protected void onUnconsumed() {
         // Invoked by the runtime if the wirelet is not processed in some way
 
         // look up extension member
@@ -197,7 +197,7 @@ public sealed abstract class Wirelet permits ApplicationWirelet, ExtensionWirele
      *            the name of the component
      * @return a wirelet that can be used to override the name of a container
      */
-    // String intrapolation?
+    // String intrapolation? Wirelet.ContainerMirror?
     public static Wirelet named(String name) {
         final class ContainerOverrideNameWirelet extends InternalBuildWirelet {
 
@@ -230,7 +230,8 @@ public sealed abstract class Wirelet permits ApplicationWirelet, ExtensionWirele
         return new ContainerOverrideNameWirelet(name);
     }
 
-    static Wirelet ignoreUnused(Wirelet wirelet) {
+    //
+    static Wirelet ignoreUnconsumed(Wirelet wirelet) {
         // Easier said then done I think. If composite wirelet.
         // We much apply to each
 

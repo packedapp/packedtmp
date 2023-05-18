@@ -13,29 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package app.packed.container;
 
-import java.util.function.BiConsumer;
-import java.util.stream.Stream;
+import internal.app.packed.container.TreeMirror;
 
 /**
- *
+ * Represents a collection of assemblies that are ordered in a rooted tree.
+ * <p>
+ * This
  */
-public interface TreeMirror<N extends TreeNodeMirror<N>> extends Mirror {
 
-    /** {@return the number of nodes in the tree.} */
-    int count();
+// Multi app.
+// application.assemblies() All assemblies that make of the application. Child applications not included.
 
-    void forEach(BiConsumer<Integer, N> action);
+// application.tree().assemblies() <--- Application tree for assemblies
 
-    /** {@return the root node in the tree.} */
-    N root();
+public interface AssemblyTreeMirror extends TreeMirror<AssemblyMirror> {
 
-    Stream<N> stream();
+    /**
+     *
+     */
+    void print();
 
-    interface Node<N> {
-        N container();
-
-        int depth();
-    }
 }

@@ -17,5 +17,5 @@ package internal.app.packed.container;
 
 import app.packed.container.Wirelet;
 
-/** Special wirelets that are defined by the framework. */
+/** Abstract class for wirelets that are defined by the framework. */
 public abstract sealed class FrameworkWirelet extends Wirelet permits CompositeWirelet, InternalBuildWirelet {}

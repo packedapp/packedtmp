@@ -60,7 +60,7 @@ abstract class AbstractAppTest<A> {
 
     AbstractAppTest() {}
 
-    protected final void add(OperationHandle h) {
+    public final void add(OperationHandle h) {
         add("main", h);
     }
 
