@@ -15,6 +15,7 @@
  */
 package app.packed.container;
 
+import internal.app.packed.container.Mirror;
 import internal.app.packed.container.TreeMirror;
 
 /**
@@ -28,7 +29,7 @@ import internal.app.packed.container.TreeMirror;
 
 // application.tree().assemblies() <--- Application tree for assemblies
 
-public interface AssemblyTreeMirror extends TreeMirror<AssemblyMirror> {
+public interface AssemblyTreeMirror extends TreeMirror<AssemblyMirror>, Mirror {
 
     /**
      *

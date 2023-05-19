@@ -96,6 +96,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
     /** Supplies a mirror for the container. */
     private final Supplier<? extends ContainerMirror> specializedMirror;
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     /**
      * Create a new container.
      *
@@ -111,7 +112,8 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
         this.specializedMirror = builder.containerMirrorSupplier;
         this.name = builder.name;
 
-        builder.locals.forEach((p, o) -> application.containerLocals.put(p.keyOf(this), o));
+        builder.locals.forEach((p, o) -> p.locals(this).set((PackedLocal) p, this, o));
+
 
         if (builder.template.kind() == PackedContainerKind.PARENT_LIFETIME) {
             this.lifetime = treeParent.lifetime;

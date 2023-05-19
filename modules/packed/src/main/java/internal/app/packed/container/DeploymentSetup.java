@@ -18,6 +18,7 @@ package internal.app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.application.BuildGoal;
+import app.packed.application.DeploymentMirror;
 
 /**
  *
@@ -34,8 +35,17 @@ public final class DeploymentSetup {
     /** The build goal. */
     public final BuildGoal goal;
 
+    public final PackedLocalMap locales = new PackedLocalMap();
+
     DeploymentSetup(ApplicationSetup root, PackedContainerBuilder containerBuilder) {
         this.root = requireNonNull(root);
         this.goal = containerBuilder.goal();
+    }
+
+    /**
+     * @return
+     */
+    public DeploymentMirror mirror() {
+        throw new UnsupportedOperationException();
     }
 }

@@ -17,14 +17,20 @@ package internal.app.packed.container;
 
 import java.util.function.Supplier;
 
+import app.packed.bean.BeanLocal;
+import app.packed.extension.ContainerLocal;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.PackedBeanLocal;
 
 /**
  *
  */
 @SuppressWarnings("rawtypes")
-public sealed interface PackedLocal<T> permits PackedBeanLocal, PackedContainerLocal{
+public abstract sealed class PackedLocal<T> permits BeanLocal, ContainerLocal {
 
-    @Nullable Supplier<? extends T> initialValueSupplier();
+    /** An optional supplier that can provide initial values for a bean local. */
+    final @Nullable Supplier<? extends T> initialValueSupplier;
+
+    protected PackedLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
+        this.initialValueSupplier = initialValueSupplier;
+    }
 }

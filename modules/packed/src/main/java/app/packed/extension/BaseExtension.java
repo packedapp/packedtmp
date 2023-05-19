@@ -17,6 +17,7 @@ import app.packed.application.BuildException;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.Inject;
 import app.packed.bean.UnmanagedLifetimeException;
@@ -49,7 +50,6 @@ import internal.app.packed.bean.BeanLifecycleOrder;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanBuilder;
 import internal.app.packed.bean.PackedBeanHandle;
-import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.bean.PackedBeanWrappedVariable;
 import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.container.LeafContainerOrApplicationBuilder;
@@ -104,7 +104,7 @@ import sandbox.lifetime.external.LifecycleController;
 public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /** A key map with providers for use together with {@link app.packed.extension.BaseExtensionPoint.CodeGenerated}. */
-    static final PackedBeanLocal<Map<Key<?>, BeanVariable>> CODEGEN = PackedBeanLocal.of(() -> new HashMap<>());
+    static final BeanLocal<Map<Key<?>, BeanVariable>> CODEGEN = BeanLocal.of(() -> new HashMap<>());
 
     // We use an initial value for now, because we share FromLinks and the boolean fields
     // But right now we only have a single field
@@ -116,7 +116,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     BaseExtension() {}
 
     <K> void addCodeGenerated(BeanSetup bean, Key<K> key, Supplier<? extends K> supplier) {
-        Map<Key<?>, BeanVariable> m = CODEGEN.get(bean);
+        Map<Key<?>, BeanVariable> m = bean.container.application.locals.get(CODEGEN, bean);
         BeanVariable var = m.get(key);
         if (var == null) {
             throw new IllegalArgumentException("The specified bean must have an injection site that uses @" + CodeGenerated.class.getSimpleName() + " " + key

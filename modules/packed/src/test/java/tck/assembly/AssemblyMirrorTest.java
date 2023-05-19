@@ -18,7 +18,6 @@ package tck.assembly;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -41,12 +40,9 @@ public class AssemblyMirrorTest extends AbstractMirrorTest {
 
         assertSame(TckAssemblies.HelloWorldAssembly.class, m.assemblyClass());
         assertThat(m.assemblyDuration()).isPositive();
-        assertThat(m.children()).isEmpty();
         assertEquals(m.container(), m.application().container());
         assertThat(m.delegatedFrom()).isEmpty();
-        assertTrue(m.isRoot());
-        assertThat(m.hooks()).isEmpty();
-        assertThat(m.parent()).isEmpty();
+        assertThat(m.assemblyHooks()).isEmpty();
         assertThat(m.toString()).isEqualTo("Assembly:HelloWorld:/");
     }
 }

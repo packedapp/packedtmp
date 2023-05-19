@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import app.packed.util.TreeNavigator;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
@@ -31,7 +32,7 @@ import internal.app.packed.container.ExtensionSetup;
  *
  * @see Extension#applicationNavigator()
  */
-public final /* primitive */ class ExtensionNavigator<E extends Extension<E>> implements Iterable<E> {
+final /* primitive */ class ExtensionNavigator<E extends Extension<E>> implements TreeNavigator<E> {
 
     /** We use the extension type mainly for casting. */
     private final Class<E> extensionType;
@@ -45,6 +46,7 @@ public final /* primitive */ class ExtensionNavigator<E extends Extension<E>> im
     }
 
     /** {@return the number of extensions in the tree.} */
+    @Override
     public int count() {
         int size = 0;
         for (@SuppressWarnings("unused")
@@ -74,7 +76,8 @@ public final /* primitive */ class ExtensionNavigator<E extends Extension<E>> im
      * {@return whether or not this extension has a parent extension.} Only extensions that are used in the root container
      * of an application does not have a parent extension.
      */
-    boolean isRoot() {
+    @Override
+    public boolean isRoot() {
         return origin.treeParent == null;
     }
 
@@ -87,6 +90,7 @@ public final /* primitive */ class ExtensionNavigator<E extends Extension<E>> im
 //    /** {@return the root of the tree.} */
 //    public root();
 
+    @Override
     public E origin() {
         return extensionType.cast(origin.instance());
     }
@@ -94,10 +98,12 @@ public final /* primitive */ class ExtensionNavigator<E extends Extension<E>> im
     /**
      * @return
      */
+    @Override
     public E root() {
         return extensionType.cast(origin.root().instance());
     }
 
+    @Override
     public Stream<E> stream() {
         return StreamSupport.stream(spliterator(), false);
     }

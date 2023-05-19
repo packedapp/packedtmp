@@ -16,17 +16,17 @@
 package app.packed.application;
 
 import app.packed.container.AssemblyTreeMirror;
+import internal.app.packed.container.Mirror;
+import internal.app.packed.container.TreeMirror;
 
 /**
  *
  */
-
 // Problemet med ApplicationTree er vel navngivning
-
-public interface ApplicationTreeMirror {
+public interface ApplicationTreeMirror extends TreeMirror<ApplicationMirror>, Mirror {
 
     AssemblyTreeMirror assemblies();
-
 }
+
 //ApplicationMirror bootstappedBy(); // nah hvad hvis det er et child som root.
 // Maa have noget paa Application som Host? Ikke parent da det ikke er en Application

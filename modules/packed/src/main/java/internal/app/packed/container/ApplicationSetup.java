@@ -21,9 +21,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationMirror;
@@ -58,9 +55,6 @@ public final class ApplicationSetup {
     /** The root container of the application. */
     public final ContainerSetup container;
 
-    /** This map maintains every {@link app.packed.extension.ContainerLocal} for the whole application. */
-    public final HashMap<Map.Entry<PackedContainerLocal<?>, Object>, Object> containerLocals = new HashMap<>();
-
     /** The deployment the application is part of. */
     public final DeploymentSetup deployment;
 
@@ -73,7 +67,7 @@ public final class ApplicationSetup {
     int extensionIdCounter;
 
     /** This map maintains every {@link app.packed.extension.ContainerLocal} for the whole application. */
-    private final ConcurrentHashMap<LocalKey, Object> locals = new ConcurrentHashMap<>();
+    public final PackedLocalMap locals = new PackedLocalMap();
 
     /** Supplies mirrors for the application. */
     private final Supplier<? extends ApplicationMirror> mirrorSupplier;
@@ -154,49 +148,6 @@ public final class ApplicationSetup {
         phase = ApplicationBuildPhase.COMPLETED;
     }
 
-    public <T> T localGet(PackedLocal<T> local, Object key) {
-        T t = localGetNullable(local, key);
-        if (t == null) {
-            throw new NoSuchElementException("A value has not been set for the specified local");
-        }
-        return t;
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> @Nullable T localGetNullable(PackedLocal<T> local, Object key) {
-        Supplier<? extends T> ivs = local.initialValueSupplier();
-        if (ivs == null) {
-            return (T) locals.get(new LocalKey(local, key));
-        } else {
-            return (T) locals.computeIfAbsent(new LocalKey(local, key), e -> local.initialValueSupplier().get());
-        }
-    }
-
-    public boolean localIsSet(PackedLocal<?> local, Object key) {
-        return locals.contains(new LocalKey(local, key));
-    }
-
-    public <T> @Nullable T localOrElse(PackedLocal<T> local, Object key, T other) {
-        T t = localGetNullable(local, key);
-        return t == null ? other : t;
-    }
-
-    public <X extends Throwable, T> @Nullable T localOrElseThrow(PackedLocal<T> local, Object key, Supplier<? extends X> exceptionSupplier) throws X {
-        T t = localGetNullable(local, key);
-        if (t == null) {
-            throw exceptionSupplier.get();
-        }
-        return t;
-    }
-
-    public <T> void localSet(PackedLocal<T> local, Object key, T value) {
-        requireNonNull(value, "value is null");
-
-        // But writing initial value is okay???
-        checkWriteToLocals();
-
-        locals.put(new LocalKey(local, key), value);
-    }
 
     /** {@return a mirror that can be exposed to end-users.} */
     public ApplicationMirror mirror() {
@@ -215,6 +166,4 @@ public final class ApplicationSetup {
     private enum ApplicationBuildPhase {
         ASSEMBLE, CODEGEN, COMPLETED;
     }
-
-    private record LocalKey(PackedLocal<?> local, Object value) {}
 }

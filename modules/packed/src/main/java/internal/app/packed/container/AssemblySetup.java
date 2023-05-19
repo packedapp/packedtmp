@@ -17,8 +17,6 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,16 +29,14 @@ import app.packed.container.DelegatingAssembly;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.AuthorSetup;
 import internal.app.packed.service.CircularServiceDependencyChecker;
-import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.ThrowableUtil;
+import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.types.ClassUtil;
 
 /** The internal configuration of an assembly. */
 public final class AssemblySetup implements AuthorSetup {
 
-    /** A MethodHandle for invoking {@link AssemblyMirror#initialize(AssemblySetup)}. */
-    private static final MethodHandle MH_ASSEMBLY_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), AssemblyMirror.class, "initialize",
-            void.class, AssemblySetup.class);
+    /** A magic initializer for {@link BeanMirror}. */
+    public static final MagicInitializer<AssemblySetup> MIRROR_INITIALIZER = MagicInitializer.of(AssemblyMirror.class);
 
     /** The assembly instance. */
     public final Assembly assembly;
@@ -113,15 +109,7 @@ public final class AssemblySetup implements AuthorSetup {
 
     /** {@return a mirror for this assembly.} */
     public AssemblyMirror mirror() {
-        AssemblyMirror mirror = ClassUtil.newMirror(AssemblyMirror.class, AssemblyMirror::new, null);
-
-        // Initialize AssemblyMirror by calling AssemblyMirror#initialize(AssemblySetup)
-        try {
-            MH_ASSEMBLY_MIRROR_INITIALIZE.invokeExact(mirror, this);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-        return mirror;
+        return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(AssemblyMirror.class, AssemblyMirror::new, null), this);
     }
 
     /** Does post processing after we have called into the assembly to build. */

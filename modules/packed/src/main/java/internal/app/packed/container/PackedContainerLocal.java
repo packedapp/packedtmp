@@ -17,7 +17,6 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Map;
 import java.util.function.Supplier;
 
 import app.packed.container.Wirelet;
@@ -26,61 +25,43 @@ import app.packed.util.Nullable;
 
 /** Implementation of {@link ContainerLocal}. */
 // Tror foerst vi skal beslutte os om vi har initial value
-public final class PackedContainerLocal<T> extends ContainerLocal<T> implements PackedLocal<T> {
-
-    private final @Nullable Supplier<? extends T> initialValueSupplier;
+public final class PackedContainerLocal<T> extends ContainerLocal<T> {
 
     /** The scope of this container local. */
     private final LocalScope scope;
 
     private PackedContainerLocal(LocalScope scope, @Nullable Supplier<? extends T> initialValueSupplier) {
+        super(initialValueSupplier);
         this.scope = requireNonNull(scope);
-        this.initialValueSupplier = initialValueSupplier;
     }
 
     /** {@inheritDoc} */
     @Override
-    @SuppressWarnings("unchecked")
     public T get(ContainerSetup container) {
-        if (initialValueSupplier == null) {
-            return (T) container.application.containerLocals.get(keyOf(container));
-        } else {
-            return (T) container.application.containerLocals.computeIfAbsent(keyOf(container), k -> k.getKey().initialValueSupplier.get());
-        }
+        return locals(container).get(this, container);
     }
 
-    @SuppressWarnings("unchecked")
     public T get(LeafContainerOrApplicationBuilder contianer) {
-        if (initialValueSupplier == null) {
-            return (T) contianer.locals.get(this);
-        } else {
-            return (T) contianer.locals.computeIfAbsent(this, e -> e.initialValueSupplier.get());
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public @Nullable Supplier<? extends T> initialValueSupplier() {
-        return initialValueSupplier;
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isPresent(ContainerSetup container) {
-        return container.application.containerLocals.containsKey(keyOf(container));
+        return locals(container).isSet(this, container);
     }
 
-    public Map.Entry<PackedContainerLocal<?>, Object> keyOf(ContainerSetup container) {
-        return Map.entry(this, switch (scope) {
-        case APPLICATION -> container.application;
-        case CONTAINER_LIFETIME -> container.lifetime;
-        case CONTAINER -> container;
-        });
+    public PackedLocalMap locals(ContainerSetup container) {
+        ApplicationSetup application = container.application;
+        return switch (scope) {
+        case DEPLOYMENT -> application.deployment.locales;
+        default -> application.locals;
+        };
     }
 
     public void set(ContainerSetup container, T value) {
         requireNonNull(container);
-        container.application.containerLocals.put(keyOf(container), value);
+        locals(container).set(this, container, value);
     }
 
     /** {@inheritDoc} */
@@ -104,7 +85,8 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> implements 
         return new PackedContainerLocal<>(scope, initialValueSupplier);
     }
 
+    // ContainerBoundaryKind
     public enum LocalScope {
-        APPLICATION, CONTAINER, CONTAINER_LIFETIME;
+        APPLICATION, CONTAINER, CONTAINER_LIFETIME, DEPLOYMENT;
     }
 }

@@ -2,6 +2,7 @@ package internal.app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.container.Author;
 import app.packed.context.Context;
+import app.packed.extension.BeanElement;
+import app.packed.extension.BeanIntrospector;
 import app.packed.lifetime.LifecycleOperationMirror;
 import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
@@ -42,6 +45,7 @@ import internal.app.packed.service.ServiceProviderSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.PackedNamespacePath;
+import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
 import sandbox.extension.bean.BeanHandle;
 import sandbox.extension.operation.OperationHandle;
@@ -51,7 +55,7 @@ import sandbox.extension.operation.OperationTemplate;
 public final class BeanSetup implements ContextualizedElementSetup {
 
     /** A magic initializer for {@link BeanMirror}. */
-    public static final MagicInitializer<BeanSetup> MIRROR_INITILIZER = MagicInitializer.of();
+    public static final MagicInitializer<BeanSetup> MIRROR_INITIALIZER = MagicInitializer.of(BeanMirror.class);
 
     /** A handle that can access BeanConfiguration#handle. */
     private static final VarHandle VH_BEAN_CONFIGURATION_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanConfiguration.class, "handle",
@@ -206,7 +210,7 @@ public final class BeanSetup implements ContextualizedElementSetup {
     /** {@return a new mirror.} */
     @Override
     public BeanMirror mirror() {
-        return MIRROR_INITILIZER.run(() -> ClassUtil.newMirror(BeanMirror.class, BeanMirror::new, mirrorSupplier), this);
+        return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(BeanMirror.class, BeanMirror::new, mirrorSupplier), this);
     }
 
     public String name() {
@@ -272,6 +276,26 @@ public final class BeanSetup implements ContextualizedElementSetup {
     public static BeanSetup crack(BeanConfiguration configuration) {
         PackedBeanHandle<?> handle = (PackedBeanHandle<?>) VH_BEAN_CONFIGURATION_TO_HANDLE.get(configuration);
         return handle.bean();
+    }
+
+    public static BeanSetup crack(BeanElement element) {
+        return ((PackedBeanElement) element).bean();
+    }
+
+
+
+
+    /** A MethodHandle for invoking {@link ExtensionMirror#initialize(ExtensionSetup)}. */
+    private static final MethodHandle MH_BEAN_INTROSPECTOR_TO_BEAN = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class, "bean",
+            BeanSetup.class);
+
+    public static BeanSetup crack(BeanIntrospector introspector) {
+        // Call ExtensionMirror#initialize(ExtensionSetup)
+        try {
+            return (BeanSetup) MH_BEAN_INTROSPECTOR_TO_BEAN.invokeExact(introspector);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
     }
 
     public static BeanSetup crack(BeanHandle<?> handle) {

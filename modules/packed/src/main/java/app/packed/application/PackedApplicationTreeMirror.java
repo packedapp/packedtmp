@@ -13,26 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
-
-import java.util.function.Supplier;
-
-import internal.app.packed.bean.BeanSetup;
+package app.packed.application;
 
 /**
  *
  */
+public class PackedApplicationTreeMirror {
 
-//https://docs.oracle.com/en/java/javase/20/docs/api/jdk.incubator.concurrent/jdk/incubator/concurrent/ScopedValue.html#get()
-interface BeanLocal2<T> {
-
-    T get(BeanSetup b); // throws NoSuchElement
-
-    boolean isSet();
-
-    T orElse(BeanSetup b, T other);
-
-    <X extends Throwable> T orElseThrow(BeanSetup b, Supplier<? extends X> exceptionSupplier);
-
-    void set(BeanSetup b, T value);
 }

@@ -57,19 +57,23 @@ public abstract class PackedContainerBuilder {
     /** A supplier for creating container mirrors. */
     protected Supplier<? extends ContainerMirror> containerMirrorSupplier;
 
+    // I would like to time stuff. But I have no idea on how to do it reliable with all the laziness
+    long creationNanos;
+
     /** Delegating assemblies. Empty unless any {@link DelegatingAssembly} has been used. */
     public final ArrayList<Class<? extends DelegatingAssembly>> delegatingAssemblies = new ArrayList<>();
 
     /** Locals that the container is initialized with. */
     public final IdentityHashMap<PackedContainerLocal<?>, Object> locals = new IdentityHashMap<>();
 
-    // I would like to time stuff. But I have no idea on how to do it reliable with all the laziness
-    long creationNanos;
-
     String name;
 
     @Nullable
     public String nameFromWirelet;
+
+    public boolean optionBuildApplicationLazy;
+
+    public boolean optionBuildReusableImage;
 
     /** The parent of the new container. Or <code>null</code> if a root container. */
     @Nullable
@@ -84,9 +88,9 @@ public abstract class PackedContainerBuilder {
         this.template = requireNonNull(template, "template is null");
     }
 
-    public boolean optionBuildApplicationLazy;
-
-    public boolean optionBuildReusableImage;
+    public FutureApplicationSetup buildLazy(Assembly assembly) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Builds a new container using the specified assembly
@@ -110,10 +114,6 @@ public abstract class PackedContainerBuilder {
 
         // Return the container that was just built.
         return as.container;
-    }
-
-    public FutureApplicationSetup buildLazy(Assembly assembly) {
-        throw new UnsupportedOperationException();
     }
 
     public abstract BuildGoal goal();

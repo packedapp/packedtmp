@@ -15,9 +15,12 @@
  */
 package app.packed.lifetime;
 
+import internal.app.packed.container.Mirror;
+import internal.app.packed.container.TreeMirror;
+
 /**
  *
  */
-public interface ContainerLifetimeTreeMirror {
+public interface ContainerLifetimeTreeMirror extends TreeMirror<ContainerLifetimeMirror> , Mirror {
 
 }

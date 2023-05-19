@@ -13,14 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.bean;
+
+import static internal.app.packed.bean.BeanSetup.crack;
+import static java.util.Objects.requireNonNull;
 
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanConfiguration;
+import app.packed.extension.BeanElement;
+import app.packed.extension.BeanIntrospector;
+import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanElement;
-import internal.app.packed.bean.PackedBeanLocal;
+import internal.app.packed.container.PackedLocal;
 import sandbox.extension.bean.BeanHandle;
 
 /**
@@ -52,25 +57,41 @@ import sandbox.extension.bean.BeanHandle;
  * @see app.packed.bean.BeanMirror#getLocal(BeanLocal)
  * @see ContainerLocal
  */
-@SuppressWarnings("rawtypes")
-public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
+// Supported entities
+//// BeanConfiguration
+//// BeanElement
+//// BeanHandle
+//// BeanIntrospector
+//// BeanMirror
 
-    public final T get(BeanConfiguration configuration) {
-        return get(BeanSetup.crack(configuration));
+// Kunne ogsaa bruges til at tagge entities?
+// Vil gerne ApplicationLocal.tag();
+/// bean().tag("dsdfsdf"); ->
+public final class BeanLocal<T> extends PackedLocal<T> {
+
+    private BeanLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
+        super(initialValueSupplier);
     }
 
-    // Is useful, if we delegate operation creation to other extensions
-    // As they will not have access to BeanIntrospector
-    public final T get(BeanElement element) {
-        throw new UnsupportedOperationException();
+    public T get(BeanConfiguration configuration) {
+        return get(crack(configuration));
     }
 
-    public final T get(BeanHandle<?> handle) {
-        return get(BeanSetup.crack(handle));
+    // Is useful, if we delegate operation creation to other extensions, As they will not have access to BeanIntrospector
+    public T get(BeanElement element) {
+        return get(crack(element));
     }
 
-    public final T get(BeanIntrospector introspector) {
-        return get(introspector.bean());
+    public T get(BeanHandle<?> handle) {
+        return get(crack(handle));
+    }
+
+    public T get(BeanIntrospector introspector) {
+        return get(crack(introspector));
+    }
+
+    public T get(BeanMirror mirror) {
+        return get(mirror.bean);
     }
 
     /**
@@ -85,7 +106,9 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
      *             if a value has not been set previously for the bean, and no initial value supplier was specified when
      *             creating the local
      */
-    protected abstract T get(BeanSetup bean);
+    private T get(BeanSetup bean) {
+        return bean.container.application.locals.get(this, bean);
+    }
 
     /**
      * In the bean represented by the specified configuration
@@ -97,16 +120,16 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
      * @throws UnsupportedOperationException
      *             if the bean local has an initial value. As this is always a usage error
      */
-    public final boolean isSet(BeanConfiguration configuration) {
+    public boolean isSet(BeanConfiguration configuration) {
         return isSet(BeanSetup.crack(configuration));
     }
 
-    public final boolean isSet(BeanHandle<?> handle) {
+    public boolean isSet(BeanHandle<?> handle) {
         return isSet(BeanSetup.crack(handle));
     }
 
-    public final boolean isSet(BeanIntrospector introspector) {
-        return isSet(introspector.bean());
+    public boolean isSet(BeanIntrospector introspector) {
+        return isSet(BeanSetup.crack(introspector));
     }
 
     /**
@@ -117,17 +140,25 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
      * @param bean
      * @return whether or not a value has previously been expl
      */
-    protected abstract boolean isSet(BeanSetup bean);
+    private boolean isSet(BeanSetup bean) {
+        return bean.container.application.locals.isSet(this, bean);
+    }
 
-    protected abstract T orElse(BeanSetup bean, T other);
+    T orElse(BeanSetup bean, T other) {
+        return bean.container.application.locals.orElse(this, bean, other);
+    }
 
     // or throws the supplied
-    public final <X extends Throwable> T orElseThrow(BeanConfiguration configuration, Supplier<? extends X> exceptionSupplier) throws X {
+    public <X extends Throwable> T orElseThrow(BeanConfiguration configuration, Supplier<? extends X> exceptionSupplier) throws X {
         if (!isSet(configuration)) {
             throw exceptionSupplier.get();
         } else {
             return null;
         }
+    }
+
+    protected <X extends Throwable> T orElseThrow(BeanSetup bean, Supplier<? extends X> exceptionSupplier) throws X {
+        return bean.container.application.locals.orElseThrow(this, bean, exceptionSupplier);
     }
 
     /**
@@ -141,11 +172,10 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
      *            the value to set
      * @return the specified bean introspector
      */
-    public final <B extends BeanIntrospector> B set(B introspector, T value) {
-        set(introspector.bean(), value);
+    public <B extends BeanIntrospector> B set(B introspector, T value) {
+        set(BeanSetup.crack(introspector), value);
         return introspector;
     }
-
 
     /**
      * Sets the value of this local for the bean represented by the specified bean configuration.
@@ -158,7 +188,7 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
      *            the value to set
      * @return the specified bean configuration
      */
-    public final <B extends BeanConfiguration> B set(B configuration, T value) {
+    public <B extends BeanConfiguration> B set(B configuration, T value) {
         set(BeanSetup.crack(configuration), value);
         return configuration;
     }
@@ -174,7 +204,7 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
      *            the value to set
      * @return the specified bean handle
      */
-    public final <B extends BeanHandle<?>> B set(B handle, T value) {
+    public <B extends BeanHandle<?>> B set(B handle, T value) {
         set(BeanSetup.crack(handle), value);
         return handle;
     }
@@ -190,7 +220,7 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
      *            the value to set
      * @return the specified bean element
      */
-    public final void set(BeanElement element, T value) {
+    public void set(BeanElement element, T value) {
         PackedBeanElement e = (PackedBeanElement) element;
         set(e.bean(), value);
         // return element;
@@ -204,7 +234,10 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
      * @param value
      *            the value to set
      */
-    protected abstract void set(BeanSetup bean, T value);
+    protected void set(BeanSetup bean, T value) {
+        requireNonNull(bean, "bean is null");
+        bean.container.application.locals.set(this, bean, value);
+    }
 
     /**
      * Creates a bean local without any initial value supplier.
@@ -214,7 +247,7 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
      * @return a new bean local
      */
     public static <T> BeanLocal<T> of() {
-        return PackedBeanLocal.of(null);
+        return new BeanLocal<>(null);
     }
 
     /**
@@ -229,8 +262,23 @@ public sealed abstract class BeanLocal<T> permits PackedBeanLocal {
      *
      */
     public static <T> BeanLocal<T> of(Supplier<? extends T> initialValueSupplier) {
-        return PackedBeanLocal.of(initialValueSupplier);
+        requireNonNull(initialValueSupplier);
+        return new BeanLocal<>(initialValueSupplier);
     }
+}
+
+//https://docs.oracle.com/en/java/javase/20/docs/api/jdk.incubator.concurrent/jdk/incubator/concurrent/ScopedValue.html#get()
+interface BeanLocal2<T> {
+
+    T get(BeanSetup b); // throws NoSuchElement
+
+    boolean isSet();
+
+    T orElse(BeanSetup b, T other);
+
+    <X extends Throwable> T orElseThrow(BeanSetup b, Supplier<? extends X> exceptionSupplier);
+
+    void set(BeanSetup b, T value);
 }
 
 //Makes no sense to have mutable operations on BeanMirror

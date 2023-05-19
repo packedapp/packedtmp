@@ -17,8 +17,11 @@ package app.packed.extension;
 
 import java.util.function.Supplier;
 
+import app.packed.bean.BeanLocal;
 import app.packed.container.Wirelet;
+import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.container.PackedLocal;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerLocal;
 
@@ -44,7 +47,11 @@ import internal.app.packed.container.PackedContainerLocal;
  * @see BeanLocal
  */
 @SuppressWarnings("rawtypes")
-public abstract sealed class ContainerLocal<T> permits PackedContainerLocal {
+public abstract sealed class ContainerLocal<T> extends PackedLocal<T> permits PackedContainerLocal {
+
+    protected ContainerLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
+        super(initialValueSupplier);
+    }
 
     protected T get(BeanSetup bean) {
         return get(bean.container);

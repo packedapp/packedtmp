@@ -42,6 +42,9 @@ public final class MagicInitializer<T> {
 
     public T initialize() {
         Holder<T> holder = TL.get();
+        if (holder == null) {
+            throw new IllegalStateException("");
+        }
         T t = requireNonNull(holder.t);
         holder.t = null;
         return t;
@@ -64,7 +67,9 @@ public final class MagicInitializer<T> {
 
     // Take a get class for better error messages?
     // Or maybe even an error message
-    public static <T> MagicInitializer<T> of() {
+
+    // IDK about class, namespace does a bit of funny initialization
+    public static <T> MagicInitializer<T> of(Class<?> clazzToInitialize) {
         return new MagicInitializer<>();
     }
 }

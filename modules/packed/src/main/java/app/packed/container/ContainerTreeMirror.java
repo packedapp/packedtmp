@@ -19,6 +19,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import app.packed.context.ContextScopeMirror;
+import internal.app.packed.container.Mirror;
 import internal.app.packed.container.TreeMirror;
 
 /**
@@ -34,7 +35,7 @@ import internal.app.packed.container.TreeMirror;
 //
 
 // Alternative ContainerMirror.ofTree
-public non-sealed interface ContainerTreeMirror extends TreeMirror<ContainerMirror>, ContextScopeMirror {
+public non-sealed interface ContainerTreeMirror extends TreeMirror<ContainerMirror>, ContextScopeMirror, Mirror {
 
     @Override
     void forEach(BiConsumer<Integer, ContainerMirror> action);

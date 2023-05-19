@@ -18,8 +18,8 @@ package sandbox.extension.bean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanMirror;
-import app.packed.extension.BeanLocal;
 import app.packed.operation.Op;
 import internal.app.packed.bean.PackedBeanBuilder;
 

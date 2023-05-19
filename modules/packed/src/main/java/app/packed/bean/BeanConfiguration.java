@@ -11,7 +11,7 @@ import app.packed.util.Key;
 import internal.app.packed.bean.PackedBeanHandle;
 import sandbox.extension.bean.BeanHandle;
 
-/** The configuration of a bean, typically returned from the installation site of a bean. */
+/** The configuration of a bean, typically returned from the bean's installation site. */
 public class BeanConfiguration {
 
     /** The bean handle. */

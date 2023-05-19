@@ -48,7 +48,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "onNew", void.class);
 
     /** Used for initializing {@link Extension}. */
-    public static final MagicInitializer<ExtensionSetup> MI = MagicInitializer.of();
+    public static final MagicInitializer<ExtensionSetup> MI = MagicInitializer.of(Extension.class);
 
     /** The container where the extension is used. */
     public final ContainerSetup container;

@@ -18,8 +18,8 @@ package sandbox.extension.domain;
 import java.util.Set;
 
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionNavigator;
 import app.packed.namespace.NamespaceMirror;
+import app.packed.util.TreeNavigator;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.NamespaceSetup;
 
@@ -43,7 +43,7 @@ public abstract class NamespaceOperator<E extends Extension<E>> {
      */
     // Ogsaa containere hvor den ikke noedvendig er brugt890[]\
 
-    public ExtensionNavigator<E> navigator() {
+    public TreeNavigator<E> navigator() {
         throw new UnsupportedOperationException();
     }
 

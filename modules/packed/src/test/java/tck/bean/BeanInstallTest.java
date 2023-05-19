@@ -55,7 +55,7 @@ public class BeanInstallTest extends AppAppTest {
         assertEquals(bsk, b.beanSourceKind());
         assertThat(b.contexts()).isEmpty();
         assertThat(b.owner()).isSameAs(Author.application());
-        assertEquals(b.application().lifetime(), b.lifetime());
+        assertEquals(b.container().lifetime(), b.lifetime());
 
         assertEquals("R", b.name());
         assertEquals("/R", b.path().toString());

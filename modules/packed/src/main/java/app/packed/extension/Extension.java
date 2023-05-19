@@ -30,6 +30,7 @@ import app.packed.application.OldApplicationPath;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.service.ServiceableBeanConfiguration;
+import app.packed.util.TreeNavigator;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NamespaceSetup;
 import internal.app.packed.container.PackedContainerHandle;
@@ -92,7 +93,7 @@ public abstract class Extension<E extends Extension<E>> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     // ApplicationNavigator?
-    protected final ExtensionNavigator<E> applicationNavigator() {
+    protected final TreeNavigator<E> applicationNavigator() {
         return new ExtensionNavigator(extension, extension.extensionType);
     }
 

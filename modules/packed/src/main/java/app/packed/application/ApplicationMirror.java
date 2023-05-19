@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.AssemblyTreeMirror;
 import app.packed.container.ContainerMirror;
+import app.packed.container.ContainerTreeMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.Extension;
@@ -15,9 +16,10 @@ import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.util.Nullable;
+import app.packed.util.TreeNavigator;
 import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.TreeNodeMirror;
+import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -35,7 +37,7 @@ import internal.app.packed.operation.OperationSetup;
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)} for details.
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public class ApplicationMirror implements TreeNodeMirror<ApplicationMirror> {
+public class ApplicationMirror implements Mirror {
 
     /** The configuration of the application. Is initially null but populated via {@link #initialize(ApplicationSetup)}. */
     @Nullable
@@ -59,18 +61,13 @@ public class ApplicationMirror implements TreeNodeMirror<ApplicationMirror> {
         return a;
     }
 
+    public AssemblyTreeMirror assemblies() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return a mirror of the assembly that defines the application.} */
     public AssemblyMirror assembly() {
         return container().assembly();
-    }
-
-    /** {@return the deployment this container is a part of.} */
-    public DeploymentMirror deployment() {
-        throw new UnsupportedOperationException();
-    }
-
-    public AssemblyTreeMirror assemblies() {
-        throw new UnsupportedOperationException();
     }
 
     /** {@return the build goal that was used when building the application.} */
@@ -81,6 +78,19 @@ public class ApplicationMirror implements TreeNodeMirror<ApplicationMirror> {
     /** {@return a mirror of the root container in the application.} */
     public ContainerMirror container() {
         return application().container.mirror();
+    }
+
+    public ContainerTreeMirror containers() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@return the deployment this container is a part of.} */
+    public DeploymentMirror deployment() {
+        return application().deployment.mirror();
+    }
+
+    public TreeNavigator<ApplicationMirror> deploymentNode() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@return a collection of any entry points the application may have.} */
@@ -135,16 +145,24 @@ public class ApplicationMirror implements TreeNodeMirror<ApplicationMirror> {
         return application.container.name;
     }
 
+    public <N extends NamespaceMirror<?>> N namespace(Class<N> type) {
+        return namespace(type, "main");
+    }
+
+    public <N extends NamespaceMirror<?>> N namespace(Class<N> type, String name) {
+        throw new UnsupportedOperationException();
+    }
+
+    public ApplicationPath path() {
+        return ApplicationPath.ofApplication(name());
+    }
+
     public void print() {
         // Maybe return ApplicationPrinter???
         // to(PrintStream ps);
         // asJSON();
         // verbose();
         print0(application.container);
-    }
-
-    public ApplicationPath path() {
-        return ApplicationPath.ofApplication(name());
     }
 
     private void print0(ContainerSetup cs) {
@@ -170,14 +188,6 @@ public class ApplicationMirror implements TreeNodeMirror<ApplicationMirror> {
     @Override
     public String toString() {
         return "Application:" + name();
-    }
-
-    public <N extends NamespaceMirror<?>> N namespace(Class<N> type) {
-        return namespace(type, "main");
-    }
-
-    public <N extends NamespaceMirror<?>> N namespace(Class<N> type, String name) {
-        throw new UnsupportedOperationException();
     }
 
     /**

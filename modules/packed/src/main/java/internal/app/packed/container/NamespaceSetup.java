@@ -18,6 +18,7 @@ package internal.app.packed.container;
 import java.util.HashMap;
 import java.util.Map;
 
+import app.packed.namespace.NamespaceMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.AuthorSetup;
 import internal.app.packed.util.AbstractTreeNode;
@@ -32,7 +33,7 @@ public final class NamespaceSetup {
     /** The default name of a namespace. */
     public static final String DEFAULT_NAME = "main";
 
-    public static final MagicInitializer<NamespaceSetup> MI = MagicInitializer.of();
+    public static final MagicInitializer<NamespaceSetup> MI = MagicInitializer.of(NamespaceMirror.class);
 
     // Must search up until root to find local names
     final Map<ContainerSetup, String> localNames = new HashMap<>();

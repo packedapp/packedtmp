@@ -12,8 +12,9 @@ import java.util.function.ToLongFunction;
 import java.util.stream.Stream;
 
 import app.packed.util.Nullable;
+import app.packed.util.TreeNavigator;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.TreeNodeMirror;
+import internal.app.packed.container.Mirror;
 
 /**
  * The base class for specialized extension mirrors.
@@ -40,7 +41,7 @@ import internal.app.packed.container.TreeNodeMirror;
  * @see ContainerMirror#use(Class)
  * @see Extension#newExtensionMirror()
  */
-public abstract class ExtensionMirror<E extends Extension<E>> implements TreeNodeMirror<ExtensionMirror<E>> {
+public abstract class ExtensionMirror<E extends Extension<E>> implements Mirror {
 
     /*
      * When naming methods in this class try to avoid using trivial names such as {@code name}, {@code type}, {@code stream}
@@ -140,12 +141,12 @@ public abstract class ExtensionMirror<E extends Extension<E>> implements TreeNod
 
     /** {@return a descriptor for the extension this mirror is a part of.} */
     public final ExtensionDescriptor extensionDescriptor() {
-        return navigator().extensionDescriptor();
+        return navigator0().extensionDescriptor();
     }
 
     /** {@return the class of the extension.} */
     public final Class<? extends Extension<?>> extensionClass() {
-        return navigator().extensionDescriptor().type();
+        return extensionDescriptor().type();
     }
 
     /** {@inheritDoc} */
@@ -177,7 +178,17 @@ public abstract class ExtensionMirror<E extends Extension<E>> implements TreeNod
      * @throws IllegalStateException
      *             if called from the constructor of the mirror
      */
-    protected final ExtensionNavigator<E> navigator() {
+    protected final TreeNavigator<E> navigator() {
+        return navigator0();
+    }
+
+    /**
+     * {@return all the extensions that are being mirrored.}
+     *
+     * @throws IllegalStateException
+     *             if called from the constructor of the mirror
+     */
+    protected final ExtensionNavigator<E> navigator0() {
         ExtensionNavigator<E> n = navigator;
         if (n == null) {
             throw new IllegalStateException(

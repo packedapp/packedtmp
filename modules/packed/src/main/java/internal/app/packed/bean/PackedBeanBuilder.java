@@ -26,9 +26,9 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.extension.BeanLocal;
 import app.packed.extension.InternalExtensionException;
 import app.packed.operation.Op;
 import app.packed.operation.Provider;
@@ -61,7 +61,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
     final ExtensionSetup installingExtension;
 
     /** Temporary map, that stores bean locals */
-    final IdentityHashMap<PackedBeanLocal<?>, Object> locals = new IdentityHashMap<>();
+    final IdentityHashMap<BeanLocal<?>, Object> locals = new IdentityHashMap<>();
 
     String namePrefix;
 
@@ -206,8 +206,8 @@ public final class PackedBeanBuilder implements BeanBuilder {
 
         // Copy any bean locals that have been set, we need to set this before introspection
         if (locals != null) {
-            for (Entry<PackedBeanLocal<?>, Object> e : locals.entrySet()) {
-                container.application.localSet((PackedBeanLocal) e.getKey(), bean, e.getValue());
+            for (Entry<BeanLocal<?>, Object> e : locals.entrySet()) {
+                container.application.locals.set((BeanLocal) e.getKey(), bean, e.getValue());
             }
         }
 
@@ -305,7 +305,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
         requireNonNull(local);
         requireNonNull(value);
         checkNotUsed();
-        locals.put((PackedBeanLocal<?>) local, value);
+        locals.put(local, value);
         return this;
     }
 

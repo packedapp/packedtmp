@@ -44,7 +44,6 @@ import internal.app.packed.operation.OperationMemberTarget.OperationConstructorT
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.ThrowableUtil;
 import sandbox.extension.operation.OperationTemplate;
@@ -64,7 +63,7 @@ public final class BeanScanner {
     private static final MethodHandle MH_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class,
             "initialize", void.class, BeanScannerExtension.class);
 
-    public static final MagicInitializer<BeanScannerExtension> MI = MagicInitializer.of();
+//    public static final MagicInitializer<BeanScannerExtension> MI = MagicInitializer.of();
 
     private final OpenClass accessor;
 

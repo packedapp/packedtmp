@@ -15,9 +15,7 @@
  */
 package tck.container;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -49,11 +47,8 @@ public class ContainerMirrorTest extends AppAppTest {
         assertIdenticalMirror(m.assembly(), c.assembly());
         findSingleBean(c);
 
-        assertTrue(c.isApplicationRoot());
 
-        assertTrue(c.isLifetimeRoot());
         assertEquals(m.lifetime(), c.lifetime());
-        assertThat(c.parent()).isEmpty();
         assertEquals(m.name(), c.name());
     }
 }

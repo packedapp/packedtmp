@@ -18,10 +18,13 @@ package internal.app.packed.container;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
+import app.packed.util.TreeNavigator;
+
 /**
  *
  */
-public interface TreeMirror<N extends TreeNodeMirror<N>> extends Mirror {
+// Maaske er det ikke et mirror... Men et tree view
+public interface TreeMirror<N> {
 
     /** {@return the number of nodes in the tree.} */
     int count();
@@ -31,11 +34,14 @@ public interface TreeMirror<N extends TreeNodeMirror<N>> extends Mirror {
     /** {@return the root node in the tree.} */
     N root();
 
+    TreeNavigator<N> rootNode();
+
     Stream<N> stream();
 
-    interface Node<N> {
-        N container();
 
-        int depth();
-    }
+//    interface Node<N> {
+//        N container();
+//
+//        int depth();
+//    }
 }

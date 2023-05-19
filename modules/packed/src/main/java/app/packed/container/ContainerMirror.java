@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.application.DeploymentMirror;
 import app.packed.application.OldApplicationPath;
 import app.packed.bean.BeanMirror;
 import app.packed.context.Context;
@@ -24,10 +25,11 @@ import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.util.Nullable;
+import app.packed.util.TreeNavigator;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.TreeNodeMirror;
+import internal.app.packed.container.Mirror;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -43,7 +45,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * At runtime you can have a ContainerMirror injected
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public non-sealed class ContainerMirror implements ContextualizedElementMirror , TreeNodeMirror<ContainerMirror> {
+public non-sealed class ContainerMirror implements ContextualizedElementMirror, Mirror {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
@@ -75,6 +77,10 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     /** {@return the application this container is a part of.} */
     public ApplicationMirror application() {
         return container().application.mirror();
+    }
+
+    public TreeNavigator<ContainerMirror> applicationNode() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@return the assembly wherein this container was defined.} */
@@ -115,6 +121,37 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
         return List.copyOf(beans).stream();
     }
 
+    /** {@return a set of all boundaries to this container's parent. Or empty if family root.} */
+    public EnumSet<ContainerBoundaryKind> bondariesToParent() {
+        ContainerSetup parent = container().treeParent;
+        if (parent != null) {
+            ContainerSetup c = container();
+
+            // Deployment has all
+            if (parent.application.deployment != c.application.deployment) {
+                return EnumSet.allOf(ContainerBoundaryKind.class);
+            }
+
+            ArrayList<ContainerBoundaryKind> l = new ArrayList<>();
+
+            if (parent.application == c.application) {
+                l.add(ContainerBoundaryKind.APPLICATION);
+            }
+            if (parent.lifetime == c.lifetime) {
+                l.add(ContainerBoundaryKind.LIFETIME);
+            }
+            if (parent.assembly == c.assembly) {
+                l.add(ContainerBoundaryKind.ASSEMBLY);
+            }
+
+            if (!l.isEmpty()) {
+                return EnumSet.copyOf(l);
+            }
+        }
+        return EnumSet.noneOf(ContainerBoundaryKind.class);
+
+    }
+
     /**
      * {@return the internal configuration of the container we are mirroring.}
      *
@@ -134,6 +171,11 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     @Override
     public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
         return ContextSetup.allMirrorsFor(container());
+    }
+
+    /** {@return the deployment this container is a part of.} */
+    public DeploymentMirror deployment() {
+        return container().application.deployment.mirror();
     }
 
     /** {@inheritDoc} */
@@ -181,11 +223,6 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
         this.container = container;
     }
 
-    /** {@return whether or not this container is the root container in the application.} */
-    public boolean isApplicationRoot() {
-        return container().isApplicationRoot();
-    }
-
     /**
      * Returns whether or not an extension of the specified type is in use by the container.
      *
@@ -196,11 +233,6 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
      */
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return container().isExtensionUsed(extensionType);
-    }
-
-    /** {@return whether or not this container is the root container in this container's lifetime.} */
-    public boolean isLifetimeRoot() {
-        return container().isLifetimeRoot();
     }
 
     /** {@return the containers's lifetime.} */
@@ -223,44 +255,6 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     /** {@return all the namespaces this container operates within.} */
     public Stream<NamespaceMirror<?>> namespaces() {
         throw new UnsupportedOperationException();
-    }
-
-    /** {@return the parent container of this container. Or empty if the root container in an application.} */
-    public Optional<ContainerMirror> parent() {
-        ContainerSetup p = container().treeParent;
-        return p == null ? Optional.empty() : Optional.of(p.mirror());
-    }
-
-    /** {@return a link Collection view of all the beans defined in the container.} */
-    public EnumSet<ContainerBoundaryKind> parentBoundaries() {
-        ContainerMirror p = parent().orElse(null);
-        if (p != null) {
-            ContainerSetup parent = p.container;
-            ContainerSetup c = container();
-
-            // Deployment has all
-            if (parent.application.deployment != c.application.deployment) {
-                return EnumSet.allOf(ContainerBoundaryKind.class);
-            }
-
-            ArrayList<ContainerBoundaryKind> l = new ArrayList<>();
-
-            if (parent.application == c.application) {
-                l.add(ContainerBoundaryKind.APPLICATION);
-            }
-            if (parent.lifetime == c.lifetime) {
-                l.add(ContainerBoundaryKind.LIFETIME);
-            }
-            if (parent.assembly == c.assembly) {
-                l.add(ContainerBoundaryKind.ASSEMBLY);
-            }
-
-            if (!l.isEmpty()) {
-                return EnumSet.copyOf(l);
-            }
-        }
-        return EnumSet.noneOf(ContainerBoundaryKind.class);
-
     }
 
     /** {@return the path of the container.} */
