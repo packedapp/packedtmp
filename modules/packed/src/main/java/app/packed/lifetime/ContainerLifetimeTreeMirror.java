@@ -15,8 +15,8 @@
  */
 package app.packed.lifetime;
 
+import app.packed.util.TreeMirror;
 import internal.app.packed.container.Mirror;
-import internal.app.packed.container.TreeMirror;
 
 /**
  *

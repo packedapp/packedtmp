@@ -15,12 +15,9 @@
  */
 package app.packed.container;
 
-import java.util.function.BiConsumer;
-import java.util.stream.Stream;
-
 import app.packed.context.ContextScopeMirror;
+import app.packed.util.TreeMirror;
 import internal.app.packed.container.Mirror;
-import internal.app.packed.container.TreeMirror;
 
 /**
  * Represents one or more containers ordered in a tree with a single node as the root.
@@ -37,17 +34,5 @@ import internal.app.packed.container.TreeMirror;
 // Alternative ContainerMirror.ofTree
 public non-sealed interface ContainerTreeMirror extends TreeMirror<ContainerMirror>, ContextScopeMirror, Mirror {
 
-    @Override
-    void forEach(BiConsumer<Integer, ContainerMirror> action);
 
-    /** {@return the root container in the tree.} */
-    @Override
-    ContainerMirror root();
-
-    /** {@return the number of containers in the tree. */
-    int size();
-
-    /** {@return a stream with all containers in the tree, depth first.} */
-    @Override
-    Stream<ContainerMirror> stream();
 }

@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildException;
+import app.packed.application.DeploymentMirror;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
@@ -493,6 +494,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                         // throw new Error(v.availableInvocationArguments().toString());
                     }
                     binding.bindContextValue(ExtensionContext.class);
+                } else if (hook == DeploymentMirror.class) {
+                    binding.bindConstant(operation.bean.container.application.deployment.mirror());
                 } else if (hook == ApplicationMirror.class) {
                     binding.bindConstant(operation.bean.container.application.mirror());
                 } else if (hook == ContainerMirror.class) {
@@ -505,7 +508,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     binding.bindConstant(operation.mirror());
                 } else {
                     // will always fail
-                    binding.checkAssignableTo(ExtensionContext.class, ApplicationMirror.class, ContainerMirror.class, AssemblyMirror.class, BeanMirror.class,
+                    binding.checkAssignableTo(ExtensionContext.class, DeploymentMirror.class, ApplicationMirror.class, ContainerMirror.class, AssemblyMirror.class, BeanMirror.class,
                             OperationMirror.class);
                 }
             }

@@ -31,10 +31,9 @@ import sandbox.operation.mirror.DependenciesMirror;
 /**
  * A mirror of a bean.
  * <p>
- * Instances of this class is typically obtained from calls to {@link ApplicationMirror} or {@link ContainerMirror}.
+ * Instances of this class is typically obtained from calls to {@link ContainerMirror}.
  */
 @BindingTypeHook(extension = BaseExtension.class)
-@SuppressWarnings("exports") // uses sandbox classes
 public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirror , ContextScopeMirror {
 
     /** The internal configuration of the bean we are mirroring. */
@@ -75,6 +74,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
     }
 
     /** {@return the dependencies this bean introduces.} */
+    @SuppressWarnings("exports") // uses sandbox classes
     public DependenciesMirror dependencies() {
         return new BeanDependenciesMirror(bean);
     }
@@ -273,6 +273,7 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
             this.to = requireNonNull(to);
         }
 
+        @SuppressWarnings("exports") // uses sandbox classes
         public DependenciesMirror dependencies() {
             throw new UnsupportedOperationException();
         }

@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package app.packed.util;
 
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
-
-import app.packed.util.TreeNavigator;
 
 /**
  *
@@ -27,17 +25,30 @@ import app.packed.util.TreeNavigator;
 public interface TreeMirror<N> {
 
     /** {@return the number of nodes in the tree.} */
-    int count();
+    default int count() {
+        return Math.toIntExact(stream().count());
+    }
 
-    void forEach(BiConsumer<Integer, N> action);
+    default boolean contains(N element) {
+        throw new UnsupportedOperationException();
+    }
+
+    default void forEach(BiConsumer<Integer, N> action) {
+        throw new UnsupportedOperationException();
+    }
 
     /** {@return the root node in the tree.} */
-    N root();
+    default N root() {
+        throw new UnsupportedOperationException();
+    }
 
-    TreeNavigator<N> rootNode();
+    default TreeNavigator<N> rootNode() {
+        throw new UnsupportedOperationException();
+    }
 
-    Stream<N> stream();
-
+    default Stream<N> stream() {
+        throw new UnsupportedOperationException();
+    }
 
 //    interface Node<N> {
 //        N container();

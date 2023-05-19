@@ -13,27 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
-
-import app.packed.util.TreeMirror;
-import internal.app.packed.container.Mirror;
+package internal.app.packed.container;
 
 /**
- * Represents a collection of assemblies that are ordered in a rooted tree.
- * <p>
- * This
+ *
  */
-
-// Multi app.
-// application.assemblies() All assemblies that make of the application. Child applications not included.
-
-// application.tree().assemblies() <--- Application tree for assemblies
-
-public interface AssemblyTreeMirror extends TreeMirror<AssemblyMirror>, Mirror {
-
-    /**
-     *
-     */
-    void print();
+public class AbstractTree<T> {
 
 }

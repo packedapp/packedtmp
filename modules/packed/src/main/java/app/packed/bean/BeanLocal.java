@@ -121,15 +121,15 @@ public final class BeanLocal<T> extends PackedLocal<T> {
      *             if the bean local has an initial value. As this is always a usage error
      */
     public boolean isSet(BeanConfiguration configuration) {
-        return isSet(BeanSetup.crack(configuration));
+        return isSet(crack(configuration));
     }
 
     public boolean isSet(BeanHandle<?> handle) {
-        return isSet(BeanSetup.crack(handle));
+        return isSet(crack(handle));
     }
 
     public boolean isSet(BeanIntrospector introspector) {
-        return isSet(BeanSetup.crack(introspector));
+        return isSet(crack(introspector));
     }
 
     /**
@@ -173,7 +173,7 @@ public final class BeanLocal<T> extends PackedLocal<T> {
      * @return the specified bean introspector
      */
     public <B extends BeanIntrospector> B set(B introspector, T value) {
-        set(BeanSetup.crack(introspector), value);
+        set(crack(introspector), value);
         return introspector;
     }
 
@@ -189,7 +189,7 @@ public final class BeanLocal<T> extends PackedLocal<T> {
      * @return the specified bean configuration
      */
     public <B extends BeanConfiguration> B set(B configuration, T value) {
-        set(BeanSetup.crack(configuration), value);
+        set(crack(configuration), value);
         return configuration;
     }
 
@@ -205,7 +205,7 @@ public final class BeanLocal<T> extends PackedLocal<T> {
      * @return the specified bean handle
      */
     public <B extends BeanHandle<?>> B set(B handle, T value) {
-        set(BeanSetup.crack(handle), value);
+        set(crack(handle), value);
         return handle;
     }
 

@@ -19,6 +19,8 @@ import java.util.Set;
 
 import app.packed.container.AssemblyTreeMirror;
 import app.packed.container.ContainerTreeMirror;
+import app.packed.extension.BaseExtension;
+import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.Extension;
 import app.packed.lifetime.ContainerLifetimeTreeMirror;
 import internal.app.packed.container.Mirror;
@@ -30,26 +32,39 @@ import internal.app.packed.container.Mirror;
 
 // We may have multiple deployments
 
-//Cluster|Node? < Java Process < Deployment < Application < Container < Bean < Operation < Binding | Interceptor
+//Cluster|Node? < Java Process < Family < Deployment < Application < Container < Bean < Operation < Binding | Interceptor
 
-public interface DeploymentMirror extends Mirror {
+@BindingTypeHook(extension = BaseExtension.class)
+public class DeploymentMirror implements Mirror {
 
     /** {@return a tree of all the applications that make of the deployment.} */
-    ApplicationTreeMirror applications();
+    public ApplicationTreeMirror applications() {
+        throw new UnsupportedOperationException();
+    }
 
     /** {@return a tree of all the assemblies that make of the deployment.} */
-    AssemblyTreeMirror assemblies();
+    public AssemblyTreeMirror assemblies() {
+        throw new UnsupportedOperationException();
+    }
 
     /** {@return a tree of all the containers that make of the deployment.} */
-    ContainerTreeMirror containers();
+    public ContainerTreeMirror containers() {
+        throw new UnsupportedOperationException();
+    }
 
     /** {@return an unmodifiable {@link Set} view of every extension type that has been used in the deployment.} */
-    Set<Class<? extends Extension<?>>> extensionTypes();
+    public Set<Class<? extends Extension<?>>> extensionTypes() {
+        throw new UnsupportedOperationException();
+    }
 
-    ContainerLifetimeTreeMirror lifetimes();
+    public ContainerLifetimeTreeMirror lifetimes() {
+        throw new UnsupportedOperationException();
+    }
 
     // Er som udgangspunkt "syntetisk" og alt information er ikke med
-    ApplicationMirror hostApplication();
+    public ApplicationMirror hostApplication() {
+        throw new UnsupportedOperationException();
+    }
 }
 
 ////Den har ikke et navn. Fordi vi er jo ikke unik per Java Process

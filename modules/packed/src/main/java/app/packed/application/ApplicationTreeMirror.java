@@ -16,8 +16,8 @@
 package app.packed.application;
 
 import app.packed.container.AssemblyTreeMirror;
+import app.packed.util.TreeMirror;
 import internal.app.packed.container.Mirror;
-import internal.app.packed.container.TreeMirror;
 
 /**
  *

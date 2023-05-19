@@ -21,6 +21,8 @@ import internal.app.packed.container.Mirror;
  * {@link App#mirrorOf(Assembly, Wirelet...)}.
  * <p>
  * An instance of ApplicationMirror can be injected at runtime simply by declaring a dependency on it.
+ * <p>
+ * Instances of this class can only be constructed by the framework
  */
 @BindingTypeHook(extension = BaseExtension.class)
 public final class AssemblyMirror implements Mirror {
@@ -30,8 +32,9 @@ public final class AssemblyMirror implements Mirror {
 
     /**
      * Create a new application mirror.
-     * <p>
-     * Subclasses should have a single package-protected constructor.
+     *
+     * @throws IllegalStateException
+     *             if attempting to explicitly construct an assembly mirror instance
      */
     public AssemblyMirror() {}
 
