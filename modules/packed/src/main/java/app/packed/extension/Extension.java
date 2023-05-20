@@ -30,7 +30,7 @@ import app.packed.application.OldApplicationPath;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.service.ServiceableBeanConfiguration;
-import app.packed.util.TreeNavigator;
+import app.packed.util.TreeView.Node;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NamespaceSetup;
 import internal.app.packed.container.PackedContainerHandle;
@@ -92,8 +92,7 @@ public abstract class Extension<E extends Extension<E>> {
      * @return an extension navigator
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    // ApplicationNavigator?
-    protected final TreeNavigator<E> applicationNavigator() {
+    protected final Node<E> applicationNode() {
         return new ExtensionNavigator(extension, extension.extensionType);
     }
 
@@ -128,6 +127,11 @@ public abstract class Extension<E extends Extension<E>> {
         }
     }
 
+    /** {@return the path of the container that this extension belongs to.} */
+    protected final OldApplicationPath containerPath() {
+        return extension.container.path();
+    }
+
     @SuppressWarnings("unchecked")
     protected final <D extends NamespaceOperator<E>> D domain(NamespaceTemplate<D> template) {
         PackedNamespaceTemplate<D> t = (PackedNamespaceTemplate<D>) template;
@@ -136,11 +140,6 @@ public abstract class Extension<E extends Extension<E>> {
             NamespaceSetup ds = new NamespaceSetup(t, extension, extension);
             return NamespaceSetup.MI.run(t.supplier, ds);
         });
-    }
-
-    /** {@return the path of the container that this extension belongs to.} */
-    protected final OldApplicationPath containerPath() {
-        return extension.container.path();
     }
 
     /**

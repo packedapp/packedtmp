@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanInstallationException;
+import app.packed.bean.BeanLocal.LocalAccessor;
 import app.packed.extension.BeanElement.BeanClass;
 import app.packed.extension.BeanElement.BeanConstructor;
 import app.packed.extension.BeanElement.BeanField;
@@ -51,7 +52,7 @@ import sandbox.extension.sandbox.ApplicationHandle;
 // Checks container lifetime
 // Checks own extension or container lifetime
 // service.provide -> isContainerLifetime or prot
-public sealed interface BeanElement permits PackedBeanElement, BeanClass, BeanField, BeanConstructor, BeanMethod, BeanVariable {
+public sealed interface BeanElement extends LocalAccessor permits PackedBeanElement, BeanClass, BeanField, BeanConstructor, BeanMethod, BeanVariable {
 
     /** {@return a list of annotations on the element.} */
     AnnotationList annotations();

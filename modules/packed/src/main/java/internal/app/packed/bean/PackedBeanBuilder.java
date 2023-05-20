@@ -34,8 +34,9 @@ import app.packed.operation.Op;
 import app.packed.operation.Provider;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import internal.app.packed.container.ContainerBeanStore;
+import internal.app.packed.container.ContainerBeanStore.BeanClassKey;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.ContainerSetup.BeanClassKey;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.operation.OperationSetup;
@@ -54,13 +55,13 @@ public final class PackedBeanBuilder implements BeanBuilder {
     // Allign with Key
     public static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Class.class, Key.class, Op.class, Optional.class, Provider.class);
 
-    /** The container the bean will belong to. */
+    /** The container the bean will be installed into. */
     final ContainerSetup container;
 
-    /** The extension that is installing the bean */
+    /** The extension that is installing the bean. */
     final ExtensionSetup installingExtension;
 
-    /** Temporary map, that stores bean locals */
+    /** Stores bean locals while building. */
     final IdentityHashMap<BeanLocal<?>, Object> locals = new IdentityHashMap<>();
 
     String namePrefix;
@@ -124,12 +125,12 @@ public final class PackedBeanBuilder implements BeanBuilder {
         requireNonNull(beanClass, "beanClass is null");
 
         BeanClassKey e = new BeanClassKey(owner.author(), beanClass);
-        Object object = container.beanClassMap.get(e);
-        if (object != null) {
-            if (object instanceof BeanSetup b) {
-                return new PackedBeanHandle<>(b);
-            } else {
+        BeanSetup existingBean = container.beans.beanClasses.get(e);
+        if (existingBean != null) {
+            if (ContainerBeanStore.isMultiInstall(existingBean)) {
                 throw new IllegalArgumentException("MultiInstall Bean");
+            } else {
+                return new PackedBeanHandle<>(existingBean);
             }
         }
         BeanHandle<T> handle = newBean(beanClass, BeanSourceKind.CLASS, beanClass);
@@ -190,6 +191,10 @@ public final class PackedBeanBuilder implements BeanBuilder {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
         }
 
+
+        // Creates (permanently) lifetime index
+        BeanSetup bean = new BeanSetup(this, beanClass, sourceKind, source);
+
         String prefix = namePrefix;
         if (prefix == null) {
             prefix = "Functional";
@@ -202,69 +207,37 @@ public final class PackedBeanBuilder implements BeanBuilder {
         // TODO virker ikke med functional beans og naming
         String n = prefix;
 
-        BeanSetup bean = new BeanSetup(this, beanClass, sourceKind, source);
-
-        // Copy any bean locals that have been set, we need to set this before introspection
-        if (locals != null) {
-            for (Entry<BeanLocal<?>, Object> e : locals.entrySet()) {
-                container.application.locals.set((BeanLocal) e.getKey(), bean, e.getValue());
-            }
-        }
-
-        // Saa smid ind i map der lazy laver et array naar der kommer flere end 1 bean.
-
-        // I Assembly/Container? Har vi saa en liste vi vedligholder af container+beanClass der lige skal checkes
-        // Den bliver opdateret foerste gang vvi konvertere BEanSetup->List
-        // Tror faktisk vi checker naar vi tilfoejer at den er sidste er multi.
-        // Vi checker ogsaa paa close at all multi sidstnerer
-        //// Saa kommer der en generisk hvis man glemmer en enkelt.
-        // Men man har altid mindst haft en multi success.
-
-        // Tror vi simpelt har et side map af multi ting.
-        // Som vi saa loeber over til sidst...
-        BeanClassKey key = new BeanClassKey(owner.author(), beanClass);
         if (beanClass != void.class) {
-            boolean multiInstall = false;
-            if (multiInstall) {
-                MuInst i = (MuInst) container.beanClassMap.compute(key, (c, o) -> {
-                    if (o == null) {
-                        return new MuInst();
-                    } else if (o instanceof BeanSetup) {
-                        throw new BeanInstallationException("Oops");
-                    } else {
-                        ((MuInst) o).counter += 1;
-                        return o;
-                    }
-                });
-                int next = i.counter;
-                if (next > 0) {
-                    n = prefix + next;
+            BeanClassKey key = new BeanClassKey(owner.author(), beanClass);
+
+            BeanSetup existingBean = container.beans.beanClasses.get(key);
+            int counter = 0;
+            if (existingBean != null) {
+                if (!ContainerBeanStore.isMultiInstall(existingBean)) {
+                    // throw new BeanInstallationException("A bean of type [" + bean.beanClass + "] has already been added to " +
+                    // container.path());
+
+                    throw new BeanInstallationException("oops");
                 }
-                while (container.namedChildren.putIfAbsent(n, bean) != null) {
-                    n = prefix + ++next;
-                    i.counter = next;
-                }
-            } else {
-                container.beanClassMap.compute(key, (c, o) -> {
-                    if (o == null) {
-                        return bean;
-                    } else if (o instanceof BeanSetup) {
-                        // singular???
-                        throw new BeanInstallationException("A bean of type [" + bean.beanClass + "] has already been added to " + container.path());
-                    } else {
-                        // We already have some multiple beans installed
-                        throw new BeanInstallationException("Oops");
-                    }
-                });
-                // Not multi install, so should be able to add it first time
-                int size = 0;
-                while (container.namedChildren.putIfAbsent(n, bean) != null) {
-                    n = prefix + ++size;
-                }
+                counter = ContainerBeanStore.multiInstallCounter(existingBean);
             }
+
+            if (counter > 0) {
+                n = prefix + counter;
+            }
+            while (container.beans.beans.putIfAbsent(n, bean) != null) {
+                n = prefix + ++counter;
+            }
+            bean.multiInstall = counter;
         }
         bean.name = n;
 
+        // Copy any bean locals that have been set, we need to set this before introspection
+        // I think maybe we need to do this as the last action?
+
+        for (Entry<BeanLocal<?>, Object> e : locals.entrySet()) {
+            container.application.locals.set((BeanLocal) e.getKey(), bean, e.getValue());
+        }
         if (sourceKind == BeanSourceKind.OP) {
             PackedOp<?> op = (PackedOp<?>) bean.beanSource;
             OperationTemplate ot;
@@ -287,21 +260,12 @@ public final class PackedBeanBuilder implements BeanBuilder {
             new BeanScanner(bean).introspect();
         }
 
-        // Bean was successfully created, add it to the container
-        BeanSetup siebling = container.beanLast;
-        if (siebling == null) {
-            container.beanFirst = bean;
-        } else {
-            siebling.beanSiblingNext = bean;
-        }
-        container.beanLast = bean;
-
         return new PackedBeanHandle<>(bean);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T> BeanBuilder setLocal(BeanLocal<T> local, T value) {
+    public <T> BeanBuilder localSet(BeanLocal<T> local, T value) {
         requireNonNull(local);
         requireNonNull(value);
         checkNotUsed();
@@ -318,7 +282,54 @@ public final class PackedBeanBuilder implements BeanBuilder {
         return this;
     }
 
-    static class MuInst {
+    // Kunne maaske have en int paa BeanSetup
+    // Og saa i Bean Classes har vi den seneste indsatte
+    // som vi tilsidt checker alle af.
+    // if (count & COUNT_MASK > )
+    // 0 = No MultiInstance, Alone
+    // 1 = Multi instance + Alone
+    // 3 = Multi Instance, <<1 = count
+    static class MultiInstallCounter {
         int counter;
     }
 }
+
+//
+//boolean multiInstall = false;
+//if (multiInstall) {
+//  MultiInstallCounter i = (MultiInstallCounter) container.beans.beanClasses.compute(key, (c, o) -> {
+//      if (o == null) {
+//          return new MultiInstallCounter();
+//      } else if (o instanceof BeanSetup) {
+//          throw new BeanInstallationException("Oops");
+//      } else {
+//          ((MultiInstallCounter) o).counter += 1;
+//          return o;
+//      }
+//  });
+//  int next = i.counter;
+//  if (next > 0) {
+//      n = prefix + next;
+//  }
+//  while (container.beans.beans.putIfAbsent(n, bean) != null) {
+//      n = prefix + ++next;
+//      i.counter = next;
+//  }
+//} else {
+//  container.beans.beanClasses.compute(key, (c, o) -> {
+//      if (o == null) {
+//          return bean;
+//      } else if (o instanceof BeanSetup) {
+//          // singular???
+//          throw new BeanInstallationException("A bean of type [" + bean.beanClass + "] has already been added to " + container.path());
+//      } else {
+//          // We already have some multiple beans installed
+//          throw new BeanInstallationException("Oops");
+//      }
+//  });
+//  // Not multi install, so should be able to add it first time
+//  int size = 0;
+//  while (container.beans.beans.putIfAbsent(n, bean) != null) {
+//      n = prefix + ++size;
+//  }
+//}

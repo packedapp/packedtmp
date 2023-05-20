@@ -15,12 +15,12 @@
  */
 package app.packed.lifetime;
 
-import app.packed.util.TreeMirror;
+import app.packed.util.TreeView;
 import internal.app.packed.container.Mirror;
 
 /**
  *
  */
-public interface ContainerLifetimeTreeMirror extends TreeMirror<ContainerLifetimeMirror> , Mirror {
+public interface ContainerLifetimeTreeMirror extends TreeView<ContainerLifetimeMirror> , Mirror {
 
 }

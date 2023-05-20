@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
+import app.packed.container.ContainerLocal;
 import app.packed.extension.Extension;
 import internal.app.packed.util.StackWalkerUtil;
 import internal.app.packed.util.types.ClassUtil;
@@ -30,9 +31,9 @@ import internal.app.packed.util.types.ClassUtil;
 // Hvor skal vi bruges
 
 /// Indtil videre har vi de her 2 use cases
-// ContainerLifetimeBridge
+// ContainerTemplateAction
 // Context
-class ExtensionLookup {
+public class ExtensionLookup {
 
     private final Class<? extends Extension<?>> extensionType;
 
@@ -40,17 +41,13 @@ class ExtensionLookup {
         this.extensionType = requireNonNull(extensionType);
     }
 
-    public Class<? extends Extension<?>> extensionType() {
-        return extensionType;
+    // HAve ExtensionLookup<T>????
+    public ContainerLocal<?> local() {
+        throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static ExtensionLookup of() {
-        Class<?> callerClass = StackWalkerUtil.SW.getCallerClass();
-        if (!Extension.class.isAssignableFrom(callerClass)) {
-            throw new IllegalCallerException("Must be called from a subclass of " + Extension.class.getSimpleName());
-        }
-        return new ExtensionLookup((Class) callerClass);
+    public Class<? extends Extension<?>> extensionType() {
+        return extensionType;
     }
 
     public static ExtensionLookup of(MethodHandles.Lookup caller, Class<? extends Extension<?>> extensionType) {
@@ -63,5 +60,14 @@ class ExtensionLookup {
                     + caller.lookupClass().getModule().getName());
         }
         return new ExtensionLookup(extensionType);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static ExtensionLookup of() {
+        Class<?> callerClass = StackWalkerUtil.SW.getCallerClass();
+        if (!Extension.class.isAssignableFrom(callerClass)) {
+            throw new IllegalCallerException("Must be called from a subclass of " + Extension.class.getSimpleName());
+        }
+        return new ExtensionLookup((Class<? extends Extension<?>>) callerClass);
     }
 }

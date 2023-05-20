@@ -35,17 +35,17 @@ public class BeanInstallTest extends AppAppTest {
     public void install() {
         record R() {}
         install(R.class);
-        BeanMirror m = findSingleApplicationBean();
+        BeanMirror m = mirrors().bean();
         install0(R.class, m, BeanSourceKind.CLASS);
         assertThat(m.operations()).hasSize(1);
 
         install(new Op0<R>(() -> new R()) {});
-        m = findSingleApplicationBean();
+        m = mirrors().bean();
         install0(R.class, m, BeanSourceKind.OP);
         assertThat(m.operations()).hasSize(1);
 
         installInstance(new R());
-        m = findSingleApplicationBean();
+        m = mirrors().bean();
         install0(R.class, m, BeanSourceKind.INSTANCE);
         assertThat(m.operations()).isEmpty();
     }

@@ -19,6 +19,7 @@ package app.packed.operation;
  *
  */
 // Hmm, syntes hvad med den her og Bean.operations???
+// CompositeOperationMirror??
 public class NestedOperationMirror extends OperationMirror {
 
 }

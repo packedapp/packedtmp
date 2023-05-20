@@ -17,14 +17,14 @@ package internal.app.packed.binding;
 
 import app.packed.container.Author;
 import app.packed.operation.BindingMirror;
-import internal.app.packed.container.PackedContainerLifetimeTunnel;
+import internal.app.packed.container.PackedContainerTemplatePack;
 
 /**
  *
  */
 public class CompanionBinding {
 
-    PackedContainerLifetimeTunnel bridge;
+    PackedContainerTemplatePack bridge;
 
     // Vi bygger en application
 

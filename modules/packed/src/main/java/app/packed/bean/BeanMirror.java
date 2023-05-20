@@ -10,7 +10,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import app.packed.application.ApplicationMirror;
 import app.packed.application.OldApplicationPath;
+import app.packed.bean.BeanLocal.LocalAccessor;
+import app.packed.container.AssemblyMirror;
 import app.packed.container.Author;
 import app.packed.container.ContainerMirror;
 import app.packed.context.Context;
@@ -34,13 +37,31 @@ import sandbox.operation.mirror.DependenciesMirror;
  * Instances of this class is typically obtained from calls to {@link ContainerMirror}.
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirror , ContextScopeMirror {
+public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirror , ContextScopeMirror , LocalAccessor {
 
-    /** The internal configuration of the bean we are mirroring. */
-    final BeanSetup bean = BeanSetup.MIRROR_INITIALIZER.initialize();
+    /** The bean we are mirroring. */
+    final BeanSetup bean;
 
-    /** Create a new bean mirror. */
-    public BeanMirror() {}
+    /**
+     * Create a new bean mirror.
+     *
+     * @throws IllegalStateException
+     *             if attempting to explicitly construct a bean mirror instance
+     */
+    public BeanMirror() {
+        // Will fail if the bean mirror is not initialized by the framework
+        this.bean = BeanSetup.MIRROR_INITIALIZER.initialize();
+    }
+
+    /** {@return the application the bean is a part of.} */
+    public ApplicationMirror application() {
+        return bean.container.application.mirror();
+    }
+
+    /** {@return the assembly where the bean is defined.} */
+    public AssemblyMirror assembly() {
+        return bean.container.assembly.mirror();
+    }
 
     /**
      * Returns the type (class) of the bean.
@@ -326,6 +347,13 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
     }
 }
 
+interface SelectableBeanMirror {
+
+    // Man kan jo godt tage Assembly, Deployment osv. Giver bare et enkelt resultat
+    // Operations, Bindings,
+    Stream<OperationMirror> select(Class<? extends OperationMirror> operations);
+}
+
 interface SSandbox {
 
     // @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -347,15 +375,6 @@ interface SSandbox {
     // No instances, Instantiable, ConstantInstance
     // Scope-> BuildConstant, RuntimeConstant, Prototype...
 }
-
-///** {@return the assembly where the bean is defined.} */
-//public AssemblyMirror assembly() {
-//    return bean.container.assembly.mirror();
-//}
-///** {@return the application the bean is a part of.} */
-//public ApplicationMirror application() {
-//  return bean.container.application.mirror();
-//}
 
 ///**
 //* Invoked by the runtime with the internal configuration of the bean to mirror.

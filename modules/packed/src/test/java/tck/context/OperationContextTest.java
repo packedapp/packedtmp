@@ -27,8 +27,8 @@ import app.packed.context.ContextMirror;
 import app.packed.operation.OperationMirror;
 import sandbox.extension.operation.OperationHandle;
 import tck.AppAppTest;
-import tck.HookExtension;
-import tck.HookExtension.MethodHook;
+import tck.HookTestingExtension;
+import tck.HookTestingExtension.MethodHook;
 import tck.context.ContextsHelpers.NoImplContext;
 
 /**
@@ -37,7 +37,7 @@ import tck.context.ContextsHelpers.NoImplContext;
 public class OperationContextTest extends AppAppTest {
 
     @BeforeEach
-    void setup() {
+    void beforeEach() {
         hooks().onVariableType((cl, v) -> {
             assert (cl == NoImplContext.class);
             v.bindContextValue(NoImplContext.class);
@@ -60,25 +60,23 @@ public class OperationContextTest extends AppAppTest {
     }
 
     @Test
-    public void mirrors() throws Throwable {
-        assertThat(appMirror().container().contexts()).isEmpty();
-        BeanMirror b = findSingleApplicationBean();
+    public void mirrorsTest() throws Throwable {
+        assertThat(mirrors().container().contexts()).isEmpty();
+        BeanMirror b = mirrors().bean();
         assertThat(b.contexts()).isEmpty();
-        OperationMirror om = findSingleOperation(b);
+        OperationMirror om = mirrors().findSingleOperation(b);
         assertThat(om.contexts()).hasSize(1);
         assertThat(om.contexts()).containsKey(NoImplContext.class);
         ContextMirror cm = om.contexts().get(NoImplContext.class);
         assertSame(NoImplContext.class, cm.contextClass());
-        assertSame(HookExtension.class, cm.extensionClass());
+        assertSame(HookTestingExtension.class, cm.extensionClass());
 //        cm.initiatingOperations();
         assertEquals(om, cm.scope());
     }
 
     @Test
     public void invokation() throws Throwable {
-
-        assertEquals(123, (Integer) invoker().invoke(new NoImplContext(123)));
-        assertEquals(3434, (Integer) invoker().invoke(new NoImplContext(3434)));
+        invoker().invokeEquals(123, new NoImplContext(123));
+        invoker().invokeEquals(3434, new NoImplContext(3434));
     }
-
 }

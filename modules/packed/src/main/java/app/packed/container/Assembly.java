@@ -16,8 +16,8 @@
 package app.packed.container;
 
 import app.packed.container.AbstractComposer.ComposableAssembly;
-import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.container.PackedContainerBuilder;
 
 /**
  * An assembly is the basic building block for creating applications in Packed.
@@ -41,10 +41,8 @@ import internal.app.packed.container.AssemblySetup;
  * <li><b>{@link BaseAssembly}</b> which assemblies information about both services and components, and creates
  * container instances using .</li>
  * </ul>
- *
  * A assembly instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with
  * an {@link IllegalStateException}.
- *
  * <p>
  * For more complicated needs an application can itself be split into a hierarchy of application nodes with a single
  * application as the root.

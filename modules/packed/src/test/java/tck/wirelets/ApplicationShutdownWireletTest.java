@@ -34,7 +34,7 @@ public class ApplicationShutdownWireletTest extends AppAppTest {
             return t;
         });
 
-        prep().wirelets(w);
+        setup().wirelets(w);
         // prep(W).
 
         // It is registered when we start the application

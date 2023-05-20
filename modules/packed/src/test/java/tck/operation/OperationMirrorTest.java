@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tck.mirror;
+package tck.operation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -32,15 +32,15 @@ import app.packed.operation.OperationTarget;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 import tck.AppAppTest;
-import tck.HookExtension;
-import tck.HookExtension.FieldHook.FieldPrivateInstanceString;
+import tck.HookTestingExtension;
+import tck.HookTestingExtension.FieldHook.FieldPrivateInstanceString;
 
 /**
  * Tests {@link OperationMirror}.
  * <p>
  * It is difficult to test OperationMirror directly. So instead we create an operation via standard APIs and test it.
  */
-public class OldOperationMirrorTest extends AppAppTest {
+public class OperationMirrorTest extends AppAppTest {
 
     /**
      * Must call {@link OperationMirror#initialize(internal.app.packed.operation.OperationSetup)} before any other
@@ -60,13 +60,13 @@ public class OldOperationMirrorTest extends AppAppTest {
         });
         installInstance(new FieldPrivateInstanceString());
 
-        BeanMirror bm = findSingleApplicationBean();
+        BeanMirror bm = mirrors().bean();
         List<OperationMirror> l = bm.operations().toList();
         assertEquals(1, l.size());
 
         OperationMirror m = l.get(0);
         assertEquals(bm, m.bean());
-        assertEquals(HookExtension.class, m.invokedBy());
+        assertEquals(HookTestingExtension.class, m.invokedBy());
         assertTrue(m.nestedIn().isEmpty());
 
         assertTrue(m.bindings().isEmpty());
@@ -94,7 +94,7 @@ public class OldOperationMirrorTest extends AppAppTest {
         });
         installInstance(new FieldPrivateInstanceString());
 
-        OperationMirror om = findSingleApplicationBean().operations().findFirst().get();
+        OperationMirror om = mirrors().bean().operations().findFirst().get();
         assertTrue(om instanceof MyOpMirror);
     }
 }

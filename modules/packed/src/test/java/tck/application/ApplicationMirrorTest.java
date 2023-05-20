@@ -37,20 +37,20 @@ public class ApplicationMirrorTest extends AppAppTest {
     /** We cannot create a usable mirror ourselves. */
     @Test
     public void frameworkMustInitializeMirror() {
-        frameworkMustInitialize(() -> new ApplicationMirror().assembly());
+        assertFrameworkInitializes(() -> new ApplicationMirror().assembly());
     }
 
     @Test
     public void test() {
         installInstance(new HelloMainBean());
 
-        ApplicationMirror m = appMirror();
+        ApplicationMirror m = mirrors().application();
 
         // Default application mirror is ApplicationMirror
         assertSame(ApplicationMirror.class, m.getClass());
 
-        assertIdenticalMirror(m, m.assembly().application());
-        assertIdenticalMirror(m, m.container().application());
+        mirrors().assertIdentical(m, m.assembly().application());
+        mirrors().assertIdentical(m, m.container().application());
 
         // Only BaseExtension is used
         assertThat(m.extensionTypes()).containsExactly(BaseExtension.class);
@@ -65,12 +65,14 @@ public class ApplicationMirrorTest extends AppAppTest {
         assertEquals(m.toString(), "Application:Assembly");
     }
 
-    /** Test that we an specialize an application mirror */
+    /** Test that we can specialize an application mirror */
     @Test
     public void specializeApplicationMirror() {
+        // Test default application mirror type
         BootstrapApp<Void> ba = BootstrapApp.of(c -> c.managedLifetime());
         assertThat(ba.mirrorOf(new HelloWorldAssembly())).isExactlyInstanceOf(ApplicationMirror.class);
 
+        // Specialize application mirror type
         class MyAppMirror extends ApplicationMirror {}
         ba = BootstrapApp.of(c -> c.specializeMirror(MyAppMirror::new).managedLifetime());
         assertThat(ba.mirrorOf(new HelloWorldAssembly())).isExactlyInstanceOf(MyAppMirror.class);

@@ -42,6 +42,10 @@ public enum BeanSourceKind {
      */
     OP,
 
-    /** No source was specified when installing the bean. */
+    /**
+     * No source was specified when installing the bean.
+     * <p>
+     * Sourceless beans always returns {@code void.class} as its bean class.
+     */
     SOURCELESS;
 }

@@ -5,11 +5,14 @@ import static java.util.Objects.requireNonNull;
 import app.packed.container.Wirelet;
 
 /**
- * A wirelet that combines multiple wirelets into a single wirelet.
+ * A special wirelet that combines multiple wirelets into a single wirelet.
  * <p>
- * Is exposed to end users via various static methods on {@link Wirelet}.
+ * Is exposed to end users via various methods on {@link Wirelet}.
  *
- * @see Wirelet
+ * @see Wirelet#andThen(Wirelet)
+ * @see Wirelet#andThen(Wirelet...)
+ * @see Wirelet#beforeThis(Wirelet...)
+ * @see Wirelet#combine(Wirelet...)
  */
 public final class CompositeWirelet extends FrameworkWirelet {
 

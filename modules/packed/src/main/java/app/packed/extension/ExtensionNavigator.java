@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import app.packed.util.TreeNavigator;
+import app.packed.util.TreeView.Node;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
@@ -32,7 +32,7 @@ import internal.app.packed.container.ExtensionSetup;
  *
  * @see Extension#applicationNavigator()
  */
-final /* primitive */ class ExtensionNavigator<E extends Extension<E>> implements TreeNavigator<E> {
+final /* primitive */ class ExtensionNavigator<E extends Extension<E>> implements Node<E> {
 
     /** We use the extension type mainly for casting. */
     private final Class<E> extensionType;

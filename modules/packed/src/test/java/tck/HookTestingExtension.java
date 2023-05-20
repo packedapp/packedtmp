@@ -51,7 +51,9 @@ import testutil.MemberFinder;
 /**
  *
  */
-public class HookExtension extends Extension<HookExtension> {
+public class HookTestingExtension extends Extension<HookTestingExtension> {
+
+    private Map<String, OperationHandle> ink = new HashMap<>();
 
     @Nullable
     private BiConsumer<? super AnnotationList, ? super BeanField> onAnnotatedField;
@@ -62,7 +64,18 @@ public class HookExtension extends Extension<HookExtension> {
     @Nullable
     private BiConsumer<? super Class<?>, ? super BeanWrappedVariable> onVariableType;
 
-    HookExtension() {}
+    HookTestingExtension() {}
+
+    void generate(String name, OperationHandle oh) {
+        requireNonNull(name);
+        ink.putIfAbsent(name, oh);
+
+        base().installIfAbsent(HookBean.class, b -> {
+            base().addCodeGenerated(b, new Key<Map<String, MethodHandle>>() {}, () -> {
+                return CollectionUtil.copyOf(ink, v -> v.generateMethodHandle());
+            });
+        });
+    }
 
     @Override
     protected BeanIntrospector newBeanIntrospector() {
@@ -97,30 +110,17 @@ public class HookExtension extends Extension<HookExtension> {
         };
     }
 
-    private Map<String, OperationHandle> ink = new HashMap<>();
-
-    void generate(String name, OperationHandle oh) {
-        requireNonNull(name);
-        ink.putIfAbsent(name, oh);
-
-        base().installIfAbsent(HookBean.class, b -> {
-            base().addCodeGenerated(b, new Key<Map<String, MethodHandle>>() {}, () -> {
-                return CollectionUtil.copyOf(ink, v -> v.generateMethodHandle());
-            });
-        });
-    }
-
-    public HookExtension onAnnotatedField(BiConsumer<? super AnnotationList, ? super BeanField> consumer) {
+    public HookTestingExtension onAnnotatedField(BiConsumer<? super AnnotationList, ? super BeanField> consumer) {
         onAnnotatedField = consumer;
         return this;
     }
 
-    public HookExtension onAnnotatedMethod(BiConsumer<? super AnnotationList, ? super BeanMethod> consumer) {
+    public HookTestingExtension onAnnotatedMethod(BiConsumer<? super AnnotationList, ? super BeanMethod> consumer) {
         onAnnotatedMethod = consumer;
         return this;
     }
 
-    public HookExtension onVariableType(BiConsumer<? super Class<?>, ? super BeanWrappedVariable> onVariableType) {
+    public HookTestingExtension onVariableType(BiConsumer<? super Class<?>, ? super BeanWrappedVariable> onVariableType) {
         this.onVariableType = onVariableType;
         return this;
     }
@@ -128,7 +128,7 @@ public class HookExtension extends Extension<HookExtension> {
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @AnnotatedFieldHook(extension = HookExtension.class)
+    @AnnotatedFieldHook(extension = HookTestingExtension.class)
     public @interface FieldHook {
 
         String name() default "main";
@@ -153,30 +153,7 @@ public class HookExtension extends Extension<HookExtension> {
         }
     }
 
-    @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    @AnnotatedMethodHook(extension = HookExtension.class)
-    public @interface MethodHook {
-
-        public static class InstanceMethodNoParamsVoid {
-            public static final Method FOO = MemberFinder.findMethod("foo");
-
-            public static void validateFoo(AnnotationList hooks, BeanMethod m) {
-                // validate annotations
-                assertEquals(FOO, m.method());
-                assertEquals(FOO.getModifiers(), m.modifiers());
-                m.toKey(); // should fail
-                assertEquals(Key.of(String.class), m.toKey());
-            }
-
-            @MethodHook
-            void foo() {}
-        }
-
-    }
-
-    public static class HB {
+    static class HB {
         public HB() {
             System.out.println("HMMM");
         }
@@ -199,5 +176,28 @@ public class HookExtension extends Extension<HookExtension> {
             }
             this.ec = ec;
         }
+    }
+
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @AnnotatedMethodHook(extension = HookTestingExtension.class)
+    public @interface MethodHook {
+
+        public static class InstanceMethodNoParamsVoid {
+            public static final Method FOO = MemberFinder.findMethod("foo");
+
+            @MethodHook
+            void foo() {}
+
+            public static void validateFoo(AnnotationList hooks, BeanMethod m) {
+                // validate annotations
+                assertEquals(FOO, m.method());
+                assertEquals(FOO.getModifiers(), m.modifiers());
+                m.toKey(); // should fail
+                assertEquals(Key.of(String.class), m.toKey());
+            }
+        }
+
     }
 }

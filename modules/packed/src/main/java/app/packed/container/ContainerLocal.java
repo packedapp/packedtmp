@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.container;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanLocal;
-import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.container.PackedLocal;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerLocal;
+import internal.app.packed.container.PackedLocal;
+import sandbox.extension.container.ContainerHandle;
 
 /**
  * This class provides container-local variables at build-time.
@@ -58,14 +59,48 @@ public abstract sealed class ContainerLocal<T> extends PackedLocal<T> permits Pa
     }
 
     /**
+     * Returns the container local value from the specified accessor.
+     * <p>
+     * If no value has been set for this local previously, this method will:
+     * <ul>
+     * <li>Initialize lazily, if an initial value supplier was used when creating this local.</li>
+     * <li>Fail with {@link java.util.NoSuchElementException}, if no initial value supplier was used when creating this
+     * local.</li>
+     * </ul>
+     *
+     * @param accessor
+     *            the container local accessor
+     * @return the value of the container local
+     *
+     * @throws java.util.NoSuchElementException
+     *             if a value has not been set previously for this container local and an initial value supplier was not
+     *             specified when creating the container local
+     */
+    public T get(LocalAccessor accessor) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * @param container
      *            the container to return the value for
      * @return the value
      */
     protected abstract T get(ContainerSetup container);
 
-    public T get(Extension<?> extension) {
-        return get(extension.extension.container);
+//    public T get(Extension<?> extension) {
+//        return get(extension.extension.container);
+//    }
+
+    /**
+     * If a value is present, performs the given action with the value, otherwise does nothing.
+     *
+     * @param action
+     *            the action to be performed, if a value is present
+     * @throws NullPointerException
+     *             if value is present and the given action is {@code null}
+     */
+    public void ifPresent(LocalAccessor accessor, Consumer<? super T> action) {
+        throw new UnsupportedOperationException();
     }
 
     protected boolean isPresent(BeanSetup bean) {
@@ -74,9 +109,9 @@ public abstract sealed class ContainerLocal<T> extends PackedLocal<T> permits Pa
 
     protected abstract boolean isPresent(ContainerSetup container);
 
-    public boolean isPresent(Extension<?> extension) {
-        return isPresent(extension.extension.container);
-    }
+//    public boolean isPresent(Extension<?> extension) {
+//        return isPresent(extension.extension.container);
+//    }
 
     protected void set(BeanSetup bean, T value) {
         throw new UnsupportedOperationException();
@@ -194,4 +229,11 @@ public abstract sealed class ContainerLocal<T> extends PackedLocal<T> permits Pa
     public static <T> ContainerLocal<T> ofFamily() {
         throw new UnsupportedOperationException();
     }
+
+    /** An entity where bean local values can be stored and retrieved. */
+    // Extension?
+
+    // En god maade at traekke sig selv ud...
+    // ContainerLocal<FooExtension> myLocal = FooExtension.local();
+    public sealed interface LocalAccessor permits ContainerConfiguration, ContainerHandle, ContainerMirror {}
 }

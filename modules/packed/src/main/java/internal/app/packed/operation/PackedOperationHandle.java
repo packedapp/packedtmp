@@ -25,8 +25,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.extension.BeanVariable;
-import app.packed.extension.ExtensionContext;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionContext;
 import app.packed.operation.Op;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
@@ -134,7 +134,7 @@ public final record PackedOperationHandle(OperationSetup operation, @Nullable Be
     /** {@inheritDoc} */
     @Override
     public MethodType invocationType() {
-        return operation.template.invocationType();
+        return operation.template.descriptor().invocationType();
     }
 
     // Ogsaa en template ting taenker jeg? IDK

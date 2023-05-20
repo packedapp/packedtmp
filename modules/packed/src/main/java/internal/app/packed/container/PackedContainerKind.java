@@ -18,6 +18,8 @@ package internal.app.packed.container;
 /**
  *
  */
+// Noget siger mig et bit set er bedre
+// Fx managed/unmanaged
 public enum PackedContainerKind {
 
     /** Represents the root container of a {@link BootstrapApp}. */
@@ -27,7 +29,7 @@ public enum PackedContainerKind {
 
     ROOT_MANAGED,
 
-    // Lazy lifetime as parent
+    /** A container that is lazily created. */
     LAZY,
 
     UNMANAGED,

@@ -41,24 +41,6 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
     /** {@inheritDoc} */
     @Override
-    public int beanInstanceIndex() {
-        return beanInstanceIndex;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Set<Class<? extends Context<?>>> contexts() {
-        return contexts.keySet();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodType invocationType() {
-        return methodType;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public OperationTemplate returnIgnore() {
         MethodType mt = methodType.changeReturnType(void.class);
         return new PackedOperationTemplate(contexts, extensionContext, beanInstanceIndex, mt, true);
@@ -99,5 +81,33 @@ public final class PackedOperationTemplate implements OperationTemplate {
         m = Map.copyOf(m);
         MethodType mt = methodType.appendParameterTypes(context.implementationClass());
         return new PackedOperationTemplate(m, extensionContext, beanInstanceIndex, mt, ignoreReturn);
+    }
+
+    public record PackedOperationTemplateDescriptor(PackedOperationTemplate pot) implements OperationTemplate.Descriptor {
+
+        /** {@inheritDoc} */
+        @Override
+        public int beanInstanceIndex() {
+            return pot.beanInstanceIndex;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Set<Class<? extends Context<?>>> contexts() {
+            return pot.contexts.keySet();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodType invocationType() {
+            return pot.methodType;
+        }
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Descriptor descriptor() {
+        return new PackedOperationTemplateDescriptor(this);
     }
 }

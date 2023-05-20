@@ -35,23 +35,23 @@ import app.packed.context.Context;
 
 public interface ContextualizedElement {
 
-    // These are the context available to me
-    // Maybe include implementations?
-    // So a.la. contextClasses
-    default Set<Class<? extends Context<?>>> availableContextsSelf() {
+    /** {@return a set of the contexts available for this bean.} */
+    // This method is mainly used for informational purposes.
+    // Kan ikke se man har brug for andet en
+    default Set<Class<? extends Context<?>>> contextAvailable(Author author) {
         throw new UnsupportedOperationException();
     }
 
     // These are the contexts the author or the operation will see
     // I don't know what the exact use case is though?
-    default Set<Class<? extends Context<?>>> availableContextsAuthor() {
+    default Set<Class<? extends Context<?>>> contextAvailableAuthor() {
         throw new UnsupportedOperationException();
     }
 
-    /** {@return a set of the contexts available for this bean.} */
-    // This method is mainly used for informational purposes.
-    // Kan ikke se man har brug for andet en
-    default Set<Class<? extends Context<?>>> availableContexts(Author author) {
+    // These are the context available to me
+    // Maybe include implementations?
+    // So a.la. contextClasses
+    default Set<Class<? extends Context<?>>> contextAvailableSelf() {
         throw new UnsupportedOperationException();
     }
 

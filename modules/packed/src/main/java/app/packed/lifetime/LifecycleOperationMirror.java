@@ -67,13 +67,13 @@ public class LifecycleOperationMirror extends OperationMirror {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * A mirror for an operation that creates a new instance of a bean.
-     * <p>
-     * The operator of this operation is always {@link BaseExtension}.
-     */
-    // IDK know if we want this
-    public static class BeanInstantiationOperationMirror extends LifecycleOperationMirror {}
+//    /**
+//     * A mirror for an operation that creates a new instance of a bean.
+//     * <p>
+//     * The operator of this operation is always {@link BaseExtension}.
+//     */
+//    // IDK know if we want this
+//    public static class BeanInstantiationOperationMirror extends LifecycleOperationMirror {}
 
     // Hvis jeg register en instance har min bean ikke en
     // Men factory og non-static class har altid en

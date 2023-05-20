@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import app.packed.application.OldApplicationPath;
+import app.packed.container.ContainerLocal;
 import app.packed.extension.Extension;
 import internal.app.packed.container.PackedContainerHandle;
 import sandbox.extension.operation.OperationHandle;
@@ -16,7 +17,7 @@ import sandbox.extension.operation.OperationHandle;
  * <p>
  * A lot of methods on this class is also available on {@link ContainerBuilder}.
  */
-public sealed interface ContainerHandle permits PackedContainerHandle {
+public sealed interface ContainerHandle extends ContainerLocal.LocalAccessor permits PackedContainerHandle {
 
     /**
      *

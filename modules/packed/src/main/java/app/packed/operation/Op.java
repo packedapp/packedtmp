@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.bean.InaccessibleMemberException;
+import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.util.Nullable;
 import internal.app.packed.operation.PackedOp;
 
@@ -135,7 +135,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
             handle = lookup.unreflectGetter(field);
         } catch (IllegalAccessException e) {
             // I think we are going to throw another exception here
-            throw new InaccessibleMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
+            throw new InaccessibleBeanMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
         System.out.println(handle);
         throw new UnsupportedOperationException();

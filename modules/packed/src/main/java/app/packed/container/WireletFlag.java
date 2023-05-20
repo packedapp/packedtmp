@@ -26,6 +26,9 @@ package app.packed.container;
 /// TargetSite -> Where it can be used
 /// Scope -> Visibility of the wirelet (can never be cross application)
 
+
+// How do we compose????? Just have a isComposite bit??? And then zeroes
+
 public class WireletFlag {
 
     public WireletFlag ALLOW_RUNTIME; // on

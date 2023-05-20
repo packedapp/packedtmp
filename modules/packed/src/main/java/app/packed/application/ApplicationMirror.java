@@ -15,8 +15,8 @@ import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
-import app.packed.util.Nullable;
-import app.packed.util.TreeNavigator;
+import app.packed.util.TreeView.Node;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.Mirror;
@@ -39,57 +39,51 @@ import internal.app.packed.operation.OperationSetup;
 @BindingTypeHook(extension = BaseExtension.class)
 public class ApplicationMirror implements Mirror {
 
-    /** The configuration of the application. Is initially null but populated via {@link #initialize(ApplicationSetup)}. */
-    @Nullable
-    private ApplicationSetup application;
-
-    /** Create a new application mirror. */
-    public ApplicationMirror() {}
+    /** The application we are mirroring. */
+    final ApplicationSetup application;
 
     /**
-     * {@return the internal configuration of application.}
+     * Create a new application mirror.
      *
      * @throws IllegalStateException
-     *             if {@link #initialize(ApplicationSetup)} has not been called.
+     *             if attempting to explicitly construct an application mirror instance
      */
-    private ApplicationSetup application() {
-        ApplicationSetup a = application;
-        if (a == null) {
-            throw new IllegalStateException(
-                    "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
-        }
-        return a;
+    public ApplicationMirror() {
+        // Will fail if the application mirror is not initialized by the framework
+        this.application = ApplicationSetup.MIRROR_INITIALIZER.initialize();
     }
 
+    /** {@return a tree representing all the assemblies used for creating this application.} */
     public AssemblyTreeMirror assemblies() {
         throw new UnsupportedOperationException();
     }
 
-    /** {@return a mirror of the assembly that defines the application.} */
+    /** {@return a mirror of the root assembly that defines the application.} */
     public AssemblyMirror assembly() {
         return container().assembly();
     }
 
     /** {@return the build goal that was used when building the application.} */
     public BuildGoal buildGoal() {
-        return application().deployment.goal;
+        return application.deployment.goal;
     }
 
     /** {@return a mirror of the root container in the application.} */
     public ContainerMirror container() {
-        return application().container.mirror();
+        return application.container.mirror();
     }
 
+    /** {@return a tree representing all the containers that make up this application.} */
     public ContainerTreeMirror containers() {
         throw new UnsupportedOperationException();
     }
 
-    /** {@return the deployment this container is a part of.} */
+    /** {@return the deployment this application is a part of.} */
     public DeploymentMirror deployment() {
-        return application().deployment.mirror();
+        return application.deployment.mirror();
     }
 
-    public TreeNavigator<ApplicationMirror> deploymentNode() {
+    public Node<ApplicationMirror> deploymentNode() {
         throw new UnsupportedOperationException();
     }
 
@@ -101,7 +95,7 @@ public class ApplicationMirror implements Mirror {
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
-        return this == other || other instanceof ApplicationMirror m && application() == m.application();
+        return this == other || other instanceof ApplicationMirror m && application == m.application;
     }
 
     /** {@return an unmodifiable {@link Set} view of every extension type that has been used in the application.} */
@@ -112,20 +106,7 @@ public class ApplicationMirror implements Mirror {
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return application().hashCode();
-    }
-
-    /**
-     * Invoked by {@link ApplicationSetup#mirror()} to initialize this mirror.
-     *
-     * @param application
-     *            the internal configuration of the application to mirror
-     */
-    final void initialize(ApplicationSetup application) {
-        if (this.application != null) {
-            throw new IllegalStateException("This mirror has already been initialized.");
-        }
-        this.application = application;
+        return application.hashCode();
     }
 
     /** {@return the application's lifetime. Which is identical to the root container's.} */
@@ -153,8 +134,8 @@ public class ApplicationMirror implements Mirror {
         throw new UnsupportedOperationException();
     }
 
-    public ApplicationPath path() {
-        return ApplicationPath.ofApplication(name());
+    public DeploymentPath path() {
+        return DeploymentPath.ofApplication(name());
     }
 
     public void print() {
@@ -169,7 +150,7 @@ public class ApplicationMirror implements Mirror {
         for (var e = cs.treeFirstChild; e != null; e = e.treeNextSibling) {
             print0(e);
         }
-        for (var b = cs.beanFirst; b != null; b = b.beanSiblingNext) {
+        for (BeanSetup b : cs.beans) {
             StringBuilder sb = new StringBuilder();
             sb.append(b.path()).append("");
             sb.append(" [").append(b.beanClass.getName()).append("], owner = " + b.author());

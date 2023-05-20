@@ -20,6 +20,7 @@ import java.util.function.BiConsumer;
 
 import app.packed.application.OldApplicationPath;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLocal.LocalAccessor;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Author;
@@ -44,7 +45,7 @@ import sandbox.extension.operation.OperationHandle;
  * @see BeanBuilder#installInstance(Object)
  */
 @SuppressWarnings("rawtypes")
-public sealed interface BeanHandle<T> extends ContextualizedElement permits PackedBeanHandle  {
+public sealed interface BeanHandle<T> extends ContextualizedElement, LocalAccessor permits PackedBeanHandle  {
 
     /** {@return the bean class.} */
     Class<?> beanClass();
@@ -89,6 +90,10 @@ public sealed interface BeanHandle<T> extends ContextualizedElement permits Pack
         return (Key<T>) Key.fromClass(beanClass());
     }
 
+    default BeanHandle<T> exportAs(Class<? super T> key) {
+        return exportAs(Key.of(key));
+    }
+
     /**
      * Exports the bean as a service with the specified key.
      *
@@ -101,7 +106,7 @@ public sealed interface BeanHandle<T> extends ContextualizedElement permits Pack
      * @see #defaultKey()
      * @see #serviceProvideAs(Key)
      */
-    void exportAs(Key<? super T> key);
+    BeanHandle<T> exportAs(Key<? super T> key);
 
     /**
      * Returns whether or not the bean is still configurable.

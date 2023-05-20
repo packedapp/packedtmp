@@ -15,18 +15,33 @@
  */
 package app.packed.bean;
 
-/**
- * This exception is thrown when installing a bean, and the framework does not have reflective permissions to access one
- * or more members (constructor, field or method) of the bean.
- * <p>
- * In order to make the bean's member accessible, the right access must be provided to the framework. This can be done
- * either by opening the package in which the bean is located to {@value app.packed.util.FrameworkNames#BASE_MODULE}
- * using a module descriptor. Or by specifying a lookup object using {@link BuildableAssembly#lookup(Lookup)} or
- * {@link AbstractComposer#lookup(Lookup)}.
- */
-public class InaccessibleMemberException extends BeanInstallationException {
+import app.packed.application.BuildException;
 
-    /** <code>serialVersionUID</code>. */
+/**
+ * An exception that is typically thrown when trying to install a stateless (static or foreign) bean that makes use of
+ * functionality that is not available for stateless beans. For example, lifecycle annotations or non-static operation
+ * methods on static beans.
+ *
+ */
+
+// Syntes det er okay at smide for stateless ogsaak
+
+// Hmm maaske saa bare have en UnmanagedBeanInstallationException
+// Container smider en Unsupported operation exception vil jeg mene.
+// Hvis man proever at installere en managed container i en unmanaged container
+
+// Hvad hvis vi siger .container.runOnShutdown(Runnable) <---
+
+// LifetimeNotManagedException. The lifetime of x bean is not managed by the container after it has been created
+// Must rely on GC
+
+// BeanNotManagedException?
+// IDK kan vi bruge den til containere?
+
+
+// Replace managed with whatever we end up
+public class ManagedBeanRequiredException extends BuildException {
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -37,7 +52,7 @@ public class InaccessibleMemberException extends BeanInstallationException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public InaccessibleMemberException(String message) {
+    public ManagedBeanRequiredException(String message) {
         super(message);
     }
 
@@ -45,13 +60,12 @@ public class InaccessibleMemberException extends BeanInstallationException {
      * Creates a new exception with the specified detailed message and cause.
      *
      * @param cause
-     *            the cause (which is saved for later retrieval by the {@link #getCause()}method). (A{@code null} value is
-     *            permitted, and indicates that the cause is nonexistent or unknown.)
+     *            the cause (which is saved for later retrieval by the {@link #getCause()}method).
      * @param message
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public InaccessibleMemberException(String message, Throwable cause) {
+    public ManagedBeanRequiredException(String message, Throwable cause) {
         super(message, cause);
     }
 }

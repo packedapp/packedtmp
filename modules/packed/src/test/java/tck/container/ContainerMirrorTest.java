@@ -32,7 +32,7 @@ public class ContainerMirrorTest extends AppAppTest {
     /** We cannot create a usable ContainerMirror ourselves. */
     @Test
     public void frameworkMustInitializeMirror() {
-        frameworkMustInitialize(() -> new ContainerMirror().application());
+        assertFrameworkInitializes(() -> new ContainerMirror().application());
     }
 
     @Test
@@ -40,12 +40,12 @@ public class ContainerMirrorTest extends AppAppTest {
         // Everything to do with extensions is tested in .extension
         installInstance(new HelloMainBean());
 
-        ApplicationMirror m = appMirror();
+        ApplicationMirror m = mirrors().application();
         ContainerMirror c = m.container();
         // Default application mirror is ApplicationMirror
-        assertIdenticalMirror(m, c.application());
-        assertIdenticalMirror(m.assembly(), c.assembly());
-        findSingleBean(c);
+        mirrors().assertIdentical(m, c.application());
+        mirrors().assertIdentical(m.assembly(), c.assembly());
+        mirrors().findSingleBean(c);
 
 
         assertEquals(m.lifetime(), c.lifetime());

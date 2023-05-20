@@ -4,7 +4,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -15,6 +14,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.DeploymentMirror;
 import app.packed.application.OldApplicationPath;
 import app.packed.bean.BeanMirror;
+import app.packed.container.ContainerLocal.LocalAccessor;
 import app.packed.context.Context;
 import app.packed.context.ContextMirror;
 import app.packed.context.ContextualizedElementMirror;
@@ -25,7 +25,7 @@ import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.util.Nullable;
-import app.packed.util.TreeNavigator;
+import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.container.ExtensionSetup;
@@ -45,7 +45,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * At runtime you can have a ContainerMirror injected
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public non-sealed class ContainerMirror implements ContextualizedElementMirror, Mirror {
+public non-sealed class ContainerMirror implements ContextualizedElementMirror , Mirror , LocalAccessor {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
@@ -64,31 +64,49 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror, 
     private static final MethodHandle MH_EXTENSION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ExtensionMirror.class, "initialize",
             void.class, ExtensionSetup.class);
 
-    /**
-     * The internal configuration of the container we are mirroring. Is initially null but populated via
-     * {@link #initialize(ContainerSetup)}.
-     */
-    @Nullable
-    private ContainerSetup container;
+    /** The container we are mirroring. */
+    final ContainerSetup container;
 
-    /** Create a new container mirror. */
-    public ContainerMirror() {}
+    /**
+     * Create a new container mirror.
+     *
+     * @throws IllegalStateException
+     *             if attempting to explicitly construct a container mirror instance
+     */
+    public ContainerMirror() {
+        // Will fail if the container mirror is not initialized by the framework
+        this.container = ContainerSetup.MIRROR_INITIALIZER.initialize();
+    }
+
+    // Includes extension beans.
+    public Stream<BeanMirror> allBeans() {
+        throw new UnsupportedOperationException();
+    }
 
     /** {@return the application this container is a part of.} */
     public ApplicationMirror application() {
-        return container().application.mirror();
+        return container.application.mirror();
     }
 
-    public TreeNavigator<ContainerMirror> applicationNode() {
+    /** {@return a node representing this container within an application.} */
+    public TreeView.Node<ContainerMirror> applicationNode() {
         throw new UnsupportedOperationException();
     }
 
     /** {@return the assembly wherein this container was defined.} */
     public AssemblyMirror assembly() {
-        return container().assembly.mirror();
+        return container.assembly.mirror();
     }
 
-    /** {@return a link Collection view of all the beans defined in the container.} */
+    /**
+     * {@return a view of all beans that owned by the application.}
+     * <p>
+     * If you want to include beans that are owned by extensions {@link #allBeans()} can be used instead.
+     *
+     *
+     *
+     * link Collection view of all the beans defined in the container.}
+     */
     // TODO change to immutable collection view
     public Stream<BeanMirror> beans() {
         // returning stream vs collection... I took a look at the methods in Collection.
@@ -97,11 +115,14 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror, 
         // https://cr.openjdk.java.net/~smarks/reviews/8148917/IterableOnce0.html
 
         // not technically a view but will do for now
-        ArrayList<BeanMirror> beans = new ArrayList<>();
-        for (var b = container().beanFirst; b != null; b = b.beanSiblingNext) {
-            beans.add(b.mirror());
-        }
-        return List.copyOf(beans).stream();
+//        ArrayList<BeanMirror> beans = new ArrayList<>();
+//        for (var b = container.beanFirst; b != null; b = b.beanSiblingNext) {
+//            beans.add(b.mirror());
+//        }
+//        return List.copyOf(beans).stream();
+
+        return container.beans.stream().map(b -> b.mirror());
+
         // return CollectionUtil.unmodifiableView(children.values(), c -> c.mirror());
         // we need a filter on the view...
         // size, isEmpty, is going to get a bit slower.
@@ -110,22 +131,15 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror, 
     /**
      * A view of all all of this containers beans that are in the same lifetime as the container itself.
      */
-    public Stream<BeanMirror> beansInSameLifetime() {
-        // not technically a view but will do for now
-        ArrayList<BeanMirror> beans = new ArrayList<>();
-        for (var b = container().beanFirst; b != null; b = b.beanSiblingNext) {
-            if (b.lifetime == container.lifetime) {
-                beans.add(b.mirror());
-            }
-        }
-        return List.copyOf(beans).stream();
+    public Stream<BeanMirror> beansInContainerLifetime() {
+        return container.beans.stream().filter(b -> b.lifetime == container.lifetime).map(b -> b.mirror());
     }
 
     /** {@return a set of all boundaries to this container's parent. Or empty if family root.} */
     public EnumSet<ContainerBoundaryKind> bondariesToParent() {
-        ContainerSetup parent = container().treeParent;
+        ContainerSetup parent = container.treeParent;
         if (parent != null) {
-            ContainerSetup c = container();
+            ContainerSetup c = container;
 
             // Deployment has all
             if (parent.application.deployment != c.application.deployment) {
@@ -152,41 +166,26 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror, 
 
     }
 
-    /**
-     * {@return the internal configuration of the container we are mirroring.}
-     *
-     * @throws IllegalStateException
-     *             if {@link #initialize(ContainerSetup)} has not been called previously.
-     */
-    private ContainerSetup container() {
-        ContainerSetup c = container;
-        if (c == null) {
-            throw new IllegalStateException(
-                    "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
-        }
-        return c;
-    }
-
     /** {@inheritDoc} */
     @Override
     public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
-        return ContextSetup.allMirrorsFor(container());
+        return ContextSetup.allMirrorsFor(container);
     }
 
     /** {@return the deployment this container is a part of.} */
     public DeploymentMirror deployment() {
-        return container().application.deployment.mirror();
+        return container.application.deployment.mirror();
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
-        return this == other || other instanceof ContainerMirror m && container() == m.container();
+        return this == other || other instanceof ContainerMirror m && container == m.container;
     }
 
     /** {@return a {@link Set} view of every extension type that have been used in the container.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
-        return container().extensionTypes();
+        return container.extensionTypes();
     }
 
     /**
@@ -201,26 +200,13 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror, 
      */
     public <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> mirrorType) {
         ClassUtil.checkProperSubclass(ExtensionMirror.class, mirrorType, "mirrorType");
-        return Optional.ofNullable(newMirrorOrNull(container(), mirrorType));
+        return Optional.ofNullable(newMirrorOrNull(container, mirrorType));
     }
 
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return container().hashCode();
-    }
-
-    /**
-     * Invoked by the runtime with the internal configuration of the container to mirror.
-     *
-     * @param bean
-     *            the internal configuration of the container to mirror
-     */
-    final void initialize(ContainerSetup container) {
-        if (this.container != null) {
-            throw new IllegalStateException("This mirror has already been initialized.");
-        }
-        this.container = container;
+        return container.hashCode();
     }
 
     /**
@@ -232,12 +218,12 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror, 
      * @see ContainerConfiguration#isExtensionUsed(Class)
      */
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-        return container().isExtensionUsed(extensionType);
+        return container.isExtensionUsed(extensionType);
     }
 
     /** {@return the containers's lifetime.} */
     public ContainerLifetimeMirror lifetime() {
-        return container().lifetime.mirror();
+        return container.lifetime.mirror();
     }
 
     /**
@@ -249,7 +235,7 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror, 
      * @return the name of this container
      */
     public String name() {
-        return container().name;
+        return container.name;
     }
 
     /** {@return all the namespaces this container operates within.} */
@@ -259,7 +245,7 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror, 
 
     /** {@return the path of the container.} */
     public OldApplicationPath path() {
-        return container().path();
+        return container.path();
     }
 
     /** {@inheritDoc} */
@@ -347,7 +333,7 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror, 
 //// Maaske bare fjerne den
 //public Set<ExtensionDescriptor> extensions() {
 //    HashSet<ExtensionDescriptor> result = new HashSet<>();
-//    for (ExtensionSetup extension : container().extensions.values()) {
+//    for (ExtensionSetup extension : container.extensions.values()) {
 //        result.add(ExtensionDescriptor.of(extension.extensionType));
 //    }
 //    return Set.copyOf(result);

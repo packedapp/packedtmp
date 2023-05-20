@@ -18,6 +18,7 @@ package app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.function.Supplier;
 
 import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
@@ -176,5 +177,16 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
         container().handle.container().assembly.lookup(lookup);
+    }
+
+    /**
+     * Specializes the {@link AssemblyMirror} that represents this assembly.
+     *
+     * @param supplier
+     *            the mirror supplier
+     */
+    protected final void specializeMirror(Supplier<? extends AssemblyMirror> supplier) {
+        requireNonNull(supplier, "supplier cannot be null");
+        throw new UnsupportedOperationException();
     }
 }

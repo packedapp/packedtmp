@@ -25,7 +25,7 @@ import app.packed.util.AnnotationList;
 import app.packed.util.Key;
 import app.packed.util.Variable;
 import tck.AppAppTest;
-import tck.HookExtension.FieldHook.FieldPrivateInstanceString;
+import tck.HookTestingExtension.FieldHook.FieldPrivateInstanceString;
 
 /**
  * This class this tests the various elements on {@link app.packed.extension.BeanIntrospector} that does not create

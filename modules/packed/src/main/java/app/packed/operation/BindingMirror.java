@@ -18,7 +18,6 @@ package app.packed.operation;
 import java.util.Optional;
 
 import app.packed.container.Author;
-import app.packed.util.Nullable;
 import app.packed.util.Variable;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromOperation;
@@ -36,59 +35,35 @@ import sandbox.operation.mirror.DependenciesMirror;
 @SuppressWarnings("exports") // Uses sandbox classes
 public class BindingMirror implements Mirror {
 
-    /**
-     * The internal configuration of the binding we are mirrored. Is initially null but populated via
-     * {@link #initialize(BindingSetup)}.
-     */
-    @Nullable
-    private BindingSetup binding;
-
-    /** Create a new binding mirror. */
-    public BindingMirror() {}
+    /** The binding we are mirrored. */
+    final BindingSetup binding;
 
     /**
-     * {@return the internal configuration of the binding.}
+     * Create a new binding mirror.
      *
      * @throws IllegalStateException
-     *             if {@link #initialize(BindingSetup)} has not been called.
+     *             if attempting to explicitly construct an binding mirror instance
      */
-    private BindingSetup binding() {
-        BindingSetup b = binding;
-        if (b == null) {
-            throw new IllegalStateException(
-                    "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
-        }
-        return b;
+    public BindingMirror() {
+        // Will fail if the binding mirror is not initialized by the framework
+        this.binding = BindingSetup.MIRROR_INITIALIZER.initialize();
     }
 
     /** {@return the kind of binding.} */
     public final BindingKind bindingKind() {
-        return binding().kind();
+        return binding.kind();
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
-        return this == other || other instanceof BindingMirror m && binding() == m.binding();
+        return this == other || other instanceof BindingMirror m && binding == m.binding;
     }
 
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return binding().hashCode();
-    }
-
-    /**
-     * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the extension.
-     *
-     * @param owner
-     *            the internal configuration of the extension to mirror
-     */
-    final void initialize(BindingSetup binding) {
-        if (this.binding != null) {
-            throw new IllegalStateException("This mirror has already been initialized.");
-        }
-        this.binding = binding;
+        return binding.hashCode();
     }
 
     /**
@@ -96,12 +71,12 @@ public class BindingMirror implements Mirror {
      * example a composite operation). Check {@link OperationMirror#nestedIn()}.
      */
     public OperationMirror operation() {
-        return binding().operation.mirror();
+        return binding.operation.mirror();
     }
 
     /** {@return the index of this binding into OperationMirror#bindings().} */
     public final int operationBindingIndex() { // alternative parameterIndex
-        return binding().operationBindingIndex;
+        return binding.operationBindingIndex;
     }
 
     /** {@inheritDoc} */
@@ -112,13 +87,13 @@ public class BindingMirror implements Mirror {
 
     /** {@return the underlying variable that has been bound.} */
     public final Variable variable() {
-        BindingSetup b = binding();
+        BindingSetup b = binding;
         return b.operation.type.parameter(b.operationBindingIndex);
     }
 
     /** {@return the x who created binding.} */
     public final Author zBoundBy() {
-        return binding().boundBy;
+        return binding.boundBy;
     }
 
     /** {@return the dependencies this binding introduces.} */
@@ -138,12 +113,12 @@ public class BindingMirror implements Mirror {
     }
 
     public Optional<BindingProviderKind> zProviderKind() {
-        return Optional.ofNullable(binding().resolver()).map(b -> b.kind());
+        return Optional.ofNullable(binding.resolver()).map(b -> b.kind());
     }
 
     public final Optional<OperationMirror> zProvidingOperation() {
         // What about lifetime
-        BindingResolution p = binding().resolver();
+        BindingResolution p = binding.resolver();
         if (p instanceof FromOperation fo) {
             return Optional.ofNullable(fo.operation().mirror());
         }

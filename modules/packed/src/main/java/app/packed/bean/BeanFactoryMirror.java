@@ -17,11 +17,22 @@ package app.packed.bean;
 
 import app.packed.lifetime.LifecycleOperationMirror;
 
-/** A mirror for operations that create {@link #bean() bean} instances. */
+/** A mirror for an operation that create {@link #bean() bean} instances. */
 public class BeanFactoryMirror extends LifecycleOperationMirror {
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "BeanFactory - " + super.target();
     }
 }
+//Should this extend Lifecycle operation????
+//Maaske er det ikke en operation???
+//Giver ikke mening at have error handle, eller lifecycle
+//Det er ikke en operation... IDK
+
+//Det der taler lidt imod at det er en operation er fx
+//ServiceProvide(Prototype) jo ogsaa er en operation...
+//Saa invokere vi lige pludselig 2 operationer...
+//Og hvad med ErrorHandlingen den ligger vel hos
+//ServiceProvide, lad os fx sige vi har

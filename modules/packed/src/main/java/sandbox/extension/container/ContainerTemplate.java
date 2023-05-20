@@ -19,12 +19,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import app.packed.container.ContainerLocal;
 import app.packed.extension.Extension;
 import app.packed.operation.Op1;
 import app.packed.util.Key;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.context.publish.ContextTemplate;
+import sandbox.extension.context.ContextSpanKind;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
@@ -40,15 +42,13 @@ import sandbox.extension.operation.OperationTemplate;
 public sealed interface ContainerTemplate permits PackedContainerTemplate {
 
     /**
-     * A template for a container that has the same lifetime as its parent container.
+     * A base template for a container that has the same lifetime as its parent container.
      * <p>
-     * The template has no {@link #lifetimeOperations() lifetime operations} as the container is automatically created when
-     * the root container in the lifetime is created.
+     * This template does supports any {@link #lifetimeOperations() lifetime operations} as the container is automatically
+     * created when the parent container is created.
+     * <p>
+     * This template does not support carrier objects. (or do we??)
      */
-    // Tror maaske vi dropper at have templates'ene her. Kan ikke bruge nogle af metoderne
-    // Hvis vi flytter dem, omnavngiver vi til ContainerLifetimeTemplate
-    // Og nok det samme for BeanTemplate
-    // Det er er nok ogsaa bedre for forstaaelsen af tunnel
     ContainerTemplate DEFAULT = new PackedContainerTemplate(PackedContainerKind.PARENT_LIFETIME);
 
     /**
@@ -57,14 +57,14 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
      * The container is created. The method is executed. And the container is shutdown again
      * <p>
      * A container lifetime created using this template must have registered at least one entry point. Otherwise an
-     * {@link app.packed.extension.InternalExtensionException} is thrown. TODO we need a method where we can set a supplier
-     * that is executed. It is typically a user error. The specified assembly must hava at least one method that schedules
-     * shit
+     * {@link app.packed.extension.InternalExtensionException} is thrown.
+     * <p>
+     * TODO we need a method where we can set a supplier that is executed. It is typically a user error. The specified
+     * assembly must hava at least one method that schedules shit
      *
      * @see app.packed.extension.BeanElement.BeanMethod#newLifetimeOperation(ContainerHandle)
      * @see app.packed.extension.bean.BeanTemplate#Z_FROM_OPERATION
      **/
-    // Managed vs Unmanaged???
     ContainerTemplate GATEWAY = new PackedContainerTemplate(PackedContainerKind.GATEWAY);
 
     /**
@@ -83,16 +83,23 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
     // Carefull with Unmanaged on Managed
     ContainerTemplate UNMANAGED = new PackedContainerTemplate(PackedContainerKind.UNMANAGED);
 
-    ContainerTemplate addLink(ContainerLifetimeTunnel link);
+    /**
+     * A set of keys that are available for injection into a lifetime bean using {@link FromLifetimeChannel}.
+     * <p>
+     * This method is mainly used for informational purposes.
+     *
+     * @return the set of keys available for injection
+     */
+    Set<Key<?>> carrierKeys();
 
-    default ContainerTemplate addLink(ContainerLifetimeTunnel... links) {
-        for (ContainerLifetimeTunnel l : links) {
-            addLink(l);
-        }
-        return this;
+    default <T> ContainerTemplate carrierProvideConstant(Class<T> key, T arg) {
+        return carrierProvideConstant(Key.of(key), arg);
     }
 
-    default ContainerTemplate allowRuntimeWirelets() {
+    /**
+     * @see FromLifetimeChannel
+     */
+    default <T> ContainerTemplate carrierProvideConstant(Key<T> key, T arg) {
         throw new UnsupportedOperationException();
     }
 
@@ -109,39 +116,30 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
      * @throws UnsupportedOperationException
      *             on container templates that do not have any lifetime operations
      */
-    ContainerTemplate lifetimeCarrier(Class<?> beanClass);
-
-    /**
-     * A set of keys that are available for injection into a lifetime bean using {@link FromLifetimeChannel}.
-     * <p>
-     * This method is mainly used for informational purposes.
-     *
-     * @return the set of keys available for injection
-     */
-    Set<Key<?>> lifetimeCarrierKeys();
-
-    default <T> ContainerTemplate lifetimeCarrierProvideConstant(Class<T> key, T arg) {
-        return lifetimeCarrierProvideConstant(Key.of(key), arg);
-    }
-
-    /**
-     * @see FromLifetimeChannel
-     */
-    default <T> ContainerTemplate lifetimeCarrierProvideConstant(Key<T> key, T arg) {
-        throw new UnsupportedOperationException();
-    }
+    ContainerTemplate carrierType(Class<?> beanClass);
 
     // Har kun visibility for the installing extension
     ContainerTemplate lifetimeOperationAddContext(int index, ContextTemplate template);
 
-    /** {@return a list of the lifetime operation templates.} */
+    /** {@return a list of the lifetime operation of this container template.} */
     List<OperationTemplate> lifetimeOperations();
+
+    default <T> ContainerTemplate localSet(ContainerLocal<T> containerLocal, T value) {
+        throw new UnsupportedOperationException();
+    }
+
+    ContainerTemplate withPack(ContainerTemplatePack pack);
+
+    default ContainerTemplate withPack(ContainerTemplatePack... packs) {
+        for (ContainerTemplatePack p : packs) {
+            withPack(p);
+        }
+        return this;
+    }
+
 }
 
 interface Zandbox {
-
-    // context either from args which are then stored
-    // or from some kind of ContextProvide method
 
     // @ContextProvide(Context.class) T, hvor T=ArgType
     Zandbox addContextFromArg(ContextTemplate template);
@@ -151,11 +149,17 @@ interface Zandbox {
     // Take a record? that matches the parameters?
     <T> Zandbox addContextFromParent(ContextTemplate template, ContextSpanKind span, Class<?> extensionBean, Op1<T, ?>... op);
 
+    // Soeger vi kun i samme lifetime?
+    Zandbox addContextFromProvide(ContextTemplate template, ContextSpanKind containerSpan);
+
     // BeanSpan not supported
     // OperationSpan I will have to think about that
 
-    // Soeger vi kun i samme lifetime?
-    Zandbox addContextFromProvide(ContextTemplate template, ContextSpanKind containerSpan);
+    default ContainerTemplate allowRuntimeWirelets() {
+        throw new UnsupportedOperationException();
+    }
+    // context either from args which are then stored
+    // or from some kind of ContextProvide method
 
     // I don't know what these do
     // In order to add links. This must have been set

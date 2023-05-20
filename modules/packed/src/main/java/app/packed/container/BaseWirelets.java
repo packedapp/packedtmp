@@ -33,7 +33,6 @@ import internal.app.packed.container.PackedContainerBuilder;
 public final class BaseWirelets {
     private BaseWirelets() {}
 
-
     // How does this work with scope?
     public static Wirelet argList(String... args) {
         throw new UnsupportedOperationException();

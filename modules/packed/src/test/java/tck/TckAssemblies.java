@@ -22,17 +22,14 @@ import app.packed.container.BaseAssembly;
 import app.packed.extension.BaseExtension;
 import tck.TckBeans.HelloMainBean;
 
-/**
- *
- */
+/** Common assemblies that can be used for testing. */
 public class TckAssemblies {
 
     public static class EmptyAssembly extends BaseAssembly {
 
         /** {@inheritDoc} */
         @Override
-        protected void build() {
-        }
+        protected void build() {}
     }
 
     public static class HelloWorldAssembly extends BaseAssembly {

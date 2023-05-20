@@ -22,9 +22,9 @@ import java.util.function.Supplier;
 
 import app.packed.application.BuildGoal;
 import app.packed.container.Assembly;
+import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
-import app.packed.extension.ContainerLocal;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.util.Key;
@@ -85,6 +85,12 @@ public final class LeafContainerOrApplicationBuilder extends NonBootstrapContain
         return handle;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public <T> ContainerBuilder carrierProvideConstant(Key<T> key, T constant) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      *
      * @throws IllegalStateException
@@ -105,13 +111,6 @@ public final class LeafContainerOrApplicationBuilder extends NonBootstrapContain
 
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> ContainerBuilder consumeLocal(ContainerLocal<T> local, Consumer<T> action) {
-        PackedContainerLocal<?> pcl = (PackedContainerLocal<?>) local;
-        action.accept((T) pcl.get(this));
-        return this;
-    }
-
     /** {@inheritDoc} */
     @Override
     public BuildGoal goal() {
@@ -120,27 +119,28 @@ public final class LeafContainerOrApplicationBuilder extends NonBootstrapContain
 
     /** {@inheritDoc} */
     @Override
-    public <T> ContainerBuilder lifetimeHolderProvideConstant(Key<T> key, T constant) {
-        throw new UnsupportedOperationException();
+    public LifetimeKind lifetimeKind() {
+        return LifetimeKind.MANAGED;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> ContainerBuilder localConsume(ContainerLocal<T> local, Consumer<T> action) {
+        PackedContainerLocal<?> pcl = (PackedContainerLocal<?>) local;
+        action.accept((T) pcl.get(this));
+        return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public LifetimeKind lifetimeKind() {
-        return LifetimeKind.MANAGED;
+    public <T> ContainerBuilder localSet(ContainerLocal<T> local, T value) {
+        locals.put((PackedContainerLocal<?>) local, value);
+        return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public ContainerBuilder named(String name) {
         this.name = name;
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> ContainerBuilder setLocal(ContainerLocal<T> local, T value) {
-        locals.put((PackedContainerLocal<?>) local, value);
         return this;
     }
 
@@ -155,7 +155,7 @@ public final class LeafContainerOrApplicationBuilder extends NonBootstrapContain
             @Nullable ContainerSetup parent) {
         LeafContainerOrApplicationBuilder pcb = new LeafContainerOrApplicationBuilder((PackedContainerTemplate) template, installedBy, application, parent);
 
-        for (PackedContainerLifetimeTunnel b : pcb.template.links().tunnels) {
+        for (PackedContainerTemplatePack b : pcb.template.links().packs) {
             b.build(pcb);
         }
         return pcb;

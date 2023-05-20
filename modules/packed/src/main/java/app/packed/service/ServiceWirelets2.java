@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,7 +25,7 @@ import app.packed.util.Key;
  */
 // ServiceWirelets not BaseWirelets. ArgList.of("Sad").toWirelet()
 // I think it is okay that we don't return ExtensionWirelet for most of the classes.
-public class ServiceWirelets {
+public class ServiceWirelets2 {
 
     // Double Provide overrides, Double Provide fails
     public static <T> Wirelet provideInstance(Class<T> key, T instance) {

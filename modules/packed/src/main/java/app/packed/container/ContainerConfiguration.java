@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.application.OldApplicationPath;
+import app.packed.container.ContainerLocal.LocalAccessor;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.util.Nullable;
@@ -19,7 +20,9 @@ import sandbox.extension.container.ContainerHandle;
  * <p>
  * Unlike {@link app.packed.bean.BeanConfiguration} this class cannot be extended.
  */
-public final class ContainerConfiguration {
+// Could let it be extendable. But it would only be usable through methods on extensions. Although
+// An assembly could return an instance of it
+public final class ContainerConfiguration implements LocalAccessor {
 
     /**
      * A marker configuration object indicating that an assembly (or composer) has already been used for building a

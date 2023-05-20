@@ -17,8 +17,6 @@ package internal.app.packed.binding;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
 import app.packed.container.Author;
@@ -29,16 +27,14 @@ import internal.app.packed.binding.BindingSetup.HookBindingSetup;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.ServiceBindingSetup;
-import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.ThrowableUtil;
+import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.types.ClassUtil;
 
 /** The configuration of an operation's binding. */
 public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindingSetup, ServiceBindingSetup {
 
-    /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
-    private static final MethodHandle MH_BINDING_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BindingMirror.class, "initialize",
-            void.class, BindingSetup.class);
+    /** A magic initializer for {@link BindingMirror}. */
+    public static final MagicInitializer<BindingSetup> MIRROR_INITIALIZER = MagicInitializer.of(BindingMirror.class);
 
     /**
      * The realm that owns the binding.
@@ -67,15 +63,7 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
 
     /** {@return a new mirror.} */
     public BindingMirror mirror() {
-        BindingMirror mirror = ClassUtil.newMirror(BindingMirror.class, BindingMirror::new, mirrorSupplier);
-
-        // Initialize BindingMirror by calling BindingMirror#initialize(BindingSetup)
-        try {
-            MH_BINDING_MIRROR_INITIALIZE.invokeExact(mirror, this);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-        return mirror;
+        return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(BindingMirror.class, BindingMirror::new, mirrorSupplier), this);
     }
 
     public abstract BindingResolution resolver();

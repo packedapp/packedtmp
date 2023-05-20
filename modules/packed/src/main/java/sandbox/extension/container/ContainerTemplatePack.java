@@ -18,17 +18,18 @@ package sandbox.extension.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
-import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-import app.packed.extension.ContainerLocal;
+import app.packed.application.BuildException;
+import app.packed.container.ContainerLocal;
 import app.packed.extension.Extension;
 import app.packed.util.Key;
-import internal.app.packed.container.AbstractContainerLifetimeTunnel;
-import internal.app.packed.container.AbstractContainerLifetimeTunnel.ConstantContainerLifetimeTunnel;
 import internal.app.packed.container.LeafContainerOrApplicationBuilder;
-import internal.app.packed.container.PackedContainerLifetimeTunnel;
+import internal.app.packed.container.PackedContainerTemplatePack;
+import internal.app.packed.container.PackedContainerTemplatePack.KeyFragment;
 
 // A link has
 
@@ -55,7 +56,7 @@ import internal.app.packed.container.PackedContainerLifetimeTunnel;
 
 // Or just ContainerTemplate.ExtensionLink
 // Hvad med mesh
-public sealed interface ContainerLifetimeTunnel permits AbstractContainerLifetimeTunnel {
+public sealed interface ContainerTemplatePack permits PackedContainerTemplatePack {
 
     /** {@return the extension that defined the tunnel.} */
     Class<? extends Extension<?>> extensionClass();
@@ -84,7 +85,7 @@ public sealed interface ContainerLifetimeTunnel permits AbstractContainerLifetim
 
     // is used in the (unlikely) scenario with multiple links
     // that each provide something with the same key
-    ContainerLifetimeTunnel rekey(Key<?> from, Key<?> to);
+    ContainerTemplatePack rekey(Key<?> from, Key<?> to);
 
     /**
      * Returns a new container lifetime channel builder for the specified extension.
@@ -97,69 +98,102 @@ public sealed interface ContainerLifetimeTunnel permits AbstractContainerLifetim
      *            the type of extension
      * @return the builder
      */
-    static ContainerLifetimeTunnel.Builder builder(MethodHandles.Lookup caller, Class<? extends Extension<?>> extensionType, String name) {
+    static ContainerTemplatePack.Builder builder(MethodHandles.Lookup caller, Class<? extends Extension<?>> extensionType, String name) {
         if (!caller.hasFullPrivilegeAccess()) {
             throw new IllegalArgumentException("caller must have full privilege access");
         } else if (caller.lookupClass().getModule() != extensionType.getModule()) {
             throw new IllegalArgumentException("extension type must be in the same module as the caller");
         }
-        return new ContainerLifetimeTunnel.Builder(new PackedContainerLifetimeTunnel(extensionType, null, Set.of()));
+        return new ContainerTemplatePack.Builder(new PackedContainerTemplatePack(extensionType, null, Map.of()));
     }
 
-    /**
-     * Returns a simple link that simply provides a constant value for the specified key which can be accessed using
-     * {@link ContainerHolderService}.
-     * <p>
-     * The returned extension link will return {@code BaseExtension.class} from {@link #extensionClass()}.
-     *
-     * @param <T>
-     *            the type of constant
-     * @param key
-     *            the key under which to make the constant available
-     * @param constant
-     *            the constant
-     * @return the tunnel
-     */
-    static <T> ContainerLifetimeTunnel ofConstant(Class<T> key, T constant) {
-        return ofConstant(Key.of(key), constant);
-    }
-
-    static <T> ContainerLifetimeTunnel ofConstant(Key<T> key, T constant) {
-        return new ConstantContainerLifetimeTunnel(key, constant);
-    }
+    // Man kan ikke lave det uden en extension class
+//    /**
+//     * Returns a simple link that simply provides a constant value for the specified key which can be accessed using
+//     * {@link ContainerHolderService}.
+//     * <p>
+//     * The returned extension link will return {@code BaseExtension.class} from {@link #extensionClass()}.
+//     *
+//     * @param <T>
+//     *            the type of constant
+//     * @param key
+//     *            the key under which to make the constant available
+//     * @param constant
+//     *            the constant
+//     * @return the tunnel
+//     */
+//    static <T> ContainerTemplatePack ofConstant(Class<T> key, T constant) {
+//        return ofConstant(Key.of(key), constant);
+//    }
+//
+//    static <T> ContainerTemplatePack ofConstant(Key<T> key, T constant) {
+//        return new ConstantContainerLifetimeTunnel(key, constant);
+//    }
 
     /** A builder for {@link ExtensionLink}. */
     // Could move this class to ExtensionContext
     // and have newExtensionLink(String name) paa den
+    // We need this builder. Because it has methods that should be exposed to
+    // users of the built product.
     public static final class Builder {
-        // We need this builder. Because it has methods that should be exposed to
-        // users of the built product.
-        /** The internal channel. */
-        private PackedContainerLifetimeTunnel channel;
 
-        private Builder(PackedContainerLifetimeTunnel channel) {
-            this.channel = requireNonNull(channel);
+        /** The internal pack. */
+        private PackedContainerTemplatePack pack;
+
+        private Builder(PackedContainerTemplatePack pack) {
+            this.pack = requireNonNull(pack);
         }
 
         /**
-         * Creates a new link.
+         * Creates a new pack.
          *
-         *
-         * @return the new link
+         * @return the new pack
          */
-        public ContainerLifetimeTunnel build() {
-            return channel;
+        public ContainerTemplatePack build() {
+            return pack;
         }
 
-        // Hvis extensionen ikke er installeret (eller eksportere den)
-        // exposeOrAlternative(Key<T>, T alternative)
-
-        public <T> ContainerLifetimeTunnel.Builder consumeLocal(ContainerLocal<T> local, Consumer<T> action) {
-            return useBuilder(c -> c.consumeLocal(local, action));
+        public <T> ContainerTemplatePack carrierProvideConstant(Class<T> key, T constant) {
+            return carrierProvideConstant(Key.of(key), constant);
         }
 
-        public ContainerLifetimeTunnel.Builder expose(Class<?>... keys) {
-            return expose(Key.ofAll(keys));
+        /**
+         * @param <T>
+         * @param key
+         * @param constant
+         * @return
+         *
+         * @see ContainerTemplate#carrierProvideConstant(Key, Object)
+         * @see ContainerCarrierBeanConfiguration#carrierProvideConstant(Key, Object)
+         * @see ContainerBuilder#carrierProvideConstant(Key, Object)
+         */
+        public <T> ContainerTemplatePack carrierProvideConstant(Key<T> key, T constant) {
+            throw new UnsupportedOperationException();
+        }
+
+        // Typically used with locals with lazy initialization
+        public <T> ContainerTemplatePack.Builder localConsume(ContainerLocal<T> local, Consumer<T> action) {
+            pack = pack.withUse(c -> c.localConsume(local, action));
+            return this;
+        }
+
+        /**
+         * @param <T>
+         * @param local
+         * @param value
+         * @return
+         *
+         * @see ContainerTemplate#localSet(ContainerLocal, Object)
+         * @see ContainerBuilder#localSet(ContainerLocal, Object)
+         */
+        public <T> ContainerTemplatePack.Builder localSet(ContainerLocal<T> local, T value) {
+            pack = pack.withUse(c -> c.localSet(local, value));
+            return this;
+        }
+
+        // Must be exported from an extension from container being linked
+        public ContainerTemplatePack.Builder provideExpose(Class<?>... keys) {
+            return provideExpose(Key.ofAll(keys));
         }
 
         /**
@@ -171,25 +205,34 @@ public sealed interface ContainerLifetimeTunnel permits AbstractContainerLifetim
          *            the keys to include
          * @return this builder
          */
+
+        // Taenker vi smider noget a.la. Foo foo template said it would expose Y but the extension provides no beans
+        // (or provides no exports from [list all container beans])
+
         // Tror bare det skal vaere almindelige provisions
-        // Ser ikke nogen grund til at bl.a. exports into it
-        public ContainerLifetimeTunnel.Builder expose(Key<?>... keys) {
-            PackedContainerLifetimeTunnel c = channel;
-            HashSet<Key<?>> s = new HashSet<>(c.keys());
-            s.addAll(Set.of(keys));
-            channel = new PackedContainerLifetimeTunnel(c.extensionClass(), c.onUse(), Set.copyOf(s));
+        // Ser ikke nogen grund til at blande. exports into it
+        public ContainerTemplatePack.Builder provideExpose(Key<?>... keys) {
+            for (Key<?> key : keys) {
+                pack = pack.withFragments(key, new KeyFragment.OfExports());
+            }
             return this;
         }
 
-        // Maybe we want a ContainerRef? ApplicationPath
-        // Difficult to throw an exception with a good message here
-        ContainerLifetimeTunnel.Builder onNoUse(Runnable action) {
-            // An action that will be executed in the target container
+        // Hvis extensionen ikke er installeret (or exported)
+        public <T> ContainerTemplatePack.Builder provideExposeOrElse(Key<T> key, T alternative) {
             return this;
         }
 
-        public <T> ContainerLifetimeTunnel.Builder setLocal(ContainerLocal<T> local, T value) {
-            return useBuilder(c -> c.setLocal(local, value));
+        public Builder requireExtension() {
+            return this;
+        }
+
+        public Builder requireExtension(String errorMessage) {
+            return this;
+        }
+
+        public Builder requireExtension(Supplier<? extends BuildException> throwaer) {
+            return this;
         }
 
         /**
@@ -204,15 +247,27 @@ public sealed interface ContainerLifetimeTunnel permits AbstractContainerLifetim
          * @return this builder
          */
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        ContainerLifetimeTunnel.Builder useBuilder(Consumer<? super LeafContainerOrApplicationBuilder> action) {
-            channel = new PackedContainerLifetimeTunnel(channel.extensionClass(), channel.onUse() == null ? action : channel.onUse().andThen((Consumer) action),
-                    channel.keys());
+        ContainerTemplatePack.Builder useBuilder(Consumer<? super LeafContainerOrApplicationBuilder> action) {
+            pack = new PackedContainerTemplatePack(pack.extensionClass(), pack.onUse() == null ? action : pack.onUse().andThen((Consumer) action), pack.services());
             return this;
         }
     }
 
     // Alternativt en Qualifier og saa local services... Og evt ingen context...
 }
+
+interface Zaandbox {
+
+    // allow multiple instance of the same action [ExtensionClass+name]
+    Zaandbox allowMultipleInstances();
+}
+
+// Maybe we want a ContainerRef? ApplicationPath
+// Difficult to throw an exception with a good message here
+//ContainerTemplatePack.Builder onNoUse(Runnable action) {
+//    // An action that will be executed in the target container
+//    return this;
+//}
 //
 //// If arguments are needed from the lifetime start, must use a context.
 //// Taenker den er til raadighed i hele extension lifetimen?

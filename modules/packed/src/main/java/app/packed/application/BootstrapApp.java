@@ -30,8 +30,8 @@ import app.packed.bean.BeanKind;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.Assembly;
+import app.packed.container.ContainerLocal;
 import app.packed.container.Wirelet;
-import app.packed.extension.ContainerLocal;
 import app.packed.extension.FrameworkExtension;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.RunState;
@@ -52,7 +52,7 @@ import internal.app.packed.util.ThrowableUtil;
 import sandbox.extension.bean.BeanBuilder;
 import sandbox.extension.bean.BeanHandle;
 import sandbox.extension.bean.BeanTemplate;
-import sandbox.extension.container.ContainerLifetimeTunnel;
+import sandbox.extension.container.ContainerTemplatePack;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
@@ -339,7 +339,9 @@ public final /* primitive */ class BootstrapApp<A> {
 
         static final OperationTemplate ot = OperationTemplate.raw().withContext(CIT).returnTypeObject();
 
-        static final BeanTemplate BT = new PackedBeanTemplate(BeanKind.MANYTON).withOperationTemplate(ot);
+        static final BeanTemplate BT = new PackedBeanTemplate(BeanKind.UNMANAGED).withOperationTemplate(ot);
+
+        //static final BeanTemplate BT2 = BeanKind.UNMANAGED.template().inLifetimeOperationContext(0, CIT);
 
         MethodHandle mh;
 
@@ -391,8 +393,8 @@ public final /* primitive */ class BootstrapApp<A> {
          *            the channel(s) to add
          * @return this composer
          */
-        public Composer addChannel(ContainerLifetimeTunnel... channels) {
-            this.template = (PackedContainerTemplate) template.addLink(channels);
+        public Composer addChannel(ContainerTemplatePack... channels) {
+            this.template = (PackedContainerTemplate) template.withPack(channels);
             return this;
         }
 

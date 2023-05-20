@@ -8,7 +8,6 @@ Altsaa hvis vi har en SessionContext maa den jo altsaa vaere tilgaengelig langt 
 // Bean -> In the bean
 // Operation -> Only the operation
 
-
 // Container er jo den mest kontroversielle....
 // IsInContext??? if (container.isInContext(SessionContext.class)-> 
 

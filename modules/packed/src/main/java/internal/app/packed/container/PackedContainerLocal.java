@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Supplier;
 
+import app.packed.container.ContainerLocal;
 import app.packed.container.Wirelet;
-import app.packed.extension.ContainerLocal;
 import app.packed.util.Nullable;
 
 /** Implementation of {@link ContainerLocal}. */

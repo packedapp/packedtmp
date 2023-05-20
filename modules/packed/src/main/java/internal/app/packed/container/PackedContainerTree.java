@@ -16,24 +16,24 @@
 package internal.app.packed.container;
 
 import java.util.Iterator;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerTreeMirror;
-import app.packed.util.TreeNavigator;
 
 /**
  *
  */
 public class PackedContainerTree implements ContainerTreeMirror {
 
-    final Mode mode;
+    final Predicate<? super ContainerSetup> nodeSelector;
 
     final ContainerSetup root;
 
-    PackedContainerTree(Mode mode, ContainerSetup root) {
-        this.mode = mode;
+    PackedContainerTree(ContainerSetup root, Predicate<? super ContainerSetup> nodeSelector) {
         this.root = root;
+        this.nodeSelector = nodeSelector;
     }
 
     @Override
@@ -42,15 +42,17 @@ public class PackedContainerTree implements ContainerTreeMirror {
     }
 
     @Override
-    public TreeNavigator<ContainerMirror> rootNode() {
+    public Node<ContainerMirror> rootNode() {
         return ContainerTreeMirror.super.rootNode();
     }
 
-    public class MirrorNode implements TreeNavigator<ContainerMirror> {
+    public static class MirrorNode implements Node<ContainerMirror> {
 
         final ContainerSetup container;
+        final PackedContainerTree tree;
 
-        MirrorNode(ContainerSetup container) {
+        MirrorNode(PackedContainerTree tree, ContainerSetup container) {
+            this.tree = tree;
             this.container = container;
         }
 
@@ -63,13 +65,13 @@ public class PackedContainerTree implements ContainerTreeMirror {
         /** {@inheritDoc} */
         @Override
         public boolean isRoot() {
-            return root == container;
+            return tree.root == container;
         }
 
         /** {@inheritDoc} */
         @Override
         public Iterator<ContainerMirror> iterator() {
-           throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException();
         }
 
         /** {@inheritDoc} */
@@ -81,7 +83,7 @@ public class PackedContainerTree implements ContainerTreeMirror {
         /** {@inheritDoc} */
         @Override
         public ContainerMirror root() {
-            return null;
+            return tree.root();
         }
 
         /** {@inheritDoc} */

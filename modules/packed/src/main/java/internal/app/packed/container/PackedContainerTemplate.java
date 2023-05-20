@@ -22,12 +22,12 @@ import app.packed.container.Wirelet;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import internal.app.packed.context.publish.ContextTemplate;
-import sandbox.extension.container.ContainerLifetimeTunnel;
+import sandbox.extension.container.ContainerTemplatePack;
 import sandbox.extension.container.ContainerTemplate;
 import sandbox.extension.operation.OperationTemplate;
 
 /** Implementation of {@link ContainerTemplate}. */
-public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, PackedContainerLifetimeTunnelSet links, Class<?> resultType)
+public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, PackedContainerTemplatePackList links, Class<?> resultType)
         implements ContainerTemplate {
 
     public PackedContainerTemplate(PackedContainerKind kind) {
@@ -35,12 +35,12 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
     }
 
     public PackedContainerTemplate(PackedContainerKind kind, Class<?> holderType) {
-        this(kind, holderType, new PackedContainerLifetimeTunnelSet(List.of()), void.class);
+        this(kind, holderType, new PackedContainerTemplatePackList(List.of()), void.class);
     }
 
     /** {@inheritDoc} */
     @Override
-    public Set<Key<?>> lifetimeCarrierKeys() {
+    public Set<Key<?>> carrierKeys() {
         return links.keys();
     }
 
@@ -57,7 +57,7 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
 
     /** {@inheritDoc} */
     @Override
-    public PackedContainerTemplate lifetimeCarrier(Class<?> guest) {
+    public PackedContainerTemplate carrierType(Class<?> guest) {
         // I don't think we are going to do any checks here?
         // Well not interface, annotation, abstract class, ...
         // All lifetime operation will change...
@@ -66,8 +66,8 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
 
     /** {@inheritDoc} */
     @Override
-    public PackedContainerTemplate addLink(ContainerLifetimeTunnel channel) {
-        PackedContainerLifetimeTunnelSet tunnels = links.add((PackedContainerLifetimeTunnel) channel);
+    public PackedContainerTemplate withPack(ContainerTemplatePack channel) {
+        PackedContainerTemplatePackList tunnels = links.add((PackedContainerTemplatePack) channel);
         return new PackedContainerTemplate(kind, holderClass, tunnels, resultType);
     }
 

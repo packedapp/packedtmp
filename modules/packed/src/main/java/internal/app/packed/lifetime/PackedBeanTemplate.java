@@ -15,6 +15,8 @@
  */
 package internal.app.packed.lifetime;
 
+import java.util.List;
+
 import app.packed.bean.BeanKind;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.PackedBeanBuilder;
@@ -28,7 +30,7 @@ import sandbox.extension.operation.OperationTemplate;
 public record PackedBeanTemplate(BeanKind kind, OperationTemplate bot, @Nullable Class<?> createAs) implements BeanTemplate {
 
     public PackedBeanTemplate(BeanKind kind) {
-        this(kind, null, null);
+        this(kind, null, Object.class);
     }
 
     /** {@inheritDoc} */
@@ -45,9 +47,41 @@ public record PackedBeanTemplate(BeanKind kind, OperationTemplate bot, @Nullable
         return new PackedBeanTemplate(kind, bot, createAs);
     }
 
+    @Override
+    public BeanTemplate createAsBeanClass() {
+        return new PackedBeanTemplate(kind, bot, null);
+    }
+
     /** {@inheritDoc} */
     @Override
-    public BeanTemplate lifetimeOperationContext(int index, ContextTemplate template) {
+    public BeanTemplate inLifetimeOperationContext(int index, ContextTemplate template) {
         throw new UnsupportedOperationException();
+    }
+
+    public record PackedBeanTemplateDescriptor(PackedBeanTemplate pbt) implements BeanTemplate.Descriptor {
+
+        /** {@inheritDoc} */
+        @Override
+        public Class<?> createAs() {
+            return pbt.createAs;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public List<OperationTemplate.Descriptor> lifetimeOperations() {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public BeanKind beanKind() {
+            return pbt.kind;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Descriptor descriptor() {
+        return new PackedBeanTemplateDescriptor(this);
     }
 }

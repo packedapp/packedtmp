@@ -20,8 +20,8 @@ import java.util.List;
 /**
  * Taenker den her er uundvaergelig naar vi exporter/importer some en streng
  */
-// Application:appName
-// Container:appName:/ Container:appName:/FooBar
+// Application:appName:
+// Container:appName::Foobar Container:appName:/FooBar
 // Assembly:appName:/,  Assembly:appName:/MyAssembly
 // Bean:appName:/:MyBean,  Bean:appName:/MyAssembly:BooBean
 // Operation:appName:/:MyBean:getStuff
@@ -29,7 +29,6 @@ import java.util.List;
 // Extension:appName:Container:ExtensionName (SimpleClassName uniqiefied)
 
 // Names, Classes, Keys, ...
-
 
 //// what about customized exports??? Det kan jo vaere den samme service
 //// Er det renames? Adaptors? idk.
@@ -45,55 +44,69 @@ import java.util.List;
 ///////
 // Namespace:appName:/??? Tror vi har
 
-public interface ApplicationPath {
+public interface DeploymentPath {
 
-    static ApplicationPath ofApplication(String applicationName) {
+    /**
+     * {@return a path representing an application with the specified name}
+     *
+     * @param applicationName
+     *            the name of the application
+     */
+    static DeploymentPath ofApplication(String applicationName) {
         return null;
     }
 
-    static ApplicationPath ofContainer(String applicationName, String[] containers) {
+    static DeploymentPath ofAssembly(String applicationName, String[] assemblies) {
         return null;
     }
 
-    static ApplicationPath ofAssembly(String applicationName, String[] assemblies) {
+    static DeploymentPath ofBean(String applicationName, String[] containers, String bean) {
         return null;
     }
 
-    static ApplicationPath ofOperation(String applicationName, String[] containers, String bean, String operation) {
+    static DeploymentPath ofBinding(String applicationName, String[] containers, String bean, String operation, int[] bindings) {
         return null;
     }
 
-    static ApplicationPath ofBinding(String applicationName, String[] containers, String bean, String operation, int[] bindings) {
+    /**
+     * {@return a path representing a container}
+     *
+     * @param applicationName
+     *            the name of the application
+     * @param container
+     *            list of
+     */
+    static DeploymentPath ofContainer(String applicationName, String[] containerNames) {
         return null;
     }
 
-    static ApplicationPath ofBean(String applicationName, String[] containers, String bean) {
+    static DeploymentPath ofExtension(String applicationName, String[] containers, String extension) {
         return null;
     }
 
-    static ApplicationPath ofExtension(String applicationName, String[] containers, String extension) {
+    static DeploymentPath ofOperation(String applicationName, String[] containers, String bean, String operation) {
         return null;
     }
 
-    enum Kind {
-        APPLICATION, CONTAINER, BEAN, ASSEMBLY;
+    interface ComponentPathModel {
+        List<String> fragments();
+
+        boolean isCustom();
+
+        String name();
+
+        interface Fragment {
+            String name();
+
+            Class<?> type();
+        }
     }
 
     enum FragmentKind {
         NAME, PATH
     }
-}
 
-interface ComponentPathModel {
-    String name();
-
-    boolean isCustom();
-
-    List<String> fragments();
-
-    interface Fragment {
-        String name();
-
-        Class<?> type();
+    enum Kind {
+        APPLICATION, ASSEMBLY, BEAN, CONTAINER;
     }
 }

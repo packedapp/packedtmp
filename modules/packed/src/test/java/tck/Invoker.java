@@ -15,6 +15,8 @@
  */
 package tck;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.util.ArrayList;
@@ -25,9 +27,9 @@ import java.util.List;
  */
 public final class Invoker {
 
-    private final String name;
-    private final MethodHandle methodHandle;
     private final Object[] args;
+    private final MethodHandle methodHandle;
+    private final String name;
 
     Invoker(String name, MethodHandle methodHandle, Object[] args) {
         this.name = name;
@@ -35,16 +37,11 @@ public final class Invoker {
         this.args = args;
     }
 
-    public Invoker raw() {
-        return new Invoker(name, methodHandle, new Object[] {});
-    }
-
-    public String name() {
-        return name;
-    }
-
-    public MethodType type() {
-        return methodHandle.type();
+    public void invokeEquals(Object expected, Object... args) throws Throwable {
+        ArrayList<Object> l = new ArrayList<>(List.of(this.args));
+        l.addAll(List.of(args));
+        Object result = methodHandle.invokeWithArguments(l);
+        assertEquals(expected, result);
     }
 
     @SuppressWarnings("unchecked")
@@ -52,5 +49,17 @@ public final class Invoker {
         ArrayList<Object> l = new ArrayList<>(List.of(this.args));
         l.addAll(List.of(args));
         return (T) methodHandle.invokeWithArguments(l);
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public Invoker raw() {
+        return new Invoker(name, methodHandle, new Object[] {});
+    }
+
+    public MethodType type() {
+        return methodHandle.type();
     }
 }

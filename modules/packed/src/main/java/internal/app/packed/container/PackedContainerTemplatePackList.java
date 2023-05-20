@@ -24,18 +24,18 @@ import app.packed.util.Key;
 /**
  *
  */
-public final class PackedContainerLifetimeTunnelSet {
+public final class PackedContainerTemplatePackList {
 
-    public final List<PackedContainerLifetimeTunnel> tunnels;
+    public final List<PackedContainerTemplatePack> packs;
 
-    PackedContainerLifetimeTunnelSet(List<PackedContainerLifetimeTunnel> tunnels) {
-        this.tunnels = List.copyOf(tunnels);
+    PackedContainerTemplatePackList(List<PackedContainerTemplatePack> tunnels) {
+        this.packs = List.copyOf(tunnels);
     }
 
-    public PackedContainerLifetimeTunnelSet add(PackedContainerLifetimeTunnel tunnel) {
-        ArrayList<PackedContainerLifetimeTunnel> l = new ArrayList<>(tunnels);
+    public PackedContainerTemplatePackList add(PackedContainerTemplatePack tunnel) {
+        ArrayList<PackedContainerTemplatePack> l = new ArrayList<>(packs);
         l.add(tunnel);
-        return new PackedContainerLifetimeTunnelSet(l);
+        return new PackedContainerTemplatePackList(l);
     }
 
     /**

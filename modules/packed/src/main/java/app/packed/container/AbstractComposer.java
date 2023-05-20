@@ -109,7 +109,6 @@ public abstract class AbstractComposer {
     }
 
     /** A special type of assembly that a composer and a composer action to configure an application. */
-    // ComposingAssembly?
     public static abstract non-sealed class ComposableAssembly<C extends AbstractComposer> extends Assembly {
 
         /** The action to run. */

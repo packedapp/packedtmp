@@ -100,7 +100,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
     /** {@inheritDoc} */
     @Override
     public List<Class<?>> availableInvocationArguments() {
-        return operation.template.invocationType().parameterList();
+        return operation.template.descriptor().invocationType().parameterList();
     }
 
     private void bind(BindingResolution provider) {
@@ -141,7 +141,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
                 throw new NotInContextException("oops " + context);
             }
         }
-        MethodType mt = operation.template.invocationType();
+        MethodType mt = operation.template.descriptor().invocationType();
         int indexOf = mt.parameterList().indexOf(context);
         // TODO fix. We need to look up the
         bindInvocationArgument(indexOf);
@@ -162,7 +162,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
         if (operation.operator != bindingExtension) {
             throw new UnsupportedOperationException("For binding " + variable);
         }
-        checkIndex(argumentIndex, operation.template.invocationType().parameterCount());
+        checkIndex(argumentIndex, operation.template.descriptor().invocationType().parameterCount());
         // TODO check type
 
         bind(new FromInvocationArgument(argumentIndex));

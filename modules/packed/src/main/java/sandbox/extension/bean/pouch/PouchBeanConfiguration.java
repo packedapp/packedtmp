@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.container.other;
+package sandbox.extension.bean.pouch;
+
+import java.util.Collection;
+import java.util.List;
 
 import app.packed.service.ServiceableBeanConfiguration;
 import sandbox.extension.bean.BeanHandle;
@@ -21,12 +24,32 @@ import sandbox.extension.bean.BeanHandle;
 /**
  *
  */
-public class ContainerHostConfiguration<T> extends ServiceableBeanConfiguration<T> {
+
+// Pouch er det om at supportere alle mulige annoteringer paa andet end
+// container beans
+
+
+// For a single bean, or for multiple beans in the same container lifetime
+// Always a managed container bean
+
+// A bean can only belong to a single pouch
+
+// bean.installedBy == beanPouch.owner
+
+// accept list, reject list extensions
+
+public class PouchBeanConfiguration<T> extends ServiceableBeanConfiguration<T> {
 
     /**
      * @param handle
      */
-    public ContainerHostConfiguration(BeanHandle<T> handle) {
+    public PouchBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
     }
+
+    public Collection<BeanHandle<?>> manages() {
+        return List.of();
+    }
 }
+
+// beanKind = Pouch

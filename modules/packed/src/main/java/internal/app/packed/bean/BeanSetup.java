@@ -33,6 +33,7 @@ import internal.app.packed.binding.BindingResolution.FromOperation;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NameCheck;
+import internal.app.packed.container.PackedLocalMap;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
@@ -54,6 +55,10 @@ import sandbox.extension.operation.OperationTemplate;
 /** The internal configuration of a bean. */
 public final class BeanSetup implements ContextualizedElementSetup {
 
+    /** A MethodHandle for invoking {@link ExtensionMirror#initialize(ExtensionSetup)}. */
+    private static final MethodHandle MH_BEAN_INTROSPECTOR_TO_BEAN = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class, "bean",
+            BeanSetup.class);
+
     /** A magic initializer for {@link BeanMirror}. */
     public static final MagicInitializer<BeanSetup> MIRROR_INITIALIZER = MagicInitializer.of(BeanMirror.class);
 
@@ -61,17 +66,11 @@ public final class BeanSetup implements ContextualizedElementSetup {
     private static final VarHandle VH_BEAN_CONFIGURATION_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanConfiguration.class, "handle",
             PackedBeanHandle.class);
 
-    boolean allowMultiClass;
-
     /** The bean class, is typical void.class for functional beans. */
     public final Class<?> beanClass;
 
     /** The kind of bean. */
     public final BeanKind beanKind;
-
-    /** All beans in a container are maintained in a linked list. */
-    @Nullable
-    public BeanSetup beanSiblingNext;
 
     /** The source ({@code null}, {@link Class}, {@link PackedOp}, otherwise the bean instance) */
     @Nullable
@@ -104,6 +103,8 @@ public final class BeanSetup implements ContextualizedElementSetup {
     /** Supplies a specialized mirror for the operation. */
     @Nullable
     private final Supplier<? extends BeanMirror> mirrorSupplier;
+
+    public int multiInstall;
 
     /** The name of this bean. Should only be updated through {@link #named(String)} */
     String name;
@@ -170,7 +171,7 @@ public final class BeanSetup implements ContextualizedElementSetup {
             return new FromConstant(beanSource.getClass(), beanSource);
         } else if (beanKind == BeanKind.CONTAINER) { // we've already checked if instance
             return new FromLifetimeArena(container.lifetime, lifetimeStoreIndex, beanClass);
-        } else if (beanKind == BeanKind.MANYTON) {
+        } else if (beanKind == BeanKind.UNMANAGED) {
             return new FromOperation(operations.get(0));
         }
         throw new Error();
@@ -207,6 +208,11 @@ public final class BeanSetup implements ContextualizedElementSetup {
         return new BeanAccessOperationSetup(installedBy, this, OperationType.of(beanClass), template);
     }
 
+    /** {@return a map of locals for the bean} */
+    public PackedLocalMap locals() {
+        return container.application.locals;
+    }
+
     /** {@return a new mirror.} */
     @Override
     public BeanMirror mirror() {
@@ -227,13 +233,13 @@ public final class BeanSetup implements ContextualizedElementSetup {
         // Issue should be the container which should probably work identical
         // And I do think we should have it as the first thing
 
-        if (container.namedChildren.putIfAbsent(newName, this) != null) {
+        if (container.beans.beans.putIfAbsent(newName, this) != null) {
             if (newName.equals(name)) { // tried to set the current name which is okay i guess?
                 return;
             }
             throw new IllegalArgumentException("A bean or container with the specified name '" + newName + "' already exists");
         }
-        container.namedChildren.remove(name);
+        container.beans.beans.remove(name);
         this.name = newName;
     }
 
@@ -282,12 +288,9 @@ public final class BeanSetup implements ContextualizedElementSetup {
         return ((PackedBeanElement) element).bean();
     }
 
-
-
-
-    /** A MethodHandle for invoking {@link ExtensionMirror#initialize(ExtensionSetup)}. */
-    private static final MethodHandle MH_BEAN_INTROSPECTOR_TO_BEAN = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class, "bean",
-            BeanSetup.class);
+    public static BeanSetup crack(BeanHandle<?> handle) {
+        return ((PackedBeanHandle<?>) handle).bean();
+    }
 
     public static BeanSetup crack(BeanIntrospector introspector) {
         // Call ExtensionMirror#initialize(ExtensionSetup)
@@ -296,10 +299,6 @@ public final class BeanSetup implements ContextualizedElementSetup {
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
-    }
-
-    public static BeanSetup crack(BeanHandle<?> handle) {
-        return ((PackedBeanHandle<?>) handle).bean();
     }
 
 }

@@ -16,13 +16,16 @@
 package app.packed.application;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
+import app.packed.bean.BeanMirror;
 import app.packed.container.AssemblyTreeMirror;
 import app.packed.container.ContainerTreeMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.Extension;
 import app.packed.lifetime.ContainerLifetimeTreeMirror;
+import internal.app.packed.container.DeploymentSetup;
 import internal.app.packed.container.Mirror;
 
 /**
@@ -32,10 +35,25 @@ import internal.app.packed.container.Mirror;
 
 // We may have multiple deployments
 
-//Cluster|Node? < Java Process < Family < Deployment < Application < Container < Bean < Operation < Binding | Interceptor
+// Family < Deployment < Application < Container < Bean < Operation < Binding | Interceptor
 
+//Cluster|Node? < Java Process < Family
 @BindingTypeHook(extension = BaseExtension.class)
 public class DeploymentMirror implements Mirror {
+
+    /** The deployment we are mirroring. */
+    private final DeploymentSetup deployment;
+
+    /**
+     * Create a new deployment mirror.
+     *
+     * @throws IllegalStateException
+     *             if attempting to explicitly construct a deployment mirror instance
+     */
+    public DeploymentMirror() {
+        // Will fail if the deployment mirror is not initialized by the framework
+        this.deployment = DeploymentSetup.MIRROR_INITIALIZER.initialize();
+    }
 
     /** {@return a tree of all the applications that make of the deployment.} */
     public ApplicationTreeMirror applications() {
@@ -47,17 +65,19 @@ public class DeploymentMirror implements Mirror {
         throw new UnsupportedOperationException();
     }
 
+    public Stream<BeanMirror> beans() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return a tree of all the containers that make of the deployment.} */
     public ContainerTreeMirror containers() {
         throw new UnsupportedOperationException();
     }
 
     /** {@return an unmodifiable {@link Set} view of every extension type that has been used in the deployment.} */
+    // Er super svaert at lave et view her.
+    // Vi skal kombinere multiple map key sets
     public Set<Class<? extends Extension<?>>> extensionTypes() {
-        throw new UnsupportedOperationException();
-    }
-
-    public ContainerLifetimeTreeMirror lifetimes() {
         throw new UnsupportedOperationException();
     }
 
@@ -65,6 +85,19 @@ public class DeploymentMirror implements Mirror {
     public ApplicationMirror hostApplication() {
         throw new UnsupportedOperationException();
     }
+
+    public ContainerLifetimeTreeMirror lifetimes() {
+        throw new UnsupportedOperationException();
+    }
+
+    public String name() {
+        return deployment.root.mirror().name();
+    }
+
+    public Stream<BeanMirror> operations() {
+        throw new UnsupportedOperationException();
+    }
+
 }
 
 ////Den har ikke et navn. Fordi vi er jo ikke unik per Java Process

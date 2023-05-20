@@ -23,13 +23,13 @@ import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 import tck.AbstractBootstrapedAppTest;
-import tck.HookExtension;
+import tck.HookTestingExtension;
 
 /** Various context class and their templates that can be used where applicable. */
 public class ContextsHelpers {
 
-    @BindingTypeHook(extension = HookExtension.class)
-    public record NoImplContext(int i) implements Context<HookExtension> {
+    @BindingTypeHook(extension = HookTestingExtension.class)
+    public record NoImplContext(int i) implements Context<HookTestingExtension> {
         /** A template. */
         public static final ContextTemplate CT = ContextTemplate.of(MethodHandles.lookup(), NoImplContext.class, NoImplContext.class);
 

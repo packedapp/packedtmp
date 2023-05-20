@@ -50,6 +50,8 @@ import internal.app.packed.container.Mirror;
 // Eller om vi kun skal have services?
 // I 9/10 tilfaelde er jeg ligeglade med dependencies ppa
 // extension beans...
+
+// Tror ikke det her er et mirror
 public interface DependenciesMirror extends Mirror {
 
     Collection<BeanMirror> beans();

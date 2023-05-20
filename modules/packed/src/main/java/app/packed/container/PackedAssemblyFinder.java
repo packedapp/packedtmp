@@ -24,16 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import app.packed.application.BuildException;
-import app.packed.extension.BaseExtension;
 import internal.app.packed.container.AssemblySetup;
 
 /**
  *
  */
-public class PackedAssemblyFinder implements AssemblyFinder {
+
+// Tror maaske vi skal implementere en Class og en module thingy
+
+public final class PackedAssemblyFinder implements AssemblyFinder {
 
     AssemblySetup as;
 
@@ -54,8 +55,8 @@ public class PackedAssemblyFinder implements AssemblyFinder {
 
     /** {@inheritDoc} */
     @Override
-    public Assembly findOne(ServiceLoader<? super Assembly> loader) {
-        return null;
+    public <T extends Assembly> T findOne(ServiceLoader<T> loader) {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -107,10 +108,6 @@ public class PackedAssemblyFinder implements AssemblyFinder {
 
     /** {@inheritDoc} */
     @Override
-    public void forEach(Consumer<? super Assembly> action) {}
-
-    /** {@inheritDoc} */
-    @Override
     public AssemblyFinder addModuleLayer(ModuleLayer moduleLayer) {
         moduleLayers.add(moduleLayer);
         return this;
@@ -123,14 +120,5 @@ public class PackedAssemblyFinder implements AssemblyFinder {
         ModuleFinder existing = mf;
         this.mf = mf == null ? m : ModuleFinder.compose(existing, m);
         return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void linkAll(Wirelet... wirelets) {
-        BaseExtension base = as.container.base();
-        forEach(assembly -> {
-            base.link(assembly, wirelets);
-        });
     }
 }

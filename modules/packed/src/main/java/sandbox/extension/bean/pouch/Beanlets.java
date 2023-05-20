@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tck.mirror;
+package sandbox.extension.bean.pouch;
 
 /**
  *
  */
-public class BindingMirrorTest extends AbstractMirrorTest {
+// Ideen er lidt at liste her, hvad vi kan bruge dem til
+// Vi snakker om alternativ til Wirelets bare for beans
 
-
+public class Beanlets {
+    // multi
 }

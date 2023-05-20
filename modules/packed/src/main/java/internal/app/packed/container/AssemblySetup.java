@@ -41,7 +41,11 @@ public final class AssemblySetup implements AuthorSetup {
     /** The assembly instance. */
     public final Assembly assembly;
 
-    /** The container the assembly defines. */
+    public long assemblyTimeFinished;
+
+    public final long assemblyTimeStarted = System.nanoTime();
+
+    /** The (root) container the assembly defines. */
     public final ContainerSetup container;
 
     /** A custom lookup object set via {@link #lookup(Lookup)} */
@@ -57,17 +61,14 @@ public final class AssemblySetup implements AuthorSetup {
      * We cannot use {@link ContainerSetup#extensions} as we remove every node when calling {@link #build()} in order to
      * allow adding new extensions while closing the assembly.
      */
+    /// Hmm applications er vist separate assembly saa
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>();
 
-    /** Whether or not assembly is open for configuration. */
+    /** Whether or not this assembly is open for configuration. */
     private boolean isConfigurable = true;
 
     /** A model of the assembly. */
     public final AssemblyModel model;
-
-    public final long assemblyStart = System.nanoTime();
-
-    public long assemblyFinished;
 
     /**
      * Create a new assembly setup.
@@ -83,6 +84,12 @@ public final class AssemblySetup implements AuthorSetup {
         this.model = AssemblyModel.of(assembly.getClass());
         this.delegatingAssemblies = builder.delegatingAssemblies == null ? List.of() : List.copyOf(builder.delegatingAssemblies);
         this.container = builder.newContainer(this);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Author author() {
+        return Author.application();
     }
 
     /**
@@ -138,7 +145,7 @@ public final class AssemblySetup implements AuthorSetup {
             // Check application dependency cycles. Or wait???
             CircularServiceDependencyChecker.dependencyCyclesFind(container);
 
-            assemblyFinished = System.nanoTime();
+            assemblyTimeFinished = System.nanoTime();
             // The application has been built successfully, generate code if needed
             container.application.close();
 
@@ -148,13 +155,7 @@ public final class AssemblySetup implements AuthorSetup {
                 e.closeAssembly();
             }
             isConfigurable = false;
-            assemblyFinished = System.nanoTime();
+            assemblyTimeFinished = System.nanoTime();
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Author author() {
-        return Author.application();
     }
 }

@@ -33,25 +33,33 @@ import sandbox.extension.operation.OperationTemplate;
  * <p>
  * In most cases Ideen er man started med en af de foruddefinered templates, og saa laver man modification
  *
+ *
+ * <p>
+ * BeanKind.Container
+ *
+ * A bean created using this template never has has any exposed {@link BeanHandle#lifetimeOperations() lifetime
+ * operations}. As the lifetime of the bean is completely controlled by the container in which is installed into.
+ * <p>
+ * BeanKind.Unmanaged
+ *
+ * // An unmanaged bean will always return the bean instance.
+ *
+ * <p>
+ * BeanKind.static
+ *
+ * * Represents a bean with no instances.
+ * <p>
+ * And hence no lifecycle then bean instance can go through.
+ * <p>
+ * The lifetime of the bean is identical to its container. A bean can never
+ * <p>
+ * A static bean never has any lifetime operations. And will fail with XX
+ * <p>
  */
 // Contexts (Hele beanen)
 // Lifetime Args (Er det bare private
 // Pouched-non-pouched
 public sealed interface BeanTemplate permits PackedBeanTemplate {
-
-    /**
-     * Represents a bean whose lifetime is that of its container. This means it will always be created and destroyed
-     * together with its container.
-     * <p>
-     * A single instance of the bean will be created (if the instance was not already provided when installing the bean)
-     * when the container is instantiated. Where after its lifecycle will follow that of the container.
-     * <p>
-     * Beans that are part of the container's lifecycle
-     * <p>
-     * A bean created using this template never has has any {@link BeanHandle#lifetimeOperations() lifetime operations}. As
-     * the lifetime of the bean is completely controlled by the container in which is installed into.
-     */
-    BeanTemplate CONTAINER = new PackedBeanTemplate(BeanKind.CONTAINER);
 
     /**
      * The lifetime of the bean is not managed by any extension. At least not in a standard way
@@ -64,42 +72,7 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
      * <p>
      * It is a failure to use lifecycle annotations on the bean
      **/
-    BeanTemplate EXTERNAL = new PackedBeanTemplate(BeanKind.MANYTON);
-
-    /**
-     * A single instance of the bean is created lazily when needed.
-     * <p>
-     *
-     * @see BeanInstaller#install(Class)
-     * @see BeanInstaller#installIfAbsent(Class, Consumer)
-     * @see BeanInstaller#install(Op)
-     * @see Map#isEmpty()
-     */
-    BeanTemplate LAZY = new PackedBeanTemplate(BeanKind.LAZY);
-
-    BeanTemplate MANAGED = new PackedBeanTemplate(BeanKind.MANYTON);
-
-    /**
-     * Represents a bean that no instances.
-     * <p>
-     * And hence no lifecycle then bean instance can go through.
-     * <p>
-     * The lifetime of the bean is identical to its container. A bean can never
-     * <p>
-     * Never has any lifetime operations.
-     * <p>
-     * Beans that use this template must always be created using {@link BeanSourceKind#CLASS a class} or
-     * {@link BeanSourceKind#SOURCELESS without a source.}. Attempting to use an Op or an instance when installing the bean
-     * will always fail with {@link app.packed.bean.BeanInstallationException}.
-     *
-     * @see BeanInstaller#install(Class)
-     * @see BeanInstaller#installIfAbsent(Class, java.util.function.Consumer)
-     * @see BeanInstaller#installWithoutSource()
-     */
-    BeanTemplate STATIC = new PackedBeanTemplate(BeanKind.STATIC);
-
-    // An unmanaged bean will always return the bean instance.
-    BeanTemplate PROTOTYPE = new PackedBeanTemplate(BeanKind.MANYTON);
+    BeanTemplate EXTERNAL = new PackedBeanTemplate(BeanKind.UNMANAGED);
 
     // The bean is created by an operation
     // There are no lifetime operations on the bean
@@ -107,10 +80,10 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     // Has a single operation that will create the bean.
     // TODO skal vi baade have managed og unmanged operationer???
     // Fx @Provide paa en prototypeBean (giver vel ikke mening)
-    BeanTemplate GATEWAY = new PackedBeanTemplate(BeanKind.MANYTON);
+    BeanTemplate GATEWAY = new PackedBeanTemplate(BeanKind.UNMANAGED);
 
     /**
-     * Specifies the return type signature of the lifetime operation that creates the bean.
+     * Specifies the return type signature of the factory operation(s) that creates the bean.
      * <p>
      * The return type of the lifetime operation that creates the bean is normally {@link BeanHandle#beanClass()}. However,
      * in order to better support {@link java.lang.invoke.MethodHandle#invokeExact(Object...)} this method can be used to
@@ -119,7 +92,7 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
      * If this template is used when installing a bean whose bean class is not assignable to the specified class. The
      * framework will throw a {@link app.packed.bean.BeanInstallationException}.
      * <p>
-     * The method handle of the first lifetime operation of the new template will always have the specified class as its
+     * The method handle of factory operation of the new template will always have the specified class as its
      * {@link java.lang.invoke.MethodType#returnType()}.
      *
      * @param clazz
@@ -133,6 +106,22 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
      * @see java.lang.invoke.MethodType#changeReturnType(Class)
      */
     BeanTemplate createAs(Class<?> clazz);
+
+    // When do you ever want this????
+    BeanTemplate createAsBeanClass();
+
+    /**
+     * Sets a context for the whole bean
+     *
+     * @param context
+     *            the context
+     * @return the new template
+     */
+    // Man skal vel angive hvordan context fungere.
+    // Er den stored, eller skal den med til alle operation?
+    default BeanTemplate inContext(ContextTemplate context) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * <p>
@@ -156,31 +145,44 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
      * @see BeanLifetimeOperationContext
      * @see app.packed.extension.context.ContextValue
      */
-    // Have no idea what this method does
-    BeanTemplate lifetimeOperationContext(int index, ContextTemplate template);
+    // Lifetime operationer kan koeres i en context
+    BeanTemplate inLifetimeOperationContext(int index, ContextTemplate template);
 
+    /** {@return a descriptor for this template} */
+    BeanTemplate.Descriptor descriptor();
 
-    /**
-     * Sets a context for the whole bean
-     *
-     * @param context
-     *            the context
-     * @return the new template
-     */
-    // Man skal vel angive hvordan context fungere.
-    // Er den stored, eller skal den med til alle operation?
-    default BeanTemplate withContext(ContextTemplate context) {
-        throw new UnsupportedOperationException();
+    interface Descriptor {
+        Class<?> createAs();
+
+        /** {@return a list of the various lifetime operations for this bean template.} */
+        // These operations cannot be directly modified. Instead must methods on this class
+        List<OperationTemplate.Descriptor> lifetimeOperations();
+
+        BeanKind beanKind();
+        // Contexts
     }
 
 }
 
 interface Sandbox {
 
-    /** {@return a list of the various lifetime operations for this bean template.} */
-    // Maybe just MethodType???
-    default List<OperationTemplate> lifetimeOperations() {
-        return List.of();
+    void ignoreAnnotations(Class<?> annot);
+
+    default boolean isBasedOn(BeanTemplate template) {
+        // return template.isUnmodified() && this.base = template
+        return false;
+    }
+
+    void noScan();
+
+    // Ahh alt er raw
+    default BeanTemplate raw() {
+        return null;
+    }
+
+    /** {@return the allowed bean source kinds for.} */
+    default EnumSet<BeanSourceKind> sourceKinds() {
+        return EnumSet.allOf(BeanSourceKind.class);
     }
 
     /**
@@ -189,25 +191,6 @@ interface Sandbox {
      * @return this installer
      */
     BeanBuilder synthetic(); // Maybe on template?
-
-    default boolean isBasedOn(BeanTemplate template) {
-        // return template.isUnmodified() && this.base = template
-        return false;
-    }
-
-    // Ahh alt er raw
-    default BeanTemplate raw() {
-        return null;
-    }
-
-    void noScan();
-
-    void ignoreAnnotations(Class<?> annot);
-
-    /** {@return the allowwed bean source kinds for.} */
-    default EnumSet<BeanSourceKind> sourceKinds() {
-        return EnumSet.allOf(BeanSourceKind.class);
-    }
 
     // Maa man goere paa installeren..
 //    default <T> void initializeLocal(BeanLocal<T> local, T value) {

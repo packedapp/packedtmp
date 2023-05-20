@@ -13,10 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tck.mirror;
+package sandbox.extension.bean.pouch;
 
 /**
  *
  */
-public class MirrorHelpers {
+public class BeanProps {
+
+    // Actor.serialize
+    // Wrapper alle operationer
+
+
+    // Controlled.. Vi behoever ikke have en shutdown lock.
+
+    // Controlled, er vel uafhandig af single multi_threading?
+    enum Threading {
+        SINGLE_THREAD, CONTROLLED, MULTI_THREADED;
+    }
 }

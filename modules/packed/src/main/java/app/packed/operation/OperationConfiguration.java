@@ -17,23 +17,24 @@ package app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.extension.Extension;
 import sandbox.extension.operation.OperationHandle;
 
 /**
  *
  */
 // Hmm, fungere ikke super godt med Bean.findOperation();
-// Med mindre vi giver muligheden for at saette det ala operation mirror
+// Med mindre vi giver muligheden for at saette det ala operation mirror. Evt via builderen..
 public class OperationConfiguration {
 
     /** The operation handle. */
     private final OperationHandle handle;
 
     /**
-     * Create a new bean configuration using the specified handle.
+     * Create a new operation configuration using the specified handle.
      *
      * @param handle
-     *            the bean handle
+     *            the operation handle
      */
     public OperationConfiguration(OperationHandle handle) {
         this.handle = requireNonNull(handle, "handle is null");
@@ -43,8 +44,18 @@ public class OperationConfiguration {
 
     }
 
+    /** {@return the underlying operation handle} */
     protected final OperationHandle handle() {
         return handle;
+    }
+
+    public OperationConfiguration named(String name) {
+        handle.named(name);
+        return this;
+    }
+
+    public Class<? extends Extension<?>> operator() {
+        return handle.operator();
     }
 
     OperationConfiguration runBefore(Runnable runnable) {

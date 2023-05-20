@@ -17,8 +17,6 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -27,7 +25,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import app.packed.application.OldApplicationPath;
-import app.packed.container.Author;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
@@ -35,24 +32,21 @@ import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.service.ServiceManager;
 import internal.app.packed.util.AbstractTreeNode;
-import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.PackedNamespacePath;
-import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
 
 /** The internal configuration of a container. */
 public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> implements ContextualizedElementSetup {
 
-    /** A MethodHandle for invoking {@link ContainerMirror#initialize(ContainerSetup)}. */
-    private static final MethodHandle MH_CONTAINER_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ContainerMirror.class, "initialize",
-            void.class, ContainerSetup.class);
+    /** A magic initializer for {@link ContainerMirror}. */
+    public static final MagicInitializer<ContainerSetup> MIRROR_INITIALIZER = MagicInitializer.of(ContainerMirror.class);
 
     /** The application this container is a part of. */
     public final ApplicationSetup application;
@@ -60,19 +54,13 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
     /** The assembly that defines the container. */
     public final AssemblySetup assembly;
 
-    /** A map of all non-void bean classes. Used for controlling non-multi-install beans. */
-    public final HashMap<BeanClassKey, Object> beanClassMap = new HashMap<>();
-
-    /** All beans installed in a container is maintained in a linked list, this field pointing to the first bean. */
-    @Nullable
-    public BeanSetup beanFirst;
-
-    /** All beans installed in a container is maintained in a linked list, this field pointing to the last bean. */
-    @Nullable
-    public BeanSetup beanLast;
+    /** All the beans installed in the container. */
+    public final ContainerBeanStore beans = new ContainerBeanStore();
 
     /** Maintains unique names for beans and child containers. */
-    public final HashMap<String, Object> namedChildren = new HashMap<>();
+    public final HashMap<String, ContainerSetup> children = new HashMap<>();
+
+    private HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
 
     /** Extensions used by this container. We keep them in a LinkedHashMap so that we can return a deterministic view. */
     // Or maybe extension types are always sorted??
@@ -87,16 +75,15 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
     /** The lifetime the container is a part of. */
     public final ContainerLifetimeSetup lifetime;
 
+    /** Supplies a mirror for the container. */
+    private final Supplier<? extends ContainerMirror> mirrorSupplier;
+
     /** The name of the container. */
     public String name;
 
     /** The container's service manager. */
     public final ServiceManager sm;
 
-    /** Supplies a mirror for the container. */
-    private final Supplier<? extends ContainerMirror> specializedMirror;
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     /**
      * Create a new container.
      *
@@ -105,15 +92,15 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
      * @param assembly
      *            the assembly the defines the container
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     ContainerSetup(PackedContainerBuilder builder, ApplicationSetup application, AssemblySetup assembly) {
         super(builder.parent);
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
-        this.specializedMirror = builder.containerMirrorSupplier;
+        this.mirrorSupplier = builder.containerMirrorSupplier;
         this.name = builder.name;
 
         builder.locals.forEach((p, o) -> p.locals(this).set((PackedLocal) p, this, o));
-
 
         if (builder.template.kind() == PackedContainerKind.PARENT_LIFETIME) {
             this.lifetime = treeParent.lifetime;
@@ -128,18 +115,31 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
 
     }
 
+    /** {@return the base extension for this container.} */
+    public BaseExtension base() {
+        return (BaseExtension) useExtension(BaseExtension.class, null).instance();
+    }
+
     /** {@return a unmodifiable view of all extension types that are in used in no particular order.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
+    @Override
+    @Nullable
+    public ContextSetup findContext(Class<? extends Context<?>> contextClass) {
+        Class<? extends Context<?>> cl = ContextInfo.normalize(contextClass);
+        return contexts.get(cl);
+    }
+
+    @Override
+    public void forEachContext(BiConsumer<? super Class<? extends Context<?>>, ? super ContextSetup> action) {
+        contexts.forEach(action);
+    }
+
     /** {@return whether or not the container is the root container in the application.} */
     public boolean isApplicationRoot() {
         return treeParent == null;
-    }
-
-    public BaseExtension base() {
-        return (BaseExtension) useExtension(BaseExtension.class, null).instance();
     }
 
     public boolean isAssemblyRoot() {
@@ -163,7 +163,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
         return extensions.containsKey(extensionClass);
     }
 
-
     /** {@return whether or not this container is the root of its lifetime.} */
     public boolean isLifetimeRoot() {
         return this == lifetime.container;
@@ -172,15 +171,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
     /** {@return a new container mirror.} */
     @Override
     public ContainerMirror mirror() {
-        ContainerMirror mirror = ClassUtil.newMirror(ContainerMirror.class, ContainerMirror::new, specializedMirror);
-
-        // Initialize ContainerMirror by calling ContainerMirror#initialize(ContainerSetup)
-        try {
-            MH_CONTAINER_MIRROR_INITIALIZE.invokeExact(mirror, this);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-        return mirror;
+        return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(ContainerMirror.class, ContainerMirror::new, mirrorSupplier), this);
     }
 
     /**
@@ -205,10 +196,10 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
 
         // Unless we are the root container. We need to insert or update this container in the parent container
         if (treeParent != null) {
-            if (treeParent.namedChildren.putIfAbsent(newName, this) != null) {
+            if (treeParent.children.putIfAbsent(newName, this) != null) {
                 throw new IllegalArgumentException("A bean or container with the specified name '" + newName + "' already exists");
             }
-            treeParent.namedChildren.remove(currentName);
+            treeParent.children.remove(currentName);
         }
         name = newName;
     }
@@ -293,21 +284,4 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
         }
         return extension;
     }
-
-
-    @Override
-    @Nullable
-    public ContextSetup findContext(Class<? extends Context<?>> contextClass) {
-        Class<? extends Context<?>> cl = ContextInfo.normalize(contextClass);
-        return contexts.get(cl);
-    }
-
-    private HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
-
-    @Override
-    public void forEachContext(BiConsumer<? super Class<? extends Context<?>>, ? super ContextSetup> action) {
-        contexts.forEach(action);
-    }
-
-    public /* primitive */ record BeanClassKey(Author realm, Class<?> beanClass) {}
 }

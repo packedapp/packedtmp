@@ -1,0 +1,3 @@
+tests all Bootstrap apps that are included
+
+ DaemonApp, App, ServiceLocator

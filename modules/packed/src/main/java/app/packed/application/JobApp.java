@@ -21,7 +21,7 @@ import app.packed.application.BootstrapApp.Image;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.util.Result;
-import sandbox.extension.container.ContainerHolderService;
+import sandbox.extension.container.ContainerCarrierService;
 
 /**
  * Must have a main in a bean with application lifetime.
@@ -78,5 +78,5 @@ public final class JobApp {
         throw new UnsupportedOperationException();
     }
 
-    record Holder(@ContainerHolderService Future<?> result) {}
+    record Holder(@ContainerCarrierService Future<?> result) {}
 }

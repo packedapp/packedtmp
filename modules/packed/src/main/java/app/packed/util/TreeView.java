@@ -15,36 +15,71 @@
  */
 package app.packed.util;
 
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
- * A tree plus a node
+ *
  */
-// TreeNode??
-public interface TreeNavigator<T> extends Iterable<T> {
+public interface TreeView<N> {
+
+    default boolean contains(N node) {
+        throw new UnsupportedOperationException();
+    }
 
     /** {@return the number of nodes in the tree.} */
-    int count();
+    default int count() {
+        return Math.toIntExact(stream().count());
+    }
+
+    default void forEachNode(Consumer<Node<N>> action) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@return the root node in the tree.} */
+    default N root() {
+        throw new UnsupportedOperationException();
+    }
+
+    default Node<N> rootNode() {
+        throw new UnsupportedOperationException();
+    }
+
+    default Stream<N> stream() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
-     * {@return whether or not this extension has a parent extension.} Only extensions that are used in the root container
-     * of an application does not have a parent extension.
+     * A tree plus a node
      */
-    boolean isRoot();
+    public interface Node<T> extends Iterable<T> {
+
+        default int depth() {
+            // Tror vi laver en recursive parent counter
+            return 0;
+        }
+
+        /** {@return the number of nodes in the tree.} */
+        int count();
+
+        /**
+         * {@return whether or not this extension has a parent extension.} Only extensions that are used in the root container
+         * of an application does not have a parent extension.
+         */
+        boolean isRoot();
 
 //    /** {@return the root of the tree.} */
 //    public root();
 
-    T origin();
+        T origin();
 
-    /**
-     * @return
-     */
-    T root();
+        /**
+         * @return
+         */
+        T root();
 
-    Stream<T> stream();
-}
-
+        Stream<T> stream();
+    }
 
 ///** {@return an unmodifiable view of all of the children of this component.} */
 //default Stream<N> children() {
@@ -78,3 +113,9 @@ public interface TreeNavigator<T> extends Iterable<T> {
 
 //Assembly
 //Application
+//    interface Node<N> {
+//        N container();
+//
+//        int depth();
+//    }
+}

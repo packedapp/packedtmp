@@ -23,40 +23,52 @@ import sandbox.extension.bean.BeanHandle;
 /**
  *
  */
-// Hvad kan du???
-// Bare at kunne saette wirelets er lidt soso.
-
-// Det er begraenset hvor mange containere man installere med det samme gaest.
-//// Men naar vi nu skal til at deploye...
-
-public class ContainerHolderConfiguration<T> extends InstanceBeanConfiguration<T> {
+public final class ContainerCarrierBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
     /**
+     *
      * @param handle
+     *            the bean handle
      */
-    public ContainerHolderConfiguration(BeanHandle<T> handle) {
+    // TODO Package private I think
+    public ContainerCarrierBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
     }
 
-    public Class<?> holderClass() {
-        throw new UnsupportedOperationException();
-    }
-
     // All guest will have these wirelets
-    public ContainerHolderConfiguration<T> addWirelets(Wirelet... wirelets) {
+    public ContainerCarrierBeanConfiguration<T> addWirelets(Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public <K> ContainerHolderConfiguration<T> overrideService(Class<K> key, K instance) {
+    public <K> ContainerCarrierBeanConfiguration<T> overrideService(Class<K> key, K instance) {
         super.overrideService(key, instance);
         return this;
     }
 
     @Override
-    public <K> ContainerHolderConfiguration<T> overrideService(Key<K> key, K instance) {
+    public <K> ContainerCarrierBeanConfiguration<T> overrideService(Key<K> key, K instance) {
         super.overrideService(key, instance);
         return this;
+    }
+
+    /**
+     * @param <T>
+     * @param key
+     * @param arg
+     * @return
+     *
+     * @see ExtensionLink#ofConstant(Class, Object)
+     */
+    public <S> ContainerBuilder carrierProvideConstant(Class<S> key, S constant) {
+        return carrierProvideConstant(Key.of(key), constant);
+    }
+
+    /**
+     * @see FromLifetimeChannel
+     */
+    public <S> ContainerBuilder carrierProvideConstant(Key<S> key, S constant) {
+        throw new UnsupportedOperationException();
     }
 }
 

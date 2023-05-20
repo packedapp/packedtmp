@@ -32,7 +32,6 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.context.ContextSetup;
@@ -53,24 +52,28 @@ import sandbox.operation.mirror.DependenciesMirror;
 @BindingTypeHook(extension = BaseExtension.class)
 public non-sealed class OperationMirror implements ContextualizedElementMirror , Mirror , ContextScopeMirror {
 
-    /**
-     * The internal configuration of the operation we are mirrored. Is initially null but populated via
-     * {@link #initialize(OperationSetup)}.
-     */
-    @Nullable
-    private OperationSetup operation;
+    /** The operation we are mirroring. */
+    private final OperationSetup operation;
 
-    /** Create a new mirror. */
-    public OperationMirror() {}
+    /**
+     * Create a new operation mirror.
+     *
+     * @throws IllegalStateException
+     *             if attempting to explicitly construct an operation mirror instance
+     */
+    public OperationMirror() {
+        // Will fail if the operation mirror is not initialized by the framework
+        this.operation = OperationSetup.MIRROR_INITIALIZER.initialize();
+    }
 
     /** {@return the bean that this operation is a part of.} */
     public BeanMirror bean() {
-        return operation().bean.mirror();
+        return operation.bean.mirror();
     }
 
     /** {@return the bindings of this operation.} */
     public List<BindingMirror> bindings() {
-        BindingSetup[] bindings = operation().bindings;
+        BindingSetup[] bindings = operation.bindings;
         if (bindings.length == 0) {
             return List.of();
         }
@@ -89,7 +92,7 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
     /** {@return an unchangeable set view of all the contexts that the operation operates within.} */
     @Override
     public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
-        return ContextSetup.allMirrorsFor(operation());
+        return ContextSetup.allMirrorsFor(operation);
     }
 
     /**
@@ -97,37 +100,24 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
      * operation.}
      */
     public Optional<LifetimeMirror> entryPointIn() {
-        return Optional.ofNullable(operation().entryPoint).map(s -> s.lifetime.mirror());
+        return Optional.ofNullable(operation.entryPoint).map(s -> s.lifetime.mirror());
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
-        return this == other || other instanceof OperationMirror m && operation() == m.operation();
+        return this == other || other instanceof OperationMirror m && operation == m.operation;
     }
 
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return operation().hashCode();
-    }
-
-    /**
-     * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the extension.
-     *
-     * @param owner
-     *            the internal configuration of the extension to mirror
-     */
-    final void initialize(OperationSetup operation) {
-        if (this.operation != null) {
-            throw new IllegalStateException("This mirror has already been initialized.");
-        }
-        this.operation = operation;
+        return operation.hashCode();
     }
 
     /** {@return the extension that can invoke the operation.} */
     public Class<? extends Extension<?>> invokedBy() {
-        return operation().operator.extensionType;
+        return operation.operator.extensionType;
     }
 
     /**
@@ -136,7 +126,7 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
      * The name of an operation is always unique among other operations on the same bean.
      */
     public String name() {
-        return operation().name();
+        return operation.name();
     }
 
     /**
@@ -146,32 +136,17 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
      * @return the binding this operation is used by if a nested operation, otherwise {@code empty}
      */
     public Optional<BindingMirror> nestedIn() {
-        return Optional.ofNullable(operation().embeddedInto).map(b -> b.operation().bindings[b.bindingIndex()].mirror());
-    }
-
-    /**
-     * {@return the internal configuration of operation.}
-     *
-     * @throws IllegalStateException
-     *             if {@link #initialize(OperationSetup)} has not been called.
-     */
-    private OperationSetup operation() {
-        OperationSetup o = operation;
-        if (o == null) {
-            throw new IllegalStateException(
-                    "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
-        }
-        return o;
+        return Optional.ofNullable(operation.embeddedInto).map(b -> b.operation().bindings[b.bindingIndex()].mirror());
     }
 
     /** {@return the operation site.} */
     public OperationTarget target() {
-        return operation().target();
+        return operation.target();
     }
 
     /** {@return the type of the operation.} */
     public OperationType type() {
-        return operation().type;
+        return operation.type;
     }
 }
 
@@ -187,7 +162,7 @@ class ZandboxOM {
 //  // operations on the bean will include the key under which the bean is being provided.
 //  public Set<Key<?>> keys() {
 //      HashSet<Key<?>> result = new HashSet<>();
-//      for (ServiceManagerEntry e : operation().bean.container.sm.entries.values()) {
+//      for (ServiceManagerEntry e : operation.bean.container.sm.entries.values()) {
 //          if (e.provider() != null) {
 //              result.add(e.key);
 //          }

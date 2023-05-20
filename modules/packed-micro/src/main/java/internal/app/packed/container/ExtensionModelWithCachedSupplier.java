@@ -25,7 +25,7 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.util.function.Supplier;
 
-import app.packed.bean.InaccessibleMemberException;
+import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.extension.Extension;
 import internal.app.packed.util.StringFormatter;
 
@@ -82,7 +82,7 @@ final class ExtensionModelWithCachedSupplier<T> {
             Supplier<?> ss = (Supplier<?>) factory.invoke();
             s = (Supplier<T>) ss;
         } catch (Throwable e) {
-            throw new InaccessibleMemberException("In order to use the extension " + StringFormatter.format(type) + ", the module '"
+            throw new InaccessibleBeanMemberException("In order to use the extension " + StringFormatter.format(type) + ", the module '"
                     + type.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
         }
 

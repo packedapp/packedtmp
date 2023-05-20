@@ -25,8 +25,8 @@ import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Key;
-import sandbox.extension.container.ContainerHolderService;
-import sandbox.extension.container.ContainerLifetimeTunnel;
+import sandbox.extension.container.ContainerCarrierService;
+import sandbox.extension.container.ContainerTemplatePack;
 import sandbox.lifetime.external.LifecycleController;
 
 /**
@@ -156,14 +156,14 @@ interface ProgramY extends AutoCloseable {
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementation(@ContainerHolderService String name, @ContainerHolderService ServiceLocator services,
-        @ContainerHolderService LifecycleController runtime) implements ProgramY {
+record ProgramImplementation(@ContainerCarrierService String name, @ContainerCarrierService ServiceLocator services,
+        @ContainerCarrierService LifecycleController runtime) implements ProgramY {
 
     ProgramImplementation {
         // System.out.println(services.keys());
     }
 
-    static ContainerLifetimeTunnel EL = ContainerLifetimeTunnel.builder(MethodHandles.lookup(), Ele.MyE.class, "doo").expose(Long.class).build();
+    static ContainerTemplatePack EL = ContainerTemplatePack.builder(MethodHandles.lookup(), Ele.MyE.class, "doo").provideExpose(Long.class).build();
 
     /** An driver for creating App instances. */
     static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ProgramImplementation.class, c -> {

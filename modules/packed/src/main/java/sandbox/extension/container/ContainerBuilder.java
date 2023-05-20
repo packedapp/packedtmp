@@ -18,13 +18,14 @@ package sandbox.extension.container;
 import java.util.function.Supplier;
 
 import app.packed.container.Assembly;
+import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.errorhandling.ErrorHandler;
-import app.packed.extension.ContainerLocal;
 import app.packed.util.Key;
 import internal.app.packed.container.LeafContainerOrApplicationBuilder;
 import internal.app.packed.context.publish.ContextTemplate;
+import sandbox.extension.context.ContextSpanKind;
 
 /**
  * A builder for containers. All containers are either directly or indirectly created via a ContainerBuilder.
@@ -78,6 +79,36 @@ public sealed interface ContainerBuilder permits LeafContainerOrApplicationBuild
     // Only Managed-Operation does not require a wrapper
     // For now this method is here. Might move it to the actual CHC at some point
 
+
+    // Hmm, don't know if need a carrier instance, if we have implicit construction
+//    /**
+//     * @return
+//     * @throws UnsupportedOperationException
+//     *             if a carrier type was not defined in the container template
+//     */
+//    default ContainerCarrierConfiguration<?> carrierInstance() {
+//        throw new UnsupportedOperationException();
+//    }
+
+    /**
+     * Provides constants per Carrier Instance for this particular container builder
+     *
+     * @param <T>
+     * @param key
+     * @param arg
+     * @return
+     *
+     * @see ExtensionLink#ofConstant(Class, Object)
+     */
+    default <T> ContainerBuilder carrierProvideConstant(Class<T> key, T constant) {
+        return carrierProvideConstant(Key.of(key), constant);
+    }
+
+    /**
+     * @see FromLifetimeChannel
+     */
+    <T> ContainerBuilder carrierProvideConstant(Key<T> key, T constant);
+
     /**
      *
      * @param holderConfiguration
@@ -87,7 +118,7 @@ public sealed interface ContainerBuilder permits LeafContainerOrApplicationBuild
      *             if the holder class of the bean does not match the holder type set when creating the container template.
      */
     // LifetimeCarrier?
-    default ContainerBuilder lifetimeHolder(ContainerHolderConfiguration<?> holderConfiguration) {
+    default ContainerBuilder carrierUse(ContainerCarrierBeanConfiguration<?> holderConfiguration) {
         // Gaar udfra vi maa definere wrapper beanen alene...Eller som minimum
         // supportere det
         // Hvis vi vil dele den...
@@ -95,23 +126,6 @@ public sealed interface ContainerBuilder permits LeafContainerOrApplicationBuild
         // Det betyder ogsaa vi skal lave en wrapper bean alene
         return this;
     }
-
-    /**
-     * @param <T>
-     * @param key
-     * @param arg
-     * @return
-     *
-     * @see ExtensionLink#ofConstant(Class, Object)
-     */
-    default <T> ContainerBuilder lifetimeHolderProvideConstant(Class<T> key, T constant) {
-        return lifetimeHolderProvideConstant(Key.of(key), constant);
-    }
-
-    /**
-     * @see FromLifetimeChannel
-     */
-    <T> ContainerBuilder lifetimeHolderProvideConstant(Key<T> key, T constant);
 
     /**
      * <p>
@@ -138,7 +152,8 @@ public sealed interface ContainerBuilder permits LeafContainerOrApplicationBuild
      *            the value of the local
      * @return this builder
      */
-    <T> ContainerBuilder setLocal(ContainerLocal<T> containerLocal, T value);
+    // Do we allow non-container scope??? I don't think so
+    <T> ContainerBuilder localSet(ContainerLocal<T> containerLocal, T value);
 
     /**
      * Sets a supplier that creates a special container mirror instead of the generic {@code ContainerMirror} when
@@ -159,7 +174,7 @@ public sealed interface ContainerBuilder permits LeafContainerOrApplicationBuild
     }
 
     // ditch beanBlass, and just make sure there is a bean that can do it
-    default ContainerBuilder zContextFromBean(Class<?> beanClass, ContextTemplate template, ContextSpanKind span) {
+    default ContainerBuilder zContextFromBean(Class<?> beanClass, ContextTemplate template, @SuppressWarnings("exports") ContextSpanKind span) {
         throw new UnsupportedOperationException();
     }
 

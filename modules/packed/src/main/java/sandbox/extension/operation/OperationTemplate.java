@@ -60,22 +60,11 @@ import internal.app.packed.operation.PackedOperationTemplate;
 // OT.forNewApplication()
 // OT.forNewContainer
 
+// IsComposite
+
 // EC? BeanInstance? [Context*] Speciel (fields)
 public sealed interface OperationTemplate permits PackedOperationTemplate {
 
-    int beanInstanceIndex();
-
-    Set<Class<? extends Context<?>>> contexts();
-
-    default boolean newLifetime() {
-        return false;
-    }
-
-    /**
-     *
-     * @return the method type representing the invocation
-     */
-    MethodType invocationType();
 
     /** {@return an operation template that ignores any return value.} */
     // If you want to fail. Check return type
@@ -108,6 +97,8 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         return PackedOperationTemplate.DEFAULTS;
     }
 
+    OperationTemplate.Descriptor descriptor();
+
     //
 //  default OperationTemplate withClassifier(Class<?> type) {
 //      throw new UnsupportedOperationException();
@@ -117,17 +108,38 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         return new PackedOperationTemplate(Map.of(), -1, -1, MethodType.methodType(void.class), false);
     }
 //
-//    enum ArgumentKind {
-//
-//        ARGUMENT,
-//
-//        /** The invocation argument is a bean instance. */
-//        BEAN_INSTANCE,
-//
-//        /** The invocation argument is an extension bean context. */
-//        // Maaske noget andet end context, given dens mening
-//        EXTENSION_BEAN_CONTEXT; // InvocationContext
-//    }
+    interface Descriptor {
+
+
+        // Invocation
+        int beanInstanceIndex();
+
+        Set<Class<? extends Context<?>>> contexts();
+
+        /**
+         *
+         * @return the method type representing the invocation
+         */
+        MethodType invocationType();
+
+        default boolean newLifetime() {
+            return false;
+        }
+
+
+        // Contexts
+    }
+    enum ArgumentKind {
+
+        ARGUMENT,
+
+        /** The invocation argument is a bean instance. */
+        BEAN_INSTANCE,
+
+        /** The invocation argument is an extension bean context. */
+        // Maaske noget andet end context, given dens mening
+        EXTENSION_BEAN_CONTEXT; // InvocationContext
+    }
 }
 //
 //// 3 choices?

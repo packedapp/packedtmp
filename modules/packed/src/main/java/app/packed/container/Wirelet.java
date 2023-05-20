@@ -80,6 +80,7 @@ import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 @SuppressWarnings("rawtypes")
 public sealed abstract class Wirelet permits UserWirelet, ExtensionWirelet, FrameworkWirelet {
 
+    // How do com
     final int flags = 0;
 
     /**

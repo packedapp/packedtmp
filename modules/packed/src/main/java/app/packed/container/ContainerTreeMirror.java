@@ -16,7 +16,7 @@
 package app.packed.container;
 
 import app.packed.context.ContextScopeMirror;
-import app.packed.util.TreeMirror;
+import app.packed.util.TreeView;
 import internal.app.packed.container.Mirror;
 
 /**
@@ -32,7 +32,7 @@ import internal.app.packed.container.Mirror;
 //
 
 // Alternative ContainerMirror.ofTree
-public non-sealed interface ContainerTreeMirror extends TreeMirror<ContainerMirror>, ContextScopeMirror, Mirror {
+public non-sealed interface ContainerTreeMirror extends TreeView<ContainerMirror>, ContextScopeMirror, Mirror {
 
 
 }

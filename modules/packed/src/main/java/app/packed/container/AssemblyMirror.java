@@ -9,34 +9,36 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.DeploymentMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanHook.BindingTypeHook;
-import app.packed.util.TreeNavigator;
+import app.packed.util.TreeView;
+import app.packed.util.TreeView.Node;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.Mirror;
 
 /**
- * A mirror of an application.
+ * A mirror of an assembly.
  * <p>
- * An instance of this class is typically obtained by calling a application mirror factory method such as
- * {@link App#mirrorOf(Assembly, Wirelet...)}.
- * <p>
- * An instance of ApplicationMirror can be injected at runtime simply by declaring a dependency on it.
- * <p>
- * Instances of this class can only be constructed by the framework
+ * An instance of AssemblyMirror can be injected at runtime simply by declaring a dependency on it.
+ *
+ * @see ApplicationMirror#assembly()
+ * @see ContainerMirror#assembly()
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public final class AssemblyMirror implements Mirror {
+public class AssemblyMirror implements Mirror {
 
-    /** The internal configuration of the assembly we are mirroring. */
-    private final AssemblySetup assembly = AssemblySetup.MIRROR_INITIALIZER.initialize();
+    /** The assembly we are mirroring. */
+    private final AssemblySetup assembly;
 
     /**
-     * Create a new application mirror.
+     * Create a new assembly mirror.
      *
      * @throws IllegalStateException
      *             if attempting to explicitly construct an assembly mirror instance
      */
-    public AssemblyMirror() {}
+    public AssemblyMirror() {
+        // Will fail if the assembly mirror is not initialized by the framework
+        this.assembly = AssemblySetup.MIRROR_INITIALIZER.initialize();
+    }
 
     /** {@return the application this assembly contributes to.} */
     public ApplicationMirror application() {
@@ -44,7 +46,7 @@ public final class AssemblyMirror implements Mirror {
     }
 
     /** {@return the application this assembly contributes to.} */
-    public TreeNavigator<AssemblyMirror> applicationNode() {
+    public TreeView.Node<AssemblyMirror> applicationNode() {
         throw new UnsupportedOperationException();
     }
 
@@ -65,7 +67,7 @@ public final class AssemblyMirror implements Mirror {
      * @return how must time was spend assembling.
      */
     public Duration assemblyDuration() {
-        return Duration.ofNanos(Math.max(0, assembly.assemblyFinished - assembly.assemblyStart));
+        return Duration.ofNanos(Math.max(0, assembly.assemblyTimeFinished - assembly.assemblyTimeStarted));
     }
 
     /** {@return a list of hooks that are applied to containers defined by the assembly.} */
@@ -114,7 +116,7 @@ public final class AssemblyMirror implements Mirror {
     }
 
     /** {@return the application this assembly contributes to.} */
-    public TreeNavigator<AssemblyMirror> deploymentNode() {
+    public Node<AssemblyMirror> deploymentNode() {
         throw new UnsupportedOperationException();
     }
 

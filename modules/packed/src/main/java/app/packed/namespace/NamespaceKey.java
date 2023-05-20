@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.beanpouch;
+package app.packed.namespace;
 
 /**
  *
  */
-// Ideen er lidt at liste her, hvad vi kan bruge dem til
-// Vi snakker om alternativ til Wirelets bare for beans
 
-public class Beanlets {
+// String name;
+// Author owner;
 
-    // multi
-}
+public class NamespaceKey {}

@@ -19,9 +19,9 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.extension.BaseExtensionPoint;
 import app.packed.extension.Extension;
 import app.packed.service.ServiceLocator;
+import sandbox.extension.container.ContainerCarrierBeanConfiguration;
+import sandbox.extension.container.ContainerCarrierService;
 import sandbox.extension.container.ContainerHandle;
-import sandbox.extension.container.ContainerHolderConfiguration;
-import sandbox.extension.container.ContainerHolderService;
 import sandbox.extension.container.ContainerTemplate;
 
 /**
@@ -29,18 +29,18 @@ import sandbox.extension.container.ContainerTemplate;
  */
 public class Usage extends Extension<Usage> {
 
-    private static final ContainerTemplate CT = ContainerTemplate.GATEWAY.lifetimeCarrier(Guest.class).addLink(BaseExtensionPoint.EXPORTED_SERVICE_LOCATOR);
+    private static final ContainerTemplate CT = ContainerTemplate.GATEWAY.carrierType(Guest.class).withPack(BaseExtensionPoint.EXPORTED_SERVICE_LOCATOR);
 
-    public ContainerConfiguration automaticHolder() {
+    public ContainerConfiguration installContainerWithImplicitCarrier() {
         ContainerHandle h = base().containerBuilder(CT).build();
         return new ContainerConfiguration(h);
     }
 
-    public ContainerConfiguration foo() {
-        ContainerHolderConfiguration<Guest> chg = base().installContainerHolder(Guest.class).overrideService(String.class, "Ssdo");
-        ContainerHandle h = base().containerBuilder(CT).lifetimeHolder(chg).build();
+    public ContainerConfiguration installContainerWithExplicitCarrier() {
+        ContainerCarrierBeanConfiguration<Guest> chg = base().installContainerCarrier(Guest.class).overrideService(String.class, "Ssdo");
+        ContainerHandle h = base().containerBuilder(CT).carrierUse(chg).build();
         return new ContainerConfiguration(h);
     }
 
-    record Guest(@ContainerHolderService ServiceLocator sl, String foo) {}
+    record Guest(@ContainerCarrierService ServiceLocator sl, String foo) {}
 }

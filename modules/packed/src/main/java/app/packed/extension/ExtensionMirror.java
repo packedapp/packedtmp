@@ -12,7 +12,7 @@ import java.util.function.ToLongFunction;
 import java.util.stream.Stream;
 
 import app.packed.util.Nullable;
-import app.packed.util.TreeNavigator;
+import app.packed.util.TreeView.Node;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
 
@@ -178,7 +178,7 @@ public abstract class ExtensionMirror<E extends Extension<E>> implements Mirror 
      * @throws IllegalStateException
      *             if called from the constructor of the mirror
      */
-    protected final TreeNavigator<E> navigator() {
+    protected final Node<E> navigator() {
         return navigator0();
     }
 

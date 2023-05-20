@@ -19,10 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.application.BuildGoal;
 import app.packed.application.DeploymentMirror;
+import internal.app.packed.util.MagicInitializer;
+import internal.app.packed.util.types.ClassUtil;
 
-/**
- *
- */
+/** Represents a deployment. */
 public final class DeploymentSetup {
 
     // Har vi en strong reference her??
@@ -31,6 +31,9 @@ public final class DeploymentSetup {
     // aldrig smide noget vaek.
     // Maaske smider vi som udgangspunkt ikke noget vaek
     public final ApplicationSetup root;
+
+    /** A magic initializer for {@link BeanMirror}. */
+    public static final MagicInitializer<DeploymentSetup> MIRROR_INITIALIZER = MagicInitializer.of(DeploymentMirror.class);
 
     /** The build goal. */
     public final BuildGoal goal;
@@ -46,6 +49,6 @@ public final class DeploymentSetup {
      * @return
      */
     public DeploymentMirror mirror() {
-        throw new UnsupportedOperationException();
+        return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(DeploymentMirror.class, DeploymentMirror::new, null), this);
     }
 }

@@ -23,6 +23,7 @@ import sandbox.extension.bean.BeanBuilder;
 /**
  *
  */
+// What is this???
 public interface BF {
 
     // if Static Bean -> Takes no BeanInstance, If NonStaticBean takes instance

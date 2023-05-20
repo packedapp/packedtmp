@@ -39,7 +39,7 @@ import app.packed.operation.Provider;
 import app.packed.util.Key;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.service.PackedServiceLocator;
-import sandbox.extension.container.ContainerHolderService;
+import sandbox.extension.container.ContainerCarrierService;
 
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.
@@ -319,7 +319,7 @@ public interface ServiceLocator {
      */
     private static BootstrapApp<ServiceLocator> bootstrap() {
         class ServiceLocatorBootstrap {
-            private static final BootstrapApp<ServiceLocator> APP = BootstrapApp.of(new Op1<@ContainerHolderService ServiceLocator, ServiceLocator>(e -> e) {},
+            private static final BootstrapApp<ServiceLocator> APP = BootstrapApp.of(new Op1<@ContainerCarrierService ServiceLocator, ServiceLocator>(e -> e) {},
                     c -> {});
         }
         return ServiceLocatorBootstrap.APP;

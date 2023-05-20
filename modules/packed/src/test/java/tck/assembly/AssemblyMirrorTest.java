@@ -22,21 +22,22 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.AssemblyMirror;
+import tck.AppAppTest;
 import tck.TckAssemblies;
-import tck.mirror.AbstractMirrorTest;
 
 /** Basic tests for {@link AssemblyMirror}. */
-public class AssemblyMirrorTest extends AbstractMirrorTest {
+public class AssemblyMirrorTest extends AppAppTest {
 
     /** We cannot create a usable ApplicationMirror ourselves. */
     @Test
     public void frameworkMustInitializeMirror() {
-        frameworkMustInitialize(() -> new AssemblyMirror().application());
+        assertFrameworkInitializes(() -> new AssemblyMirror().application());
     }
 
     @Test
     public void helloWorldApp() {
-        AssemblyMirror m = HW.assembly();
+        setup().assembleWith(new TckAssemblies.HelloWorldAssembly());
+        AssemblyMirror m = mirrors().assembly();
 
         assertSame(TckAssemblies.HelloWorldAssembly.class, m.assemblyClass());
         assertThat(m.assemblyDuration()).isPositive();

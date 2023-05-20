@@ -23,7 +23,7 @@ import testutil.MemberFinder;
 import testutil.stubs.Letters.A;
 
 /**
- *
+ * Common beans that can be used for testing.
  */
 public class TckBeans {
 

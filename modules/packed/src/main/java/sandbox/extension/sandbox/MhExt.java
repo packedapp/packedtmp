@@ -18,13 +18,14 @@ package sandbox.extension.sandbox;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.application.App;
+import app.packed.bean.BeanKind;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
+import app.packed.lifetime.OnInitialize;
 import sandbox.extension.bean.BeanHandle;
-import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.operation.OperationHandle;
 
 /**
@@ -53,12 +54,15 @@ public class MhExt extends BaseAssembly {
         final MethodHandle mh;
 
         public EBean(ExtensionContext context, @CodeGenerated MethodHandle f) throws Throwable {
+            System.out.println(f.type());
             this.mh = f;
         }
 
-       // @OnInitialize
-        public void onInit() throws Throwable {
-            mh.invoke();
+        @OnInitialize
+        public void onInit(ExtensionContext ec) throws Throwable {
+            FFF fff = (FFF) mh.invokeExact(ec);
+
+            System.out.println(fff);
         }
     }
 
@@ -69,7 +73,7 @@ public class MhExt extends BaseAssembly {
         BeanHandle<?> h;
 
         public void ownL(Class<?> cl) {
-            h = base().beanBuilder(BeanTemplate.PROTOTYPE).install(cl);
+            h = base().beanBuilder(BeanKind.UNMANAGED.template()).install(cl);
         }
 
         @Override
@@ -77,7 +81,6 @@ public class MhExt extends BaseAssembly {
             InstanceBeanConfiguration<EBean> b = base().install(EBean.class);
 
             base().addCodeGenerated(b, MethodHandle.class, () -> {
-                // new Exception().printStackTrace();
                 if (h != null) {
                     OperationHandle oh = h.lifetimeOperations().get(0);
                     System.out.println(oh);

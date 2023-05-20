@@ -16,12 +16,14 @@
 package app.packed.bean;
 
 /**
- * Indicates that a {@link BeanKind#STATIC static} bean uses hook annotations on non-static fields or methods.
+ * Indicates that a {@link BeanKind#STATIC static} bean uses hooks on non-static fields or methods.
  * <p>
  * A static bean can only apply hook annotations on static fields or methods as no instances of the bean is available at
  * runtime.
  */
-public class NonStaticMemberException extends BeanInstallationException {
+// was StaticBeanMemberRequiredException
+// was BeanMemberNotDeclaredStaticException
+public class NonStaticBeanMemberException extends BeanInstallationException {
 
     private static final long serialVersionUID = 1L;
 
@@ -33,7 +35,7 @@ public class NonStaticMemberException extends BeanInstallationException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public NonStaticMemberException(String message) {
+    public NonStaticBeanMemberException(String message) {
         super(message);
     }
 
@@ -46,7 +48,7 @@ public class NonStaticMemberException extends BeanInstallationException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public NonStaticMemberException(String message, Throwable cause) {
+    public NonStaticBeanMemberException(String message, Throwable cause) {
         super(message, cause);
     }
 }

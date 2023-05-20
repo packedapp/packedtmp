@@ -29,9 +29,9 @@ import app.packed.operation.OperationTarget;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 import tck.AppAppTest;
-import tck.HookExtension;
-import tck.HookExtension.FieldHook.FieldPrivateInstanceString;
-import tck.HookExtension.FieldHook.FieldPrivateStaticString;
+import tck.HookTestingExtension;
+import tck.HookTestingExtension.FieldHook.FieldPrivateInstanceString;
+import tck.HookTestingExtension.FieldHook.FieldPrivateStaticString;
 
 /**
  *
@@ -44,7 +44,7 @@ public class OnAnnotatedFieldTest extends AppAppTest {
 
             OperationHandle h = b.newGetOperation(OperationTemplate.defaults());
             assertEquals(MethodType.methodType(String.class, ExtensionContext.class), h.invocationType());
-            assertSame(HookExtension.class, h.operator());
+            assertSame(HookTestingExtension.class, h.operator());
 
             if (h.target() instanceof OperationTarget.OfField f) {
                 assertEquals(FieldPrivateInstanceString.FOO_FIELD, f.field());

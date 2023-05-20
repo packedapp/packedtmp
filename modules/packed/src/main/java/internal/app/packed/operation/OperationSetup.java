@@ -18,7 +18,6 @@ package internal.app.packed.operation;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -31,7 +30,7 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanFactoryMirror;
 import app.packed.bean.BeanKind;
-import app.packed.bean.NonStaticMemberException;
+import app.packed.bean.NonStaticBeanMemberException;
 import app.packed.context.Context;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
@@ -50,8 +49,7 @@ import internal.app.packed.entrypoint.EntryPointSetup;
 import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceProviderSetup;
-import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.ThrowableUtil;
+import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.types.ClassUtil;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
@@ -59,9 +57,8 @@ import sandbox.extension.operation.OperationTemplate;
 /** Represents an operation on a bean. */
 public sealed abstract class OperationSetup implements ContextualizedElementSetup {
 
-    /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
-    private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), OperationMirror.class, "initialize", void.class,
-            OperationSetup.class);
+    /** A magic initializer for {@link OperationMirror}. */
+    public static final MagicInitializer<OperationSetup> MIRROR_INITIALIZER = MagicInitializer.of(OperationMirror.class);
 
     /** An empty array of {@code BindingSetup}. */
     private static final BindingSetup[] NO_BINDINGS = {};
@@ -121,7 +118,7 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
         this.bindings = type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[type.parameterCount()];
         this.template = requireNonNull((PackedOperationTemplate) template);
 
-        if (template.newLifetime()) {
+        if (template.descriptor().newLifetime()) {
             this.entryPoint = new EntryPointSetup(this, bean.lifetime);
         } else {
             this.entryPoint = null;
@@ -192,17 +189,7 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
     /** {@return a new mirror.} */
     @Override
     public final OperationMirror mirror() {
-        // debug();
-        // new Exception().printStackTrace();
-        OperationMirror mirror = ClassUtil.newMirror(OperationMirror.class, OperationMirror::new, mirrorSupplier);
-
-        // Initialize OperationMirror by calling OperationMirror#initialize(OperationSetup)
-        try {
-            MH_MIRROR_INITIALIZE.invokeExact(mirror, this);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-        return mirror;
+        return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(OperationMirror.class, OperationMirror::new, mirrorSupplier), this);
     }
 
     public String name() {
@@ -325,7 +312,7 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
                 OperationMemberTarget<?> member, MethodHandle methodHandle) {
             super(operator, bean, operationType, template, null);
             if (bean.beanKind == BeanKind.STATIC && !Modifier.isStatic(member.modifiers())) {
-                throw new NonStaticMemberException("Cannot create operation for non-static member " + member);
+                throw new NonStaticBeanMemberException("Cannot create operation for non-static member " + member);
             }
             this.target = requireNonNull(member);
             this.methodHandle = requireNonNull(methodHandle);

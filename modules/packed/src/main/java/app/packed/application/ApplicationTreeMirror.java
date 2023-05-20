@@ -16,14 +16,14 @@
 package app.packed.application;
 
 import app.packed.container.AssemblyTreeMirror;
-import app.packed.util.TreeMirror;
+import app.packed.util.TreeView;
 import internal.app.packed.container.Mirror;
 
 /**
  *
  */
 // Problemet med ApplicationTree er vel navngivning
-public interface ApplicationTreeMirror extends TreeMirror<ApplicationMirror>, Mirror {
+public interface ApplicationTreeMirror extends TreeView<ApplicationMirror>, Mirror {
 
     AssemblyTreeMirror assemblies();
 }

@@ -28,6 +28,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import app.packed.application.BuildGoal;
+import app.packed.container.BaseAssembly;
 import app.packed.container.BuildableAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
@@ -39,24 +40,30 @@ import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
 import sandbox.extension.operation.OperationHandle;
-import tck.AbstractAppTest.State.State1Prepping;
-import tck.AbstractAppTest.State.State2Building;
-import tck.AbstractAppTest.State.State3Build;
+import tck.AbstractAppTest.InternalTestState.State1Setup;
+import tck.AbstractAppTest.InternalTestState.State2Building;
+import tck.AbstractAppTest.InternalTestState.State3Build;
 
 /**
  *
  */
 abstract class AbstractAppTest<A> {
 
+    /** A thread local per test. */
     private static final ThreadLocal<TestStore> TL = new ThreadLocal<>();
+
     static {
-        // Eclipse needs this as it does not open super classes of tests.
+        // Eclipse needs this. As it does not open the super classes of tests.
+        // It only opens the actual test class
         Class<?> c = AbstractAppTest.class;
         c.getModule().addOpens(c.getPackageName(), c.getClassLoader().getUnnamedModule());
     }
 
-    private AtomicBoolean B = new AtomicBoolean();
-    private State state;
+    /** The state of the test. */
+    private InternalTestState state;
+
+    /** A simple boolean that can be triggered. */
+    private AtomicBoolean triggered = new AtomicBoolean();
 
     AbstractAppTest() {}
 
@@ -65,15 +72,17 @@ abstract class AbstractAppTest<A> {
     }
 
     protected final void add(String name, OperationHandle h) {
-        configuration().use(HookExtension.class).generate(name, h);
+        configuration().use(HookTestingExtension.class).generate(name, h);
     }
 
-    final ApplicationSetup appSetup() {
+    protected abstract A app();
+
+    final ApplicationSetup applicationSetup() {
         return stateBuild().application;
     }
 
     protected final void assertTriggered() {
-        assertTrue(B.get());
+        assertTrue(triggered.get());
     }
 
     @AfterEach
@@ -83,8 +92,8 @@ abstract class AbstractAppTest<A> {
 
     /** {@return the configuration of the container.} */
     protected final ContainerConfiguration configuration() {
-        State st = state;
-        if (st instanceof State1Prepping p) {
+        InternalTestState st = state;
+        if (st instanceof State1Setup p) {
             State2Building sb = new State2Building(p);
             this.state = sb;
             return sb.b.cc;
@@ -100,7 +109,6 @@ abstract class AbstractAppTest<A> {
         return invoker("main");
     }
 
-    protected abstract A app();
     public Invoker invoker(String name) {
         app();
         Map<String, Invoker> m = ts().invokers;
@@ -112,29 +120,29 @@ abstract class AbstractAppTest<A> {
         return invoker;
     }
 
-    /**
-     * {@return a prepping object.}
-     */
-    protected final Prep prep() {
-        State st = state;
-        if (st instanceof State1Prepping p) {
-            return p;
-        }
-        reset();
-        return prep();
-    }
-
     @BeforeEach
     protected final void reset() {
         TL.set(new TestStore());
-        B.set(false);
-        state = new State1Prepping();
+        triggered.set(false);
+        state = new State1Setup(this);
+    }
+
+    /**
+     * {@return a test setup object.}. If the test is not already in the setup state it will be reset to the setup state.
+     */
+    protected final TestAppSetup setup() {
+        InternalTestState st = state;
+        if (st instanceof State1Setup s) {
+            return s;
+        }
+        reset();
+        return setup();
     }
 
     final State3Build stateBuild() {
-        State st = state;
-        if (st instanceof State1Prepping p) {
-            throw new IllegalStateException("Application has already been configured yet");
+        InternalTestState st = state;
+        if (st instanceof State1Setup p) {
+            throw new IllegalStateException("Application has already been configured");
         } else if (st instanceof State2Building sb) {
             State3Build sbb = new State3Build(sb);
             this.state = sbb;
@@ -145,24 +153,74 @@ abstract class AbstractAppTest<A> {
     }
 
     protected final void trigger() {
-        B.set(true);
+        triggered.set(true);
     }
 
     static TestStore ts() {
         return TL.get();
     }
 
-    public interface Prep {
+    sealed interface InternalTestState {
 
-        Prep goal(BuildGoal goal);
+        final class State1Setup implements InternalTestState , TestAppSetup {
 
-        default Prep image() {
-            return goal(BuildGoal.IMAGE);
+            final AbstractAppTest<?> aat;
+
+            BuildableAssembly assembly;
+
+            private BuildGoal goal = BuildGoal.LAUNCH;
+
+            private List<Wirelet> wirelets = new ArrayList<>();
+
+            State1Setup(AbstractAppTest<?> aat) {
+                this.aat = requireNonNull(aat);
+            }
+
+            @Override
+            public void assembleWith(BaseAssembly assembly) {
+                this.assembly = requireNonNull(assembly);
+                aat.configuration();
+            }
+
+            @Override
+            public State1Setup goal(BuildGoal goal) {
+                this.goal = requireNonNull(goal);
+                return this;
+            }
+
+            @Override
+            public State1Setup wirelets(Wirelet... wirelets) {
+                this.wirelets.addAll(List.of(wirelets));
+                return this;
+            }
         }
 
-        Prep wirelets(Wirelet... wirelets);
+        final class State2Building implements InternalTestState {
+
+            final AbstractAppTest.StandaloneContainerBuilder b;
+
+            State2Building(State1Setup setup) {
+                b = new StandaloneContainerBuilder(setup);
+                b.processBuildWirelet(setup.wirelets.toArray(i -> new Wirelet[i]));
+            }
+        }
+
+        final class State3Build implements InternalTestState {
+
+            Object app;
+
+            final ApplicationSetup application;
+
+            State3Build(State2Building sb) {
+                sb.b.assembly.postBuild();
+                this.application = sb.b.assembly.container.application;
+            }
+        }
     }
 
+    /**
+     * A special container builder
+     */
     private static class StandaloneContainerBuilder extends PackedContainerBuilder {
 
         final AssemblySetup assembly;
@@ -174,15 +232,18 @@ abstract class AbstractAppTest<A> {
         /**
          * @param template
          */
-        protected StandaloneContainerBuilder(BuildGoal goal) {
+        protected StandaloneContainerBuilder(State1Setup setup) {
             super(new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION));
-            this.goal = goal;
-
-            assembly = new AssemblySetup(this, new BuildableAssembly() {
-
-                @Override
-                protected void build() {}
-            });
+            this.goal = setup.goal;
+            BuildableAssembly ba = setup.assembly;
+            if (ba == null) {
+                ba = new BuildableAssembly() {
+                    @Override
+                    protected void build() {}
+                };
+            }
+            assembly = new AssemblySetup(this, ba);
+            // Do
             cc = new ContainerConfiguration(new PackedContainerHandle(assembly.container));
 
         }
@@ -200,48 +261,14 @@ abstract class AbstractAppTest<A> {
         }
     }
 
-    sealed interface State {
+    /** A test setup object that can be used to set the build goal and wirelets. */
+    public interface TestAppSetup {
 
-        final class State1Prepping implements State , Prep {
+        void assembleWith(BaseAssembly assembly);
 
-            private BuildGoal goal = BuildGoal.LAUNCH;
+        TestAppSetup goal(BuildGoal goal);
 
-            private List<Wirelet> wirelets = new ArrayList<>();
-
-            @Override
-            public State1Prepping goal(BuildGoal goal) {
-                this.goal = requireNonNull(goal);
-                return this;
-            }
-
-            @Override
-            public State1Prepping wirelets(Wirelet... wirelets) {
-                this.wirelets.addAll(List.of(wirelets));
-                return this;
-            }
-        }
-
-        final class State2Building implements State {
-
-            final AbstractAppTest.StandaloneContainerBuilder b;
-
-            State2Building(State1Prepping prep) {
-                b = new StandaloneContainerBuilder(prep.goal);
-                b.processBuildWirelet(prep.wirelets.toArray(i -> new Wirelet[i]));
-            }
-        }
-
-        final class State3Build implements State {
-
-            Object app;
-
-            final ApplicationSetup application;
-
-            State3Build(State2Building sb) {
-                sb.b.assembly.postBuild();
-                this.application = sb.b.assembly.container.application;
-            }
-        }
+        TestAppSetup wirelets(Wirelet... wirelets);
     }
 
     static class TestStore {

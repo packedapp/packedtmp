@@ -24,11 +24,11 @@ import java.util.function.Supplier;
 import app.packed.util.Nullable;
 
 /**
- * A map of locals.
+ * A map of bean or container locals.
  */
 public final class PackedLocalMap {
 
-    /** This map maintains every {@link app.packed.extension.ContainerLocal} for the whole application. */
+    /** This map containing every local. */
     private final ConcurrentHashMap<LocalKey, Object> locals = new ConcurrentHashMap<>();
 
     public <T> T get(PackedLocal<T> local, Object key) {

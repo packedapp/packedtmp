@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanKind;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.extension.BeanHook.AnnotatedBindingHook;
 import app.packed.lifetime.LifecycleOrder;
@@ -31,9 +32,9 @@ import sandbox.extension.bean.BeanBuilder;
 import sandbox.extension.bean.BeanHandle;
 import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.container.ContainerBuilder;
-import sandbox.extension.container.ContainerHolderConfiguration;
-import sandbox.extension.container.ContainerLifetimeTunnel;
+import sandbox.extension.container.ContainerCarrierBeanConfiguration;
 import sandbox.extension.container.ContainerTemplate;
+import sandbox.extension.container.ContainerTemplatePack;
 import sandbox.extension.operation.DelegatingOperationHandle;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
@@ -50,25 +51,25 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     // Altsaa fx naar vi naar hen til application.
     // Vi kan jo ikke installere den i extensionen...
-    public static ContainerLifetimeTunnel CONTAINER_MIRROR = ContainerLifetimeTunnel.builder(MethodHandles.lookup(), BaseExtension.class, "ContainerMirror")
+    public static ContainerTemplatePack CONTAINER_MIRROR = ContainerTemplatePack.builder(MethodHandles.lookup(), BaseExtension.class, "ContainerMirror")
             .build();
 
     /** A bridge that makes the name of the container available. */
-    public static final ContainerLifetimeTunnel CONTAINER_NAME = null;
+    public static final ContainerTemplatePack CONTAINER_NAME = null;
 
     /**
      * A container lifetime channel that makes the container's exported services available as
      * {@link app.packed.service.ServiceLocator}.
      */
-    public static final ContainerLifetimeTunnel EXPORTED_SERVICE_LOCATOR = baseBuilder("ExportedServiceLocator")
-            .consumeLocal(BaseExtension.FROM_LINKS, t -> t.exportServices = true).expose(ServiceLocator.class).build();
+    public static final ContainerTemplatePack EXPORTED_SERVICE_LOCATOR = baseBuilder("ExportedServiceLocator")
+            .localConsume(BaseExtension.FROM_LINKS, t -> t.exportServices = true).provideExpose(ServiceLocator.class).build();
 
     // Teanker vi altid exportere den
     // check that we have a managed lifetime. Maybe PackedManagedBeanController is already installed
     // baseExtension.managedLifetimeBean.export(); // maybe it is already exported
 
-    public static final ContainerLifetimeTunnel MANAGED_LIFETIME_CONTROLLER = baseBuilder("ManagedLifetimeController")
-            .expose(LifecycleController.class).build();
+    public static final ContainerTemplatePack MANAGED_LIFETIME_CONTROLLER = baseBuilder("ManagedLifetimeController").provideExpose(LifecycleController.class)
+            .build();
 
     /** Creates a new base extension point. */
     BaseExtensionPoint() {}
@@ -125,10 +126,6 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         be.addCodeGenerated(b, key, supplier);
     }
 
-    public int registerEntryPoint(Class<?> hook) {
-        return super.extensionSetup().container.lifetime.entryPoints.takeOver(extension(), usedBy());// .registerEntryPoint(usedBy(), isMain);
-    }
-
     /**
      * Creates a new application bean installer.
      *
@@ -147,7 +144,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            a template for the bean's lifetime
      * @return the installer
      */
-    public BeanBuilder beanInstallerForExtension(BeanTemplate template, UseSite forExtension) {
+    public BeanBuilder beanBuilderForExtension(BeanTemplate template, UseSite forExtension) {
         requireNonNull(forExtension, "forExtension is null");
         return new PackedBeanBuilder(extension().extension, ((PackedExtensionPointContext) forExtension).usedBy(), template);
     }
@@ -165,6 +162,11 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         return LeafContainerOrApplicationBuilder.of(template, es.extensionType, es.container.application, es.container);
     }
 
+    public <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
+        BeanHandle<T> handle = beanBuilderForExtension(BeanKind.CONTAINER.template(), context()).install(implementation);
+        return new ServiceableBeanConfiguration<>(handle);
+    }
+
 //    // Contexts
 //    public ContainerBuilder containerInstallerExistingLifetime(boolean isLazy) {
 //        // Kan only use channels that are direct dependencies of the usage extension
@@ -172,25 +174,6 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 //        ExtensionSetup s = contextUse().usedBy();
 //        return new PackedContainerBuilder(ContainerTemplate.IN_PARENT, s.extensionType, s.container.application, s.container);
 //    }
-
-    // Can I come up with a situation where we want multiple guests of the same type??
-    // I think not
-    public <T> ContainerHolderConfiguration<T> installContainerHolder(Class<T> holderClass) {
-        throw new UnsupportedOperationException();
-    }
-
-    public <T> ContainerHolderConfiguration<T> installContainerHolder(Op<T> holderClass) {
-        throw new UnsupportedOperationException();
-    }
-//
-//    public <T> ContainerHolderConfiguration<T> containerHolderInstallIfAbsent(Class<T> holderClass, Consumer<? super ContainerHolderConfiguration<T>> action) {
-//        throw new UnsupportedOperationException();
-//    }
-
-    public <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = beanInstallerForExtension(BeanTemplate.CONTAINER, context()).install(implementation);
-        return new ServiceableBeanConfiguration<>(handle);
-    }
 
     /**
      * @param <T>
@@ -200,8 +183,28 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public <T> InstanceBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<T> handle = beanInstallerForExtension(BeanTemplate.CONTAINER, context()).install(op);
+        BeanHandle<T> handle = beanBuilderForExtension(BeanKind.CONTAINER.template(), context()).install(op);
         return new InstanceBeanConfiguration<>(handle);
+    }
+
+    // Can I come up with a situation where we want multiple guests of the same type??
+    // I think not
+    public <T> ContainerCarrierBeanConfiguration<T> installContainerCarrier(Class<T> holderClass) {
+        throw new UnsupportedOperationException();
+    }
+
+    public <T> ContainerCarrierBeanConfiguration<T> installContainerCarrier(Op<T> holderClass) {
+        throw new UnsupportedOperationException();
+    }
+//
+//    public <T> ContainerHolderConfiguration<T> containerHolderInstallIfAbsent(Class<T> holderClass, Consumer<? super ContainerHolderConfiguration<T>> action) {
+//        throw new UnsupportedOperationException();
+//    }
+
+    public FunctionalBeanConfiguration installFunctional() {
+        PackedBeanBuilder bb = (PackedBeanBuilder) beanBuilderForExtension(BeanKind.STATIC.template(), context());
+        BeanHandle<?> handle = bb.installSourceless();
+        return new FunctionalBeanConfiguration(handle);
     }
 
     public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
@@ -222,13 +225,13 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
-        BeanHandle<T> handle = beanInstallerForExtension(BeanTemplate.CONTAINER, context()).installIfAbsent(clazz,
+        BeanHandle<T> handle = beanBuilderForExtension(BeanKind.CONTAINER.template(), context()).installIfAbsent(clazz,
                 h -> action.accept(new InstanceBeanConfiguration<>(h)));
         return new InstanceBeanConfiguration<>(handle);
     }
 
     public <T> InstanceBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = beanInstallerForExtension(BeanTemplate.CONTAINER, context()).installInstance(instance);
+        BeanHandle<T> handle = beanBuilderForExtension(BeanKind.CONTAINER.template(), context()).installInstance(instance);
         return new InstanceBeanConfiguration<>(handle);
     }
 
@@ -240,40 +243,18 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public BeanConfiguration installStatic(Class<?> beanClass) {
-        BeanHandle<?> handle = beanInstallerForExtension(BeanTemplate.STATIC, context()).install(beanClass);
+        BeanHandle<?> handle = beanBuilderForExtension(BeanKind.STATIC.template(), context()).install(beanClass);
         return new BeanConfiguration(handle);
     }
 
-    public FunctionalBeanConfiguration installFunctional() {
-        PackedBeanBuilder bb = (PackedBeanBuilder) beanInstallerForExtension(BeanTemplate.STATIC, context());
-        BeanHandle<?> handle = bb.installSourceless();
-        return new FunctionalBeanConfiguration(handle);
+    public int registerEntryPoint(Class<?> hook) {
+        return super.extensionSetup().container.lifetime.entryPoints.takeOver(extension(), usedBy());// .registerEntryPoint(usedBy(), isMain);
     }
 
     public OperationConfiguration runLifecycleOperation(DelegatingOperationHandle operation, RunState state, LifecycleOrder ordering) {
         throw new UnsupportedOperationException();
     }
 
-//    // onExtension E newContainer(Wirelet wirelets); // adds this to the container and returns it
-//
-//    public ContainerHandle newContainer(Assembly assembly, Wirelet... wirelets) {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    public ContainerHandle newContainer(Wirelet... wirelets) {
-//        // What is the usecase here without
-//        // Okay I want to a create a container in the container.
-//        // And then add myself
-//
-//        // Let's say entity beans are always in their own container
-//        // newContainer().useMyself().
-//
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    public <T> ContainerGuestBeanConfiguration<T> newContainerGuest(Class<T> containerGuest, ExtensionLifetimeBridge... bridges) {
-//        throw new UnsupportedOperationException();
-//    }
 
     public OperationConfiguration runOnBeanInitialization(DelegatingOperationHandle h, LifecycleOrder ordering) {
         requireNonNull(ordering, "ordering is null");
@@ -307,15 +288,18 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 //        throw new UnsupportedOperationException();
 //    }
 
-    private static ContainerLifetimeTunnel.Builder baseBuilder(String name) {
-        return ContainerLifetimeTunnel.builder(MethodHandles.lookup(), BaseExtension.class, name);
+    private static ContainerTemplatePack.Builder baseBuilder(String name) {
+        return ContainerTemplatePack.builder(MethodHandles.lookup(), BaseExtension.class, name);
     }
 
     /**
-     * This annotation is used to indicate that the annotated variable is constructed doing the code generation phase of the
-     * application.
+     * This annotation is used to indicate that the value of a annotated variable (field or parameter) of a bean is
+     * constructed doing the code generation phase of the application.
      * <p>
-     * This annotation can only used by extensions.
+     * Values for a specific bean must be provided either via {@link BaseExtensionPoint}
+     *
+     * <p>
+     * This annotation can only be used by extensions.
      *
      * @see BindableVariable#bindGeneratedConstant(java.util.function.Supplier)
      * @see BaseExtensionPoint#addCodeGenerated(app.packed.bean.BeanConfiguration, Class, java.util.function.Supplier)
@@ -327,3 +311,24 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     @AnnotatedBindingHook(extension = BaseExtension.class)
     public @interface CodeGenerated {}
 }
+
+//// onExtension E newContainer(Wirelet wirelets); // adds this to the container and returns it
+//
+//public ContainerHandle newContainer(Assembly assembly, Wirelet... wirelets) {
+//  throw new UnsupportedOperationException();
+//}
+//
+//public ContainerHandle newContainer(Wirelet... wirelets) {
+//  // What is the usecase here without
+//  // Okay I want to a create a container in the container.
+//  // And then add myself
+//
+//  // Let's say entity beans are always in their own container
+//  // newContainer().useMyself().
+//
+//  throw new UnsupportedOperationException();
+//}
+//
+//public <T> ContainerGuestBeanConfiguration<T> newContainerGuest(Class<T> containerGuest, ExtensionLifetimeBridge... bridges) {
+//  throw new UnsupportedOperationException();
+//}

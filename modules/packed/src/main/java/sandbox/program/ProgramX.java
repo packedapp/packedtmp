@@ -23,7 +23,7 @@ import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Key;
-import sandbox.extension.container.ContainerHolderService;
+import sandbox.extension.container.ContainerCarrierService;
 import sandbox.lifetime.external.LifecycleController;
 
 /**
@@ -153,8 +153,8 @@ public interface ProgramX extends AutoCloseable {
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementationX(@ContainerHolderService String name, @ContainerHolderService ServiceLocator services,
-        @ContainerHolderService LifecycleController runtime) implements ProgramX {
+record ProgramImplementationX(@ContainerCarrierService String name, @ContainerCarrierService ServiceLocator services,
+        @ContainerCarrierService LifecycleController runtime) implements ProgramX {
 
     ProgramImplementationX {
         // System.out.println(services.keys());

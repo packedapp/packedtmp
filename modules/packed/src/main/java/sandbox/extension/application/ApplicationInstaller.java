@@ -15,7 +15,7 @@
  */
 package sandbox.extension.application;
 
-import app.packed.extension.ContainerLocal;
+import app.packed.container.ContainerLocal;
 
 /**
  *

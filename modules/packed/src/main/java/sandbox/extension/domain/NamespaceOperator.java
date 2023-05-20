@@ -19,7 +19,7 @@ import java.util.Set;
 
 import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceMirror;
-import app.packed.util.TreeNavigator;
+import app.packed.util.TreeView.Node;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.NamespaceSetup;
 
@@ -43,7 +43,7 @@ public abstract class NamespaceOperator<E extends Extension<E>> {
      */
     // Ogsaa containere hvor den ikke noedvendig er brugt890[]\
 
-    public TreeNavigator<E> navigator() {
+    public Node<E> navigator() {
         throw new UnsupportedOperationException();
     }
 

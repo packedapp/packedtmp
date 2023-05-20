@@ -120,6 +120,7 @@ public abstract class PackedContainerBuilder {
 
     public abstract LifetimeKind lifetimeKind();
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     ContainerSetup newContainer(ApplicationSetup application, AssemblySetup assembly) {
         // All wirelets have been processed when we reaches here
 
@@ -154,7 +155,8 @@ public abstract class PackedContainerBuilder {
 
         String n = nn;
         if (parent != null) {
-            HashMap<String, Object> c = parent.namedChildren;
+            // TODO fix, we are adding ContainerBuilder not ContainerSetup
+            HashMap<String, Object> c = (HashMap) parent.children;
             if (c.size() == 0) {
                 c.put(n, this);
             } else {

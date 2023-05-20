@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.beanpouch;
+package sandbox.extension.bean.pouch;
 
 /**
  *

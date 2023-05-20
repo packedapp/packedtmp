@@ -51,6 +51,5 @@ public class BeanInstallationException extends BuildException {
 // Previously we had a InvalidBeanClassEXception which was used to indicate that something was wrong with the actual class.
 // But it was a bit difficult to distinguish between the two, and difficult to decide which to throw.
 // BeanInstallationException is also a very clear name.
-
 // We also had a DublicateBeanClassException which I could just never come up with a good name for.
 // So that was ditched as well

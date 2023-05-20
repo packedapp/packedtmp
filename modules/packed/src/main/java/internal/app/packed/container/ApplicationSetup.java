@@ -17,16 +17,13 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.util.Nullable;
-import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.ThrowableUtil;
+import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.types.ClassUtil;
 import sandbox.extension.domain.NamespaceOperator;
 
@@ -38,9 +35,8 @@ import sandbox.extension.domain.NamespaceOperator;
  */
 public final class ApplicationSetup {
 
-    /** A MethodHandle for invoking {@link ApplicationMirror#initialize(ApplicationSetup)}. */
-    private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ApplicationMirror.class, "initialize",
-            void.class, ApplicationSetup.class);
+    /** A magic initializer for {@link BeanMirror}. */
+    public static final MagicInitializer<ApplicationSetup> MIRROR_INITIALIZER = MagicInitializer.of(ApplicationMirror.class);
 
     /** Any (statically defined) children this application has. */
     final ArrayList<FutureApplicationSetup> children = new ArrayList<>();
@@ -151,15 +147,7 @@ public final class ApplicationSetup {
 
     /** {@return a mirror that can be exposed to end-users.} */
     public ApplicationMirror mirror() {
-        ApplicationMirror mirror = ClassUtil.newMirror(ApplicationMirror.class, ApplicationMirror::new, mirrorSupplier);
-
-        // Initialize ApplicationMirror by calling ApplicationMirror#initialize(ApplicationSetup)
-        try {
-            MH_APPLICATION_MIRROR_INITIALIZE.invokeExact(mirror, this);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-        return mirror;
+        return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(ApplicationMirror.class, ApplicationMirror::new, mirrorSupplier), this);
     }
 
     /** The build phase of the application. */

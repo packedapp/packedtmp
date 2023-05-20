@@ -18,13 +18,20 @@ package app.packed.container;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
 import java.util.ServiceLoader;
-import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  *
  */
+// Jeg tror ikke man kan skifte mode...
+// Module paths kan aldrig laese class paths.
+// Og classpath er ikke interesseret i at lase module paths
+
+// Man kan ikke filtrere
+
 // Mode : Standalone or from Assembly
-// PathMode : Classpath, Modulepath
+// PathMode : Classpath, Modulepath (if source assembly
+
 // cardinality : findAny, findOne, findAll
 
 // kind: Static vs Dynamic (Dynamic meaning deployiesh)
@@ -38,12 +45,15 @@ import java.util.function.Consumer;
 
 // Tror det er en god demo. Men hmm, tror vi skal noget andet paa lang sigt...
 
-// Delt op i tre.
+// Was Delt op i tre.
 //// 1. Hvor kigger vi
 //// 2. Filtre
 //// 3. En terminal operation
 
 
+// Now
+//// Where to look
+//// What to find
 
 // Where to Look
 //// Paths
@@ -53,14 +63,11 @@ import java.util.function.Consumer;
 
 // Terminals
 //// find one/all
-//// link one/all
-//// forEach
-
 
 // Future
 //// Taenk over hvordan man maaske vil kunne supportere mere komplekse layouts i fremtiden
 //// Eller det er maaske JLink images?
-public interface AssemblyFinder {
+public sealed interface AssemblyFinder permits PackedAssemblyFinder {
 
     AssemblyFinder addModuleLayer(ModuleLayer moduleLayer);
 
@@ -76,12 +83,30 @@ public interface AssemblyFinder {
     AssemblyFinder classLoader(ClassLoader classLoader);
 
     // finders can ikke laengere modificeres
+    // Compose with
     default AssemblyFinder compose(AssemblyFinder... finders) {
         throw new UnsupportedOperationException();
     }
 
-    Assembly findOne(ServiceLoader<? super Assembly> loader);
+    default <T extends Assembly> Stream<T> findAll(ServiceLoader<T> loader) {
+        throw new UnsupportedOperationException();
+    }
 
+
+    // Find exactly one
+    // Fails if there are more than one
+    <T extends Assembly> T findOne(ServiceLoader<T> loader);
+
+    /**
+     * Find and instantiates an assembly with the specified name.
+     *
+     * @param className
+     *            the canonical name of the assembly
+     * @return an instance of the assembly
+     *
+     * @throws BuildException
+     *             if an assembly with the specified name was not present or could not be instantiated
+     */
     Assembly findOne(String className);
 
     /**
@@ -95,11 +120,40 @@ public interface AssemblyFinder {
      */
     Assembly findOne(String moduleName, String className);
 
-    void forEach(Consumer<? super Assembly> action);
+    AssemblyFinder paths(Path... paths);
 
-    default void linkOne(String moduleName, String className, Wirelet... wirelets) {
-
+    default AssemblyFinder paths(String... paths) {
+        for (String s : paths) {
+            paths(Path.of(s));
+        }
+        return this;
     }
+
+    /** {@return an assembly finder that uses the classpath to find assemblies.} */
+    static AssemblyFinder onClasspath() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * {@return an assembly finder that uses the modulepath to find assemblies.}
+     *
+     * @param caller
+     *            a lookup object that is used for visibility and for instantiating assembly instances
+     */
+    static AssemblyFinder onModulepath(MethodHandles.Lookup caller) {
+        throw new UnsupportedOperationException();
+    }
+
+    // default mode er fra Assembly.getModule==Unamanaged ? classpath : modulepath
+    enum Mode {
+        SEARCH_CLASSPATH, SEARCH_MODULEPATH;
+    }
+}
+// Skal ogsaa kunne bruges i standalone mode.
+// Her er det vel primaert en enkelt Assembly men leder efter
+
+interface Zarchive {
+
 
     /**
      * Links all matching assemblies by calling {@link app.packed.extension.BaseExtension#link(Assembly, Wirelet...)} for
@@ -111,30 +165,11 @@ public interface AssemblyFinder {
      * @throws UnsupportedOperationException
      *             if used in stand-alone mode.
      */
+    // Vi supportere ikke linking direkte...
+    // findAll().foreach(e->link(e));
     void linkAll(Wirelet... wirelets);
 
-    AssemblyFinder paths(Path... paths);
+    default void linkOne(String moduleName, String className, Wirelet... wirelets) {
 
-    default AssemblyFinder paths(String... paths) {
-        for (String s : paths) {
-            paths(Path.of(s));
-        }
-        return this;
-    }
-
-    static AssemblyFinder onClassPath() {
-        throw new UnsupportedOperationException();
-    }
-
-    // caller is needed to instantiate assemblies
-    static AssemblyFinder onModulePath(MethodHandles.Lookup caller) {
-        throw new UnsupportedOperationException();
-    }
-
-    // default mode er fra Assembly.getModule==Unamanaged ? classpath : modulepath
-    enum Mode {
-        SEARCH_CLASSPATH, SEARCH_MODULEPATH;
     }
 }
-// Skal ogsaa kunne bruges i standalone mode.
-// Her er det vel primaert en enkelt Assembly men leder efter

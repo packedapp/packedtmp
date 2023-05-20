@@ -20,11 +20,7 @@ Because everything is so interconnected it is difficult to test only parts of Pa
 Structural tests
 
 
-
-
-
 tck.apps <- test DaemonApp, App, ServiceLocator
-
 
 tck.bean.hooks
 

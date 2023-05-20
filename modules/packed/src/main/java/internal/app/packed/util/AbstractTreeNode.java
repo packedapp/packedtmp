@@ -26,6 +26,8 @@ import app.packed.util.Nullable;
 /**
  * A node in a tree.
  */
+
+// Det den her kan som LinkedHashMap ikke kan er at gaa fra en sieblig til en anden.
 public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
 
     /** The (nullable) first child of the node. */

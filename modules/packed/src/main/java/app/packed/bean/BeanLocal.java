@@ -15,9 +15,9 @@
  */
 package app.packed.bean;
 
-import static internal.app.packed.bean.BeanSetup.crack;
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.extension.BeanElement;
@@ -29,23 +29,15 @@ import internal.app.packed.container.PackedLocal;
 import sandbox.extension.bean.BeanHandle;
 
 /**
- * This class provides bean-local variables at build-time.
+ * This class provides build-time bean-local variables primarily for use by {@link app.packed.extension.Extension
+ * extensions}.
  * <p>
- * Bean locals are typically used for sharing per-bean data between various parts of the application while building it.
- * For example, a value can be set for a bean when installing it using XXX.
- *
- * This value can then retrieved from a bean handle
- *
- * There are number where a BeanLocal be used:
- *
- * Before creating a bean a value can be set using
- * {@link app.packed.extension.bean.BeanBuilder#setLocal(BeanLocal, Object)}
- *
- *
- * Finally, a bean local can be used from a {@link app.packed.bean.BeanMirror}
+ * Bean locals are typically used for sharing per-bean data between various parts of the application while the
+ * application is being built. For example, a value can be set for a bean when installing it. And then later be
+ * retrieved from a bean mirror instance. The {@link LocalAccessor} interfaces details all the entities that supports
+ * bean local storage in its permit clause.
  * <p>
- * While bean locals are primarily developers of extensions, there are no reasons that ordinary users could not use
- * them.
+ * While bean locals are primarily developers of extensions, power users are free to use them in any way they want.
  * <p>
  * Bean locals should generally not be shared outside outside of trusted code.
  * <p>
@@ -53,177 +45,86 @@ import sandbox.extension.bean.BeanHandle;
  * subclasses. Specifically, there are no support for querying bean locals at runtime.
  *
  * @see app.packed.extension.bean.BeanBuilder#setLocal(BeanLocal, Object)
- * @see app.packed.bean.BeanMirror#isLocalPresent(BeanLocal)
- * @see app.packed.bean.BeanMirror#getLocal(BeanLocal)
  * @see ContainerLocal
  */
-// Supported entities
-//// BeanConfiguration
-//// BeanElement
-//// BeanHandle
-//// BeanIntrospector
-//// BeanMirror
-
-// Kunne ogsaa bruges til at tagge entities?
-// Vil gerne ApplicationLocal.tag();
-/// bean().tag("dsdfsdf"); ->
 public final class BeanLocal<T> extends PackedLocal<T> {
 
     private BeanLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
         super(initialValueSupplier);
     }
 
-    public T get(BeanConfiguration configuration) {
-        return get(crack(configuration));
-    }
-
-    // Is useful, if we delegate operation creation to other extensions, As they will not have access to BeanIntrospector
-    public T get(BeanElement element) {
-        return get(crack(element));
-    }
-
-    public T get(BeanHandle<?> handle) {
-        return get(crack(handle));
-    }
-
-    public T get(BeanIntrospector introspector) {
-        return get(crack(introspector));
-    }
-
-    public T get(BeanMirror mirror) {
-        return get(mirror.bean);
-    }
-
     /**
+     * Returns the bean local value from the specified accessor.
      * <p>
-     * If this local has been created with an initial value supplier. The supplier will be used to initialize a value
+     * If no value has been set for this local previously, this method will:
+     * <ul>
+     * <li>Initialize lazily, if an initial value supplier was used when creating this local.</li>
+     * <li>Fail with {@link java.util.NoSuchElementException}, if no initial value supplier was used when creating this
+     * local.</li>
+     * </ul>
      *
-     * @param bean
-     *            the bean to return a value from
-     * @return the value of the bean local if set in the specified bean
+     * @param accessor
+     *            the bean local accessor
+     * @return the value of the bean local
      *
      * @throws java.util.NoSuchElementException
-     *             if a value has not been set previously for the bean, and no initial value supplier was specified when
-     *             creating the local
+     *             if a value has not been set previously for this bean local and an initial value supplier was not
+     *             specified when creating the bean local
      */
-    private T get(BeanSetup bean) {
-        return bean.container.application.locals.get(this, bean);
+    public T get(LocalAccessor accessor) {
+        BeanSetup bean = crack(accessor);
+        return bean.locals().get(this, bean);
     }
 
     /**
-     * In the bean represented by the specified configuration
+     * If a value is present, performs the given action with the value, otherwise does nothing.
      *
-     * @param configuration
-     *            the bean's configuration
-     * @return whether or not a value has been set in the local for the configuraiton
-     *
-     * @throws UnsupportedOperationException
-     *             if the bean local has an initial value. As this is always a usage error
+     * @param action
+     *            the action to be performed, if a value is present
+     * @throws NullPointerException
+     *             if value is present and the given action is {@code null}
      */
-    public boolean isSet(BeanConfiguration configuration) {
-        return isSet(crack(configuration));
-    }
-
-    public boolean isSet(BeanHandle<?> handle) {
-        return isSet(crack(handle));
-    }
-
-    public boolean isSet(BeanIntrospector introspector) {
-        return isSet(crack(introspector));
+    public void ifPresent(LocalAccessor accessor, Consumer<? super T> action) {
+        throw new UnsupportedOperationException();
     }
 
     /**
-     * <p>
-     * Calling this method will not initialize the value of the local if no value has been explicitly set and a initial
-     * value supplier was specified when creating the local.
+     * Returns whether or not a value has been set or previously initialized in the specified accessor.
      *
-     * @param bean
-     * @return whether or not a value has previously been expl
+     * @param accessor
+     *            the bean local accessor
+     * @return true if a value has been set or initialized, otherwise false
+     *
+     * @apiNote Calling this method will <strong>never</strong> initialize the value of the local even if a initial value
+     *          supplier was specified when creating the local. As such this method rarely makes sense to call if an initial
+     *          value supplier was specified when creating the local.
      */
-    private boolean isSet(BeanSetup bean) {
-        return bean.container.application.locals.isSet(this, bean);
-    }
-
-    T orElse(BeanSetup bean, T other) {
-        return bean.container.application.locals.orElse(this, bean, other);
-    }
-
-    // or throws the supplied
-    public <X extends Throwable> T orElseThrow(BeanConfiguration configuration, Supplier<? extends X> exceptionSupplier) throws X {
-        if (!isSet(configuration)) {
-            throw exceptionSupplier.get();
-        } else {
-            return null;
-        }
-    }
-
-    protected <X extends Throwable> T orElseThrow(BeanSetup bean, Supplier<? extends X> exceptionSupplier) throws X {
-        return bean.container.application.locals.orElseThrow(this, bean, exceptionSupplier);
+    public boolean isSet(LocalAccessor accessor) {
+        BeanSetup bean = crack(accessor);
+        return bean.locals().isSet(this, bean);
     }
 
     /**
-     * Sets the value of this local for the bean represented by the specified bean introspector.
+     * Returns whether or not a value has been set or previously initialized in the specified accessor.
      *
-     * @param <B>
-     *            the type of bean introspector
-     * @param handle
-     *            the bean introspector that represents the bean
-     * @param value
-     *            the value to set
-     * @return the specified bean introspector
+     * @param accessor
+     *            the bean local accessor
+     * @param other
+     *            the value to return if a value has not been set previously
+     * @return true if a value has been set or initialized, otherwise false
+     *
+     * @apiNote Calling this method will <strong>never</strong> initialize the value of the local even if a initial value
+     *          supplier was specified when creating the local. As such this method rarely makes sense to call if an initial
+     *          value supplier was specified when creating the local.
      */
-    public <B extends BeanIntrospector> B set(B introspector, T value) {
-        set(crack(introspector), value);
-        return introspector;
+    public T orElse(LocalAccessor accessor, T other) {
+        BeanSetup bean = crack(accessor);
+        return bean.locals().orElse(this, bean, other);
     }
 
-    /**
-     * Sets the value of this local for the bean represented by the specified bean configuration.
-     *
-     * @param <B>
-     *            the type of bean configuration
-     * @param handle
-     *            the bean configuration that represents the bean
-     * @param value
-     *            the value to set
-     * @return the specified bean configuration
-     */
-    public <B extends BeanConfiguration> B set(B configuration, T value) {
-        set(crack(configuration), value);
-        return configuration;
-    }
-
-    /**
-     * Sets the value of this local for the bean represented by the specified bean handle.
-     *
-     * @param <B>
-     *            the type of bean handle
-     * @param handle
-     *            the bean handle that represents the bean
-     * @param value
-     *            the value to set
-     * @return the specified bean handle
-     */
-    public <B extends BeanHandle<?>> B set(B handle, T value) {
-        set(crack(handle), value);
-        return handle;
-    }
-
-    /**
-     * Sets the value of this local for the bean represented by the specified bean element.
-     *
-     * @param <B>
-     *            the type of bean element
-     * @param handle
-     *            the bean element that represents the bean
-     * @param value
-     *            the value to set
-     * @return the specified bean element
-     */
-    public void set(BeanElement element, T value) {
-        PackedBeanElement e = (PackedBeanElement) element;
-        set(e.bean(), value);
-        // return element;
+    public <X extends Throwable> T orElseThrow(LocalAccessor accessor, Supplier<? extends X> exceptionSupplier) throws X {
+        BeanSetup bean = crack(accessor);
+        return bean.locals().orElseThrow(this, bean, exceptionSupplier);
     }
 
     /**
@@ -234,13 +135,37 @@ public final class BeanLocal<T> extends PackedLocal<T> {
      * @param value
      *            the value to set
      */
-    protected void set(BeanSetup bean, T value) {
-        requireNonNull(bean, "bean is null");
-        bean.container.application.locals.set(this, bean, value);
+    public void set(LocalAccessor accessor, T value) {
+        BeanSetup bean = crack(accessor);
+        bean.locals().set(this, bean, value);
     }
 
     /**
-     * Creates a bean local without any initial value supplier.
+     * Extracts the actual bean setup from the specified accessor.
+     *
+     * @param accessor
+     *            the accessor to extract from
+     * @return the extracted bean
+     */
+    private static BeanSetup crack(LocalAccessor accessor) {
+        requireNonNull(accessor, "accessor is null");
+        if (accessor instanceof BeanConfiguration bc) {
+            return BeanSetup.crack(bc);
+        } else if (accessor instanceof PackedBeanElement bc) {
+            return bc.bean();
+        } else if (accessor instanceof BeanHandle<?> bc) {
+            return BeanSetup.crack(bc);
+        } else if (accessor instanceof BeanIntrospector bc) {
+            return BeanSetup.crack(bc);
+        } else if (accessor instanceof BeanMirror bc) {
+            return bc.bean;
+        } else {
+            throw new Error();
+        }
+    }
+
+    /**
+     * Creates a new bean local without any initial value supplier.
      *
      * @param <T>
      *            the type of the bean local's value
@@ -251,7 +176,7 @@ public final class BeanLocal<T> extends PackedLocal<T> {
     }
 
     /**
-     * Creates a bean local. The initial value is determined by invoking the {@code get} method on the specified
+     * Creates a new bean local. The initial value is determined by invoking the {@code get} method on the specified
      * {@code Supplier}. If the specified supplier returns null, no initial value will be set.
      *
      * @param <T>
@@ -265,21 +190,10 @@ public final class BeanLocal<T> extends PackedLocal<T> {
         requireNonNull(initialValueSupplier);
         return new BeanLocal<>(initialValueSupplier);
     }
+
+    /** An entity where bean local values can be stored and retrieved. */
+    @SuppressWarnings("rawtypes")
+    public sealed interface LocalAccessor permits BeanConfiguration, BeanElement, BeanHandle, BeanIntrospector, BeanMirror {}
 }
 
 //https://docs.oracle.com/en/java/javase/20/docs/api/jdk.incubator.concurrent/jdk/incubator/concurrent/ScopedValue.html#get()
-interface BeanLocal2<T> {
-
-    T get(BeanSetup b); // throws NoSuchElement
-
-    boolean isSet();
-
-    T orElse(BeanSetup b, T other);
-
-    <X extends Throwable> T orElseThrow(BeanSetup b, Supplier<? extends X> exceptionSupplier);
-
-    void set(BeanSetup b, T value);
-}
-
-//Makes no sense to have mutable operations on BeanMirror
-//boolean hasInitialValue(), you should never need to query it

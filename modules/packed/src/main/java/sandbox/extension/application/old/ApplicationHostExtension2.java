@@ -47,7 +47,7 @@ class ApplicationHostExtension2 extends FrameworkExtension<ApplicationHostExtens
 
     static final OperationTemplate ot = OperationTemplate.raw().withContext(CIT).returnTypeObject();
 
-    static final BeanTemplate BLT = new PackedBeanTemplate(BeanKind.MANYTON).withOperationTemplate(ot);
+    static final BeanTemplate BLT = new PackedBeanTemplate(BeanKind.UNMANAGED).withOperationTemplate(ot);
 
     MethodHandle mh;
 

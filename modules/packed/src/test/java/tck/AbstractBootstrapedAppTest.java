@@ -31,6 +31,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.bean.BeanMirror;
 import app.packed.container.Assembly;
+import app.packed.container.AssemblyMirror;
 import app.packed.container.Author;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
@@ -43,62 +44,42 @@ import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.container.WireletSelectionArray;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.util.ThrowableUtil;
-import tck.AbstractAppTest.State.State3Build;
+import tck.AbstractAppTest.InternalTestState.State3Build;
 
 /**
- *
+ * A test that uses a bootstrap app.
  */
 public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
 
+    /** The app that we are testing. */
     final BootstrapApp<A> app;
 
-    final Holder holder;
+    /** The internals of a BootstrapApp. */
+    private final BootstrapAppInternals internals;
 
     protected AbstractBootstrapedAppTest(BootstrapApp<A> app) {
         this.app = requireNonNull(app);
-        this.holder = Holder.of(app);
+        this.internals = BootstrapAppInternals.extractInternals(app);
     }
 
-    protected final ApplicationMirror appMirror() {
-        return appSetup().mirror();
+    @Override
+    @SuppressWarnings("unchecked")
+    protected final A app() {
+        State3Build b = stateBuild();
+        if (b.app != null) {
+            return (A) b.app;
+        }
+        return launch();
     }
 
-    protected static final void frameworkMustInitialize(Executable e) {
-        assertThrows(IllegalStateException.class, e);
-    }
-
-    protected final void link(Assembly assembly, Wirelet... wirelets) {
-        base().link(assembly, wirelets);
-    }
-
-    protected final void assertIdenticalMirror(Object expected, Object actual) {
-        assertEquals(expected, actual);
-    }
-
+    /** {@return the base extension.} */
     protected final BaseExtension base() {
         return configuration().use(BaseExtension.class);
     }
 
-    /** {@return a bean mirror for the a single application bean.} */
-    protected final BeanMirror findSingleApplicationBean() {
-        return findSingleBean(appMirror().container());
-    }
-
-    protected final BeanMirror findSingleBean(ContainerMirror c) {
-        List<BeanMirror> beans = c.beans().filter(b -> b.owner() == Author.application()).toList();
-        assertThat(beans).hasSize(1);
-        return beans.get(0);
-    }
-
-    protected final OperationMirror findSingleOperation(BeanMirror c) {
-        List<OperationMirror> mirrors = c.operations().toList();
-        assertThat(mirrors).hasSize(1);
-        return mirrors.get(0);
-    }
-
-
-    public final HookExtension hooks() {
-        return configuration().use(HookExtension.class);
+    /** { @return a special hook extension used for testing.} */
+    public final HookTestingExtension hooks() {
+        return configuration().use(HookTestingExtension.class);
     }
 
     protected final <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
@@ -113,16 +94,7 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         return base().installInstance(instance);
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    protected final A app() {
-        State3Build b = stateBuild();
-        if (b.app != null) {
-            return (A) b.app;
-        }
-        return launch();
-    }
-
+    /** {@return launches and returns the application.} */
     protected final A launch() {
         return launch(new Wirelet[0]);
     }
@@ -135,13 +107,72 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         // Right now we do not support runtime wirelets
         ApplicationLaunchContext alc = ApplicationLaunchContext.launch(as, WireletSelectionArray.of(wirelets));
 
-        A app = (A) holder.newHolder(alc);
+        A app = (A) internals.newHolder(alc);
         b.app = app;
         return app;
     }
 
-    /** The internal configuration of a bootstrap app. */
-    record Holder(Supplier<? extends ApplicationMirror> mirrorSupplier, PackedContainerTemplate template, MethodHandle mh) {
+    protected final void link(Assembly assembly, Wirelet... wirelets) {
+        base().link(assembly, wirelets);
+    }
+
+    /** {@return a mirror for the application.} */
+    protected final Mirrors mirrors() {
+        return new Mirrors();
+    }
+
+    /**
+     * There are certain classes (typically mirrors) that can only be instantiated within a context provided by the
+     * framework.
+     *
+     * @param e
+     *            the test executable
+     */
+    protected static final void assertFrameworkInitializes(Executable e) {
+        assertThrows(IllegalStateException.class, e);
+    }
+
+    public final class Mirrors {
+
+        /** {@return a mirror for the application.} */
+        public ApplicationMirror application() {
+            return applicationSetup().mirror();
+        }
+
+        /** {@return a mirror for the application.} */
+        public AssemblyMirror assembly() {
+            return application().assembly();
+        }
+
+        public void assertIdentical(Object expected, Object actual) {
+            assertEquals(expected, actual);
+        }
+
+        /** {@return a bean mirror for the a single application bean.} */
+        public BeanMirror bean() {
+            return findSingleBean(container());
+        }
+
+        /** {@return a mirror for the root container in the application.} */
+        public ContainerMirror container() {
+            return application().container();
+        }
+
+        public BeanMirror findSingleBean(ContainerMirror c) {
+            List<BeanMirror> beans = c.beans().filter(b -> b.owner() == Author.application()).toList();
+            assertThat(beans).hasSize(1);
+            return beans.get(0);
+        }
+
+        public OperationMirror findSingleOperation(BeanMirror c) {
+            List<OperationMirror> mirrors = c.operations().toList();
+            assertThat(mirrors).hasSize(1);
+            return mirrors.get(0);
+        }
+    }
+
+    /** Used for extracting the internal configuration of BootstrapApp. */
+    record BootstrapAppInternals(Supplier<? extends ApplicationMirror> mirrorSupplier, PackedContainerTemplate template, MethodHandle mh) {
 
         /**
          * Create a new application interface using the specified launch context.
@@ -165,10 +196,10 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
             return (T) f.get(o);
         }
 
-        public static Holder of(BootstrapApp<?> app) {
+        public static BootstrapAppInternals extractInternals(BootstrapApp<?> app) {
             try {
                 Object holder = read(app, "holder");
-                return new Holder(read(holder, "mirrorSupplier"), read(holder, "template"), read(holder, "mh"));
+                return new BootstrapAppInternals(read(holder, "mirrorSupplier"), read(holder, "template"), read(holder, "mh"));
             } catch (ReflectiveOperationException e) {
                 throw new AssertionError(e);
             }

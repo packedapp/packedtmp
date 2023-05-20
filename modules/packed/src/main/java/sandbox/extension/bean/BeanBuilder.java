@@ -56,10 +56,8 @@ public sealed interface BeanBuilder permits PackedBeanBuilder {
     // constant = non-introspected bean
     <T> BeanHandle<T> installInstance(T instance);
 
-    BeanBuilder namePrefix(String prefix);
-
     /**
-     * Sets the value of the specified bean local for the bean being built.
+     * Sets the value of the specified bean local for the new bean.
      *
      * @param <T>
      *            the type of value the bean local holds
@@ -69,10 +67,12 @@ public sealed interface BeanBuilder permits PackedBeanBuilder {
      *            the value of the local
      * @return this builder
      */
-    <T> BeanBuilder setLocal(BeanLocal<T> local, T value);
+    <T> BeanBuilder localSet(BeanLocal<T> local, T value);
+
+    BeanBuilder namePrefix(String prefix);
 
     /**
-     * Sets a supplier that creates a special bean mirror instead of the generic {@code BeanMirror} when a mirror is needed.
+     * Sets a supplier that creates a special bean mirror instead of a generic {@code BeanMirror} when a bean mirror is needed.
      *
      * @param supplier
      *            the supplier used to create the bean mirror

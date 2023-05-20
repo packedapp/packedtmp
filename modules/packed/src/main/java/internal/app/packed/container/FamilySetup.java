@@ -13,20 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.container;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.AnnotatedBindingHook;
+package internal.app.packed.container;
 
 /**
  *
  */
-@Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
-@Retention(RetentionPolicy.RUNTIME)
-@AnnotatedBindingHook(extension = BaseExtension.class)
-public @interface ContainerHolderService {}
+public class FamilySetup {
+
+}

@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 
 import app.packed.application.OldApplicationPath;
+import app.packed.bean.BeanLocal.LocalAccessor;
 import app.packed.container.Author;
 import app.packed.context.Context;
 import app.packed.util.Key;
@@ -12,7 +13,7 @@ import internal.app.packed.bean.PackedBeanHandle;
 import sandbox.extension.bean.BeanHandle;
 
 /** The configuration of a bean, typically returned from the bean's installation site. */
-public class BeanConfiguration {
+public non-sealed class BeanConfiguration implements LocalAccessor {
 
     /** The bean handle. */
     private final PackedBeanHandle<?> handle;
@@ -30,11 +31,11 @@ public class BeanConfiguration {
     /**
      * Allows to install multiple beans with the same bean class in a container.
      * <p>
-     * Beans that have void bean class are automatically multi class
+     * Beans that have {@code void} bean class are automatically multi class
      *
      * @return this configuration
      * @throws UnsupportedOperationException
-     *             if void bean class
+     *             if called on a bean with void bean class
      */
     public BeanConfiguration allowMultiClass() {
         handle.allowMultiClass();
