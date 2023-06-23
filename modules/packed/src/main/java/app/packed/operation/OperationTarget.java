@@ -35,7 +35,7 @@ import internal.app.packed.operation.OperationSetup.MethodHandleOperationSetup;
 // Hvad har at lave en ny container/bean som target???
 public sealed interface OperationTarget {
 
-    /** Represents an operation that invokes other operations. */
+    /** Represents an operation that invokes other (child) operations. */
     non-sealed interface OfNested extends OperationTarget {}
 
     /** Represents an operation that invokes a {@link Constructor constructor}. */

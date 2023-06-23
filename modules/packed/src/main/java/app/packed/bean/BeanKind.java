@@ -47,14 +47,6 @@ public enum BeanKind {
      */
     LAZY,
 
-    /**
-     * A unmanaged bean is a bean that is create within the context of a container. But once created the container no longer
-     * keeps track of the bean. As a consequence unmanaged beans does not destructive lifecycle operations.
-     * <p>
-     * A typical example is prototype services
-     */
-    UNMANAGED,
-
     MANANGED,
 
     /**
@@ -67,7 +59,15 @@ public enum BeanKind {
      *
      * @see BaseExtension#installStatic(Class)
      **/
-    STATIC;
+    STATIC,
+
+    /**
+     * A unmanaged bean is a bean that is create within the context of a container. But once created the container no longer
+     * keeps track of the bean. As a consequence unmanaged beans does not destructive lifecycle operations.
+     * <p>
+     * A typical example is prototype services
+     */
+    UNMANAGED;
 
     // Operational <- A bean that is spawned (an instance created) for the sole duration of an operation
     // After which is will be destroyed
@@ -75,11 +75,6 @@ public enum BeanKind {
 
     // Operational = Managed?? Altsaa hvis vi er vi er BeanLifetimeKind giver den vel ikke super mening
     // Men er det en BeanKind saa er det vel ok.
-
-
-    public BeanTemplate template() {
-        return new PackedBeanTemplate(this);
-    }
 
     public boolean hasBeanLifetime() {
         return !hasContainerLifetime();
@@ -92,6 +87,17 @@ public enum BeanKind {
     /** @return whether or not the bean can have more than 1 instance. */
     public boolean isMultiInstance() {
         return this == MANANGED || this == UNMANAGED;
+    }
+
+    /**
+     * {@return a bean template that can be used by extensions to install new beans}
+     * <p>
+     * This method is only relevant for extension developers.
+     *
+     * @return
+     */
+    public BeanTemplate template() {
+        return new PackedBeanTemplate(this);
     }
 }
 //

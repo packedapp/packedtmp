@@ -31,7 +31,7 @@ public non-sealed class BeanConfiguration implements LocalAccessor {
     /**
      * Allows to install multiple beans with the same bean class in a container.
      * <p>
-     * Beans that have {@code void} bean class are automatically multi class
+     * Beans that have {@code void} bean class are automatically multi class.
      *
      * @return this configuration
      * @throws UnsupportedOperationException
@@ -110,13 +110,17 @@ public non-sealed class BeanConfiguration implements LocalAccessor {
     }
 
     public <K> BeanConfiguration overrideService(Class<K> key, K constant) {
-        // Add: Provider? Use cases???
+        // Future Functionality:
 
-        // Problemet med Op er at den skal resolves...
-        // Den kan fx afhavnding af en service. Der allerede er blevet manuelt
-        // bundet tidligere.
-        // Siger ikke det er umuligt, men som det er nu. Tror jeg ikke
-        // vi tillader at tilfoejere operationer dynamisk efter vi har installeret beanen.
+        // overrideService(key, Provider) -> Needs some use cases
+        // And when is it generated? When the bean is instantiated?
+        // And is is per bean or use site?
+
+        // overrideService(key, Op) ->
+        // The issue is here that Op needs to be resolved.
+        // Maybe Op includes a service that have already been overridden.
+        // Not saying its impossible. But currently we do not support
+        // Adding operations dynamically after the bean has been scanned.
         return overrideService(Key.of(key), constant);
     }
 
@@ -128,7 +132,7 @@ public non-sealed class BeanConfiguration implements LocalAccessor {
      * @param key
      *            the key of the service
      * @param constant
-     *            the constant replace service binding with
+     *            the constant to bind the service to
      * @return this configuration
      * @throws IllegalArgumentException
      *             if the bean does not have binding that are resolved as a service with the specified key

@@ -27,7 +27,7 @@ import java.util.function.Function;
  */
 public class LazyNamer {
 
-    @SuppressWarnings({ "rawtypes", "unchecked"})
+    @SuppressWarnings({ "unchecked" })
     public static <K> Map<K, String> calculate(Collection<K> values, Function<K, String> stringifier) {
         Map<String, Object> tmp = new HashMap<>();
         ArrayList<String> collisions = new ArrayList<>();

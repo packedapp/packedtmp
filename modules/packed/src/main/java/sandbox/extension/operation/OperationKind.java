@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package sandbox.extension.operation;
 
 /**
  *
  */
-// Hmm, syntes hvad med den her og Bean.operations???
-// CompositeOperationMirror??
-public class NestedOperationMirror extends OperationMirror {
+public class OperationKind {
 
 }

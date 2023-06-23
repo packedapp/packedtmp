@@ -65,9 +65,17 @@ import internal.app.packed.operation.PackedOperationTemplate;
 // EC? BeanInstance? [Context*] Speciel (fields)
 public sealed interface OperationTemplate permits PackedOperationTemplate {
 
+    default OperationTemplate appendBeanInstance() {
+        return appendBeanInstance(Object.class);
+    }
+
+    OperationTemplate appendBeanInstance(Class<?> beanClass);
+
+    OperationTemplate.Descriptor descriptor();
 
     /** {@return an operation template that ignores any return value.} */
     // If you want to fail. Check return type
+    // Isn't it just void???
     OperationTemplate returnIgnore();
 
     OperationTemplate returnType(Class<?> type);
@@ -76,15 +84,6 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         return returnType(Object.class);
     }
 
-    default OperationTemplate withBeanInstance() {
-        return withBeanInstance(Object.class);
-    }
-
-    OperationTemplate withBeanInstance(Class<?> beanClass);
-
-    // Hvad sker der naar den er i andre lifetimes?
-    OperationTemplate withContext(ContextTemplate context);
-
 //    default OperationTemplate withoutContext(Class<? extends Context<?>> contextClass) {
 //        // Den eneste usecase er at fjerne ContainerContext
 //        return this;
@@ -92,12 +91,13 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
 
     // Takes EBC returns void
 
+    // Hvad sker der naar den er i andre lifetimes?
+    OperationTemplate withContext(ContextTemplate context);
+
     // Tror ikke laengere man kan lave dem direkte paa den her maade...
     static OperationTemplate defaults() {
         return PackedOperationTemplate.DEFAULTS;
     }
-
-    OperationTemplate.Descriptor descriptor();
 
     //
 //  default OperationTemplate withClassifier(Class<?> type) {
@@ -107,13 +107,33 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     static OperationTemplate raw() {
         return new PackedOperationTemplate(Map.of(), -1, -1, MethodType.methodType(void.class), false);
     }
-//
+
+    // Was argument type.
+    enum BeanInstanceHowToGet {
+
+        /** The invocation argument is a bean instance. */
+        EXPLITCIT_BEAN_INSTANCE,
+
+        /** The invocation argument is an extension bean context. */
+        // Maaske noget andet end context, given dens mening
+        FROM_EXTENSION_CONTEXT; // InvocationContext
+    }
+
+    enum BeanInstanceHowToGet2 {
+        // Operation never takes a bean
+        STATIC
+    }
+    /**
+     * An immutable descriptor for an {@link OperationTemplate}. Acquired by calling {@link OperationTemplate#descriptor()}.
+     */
     interface Descriptor {
 
-
-        // Invocation
+        // Skal hellere vaere BeanPackaging
         int beanInstanceIndex();
 
+        // InvocationContexts? Or all contexts
+        // SessionContext kan f.eks. komme fra en ExtensionContext
+        // Men det er ikke et argument noget sted
         Set<Class<? extends Context<?>>> contexts();
 
         /**
@@ -126,19 +146,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
             return false;
         }
 
-
         // Contexts
-    }
-    enum ArgumentKind {
-
-        ARGUMENT,
-
-        /** The invocation argument is a bean instance. */
-        BEAN_INSTANCE,
-
-        /** The invocation argument is an extension bean context. */
-        // Maaske noget andet end context, given dens mening
-        EXTENSION_BEAN_CONTEXT; // InvocationContext
     }
 }
 //

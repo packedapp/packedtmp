@@ -63,17 +63,17 @@ public sealed interface BindingResolution {
         /** {@inheritDoc} */
         @Override
         public BindingProviderKind kind() {
-            return BindingProviderKind.OPERATION;
+            return BindingProviderKind.OPERATION_RESULT;
         }
     }
 
     /** Provides values from the result of an operation. */
-    public record FromOperation(OperationSetup operation) implements BindingResolution {
+    public record FromOperationResult(OperationSetup operation) implements BindingResolution {
 
         /** {@inheritDoc} */
         @Override
         public BindingProviderKind kind() {
-            return BindingProviderKind.OPERATION;
+            return BindingProviderKind.OPERATION_RESULT;
         }
     }
 }

@@ -52,7 +52,7 @@ import internal.app.packed.bean.BeanLifecycleOrder;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanBuilder;
 import internal.app.packed.bean.PackedBeanWrappedVariable;
-import internal.app.packed.binding.BindingResolution.FromOperation;
+import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.container.LeafContainerOrApplicationBuilder;
 import internal.app.packed.entrypoint.OldEntryPointSetup;
 import internal.app.packed.entrypoint.OldEntryPointSetup.MainThreadOfControl;
@@ -127,6 +127,31 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         }
 
         var.bindGeneratedConstant(supplier);
+    }
+
+    /**
+     * All beans. the consumer is invoked once on every bean that is installed with
+     * <p>
+     * If there are any all bean transformers. They will be invoked before this
+     *
+     * @param transformer
+     *            the bean transformer
+     */
+    public void beanTransformNext(Consumer<? super BeanTransformer> transformer) {}
+
+    // All beans that are installed with the assembly
+    /**
+     * <p>
+     * If there are multiple all bean transformers active at the same type. They will be invoked in the order they where registered.
+     * The first one registered will be run first
+     *
+     * @param transformer
+     * @return A runnable that be can executed after which the transformer is no longer used.
+     */
+    // It is not really all, but all subsekvent installed. Beans that have already been registered is
+    // ignored.
+    public Runnable beanTransformAll(Consumer<? super BeanTransformer> transformer) {
+        throw new UnsupportedOperationException();
     }
 
     // One of 3 models...
@@ -357,7 +382,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     }
 
                     OperationSetup operation = OperationSetup.crack(field.newGetOperation(OperationTemplate.defaults()));
-                    extension.container.sm.provide(key, operation, new FromOperation(operation));
+                    extension.container.sm.provide(key, operation, new FromOperationResult(operation));
                 } else {
                     super.hookOnAnnotatedField(hook, field);
                 }
@@ -388,7 +413,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                         }
                     }
                     OperationSetup operation = OperationSetup.crack(method.newOperation(temp2));
-                    bean.container.sm.provide(method.toKey(), operation, new FromOperation(operation));
+                    bean.container.sm.provide(method.toKey(), operation, new FromOperationResult(operation));
                 } else if (annotation instanceof Export) {
                     OperationTemplate temp2 = OperationTemplate.defaults().returnType(method.operationType().returnRawType());
 

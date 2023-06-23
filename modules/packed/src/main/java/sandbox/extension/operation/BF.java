@@ -24,6 +24,8 @@ import sandbox.extension.bean.BeanBuilder;
  *
  */
 // What is this???
+// Jeg tror det er noget ed Field at goere (F'et i navnet)
+
 public interface BF {
 
     // if Static Bean -> Takes no BeanInstance, If NonStaticBean takes instance

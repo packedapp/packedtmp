@@ -151,6 +151,7 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     /** {@return a descriptor for this template} */
     BeanTemplate.Descriptor descriptor();
 
+    /** A descriptor for a BeanTemplate. */
     interface Descriptor {
         Class<?> createAs();
 

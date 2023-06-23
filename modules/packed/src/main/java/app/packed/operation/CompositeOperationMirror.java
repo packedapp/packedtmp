@@ -13,22 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.operation.mirror;
+package app.packed.operation;
 
 /**
  *
  */
-// What about @Default... Optional, osv)
-// Er ikke super interessant for brugere...
-public enum BindingProviderKind {
+// Hmm, syntes hvad med den her og Bean.operations???
+// CompositeOperationMirror??
+public class CompositeOperationMirror extends OperationMirror {
 
-    /** A constant. */
-    CONSTANT,
-
-    /** An argument that is provided when invoking the operation. */
-    ARGUMENT,
-
-    /** The binding is a result of another operation (possible on arguments to the operation). */
-    OPERATION_RESULT;
 }
-// LifetimeConstant

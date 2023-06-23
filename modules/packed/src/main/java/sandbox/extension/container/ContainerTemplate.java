@@ -83,14 +83,8 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
     // Carefull with Unmanaged on Managed
     ContainerTemplate UNMANAGED = new PackedContainerTemplate(PackedContainerKind.UNMANAGED);
 
-    /**
-     * A set of keys that are available for injection into a lifetime bean using {@link FromLifetimeChannel}.
-     * <p>
-     * This method is mainly used for informational purposes.
-     *
-     * @return the set of keys available for injection
-     */
-    Set<Key<?>> carrierKeys();
+
+    ContainerTemplate.Descriptor descriptor();
 
     default <T> ContainerTemplate carrierProvideConstant(Class<T> key, T arg) {
         return carrierProvideConstant(Key.of(key), arg);
@@ -121,8 +115,6 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
     // Har kun visibility for the installing extension
     ContainerTemplate lifetimeOperationAddContext(int index, ContextTemplate template);
 
-    /** {@return a list of the lifetime operation of this container template.} */
-    List<OperationTemplate> lifetimeOperations();
 
     default <T> ContainerTemplate localSet(ContainerLocal<T> containerLocal, T value) {
         throw new UnsupportedOperationException();
@@ -135,6 +127,22 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
             withPack(p);
         }
         return this;
+    }
+
+    interface Descriptor {
+
+        /**
+         * A set of keys that are available for injection into a lifetime bean using {@link FromLifetimeChannel}.
+         * <p>
+         * This method is mainly used for informational purposes.
+         *
+         * @return the set of keys available for injection
+         */
+        Set<Key<?>> carrierKeys();
+
+
+        /** {@return a list of the lifetime operation of this container template.} */
+        List<OperationTemplate> lifetimeOperations();
     }
 
 }

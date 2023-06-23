@@ -22,8 +22,8 @@ import app.packed.container.Wirelet;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import internal.app.packed.context.publish.ContextTemplate;
-import sandbox.extension.container.ContainerTemplatePack;
 import sandbox.extension.container.ContainerTemplate;
+import sandbox.extension.container.ContainerTemplatePack;
 import sandbox.extension.operation.OperationTemplate;
 
 /** Implementation of {@link ContainerTemplate}. */
@@ -38,17 +38,6 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
         this(kind, holderType, new PackedContainerTemplatePackList(List.of()), void.class);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Set<Key<?>> carrierKeys() {
-        return links.keys();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<OperationTemplate> lifetimeOperations() {
-        return List.of();
-    }
 
     // expects results. Maa ogsaa tage en Extension...
     public PackedContainerTemplate expectResult(Class<?> resultType) {
@@ -88,5 +77,26 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
     @Nullable
     public Wirelet wirelet() {
         return null;
+    }
+
+    public record PackedDescriptor(PackedContainerTemplate template) implements ContainerTemplate.Descriptor {
+
+        /** {@inheritDoc} */
+        @Override
+        public List<OperationTemplate> lifetimeOperations() {
+            return List.of();
+        }
+        /** {@inheritDoc} */
+        @Override
+        public Set<Key<?>> carrierKeys() {
+            return template.links.keys();
+        }
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Descriptor descriptor() {
+        return new PackedDescriptor(this);
     }
 }

@@ -39,7 +39,7 @@ import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromCodeGenerated;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromInvocationArgument;
-import internal.app.packed.binding.BindingResolution.FromOperation;
+import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.binding.BindingSetup.HookBindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.context.ContextSetup;
@@ -179,7 +179,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
 
         // Create the nested operation
         OperationSetup os = pop.newOperationSetup(operation.bean, bindingExtension, template, new EmbeddedIntoOperation(operation, index));
-        bind(new FromOperation(os));
+        bind(new FromOperationResult(os));
 
         // Resolve the new operation immediately
         scanner.resolveNow(os);

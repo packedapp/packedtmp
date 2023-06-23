@@ -38,7 +38,7 @@ import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.binding.BindingResolution.FromOperation;
+import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.context.ContextInfo;
@@ -159,7 +159,7 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
     public final void forEachBinding(Consumer<? super BindingSetup> binding) {
         for (BindingSetup bs : bindings) {
             requireNonNull(bs);
-            if (bs.resolver() != null && bs.resolver() instanceof FromOperation nested) {
+            if (bs.resolver() != null && bs.resolver() instanceof FromOperationResult nested) {
                 nested.operation().forEachBinding(binding);
             }
             binding.accept(bs);

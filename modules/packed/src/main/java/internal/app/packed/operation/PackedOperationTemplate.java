@@ -62,7 +62,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
     /** {@inheritDoc} */
     @Override
-    public PackedOperationTemplate withBeanInstance(Class<?> beanClass) {
+    public PackedOperationTemplate appendBeanInstance(Class<?> beanClass) {
         requireNonNull(beanClass, "beanClass is null");
         if (beanInstanceIndex != -1) {
             throw new UnsupportedOperationException("Already has a bean instance at index " + beanInstanceIndex);

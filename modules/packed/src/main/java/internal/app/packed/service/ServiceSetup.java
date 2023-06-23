@@ -31,7 +31,7 @@ import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
-import internal.app.packed.binding.BindingResolution.FromOperation;
+import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
@@ -155,7 +155,7 @@ public final class ServiceSetup {
 
             // return "Another bean of type " + format(existingTarget.bean.beanClass) + " is already providing a service for Key<" +
             // key.toStringSimple() + ">";
-        } else if (existingProvider.resolution instanceof FromOperation os) {
+        } else if (existingProvider.resolution instanceof FromOperationResult os) {
             if (os.operation() instanceof MemberOperationSetup m && m.target instanceof OperationMethodTarget t) {
                 String ss = StringFormatter.formatShortWithParameters(t.method());
                 return "A method " + ss + " is already providing a service for " + key;

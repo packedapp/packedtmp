@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import app.packed.bean.BeanMirror;
 import app.packed.extension.Extension;
-import app.packed.operation.NestedOperationMirror;
+import app.packed.operation.CompositeOperationMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.lifetime.LifetimeSetup;
@@ -92,7 +92,7 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
     // Fungere ikke specielt godt vil jeg mene. Vi vil jo gerne vide hvad der
     // bliver koert i de forskellige lifetime. Det skal jo ikke aendre sig
     // fordi vi bruger en anden Bootstrap App
-    public List<NestedOperationMirror> operations() {
+    public List<CompositeOperationMirror> operations() {
         throw new UnsupportedOperationException();
     }
 

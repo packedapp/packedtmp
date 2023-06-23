@@ -25,7 +25,7 @@ import internal.app.packed.binding.BindingResolution.FromCodeGenerated;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromInvocationArgument;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
-import internal.app.packed.binding.BindingResolution.FromOperation;
+import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
@@ -89,7 +89,7 @@ final class OperationCodeGenerator {
         } else if (p instanceof FromInvocationArgument c) {
             permuters.add(c.argumentIndex());
             return mh;
-        } else if (p instanceof FromOperation fo) {
+        } else if (p instanceof FromOperationResult fo) {
             MethodHandle methodHandle = fo.operation().generateMethodHandle();
             mh = MethodHandles.collectArguments(mh, permuters.size(), methodHandle);
             for (int j = 0; j < methodHandle.type().parameterCount(); j++) {

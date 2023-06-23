@@ -348,7 +348,7 @@ public interface ServiceOutgoingTransformer {
      *
      * @see #retainAll(Collection)
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "unchecked" })
     default void removeAll(Collection<?> keys) {
         requireNonNull(keys, "keys is null");
         for (Object o : keys) {
@@ -387,7 +387,7 @@ public interface ServiceOutgoingTransformer {
      * @throws IllegalAccessError
      *             if the collection contains elements that are not either a {@link Class} or a {@link Key}.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "unchecked" })
     default void retainAll(Collection<?> keys) {
         requireNonNull(keys, "keys is null");
         Object[] a = keys.toArray();

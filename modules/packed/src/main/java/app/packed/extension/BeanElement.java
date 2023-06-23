@@ -35,12 +35,10 @@ import internal.app.packed.bean.PackedBeanConstructor;
 import internal.app.packed.bean.PackedBeanElement;
 import internal.app.packed.bean.PackedBeanField;
 import internal.app.packed.bean.PackedBeanMethod;
-import sandbox.extension.bean.BeanHandle;
-import sandbox.extension.container.ContainerHandle;
+import sandbox.extension.operation.CompositeOperationHandle;
 import sandbox.extension.operation.DelegatingOperationHandle;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
-import sandbox.extension.sandbox.ApplicationHandle;
 
 /**
  *
@@ -243,18 +241,11 @@ public sealed interface BeanElement extends LocalAccessor permits PackedBeanElem
          */
         DelegatingOperationHandle newDelegatingOperation();
 
-        // IDK if we need a separate one. Or this can be encoded in the BOT
-        default OperationHandle newLifetimeOperation(BeanHandle<?> handle) {
-            throw new UnsupportedOperationException();
-        }
 
-        // Bean must have Container (or lazy) kind in the root of the installed container
-        // Der er noget omkring return value???
-        default OperationHandle newLifetimeOperation(ContainerHandle handle) {
-            throw new UnsupportedOperationException();
-        }
-
-        default OperationHandle newLifetimeOperation(ApplicationHandle handle) {
+        // Vi har ikke order endnu...
+        // Saa maa vi vente med at kalde denne metode...
+        // Hmm, det kan vi ikke fordi vi resolver ting
+        default OperationHandle newChildOperation(CompositeOperationHandle parentHandle) {
             throw new UnsupportedOperationException();
         }
 
@@ -287,3 +278,18 @@ public sealed interface BeanElement extends LocalAccessor permits PackedBeanElem
         }
     }
 }
+
+
+// addToCompositeOperation...
+
+// IDK if we need a separate one. Or this can be encoded in the BOT
+// Lifecycle Operation it must be
+//default OperationHandle newLifetimeOperation(BeanHandle<?> handle) {
+//    throw new UnsupportedOperationException();
+//}
+//
+//// Bean must have Container (or lazy) kind in the root of the installed container
+//// Der er noget omkring return value???
+//default OperationHandle newLifetimeOperation(ContainerHandle handle) {
+//    throw new UnsupportedOperationException();
+//}

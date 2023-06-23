@@ -118,7 +118,9 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
         return bean.toString();
     }
 
+    // add overrideServiceIfPresent? Or have a Set<Key<?>> BeanConfiguration.services()
     public <K> void overrideService(Key<K> key, K instance) {
+        // Find any existing bindings for the specified key
         ServiceSetup ss = bean.container.sm.entries.get(key);
         if (ss != null) {
             List<ServiceBindingSetup> l = ss.removeBindingsForBean(bean);
@@ -135,7 +137,7 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
         // But is not resolved as a service
 
         // Also if we override twice, would be nice with something like. Already overridden
-        throw new IllegalArgumentException("Bean does not have any service dependencies on " + key);
+        throw new IllegalArgumentException("Bean '"+ path() + "' does not have a dependency for a service with " + key + ". Services that can be overridden: " + bean.container.sm.entries.keySet());
     }
 
     /**

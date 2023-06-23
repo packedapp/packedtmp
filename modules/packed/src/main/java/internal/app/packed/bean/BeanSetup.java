@@ -29,7 +29,7 @@ import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
-import internal.app.packed.binding.BindingResolution.FromOperation;
+import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NameCheck;
@@ -172,7 +172,7 @@ public final class BeanSetup implements ContextualizedElementSetup {
         } else if (beanKind == BeanKind.CONTAINER) { // we've already checked if instance
             return new FromLifetimeArena(container.lifetime, lifetimeStoreIndex, beanClass);
         } else if (beanKind == BeanKind.UNMANAGED) {
-            return new FromOperation(operations.get(0));
+            return new FromOperationResult(operations.get(0));
         }
         throw new Error();
     }

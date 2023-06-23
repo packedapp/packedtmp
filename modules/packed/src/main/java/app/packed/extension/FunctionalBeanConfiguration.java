@@ -33,20 +33,13 @@ import sandbox.extension.operation.OperationHandle;
  * @see BaseExtensionPoint#installFunctional()
  */
 // Hmm, den skal jo aldrig exposes til brugere
-public class FunctionalBeanConfiguration extends BeanConfiguration {
+public final class FunctionalBeanConfiguration extends BeanConfiguration {
 
     /**
      * @param handle
      */
     FunctionalBeanConfiguration(BeanHandle<?> handle) {
         super(handle);
-    }
-
-    // Maaske vi har en FunctionTemplate der pakker interface + operation type + prefix
-
-    // Hvorfor er det ikke operation?
-    public OperationHandle addOperation(OperationType operationType, Class<?> functionalInterface, Object function) {
-        throw new UnsupportedOperationException();
     }
 
     // We need a extension bean
@@ -60,6 +53,18 @@ public class FunctionalBeanConfiguration extends BeanConfiguration {
 
         // Function, OpType.of(void.class, HttpRequest.class, HttpResponse.class), someFunc)
         throw new UnsupportedOperationException();
+    }
+
+    // Maaske vi har en FunctionTemplate der pakker interface + operation type + prefix
+
+    // Hvorfor er det ikke operation?
+    public OperationHandle addOperation(OperationType operationType, Class<?> functionalInterface, Object function) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public FunctionalBeanConfiguration allowMultiClass() {
+        throw new UnsupportedOperationException("This method is not supported for functional beans");
     }
 
     /** {@inheritDoc} */
@@ -77,15 +82,13 @@ public class FunctionalBeanConfiguration extends BeanConfiguration {
     /** {@inheritDoc} */
     @Override
     public <K> FunctionalBeanConfiguration overrideService(Class<K> key, K instance) {
-        super.overrideService(key, instance); // will always fail, because there are no services
-        return this;
+        throw new UnsupportedOperationException("This method is not supported for functional beans");
     }
 
     /** {@inheritDoc} */
     @Override
     public <K> FunctionalBeanConfiguration overrideService(Key<K> key, K instance) {
-        super.overrideService(key, instance); // will always fail, because there are no services
-        return this;
+        throw new UnsupportedOperationException("This method is not supported for functional beans");
     }
 }
 

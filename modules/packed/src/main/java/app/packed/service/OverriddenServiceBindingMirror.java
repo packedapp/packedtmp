@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.operation.mirror;
+package app.packed.service;
+
+import app.packed.operation.BindingMirror;
+import app.packed.util.Key;
 
 /**
  *
+ * @see app.packed.bean.BeanConfiguration#overrideService(Class, Object)
+ * @see app.packed.bean.BeanConfiguration#overrideService(app.packed.util.Key, Object)
  */
-// What about @Default... Optional, osv)
-// Er ikke super interessant for brugere...
-public enum BindingProviderKind {
+public class OverriddenServiceBindingMirror extends BindingMirror {
 
-    /** A constant. */
-    CONSTANT,
-
-    /** An argument that is provided when invoking the operation. */
-    ARGUMENT,
-
-    /** The binding is a result of another operation (possible on arguments to the operation). */
-    OPERATION_RESULT;
+    public Key<?> key() {
+        throw new UnsupportedOperationException();
+    }
 }
-// LifetimeConstant

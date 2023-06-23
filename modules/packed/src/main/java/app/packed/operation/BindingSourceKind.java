@@ -13,12 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.sandbox;
+package app.packed.operation;
 
 /**
  *
  */
-// I have no idea what you do
-public interface OpXemplate {
+public enum BindingSourceKind {
+    CONSTANT,
 
+    ARGUMENT,
+
+    LOOKUP,
+
+    OPERATION;
 }
+
+// Hvad hvis vi extract fx .getRequesr() fra HttpExchange argument object?

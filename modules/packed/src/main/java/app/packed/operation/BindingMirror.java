@@ -20,7 +20,7 @@ import java.util.Optional;
 import app.packed.container.Author;
 import app.packed.util.Variable;
 import internal.app.packed.binding.BindingResolution;
-import internal.app.packed.binding.BindingResolution.FromOperation;
+import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.Mirror;
 import sandbox.operation.mirror.BindingProviderKind;
@@ -119,7 +119,7 @@ public class BindingMirror implements Mirror {
     public final Optional<OperationMirror> zProvidingOperation() {
         // What about lifetime
         BindingResolution p = binding.resolver();
-        if (p instanceof FromOperation fo) {
+        if (p instanceof FromOperationResult fo) {
             return Optional.ofNullable(fo.operation().mirror());
         }
         return Optional.empty();

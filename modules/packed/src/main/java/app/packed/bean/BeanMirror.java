@@ -25,6 +25,8 @@ import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
+import app.packed.service.OverriddenServiceBindingMirror;
+import app.packed.util.Key;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.context.ContextSetup;
@@ -198,6 +200,10 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
 
     public OldApplicationPath path() {
         return bean.path();
+    }
+
+    public Map<Key<?>, Collection<OverriddenServiceBindingMirror>> overriddenServices() {
+        throw new UnsupportedOperationException();
     }
 
     /**

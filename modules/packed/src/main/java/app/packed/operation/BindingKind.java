@@ -21,15 +21,6 @@ package app.packed.operation;
 public enum BindingKind {
 
     /**
-     * The binding has been created manually.
-     *
-     * @see OperationHandle#manuallyBindable(int)
-     * @see Op#bind(Object)
-     * @see Op#bind(int, Object, Object...)
-     */
-    MANUAL,
-
-    /**
      * The binding has been created because of a Hook. Either the variable is annotated with a binding hook. Or the variable
      * class is annotated with BindingHook
      *
@@ -41,8 +32,21 @@ public enum BindingKind {
     HOOK,
 
     /**
+     * The binding has been created manually.
      *
+     * @see OperationHandle#manuallyBindable(int)
+     * @see Op#bind(Object)
+     * @see Op#bind(int, Object, Object...)
+     */
+    MANUAL,
+
+    /**
+     * The binding represents the dependency on a service.
+     * <p>
      * Service bindings are always represented by a {@link ServiceBindingMirror} which contains the key of the service.
+     * <p>
+     * If a service has been overridden via {@link app.packed.bean.BeanConfiguration#overrideService(Class, Object)} the binding
+     * kind is replaced with {@link #MANUAL} and an {@link app.packed.service.OverriddenServiceBindingMirror}.
      *
      * @see ServiceBindingMirror
      */

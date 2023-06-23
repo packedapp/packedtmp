@@ -25,7 +25,7 @@ import internal.app.packed.bean.BeanSetup;
 import sandbox.extension.bean.BeanHandle;
 
 /**
- * The configuration of beans that have instances at runtime.
+ * The configuration of bean that have instances at runtime. This is all beans except for {@link BeanKind#STATIC beans}.
  *
  * @param <T>
  *            the type of the bean instance
@@ -33,7 +33,7 @@ import sandbox.extension.bean.BeanHandle;
 public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 
     /**
-     * Creates a new InstanceBeanConfiguration
+     * Creates a new InstanceBeanConfiguration.
      *
      * @param handle
      *            the bean handle
@@ -74,6 +74,7 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
         super.overrideService(key, instance);
         return this;
     }
+
 }
 
 //Skal bruges paa params som skal "bootstrappes" med...
