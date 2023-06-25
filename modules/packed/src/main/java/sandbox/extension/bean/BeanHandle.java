@@ -33,8 +33,8 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.util.Key;
-import internal.app.packed.bean.PackedBeanBuilder;
 import internal.app.packed.bean.PackedBeanHandle;
+import internal.app.packed.bean.PackedBeanHandleBuilder;
 import internal.app.packed.context.publish.ContextualizedElement;
 import sandbox.extension.operation.OperationHandle;
 
@@ -180,7 +180,7 @@ public sealed interface BeanHandle<T> extends ContextualizedElement, LocalAccess
      * @see BaseExtensionPoint#newBean(BeanKind)
      * @see BaseExtensionPoint#newBeanForExtension(BeanKind, app.packed.extension.ExtensionPoint.UseSite)
      */
-    public sealed interface Builder permits PackedBeanBuilder {
+    public sealed interface Builder permits PackedBeanHandleBuilder {
 
         /**
          * Installs the bean using the specified class as the bean source.

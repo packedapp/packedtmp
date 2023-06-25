@@ -42,14 +42,13 @@ import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
 import sandbox.extension.bean.BeanHandle;
-import sandbox.extension.bean.BeanHandle.Builder;
 import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
  * This class is responsible for installing new beans.
  */
-public final class PackedBeanBuilder implements Builder {
+public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
 
     /** A list ofIllegal bean classes. Void is technically allowed but {@link #installWithoutSource()} needs to used. */
     // Allign with Key
@@ -86,7 +85,7 @@ public final class PackedBeanBuilder implements Builder {
      * @param template
      *            a lifetime template for the new bean
      */
-    public PackedBeanBuilder(ExtensionSetup installingExtension, AuthorSetup owner, BeanTemplate template) {
+    public PackedBeanHandleBuilder(ExtensionSetup installingExtension, AuthorSetup owner, BeanTemplate template) {
         this.container = installingExtension.container;
         this.installingExtension = requireNonNull(installingExtension);
         this.owner = requireNonNull(owner);
@@ -167,7 +166,17 @@ public final class PackedBeanBuilder implements Builder {
 
     /** {@inheritDoc} */
     @Override
-    public Builder namePrefix(String prefix) {
+    public <T> PackedBeanHandleBuilder localSet(BeanLocal<T> local, T value) {
+        requireNonNull(local);
+        requireNonNull(value);
+        checkNotUsed();
+        locals.put(local, value);
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedBeanHandleBuilder namePrefix(String prefix) {
         this.namePrefix = requireNonNull(prefix, "prefix is null");
         return this;
     }
@@ -265,17 +274,7 @@ public final class PackedBeanBuilder implements Builder {
 
     /** {@inheritDoc} */
     @Override
-    public <T> Builder localSet(BeanLocal<T> local, T value) {
-        requireNonNull(local);
-        requireNonNull(value);
-        checkNotUsed();
-        locals.put(local, value);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Builder specializeMirror(Supplier<? extends BeanMirror> supplier) {
+    public PackedBeanHandleBuilder specializeMirror(Supplier<? extends BeanMirror> supplier) {
         requireNonNull(supplier, "supplier is null");
         checkNotUsed();
         this.supplier = supplier;

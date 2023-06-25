@@ -19,6 +19,7 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
 import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.container.ContainerHandle.Builder;
 
 /**
  *
@@ -60,14 +61,14 @@ public final class ContainerCarrierBeanConfiguration<T> extends InstanceBeanConf
      *
      * @see ExtensionLink#ofConstant(Class, Object)
      */
-    public <S> ContainerHandleBuilder carrierProvideConstant(Class<S> key, S constant) {
+    public <S> Builder carrierProvideConstant(Class<S> key, S constant) {
         return carrierProvideConstant(Key.of(key), constant);
     }
 
     /**
      * @see FromLifetimeChannel
      */
-    public <S> ContainerHandleBuilder carrierProvideConstant(Key<S> key, S constant) {
+    public <S> Builder carrierProvideConstant(Key<S> key, S constant) {
         throw new UnsupportedOperationException();
     }
 }

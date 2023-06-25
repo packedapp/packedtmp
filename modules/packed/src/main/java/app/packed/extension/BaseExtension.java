@@ -51,7 +51,7 @@ import app.packed.util.Key;
 import app.packed.util.Variable;
 import internal.app.packed.bean.BeanLifecycleOrder;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.PackedBeanBuilder;
+import internal.app.packed.bean.PackedBeanHandleBuilder;
 import internal.app.packed.bean.PackedBeanWrappedVariable;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.container.LeafContainerOrApplicationBuilder;
@@ -67,7 +67,6 @@ import sandbox.extension.bean.BeanHandle.Builder;
 import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.container.ContainerCarrierService;
 import sandbox.extension.container.ContainerHandle;
-import sandbox.extension.container.ContainerHandleBuilder;
 import sandbox.extension.container.ContainerTemplate;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
@@ -222,8 +221,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return new ServiceableBeanConfiguration<>(handle);
     }
 
-    private PackedBeanBuilder install0(BeanTemplate template) {
-        return new PackedBeanBuilder(extension, extension.container.assembly, template);
+    private PackedBeanHandleBuilder install0(BeanTemplate template) {
+        return new PackedBeanHandleBuilder(extension, extension.container.assembly, template);
     }
 
     /**
@@ -323,7 +322,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     /** {@return a new container builder used for linking.} */
-    private ContainerHandleBuilder link0() {
+    private ContainerHandle.Builder link0() {
         return LeafContainerOrApplicationBuilder.of(ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application, extension.container);
     }
 
@@ -335,7 +334,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return a bean installer
      */
     private Builder newBeanBuilderSelf(BeanTemplate template) {
-        return new PackedBeanBuilder(extension, extension, template);
+        return new PackedBeanHandleBuilder(extension, extension, template);
     }
 
     /**

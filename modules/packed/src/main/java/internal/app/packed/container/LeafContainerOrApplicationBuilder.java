@@ -29,12 +29,12 @@ import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import sandbox.extension.container.ContainerHandleBuilder;
+import sandbox.extension.container.ContainerHandle.Builder;
 import sandbox.extension.container.ContainerTemplate;
 
 // Would love
 /** Implementation of {@link ContainerBuilder} for a non-root container. */
-public final class LeafContainerOrApplicationBuilder extends NonBootstrapContainerBuilder implements ContainerHandleBuilder {
+public final class LeafContainerOrApplicationBuilder extends NonBootstrapContainerBuilder implements Builder {
 
     /** The extension that is installing the container. */
     final Class<? extends Extension<?>> installedBy;
@@ -87,7 +87,7 @@ public final class LeafContainerOrApplicationBuilder extends NonBootstrapContain
 
     /** {@inheritDoc} */
     @Override
-    public <T> ContainerHandleBuilder carrierProvideConstant(Key<T> key, T constant) {
+    public <T> Builder carrierProvideConstant(Key<T> key, T constant) {
         throw new UnsupportedOperationException();
     }
 
@@ -124,7 +124,7 @@ public final class LeafContainerOrApplicationBuilder extends NonBootstrapContain
     }
 
     @SuppressWarnings("unchecked")
-    public <T> ContainerHandleBuilder localConsume(ContainerLocal<T> local, Consumer<T> action) {
+    public <T> Builder localConsume(ContainerLocal<T> local, Consumer<T> action) {
         PackedContainerLocal<?> pcl = (PackedContainerLocal<?>) local;
         action.accept((T) pcl.get(this));
         return this;
@@ -132,21 +132,21 @@ public final class LeafContainerOrApplicationBuilder extends NonBootstrapContain
 
     /** {@inheritDoc} */
     @Override
-    public <T> ContainerHandleBuilder localSet(ContainerLocal<T> local, T value) {
+    public <T> Builder localSet(ContainerLocal<T> local, T value) {
         locals.put((PackedContainerLocal<?>) local, value);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ContainerHandleBuilder named(String name) {
+    public Builder named(String name) {
         this.name = name;
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ContainerHandleBuilder specializeMirror(Supplier<? extends ContainerMirror> supplier) {
+    public Builder specializeMirror(Supplier<? extends ContainerMirror> supplier) {
         this.containerMirrorSupplier = supplier;
         return this;
     }

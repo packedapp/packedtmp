@@ -132,7 +132,7 @@ public final class BeanSetup implements ContextualizedElementSetup {
     public final List<ServiceProviderSetup> serviceProviders = new ArrayList<>();
 
     /** Create a new bean. */
-    BeanSetup(PackedBeanBuilder installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
+    BeanSetup(PackedBeanHandleBuilder installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
         this.beanKind = requireNonNull(installer.template.kind());
         this.beanClass = requireNonNull(beanClass);
         this.beanSource = beanSource;

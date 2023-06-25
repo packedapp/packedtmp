@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import app.packed.bean.BeanKind;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.PackedBeanBuilder;
+import internal.app.packed.bean.PackedBeanHandleBuilder;
 import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.operation.OperationTemplate;
@@ -42,7 +42,7 @@ public record PackedBeanTemplate(BeanKind kind, OperationTemplate bot, @Nullable
     /** {@inheritDoc} */
     @Override
     public BeanTemplate createAs(Class<?> createAs) {
-        if (createAs.isPrimitive() || PackedBeanBuilder.ILLEGAL_BEAN_CLASSES.contains(createAs)) {
+        if (createAs.isPrimitive() || PackedBeanHandleBuilder.ILLEGAL_BEAN_CLASSES.contains(createAs)) {
             throw new IllegalArgumentException(createAs + " is not valid argument");
         }
         return new PackedBeanTemplate(kind, bot, createAs);
