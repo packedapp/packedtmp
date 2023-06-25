@@ -49,8 +49,8 @@ import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.util.ThrowableUtil;
-import sandbox.extension.bean.BeanBuilder;
 import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.bean.BeanHandle.Builder;
 import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.container.ContainerTemplatePack;
 import sandbox.extension.operation.OperationTemplate;
@@ -351,13 +351,13 @@ public final /* primitive */ class BootstrapApp<A> {
 
         <T> void newApplication(Class<T> guestBean) {
             // We need the attachment, because ContainerGuest is on
-            BeanBuilder bi = base().beanBuilder(BT);
+            Builder bi = base().beanBuilder(BT);
             newApplication(bi.install(guestBean));
         }
 
         <T> void newApplication(Op<T> guestBean) {
             // We need the attachment, because ContainerGuest is on
-            BeanBuilder bi = base().beanBuilder(BT);
+            Builder bi = base().beanBuilder(BT);
             newApplication(bi.install(guestBean));
         }
     }

@@ -35,8 +35,10 @@ import sandbox.extension.context.ContextSpanKind;
  * @see BaseExtensionPoint#beanInstallerForExtension(app.packed.extension.bean.BeanTemplate,
  *      app.packed.extension.ExtensionPoint.UseSite)
  */
+
 // TODO move back to BaseExtensionPoint
-public sealed interface ContainerBuilder permits LeafContainerOrApplicationBuilder {
+// Put on OperationHandle?????
+public sealed interface ContainerHandleBuilder permits LeafContainerOrApplicationBuilder {
 
     /**
      * Creates a new container using the specified assembly.
@@ -100,14 +102,14 @@ public sealed interface ContainerBuilder permits LeafContainerOrApplicationBuild
      *
      * @see ExtensionLink#ofConstant(Class, Object)
      */
-    default <T> ContainerBuilder carrierProvideConstant(Class<T> key, T constant) {
+    default <T> ContainerHandleBuilder carrierProvideConstant(Class<T> key, T constant) {
         return carrierProvideConstant(Key.of(key), constant);
     }
 
     /**
      * @see FromLifetimeChannel
      */
-    <T> ContainerBuilder carrierProvideConstant(Key<T> key, T constant);
+    <T> ContainerHandleBuilder carrierProvideConstant(Key<T> key, T constant);
 
     /**
      *
@@ -118,7 +120,7 @@ public sealed interface ContainerBuilder permits LeafContainerOrApplicationBuild
      *             if the holder class of the bean does not match the holder type set when creating the container template.
      */
     // LifetimeCarrier?
-    default ContainerBuilder carrierUse(ContainerCarrierBeanConfiguration<?> holderConfiguration) {
+    default ContainerHandleBuilder carrierUse(ContainerCarrierBeanConfiguration<?> holderConfiguration) {
         // Gaar udfra vi maa definere wrapper beanen alene...Eller som minimum
         // supportere det
         // Hvis vi vil dele den...
@@ -139,7 +141,7 @@ public sealed interface ContainerBuilder permits LeafContainerOrApplicationBuild
      *            the name of the container
      * @return this builder
      */
-    ContainerBuilder named(String name);
+    ContainerHandleBuilder named(String name);
 
     /**
      * Sets the value of the specified container local for the container being built.
@@ -153,7 +155,7 @@ public sealed interface ContainerBuilder permits LeafContainerOrApplicationBuild
      * @return this builder
      */
     // Do we allow non-container scope??? I don't think so
-    <T> ContainerBuilder localSet(ContainerLocal<T> containerLocal, T value);
+    <T> ContainerHandleBuilder localSet(ContainerLocal<T> containerLocal, T value);
 
     /**
      * Sets a supplier that creates a special container mirror instead of the generic {@code ContainerMirror} when
@@ -164,17 +166,17 @@ public sealed interface ContainerBuilder permits LeafContainerOrApplicationBuild
      * @apiNote the specified supplier may be called multiple times for the same bean. In which case an equivalent mirror
      *          must be returned
      */
-    ContainerBuilder specializeMirror(Supplier<? extends ContainerMirror> supplier);
+    ContainerHandleBuilder specializeMirror(Supplier<? extends ContainerMirror> supplier);
 
     // The application will fail to build if the installing extension
     // is not used by. Is only applicable for new(Assembly)
     // Maaske er det fint bare en wirelet der kan tage en custom besked?
-    default ContainerBuilder zBuildAndRequiresThisExtension(Assembly assembly, Wirelet... wirelets) {
+    default ContainerHandleBuilder zBuildAndRequiresThisExtension(Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
     // ditch beanBlass, and just make sure there is a bean that can do it
-    default ContainerBuilder zContextFromBean(Class<?> beanClass, ContextTemplate template, @SuppressWarnings("exports") ContextSpanKind span) {
+    default ContainerHandleBuilder zContextFromBean(Class<?> beanClass, ContextTemplate template, @SuppressWarnings("exports") ContextSpanKind span) {
         throw new UnsupportedOperationException();
     }
 
@@ -188,11 +190,11 @@ public sealed interface ContainerBuilder permits LeafContainerOrApplicationBuild
      *            optional wirelets
      * @return a container handle representing the linked container
      */
-    default ContainerBuilder zErrorHandle(ErrorHandler h) {
+    default ContainerHandleBuilder zErrorHandle(ErrorHandler h) {
         return this;
     }
 
-    default ContainerBuilder zRequireUseOfExtension(String errorMessage) {
+    default ContainerHandleBuilder zRequireUseOfExtension(String errorMessage) {
         throw new UnsupportedOperationException();
     }
 }

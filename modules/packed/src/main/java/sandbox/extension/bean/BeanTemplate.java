@@ -17,15 +17,17 @@ package sandbox.extension.bean;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.lifetime.PackedBeanTemplate;
+import sandbox.extension.bean.BeanHandle.Builder;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
- * A bean template defines basic properties for a bean and one must be provided when creating a new bean.
+ * A bean template is a reusable building block that must be specified whenever an extension creates a new bean.
  * <p>
  * using when installating new beans using {@link app.packed.extension.BaseExtensionPoint#beanBuilder(BeanTemplate)} or
  * {@link app.packed.extension.BaseExtensionPoint#beanInstallerForExtension(BeanTemplate, app.packed.extension.ExtensionPoint.UseSite)}.
@@ -85,9 +87,9 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     /**
      * Specifies the return type signature of the factory operation(s) that creates the bean.
      * <p>
-     * The return type of the lifetime operation that creates the bean is normally {@link BeanHandle#beanClass()}. However,
-     * in order to better support {@link java.lang.invoke.MethodHandle#invokeExact(Object...)} this method can be used to
-     * specify a more generic type, typically {@code Object.class}.
+     * The return type of the lifetime operation that creates the bean is {@code Object.class} as default. In order to
+     * better support {@link java.lang.invoke.MethodHandle#invokeExact(Object...)}. However, this method can be used to
+     * specify a less generic type if needed.
      * <p>
      * If this template is used when installing a bean whose bean class is not assignable to the specified class. The
      * framework will throw a {@link app.packed.bean.BeanInstallationException}.
@@ -109,6 +111,9 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
 
     // When do you ever want this????
     BeanTemplate createAsBeanClass();
+
+    /** {@return a descriptor for this template} */
+    BeanTemplate.Descriptor descriptor();
 
     /**
      * Sets a context for the whole bean
@@ -148,19 +153,25 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     // Lifetime operationer kan koeres i en context
     BeanTemplate inLifetimeOperationContext(int index, ContextTemplate template);
 
-    /** {@return a descriptor for this template} */
-    BeanTemplate.Descriptor descriptor();
-
-    /** A descriptor for a BeanTemplate. */
+    /** A descriptor for a BeanTemplate. This class is mainly used for informational purposes. */
     interface Descriptor {
-        Class<?> createAs();
 
-        /** {@return a list of the various lifetime operations for this bean template.} */
-        // These operations cannot be directly modified. Instead must methods on this class
-        List<OperationTemplate.Descriptor> lifetimeOperations();
-
+        /** {@return the kind of bean the descriptor's template creates} */
         BeanKind beanKind();
-        // Contexts
+
+        /**
+         * <p>
+         * Empty means create as bean class
+         *
+         * @return
+         *
+         * @see BeanTemplate#createAs(Class)
+         * @see BeanTemplate#createAsBeanClass()
+         */
+        Optional<Class<?>> createAs();
+
+        /** {@return a list of the various lifetime operations for the descriptor's template.} */
+        List<OperationTemplate.Descriptor> lifetimeOperations();
     }
 
 }
@@ -191,7 +202,7 @@ interface Sandbox {
      *
      * @return this installer
      */
-    BeanBuilder synthetic(); // Maybe on template?
+    Builder synthetic(); // Maybe on template?
 
     // Maa man goere paa installeren..
 //    default <T> void initializeLocal(BeanLocal<T> local, T value) {

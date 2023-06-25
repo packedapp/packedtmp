@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.Map;
 
 import app.packed.extension.BeanCustomHook;
-import app.packed.extension.Extension;
-import app.packed.extension.InternalExtensionException;
 import app.packed.extension.BeanHook.AnnotatedBindingHook;
 import app.packed.extension.BeanHook.AnnotatedMethodHook;
 import app.packed.extension.BeanHook.BindingTypeHook;
+import app.packed.extension.Extension;
+import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
 import internal.app.packed.util.types.ClassUtil;
 

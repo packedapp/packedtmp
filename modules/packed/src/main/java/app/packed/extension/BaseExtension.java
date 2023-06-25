@@ -20,6 +20,7 @@ import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.BeanTransformer;
 import app.packed.bean.Inject;
 import app.packed.bean.ManagedBeanRequiredException;
 import app.packed.container.Assembly;
@@ -61,12 +62,12 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.PackedServiceLocator;
 import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.MethodHandleUtil;
-import sandbox.extension.bean.BeanBuilder;
 import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.bean.BeanHandle.Builder;
 import sandbox.extension.bean.BeanTemplate;
-import sandbox.extension.container.ContainerBuilder;
 import sandbox.extension.container.ContainerCarrierService;
 import sandbox.extension.container.ContainerHandle;
+import sandbox.extension.container.ContainerHandleBuilder;
 import sandbox.extension.container.ContainerTemplate;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
@@ -137,20 +138,18 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @param transformer
      *            the bean transformer
      */
-    public void beanTransformNext(Consumer<? super BeanTransformer> transformer) {}
+    public void transformNextBean(Consumer<? super BeanTransformer> transformer) {}
 
     // All beans that are installed with the assembly
     /**
      * <p>
-     * If there are multiple all bean transformers active at the same type. They will be invoked in the order they where registered.
-     * The first one registered will be run first
+     * If there are multiple all bean transformers active at the same type. They will be invoked in the order they where
+     * registered. The first one registered will be run first
      *
      * @param transformer
-     * @return A runnable that be can executed after which the transformer is no longer used.
+     * @return A runnable that be can run after which the transformer will no longer be applied when installing beans.
      */
-    // It is not really all, but all subsekvent installed. Beans that have already been registered is
-    // ignored.
-    public Runnable beanTransformAll(Consumer<? super BeanTransformer> transformer) {
+    public Runnable transformFutureBeans(Consumer<? super BeanTransformer> transformer) {
         throw new UnsupportedOperationException();
     }
 
@@ -324,7 +323,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     /** {@return a new container builder used for linking.} */
-    private ContainerBuilder link0() {
+    private ContainerHandleBuilder link0() {
         return LeafContainerOrApplicationBuilder.of(ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application, extension.container);
     }
 
@@ -335,7 +334,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      *            a template for the bean
      * @return a bean installer
      */
-    private BeanBuilder newBeanBuilderSelf(BeanTemplate template) {
+    private Builder newBeanBuilderSelf(BeanTemplate template) {
         return new PackedBeanBuilder(extension, extension, template);
     }
 

@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.bean;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanKind;
-import app.packed.bean.BeanSourceKind;
+import app.packed.container.Assembly;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import app.packed.util.Variable;
@@ -34,11 +35,23 @@ import app.packed.util.Variable;
  *
  */
 
+// Lookup
+// Class Hierarchy
+// AOP?
+// Member modification
+
+// OperationTransformer
+
+// All about operations I guess
+
 // Hmm, tror vi maa have en OperationTransformer...
 // Also with naming and stuff
 public interface BeanTransformer {
 
     void addOperation(Op<?> op);
+
+    // usefull for processes and default bean transformers
+    Class<Class<? super Assembly>> assemblyClass();
 
     /** {@return the current bean class.} */
     Class<?> beanClass();
@@ -55,6 +68,9 @@ public interface BeanTransformer {
     // new TypeVarToken<@OnStarting>(){};
     // addFunction0(new SyntheticVariable<@OnStarting>(){}, e->{ sysout("We started) })
     void addFunction(Variable result, Supplier<?> supplier);
+
+    // on Bean class or members
+    void ignoreAnnotations(Class<? extends Annotation> annotationType);
 
     void addFunction(Variable result, Variable param1, Supplier<?> supplier);
 
@@ -103,4 +119,19 @@ public interface BeanTransformer {
     // Will include the bean class and everyone of its super classes.
     // Object.class is never scanned.
     void skipScanForClass(Predicate<? super Class<?>> skipScanFor);
+
+    // I don't think we allow for unregistering it
+    static void alwaysTransform(Lookup lookup, Consumer<? super BeanTransformer> transformation) {
+        alwaysTransform(lookup, lookup.lookupClass(), transformation);
+    }
+
+    // Can be used to augment extension beans that are open to you
+    static void alwaysTransform(Lookup lookup, Class<?> beanClass, Consumer<? super BeanTransformer> transformation) {
+        throw new UnsupportedOperationException();
+    }
+
+    static void alwaysTransformSubclassesOf(Lookup lookup, Consumer<? super BeanTransformer> transformation) {
+        alwaysTransform(lookup, lookup.lookupClass(), transformation);
+    }
+
 }

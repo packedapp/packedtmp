@@ -27,8 +27,8 @@ import app.packed.extension.BeanIntrospector;
 import app.packed.extension.FrameworkExtension;
 import sandbox.extension.bean.BeanHandle;
 import sandbox.extension.bean.BeanTemplate;
-import sandbox.extension.container.ContainerBuilder;
 import sandbox.extension.container.ContainerHandle;
+import sandbox.extension.container.ContainerHandleBuilder;
 import sandbox.extension.container.ContainerTemplate;
 import sandbox.extension.domain.NamespaceTemplate;
 
@@ -74,11 +74,11 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
         };
     }
 
-    private ContainerBuilder newContainer() {
+    private ContainerHandleBuilder newContainer() {
         if (isInApplicationLifetime()) {
             throw new UnsupportedOperationException("This method must be called from an extension in the application lifetime");
         }
-        ContainerBuilder cb = base().containerBuilder(ContainerTemplate.GATEWAY);
+        ContainerHandleBuilder cb = base().containerBuilder(ContainerTemplate.GATEWAY);
         // CT.addEntryPointErrorMessage("Lifetime must container at least one entry point with CliCommand")
 
         return cb;

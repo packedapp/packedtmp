@@ -60,14 +60,14 @@ public final class ContainerCarrierBeanConfiguration<T> extends InstanceBeanConf
      *
      * @see ExtensionLink#ofConstant(Class, Object)
      */
-    public <S> ContainerBuilder carrierProvideConstant(Class<S> key, S constant) {
+    public <S> ContainerHandleBuilder carrierProvideConstant(Class<S> key, S constant) {
         return carrierProvideConstant(Key.of(key), constant);
     }
 
     /**
      * @see FromLifetimeChannel
      */
-    public <S> ContainerBuilder carrierProvideConstant(Key<S> key, S constant) {
+    public <S> ContainerHandleBuilder carrierProvideConstant(Key<S> key, S constant) {
         throw new UnsupportedOperationException();
     }
 }

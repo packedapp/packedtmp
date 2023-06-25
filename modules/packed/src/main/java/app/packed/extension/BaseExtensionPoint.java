@@ -28,11 +28,11 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.LeafContainerOrApplicationBuilder;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.PackedOperationHandle;
-import sandbox.extension.bean.BeanBuilder;
 import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.bean.BeanHandle.Builder;
 import sandbox.extension.bean.BeanTemplate;
-import sandbox.extension.container.ContainerBuilder;
 import sandbox.extension.container.ContainerCarrierBeanConfiguration;
+import sandbox.extension.container.ContainerHandleBuilder;
 import sandbox.extension.container.ContainerTemplate;
 import sandbox.extension.container.ContainerTemplatePack;
 import sandbox.extension.operation.DelegatingOperationHandle;
@@ -133,7 +133,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            a template for the bean's lifetime
      * @return the installer
      */
-    public BeanBuilder beanBuilder(BeanTemplate template) {
+    public Builder beanBuilder(BeanTemplate template) {
         return new PackedBeanBuilder(extension().extension, extension().extension.container.assembly, template);
     }
 
@@ -144,7 +144,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            a template for the bean's lifetime
      * @return the installer
      */
-    public BeanBuilder beanBuilderForExtension(BeanTemplate template, UseSite forExtension) {
+    public Builder beanBuilderForExtension(BeanTemplate template, UseSite forExtension) {
         requireNonNull(forExtension, "forExtension is null");
         return new PackedBeanBuilder(extension().extension, ((PackedExtensionPointContext) forExtension).usedBy(), template);
     }
@@ -156,7 +156,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            the container's template
      * @return a new container builder
      */
-    public ContainerBuilder containerBuilder(ContainerTemplate template) {
+    public ContainerHandleBuilder containerBuilder(ContainerTemplate template) {
         // Kan only use channels that are direct dependencies of the usage extension
         ExtensionSetup es = contextUse().usedBy();
         return LeafContainerOrApplicationBuilder.of(template, es.extensionType, es.container.application, es.container);

@@ -17,10 +17,14 @@ package sandbox.extension.bean;
 
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import app.packed.application.OldApplicationPath;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanLocal.LocalAccessor;
+import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Author;
@@ -29,6 +33,7 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.util.Key;
+import internal.app.packed.bean.PackedBeanBuilder;
 import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.context.publish.ContextualizedElement;
 import sandbox.extension.operation.OperationHandle;
@@ -165,6 +170,65 @@ public sealed interface BeanHandle<T> extends ContextualizedElement, LocalAccess
      */
     void provideAs(Key<? super T> key);
 
+
+    /**
+     * An installer for installing beans into a container.
+     * <p>
+     * The various install methods can be called multiple times to install multiple beans. However, the use cases for this
+     * are limited.
+     *
+     * @see BaseExtensionPoint#newBean(BeanKind)
+     * @see BaseExtensionPoint#newBeanForExtension(BeanKind, app.packed.extension.ExtensionPoint.UseSite)
+     */
+    public sealed interface Builder permits PackedBeanBuilder {
+
+        /**
+         * Installs the bean using the specified class as the bean source.
+         *
+         * @param <T>
+         *            the type of bean
+         * @param beanClass
+         *            the bean class
+         * @return a bean handle representing the installed bean
+         *
+         * @see app.packed.bean.BeanSourceKind#CLASS
+         */
+        <T> BeanHandle<T> install(Class<T> beanClass);
+
+        <T> BeanHandle<T> install(Op<T> operation);
+
+        // These things can never be multi
+        <T> BeanHandle<T> installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle<T>> onInstall);
+
+        // instance = introspected bean
+        // constant = non-introspected bean
+        <T> BeanHandle<T> installInstance(T instance);
+
+        /**
+         * Sets the value of the specified bean local for the new bean.
+         *
+         * @param <T>
+         *            the type of value the bean local holds
+         * @param local
+         *            the bean local to set
+         * @param value
+         *            the value of the local
+         * @return this builder
+         */
+        <T> Builder localSet(BeanLocal<T> local, T value);
+
+        Builder namePrefix(String prefix);
+
+        /**
+         * Sets a supplier that creates a special bean mirror instead of a generic {@code BeanMirror} when a bean mirror is needed.
+         *
+         * @param supplier
+         *            the supplier used to create the bean mirror
+         * @apiNote the specified supplier may be called multiple times for the same bean. In which case an equivalent mirror
+         *          must be returned
+         */
+        Builder specializeMirror(Supplier<? extends BeanMirror> supplier);
+    }
 }
 
 interface Zandbox<T> {

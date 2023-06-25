@@ -33,7 +33,14 @@ import internal.app.packed.operation.PackedOperationHandle;
  */
 public sealed interface OperationHandle extends ContextualizedElement permits PackedOperationHandle {
 
-    /** {@return any contexts this operation operates within.} */
+    /**
+     * @param handle
+     *
+     * @throws UnsupportedOperationException
+     *             if this operation handle is not a composite operation handle
+     */
+    default void addChild(OperationHandle handle) {}
+
     // Hmm there is a difference between operating within contexts./
     // And invocation argument contexts
     // Set<Class<? extends Context<?>>> contexts();

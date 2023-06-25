@@ -25,8 +25,8 @@ import java.lang.reflect.Modifier;
 
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanHook.AnnotatedFieldHook;
-import app.packed.operation.OperationType;
 import app.packed.extension.Extension;
+import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
 import app.packed.util.Key;
 import app.packed.util.Nullable;

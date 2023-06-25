@@ -24,8 +24,8 @@ import app.packed.operation.Op;
 import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
-import sandbox.extension.bean.BeanBuilder;
 import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.bean.BeanHandle.Builder;
 import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.operation.OperationTemplate;
 
@@ -60,13 +60,13 @@ class ApplicationHostExtension2 extends FrameworkExtension<ApplicationHostExtens
 
     public <T> ApplicationHostConfiguration<T> newApplication(Class<T> guestBean) {
         // We need the attachment, because ContainerGuest is on
-        BeanBuilder bi = base().beanBuilder(BLT);
+        Builder bi = base().beanBuilder(BLT);
         return newApplication(bi.install(guestBean));
     }
 
     public <T> ApplicationHostConfiguration<T> newApplication(Op<T> guestBean) {
         // We need the attachment, because ContainerGuest is on
-        BeanBuilder bi = base().beanBuilder(BLT);
+        Builder bi = base().beanBuilder(BLT);
         return newApplication(bi.install(guestBean));
     }
 

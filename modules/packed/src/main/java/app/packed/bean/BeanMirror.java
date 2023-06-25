@@ -35,8 +35,6 @@ import sandbox.operation.mirror.DependenciesMirror;
 
 /**
  * A mirror of a bean.
- * <p>
- * Instances of this class is typically obtained from calls to {@link ContainerMirror}.
  */
 @BindingTypeHook(extension = BaseExtension.class)
 public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirror , ContextScopeMirror , LocalAccessor {
@@ -117,6 +115,8 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
 
     // Syntes maaske bare skal lede efter den i operations()?
     // Saa supportere vi ogsaa flere factory metodes hvis vi har brug for det en gang
+    // We don't support multi factory for default installs.
+    // However custom bean templates may support it
     public Optional<OperationMirror> factoryOperation() {
         if (bean.beanKind != BeanKind.STATIC && bean.beanSourceKind != BeanSourceKind.INSTANCE) {
             return Optional.of(bean.operations.get(0).mirror());

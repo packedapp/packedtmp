@@ -41,15 +41,15 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
-import sandbox.extension.bean.BeanBuilder;
 import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.bean.BeanHandle.Builder;
 import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
  * This class is responsible for installing new beans.
  */
-public final class PackedBeanBuilder implements BeanBuilder {
+public final class PackedBeanBuilder implements Builder {
 
     /** A list ofIllegal bean classes. Void is technically allowed but {@link #installWithoutSource()} needs to used. */
     // Allign with Key
@@ -167,7 +167,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
 
     /** {@inheritDoc} */
     @Override
-    public BeanBuilder namePrefix(String prefix) {
+    public Builder namePrefix(String prefix) {
         this.namePrefix = requireNonNull(prefix, "prefix is null");
         return this;
     }
@@ -265,7 +265,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
 
     /** {@inheritDoc} */
     @Override
-    public <T> BeanBuilder localSet(BeanLocal<T> local, T value) {
+    public <T> Builder localSet(BeanLocal<T> local, T value) {
         requireNonNull(local);
         requireNonNull(value);
         checkNotUsed();
@@ -275,7 +275,7 @@ public final class PackedBeanBuilder implements BeanBuilder {
 
     /** {@inheritDoc} */
     @Override
-    public BeanBuilder specializeMirror(Supplier<? extends BeanMirror> supplier) {
+    public Builder specializeMirror(Supplier<? extends BeanMirror> supplier) {
         requireNonNull(supplier, "supplier is null");
         checkNotUsed();
         this.supplier = supplier;

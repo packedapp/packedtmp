@@ -18,10 +18,10 @@ package internal.app.packed.bean;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 
+import app.packed.extension.BeanElement.BeanConstructor;
 import app.packed.util.Key;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
-import app.packed.extension.BeanElement.BeanConstructor;
 
 /**
  *

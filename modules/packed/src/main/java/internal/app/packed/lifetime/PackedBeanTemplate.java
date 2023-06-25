@@ -16,6 +16,7 @@
 package internal.app.packed.lifetime;
 
 import java.util.List;
+import java.util.Optional;
 
 import app.packed.bean.BeanKind;
 import app.packed.util.Nullable;
@@ -62,8 +63,8 @@ public record PackedBeanTemplate(BeanKind kind, OperationTemplate bot, @Nullable
 
         /** {@inheritDoc} */
         @Override
-        public Class<?> createAs() {
-            return pbt.createAs;
+        public Optional<Class<?>> createAs() {
+            return Optional.ofNullable(pbt.createAs);
         }
 
         /** {@inheritDoc} */
