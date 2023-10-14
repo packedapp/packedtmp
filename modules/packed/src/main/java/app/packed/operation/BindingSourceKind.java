@@ -19,12 +19,15 @@ package app.packed.operation;
  *
  */
 public enum BindingSourceKind {
+
+    /** A binding to a constant specified at build-time. */
     CONSTANT,
 
     ARGUMENT,
 
     LOOKUP,
 
+    /** A binding to the result of another (embedded) operation. */
     OPERATION;
 }
 

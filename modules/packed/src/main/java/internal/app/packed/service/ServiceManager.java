@@ -24,9 +24,9 @@ import java.util.Map.Entry;
 
 import app.packed.bean.BeanSourceKind;
 import app.packed.extension.ExtensionContext;
-import app.packed.service.ExportedServiceMirror;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
+import app.packed.service.mirror.ExportedServiceMirror;
 import app.packed.util.Key;
 import app.packed.util.KeyAlreadyUsedException;
 import app.packed.util.Nullable;

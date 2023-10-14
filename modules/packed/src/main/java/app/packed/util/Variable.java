@@ -28,7 +28,11 @@ import internal.app.packed.util.PackedVariable;
 import internal.app.packed.util.types.TypeUtil;
 
 /**
- * In Packed a variable (this interface) represents an annotated type of some kind This interface represents a variable of some kind, for example, a {@link Field}, Pa
+ * A variable (this interface) represents a {@link Type} and zero or more annotations.
+ * <p>
+ *
+ *
+ *  an annotated type of some kind This interface represents a variable of some kind, for example, a {@link Field}, Pa
  *
  * {@code AnnotatedVariable} represents a type and an annotated element. A variable is simple wrapper around a
  * {@link TypeToken} and an {@link AnnotatedElement}. A variable is typically constructed from a {@link Field},
@@ -69,34 +73,16 @@ public sealed interface Variable permits PackedVariable {
     Type type();
 
     /**
-     * Returns a variable from the return type of the specified executable.
-     *
-     * @param executable
-     *            the executable to return a variable from
-     * @return the variable
-     *
-     * @see Executable#getAnnotatedReturnType()
-     */
-    static Variable fromReturnType(Executable executable) {
-        if (executable instanceof Method m) {
-            return PackedVariable.of(m.getAnnotations(), m.getGenericReturnType());
-        } else {
-            Constructor<?> c = (Constructor<?>) executable;
-            return PackedVariable.of(c.getAnnotations(), c.getDeclaringClass());
-        }
-    }
-
-    /**
-     * Returns a variable representing the annotated type of the specified field.
+     * Returns a variable representing the specified field.
      * <p>
-     * Annotations on the returned variable
+     * The variable is constructed using {@link Field#getGenericType()} and {@link Field#getAnnotations()}.
      *
      * @param field
      *            the field to return a variable from
      * @return the variable
      */
     static Variable fromField(Field field) {
-        return PackedVariable.of(field.getAnnotations(), field.getGenericType());
+        return PackedVariable.of(field.getGenericType(), field.getAnnotations());
     }
 
     /**
@@ -107,7 +93,25 @@ public sealed interface Variable permits PackedVariable {
      * @return the variable
      */
     static Variable fromParameter(Parameter parameter) {
-        return PackedVariable.of(parameter.getAnnotations(), parameter.getParameterizedType());
+        return PackedVariable.of(parameter.getParameterizedType(), parameter.getAnnotations());
+    }
+
+    /**
+     * Returns a variable from the return type of the specified executable.
+     *
+     * @param executable
+     *            the executable to return a variable from
+     * @return the variable
+     *
+     * @see Executable#getAnnotatedReturnType()
+     */
+    static Variable fromReturnType(Executable executable) {
+        if (executable instanceof Method m) {
+            return PackedVariable.of(m.getGenericReturnType(), m.getAnnotations());
+        } else {
+            Constructor<?> c = (Constructor<?>) executable;
+            return PackedVariable.of(c.getDeclaringClass(), c.getAnnotations());
+        }
     }
 
     static Variable of(Type type) {

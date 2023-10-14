@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.service.mirror;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
-import app.packed.operation.BindingMirror;
 import app.packed.util.Key;
 import internal.app.packed.service.ServiceBindingSetup;
 
@@ -41,7 +40,7 @@ import internal.app.packed.service.ServiceBindingSetup;
 //// missing but default
 
 // Maaske er ServiceBinding altid en service, og det andet er en manuel binding
-public class ServiceBindingMirror extends BindingMirror {
+public class ServiceBindingMirror extends KeyBasedBindingMirror {
 
     /** The service binding */
     private final ServiceBindingSetup binding;
@@ -69,6 +68,7 @@ public class ServiceBindingMirror extends BindingMirror {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Key<?> key() {
         return binding.entry.key;
     }

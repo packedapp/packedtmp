@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.operation;
+package internal.app.packed.operation;
 
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationType;
-import internal.app.packed.operation.PackedDelegatingOperationHandle;
+import sandbox.extension.operation.OperationHandle;
+import sandbox.extension.operation.OperationTemplate;
 
 /**
  * A special type of operation handle that allows an extension to delegate the execution of an operation to another

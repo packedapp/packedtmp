@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import app.packed.service.ExportedServiceMirror;
-import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.ServiceContract;
+import app.packed.service.mirror.ExportedServiceMirror;
+import app.packed.service.mirror.ProvidedServiceMirror;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerSetup;

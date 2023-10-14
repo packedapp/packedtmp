@@ -59,25 +59,15 @@ import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
  * <p>
  * Wirelets are divided into 3 main types:
  *
- * Application Wirelet: These wirelets are defined by Packed itself can typically needs access to Packed's internal
- * APIs.
+ * User Wirelet: These wirelets are defined by users of the framework.
  *
- * Extension Wirelets: Wirelets that are defined by extensions and typically available via public static methods in a
- * XWirelet class.
+ * Extension Wirelets: These wirelets are defined by extensions. These are typically available via public static methods
+ * in a XWirelet class.
  *
- * Framework wirelets: Special wirelets, Application wirelets
- *
- * There are 2 addition internal wirelet types which cannot be extended by users:
- *
- * User Wirelets: Wirelets that are defined by end-users
- *
- * @implNote In addition to the two wirelet types discussed. There is a third wirelet type: FrameworkWirelet which is
- *           internal to the wirelet.
+ * Framework wirelets: These wirelets are defined by the framework. Cannot be extended by neither users or applications.
  *
  * @see ContainerConfiguration#selectWirelets(Class)
  */
-
-@SuppressWarnings("rawtypes")
 public sealed abstract class Wirelet permits UserWirelet, ExtensionWirelet, FrameworkWirelet {
 
     // How do com
@@ -199,6 +189,7 @@ public sealed abstract class Wirelet permits UserWirelet, ExtensionWirelet, Fram
      * @return a wirelet that can be used to override the name of a container
      */
     // String intrapolation? Wirelet.ContainerMirror?
+    // StringTemplate? Hvor fx navn kommer
     public static Wirelet named(String name) {
         final class ContainerOverrideNameWirelet extends InternalBuildWirelet {
 
@@ -223,7 +214,7 @@ public sealed abstract class Wirelet permits UserWirelet, ExtensionWirelet, Fram
 
             /** {@inheritDoc} */
             @Override
-            protected void onInstall(PackedContainerBuilder installer) {
+            protected void onBuild(PackedContainerBuilder installer) {
                 installer.nameFromWirelet = name;// has already been validated
             }
         }

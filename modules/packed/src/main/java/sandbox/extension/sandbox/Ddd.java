@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
+import app.packed.bean.BeanKind;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanHook.AnnotatedMethodHook;
@@ -30,7 +31,6 @@ import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifecycleOrder;
 import app.packed.lifetime.OnInitialize;
-import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.container.ContainerTemplate;
 
@@ -50,7 +50,6 @@ public class Ddd extends BaseAssembly {
         App.run(new Ddd());
         ApplicationMirror m = App.mirrorOf(new Ddd());
         System.out.println(Ddd.class.getCanonicalName() + ".build(Ddd.java:44)");
-        new Exception().printStackTrace();
         m.print();
     }
 
@@ -66,13 +65,13 @@ public class Ddd extends BaseAssembly {
         MyEntityException() {}
 
         public void addEntityBean(Class<?> entityBean) {
-            child().base().beanBuilder(BeanTemplate.EXTERNAL).install(entityBean);
+            child().base().newBeanForUser(BeanKind.MANANGED.template()).install(entityBean);
         }
 
         MyEntityException child() {
             MyEntityException c = child;
             if (c == null) {
-                ContainerHandle h = base().containerBuilder(ContainerTemplate.DEFAULT).named("EntityBeans").buildAndUseThisExtension();
+                ContainerHandle h = base().newContainer(ContainerTemplate.DEFAULT).named("EntityBeans").buildAndUseThisExtension();
                 c = child = fromHandle(h).get();
             }
             return c;
@@ -84,7 +83,9 @@ public class Ddd extends BaseAssembly {
 
                 @Override
                 public void hookOnAnnotatedMethod(Annotation hooks, BeanMethod on) {
-                    base().runOnBeanInject(on.newDelegatingOperation());
+              //      base().runOnBeanInject(on.newDelegatingOperation());
+
+                   // base().runOnBeanInject(on.newOperation());
                 }
             };
         }

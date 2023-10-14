@@ -20,26 +20,33 @@ import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 import java.util.function.Supplier;
 
-import app.packed.extension.BeanVariable;
+import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionPoint;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationType;
 import internal.app.packed.context.publish.ContextualizedElement;
+import internal.app.packed.operation.PackedOperationBuilder;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /**
- * A handle for an operation.
+ * A handle for managing an operation at build-time.
  */
-public sealed interface OperationHandle extends ContextualizedElement permits PackedOperationHandle {
+// AllInit
+/// FooBean.init()
+/// TooBean.init1()
+/// TooBean.init12()
 
-    /**
-     * @param handle
-     *
-     * @throws UnsupportedOperationException
-     *             if this operation handle is not a composite operation handle
-     */
-    default void addChild(OperationHandle handle) {}
+// Embedded (yes/no)
+// Top (yes/no)
+// Top does not have a parent
+// Top Yes and
+
+// Top
+// Non-Top
+// Embedded
+public sealed interface OperationHandle extends ContextualizedElement permits PackedOperationHandle {
 
     // Hmm there is a difference between operating within contexts./
     // And invocation argument contexts
@@ -48,28 +55,24 @@ public sealed interface OperationHandle extends ContextualizedElement permits Pa
     /**
      * Generates a method handle that can be used to invoke the underlying operation.
      * <p>
-     * This method can only be called in the code generating phase of the application's build process.
+     * This method cannot be called earlier than the code generating phase of the application.
      * <p>
-     * The type of the returned method handle is {@code invocationType()}.
+     * The {@link MethodType method type} of the returned method handle is {@code invocationType()}.
      *
      * @return the generated method handle
      *
      * @throws IllegalStateException
-     *             if called outside of the code generating phase of the application.
+     *             if called before the code generating phase of the application.
      */
     MethodHandle generateMethodHandle();
-
-    default VarHandle generateVarHandle() {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * {@return the invocation type of this operation.}
      * <p>
-     * Method handles generated via {@link #generateMethodHandle()} will always return their {@link MethodHandle#type()
-     * type} as the returned value
+     * Method handles generated via {@link #generateMethodHandle()} will always the returned value as their
+     * {@link MethodHandle#type() method handle type}.
      *
-     * @see OperationTemplate
+     * @see OperationTemplate.Descriptor#invocationType()
      */
     MethodType invocationType();
 
@@ -95,7 +98,7 @@ public sealed interface OperationHandle extends ContextualizedElement permits Pa
      *             Maaske har vi en slags immutable version af operation handle
      * @throws IllegalStateException
      *             this method must be called before the runtime starts resolving parameters. It is best to call this
-     *             immidealy after having created the operation. The actual binding can be done at a laver point\
+     *             immediately after having created the operation. The actual binding can be done at a laver point\
      * @see BindingKind#MANUAL
      */
     // Tror vi force laver (reserves) en binding her.
@@ -103,7 +106,8 @@ public sealed interface OperationHandle extends ContextualizedElement permits Pa
     // parameter virker kun som navn hvis man ikke "reservere" binding.
     // Men binder med det samme
     // reserve
-    BeanVariable manuallyBindable(int parameterIndex);
+    // manuallyBindable(1).bindInvocationArgument(1);
+    BindableVariable manuallyBindable(int parameterIndex);
 
     // Ogsaa en template ting taenker jeg? IDK
     void named(String name);
@@ -130,15 +134,61 @@ public sealed interface OperationHandle extends ContextualizedElement permits Pa
 
     /** {@return the type of this operation.} */
     OperationType type();
+
+    /**
+    *
+    */
+
+    // Source
+    //// Method/Constructor
+    //// Field -> Get/Set/Invoke
+    //// Function / Op / MethodHandle
+
+    // "Targets"
+
+    // FullOp
+    // ChildOp
+    // DelegateTo
+    // (Bounded) EmbeddedOp  (Er aldrig visible...
+
+    public sealed interface Builder permits PackedOperationBuilder {
+
+        OperationHandle build(OperationTemplate template);
+
+        Builder delegateTo(ExtensionPoint.UseSite extension);
+
+        /**
+         * Specializes the mirror that is returned for the operation.
+         * <p>
+         * The specified supplier may be called multiple times for the same operation.
+         * <p>
+         * The specified supplier should never return {@code null}.
+         *
+         * @param supplier
+         *            a mirror supplier that is called if a mirror is required
+         * @throws IllegalStateException
+         *             if the operation is no longer configurable
+         */
+        Builder specializeMirror(Supplier<? extends OperationMirror> supplier);
+    }
 }
 
 interface Zandbox {
+
+//  // Maaske har vi en and then...
+//  // First@InitializeHandle.andThen(Builder )
+//  // Kan kun lave en MH for den foerste
+//  OperationHandle buildChild(OperationHandle parent);
+
+    // raekkefoelgen kender man jo ikke
+    // Foer vi har sorteret
+    void addChild(OperationHandle h);
 
     // Det ville jo vaere rart at sige. Hey
     // Lav denne Operation. Det er en naestet operation, saa
     // tages contexts fra parent operation
 
-    // raekkefoelgen kender man jo ikke
-    // Foer vi har sorteret
-    void addChild(OperationHandle h);
+    default VarHandle generateVarHandle() {
+        throw new UnsupportedOperationException();
+    }
 }

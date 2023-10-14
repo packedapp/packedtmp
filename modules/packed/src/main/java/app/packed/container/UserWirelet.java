@@ -16,10 +16,6 @@
 package app.packed.container;
 
 /**
- * A wirelet that can be used by application developers.
+ * A wirelet that can be used by users of the framework.
  */
-// ApplicationWirelets er jo ikke saerlig fed... Naar vi har den her
-
-// Efter vi har faaet Deployment. Kan vi ikke bruge application
-// UserWirelet
 public non-sealed abstract class UserWirelet extends Wirelet {}

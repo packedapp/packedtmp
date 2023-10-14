@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 import app.packed.application.OldApplicationPath;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocal;
-import app.packed.bean.BeanLocal.LocalAccessor;
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
@@ -39,7 +39,7 @@ import internal.app.packed.context.publish.ContextualizedElement;
 import sandbox.extension.operation.OperationHandle;
 
 /**
- * A bean handle is a reference to an installed bean, private to the extension that installed the bean.
+ * A bean handle is a build-time reference to an installed bean.
  * <p>
  * Instances of {@code BeanHandle} should never be exposed outside of the extension that created the bean. Instead a
  * handle should be returned wrapped in {@link BeanConfiguration} (or a subclass hereof).
@@ -49,8 +49,7 @@ import sandbox.extension.operation.OperationHandle;
  * @see BeanBuilder#installIfAbsent(Class, java.util.function.Consumer)
  * @see BeanBuilder#installInstance(Object)
  */
-@SuppressWarnings("rawtypes")
-public sealed interface BeanHandle<T> extends ContextualizedElement, LocalAccessor permits PackedBeanHandle  {
+public sealed interface BeanHandle<T> extends ContextualizedElement, Accessor permits PackedBeanHandle {
 
     /** {@return the bean class.} */
     Class<?> beanClass();
@@ -142,6 +141,19 @@ public sealed interface BeanHandle<T> extends ContextualizedElement, LocalAccess
     void named(String name);
 
     /**
+     * Prepares t
+     *
+     * @param function
+     *            the user defined function that should be invoked
+     * @return a new operation handle handle
+     */
+    default OperationHandle.Builder newFunctionalOperation(Object function) {
+        // De giver faktisk ret god mening at tage funktionen nu
+        // Det er jo ligesom at BeanMethod giver metoden videre til builderen
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * @return
      */
     Author author();
@@ -170,7 +182,6 @@ public sealed interface BeanHandle<T> extends ContextualizedElement, LocalAccess
      */
     void provideAs(Key<? super T> key);
 
-
     /**
      * An installer for installing beans into a container.
      * <p>
@@ -181,6 +192,10 @@ public sealed interface BeanHandle<T> extends ContextualizedElement, LocalAccess
      * @see BaseExtensionPoint#newBeanForExtension(BeanKind, app.packed.extension.ExtensionPoint.UseSite)
      */
     public sealed interface Builder permits PackedBeanHandleBuilder {
+
+        default BeanHandle<?> installFunctional() {
+            throw new UnsupportedOperationException();
+        }
 
         /**
          * Installs the bean using the specified class as the bean source.
@@ -220,7 +235,8 @@ public sealed interface BeanHandle<T> extends ContextualizedElement, LocalAccess
         Builder namePrefix(String prefix);
 
         /**
-         * Sets a supplier that creates a special bean mirror instead of a generic {@code BeanMirror} when a bean mirror is needed.
+         * Sets a supplier that creates a special bean mirror instead of a generic {@code BeanMirror} if a mirror for the bean
+         * is requested.
          *
          * @param supplier
          *            the supplier used to create the bean mirror

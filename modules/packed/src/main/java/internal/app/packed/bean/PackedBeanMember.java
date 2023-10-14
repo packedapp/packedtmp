@@ -21,7 +21,6 @@ import app.packed.util.AnnotationList;
 import internal.app.packed.util.PackedAnnotationList;
 
 /** The super class of operational members. The inheritance hierarchy follows that of {@link Member}. */
-@SuppressWarnings("rawtypes")
 abstract sealed class PackedBeanMember<M extends Member> extends PackedBeanElement permits PackedBeanExecutable {
 
     @Override

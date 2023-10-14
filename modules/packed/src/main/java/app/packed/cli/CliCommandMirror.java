@@ -24,20 +24,21 @@ import app.packed.namespace.NamespaceOperationMirror;
  */
 public class CliCommandMirror extends NamespaceOperationMirror {
 
-    /** The command being mirrored. */
-    final PackedCliCommand command;
+    final CliExtensionNamespace namespace;
+    final CliCommand command;
 
-    CliCommandMirror(PackedCliCommand command) {
+    CliCommandMirror(CliExtensionNamespace namespace, CliCommand command) {
         this.command = command;
+        this.namespace = namespace;
     }
 
     public List<String> names() {
-        return List.of(command.command().name());
+        return List.of(command.name());
     }
 
     /** {@return the namespace this command is part of.} */
     @Override
     public CliNamespaceMirror namespace() {
-        return command.namespace().mirror();
+        return namespace.mirror();
     }
 }

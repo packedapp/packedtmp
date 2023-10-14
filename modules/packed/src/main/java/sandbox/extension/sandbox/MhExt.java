@@ -73,7 +73,7 @@ public class MhExt extends BaseAssembly {
         BeanHandle<?> h;
 
         public void ownL(Class<?> cl) {
-            h = base().beanBuilder(BeanKind.UNMANAGED.template()).install(cl);
+            h = base().newBeanForUser(BeanKind.UNMANAGED.template()).install(cl);
         }
 
         @Override

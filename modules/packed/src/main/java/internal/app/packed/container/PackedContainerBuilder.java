@@ -37,11 +37,12 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
- * A container build is responsible for building containers and applications.
+ * A container builder is used for every container that is being built.
  * <p>
- * This class and subclasses are a bit messy.
+ * This class and subclasses are a bit messy. Still don't know if we want to expose some kind of container builder.
  *
- * @implNote This class is not sealed because some of the implementations is in a public package
+ *
+ * @implNote This class is not sealed because some of the implementations are in a public package
  */
 // Hvis vi ender med separate Container og Applications links metoder.
 // Saa tror vi skal have en AbstractContainerContainerBuilder, AbstractContainerApplicationBuilder.
@@ -63,9 +64,10 @@ public abstract class PackedContainerBuilder {
     /** Delegating assemblies. Empty unless any {@link DelegatingAssembly} has been used. */
     public final ArrayList<Class<? extends DelegatingAssembly>> delegatingAssemblies = new ArrayList<>();
 
-    /** Locals that the container is initialized with. */
-    public final IdentityHashMap<PackedContainerLocal<?>, Object> locals = new IdentityHashMap<>();
+    /** Container locals that the container is initialized with. */
+    final IdentityHashMap<PackedContainerLocal<?>, Object> locals = new IdentityHashMap<>();
 
+    /** The name of the container. */
     String name;
 
     @Nullable
@@ -82,6 +84,7 @@ public abstract class PackedContainerBuilder {
     /** The template for the new container. */
     public final PackedContainerTemplate template;
 
+    /** A list of wirelets that have not been consumed yet. */
     public final ArrayList<Wirelet> unconsumedWirelets = new ArrayList<>();
 
     protected PackedContainerBuilder(PackedContainerTemplate template) {
@@ -181,36 +184,31 @@ public abstract class PackedContainerBuilder {
 
     // Er her fordi den skal fixes paa lang sigt
     ContainerSetup newContainer(AssemblySetup assembly) {
-        if (this instanceof LeafContainerOrApplicationBuilder installer) {
+        if (this instanceof NonRootContainerBuilder installer) {
             return installer.newContainer(installer.parent.application, assembly);
         } else {
             return new ApplicationSetup(this, assembly).container;
         }
     }
 
-    // Hvad vi har bagefter er en liste af ikke internal wirelets
-
-    // Wirelets from Template
-    // Wirelets from delegating assembly
-    // Wirelets from build site
-
-    public void processBuildWirelet(Wirelet[] wirelets) {
+    /**
+     * Processes all wirelets that were specified when building the container.
+     *
+     * @param wirelets
+     *            the wirelets to process
+     */
+    public void processBuildWirelets(Wirelet[] wirelets) {
         requireNonNull(wirelets, "wirelets is null");
-        for (Wirelet w : wirelets) {
-            processWireletOnBuild(w);
-        }
-    }
-
-    void processWireletOnBuild(Wirelet w) {
-        requireNonNull(w);
-        if (w instanceof CompositeWirelet cw) {
-            for (Wirelet ww : cw.wirelets) {
-                processWireletOnBuild(ww);
+        for (Wirelet wirelet : wirelets) {
+            requireNonNull(wirelet, "wirelet is null");
+            if (wirelet instanceof CompositeWirelet cw) {
+                processBuildWirelets(cw.wirelets);
+            } else if (wirelet instanceof InternalBuildWirelet ibw) {
+                ibw.onBuild(this);
+            } else {
+                // A non-build wirelet that will be processed at a later point
+                unconsumedWirelets.add(wirelet);
             }
-        } else if (w instanceof InternalBuildWirelet ibw) {
-            ibw.onInstall(this);
-        } else {
-            unconsumedWirelets.add(w);
         }
     }
 

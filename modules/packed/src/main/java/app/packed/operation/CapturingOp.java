@@ -63,7 +63,10 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
             Class<?> functionalInterface = p.getType();
 
             SamType st = SamType.of(functionalInterface);
-            return new Base(type, st);
+
+            TypeVariableExtractor tve = TypeVariableExtractor.of(type);
+
+            return new Base(st, tve);
         }
     };
 
@@ -136,18 +139,7 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
         return op.type();
     }
 
-    private static class Base {
-        final SamType samType;
-
-        final TypeVariableExtractor tve;
-
-        Base(Class<?> baseType, SamType samType) {
-            this.samType = samType;
-            this.tve = TypeVariableExtractor.of(baseType);
-
-            // TODO make methodHandle that can
-        }
-    }
+    private record Base(SamType samType, TypeVariableExtractor tve) {}
 
     private static class Top {
         final Base base;

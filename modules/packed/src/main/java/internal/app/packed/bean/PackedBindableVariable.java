@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanInstallationException;
 import app.packed.context.Context;
 import app.packed.context.NotInContextException;
-import app.packed.extension.BeanVariable;
+import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.operation.BindingMirror;
@@ -49,9 +49,10 @@ import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.operation.PackedOp;
 import sandbox.extension.operation.OperationTemplate;
+import sandbox.extension.operation.OperationTemplate.Descriptor;
 
 /** Implementation of {@link BindableVariable}. */
-public final class PackedBindableVariable extends PackedBeanElement implements BeanVariable {
+public final class PackedBindableVariable extends PackedBeanElement implements BindableVariable {
 
     /** Whether or not allow binding of static fields. */
     private boolean allowStaticFieldBinding;
@@ -85,7 +86,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
 
     /** {@inheritDoc} */
     @Override
-    public BeanVariable allowStaticFieldBinding() {
+    public BindableVariable allowStaticFieldBinding() {
         checkNotBound();
         allowStaticFieldBinding = true;
         return this;
@@ -110,7 +111,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
 
     /** {@inheritDoc} */
     @Override
-    public void bindConstant(@Nullable Object obj) {
+    public PackedBindableVariable bindConstant(@Nullable Object obj) {
         checkBeforeBind();
         if (obj == null) {
             if (variable.rawType().isPrimitive()) {
@@ -129,11 +130,12 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
 
         }
         bind(new FromConstant(Object.class, obj));
+        return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void bindContextValue(Class<? extends Context<?>> context) {
+    public PackedBindableVariable bindContext(Class<? extends Context<?>> context) {
         // todo normalize
         if (context != ExtensionContext.class) {
             ContextSetup findContext = operation.findContext(context);
@@ -145,19 +147,20 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
         int indexOf = mt.parameterList().indexOf(context);
         // TODO fix. We need to look up the
         bindInvocationArgument(indexOf);
+        return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void bindGeneratedConstant(Supplier<?> supplier) {
+    public PackedBindableVariable bindComputedConstant(Supplier<?> supplier) {
         checkBeforeBind();
         // We can't really do any form of type checks until we call the supplier
         bind(new FromCodeGenerated(supplier));
+        return this;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public void bindInvocationArgument(int argumentIndex) {
+    public PackedBindableVariable bindInvocationArgument(int argumentIndex) {
         checkBeforeBind();
         if (operation.operator != bindingExtension) {
             throw new UnsupportedOperationException("For binding " + variable);
@@ -166,11 +169,12 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
         // TODO check type
 
         bind(new FromInvocationArgument(argumentIndex));
+        return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void bindOp(Op<?> op) {
+    public PackedBindableVariable bindOp(Op<?> op) {
         checkBeforeBind();
         PackedOp<?> pop = PackedOp.crack(op);
 
@@ -183,6 +187,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
 
         // Resolve the new operation immediately
         scanner.resolveNow(os);
+        return this;
     }
 
     private void checkBeforeBind() {
@@ -219,7 +224,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
 
     /** {@inheritDoc} */
     @Override
-    public BeanVariable specializeMirror(Supplier<? extends BindingMirror> supplier) {
+    public BindableVariable specializeMirror(Supplier<? extends BindingMirror> supplier) {
         checkNotBound();
         this.mirrorSupplier = requireNonNull(supplier);
         return this;
@@ -228,7 +233,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
     /** {@inheritDoc} */
     @Override
     public Key<?> toKey() {
-        return Key.fromVariable(this);
+        return Key.fromBindableVariable(this);
     }
 
     /** {@inheritDoc} */
@@ -241,5 +246,11 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
     @Override
     public BeanSetup bean() {
         return scanner.bean;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Descriptor operation() {
+        return operation.template.descriptor();
     }
 }

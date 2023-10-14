@@ -39,9 +39,23 @@ public final class App {
     private App() {}
 
     /**
-     * Builds an application and returns a launcher that can be used to launch a <b>single</b> instance of the application.
+     * This method is identical to {@link #run(Assembly, Wirelet...)} except that it will not wrapped any checked
+     * exceptions.
+     *
+     * @param assembly
+     * @param wirelets
+     * @throws Throwable
+     */
+    public static void checkedRun(Assembly assembly, Wirelet... wirelets) throws Throwable {
+        BOOTSTRAP.launch(assembly, wirelets);
+    }
+
+    /**
+     * Builds the application from the specified assembly and returns a image that can be used to launch a <b>single</b>
+     * instance of the application at a later point.
      * <p>
-     * If you need to launch multiple instances of the same application specify {@code ApplicationImageWirelets.resuable()}.
+     * If you need to launch multiple instances of the same application. You can specify
+     * {@code ApplicationImageWirelets.resuable()} in the wirelet part of this method.
      *
      * @param assembly
      *            the application's assembly
@@ -138,4 +152,3 @@ public final class App {
         }
     }
 }
-

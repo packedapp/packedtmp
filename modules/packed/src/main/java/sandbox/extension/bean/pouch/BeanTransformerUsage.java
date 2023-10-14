@@ -17,7 +17,7 @@ package sandbox.extension.bean.pouch;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.bean.BeanTransformer;
+import app.packed.bean.BeanClassTransformer;
 import app.packed.bean.Inject;
 import app.packed.container.AssemblyHook;
 import app.packed.container.BaseAssembly;
@@ -38,14 +38,12 @@ public class BeanTransformerUsage {
             base().transformNextBean(c -> c.ignoreAllFields(f -> f.getName().equals("foo")));
 
             install(String.class);
-            base().transformNextBean(c -> c.ignoreAllFieldsNamed("foo"));
-            install(String.class);
 
             // Ignore all fields annotated with @Inject
             // AssemblyHook?
-            base().transformFutureBeans(c -> c.ignoreAllFields(f -> f.isAnnotationPresent(Inject.class)));
+            base().transformBeans(c -> c.ignoreAllFields(f -> f.isAnnotationPresent(Inject.class)));
 
-            Runnable cancel = base().transformFutureBeans(c -> {
+            Runnable cancel = base().transformBeans(c -> {
                 if (c.beanClass().getPackageName().equals("foobar")) {
                     System.out.println(c.beanClass());
                 }
@@ -62,7 +60,7 @@ public class BeanTransformerUsage {
 
         @Override
         public void beforeBuild(ContainerConfiguration configuration) {
-            configuration.use(BaseExtension.class).transformFutureBeans(c -> {
+            configuration.use(BaseExtension.class).transformBeans(c -> {
 
                 // replace Jakarta.inject -> Doo.inject.class;
                 // if c.eachBeanField.isAnnotatedWith(Inject.class) -> Throw new UOE;
@@ -73,7 +71,7 @@ public class BeanTransformerUsage {
     public class MyBean {
 
         static {
-            BeanTransformer.alwaysTransform(MethodHandles.lookup(), c -> {
+            BeanClassTransformer.alwaysTransform(MethodHandles.lookup(), c -> {
                 c.addFunction(Variable.of(Void.class), () -> {
                     System.out.println();
                     return null;

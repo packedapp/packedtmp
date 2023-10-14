@@ -32,11 +32,7 @@ import internal.app.packed.operation.OperationSetup.MethodHandleOperationSetup;
  *
  * @see OperationMirror#target()
  */
-// Hvad har at lave en ny container/bean som target???
 public sealed interface OperationTarget {
-
-    /** Represents an operation that invokes other (child) operations. */
-    non-sealed interface OfNested extends OperationTarget {}
 
     /** Represents an operation that invokes a {@link Constructor constructor}. */
     sealed interface OfConstructor extends OperationTarget permits OperationConstructorTarget {
@@ -49,7 +45,7 @@ public sealed interface OperationTarget {
     sealed interface OfField extends OperationTarget permits OperationFieldTarget {
 
         /** {@return the mode used when accessing the field.} */
-        AccessMode accessMode(); // If we support VarHandle, Optional? or fail
+        AccessMode accessMode(); // If we support VarHandle: Optional? or fail . Hmm skal vel matche operation type
 
         /** {@return the underlying field.} */
         Field field();
@@ -82,6 +78,13 @@ public sealed interface OperationTarget {
         MethodType methodType();
     }
 }
+
+//Hvad har at lave en ny container/bean som target???
+// OfSpecial()
+
+// Vi har invokers nu. Det er ikke operation
+///** Represents an operation that invokes other (child) operations. */
+//non-sealed interface OfNested extends OperationTarget {}
 
 ///** Represents an operation that accesses a bean instance. */
 //public non-sealed interface OfThisAccess extends OperationTarget {

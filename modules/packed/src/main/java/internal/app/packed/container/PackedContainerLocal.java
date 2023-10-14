@@ -41,7 +41,7 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
         return locals(container).get(this, container);
     }
 
-    public T get(LeafContainerOrApplicationBuilder contianer) {
+    public T get(NonRootContainerBuilder contianer) {
         throw new UnsupportedOperationException();
     }
 
@@ -70,7 +70,7 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
         final class ContainerSetLocalWirelet extends InternalBuildWirelet {
 
             @Override
-            protected void onInstall(PackedContainerBuilder installer) {
+            protected void onBuild(PackedContainerBuilder installer) {
                 installer.locals.put(PackedContainerLocal.this, value);
             }
         }

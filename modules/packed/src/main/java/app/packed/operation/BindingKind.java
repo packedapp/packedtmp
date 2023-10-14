@@ -32,7 +32,7 @@ public enum BindingKind {
     HOOK,
 
     /**
-     * The binding has been created manually.
+     * A binding that was created manually.
      *
      * @see OperationHandle#manuallyBindable(int)
      * @see Op#bind(Object)

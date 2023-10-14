@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanInstallationException;
-import app.packed.bean.BeanLocal.LocalAccessor;
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.extension.BeanElement.BeanClass;
 import app.packed.extension.BeanElement.BeanConstructor;
 import app.packed.extension.BeanElement.BeanField;
@@ -35,9 +35,8 @@ import internal.app.packed.bean.PackedBeanConstructor;
 import internal.app.packed.bean.PackedBeanElement;
 import internal.app.packed.bean.PackedBeanField;
 import internal.app.packed.bean.PackedBeanMethod;
-import sandbox.extension.operation.CompositeOperationHandle;
-import sandbox.extension.operation.DelegatingOperationHandle;
 import sandbox.extension.operation.OperationHandle;
+import sandbox.extension.operation.OperationHandle.Builder;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
@@ -50,7 +49,7 @@ import sandbox.extension.operation.OperationTemplate;
 // Checks container lifetime
 // Checks own extension or container lifetime
 // service.provide -> isContainerLifetime or prot
-public sealed interface BeanElement extends LocalAccessor permits PackedBeanElement, BeanClass, BeanField, BeanConstructor, BeanMethod, BeanVariable {
+public sealed interface BeanElement extends Accessor permits PackedBeanElement, BeanClass, BeanField, BeanConstructor, BeanMethod, BindableVariable {
 
     /** {@return a list of annotations on the element.} */
     AnnotationList annotations();
@@ -158,6 +157,10 @@ public sealed interface BeanElement extends LocalAccessor permits PackedBeanElem
         /** {@return the underlying field.} */
         Field field();
 
+        default Builder newGetOperation() {
+            throw new UnsupportedOperationException();
+        }
+
         /**
          * Creates a new operation that can read the underlying field.
          * <p>
@@ -170,11 +173,6 @@ public sealed interface BeanElement extends LocalAccessor permits PackedBeanElem
          * @see Lookup#unreflectGetter(Field)
          */
         OperationHandle newGetOperation(OperationTemplate template);
-
-        // Unwrapped instaed???
-        default BeanVariable newInjectOperation() {
-            throw new UnsupportedOperationException();
-        }
 
         /**
          * Creates a new operation that can read or/and write a field as specified by the provided access mode.
@@ -225,7 +223,8 @@ public sealed interface BeanElement extends LocalAccessor permits PackedBeanElem
     public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod {
 
         /**
-         * @return
+         * {@return whether or not this bean method has invoke access to the underlying method}
+         *
          * @see AnnotatedMethodHook#allowInvoke()
          */
         boolean hasInvokeAccess();
@@ -234,20 +233,21 @@ public sealed interface BeanElement extends LocalAccessor permits PackedBeanElem
         Method method();
 
         /**
-         * Creates a new delegating operation handle that allows an extension to delegate the invocation of the method to
-         * another extension.
+         * Creates a new builder for an operation that can invoke the underlying method.
          *
-         * @return the delegating operation handle
+         * @return an operation handle builder
+         *
+         * @throws InaccessibleBeanMemberException
+         *             if the framework does not have access to invoke the method
+         * @throws InternalExtensionException
+         *             if the extension does not have access to invoke the method
+         *
+         * @see OperationTarget.OfMethodHandle
+         * @see Lookup#unreflect(Method)
+         * @see BeanMethodHook#allowInvoke()
+         * @see BeanClassHook#allowFullPrivilegeAccess()
          */
-        DelegatingOperationHandle newDelegatingOperation();
-
-
-        // Vi har ikke order endnu...
-        // Saa maa vi vente med at kalde denne metode...
-        // Hmm, det kan vi ikke fordi vi resolver ting
-        default OperationHandle newChildOperation(CompositeOperationHandle parentHandle) {
-            throw new UnsupportedOperationException();
-        }
+        OperationHandle.Builder newOperation();
 
         /**
          * Creates a new operation that can invoke the underlying method.
@@ -278,7 +278,6 @@ public sealed interface BeanElement extends LocalAccessor permits PackedBeanElem
         }
     }
 }
-
 
 // addToCompositeOperation...
 

@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.service.mirror;
 
-import app.packed.bean.BeanMirror;
+import app.packed.util.Key;
 
 /**
  *
  */
-//Hvor faar vi den fra successfuld
-////En Bean (constant)
-////En Lifetime bean
-////En prototypeBean
-////En @Provide method
+public interface ServiceMirror {
 
-// En prototype bean og @Provide har nok mest tilfaelles
-// De er en non-caching operation
-public interface ResolvedServiceMirror {
+    Key<?> key();
 
-    BeanMirror bean();
-
-    boolean isBeanInstance();
+    ServiceNamespaceMirror domain();
 }

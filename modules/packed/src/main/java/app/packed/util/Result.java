@@ -21,16 +21,14 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- *
- * <p>
- * This class is modelled on the basis of {@link Future}.
+ * This class is modelled on the basis of a completed {@link Future}.
  *
  */
 // https://www.reddit.com/r/Kotlin/comments/oi9rh2/so_glad_that_result_is_finalized_in_15/
 
 // ApplicationResult? Take a RunState as well
 // BuildException
-public final /* primitive */ class Result<T> {
+public final /* value */ class Result<T> {
 
     /** The result, or an exception if completed exceptional. */
     private final Object result;

@@ -16,6 +16,7 @@
 package app.packed.util;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -48,6 +49,8 @@ public interface TreeView<N> {
     default Stream<N> stream() {
         throw new UnsupportedOperationException();
     }
+
+    default void print(Function<? super N, String> f) {}
 
     /**
      * A tree plus a node

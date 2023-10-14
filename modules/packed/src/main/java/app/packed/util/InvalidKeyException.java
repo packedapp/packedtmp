@@ -1,12 +1,9 @@
 package app.packed.util;
 
 /**
- *
- * No Type variables
- *
- * No forbidden types
- *
- * No qualifiers of the same type or canonical name
+ * An exception that is typically thrown when trying to construct a key that is not valid.
+ * <p>
+ * {@link Key} lists all the conditions that must apply to construct a valid key.
  */
 public class InvalidKeyException extends RuntimeException {
 

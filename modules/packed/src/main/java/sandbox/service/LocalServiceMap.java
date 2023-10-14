@@ -15,7 +15,7 @@
  */
 package sandbox.service;
 
-import app.packed.extension.BeanVariable;
+import app.packed.extension.BindableVariable;
 import app.packed.util.Key;
 import sandbox.extension.bean.BeanHandle;
 import sandbox.extension.operation.OperationHandle;
@@ -47,9 +47,9 @@ public interface LocalServiceMap {
     // Vi har fundet en binding som vi gerne vil binde til en service
 
     // Must be resolvable to a key
-    void bindInto(BeanVariable variable);
-    void bindInto(Class<?> key, BeanVariable variable);
-    void bindInto(Key<?> key, BeanVariable variable);
+    void bindInto(BindableVariable variable);
+    void bindInto(Class<?> key, BindableVariable variable);
+    void bindInto(Key<?> key, BindableVariable variable);
 
     // Producing multiple services with the same key is not supported
 

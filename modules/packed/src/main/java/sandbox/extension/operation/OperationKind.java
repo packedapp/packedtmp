@@ -20,4 +20,11 @@ package sandbox.extension.operation;
  */
 public class OperationKind {
 
+    // Direct?
+
+    // Raw
+
+    // Composite
+
+    // Interceptor???
 }

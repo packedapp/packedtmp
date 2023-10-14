@@ -30,7 +30,7 @@ import app.packed.application.OldApplicationPath;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.service.ServiceableBeanConfiguration;
-import app.packed.util.TreeView.Node;
+import app.packed.util.TreeView;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NamespaceSetup;
 import internal.app.packed.container.PackedContainerHandle;
@@ -76,7 +76,7 @@ import sandbox.extension.domain.NamespaceTemplate;
 public abstract class Extension<E extends Extension<E>> {
 
     /** The internal configuration of the extension. */
-    final ExtensionSetup extension = ExtensionSetup.MI.initialize();
+    final ExtensionSetup extension;
 
     /**
      * Creates a new extension. Subclasses should have a single package-private constructor.
@@ -84,25 +84,27 @@ public abstract class Extension<E extends Extension<E>> {
      * @throws IllegalStateException
      *             if attempting to construct the extension manually
      */
-    protected Extension() {}
+    protected Extension() {
+        // Will fail if the extension is not initialized by the framework
+        this.extension = ExtensionSetup.MAGIC_INITIALIZER.initialize();
+    }
 
     /**
-     * Returns an extension navigator with this extension instance as the current extension.
+     * Returns a node representing this extension in the application's extension tree.
      *
      * @return an extension navigator
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final Node<E> applicationNode() {
-        return new ExtensionNavigator(extension, extension.extensionType);
+    protected final TreeView.Node<E> applicationNode() {
+        return new ExtensionTreeViewNode(extension, extension.extensionType);
     }
 
     /**
      * {@return an instance of this extension that is used in the application's root container. Will return this if this
      * extension is the root extension}
      */
-    @SuppressWarnings("unchecked")
     protected final E applicationRoot() {
-        return (E) extension.root().instance();
+        return applicationNode().root();
     }
 
     /** {@return the base extension point.} */
@@ -263,6 +265,7 @@ public abstract class Extension<E extends Extension<E>> {
      * extension's container. Failing to follow this rule will result in an {@link InternalExtensionException} being thrown.
      */
     // Hmm InternalExtensionException hvis det er brugerens skyld??
+    // Configured????
     protected void onApplicationClose() {
         // childCursor
         for (ExtensionSetup e = extension.treeFirstChild; e != null; e = e.treeNextSibling) {

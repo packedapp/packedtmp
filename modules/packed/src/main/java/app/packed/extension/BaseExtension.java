@@ -15,12 +15,12 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildException;
 import app.packed.application.DeploymentMirror;
+import app.packed.bean.BeanClassTransformer;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanTransformer;
 import app.packed.bean.Inject;
 import app.packed.bean.ManagedBeanRequiredException;
 import app.packed.container.Assembly;
@@ -52,9 +52,9 @@ import app.packed.util.Variable;
 import internal.app.packed.bean.BeanLifecycleOrder;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandleBuilder;
-import internal.app.packed.bean.PackedBeanWrappedVariable;
+import internal.app.packed.bean.PackedBindableWrappedVariable;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
-import internal.app.packed.container.LeafContainerOrApplicationBuilder;
+import internal.app.packed.container.NonRootContainerBuilder;
 import internal.app.packed.entrypoint.OldEntryPointSetup;
 import internal.app.packed.entrypoint.OldEntryPointSetup.MainThreadOfControl;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
@@ -63,7 +63,6 @@ import internal.app.packed.service.PackedServiceLocator;
 import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.MethodHandleUtil;
 import sandbox.extension.bean.BeanHandle;
-import sandbox.extension.bean.BeanHandle.Builder;
 import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.container.ContainerCarrierService;
 import sandbox.extension.container.ContainerHandle;
@@ -104,21 +103,21 @@ import sandbox.lifetime.external.LifecycleController;
 
 public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
-    /** A key map with providers for use together with {@link app.packed.extension.BaseExtensionPoint.CodeGenerated}. */
-    static final BeanLocal<Map<Key<?>, BeanVariable>> CODEGEN = BeanLocal.of(() -> new HashMap<>());
+    /** A bean local for variables that use {@link app.packed.extension.BaseExtensionPoint.CodeGenerated}. */
+    private static final BeanLocal<Map<Key<?>, BindableVariable>> CODEGEN = BeanLocal.of(() -> new HashMap<>());
 
     // We use an initial value for now, because we share FromLinks and the boolean fields
     // But right now we only have a single field
     static final ContainerLocal<FromLinks> FROM_LINKS = ContainerLocal.ofContainer(FromLinks::new);
 
-    final ArrayList<BeanVariable> varsToResolve = new ArrayList<>();
+    final ArrayList<BindableVariable> varsToResolve = new ArrayList<>();
 
     /** All your base are belong to us. */
     BaseExtension() {}
 
     <K> void addCodeGenerated(BeanSetup bean, Key<K> key, Supplier<? extends K> supplier) {
-        Map<Key<?>, BeanVariable> m = bean.container.application.locals.get(CODEGEN, bean);
-        BeanVariable var = m.get(key);
+        Map<Key<?>, BindableVariable> m = bean.container.application.locals.get(CODEGEN, bean);
+        BindableVariable var = m.get(key);
         if (var == null) {
             throw new IllegalArgumentException("The specified bean must have an injection site that uses @" + CodeGenerated.class.getSimpleName() + " " + key
                     + ". Available " + m.keySet());
@@ -126,30 +125,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             throw new IllegalStateException("A supplier has previously been provided for key [key = " + key + ", bean = " + bean + "]");
         }
 
-        var.bindGeneratedConstant(supplier);
-    }
-
-    /**
-     * All beans. the consumer is invoked once on every bean that is installed with
-     * <p>
-     * If there are any all bean transformers. They will be invoked before this
-     *
-     * @param transformer
-     *            the bean transformer
-     */
-    public void transformNextBean(Consumer<? super BeanTransformer> transformer) {}
-
-    // All beans that are installed with the assembly
-    /**
-     * <p>
-     * If there are multiple all bean transformers active at the same type. They will be invoked in the order they where
-     * registered. The first one registered will be run first
-     *
-     * @param transformer
-     * @return A runnable that be can run after which the transformer will no longer be applied when installing beans.
-     */
-    public Runnable transformFutureBeans(Consumer<? super BeanTransformer> transformer) {
-        throw new UnsupportedOperationException();
+        var.bindComputedConstant(supplier);
     }
 
     // One of 3 models...
@@ -323,7 +299,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /** {@return a new container builder used for linking.} */
     private ContainerHandle.Builder link0() {
-        return LeafContainerOrApplicationBuilder.of(ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application, extension.container);
+        return NonRootContainerBuilder.of(ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application, extension.container);
     }
 
     /**
@@ -333,7 +309,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      *            a template for the bean
      * @return a bean installer
      */
-    private Builder newBeanBuilderSelf(BeanTemplate template) {
+    private BeanHandle.Builder newBeanBuilderSelf(BeanTemplate template) {
         return new PackedBeanHandleBuilder(extension, extension, template);
     }
 
@@ -366,7 +342,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                 if (hook instanceof Inject) {
                     // checkNotStatic
                     // Det er jo inject service!???
-                    field.newInjectOperation().unwrap();
+                 //   field.newBindableVariable().unwrap();
                     // OperationHandle handle = field.newSetOperation(null) .newOperation(temp);
                     // bean.lifecycle.addInitialize(handle, null);
                     throw new UnsupportedOperationException();
@@ -444,7 +420,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             /** Handles {@link ContainerGuest}, {@link InvocationArgument} and {@link CodeGenerated}. */
             @Override
-            public void hookOnAnnotatedVariable(Annotation annotation, BeanVariable v) {
+            public void hookOnAnnotatedVariable(Annotation annotation, BindableVariable v) {
                 if (annotation instanceof ContainerCarrierService) {
                     Variable va = v.variable();
                     if (va.rawType().equals(String.class)) {
@@ -465,7 +441,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     Key<?> key = v.toKey();
 
                     // We currently only allow code generated services to be injected in one place
-                    BeanVariable bv = CODEGEN.get(this).putIfAbsent(key, v);
+                    BindableVariable bv = CODEGEN.get(this).putIfAbsent(key, v);
                     if (bv != null) {
                         failWith(key + " Can only be injected once for bean ");
                     }
@@ -476,19 +452,19 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             }
 
             @Override
-            public void hookOnVariableType(Class<?> hook, BeanWrappedVariable binding) {
-                OperationSetup operation = ((PackedBeanWrappedVariable) binding).v.operation;
+            public void hookOnVariableType(Class<?> hook, UnwrappedBindableVariable binding) {
+                OperationSetup operation = ((PackedBindableWrappedVariable) binding).v.operation;
 
                 if (ApplicationLaunchContext.class.isAssignableFrom(hook)) {
-                    binding.bindContextValue(ApplicationLaunchContext.class);
+                    binding.bindContext(ApplicationLaunchContext.class);
                 } else if (hook == ExtensionContext.class) {
                     if (beanAuthor().isApplication()) {
                         binding.failWith(hook.getSimpleName() + " can only be injected into extensions");
                     }
-                    if (binding.availableInvocationArguments().isEmpty() || binding.availableInvocationArguments().get(0) != ExtensionContext.class) {
-                        // throw new Error(v.availableInvocationArguments().toString());
-                    }
-                    binding.bindContextValue(ExtensionContext.class);
+//                    if (binding.availableInvocationArguments().isEmpty() || binding.availableInvocationArguments().get(0) != ExtensionContext.class) {
+//                        // throw new Error(v.availableInvocationArguments().toString());
+//                    }
+                    binding.bindContext(ExtensionContext.class);
                 } else if (hook == DeploymentMirror.class) {
                     binding.bindConstant(operation.bean.container.application.deployment.mirror());
                 } else if (hook == ApplicationMirror.class) {
@@ -533,7 +509,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         // close child extensions first
         super.onAssemblyClose();
 
-        for (BeanVariable v : varsToResolve) {
+        for (BindableVariable v : varsToResolve) {
             if (!v.isBound()) {
                 throw new InternalExtensionException(v.toKey() + " not bound for bean ");
             }
@@ -588,12 +564,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return provideConstant(Key.of(key), constant);
     }
 
-    // Think we need installPrototype (Which will fail if not provided or exported)
-    // providePrototype would then be installPrototype().provide() // not ideal
-    // Men taenker vi internt typisk arbejde op i mod implementering. Dog ikke altid
-    // providePerRequest <-- every time the service is requested
-    // Also these beans, can typically just be composites??? Nah
-
     <T> OperationConfiguration provideConstant(Key<T> key, T constant) {
         // Nah skaber den forvirring? Nej det syntes det er rart
         // at have muligheden for ikke at scanne
@@ -629,6 +599,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         throw new UnsupportedOperationException();
     }
 
+    // Think we need installPrototype (Which will fail if not provided or exported)
+    // providePrototype would then be installPrototype().provide() // not ideal
+    // Men taenker vi internt typisk arbejde op i mod implementering. Dog ikke altid
+    // providePerRequest <-- every time the service is requested
+    // Also these beans, can typically just be composites??? Nah
+
     public void requiresOptionally(Class<?>... keys) {
         requiresOptionally(Key.ofAll(keys));
     }
@@ -650,6 +626,35 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         checkIsConfigurable();
         throw new UnsupportedOperationException();
     }
+
+    // transformAllBeans() <-- includes extension beans... (Must be open)
+    public Runnable transformAllBeans(Consumer<? super BeanClassTransformer> transformer) {
+        throw new UnsupportedOperationException();
+    }
+
+    // All beans that are installed with the assembly
+    /**
+     * <p>
+     * If there are multiple all bean transformers active at the same type. They will be invoked in the order they where
+     * registered. The first one registered will be run first
+     *
+     * @param transformer
+     * @return A runnable that be can run after which the transformer will no longer be applied when installing beans.
+     */
+    // Also a version with BeanClass?? , Class<?>... beanClasses (
+    public Runnable transformBeans(Consumer<? super BeanClassTransformer> transformer) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * All beans. the consumer is invoked once on every bean that is installed with
+     * <p>
+     * If there are any all bean transformers. They will be invoked before this
+     *
+     * @param transformer
+     *            the bean transformer
+     */
+    public void transformNextBean(Consumer<? super BeanClassTransformer> transformer) {}
 
     static class FromLinks {
         boolean exportServices;

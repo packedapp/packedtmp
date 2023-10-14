@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodType;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import app.packed.context.Context;
 import app.packed.extension.ExtensionContext;
@@ -93,8 +92,10 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
         /** {@inheritDoc} */
         @Override
-        public Set<Class<? extends Context<?>>> contexts() {
-            return pot.contexts.keySet();
+        public Map<Class<?>, ContextTemplate.Descriptor> contexts() {
+            HashMap<Class<?>, ContextTemplate.Descriptor> m = new HashMap<>();
+            pot.contexts.forEach((k, v) -> m.put(k, v.descriptor()));
+            return Map.copyOf(m);
         }
 
         /** {@inheritDoc} */

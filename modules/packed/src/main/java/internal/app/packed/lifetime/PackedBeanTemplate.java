@@ -16,6 +16,7 @@
 package internal.app.packed.lifetime;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import app.packed.bean.BeanKind;
@@ -55,7 +56,7 @@ public record PackedBeanTemplate(BeanKind kind, OperationTemplate bot, @Nullable
 
     /** {@inheritDoc} */
     @Override
-    public BeanTemplate inLifetimeOperationContext(int index, ContextTemplate template) {
+    public BeanTemplate inContextForLifetimeOperation(int index, ContextTemplate template) {
         throw new UnsupportedOperationException();
     }
 
@@ -77,6 +78,12 @@ public record PackedBeanTemplate(BeanKind kind, OperationTemplate bot, @Nullable
         @Override
         public BeanKind beanKind() {
             return pbt.kind;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Map<Class<?>, ContextTemplate.Descriptor> contexts() {
+            throw new UnsupportedOperationException();
         }
     }
 

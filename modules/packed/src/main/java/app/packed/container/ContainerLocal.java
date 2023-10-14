@@ -47,7 +47,6 @@ import sandbox.extension.container.ContainerHandle;
  * @see app.packed.container.ContainerMirror
  * @see BeanLocal
  */
-@SuppressWarnings("rawtypes")
 public abstract sealed class ContainerLocal<T> extends PackedLocal<T> permits PackedContainerLocal {
 
     protected ContainerLocal(@Nullable Supplier<? extends T> initialValueSupplier) {

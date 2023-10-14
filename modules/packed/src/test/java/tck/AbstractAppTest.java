@@ -197,11 +197,11 @@ abstract class AbstractAppTest<A> {
 
         final class State2Building implements InternalTestState {
 
-            final AbstractAppTest.StandaloneContainerBuilder b;
+            final AbstractAppTest.TestableContainerBuilder b;
 
             State2Building(State1Setup setup) {
-                b = new StandaloneContainerBuilder(setup);
-                b.processBuildWirelet(setup.wirelets.toArray(i -> new Wirelet[i]));
+                b = new TestableContainerBuilder(setup);
+                b.processBuildWirelets(setup.wirelets.toArray(i -> new Wirelet[i]));
             }
         }
 
@@ -219,9 +219,9 @@ abstract class AbstractAppTest<A> {
     }
 
     /**
-     * A special container builder
+     * A special container builder used for testing purposes.
      */
-    private static class StandaloneContainerBuilder extends PackedContainerBuilder {
+    private static class TestableContainerBuilder extends PackedContainerBuilder {
 
         final AssemblySetup assembly;
 
@@ -232,7 +232,7 @@ abstract class AbstractAppTest<A> {
         /**
          * @param template
          */
-        protected StandaloneContainerBuilder(State1Setup setup) {
+        protected TestableContainerBuilder(State1Setup setup) {
             super(new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION));
             this.goal = setup.goal;
             BuildableAssembly ba = setup.assembly;

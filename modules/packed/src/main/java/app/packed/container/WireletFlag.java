@@ -19,6 +19,9 @@ package app.packed.container;
  *
  */
 
+//// Det jo en slags Condensor. Som man kalder igen og igen.
+
+
 //Configuration
 /// Buildtime only
 /// Shared -> Is the wirelet consumed (maybe Consumable)
@@ -31,12 +34,16 @@ package app.packed.container;
 
 public class WireletFlag {
 
-    public WireletFlag ALLOW_RUNTIME; // on
+    /** Whether or not the wirelet can be used at runtime */
+    // May it is actually a two bit? allowRuntime, allowBuildtime
+    public WireletFlag ALLOW_RUNTIME;
 
     /** Wirelets that are not shared must be consumed exactly once. */
     public WireletFlag ALLOW_SHARED; // alternative skal man overskrive en metode... Tror ikke det er udbredt
     // Problemet er den metode skal have Variable'sene med som parameter.
     // Supplier<List<Places>>
+    //// Hvilket problem er det egentlig vi loeser her???
+
 
     // alternative har vi en metode vi overskriver
     public WireletFlag ALLOW_UNCONSUMED;
@@ -55,9 +62,3 @@ public class WireletFlag {
     //
     //
 }
-
-
-
-// Skal tage det i constructeren
-
-// Ent

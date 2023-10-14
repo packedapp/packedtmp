@@ -15,13 +15,16 @@
  */
 package app.packed.util;
 
+import app.packed.application.OldApplicationPath;
+
 /**
  *
  */
+// Maybe just ComponentMirror...
 public interface ApplicationComponent {
 
     /** {@return the path of the component.} */
-    default ApplicationComponentPath componentPath() {
+    default OldApplicationPath componentPath() {
         throw new UnsupportedOperationException();
     }
 }

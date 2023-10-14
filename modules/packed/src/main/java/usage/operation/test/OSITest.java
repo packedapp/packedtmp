@@ -22,9 +22,9 @@ import java.time.LocalDateTime;
 
 import app.packed.application.App;
 import app.packed.container.BaseAssembly;
-import app.packed.extension.BeanHook.AnnotatedBindingHook;
+import app.packed.extension.BeanHook.AnnotatedVariableHook;
 import app.packed.extension.BeanIntrospector;
-import app.packed.extension.BeanVariable;
+import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
 import app.packed.lifetime.OnInitialize;
 import app.packed.operation.Op0;
@@ -63,7 +63,7 @@ public class OSITest extends BaseAssembly {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedBindingHook(extension = MyExt.class)
+    @AnnotatedVariableHook(extension = MyExt.class)
     @interface BuildTime {}
 
     static class MyExt extends Extension<MyExt> {
@@ -73,11 +73,11 @@ public class OSITest extends BaseAssembly {
         protected BeanIntrospector newBeanIntrospector() {
             return new BeanIntrospector() {
                 @Override
-                public void hookOnAnnotatedVariable(Annotation hook, BeanVariable d) {
+                public void hookOnAnnotatedVariable(Annotation hook, BindableVariable d) {
                     if (hook instanceof BuildTime) {
                         d.checkAssignableTo(LocalDateTime.class);
                         // d.bindConstant(LocalDateTime.now());
-                        d.bindGeneratedConstant(() -> LocalDateTime.now());
+                        d.bindComputedConstant(() -> LocalDateTime.now());
                     } else if (hook instanceof InitializationTime) {
                         applicationRoot().base().installIfAbsent(AppInitializeTime.class);
                         d.checkAssignableTo(LocalDateTime.class);
@@ -98,10 +98,10 @@ public class OSITest extends BaseAssembly {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedBindingHook(extension = MyExt.class)
+    @AnnotatedVariableHook(extension = MyExt.class)
     @interface Now {}
 
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedBindingHook(extension = MyExt.class)
+    @AnnotatedVariableHook(extension = MyExt.class)
     @interface InitializationTime {}
 }

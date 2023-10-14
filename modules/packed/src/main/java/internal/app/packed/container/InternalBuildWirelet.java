@@ -57,7 +57,7 @@ public abstract non-sealed class InternalBuildWirelet extends FrameworkWirelet {
      * @param installer
      *            an installer for the container
      */
-    protected abstract void onInstall(PackedContainerBuilder builder);
+    protected abstract void onBuild(PackedContainerBuilder builder);
 
     /** {@inheritDoc} */
     @Override

@@ -27,9 +27,8 @@ import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
-import internal.app.packed.operation.PackedDelegatingOperationHandle;
+import internal.app.packed.operation.PackedOperationBuilder;
 import internal.app.packed.util.PackedAnnotationList;
-import sandbox.extension.operation.DelegatingOperationHandle;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 
@@ -48,16 +47,8 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
 
     /** {@inheritDoc} */
     @Override
-    public DelegatingOperationHandle newDelegatingOperation() {
-        checkConfigurable();
-
-        // We should be able to create this lazily
-        // Probably need to store the lookup mechanism on the bean...
-        MethodHandle methodHandle = extension.scanner.unreflectMethod(member);
-
-        PackedDelegatingOperationHandle h = new PackedDelegatingOperationHandle(extension.scanner, extension.extension, extension.scanner.bean, new OperationMethodTarget(member),
-                operationType(), methodHandle);
-        return h;
+    public PackedOperationBuilder newOperation() {
+        return null;
     }
 
     /** {@inheritDoc} */

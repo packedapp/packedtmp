@@ -35,7 +35,7 @@ public enum BuildGoal {
     LAUNCH,
 
     /**
-     * The goal is to build an {@link ApplicationMirror}.
+     * The goal is to build an application and expose one or more mirrors, for example, {@link ApplicationMirror}.
      *
      * @see App#mirrorOf(Assembly, Wirelet...)
      */

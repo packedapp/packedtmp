@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.extension.BeanVariable;
+import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.operation.Op;
@@ -104,7 +104,7 @@ public final record PackedOperationHandle(OperationSetup operation, @Nullable Be
     // bind(index).toConstant("Foo");
     // Maybe take an consumer to make sure it is "executed"
     @Override
-    public BeanVariable manuallyBindable(int index) {
+    public BindableVariable manuallyBindable(int index) {
 
         // This method does not throw IllegalStateExtension, but OnBinding may.
         // custom invocationContext must have been set before calling this method

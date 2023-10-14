@@ -25,7 +25,7 @@ import app.packed.util.Variable;
 /** Implementation of {@link Variable}. */
 public record PackedVariable(PackedAnnotationList annotations, Type type) implements Variable {
 
-    public static PackedVariable of(Annotation[] annotations, Type type) {
+    public static PackedVariable of(Type type, Annotation[] annotations) {
         return new PackedVariable(new PackedAnnotationList(annotations), type);
     }
 

@@ -36,4 +36,5 @@ public interface AssemblyTreeMirror extends TreeView<AssemblyMirror>, Mirror {
      */
     void print();
 
+    void printWithDuration();
 }

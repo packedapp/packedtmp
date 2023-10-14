@@ -32,13 +32,13 @@ public class Usage extends Extension<Usage> {
     private static final ContainerTemplate CT = ContainerTemplate.GATEWAY.carrierType(Guest.class).withPack(BaseExtensionPoint.EXPORTED_SERVICE_LOCATOR);
 
     public ContainerConfiguration installContainerWithImplicitCarrier() {
-        ContainerHandle h = base().containerBuilder(CT).build();
+        ContainerHandle h = base().newContainer(CT).build();
         return new ContainerConfiguration(h);
     }
 
     public ContainerConfiguration installContainerWithExplicitCarrier() {
         ContainerCarrierBeanConfiguration<Guest> chg = base().installContainerCarrier(Guest.class).overrideService(String.class, "Ssdo");
-        ContainerHandle h = base().containerBuilder(CT).carrierUse(chg).build();
+        ContainerHandle h = base().newContainer(CT).carrierUse(chg).build();
         return new ContainerConfiguration(h);
     }
 

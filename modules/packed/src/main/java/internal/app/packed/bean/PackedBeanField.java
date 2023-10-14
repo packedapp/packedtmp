@@ -15,8 +15,6 @@
  */
 package internal.app.packed.bean;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
@@ -24,13 +22,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import app.packed.extension.BeanElement.BeanField;
-import app.packed.extension.BeanHook.AnnotatedFieldHook;
-import app.packed.extension.Extension;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
 import app.packed.util.Key;
-import app.packed.util.Nullable;
 import app.packed.util.Variable;
+import internal.app.packed.bean.BeanHookCache.HookOnFieldAnnotation;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
@@ -160,29 +156,6 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
     /** {@inheritDoc} */
     @Override
     public Variable variable() {
-        return PackedVariable.of(field.getAnnotations(), field.getGenericType());
-    }
-
-    record HookOnFieldAnnotation(Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable) {
-
-        /** A cache of field annotations. */
-        private static final ClassValue<HookOnFieldAnnotation> CACHE = new ClassValue<>() {
-
-            @Override
-            protected HookOnFieldAnnotation computeValue(Class<?> type) {
-                AnnotatedFieldHook fieldHook = type.getAnnotation(AnnotatedFieldHook.class);
-                if (fieldHook == null) {
-                    return null;
-                }
-                HookUtils.checkExtensionClass(type, fieldHook.extension());
-                HookUtils.checkMemberAnnotation(type, ElementType.FIELD);
-                return new HookOnFieldAnnotation(fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet());
-            }
-        };
-
-        @Nullable
-        public static HookOnFieldAnnotation find(Class<? extends Annotation> annotationType) {
-            return CACHE.get(annotationType);
-        }
+        return PackedVariable.of(field.getGenericType(), field.getAnnotations());
     }
 }

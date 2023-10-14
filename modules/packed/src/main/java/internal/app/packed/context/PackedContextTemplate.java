@@ -40,6 +40,10 @@ public record PackedContextTemplate(Class<? extends Extension<?>> extensionClass
         }
     };
 
+    public ContextTemplate.Descriptor descriptor() {
+        throw new UnsupportedOperationException();
+    }
+
     public static ContextTemplate of(MethodHandles.Lookup caller, boolean isHidden, Class<? extends Context<?>> contextClass, Class<?> implementation) {
         Class<? extends Extension<?>> c = PackedContextTemplate.TYPE_VARIABLE_EXTRACTOR.get(contextClass); // checks same module
         // check implementation is same class or implement contextclass

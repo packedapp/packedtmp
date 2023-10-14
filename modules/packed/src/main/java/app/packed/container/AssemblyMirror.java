@@ -45,7 +45,7 @@ public class AssemblyMirror implements Mirror {
         return assembly.container.application.mirror();
     }
 
-    /** {@return the application this assembly contributes to.} */
+    /** {@return the node representing this assembly in the application's tree of assemblies.} */
     public TreeView.Node<AssemblyMirror> applicationNode() {
         throw new UnsupportedOperationException();
     }
@@ -57,14 +57,14 @@ public class AssemblyMirror implements Mirror {
 
     /**
      * Returns the duration of the assemble phase for this assembly. This is roughly the time spent in the build method.
-     * Added with time spend for each extension to calculate stuff.
+     * Added with time spend for each extension to calculate stuff. Time spend for an application may also. Ty
      * <p>
      * The duration reported by this method never include time spent on generating code. Code generation is always done on a
      * per application basis. And cannot be tracked on a per-assembly basis.
      * <p>
      * Durations reported when starting up a JVM is typically dominated by time spend loading classes.
      *
-     * @return how must time was spend assembling.
+     * @return how much time was spend assembling.
      */
     public Duration assemblyDuration() {
         return Duration.ofNanos(Math.max(0, assembly.assemblyTimeFinished - assembly.assemblyTimeStarted));
@@ -101,7 +101,7 @@ public class AssemblyMirror implements Mirror {
         return assembly.container.mirror();
     }
 
-    /** {@return a tree of all the containers this assembly defines.} */
+    /** {@return a tree of the containers this assembly defines.} */
     public ContainerTreeMirror containers() {
         throw new UnsupportedOperationException();
     }

@@ -19,13 +19,15 @@ import app.packed.extension.BeanIntrospector;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
- * An instance of this class is created per extension that participates in the introspection. The main purpose of the
- * class is to make sure that the extension points to the same bean introspector for the whole of the introspection.
+ * An instance of this class is created for each extension that participates in the introspection of a single bean.
+ * <p>
+ * The main purpose of the class is to make sure that the extension points to the same bean introspector for the whole
+ * of the introspection.
  */
 // Convert to Record
 public final class BeanScannerExtension implements Comparable<BeanScannerExtension> {
 
-    /** The actual extension. */
+    /** The extension instance. */
     public final ExtensionSetup extension;
 
     boolean hasFullAccess;
@@ -41,13 +43,13 @@ public final class BeanScannerExtension implements Comparable<BeanScannerExtensi
         this.scanner = scanner;
     }
 
-    public boolean hasFullAccess() {
-        return hasFullAccess;
-    }
-
     /** {@inheritDoc} */
     @Override
     public int compareTo(BeanScannerExtension o) {
         return extension.compareTo(o.extension);
+    }
+
+    public boolean hasFullAccess() {
+        return hasFullAccess;
     }
 }

@@ -15,8 +15,6 @@
  */
 package internal.app.packed.lifetime;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -36,7 +34,7 @@ public final class BeanLifetimeSetup implements LifetimeSetup {
             "initialize", void.class, BeanLifetimeSetup.class);
 
     /** The single bean this lifetime contains. */
-    public final BeanSetup bean;
+    public final List<BeanSetup> beans;
 
     /** */
     public final List<FuseableOperation> lifetimes;
@@ -47,7 +45,7 @@ public final class BeanLifetimeSetup implements LifetimeSetup {
         } else {
             this.lifetimes = FuseableOperation.of(List.of(installer.template.bot()));
         }
-        this.bean = requireNonNull(bean);
+        this.beans = List.of(bean);
     }
 
     /** {@inheritDoc} */
@@ -79,7 +77,7 @@ public final class BeanLifetimeSetup implements LifetimeSetup {
     /** {@inheritDoc} */
     @Override
     public ContainerLifetimeSetup parent() {
-        return bean.container.lifetime;
+        return beans.get(0).container.lifetime;
     }
 
     /** {@inheritDoc} */

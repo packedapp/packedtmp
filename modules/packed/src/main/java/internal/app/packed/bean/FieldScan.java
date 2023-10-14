@@ -26,7 +26,8 @@ import java.util.TreeMap;
 import app.packed.bean.BeanInstallationException;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
-import internal.app.packed.bean.PackedBeanField.HookOnFieldAnnotation;
+import internal.app.packed.bean.BeanHookCache.HookOnAnnotatedBinding;
+import internal.app.packed.bean.BeanHookCache.HookOnFieldAnnotation;
 import internal.app.packed.util.PackedAnnotationList;
 
 /**
@@ -36,7 +37,7 @@ class FieldScan {
 
     private static void checkNoBindingHooks(BeanScanner scanner, Field field, Annotation[] annotations, Annotation fieldAnnotation) {
         for (Annotation a : annotations) {
-            HookOnAnnotatedBinding b = HookOnAnnotatedBinding.find(a.annotationType());
+            HookOnAnnotatedBinding b = BeanHookCache.findAnnotatedVariableHook(a.annotationType());
             if (b != null) {
                 throw new InternalExtensionException("Nope");
             }
@@ -52,7 +53,7 @@ class FieldScan {
         }
         case 1 -> {
             Annotation a = annotations[0];
-            HookOnFieldAnnotation hook = HookOnFieldAnnotation.find(a.annotationType());
+            HookOnFieldAnnotation hook = BeanHookCache.findAnnotatedOnFieldHook(a.annotationType());
             if (hook != null) {
                 checkNoBindingHooks(scanner, field, annotations, a);
                 new PackedBeanField(scanner, field, pal, pal, hook).onHook();
@@ -62,8 +63,8 @@ class FieldScan {
         case 2 -> {
             Annotation a0 = annotations[0];
             Annotation a1 = annotations[1];
-            HookOnFieldAnnotation hook0 = HookOnFieldAnnotation.find(a0.annotationType());
-            HookOnFieldAnnotation hook1 = HookOnFieldAnnotation.find(a1.annotationType());
+            HookOnFieldAnnotation hook0 = BeanHookCache.findAnnotatedOnFieldHook(a0.annotationType());
+            HookOnFieldAnnotation hook1 = BeanHookCache.findAnnotatedOnFieldHook(a1.annotationType());
             if (hook0 != null) {
                 checkNoBindingHooks(scanner, field, annotations, a0);
                 if (hook1 == null) {
@@ -91,7 +92,7 @@ class FieldScan {
             Annotation a = null;
             Map<Class<? extends Extension<?>>, List<Pair>> map = new IdentityHashMap<>();
             for (Annotation annotation : annotations) {
-                HookOnFieldAnnotation hook = HookOnFieldAnnotation.find(annotation.annotationType());
+                HookOnFieldAnnotation hook = BeanHookCache.findAnnotatedOnFieldHook(annotation.annotationType());
                 if (hook != null) {
                     a = annotation;
                     map.computeIfAbsent(hook.extensionType(), e -> new ArrayList<>(3)).add(new Pair(hook, annotation));
@@ -125,7 +126,7 @@ class FieldScan {
         // There were no field hook annotations, let's see if we have any binding annotations.
         HookOnAnnotatedBinding b = null;
         for (Annotation a : annotations) {
-            HookOnAnnotatedBinding bb = HookOnAnnotatedBinding.find(a.annotationType());
+            HookOnAnnotatedBinding bb = BeanHookCache.findAnnotatedVariableHook(a.annotationType());
             if (b != null) {
                 throw new BeanInstallationException("Can only have 1 binding annotation");
             }

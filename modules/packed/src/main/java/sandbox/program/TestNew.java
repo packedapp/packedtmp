@@ -25,13 +25,13 @@ import java.util.List;
 import app.packed.application.App;
 import app.packed.bean.BeanMirror;
 import app.packed.container.BaseAssembly;
-import app.packed.extension.BeanHook.AnnotatedBindingHook;
+import app.packed.extension.BeanHook.AnnotatedVariableHook;
 import app.packed.extension.BeanIntrospector;
-import app.packed.extension.BeanVariable;
+import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
 import app.packed.service.Provide;
-import app.packed.service.ProvidedServiceMirror;
-import app.packed.service.ServiceBindingMirror;
+import app.packed.service.mirror.ProvidedServiceMirror;
+import app.packed.service.mirror.ServiceBindingMirror;
 
 /**
  *
@@ -93,7 +93,7 @@ public class TestNew extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void hookOnAnnotatedVariable(Annotation hook, BeanVariable h) {
+                public void hookOnAnnotatedVariable(Annotation hook, BindableVariable h) {
                     if (hook.annotationType() == XX.class) {
                         String str = h.annotations().readRequired(XX.class).value();
                         h.bindConstant(str.toUpperCase());
@@ -107,7 +107,7 @@ public class TestNew extends BaseAssembly {
 
     @Target({ ElementType.PARAMETER })
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedBindingHook(extension = MyExt.class)
+    @AnnotatedVariableHook(extension = MyExt.class)
     @interface XX {
         String value();
     }

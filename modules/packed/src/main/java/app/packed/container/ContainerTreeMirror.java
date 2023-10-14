@@ -24,15 +24,16 @@ import internal.app.packed.container.Mirror;
  * <p>
  * Unless otherwise specified the tree is ordered accordingly to the installation order of each container.
  */
-// Vi skal have den fordi namespace simpelthen bliver noedt til at definere den
-// Vi har en main database der bruges i P og saa bruger vi den i C1, C2 bruger den under alias "NotMain", og definere sin egen main.
-// C3 definere kun sig egen main
 
-// Hvis vi siger at et domain er hele appen. Hvad goere vi i C3. Er den tilgaengelig under et "fake" navn???
-//
-
-// Alternative ContainerMirror.ofTree
+//Alternative ContainerMirror.ofTree
 public non-sealed interface ContainerTreeMirror extends TreeView<ContainerMirror>, ContextScopeMirror, Mirror {
 
 
 }
+//Vi skal have den fordi namespace simpelthen bliver noedt til at definere den
+//Vi har en main database der bruges i P og saa bruger vi den i C1, C2 bruger den under alias "NotMain", og definere sin egen main.
+//C3 definere kun sig egen main
+
+//Hvis vi siger at et domain er hele appen. Hvad goere vi i C3. Er den tilgaengelig under et "fake" navn???
+//
+

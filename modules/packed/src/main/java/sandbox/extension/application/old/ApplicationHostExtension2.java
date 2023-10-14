@@ -60,13 +60,13 @@ class ApplicationHostExtension2 extends FrameworkExtension<ApplicationHostExtens
 
     public <T> ApplicationHostConfiguration<T> newApplication(Class<T> guestBean) {
         // We need the attachment, because ContainerGuest is on
-        Builder bi = base().beanBuilder(BLT);
+        Builder bi = base().newBeanForUser(BLT);
         return newApplication(bi.install(guestBean));
     }
 
     public <T> ApplicationHostConfiguration<T> newApplication(Op<T> guestBean) {
         // We need the attachment, because ContainerGuest is on
-        Builder bi = base().beanBuilder(BLT);
+        Builder bi = base().newBeanForUser(BLT);
         return newApplication(bi.install(guestBean));
     }
 

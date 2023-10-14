@@ -71,6 +71,8 @@ public sealed interface ContextTemplate permits PackedContextTemplate {
         return PackedContextTemplate.of(caller, true, contextImplementation, contextImplementation);
     }
 
+    interface Descriptor {}
+
     // Maaske har vi ogsaa Span her... Saa maa man bare lave mere end en instans
     // Et span er naar man tilfoejer contexten
 

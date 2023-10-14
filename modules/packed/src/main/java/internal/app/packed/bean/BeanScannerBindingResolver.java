@@ -49,7 +49,7 @@ final class BeanScannerBindingResolver {
             BeanScannerExtension contributor = iBean.computeContributor(hook.extensionType());
             PackedBindableVariable h = new PackedBindableVariable(iBean, operation, index, contributor.extension, v);
 
-            contributor.introspector.hookOnVariableType(v.rawType(), new PackedBeanWrappedVariable(h));
+            contributor.introspector.hookOnVariableType(v.rawType(), new PackedBindableWrappedVariable(h));
             if (operation.bindings[index] != null) {
                 return;
             }

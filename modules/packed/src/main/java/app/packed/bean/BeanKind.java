@@ -7,6 +7,9 @@ import sandbox.extension.bean.BeanTemplate;
  * This enum details the various kinds of beans that are supported in Packed.
  */
 // All to do with lifetime.... BeanLifetimeKind
+
+// Maybe ditching scope is bad
+// https://marcelkliemannel.com/articles/2021/overview-of-bean-scopes-in-quarkus/
 public enum BeanKind {
 
     /**
@@ -27,9 +30,27 @@ public enum BeanKind {
     CONTAINER,
 
     /**
-     * A foreign bean is a bean whose lifecycle is managed outside of the container in which it is registered.
-     *
+     * A foreign bean is a bean whose lifecycle is managed outside of the container in which it is registered And where the
+     * instance must be provided (typically by the end-user) for every operation.
+     * <p>
+     * A foerign bean is always presented on every operation. The instance is never stored any where.
+     * <p>
+     * A foerign bean is always unmanaged.
      */
+    /**
+     * The lifetime of the bean is not managed by any extension. At least not in a standard way
+     * <p>
+     * {@link #operations()} always returns a empty list
+     * <p>
+     * All operations on the bean must take a bean instance.
+     * <p>
+     * Giver det mening overhoved at supportere operation
+     * <p>
+     * It is a failure to use lifecycle annotations on the bean
+     **/
+    // Cannot be exposed as a service
+    // Other name:Per_Operattion <- Bean must be provided for each operation
+    // Validationi9
     // Can we have more than 1?
     // Can they be removed? Obviously if we have more than one
     FOREIGN,
@@ -52,10 +73,15 @@ public enum BeanKind {
     /**
      * A static bean is a bean with no runtime instances.
      * <p>
-     * Since static beans are stateless, they have no lifecycle as this is always bound a bean instance. Trying to use
-     * lifecycle annotations such as {@link Inject} or {@link OnStart} will fail with a {@link BeanInstallationException}.
+     * Since static beans are stateless, they have no lifecycle as lifecycles are always bound to a bean instance.
      * <p>
-     * Static beans are always bound to the lifetime of their container.
+     * Trying to use lifecycle annotations such as {@link Inject} or {@link OnStart} will fail with a
+     * {@link BeanInstallationException}.
+     * <p>
+     * Constructors are never scanned when creating static beans, and therefore never validated for correctness.
+     * <p>
+     * Static beans are always bound to the lifetime of their container. Meaning that they are only usable as long as their
+     * container are active
      *
      * @see BaseExtension#installStatic(Class)
      **/
@@ -86,7 +112,7 @@ public enum BeanKind {
 
     /** @return whether or not the bean can have more than 1 instance. */
     public boolean isMultiInstance() {
-        return this == MANANGED || this == UNMANAGED;
+        return this == MANANGED || this == UNMANAGED || this == FOREIGN;
     }
 
     /**

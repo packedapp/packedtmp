@@ -31,7 +31,7 @@ import sandbox.extension.container.ContainerTemplatePack;
  * Represent a communication channel between a parent container lifetime and a child container lifetime. This class is
  * exposed as {@link ContainerLifetimeChannel}.
  */
-public record PackedContainerTemplatePack(Class<? extends Extension<?>> extensionClass, Consumer<? super LeafContainerOrApplicationBuilder> onUse,
+public record PackedContainerTemplatePack(Class<? extends Extension<?>> extensionClass, Consumer<? super NonRootContainerBuilder> onUse,
         Map<Key<?>, PackedContainerTemplatePack.KeyFragment> services) implements ContainerTemplatePack {
 
     // is used in the (unlikely) scenario with multiple links
@@ -45,7 +45,7 @@ public record PackedContainerTemplatePack(Class<? extends Extension<?>> extensio
         throw new UnsupportedOperationException();
     }
 
-    public void build(LeafContainerOrApplicationBuilder builder) {
+    public void build(NonRootContainerBuilder builder) {
         if (onUse != null) {
             onUse.accept(builder);
         }
@@ -70,7 +70,7 @@ public record PackedContainerTemplatePack(Class<? extends Extension<?>> extensio
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public PackedContainerTemplatePack withUse(Consumer<? super LeafContainerOrApplicationBuilder> action) {
+    public PackedContainerTemplatePack withUse(Consumer<? super NonRootContainerBuilder> action) {
         return new PackedContainerTemplatePack(extensionClass(), onUse == null ? action : onUse.andThen((Consumer) action), services);
     }
 

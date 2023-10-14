@@ -81,7 +81,7 @@ public final class TypeVariableExtractor {
         Variable[] variables = new Variable[types.length];
         for (int i = 0; i < variables.length; i++) {
             AnnotatedType at = pta.getAnnotatedActualTypeArguments()[i];
-            variables[i] = PackedVariable.of(at.getAnnotations(), at.getType());
+            variables[i] = PackedVariable.of(at.getType(), at.getAnnotations());
         }
         return variables;
     }

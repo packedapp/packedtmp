@@ -15,16 +15,17 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * new instance (using constructor injection). Extension point instances are <strong>never</strong> cached, instead they
  * are instantiated every time they are requested.
  * <p>
- * An extension that requests a specific extension point. Must define the extension that the extension point is a part
- * of as a direct dependency using {@link DependsOn}. Failure to do so will result in an
- * {@link InternalExtensionException} being thrown when calling {@link Extension#use(Class)}.
+ * An extension that requests a specific extension point must define the extension that the extension point is a part of
+ * as a direct dependency using the {@link DependsOn} annotation. Failure to do so will result in an
+ * {@link InternalExtensionException} being thrown when calling {@link Extension#use(Class)} or installing a bean that
+ * belongs to the extension.
  * <p>
  * An extension point class contains no overridable life-cycle methods similar to those on Extension. Instead extension
  * points are just thin wrappers on top of an extension. Where every invocation on the extension point delegates to
  * package-private methods on the {@link ExtensionPoint#extension()} itself.
  * <p>
- * If an extension defines classes that are only used by other extensions and not application developers. They should be
- * declared as nested classes on an extension point. See, for example, {@link EntryPointExtensionPoint}.
+ * If an extension defines classes that are only used by other extensions and not directly by application developers.
+ * They should be declared as nested classes on an extension point. See, for example, {@link EntryPointExtensionPoint}.
  *
  * NOTE: In order to properly implement an extension point you:
  * <ul>
@@ -46,7 +47,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  */
 public abstract class ExtensionPoint<E extends Extension<E>> {
 
-    /** A ExtensionPoint class to Extension class mapping. */
+    /** Maps an ExtensionPoint class to the type parameter (E). */
     final static ClassValue<Class<? extends Extension<?>>> TYPE_VARIABLE_EXTRACTOR = new ClassValue<>() {
 
         /** A type variable extractor. */
@@ -106,7 +107,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
         return c;
     }
 
-    /** {@return the extension instance that this extension point is a part of.} */
+    /** {@return the extension instance that this extension point is a part of} */
     @SuppressWarnings("unchecked")
     protected final E extension() {
         return (E) extensionSetup().instance();

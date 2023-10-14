@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.OldApplicationPath;
-import app.packed.bean.BeanLocal.LocalAccessor;
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.Author;
 import app.packed.container.ContainerMirror;
@@ -25,7 +25,7 @@ import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
-import app.packed.service.OverriddenServiceBindingMirror;
+import app.packed.service.mirror.OverriddenServiceBindingMirror;
 import app.packed.util.Key;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.Mirror;
@@ -35,9 +35,11 @@ import sandbox.operation.mirror.DependenciesMirror;
 
 /**
  * A mirror of a bean.
+ * <p>
+ * An instance of BeanMirror can be injected at runtime simply by declaring a dependency on it.
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirror , ContextScopeMirror , LocalAccessor {
+public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirror , ContextScopeMirror , Accessor {
 
     /** The bean we are mirroring. */
     final BeanSetup bean;
@@ -75,10 +77,12 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
         return bean.beanClass;
     }
 
+    /** {@return the bean kind} */
     public final BeanKind beanKind() {
         return bean.beanKind;
     }
 
+    /** {@return the bean source kind} */
     public final BeanSourceKind beanSourceKind() {
         return bean.beanSourceKind;
     }

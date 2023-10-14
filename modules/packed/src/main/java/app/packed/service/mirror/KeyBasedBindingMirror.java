@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.service.mirror;
 
 import app.packed.operation.BindingMirror;
 import app.packed.util.Key;
 
 /**
  *
- * @see app.packed.bean.BeanConfiguration#overrideService(Class, Object)
- * @see app.packed.bean.BeanConfiguration#overrideService(app.packed.util.Key, Object)
+ * @see BindingKind#SERVICE
  */
-public class OverriddenServiceBindingMirror extends BindingMirror {
+// Er maaske nået til Context Services, Extension Services, Container Services
+public abstract class KeyBasedBindingMirror extends BindingMirror {
 
-    public Key<?> key() {
-        throw new UnsupportedOperationException();
-    }
+    /** {@return the binding key.} */
+    public abstract Key<?> key();
 }

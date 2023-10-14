@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 import internal.app.packed.util.PackedAnnotationList;
 
 /**
- * An annotation reader can be used to process annotations on bean elements.
+ * A list of annotations.
  *
  * @see AnnotatedElement
  */
@@ -51,7 +51,6 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
 
     boolean isPresent(Class<? extends Annotation> annotationClass);
 
-    // Det er taenk
     Annotation[] readAnyOf(Class<?>... annotationTypes);
 
     /**
@@ -76,12 +75,14 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
     /** {@return the number of annotations in the list.} */
     int size();
 
+    /** {@return the list of annotations as an array} */
     Annotation[] toArray();
 
+    /** {@return this list as a java.util.list} */
     List<Annotation> toList();
 
     /**
-     * Returns a list of annotations on the class.
+     * Returns a list of all annotations on the specified class.
      *
      * @param class
      *            the class to return a list for
@@ -146,6 +147,13 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
         return PackedAnnotationList.EMPTY;
     }
 
+    /**
+     * Returns a new annotation list that contains the sole specified annotation
+     *
+     * @param annotation
+     *            the single annotation to include in the list
+     * @return the new annotation list
+     */
     static AnnotationList of(Annotation annotation) {
         requireNonNull(annotation, "annotation is null");
         return new PackedAnnotationList(new Annotation[] { annotation });

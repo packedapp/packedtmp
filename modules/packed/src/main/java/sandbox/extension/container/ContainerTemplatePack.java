@@ -27,7 +27,7 @@ import app.packed.application.BuildException;
 import app.packed.container.ContainerLocal;
 import app.packed.extension.Extension;
 import app.packed.util.Key;
-import internal.app.packed.container.LeafContainerOrApplicationBuilder;
+import internal.app.packed.container.NonRootContainerBuilder;
 import internal.app.packed.container.PackedContainerTemplatePack;
 import internal.app.packed.container.PackedContainerTemplatePack.KeyFragment;
 
@@ -56,6 +56,8 @@ import internal.app.packed.container.PackedContainerTemplatePack.KeyFragment;
 
 // Or just ContainerTemplate.ExtensionLink
 // Hvad med mesh
+
+// Move as nested class to ContainerTemplate
 public sealed interface ContainerTemplatePack permits PackedContainerTemplatePack {
 
     /** {@return the extension that defined the tunnel.} */
@@ -85,6 +87,12 @@ public sealed interface ContainerTemplatePack permits PackedContainerTemplatePac
 
     // is used in the (unlikely) scenario with multiple links
     // that each provide something with the same key
+
+    /**
+     * @param from
+     * @param to
+     * @return the new template pack
+     */
     ContainerTemplatePack rekey(Key<?> from, Key<?> to);
 
     /**
@@ -247,8 +255,9 @@ public sealed interface ContainerTemplatePack permits PackedContainerTemplatePac
          * @return this builder
          */
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        ContainerTemplatePack.Builder useBuilder(Consumer<? super LeafContainerOrApplicationBuilder> action) {
-            pack = new PackedContainerTemplatePack(pack.extensionClass(), pack.onUse() == null ? action : pack.onUse().andThen((Consumer) action), pack.services());
+        ContainerTemplatePack.Builder useBuilder(Consumer<? super NonRootContainerBuilder> action) {
+            pack = new PackedContainerTemplatePack(pack.extensionClass(), pack.onUse() == null ? action : pack.onUse().andThen((Consumer) action),
+                    pack.services());
             return this;
         }
     }

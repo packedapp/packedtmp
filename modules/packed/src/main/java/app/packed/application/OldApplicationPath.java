@@ -146,4 +146,8 @@ public interface OldApplicationPath extends Comparable<OldApplicationPath>, /* ,
     }
 
     // TODO hashCode contract
+
+    enum Kind {
+        APPLICATION, ASSEMBLY, BEAN, CONTAINER, OPERATION;
+    }
 }

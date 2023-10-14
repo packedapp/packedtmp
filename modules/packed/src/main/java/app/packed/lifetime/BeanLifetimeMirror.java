@@ -15,6 +15,7 @@
  */
 package app.packed.lifetime;
 
+import java.util.Collection;
 import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
@@ -42,9 +43,9 @@ public final class BeanLifetimeMirror extends LifetimeMirror {
     /** Create a new mirror. */
     public BeanLifetimeMirror() {}
 
-    /** {@return the bean.} */
-    public BeanMirror bean() {
-        return lifetime().bean.mirror();
+    /** {@return all the beans that are in the lifetime.} */
+    public Collection<BeanMirror> beans() {
+        return lifetime().beans.stream().map(b -> b.mirror()).toList();
     }
 
     /** {@return the lifetime of the container this bean is contained within.} */

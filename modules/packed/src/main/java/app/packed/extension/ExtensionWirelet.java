@@ -19,7 +19,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 
 /**
- * Extension wirelets are a specific type of wirelets that can only be defined by {@link Extension extensions}.
+ * Extension wirelets are a wirelets defined by a specific {@link Extension extension}.
  * <p>
  * At build time use {@link Extension#selectWirelets(Class)}
  * <p>
@@ -31,9 +31,29 @@ import app.packed.container.WireletSelection;
  *            The type of the extension this wirelet is a part up
  *
  * @see Extension#selectWirelets(Class)
- *
  */
 public non-sealed abstract class ExtensionWirelet<E extends Extension<E>> extends Wirelet {
+
+    /**
+     * Invoked by the runtime if the wirelet is not consumed. Either at build-time using
+     * {@link app.packed.extension.Extension#selectWirelets(Class)} or at runtime using injection of
+     * {@link WireletSelection}.
+     */
+    @Override
+    protected void onUnconsumed() {
+        // Invoked by the runtime if the wirelet is not processed in some way
+
+        // look up extension member
+        // HOW to know from this method whether or not the extension is in use???
+        // Could use ThreadLocal...
+        // Nej vi er ligeglade. En unprocessed extension wirelet...
+        // Er automatisk en extension der ikke er registreret
+        // Alle extensions skal processere alle deres wirelets
+
+        // Either the extension is not registered or some other
+
+        // Tror vi tester om den er overskrevet
+    }
 
     // ExtensionModel extension;
     // Then it is only looked up once.

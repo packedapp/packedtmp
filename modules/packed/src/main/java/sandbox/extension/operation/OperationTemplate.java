@@ -15,11 +15,12 @@
  */
 package sandbox.extension.operation;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Map;
-import java.util.Set;
 
-import app.packed.context.Context;
+import app.packed.bean.BeanKind;
+import app.packed.operation.OperationType;
 import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.operation.PackedOperationTemplate;
 
@@ -84,6 +85,13 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         return returnType(Object.class);
     }
 
+    default OperationTemplate withInvocationArgument(Class<?> argumentClass) {
+        // Kan man bruge alle argumenterne? eller kun dem her?
+        // Vil mene alle... Hmm, idk.
+        // Det er lettere at indexere hvis man det kun er dem man har tilfoejet her
+        return this;
+    }
+
 //    default OperationTemplate withoutContext(Class<? extends Context<?>> contextClass) {
 //        // Den eneste usecase er at fjerne ContainerContext
 //        return this;
@@ -108,6 +116,16 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         return new PackedOperationTemplate(Map.of(), -1, -1, MethodType.methodType(void.class), false);
     }
 
+    static OperationTemplate ofFunction(Class<?> functionalInterface, OperationType operationType) {
+        return ofFunction(MethodHandles.publicLookup(), functionalInterface, operationType);
+    }
+
+    static OperationTemplate ofFunction(MethodHandles.Lookup caller, Class<?> functionalInterface, OperationType operationType) {
+        BeanKind.STATIC.template();
+        throw new UnsupportedOperationException();
+    }
+
+
     // Was argument type.
     enum BeanInstanceHowToGet {
 
@@ -123,6 +141,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         // Operation never takes a bean
         STATIC
     }
+
     /**
      * An immutable descriptor for an {@link OperationTemplate}. Acquired by calling {@link OperationTemplate#descriptor()}.
      */
@@ -134,7 +153,9 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         // InvocationContexts? Or all contexts
         // SessionContext kan f.eks. komme fra en ExtensionContext
         // Men det er ikke et argument noget sted
-        Set<Class<? extends Context<?>>> contexts();
+
+        // Replace With ContextTemplate.Descriptor
+        Map<Class<?>, ContextTemplate.Descriptor> contexts();
 
         /**
          *

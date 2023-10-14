@@ -15,6 +15,8 @@
  */
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.List;
 
 import app.packed.application.BuildException;
@@ -33,11 +35,12 @@ import internal.app.packed.container.PackedContainerBuilder;
  * </ul>
  * <p>
  * Delegating assemblies cannot use the {@link AssemblyHook} annotation or {@link BeanHook custom bean hooks}. They must
- * always be placed on the assembly being delegated to instead. Failure to do so will result in a {@link BuildException}
- * being thrown.
+ * always be placed on the assembly being delegated to. Failure to follow this rule will result in a
+ * {@link BuildException} being thrown.
  * <p>
  * Delegating assemblies are never reported from {@link AssemblyMirror#assemblyClass()}, instead the assembly that was
- * delegated to is reported. The delegating assembly can be obtained from {@link AssemblyMirror#delegatedFrom()}.
+ * delegated to is reported. The delegating assembly(s) can be obtained by calling
+ * {@link AssemblyMirror#delegatedFrom()}, which lists any assemblies in order.
  */
 public non-sealed abstract class DelegatingAssembly extends Assembly {
 
@@ -66,7 +69,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
         return assembly.build(containerBuilder);
     }
 
-    Assembly extract(PackedContainerBuilder containerBuilder) {
+    Assembly extractAssembly(PackedContainerBuilder containerBuilder) {
         AssemblyModel.of(getClass()); // Check that this assembly does not use AssemblyHooks
 
         // Problem with relying on StackOverflowException is that you cannot really what assembly
@@ -86,7 +89,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
         containerBuilder.delegatingAssemblies.add(getClass());
 
         if (assembly instanceof DelegatingAssembly da) {
-            return da.extract(containerBuilder);
+            return da.extractAssembly(containerBuilder);
         }
         return assembly;
     }
@@ -108,9 +111,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
         return new WireletPrefixDelegatingAssembly(assembly, wirelets);
     }
 
-    /**
-     * A special type of delegating assembly that allows to prefix wirelets.
-     */
+    /** A delegating assembly that allows to prefix wirelets. */
     private static class WireletPrefixDelegatingAssembly extends DelegatingAssembly {
 
         /** The assembly to delegate to. */
@@ -120,23 +121,21 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
         private final Wirelet[] wirelets;
 
         private WireletPrefixDelegatingAssembly(Assembly assembly, Wirelet[] wirelets) {
-            this.assembly = assembly;
+            this.assembly = requireNonNull(assembly);
             this.wirelets = List.of(wirelets).toArray(i -> new Wirelet[i]);
         }
 
         /** {@inheritDoc} */
         @Override
         AssemblySetup build(PackedContainerBuilder containerBuilder) {
-            containerBuilder.processBuildWirelet(wirelets);
+            containerBuilder.processBuildWirelets(wirelets);
             return assembly.build(containerBuilder);
         }
 
-
-
         @Override
-        Assembly extract(PackedContainerBuilder containerBuilder) {
-            containerBuilder.processBuildWirelet(wirelets);
-            return super.extract(containerBuilder);
+        Assembly extractAssembly(PackedContainerBuilder containerBuilder) {
+            containerBuilder.processBuildWirelets(wirelets);
+            return super.extractAssembly(containerBuilder);
         }
 
         /** {@inheritDoc} */

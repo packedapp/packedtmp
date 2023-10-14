@@ -34,7 +34,7 @@ import internal.app.packed.container.AssemblySetup;
 
 // Tror maaske vi skal implementere en Class og en module thingy
 
-public final class PackedAssemblyFinder implements AssemblyFinder {
+final class PackedAssemblyFinder implements AssemblyFinder {
 
     AssemblySetup as;
 

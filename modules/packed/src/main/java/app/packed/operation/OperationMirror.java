@@ -121,7 +121,7 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
     }
 
     /**
-     * {@return the name of the operation.}
+     * {@return the name of the operation}
      * <p>
      * The name of an operation is always unique among other operations on the same bean.
      */
@@ -130,7 +130,7 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
     }
 
     /**
-     * If this operation is a nested operation. Returns the binding the operation is used by. Otherwise
+     * If this operation is a nested operation. Returns the corresponding binding in the parent operationWW. Otherwise
      * {@link Optional#empty()}.
      *
      * @return the binding this operation is used by if a nested operation, otherwise {@code empty}
@@ -179,10 +179,6 @@ class ZandboxOM {
 //      throw new UnsupportedOperationException();
 //  }
 
-    ContainerMirror invokedFromContainer() {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Returns whether or new component lifetime is created every time the operation is invoked. The lifetime will last jast
      * for the lifetime of the operation.
@@ -214,11 +210,6 @@ class ZandboxOM {
         throw new UnsupportedOperationException();
     }
 
-//    /** {@return the services that are available at this injection site.} */
-//    final Set<Key<?>> availableServices() {
-//        throw new UnsupportedOperationException();
-//    }
-
     // Synchronous/Asynchronous
     final boolean createsNewThread() {
         // Does the operation spawn a new thread????
@@ -229,6 +220,11 @@ class ZandboxOM {
         // Hoere det til i noget meta data per extension???
         return false;
     }
+
+//    /** {@return the services that are available at this injection site.} */
+//    final Set<Key<?>> availableServices() {
+//        throw new UnsupportedOperationException();
+//    }
 
     public Collection<BeanMirror> dependsOn() {
         // Introduces dependencies on xx beans
@@ -265,6 +261,10 @@ class ZandboxOM {
     // I don't know if we want this? It is very internal...
     final MethodType invocationType() {
         // OperationTypeMirror? Nope things are erased
+        throw new UnsupportedOperationException();
+    }
+
+    ContainerMirror invokedFromContainer() {
         throw new UnsupportedOperationException();
     }
 

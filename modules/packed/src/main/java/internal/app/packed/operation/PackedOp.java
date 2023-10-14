@@ -36,7 +36,6 @@ import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
 import sandbox.extension.operation.OperationTemplate;
 
 /** The internal implementation of Op. */
-@SuppressWarnings("rawtypes")
 public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp, TerminalOp {
 
     /** The method handle. */

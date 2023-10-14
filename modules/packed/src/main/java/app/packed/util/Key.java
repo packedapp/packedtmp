@@ -34,7 +34,7 @@ import java.util.Set;
 
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.extension.BeanVariable;
+import app.packed.extension.BindableVariable;
 import app.packed.operation.Provider;
 import internal.app.packed.bean.PackedBeanMethod;
 import internal.app.packed.bean.PackedBindableVariable;
@@ -707,7 +707,7 @@ public abstract class Key<T> {
         return convert(method.getGenericReturnType(), method.getAnnotations(), false, FROM_METHOD_RETURN_TYPE, method);
     }
 
-    public static Key<?> fromVariable(BeanVariable variable) {
+    public static Key<?> fromBindableVariable(BindableVariable variable) {
         PackedBindableVariable v = (PackedBindableVariable) variable;
         return convert(v.variable().type(), v.variable().annotations().toArray(), false, FROM_BEAN_VARIABLE, v);
     }

@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package app.packed.service.mirror;
+
+import app.packed.util.Key;
 
 /**
  *
+ * @see app.packed.bean.BeanConfiguration#overrideService(Class, Object)
+ * @see app.packed.bean.BeanConfiguration#overrideService(app.packed.util.Key, Object)
  */
-// A model with namespace + fragments
-// Fragment values (Object) stored in an array
-public interface ApplicationComponentPath {
+public class OverriddenServiceBindingMirror extends KeyBasedBindingMirror {
 
-    Descriptor descriptor();
-
-    interface Descriptor {
-
-    }
-
-    interface Fragment {
-        Fragment APPLICATION = null;
+    @Override
+    public Key<?> key() {
+        throw new UnsupportedOperationException();
     }
 }

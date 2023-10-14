@@ -19,7 +19,7 @@ import java.lang.annotation.Annotation;
 
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanLocal.LocalAccessor;
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.BeanSourceKind;
 import app.packed.container.Author;
 import app.packed.extension.BeanElement.BeanClass;
@@ -35,19 +35,20 @@ import internal.app.packed.util.PackedAnnotationList;
 import internal.app.packed.util.StringFormatter;
 
 /**
+ * Bean introspectors are the primary way for extensions to interacts the
  *
  * This class contains a number of overridable callback methods, all of them starting with {@code on}. Make list
  *
- * @see Extension#newBeanIntrospector
+ * @see Extension#newBeanIntrospector()
  */
 
-// Operations
+// Operations24C3
 /// OnX
 //// Man kan lave ny operationer
 //// Operationen er configurable indtil onX returnere, man kalder customBinding(int index), eller
 //// Kalder OH.resolveParameters
 //// - Bindings kan ikke overskrives
-public non-sealed abstract class BeanIntrospector implements LocalAccessor {
+public non-sealed abstract class BeanIntrospector implements Accessor {
 
     /**
      * The configuration of this introspector. Is initially null but populated via
@@ -65,13 +66,6 @@ public non-sealed abstract class BeanIntrospector implements LocalAccessor {
      */
     public void afterHooks() {}
 
-//    @SuppressWarnings("unchecked")
-//    public <A> Optional<A> attachment(Class<A> attachmentType) {
-//        requireNonNull(attachmentType);
-//        Map<Class<?>, Object> a = setup().bean.attachments;
-//        return a == null ? Optional.empty() : Optional.ofNullable((A) a.get(attachmentType));
-//    }
-
     BeanSetup bean() {
         return setup().scanner.bean;
     }
@@ -79,6 +73,11 @@ public non-sealed abstract class BeanIntrospector implements LocalAccessor {
     /** {@return an annotation reader for the bean class.} */
     public final AnnotationList beanAnnotations() {
         return new PackedAnnotationList(beanClass().getAnnotations());
+    }
+
+    /** {@return the owner of the bean.} */
+    public final Author beanAuthor() {
+        return bean().author();
     }
 
     /** {@return the bean class that is being introspected.} */
@@ -99,11 +98,6 @@ public non-sealed abstract class BeanIntrospector implements LocalAccessor {
     /** {@return the extension the bean was installed via.} */
     public final LifetimeKind beanLifetimeKind() {
         return bean().lifetime.lifetimeKind();
-    }
-
-    /** {@return the owner of the bean.} */
-    public final Author beanAuthor() {
-        return bean().author();
     }
 
     /** {@return the bean source kind.} */
@@ -160,12 +154,30 @@ public non-sealed abstract class BeanIntrospector implements LocalAccessor {
         }
     }
 
+    /**
+     * This method is called by the similar named method {@link #hookOnAnnotatedField(AnnotationList, BeanField)} for every
+     * annotation.
+     *
+     * @param annotation
+     *            the annotation
+     * @param field
+     *            an operational field
+     */
     public void hookOnAnnotatedField(Annotation annotation, BeanField field) {
         throw new BeanInstallationException(extension().fullName() + " does not know how to handle " + annotation.annotationType() + " on " + field);
     }
 
     /**
-     * A callback method that is called for fields that are annotated with a field hook annotation defined by the extension:
+     * A callback method that is called by the framework when a bean is being installed for fields that are annotated with
+     * one or more field hook annotation belonging to the extension:
+     * <p>
+     * The default implementation simply calls {@link #hookOnAnnotatedField(Annotation, BeanField)} for each separately
+     * applied annotation. And in most
+     * <p>
+     * This method should be overridden only if there are annotations that can be applied multiple times to the same field.
+     * Or i
+     *
+     * annotation. And
      *
      * is annotated with an annotation that itself is annotated with {@link AnnotatedFieldHook} and where
      * {@link AnnotatedFieldHook#extension()} matches the type of this extension.
@@ -179,12 +191,16 @@ public non-sealed abstract class BeanIntrospector implements LocalAccessor {
      *            an operational field
      * @see AnnotatedFieldHook
      */
+    // Combinations of Field Annotations, Variable Annotations & VariableType
+    // Failures? or order of importancez
     public void hookOnAnnotatedField(AnnotationList hooks, BeanField field) {
         for (Annotation a : hooks) {
             hookOnAnnotatedField(a, field);
         }
     }
 
+    // can we attach information to the method???
+    // fx @Lock(sdfsdfsdf) uden @Query???
     public void hookOnAnnotatedMethod(Annotation hook, BeanMethod method) {
         // Test if getClass()==BeanScanner forgot to implement
         // Not we want to return generic bean scanner from newBeanScanner
@@ -203,12 +219,15 @@ public non-sealed abstract class BeanIntrospector implements LocalAccessor {
     }
 
     /**
+     * <p>
+     * A variable can never be annotated with more than 1 operational
+     *
      * @param variable
      *            a binding
      *
      * @see AnnotatedBindingHook
      */
-    public void hookOnAnnotatedVariable(Annotation hook, BeanVariable variable) {
+    public void hookOnAnnotatedVariable(Annotation hook, BindableVariable binder) {
         throw new BeanInstallationException(extension().fullName() + " failed to handle parameter hook annotation(s) " + hook);
     }
 
@@ -217,7 +236,7 @@ public non-sealed abstract class BeanIntrospector implements LocalAccessor {
      *
      * @see BindingTypeHook
      */
-    public void hookOnVariableType(Class<?> hook, BeanWrappedVariable variable) {
+    public void hookOnVariableType(Class<?> hook, UnwrappedBindableVariable binder) {
         throw new BeanInstallationException(extension().fullName() + " cannot handle type hook " + StringFormatter.format(hook));
     }
 
@@ -241,7 +260,7 @@ public non-sealed abstract class BeanIntrospector implements LocalAccessor {
     /** {@return whether or not the bean is in same lifetime as the application.} */
     public final boolean isInApplicationLifetime() {
         BeanSetup b = bean();
-        return b.lifetime == b.container .application.container.lifetime;
+        return b.lifetime == b.container.application.container.lifetime;
     }
 
     /** {@return whether or not the bean is in same lifetime as its container.} */

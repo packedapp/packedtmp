@@ -20,7 +20,7 @@ import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerBuilder;
 
 /**
- * An assembly is the basic building block for creating applications in Packed.
+ * An assembly is the basic building block for creating applications on top of the framework.
  * <p>
  * An assembly provides the instructions for creating an application, and every application in Packed is constructed
  * either directly or indirectly from an assembly. A single assembly can either comprise the entire application or serve
@@ -47,9 +47,9 @@ import internal.app.packed.container.PackedContainerBuilder;
  * For more complicated needs an application can itself be split into a hierarchy of application nodes with a single
  * application as the root.
  * <p>
- * This class cannot be extended directly, instead you should typically extend {@link BaseAssembly} instead.
+ * This class cannot be extended directly. If you are developing an application on top of the framework, you would
+ * typically extend {@link BaseAssembly} instead.
  */
-@SuppressWarnings("rawtypes") // Eclipse bug
 public sealed abstract class Assembly permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
 
     /**

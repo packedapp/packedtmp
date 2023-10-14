@@ -43,7 +43,7 @@ public class ContextsHelpers {
     public static void bindSimple(AbstractBootstrapedAppTest<?> t) {
         t.hooks().onVariableType((cl, v) -> {
             assert (cl == NoImplContext.class);
-            v.bindContextValue(NoImplContext.class);
+            v.bindContext(NoImplContext.class);
         });
 
         t.hooks().onAnnotatedMethod((l, b) -> {

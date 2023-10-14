@@ -18,7 +18,7 @@ package internal.app.packed.service;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.operation.BindingKind;
-import app.packed.service.ServiceBindingMirror;
+import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingSetup;

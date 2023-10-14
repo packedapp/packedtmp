@@ -13,18 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.operation;
+package app.packed.application;
 
 /**
  *
  */
-// Hmm, de problemer der er nu
-public interface OperationBuilder {
-    // nested operations
-
-    // Syntes ikke det giver mening at merge dem ind i nested
-    // Maaske har man en NestedOperationTemplate
-    // Og saa siger man nest in OperationTemplate
-
-    // IDK tricky,
+public interface ComponentMirror {
+    ComponentPath path();
 }

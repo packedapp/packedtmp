@@ -184,9 +184,12 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
      *
      * @param supplier
      *            the mirror supplier
+     * @throws IllegalStateException
+     *             if called from outside of {@link #build()}
      */
     protected final void specializeMirror(Supplier<? extends AssemblyMirror> supplier) {
         requireNonNull(supplier, "supplier cannot be null");
+        container();
         throw new UnsupportedOperationException();
     }
 }

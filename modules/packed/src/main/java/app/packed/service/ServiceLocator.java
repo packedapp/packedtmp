@@ -42,7 +42,10 @@ import internal.app.packed.service.PackedServiceLocator;
 import sandbox.extension.container.ContainerCarrierService;
 
 /**
- * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.
+ * An service locator is a holder of services, where each service can be looked up by a {@link Key} at runtime.
+ * <p>
+ *
+ *
  * An injector is typically created by populating an injector builder with the various services that needs to be
  * available.
  *
@@ -101,9 +104,6 @@ import sandbox.extension.container.ContainerCarrierService;
  * <p>
  * Injectors are always immutable, however, extensions of this interface might provide mutable operations for methods
  * unrelated to injection.
- */
-
-/**
  *
  * <p>
  * Unless otherwise specified the set of services provided by a service locator is unchangeable.
@@ -226,11 +226,7 @@ public interface ServiceLocator {
      */
     Set<Key<?>> keys();
 
-    /**
-     * Returns a service selection with all of the services in this locator.
-     *
-     * @return a service selection with all of the services in this locator
-     */
+    /** {@return a service selection with all of the services in this locator} */
     ServiceSelection<?> selectAll();
 
     /**
@@ -333,17 +329,25 @@ public interface ServiceLocator {
      * @param wirelets
      *            optional wirelets
      * @return the new image
-     * @see #driver()
      */
     static ServiceLocator.Image imageOf(Assembly assembly, Wirelet... wirelets) {
         return new ServiceLocator.Image(bootstrap().imageOf(assembly, wirelets));
     }
 
+    /**
+     * Creates a new application mirror from the specified assembly and optional wirelets.
+     *
+     * @param assembly
+     *            the assembly to use for creating the mirror
+     * @param wirelets
+     *            optional wirelets
+     * @return the new application mirror
+     */
     static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
         return bootstrap().mirrorOf(assembly, wirelets);
     }
 
-    /** {@return a service locator that provides no services.} */
+    /** {@return an empty service locator that provides no services.} */
     static ServiceLocator of() {
         return new PackedServiceLocator(PackedExtensionContext.EMPTY, Map.of());
     }
@@ -548,13 +552,13 @@ public interface ServiceLocator {
             this.image = image;
         }
 
-        /** Runs the application represented by this image. */
+        /** Creates a new service locator application from this image. */
         public ServiceLocator create() {
             return image.launch();
         }
 
         /**
-         * Runs the application represented by this image.
+         * Creates a new service locator application from this image.
          *
          * @param wirelets
          *            optional wirelets

@@ -19,6 +19,10 @@ package app.packed.errorhandling;
  * Just a place holder for now.
  */
 
+// Only support for error handling on runtime...
+// Buildtime always throws
+
+
 // Will probably work in some nested way.
 
 // Application <- Container <- Bean <- Operation <- Interceptor

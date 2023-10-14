@@ -37,7 +37,7 @@ import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanHook.AnnotatedFieldHook;
 import app.packed.extension.BeanHook.AnnotatedMethodHook;
 import app.packed.extension.BeanIntrospector;
-import app.packed.extension.BeanWrappedVariable;
+import app.packed.extension.UnwrappedBindableVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.util.AnnotationList;
@@ -62,7 +62,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
     private BiConsumer<? super AnnotationList, ? super BeanMethod> onAnnotatedMethod;
 
     @Nullable
-    private BiConsumer<? super Class<?>, ? super BeanWrappedVariable> onVariableType;
+    private BiConsumer<? super Class<?>, ? super UnwrappedBindableVariable> onVariableType;
 
     HookTestingExtension() {}
 
@@ -100,7 +100,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
             }
 
             @Override
-            public void hookOnVariableType(Class<?> hook, BeanWrappedVariable variable) {
+            public void hookOnVariableType(Class<?> hook, UnwrappedBindableVariable variable) {
                 if (onVariableType != null) {
                     onVariableType.accept(hook, variable);
                 } else {
@@ -120,7 +120,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
         return this;
     }
 
-    public HookTestingExtension onVariableType(BiConsumer<? super Class<?>, ? super BeanWrappedVariable> onVariableType) {
+    public HookTestingExtension onVariableType(BiConsumer<? super Class<?>, ? super UnwrappedBindableVariable> onVariableType) {
         this.onVariableType = onVariableType;
         return this;
     }

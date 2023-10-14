@@ -56,7 +56,6 @@ import internal.app.packed.operation.PackedOp;
  *
  * @apiNote Op implementations does not generally implement {@link #hashCode()} or {@link #equals(Object)}.
  */
-@SuppressWarnings("rawtypes") // eclipse being difficult
 public sealed interface Op<R> permits PackedOp, CapturingOp {
 
     /**
@@ -87,7 +86,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
      *
      * @param argument
      *            the argument to bind.
-     * @return a new operation
+     * @return a new operation without the leading variable
      *
      * @throws ClassCastException
      *             if the argument does not match the type of the leading variable.
@@ -123,6 +122,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
         requireNonNull(constructor, "constructor is null");
         throw new UnsupportedOperationException();
     }
+
     // Tror vi maa droppe de her lookups, de fungere ikke rigtig
     static Op<?> ofField(Lookup lookup, Field field) {
         requireNonNull(field, "field is null");

@@ -12,7 +12,7 @@ import app.packed.container.Wirelet;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.Extension;
 import app.packed.util.Key;
-import internal.app.packed.container.LeafContainerOrApplicationBuilder;
+import internal.app.packed.container.NonRootContainerBuilder;
 import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.context.ContextSpanKind;
@@ -29,6 +29,7 @@ import sandbox.extension.operation.OperationHandle;
 public sealed interface ContainerHandle extends ContainerLocal.LocalAccessor permits PackedContainerHandle {
 
     /**
+     * Checks that the container is still configurable, or throws an exception.
      *
      * @throws IllegalStateException
      *             if the container is no longer configurable
@@ -70,11 +71,12 @@ public sealed interface ContainerHandle extends ContainerLocal.LocalAccessor per
     boolean isExtensionUsed(Class<? extends Extension<?>> extensionType);
 
     /**
-     * If the container is registered with its own lifetime. This method returns a list of the container's lifetime
-     * operations.
+     * This method returns a list of the container's lifetime operations.
+     * <p>
+     * If the lifetime of the container container cannot be explicitly controlled, for example, if it is a child container.
+     * The returned list is empty.
      *
-     * @return a list of lifetime operations of this container. The list is empty if the lifetime of the container cannot be
-     *         controlled explicitly
+     * @return a list of lifetime operations of this container.
      */
     List<OperationHandle> lifetimeOperations();
 
@@ -94,17 +96,13 @@ public sealed interface ContainerHandle extends ContainerLocal.LocalAccessor per
     OldApplicationPath path();
 
     /**
-     * A builder for containers. All containers are either directly or indirectly created via a ContainerBuilder.
-     * <p>
+     * A builder for a container (handle).
      *
      * @see BaseExtensionPoint#addCodeGenerated(BeanConfiguration, Class, Supplier)
      * @see BaseExtensionPoint#beanInstallerForExtension(app.packed.extension.bean.BeanTemplate,
      *      app.packed.extension.ExtensionPoint.UseSite)
      */
-
-    // TODO move back to BaseExtensionPoint
-    // Put on OperationHandle?????
-    public sealed interface Builder permits LeafContainerOrApplicationBuilder {
+    public sealed interface Builder permits NonRootContainerBuilder {
 
         /**
          * Creates a new container using the specified assembly.
@@ -146,7 +144,6 @@ public sealed interface ContainerHandle extends ContainerLocal.LocalAccessor per
 
         // Only Managed-Operation does not require a wrapper
         // For now this method is here. Might move it to the actual CHC at some point
-
 
         // Hmm, don't know if need a carrier instance, if we have implicit construction
 //        /**
@@ -228,7 +225,7 @@ public sealed interface ContainerHandle extends ContainerLocal.LocalAccessor per
          * requested.
          *
          * @param supplier
-         *            the supplier used to create the bean mirror
+         *            the supplier used to create the container mirror
          * @apiNote the specified supplier may be called multiple times for the same bean. In which case an equivalent mirror
          *          must be returned
          */

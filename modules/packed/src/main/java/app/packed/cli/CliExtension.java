@@ -25,8 +25,6 @@ import app.packed.container.Wirelet;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.FrameworkExtension;
-import sandbox.extension.bean.BeanHandle;
-import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.container.ContainerHandle.Builder;
 import sandbox.extension.container.ContainerTemplate;
@@ -53,8 +51,9 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
     public <T> InstanceBeanConfiguration<T> newBean(Class<T> beanClass) {
         // Hvad goer den praecis??? Laver bean'en og exiter???
 
-        BeanHandle<T> h = base().beanBuilder(BeanTemplate.EXTERNAL).install(beanClass);
-        return new InstanceBeanConfiguration<>(h);
+//        BeanHandle<T> h = base().beanBuilder(BeanTemplate).install(beanClass);
+//        return new InstanceBeanConfiguration<>(h);
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -78,7 +77,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
         if (isInApplicationLifetime()) {
             throw new UnsupportedOperationException("This method must be called from an extension in the application lifetime");
         }
-        Builder cb = base().containerBuilder(ContainerTemplate.GATEWAY);
+        Builder cb = base().newContainer(ContainerTemplate.GATEWAY);
         // CT.addEntryPointErrorMessage("Lifetime must container at least one entry point with CliCommand")
 
         return cb;

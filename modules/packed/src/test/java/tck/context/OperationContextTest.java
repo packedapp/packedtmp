@@ -40,7 +40,7 @@ public class OperationContextTest extends AppAppTest {
     void beforeEach() {
         hooks().onVariableType((cl, v) -> {
             assert (cl == NoImplContext.class);
-            v.bindContextValue(NoImplContext.class);
+            v.bindContext(NoImplContext.class);
         });
 
         hooks().onAnnotatedMethod((l, b) -> {

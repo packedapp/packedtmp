@@ -44,7 +44,7 @@ public @interface BeanHook {
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @BeanHook
-    public @interface AnnotatedBindingHook {
+    public @interface AnnotatedVariableHook {
 
         /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
         Class<? extends Extension<?>> extension();
@@ -83,7 +83,9 @@ public @interface BeanHook {
     public @interface AnnotatedClassHook {
 
         /** Whether or not the sidecar is allow to get the contents of a field. */
-        // maybe allowAllAccess
+        /**
+         * @return
+         */
         boolean allowFullPrivilegeAccess() default false;
 
         /** The extension the hook is a part of. */

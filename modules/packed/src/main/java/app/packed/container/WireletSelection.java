@@ -26,11 +26,11 @@ import internal.app.packed.container.WireletSelectionArray;
 /**
  * A selection of wirelets of a specific type (W).
  * <p>
- * The framework provides no way to guard against use of multiple wirelets of the same type. This is easier done on the
- * wirelet consumer side (this selection)
+ * The framework provides no automatic way to guard against use of multiple wirelets of the same type. If this is an
+ * issue, it must done on the wirelet consuming side.
  */
-@SuppressWarnings("rawtypes")
 @BindingTypeHook(extension = BaseExtension.class)
+// Bound
 public sealed interface WireletSelection<W extends Wirelet> extends Iterable<W> permits WireletSelectionArray {
 
     /** {@return the first wirelet in this selection or empty {@code Optional}, if no wirelets are present} */

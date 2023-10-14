@@ -47,11 +47,9 @@ class CliExtensionNamespace extends NamespaceOperator<CliExtension> {
     void process(CliExtension extension, CliCommand c, BeanMethod method) {
         OperationHandle h = null;
         if (isInApplicationLifetime(extension)) {
-            h = method.newOperation(OperationTemplate.defaults());
-
+            h = method.newOperation().specializeMirror(() -> new CliCommandMirror(this, c)).build(OperationTemplate.defaults());
             // check Launched
         } else {
-
             // EntryPoint.LaunchLifetime
         }
 
@@ -59,7 +57,6 @@ class CliExtensionNamespace extends NamespaceOperator<CliExtension> {
         if (commands.putIfAbsent(c.name()[0], cd) != null) {
             throw new BeanInstallationException("Multiple cli commands with the same name, name = " + c.name());
         }
-        h.specializeMirror(() -> new CliCommandMirror(cd));
         // OT.DEFAULTS.entryPoint();
     }
 }

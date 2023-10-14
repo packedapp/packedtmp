@@ -18,7 +18,7 @@ package usage.cli;
 import app.packed.application.ApplicationMirror;
 import app.packed.cli.CliCommandMirror;
 import app.packed.cli.CliNamespaceMirror;
-import app.packed.service.ServiceNamespaceMirror;
+import app.packed.service.mirror.ServiceNamespaceMirror;
 
 /**
  *

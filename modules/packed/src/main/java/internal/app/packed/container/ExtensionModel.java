@@ -217,7 +217,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      * @return a new extension instance
      */
     Extension<?> newInstance(ExtensionSetup extension) {
-        return ExtensionSetup.MI.run(this::newExtension, extension);
+        return ExtensionSetup.MAGIC_INITIALIZER.run(this::newExtension, extension);
     }
 
     Extension<?> newExtension() {

@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package sandbox.extension.operation;
 
-import app.packed.util.Key;
+import java.lang.invoke.MethodHandle;
 
 /**
  *
  */
-public interface ServiceMirror {
+// Vi har ikke laengere trae operationer, men kan lave en invoker
+public interface SerialInvoker {
 
-    Key<?> key();
-
-    ServiceNamespaceMirror domain();
+    MethodHandle generateMethodHandle();
 }

@@ -17,9 +17,11 @@ package sandbox.extension.bean;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanSourceKind;
 import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.lifetime.PackedBeanTemplate;
@@ -27,7 +29,7 @@ import sandbox.extension.bean.BeanHandle.Builder;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
- * A bean template is a reusable building block that must be specified whenever an extension creates a new bean.
+ * A bean template is a reusable building block that is specified when a new bean is created.
  * <p>
  * using when installating new beans using {@link app.packed.extension.BaseExtensionPoint#beanBuilder(BeanTemplate)} or
  * {@link app.packed.extension.BaseExtensionPoint#beanInstallerForExtension(BeanTemplate, app.packed.extension.ExtensionPoint.UseSite)}.
@@ -58,23 +60,11 @@ import sandbox.extension.operation.OperationTemplate;
  * A static bean never has any lifetime operations. And will fail with XX
  * <p>
  */
-// Contexts (Hele beanen)
-// Lifetime Args (Er det bare private
-// Pouched-non-pouched
+//CreateAsClass
+// Contexts (Bean + Lifetime operation)
+// LocalSet
+//Pouched-non-pouched // Not
 public sealed interface BeanTemplate permits PackedBeanTemplate {
-
-    /**
-     * The lifetime of the bean is not managed by any extension. At least not in a standard way
-     * <p>
-     * {@link #operations()} always returns a empty list
-     * <p>
-     * All operations on the bean must take a bean instance.
-     * <p>
-     * Giver det mening overhoved at supportere operation
-     * <p>
-     * It is a failure to use lifecycle annotations on the bean
-     **/
-    BeanTemplate EXTERNAL = new PackedBeanTemplate(BeanKind.UNMANAGED);
 
     // The bean is created by an operation
     // There are no lifetime operations on the bean
@@ -83,6 +73,8 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     // TODO skal vi baade have managed og unmanged operationer???
     // Fx @Provide paa en prototypeBean (giver vel ikke mening)
     BeanTemplate GATEWAY = new PackedBeanTemplate(BeanKind.UNMANAGED);
+
+    BeanTemplate FUNCTIONAL = BeanKind.STATIC.template();
 
     /**
      * Specifies the return type signature of the factory operation(s) that creates the bean.
@@ -109,7 +101,17 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
      */
     BeanTemplate createAs(Class<?> clazz);
 
-    // When do you ever want this????
+    /**
+     * The creation MethodHandle will have the actual bean type as its return type.
+     * <p>
+     * Normally the return type is {@code Object.class} to allow for better interoperability with
+     * {@link java.lang.invoke.MethodHandle#invokeExact(Object...)}.
+     *
+     * @return the new template
+     *
+     * @throws UnsupportedOperationException
+     *             if bean kind is not {@link BeanKind#MANANGED} or {@link BeanKind#UNMANAGED}
+     */
     BeanTemplate createAsBeanClass();
 
     /** {@return a descriptor for this template} */
@@ -151,13 +153,20 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
      * @see app.packed.extension.context.ContextValue
      */
     // Lifetime operationer kan koeres i en context
-    BeanTemplate inLifetimeOperationContext(int index, ContextTemplate template);
+    BeanTemplate inContextForLifetimeOperation(int index, ContextTemplate template);
+
+    default <T> BeanTemplate localSet(BeanLocal<T> beanLocal, T value) {
+        throw new UnsupportedOperationException();
+    }
 
     /** A descriptor for a BeanTemplate. This class is mainly used for informational purposes. */
     interface Descriptor {
 
         /** {@return the kind of bean the descriptor's template creates} */
         BeanKind beanKind();
+
+        /** {@return the bean contexts} */
+        Map<Class<?>, ContextTemplate.Descriptor> contexts();
 
         /**
          * <p>
@@ -180,11 +189,6 @@ interface Sandbox {
 
     void ignoreAnnotations(Class<?> annot);
 
-    default boolean isBasedOn(BeanTemplate template) {
-        // return template.isUnmodified() && this.base = template
-        return false;
-    }
-
     void noScan();
 
     // Ahh alt er raw
@@ -204,24 +208,8 @@ interface Sandbox {
      */
     Builder synthetic(); // Maybe on template?
 
-    // Maa man goere paa installeren..
-//    default <T> void initializeLocal(BeanLocal<T> local, T value) {
-//
-//    }
-
 //    // No seperet MH for starting, part of init
 //    // Tror maaske det her er en seperat template
 //    Builder autoStart();
 
-//
-//    // Ideen er lidt at vi som default returnere Object vil jeg mene
-//    // Men man kunne sige fx AbstractEntityBean at bean.init returnere
-//    Builder instanceAs(Class<?> clazz);
-//
-//    default Builder inContext(ContextTemplate template) {
-//        // This means Context args are added to all operations.
-//
-//        // builderManyton().inContext(WebContext.template).builder();
-//        return this;
-//    }
 }

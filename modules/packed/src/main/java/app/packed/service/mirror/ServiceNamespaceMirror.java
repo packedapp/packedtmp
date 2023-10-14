@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.service.mirror;
 
 import java.util.Collection;
 import java.util.Map;
 
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceMirror;
+import app.packed.service.ServiceContract;
 import app.packed.util.Key;
 
 /**

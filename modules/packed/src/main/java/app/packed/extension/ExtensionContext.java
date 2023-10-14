@@ -20,7 +20,7 @@ import app.packed.extension.BeanHook.BindingTypeHook;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 
 /**
- * All beans that are owned by an extension operates within an ExtensionContext.
+ * All (container?) beans that are owned by an extension operates within an ExtensionContext.
  * <p>
  * An instance of this class is typically required when invoking operations.
  */

@@ -34,7 +34,7 @@ import sandbox.extension.container.ContainerTemplate;
 
 // Would love
 /** Implementation of {@link ContainerBuilder} for a non-root container. */
-public final class LeafContainerOrApplicationBuilder extends NonBootstrapContainerBuilder implements Builder {
+public final class NonRootContainerBuilder extends NonBootstrapContainerBuilder implements Builder {
 
     /** The extension that is installing the container. */
     final Class<? extends Extension<?>> installedBy;
@@ -44,7 +44,7 @@ public final class LeafContainerOrApplicationBuilder extends NonBootstrapContain
     boolean newApplication;
 
     // Cannot take ExtensionSetup, as BaseExtension is not instantiated for a root container
-    private LeafContainerOrApplicationBuilder(PackedContainerTemplate template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
+    private NonRootContainerBuilder(PackedContainerTemplate template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
             @Nullable ContainerSetup parent) {
         super(template);
         this.parent = parent;
@@ -57,7 +57,7 @@ public final class LeafContainerOrApplicationBuilder extends NonBootstrapContain
         checkNotUsed();
         checkIsConfigurable();
 
-        processBuildWirelet(wirelets);
+        processBuildWirelets(wirelets);
 
         ContainerSetup container = buildNow(assembly);
         return new PackedContainerHandle(container);
@@ -71,7 +71,7 @@ public final class LeafContainerOrApplicationBuilder extends NonBootstrapContain
 
         // Be careful if moving into newContainer, some tests
         // can fail easily
-        processBuildWirelet(wirelets);
+        processBuildWirelets(wirelets);
 
         ContainerSetup container = newContainer(parent.application, parent.assembly);
         return new PackedContainerHandle(container);
@@ -151,9 +151,9 @@ public final class LeafContainerOrApplicationBuilder extends NonBootstrapContain
         return this;
     }
 
-    public static LeafContainerOrApplicationBuilder of(ContainerTemplate template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
+    public static NonRootContainerBuilder of(ContainerTemplate template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
             @Nullable ContainerSetup parent) {
-        LeafContainerOrApplicationBuilder pcb = new LeafContainerOrApplicationBuilder((PackedContainerTemplate) template, installedBy, application, parent);
+        NonRootContainerBuilder pcb = new NonRootContainerBuilder((PackedContainerTemplate) template, installedBy, application, parent);
 
         for (PackedContainerTemplatePack b : pcb.template.links().packs) {
             b.build(pcb);

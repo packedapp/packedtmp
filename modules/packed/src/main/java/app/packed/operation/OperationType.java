@@ -235,7 +235,7 @@ public final /* primitive */ class OperationType {
         if (parameterTypes.length > 0) {
             vars = new Variable[parameterTypes.length];
             for (int i = 0; i < vars.length; i++) {
-                vars[i] = PackedVariable.of(annotations[i], parameterTypes[i]);
+                vars[i] = PackedVariable.of(parameterTypes[i], annotations[i]);
             }
         }
         return new OperationType(AnnotationList.fromExecutable(executable), Variable.fromReturnType(executable), vars);

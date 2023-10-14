@@ -32,7 +32,7 @@ import internal.app.packed.container.ExtensionSetup;
  *
  * @see Extension#applicationNavigator()
  */
-final /* primitive */ class ExtensionNavigator<E extends Extension<E>> implements Node<E> {
+final /* primitive */ class ExtensionTreeViewNode<E extends Extension<E>> implements Node<E> {
 
     /** We use the extension type mainly for casting. */
     private final Class<E> extensionType;
@@ -40,7 +40,7 @@ final /* primitive */ class ExtensionNavigator<E extends Extension<E>> implement
     /** The origin of the navigator. */
     private final ExtensionSetup origin;
 
-    ExtensionNavigator(ExtensionSetup origin, Class<E> extensionType) {
+    ExtensionTreeViewNode(ExtensionSetup origin, Class<E> extensionType) {
         this.origin = requireNonNull(origin);
         this.extensionType = requireNonNull(extensionType);
     }
@@ -59,7 +59,7 @@ final /* primitive */ class ExtensionNavigator<E extends Extension<E>> implement
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof ExtensionNavigator<?> en && (origin == en.origin);
+        return obj instanceof ExtensionTreeViewNode<?> en && (origin == en.origin);
     }
 
     ExtensionDescriptor extensionDescriptor() {

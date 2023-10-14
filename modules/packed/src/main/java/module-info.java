@@ -14,6 +14,7 @@ module app.packed {
     exports app.packed.namespace;
     exports app.packed.operation;
     exports app.packed.service;
+    exports app.packed.service.mirror;
     exports app.packed.util;
 
     // temporary sandbox thingies

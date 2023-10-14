@@ -15,6 +15,7 @@ import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
+import app.packed.service.ServiceContract;
 import app.packed.util.TreeView.Node;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ApplicationSetup;
@@ -134,8 +135,8 @@ public class ApplicationMirror implements Mirror {
         throw new UnsupportedOperationException();
     }
 
-    public DeploymentPath path() {
-        return DeploymentPath.ofApplication(name());
+    public ComponentPath path() {
+        return ComponentPath.Schema.APPLICATION.newPath(name());
     }
 
     public void print() {
@@ -163,6 +164,11 @@ public class ApplicationMirror implements Mirror {
             }
             System.out.print(sb.toString());
         }
+    }
+
+    /** {@return the service contract of this application.} */
+    public ServiceContract serviceContract() {
+        return application.container.sm.newContract();
     }
 
     /** {@inheritDoc} */

@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 
 import app.packed.application.OldApplicationPath;
-import app.packed.bean.BeanLocal.LocalAccessor;
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.container.Author;
 import app.packed.context.Context;
 import app.packed.util.Key;
@@ -13,7 +13,7 @@ import internal.app.packed.bean.PackedBeanHandle;
 import sandbox.extension.bean.BeanHandle;
 
 /** The configuration of a bean, typically returned from the bean's installation site. */
-public non-sealed class BeanConfiguration implements LocalAccessor {
+public non-sealed class BeanConfiguration implements Accessor {
 
     /** The bean handle. */
     private final PackedBeanHandle<?> handle;

@@ -23,7 +23,7 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.LeafContainerOrApplicationBuilder;
+import internal.app.packed.container.NonRootContainerBuilder;
 import internal.app.packed.container.PackedContainerBuilder;
 import internal.app.packed.container.PackedContainerHandle;
 
@@ -131,7 +131,7 @@ public abstract class AbstractComposer {
          */
         @Override
         AssemblySetup build(PackedContainerBuilder builder) {
-            if (builder instanceof LeafContainerOrApplicationBuilder installer) {
+            if (builder instanceof NonRootContainerBuilder installer) {
                 throw new IllegalArgumentException("Cannot link an instance of " + ComposableAssembly.class + ", assembly must extend "
                         + BuildableAssembly.class.getSimpleName() + " instead");
             }

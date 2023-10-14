@@ -28,7 +28,6 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
-import sandbox.extension.operation.DelegatingOperationHandle;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 
