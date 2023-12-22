@@ -6,6 +6,7 @@ import java.util.Set;
 
 import app.packed.application.OldApplicationPath;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentPath;
 import app.packed.container.Operative;
 import app.packed.context.Context;
 import app.packed.util.Key;
@@ -25,7 +26,6 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      *            the bean handle
      */
     public BeanConfiguration(BeanHandle<?> handle) {
-        super(handle);
         this.handle = (PackedBeanHandle<?>) requireNonNull(handle, "handle is null");
     }
 
@@ -43,7 +43,21 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         return this;
     }
 
+    /** {@return the path of the component} */
+    @Override
+    public final ComponentPath componentPath() {
+        return handle.componentPath();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanConfiguration componentTag(String... tags) {
+        handle.componentTags(tags);
+        return this;
+    }
+
     /** {@return the owner of the bean.} */
+    // Declared by???
     public final Operative author() {
         return handle.author();
     }

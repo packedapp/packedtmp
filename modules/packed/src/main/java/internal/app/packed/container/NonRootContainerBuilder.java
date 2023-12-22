@@ -54,19 +54,19 @@ public final class NonRootContainerBuilder extends NonBootstrapContainerBuilder 
 
     /** {@inheritDoc} */
     @Override
-    public PackedContainerHandle build(Assembly assembly, Wirelet... wirelets) {
+    public ContainerSetup build(Assembly assembly, Wirelet... wirelets) {
         checkNotUsed();
         checkIsConfigurable();
 
         processBuildWirelets(wirelets);
 
         ContainerSetup container = buildNow(assembly);
-        return new PackedContainerHandle(container);
+        return container;
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedContainerHandle build(Wirelet... wirelets) {
+    public ContainerSetup build(Wirelet... wirelets) {
         checkNotUsed();
         checkIsConfigurable();
 
@@ -75,14 +75,14 @@ public final class NonRootContainerBuilder extends NonBootstrapContainerBuilder 
         processBuildWirelets(wirelets);
 
         ContainerSetup container = newContainer(parent.application, parent.assembly);
-        return new PackedContainerHandle(container);
+        return container;
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedContainerHandle buildAndUseThisExtension(Wirelet... wirelets) {
-        PackedContainerHandle handle = build(wirelets);
-        handle.container().useExtension(installedBy, null);
+    public ContainerSetup buildAndUseThisExtension(Wirelet... wirelets) {
+        ContainerSetup handle = build(wirelets);
+        handle.useExtension(installedBy, null);
         return handle;
     }
 

@@ -37,9 +37,9 @@ import app.packed.namespace.NamespaceTemplate;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.util.BaseModuleConstants;
 import app.packed.util.TreeView;
+import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NamespaceSetup;
-import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.container.PackedNamespaceTemplate;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
@@ -159,7 +159,7 @@ public abstract class Extension<E extends Extension<E>> {
     @SuppressWarnings("unchecked")
     protected final Optional<E> fromHandle(ContainerHandle handle) {
         requireNonNull(handle, "handle is null");
-        ExtensionSetup s = ((PackedContainerHandle) handle).container().extensions.get(extension.extensionType);
+        ExtensionSetup s = ((ContainerSetup) handle).extensions.get(extension.extensionType);
         return s == null ? Optional.empty() : Optional.ofNullable((E) s.instance());
     }
 

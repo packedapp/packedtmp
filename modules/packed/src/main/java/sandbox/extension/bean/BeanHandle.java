@@ -29,7 +29,7 @@ import app.packed.bean.BeanLocalAccessor;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.component.ComponentHandle;
+import app.packed.component.ComponentPath;
 import app.packed.container.Operative;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.BaseExtension;
@@ -52,7 +52,7 @@ import sandbox.extension.operation.OperationHandle;
  * @see BeanBuilder#installIfAbsent(Class, java.util.function.Consumer)
  * @see BeanBuilder#installInstance(Object)
  */
-public sealed interface BeanHandle<T> extends ComponentHandle, ContextualizedElement , BeanLocalAccessor permits PackedBeanHandle {
+public sealed interface BeanHandle<T> extends ContextualizedElement , BeanLocalAccessor permits PackedBeanHandle {
 
     /** {@return the bean class.} */
     Class<?> beanClass();
@@ -62,6 +62,12 @@ public sealed interface BeanHandle<T> extends ComponentHandle, ContextualizedEle
 
     /** {@return the bean source kind.} */
     BeanSourceKind beanSourceKind();
+
+    /** {@return the path of the component} */
+    ComponentPath componentPath();
+
+    // Primarily specified by the user and for used for building or mirrors
+    void componentTags(String... tags);
 
     /**
      * Checks that the bean is still configurable or throws an {@link IllegalStateException} if not

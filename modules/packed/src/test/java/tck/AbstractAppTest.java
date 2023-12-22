@@ -36,7 +36,6 @@ import app.packed.lifetime.LifetimeKind;
 import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerBuilder;
-import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
 import sandbox.extension.operation.OperationHandle;
@@ -244,7 +243,7 @@ abstract class AbstractAppTest<A> {
             }
             assembly = new AssemblySetup(this, ba);
             // Do
-            cc = new ContainerConfiguration(new PackedContainerHandle(assembly.container));
+            cc = new ContainerConfiguration(assembly.container);
 
         }
 

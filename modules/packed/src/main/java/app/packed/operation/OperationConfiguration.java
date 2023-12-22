@@ -18,6 +18,7 @@ package app.packed.operation;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
 import sandbox.extension.operation.OperationHandle;
 
@@ -69,5 +70,17 @@ public class OperationConfiguration extends ComponentConfiguration {
     /** {@return the tyoe of the operation} */
     public final OperationType type() {
         return handle.type();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
+        return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentConfiguration componentTag(String... tags) {
+        return null;
     }
 }

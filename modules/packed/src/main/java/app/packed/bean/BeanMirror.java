@@ -213,6 +213,7 @@ public non-sealed class BeanMirror implements BeanLocalAccessor, ComponentMirror
     }
 
     /** {@return the owner of the bean.} */
+    // declaredBy
     public final Operative owner() {
         return bean.author();
     }

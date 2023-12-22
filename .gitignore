@@ -6,6 +6,7 @@ target.tmp
 .classpath
 .project
 .settings
+.java-version
 dependency-reduced-pom.xml
 .DS_Store
 /trace*

@@ -18,19 +18,12 @@ package app.packed.component;
 import java.util.Set;
 
 /**
- * A mirror for a component.
+ * A mirror representing a component.
  * <p>
  * A component mirror is always defined either by the framework or by an extension.
  * IDK would it make sense to have it as a user??? Fx Importer...
  */
 
-
-// Does a component always have a runtime representation???
-// Assembly and Extension does not have a runtime representation...
-
-// Fx CliCommandMirror extends OperationMirror...
-// Saa det bliver en FrameworkComponentMirror hvilket ikke er korrekt...
-// Saa enten skal den linke til operationen
 
 
 public interface ComponentMirror extends Mirror {
@@ -47,6 +40,15 @@ public interface ComponentMirror extends Mirror {
     /** {@return the path of the component} */
     ComponentPath componentPath();
 }
+
+
+//Does a component always have a runtime representation???
+//Assembly and Extension does not have a runtime representation...
+
+//Fx CliCommandMirror extends OperationMirror...
+//Saa det bliver en FrameworkComponentMirror hvilket ikke er korrekt...
+//Saa enten skal den linke til operationen
+
 
 // Wirelets are not components
 // Extensions are not components (They are not part of an application)

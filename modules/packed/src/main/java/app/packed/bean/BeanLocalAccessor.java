@@ -22,4 +22,5 @@ import sandbox.extension.bean.BeanHandle;
 /**
  *
  */
+// Used to be an inner interface on BeanLocal, but eclipse compiled complained on it
 public sealed interface BeanLocalAccessor permits BeanConfiguration, BeanElement, BeanHandle, BeanIntrospector, BeanMirror {}

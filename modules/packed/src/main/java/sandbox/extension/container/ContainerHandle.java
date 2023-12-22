@@ -13,8 +13,8 @@ import app.packed.container.Wirelet;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.Extension;
 import app.packed.util.Key;
+import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.NonRootContainerBuilder;
-import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.context.ContextSpanKind;
 import sandbox.extension.operation.OperationHandle;
@@ -27,7 +27,7 @@ import sandbox.extension.operation.OperationHandle;
  * <p>
  * A lot of methods on this class is also available on {@link ContainerBuilder}.
  */
-public sealed interface ContainerHandle extends Component , ContainerLocal.LocalAccessor permits PackedContainerHandle {
+public sealed interface ContainerHandle extends Component , ContainerLocal.LocalAccessor permits ContainerSetup {
 
     /**
      * Checks that the container is still configurable, or throws an exception.
@@ -51,7 +51,7 @@ public sealed interface ContainerHandle extends Component , ContainerLocal.Local
     Set<Class<? extends Extension<?>>> extensionTypes();
 
     /**
-     * Returns whether or not the bean is still configurable.
+     * Returns whether or not the container is still configurable.
      * <p>
      * If an assembly was used to create the container. The handle is never configurable.
      *
@@ -68,6 +68,8 @@ public sealed interface ContainerHandle extends Component , ContainerLocal.Local
      * @return {@code true} if the extension is currently in use, otherwise {@code false}
      * @implNote The framework does not perform detailed tracking on which extensions use other extensions. As a consequence
      *           it cannot give a more detailed answer about who is using a particular extension
+     * @see ContainerConfiguration#isExtensionUsed(Class)
+     * @see ContainerMirror#isExtensionUsed(Class)
      */
     boolean isExtensionUsed(Class<? extends Extension<?>> extensionType);
 

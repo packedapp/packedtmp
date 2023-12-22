@@ -25,7 +25,6 @@ import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.NonRootContainerBuilder;
 import internal.app.packed.container.PackedContainerBuilder;
-import internal.app.packed.container.PackedContainerHandle;
 
 /**
  * A composer is
@@ -98,7 +97,7 @@ public abstract class AbstractComposer {
      */
     public final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
-        configuration().handle.container().assembly.lookup(lookup);
+        configuration().container.assembly.lookup(lookup);
     }
 
     protected void preCompose() {}
@@ -138,7 +137,7 @@ public abstract class AbstractComposer {
             Object existing = composer.configuration;
             if (existing == null) {
                 AssemblySetup a = new AssemblySetup(builder, this);
-                ContainerConfiguration cc = composer.configuration = new ContainerConfiguration(new PackedContainerHandle(a.container));
+                ContainerConfiguration cc = composer.configuration = new ContainerConfiguration(a.container);
                 try {
                     composer.preCompose();
 

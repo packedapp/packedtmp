@@ -15,31 +15,15 @@
  */
 package app.packed.component;
 
-import static java.util.Objects.requireNonNull;
-
 /**
  * The abstract configuration of a component.
  */
+// We do not have a common ComponentHandle. Because extensions might define their own
 public abstract class ComponentConfiguration implements Component {
-
-    private final ComponentHandle handle;
-
-    protected ComponentConfiguration() {
-        this.handle = null;
-    }
-
-    protected ComponentConfiguration(ComponentHandle handle) {
-        this.handle = requireNonNull(handle, "handle is null");
-    }
 
     /** {@return the path of the component} */
     @Override
-    public final ComponentPath componentPath() {
-        return handle.componentPath();
-    }
+    public abstract ComponentPath componentPath();
 
-    public ComponentConfiguration componentTag(String... tags) {
-        handle.componentTags(tags);
-        return this;
-    }
+    public abstract ComponentConfiguration componentTag(String... tags);
 }

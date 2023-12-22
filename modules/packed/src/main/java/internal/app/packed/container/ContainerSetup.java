@@ -20,13 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import app.packed.application.OldApplicationPath;
-import app.packed.component.Component;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
@@ -48,10 +49,12 @@ import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.TreeNode;
 import internal.app.packed.util.TreeNode.ActualNode;
 import internal.app.packed.util.types.ClassUtil;
+import sandbox.extension.container.ContainerHandle;
+import sandbox.extension.operation.OperationHandle;
 
 /** The internal configuration of a container. */
 public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
-        implements ActualNode<ContainerSetup> , Component , ContextualizedElementSetup , Mirrorable<ContainerMirror> {
+        implements ActualNode<ContainerSetup> , ContextualizedElementSetup , Mirrorable<ContainerMirror> , ContainerHandle {
 
     /** A magic initializer for {@link ContainerMirror}. */
     public static final MagicInitializer<ContainerSetup> MIRROR_INITIALIZER = MagicInitializer.of(ContainerMirror.class);
@@ -123,6 +126,18 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
         this.ignoreRename = builder.nameFromWirelet != null;
     }
 
+    /**
+     * Returns an immutable set containing any extensions that are disabled for containers created by this driver.
+     * <p>
+     * When hosting an application, we must merge the parents unsupported extensions and the new guests applications drivers
+     * unsupported extensions
+     *
+     * @return a set of disabled extensions
+     */
+    public Set<Class<? extends Extension<?>>> bannedExtensions() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return the base extension for this container.} */
     public BaseExtension base() {
         return (BaseExtension) useExtension(BaseExtension.class, null).instance();
@@ -134,7 +149,16 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param tags
+     * @return
+     */
+    public ComponentConfiguration componentTag(String[] tags) {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return a unmodifiable view of all extension types that are in used in no particular order.} */
+    @Override
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
     }
@@ -166,15 +190,14 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
         return treeParent == null || assembly.container == this;
     }
 
-    /**
-     * Returns whether or not the specified extension class is used.
-     *
-     * @param extensionClass
-     *            the extension to test
-     * @return true if the specified extension type is used, otherwise false
-     * @see ContainerConfiguration#isExtensionUsed(Class)
-     * @see ContainerMirror#isExtensionUsed(Class)
-     */
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConfigurable() {
+        return assembly.isConfigurable();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionClass) {
         requireNonNull(extensionClass, "extensionClass is null");
         return extensions.containsKey(extensionClass);
@@ -183,6 +206,17 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
     /** {@return whether or not this container is the root of its lifetime.} */
     public boolean isLifetimeRoot() {
         return this == lifetime.container;
+    }
+
+    /**
+     * If the container is registered with its own lifetime. This method returns a list of the container's lifetime
+     * operations.
+     *
+     * @return a list of lifetime operations if the container has its own lifetime
+     */
+    @Override
+    public List<OperationHandle> lifetimeOperations() {
+        return List.of();
     }
 
     /** {@return a new container mirror.} */
@@ -198,6 +232,9 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
      *            the new name of the container
      */
     public void named(String newName) {
+        checkIsConfigurable();
+        // TODO start by checking isConfigurable
+
         // We start by validating the new name of the component
         NameCheck.checkComponentName(newName);
 
@@ -214,7 +251,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
         // Unless we are the root container. We need to insert or update this container in the parent container
         if (treeParent != null) {
             if (treeParent.children.putIfAbsent(newName, this) != null) {
-                throw new IllegalArgumentException("A bean or container with the specified name '" + newName + "' already exists");
+                throw new IllegalArgumentException("A container with the specified name '" + newName + "' already exists in the parent");
             }
             treeParent.children.remove(currentName);
         }
@@ -228,6 +265,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
     }
 
     /** {@return the path of this container} */
+    @Override
     public OldApplicationPath path() {
         int depth = depth();
         return switch (depth) {

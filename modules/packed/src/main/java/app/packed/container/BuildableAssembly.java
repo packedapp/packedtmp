@@ -25,7 +25,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerBuilder;
-import internal.app.packed.container.PackedContainerHandle;
 
 /**
  * Assemblies are the main way that applications are configured in Packed.
@@ -68,7 +67,7 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
     /** {@return an assembly finder that can be used to find assemblies on the class- or module-path.} */
     // Classpath if the assembly is on the classpath, otherwise modulepath
     protected final AssemblyFinder assemblyFinder() {
-        return new PackedAssemblyFinder(getClass(), container().handle.container().assembly);
+        return new PackedAssemblyFinder(getClass(), container().container.assembly);
     }
 
     /**
@@ -86,7 +85,7 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
         Object existing = configuration;
         if (existing == null) {
             AssemblySetup assembly = new AssemblySetup(builder, this);
-            existing = configuration = new ContainerConfiguration(new PackedContainerHandle(assembly.container));
+            existing = configuration = new ContainerConfiguration(assembly.container);
             try {
 
                 // What is the state of the assembly here??? Pre_Build or building
@@ -203,7 +202,7 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
-        container().handle.container().assembly.lookup(lookup);
+        container().container.assembly.lookup(lookup);
     }
 
     /**

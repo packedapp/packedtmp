@@ -16,10 +16,23 @@
 package app.packed.application;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentPath;
 
 /**
  *
  */
 public class ApplicationConfiguration extends ComponentConfiguration {
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
+        return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentConfiguration componentTag(String... tags) {
+        return null;
+    }
 
 }
