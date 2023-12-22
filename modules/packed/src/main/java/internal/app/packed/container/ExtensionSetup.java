@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.container.Author;
+import app.packed.container.Operative;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
@@ -125,9 +125,11 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
     /** {@inheritDoc} */
     @Override
-    public int compareTo(ExtensionSetup o) {
-        ExtensionModel otherModel = o.model;
-
+    public int compareTo(ExtensionSetup other) {
+        ExtensionModel otherModel = other.model;
+        if (other == this) {
+            return 0;
+        }
         // We need a total deterministic ordering of extensions
 
         // First we compare the depth of each extension
@@ -141,7 +143,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
                 if (d == 0) {
                     // Same canonical name but different class loaders.
                     // sort in order of usage
-                    d = tree.applicationExtensionId - o.tree.applicationExtensionId;
+                    d = tree.applicationExtensionId - other.tree.applicationExtensionId;
                 }
             }
         }
@@ -208,7 +210,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
     /** {@inheritDoc} */
     @Override
-    public Author author() {
+    public Operative author() {
         return tree.model.realm();
     }
 

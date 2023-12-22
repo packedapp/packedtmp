@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 import app.packed.application.OldApplicationPath;
+import app.packed.component.ComponentPath;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.Extension;
 import sandbox.extension.container.ContainerHandle;
@@ -111,5 +112,11 @@ public record PackedContainerHandle(ContainerSetup container) implements Contain
     @Override
     public OldApplicationPath path() {
         return container.path();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
+        return container.componentPath();
     }
 }

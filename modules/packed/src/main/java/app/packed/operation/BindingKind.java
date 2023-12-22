@@ -18,6 +18,9 @@ package app.packed.operation;
 /**
  *
  */
+
+// What about functions and their parameters?? Stuff into manual with a good story
+
 public enum BindingKind {
 
     /**

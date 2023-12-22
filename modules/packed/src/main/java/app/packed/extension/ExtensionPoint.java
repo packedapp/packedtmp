@@ -1,6 +1,6 @@
 package app.packed.extension;
 
-import app.packed.container.Author;
+import app.packed.container.Operative;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.container.ExtensionSetup;
@@ -113,7 +113,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
         return (E) extensionSetup().instance();
     }
 
-    protected final ExtensionSetup extensionSetup() {
+    final ExtensionSetup extensionSetup() {
         return contextUse().extension();
     }
 
@@ -143,6 +143,6 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     //// Er lidt underlig maaske med UseSite hvis man tager den som parameter
     //// Men vil ikke mere hvor man skal tage et ExtensionPointContext???
     public sealed interface UseSite permits PackedExtensionPointContext {
-        Author author();
+        Operative author();
     }
 }

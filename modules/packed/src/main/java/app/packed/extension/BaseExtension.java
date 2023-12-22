@@ -78,8 +78,6 @@ import sandbox.lifetime.external.LifecycleController;
  * extension.
  * <p>
  * All methods on this class deals with beans Table area [bean,container,service] prefix desciption
- *
- *
  * <p>
  * This extension does not define an {@link ExtensionExtension extension mirror}. Instead all relevant methods are
  * placed directly on {@link app.packed.bean.BeanMirror}, {@link app.packed.container.ContainerMirror} and
@@ -181,7 +179,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      */
     public <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
         BeanHandle<T> handle = install0(BeanKind.CONTAINER.template()).install(implementation);
-        return new ServiceableBeanConfiguration<>(handle);
+        return handle.configure(ServiceableBeanConfiguration::new);
     }
 
     /**
@@ -281,6 +279,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @param wirelets
      *            optional wirelets
      */
+    // Why not on ContainerConfiguration. Think because I wanted to keep it clean
     public void link(Assembly assembly, Wirelet... wirelets) {
         link0().build(assembly, wirelets);
     }
@@ -300,6 +299,14 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     /** {@return a new container builder used for linking.} */
     private ContainerHandle.Builder link0() {
         return NonRootContainerBuilder.of(ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application, extension.container);
+    }
+
+    void linkPrefix(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    void linkPostfix(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -342,7 +349,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                 if (hook instanceof Inject) {
                     // checkNotStatic
                     // Det er jo inject service!???
-                 //   field.newBindableVariable().unwrap();
+                    // field.newBindableVariable().unwrap();
                     // OperationHandle handle = field.newSetOperation(null) .newOperation(temp);
                     // bean.lifecycle.addInitialize(handle, null);
                     throw new UnsupportedOperationException();
@@ -434,7 +441,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                         throw new UnsupportedOperationException("va " + va.rawType());
                     }
                 } else if (annotation instanceof CodeGenerated cg) {
-                    if (beanAuthor().isApplication()) {
+                    if (beanAuthor().isUser()) {
                         throw new BeanInstallationException("@" + CodeGenerated.class.getSimpleName() + " can only be used by extensions");
                     }
                     // Create the key
@@ -458,7 +465,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                 if (ApplicationLaunchContext.class.isAssignableFrom(hook)) {
                     binding.bindContext(ApplicationLaunchContext.class);
                 } else if (hook == ExtensionContext.class) {
-                    if (beanAuthor().isApplication()) {
+                    if (beanAuthor().isUser()) {
                         binding.failWith(hook.getSimpleName() + " can only be injected into extensions");
                     }
 //                    if (binding.availableInvocationArguments().isEmpty() || binding.availableInvocationArguments().get(0) != ExtensionContext.class) {

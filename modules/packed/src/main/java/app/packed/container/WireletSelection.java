@@ -20,17 +20,16 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.BindingTypeHook;
+import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
 import internal.app.packed.container.WireletSelectionArray;
 
 /**
  * A selection of wirelets of a specific type (W).
  * <p>
- * The framework provides no automatic way to guard against use of multiple wirelets of the same type. If this is an
- * issue, it must done on the wirelet consuming side.
+ * The framework provides no automatic way to guard against use of multiple wirelets of the same type. Typically you
+ * would just select the {@link #last()} one if this is an issue.
  */
 @BindingTypeHook(extension = BaseExtension.class)
-// Bound
 public sealed interface WireletSelection<W extends Wirelet> extends Iterable<W> permits WireletSelectionArray {
 
     /** {@return the first wirelet in this selection or empty {@code Optional}, if no wirelets are present} */
@@ -83,3 +82,10 @@ public sealed interface WireletSelection<W extends Wirelet> extends Iterable<W> 
         throw new UnsupportedOperationException();
     }
 }
+
+//Ideen var lidt WireletSingle<FooWirelet> or WireletSingletop<Optional<FooWirelet>>
+//For at give bedre fejlmeddelser.
+//Man tror maaske vi skal incorporeret det i wirelet selection instead
+
+//W understottet ikke Optional<W>
+//interface WireletSingleton<W extends Wirelet> {}

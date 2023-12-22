@@ -41,12 +41,13 @@ interface Spawn {
 
     /// 7! metoder.. hmm, hvis det er det der skal til
     /// Scheduling har vel ikke et domain?
-    ScheduleOperation schedule(Runnable runnable);
-    ScheduleOperation schedule(Callable<?> callable);
+    ScheduleOperationConfiguration schedule(Runnable runnable);
+    ScheduleOperationConfiguration schedule(Callable<?> callable);
     <T> InstanceBeanConfiguration<T> schedule(Class<T> beanClass);
     <T> InstanceBeanConfiguration<T> schedule(Op<T> beanClass);
     void scheduleContainer(Assembly assembly, Wirelet... wirelets);
     ContainerConfiguration scheduleContainer(Wirelet... wirelets);
+
     ApplicationConfiguration scheduleApplication(Wirelet... wirelets);
 
 
@@ -61,6 +62,6 @@ interface Spawn {
 
     interface WebRequestOperation {}
     interface WebRequest{}
-    interface ScheduleOperation {}
+    interface ScheduleOperationConfiguration {}
     interface WebOperation {}
 }

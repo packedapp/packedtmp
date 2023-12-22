@@ -34,8 +34,8 @@ import java.util.function.BiConsumer;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.extension.BeanHook.AnnotatedFieldHook;
-import app.packed.extension.BeanHook.AnnotatedMethodHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanFieldHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.UnwrappedBindableVariable;
 import app.packed.extension.Extension;
@@ -128,7 +128,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @AnnotatedFieldHook(extension = HookTestingExtension.class)
+    @AnnotatedBeanFieldHook(extension = HookTestingExtension.class)
     public @interface FieldHook {
 
         String name() default "main";
@@ -181,7 +181,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @AnnotatedMethodHook(extension = HookTestingExtension.class)
+    @AnnotatedBeanMethodHook(extension = HookTestingExtension.class)
     public @interface MethodHook {
 
         public static class InstanceMethodNoParamsVoid {

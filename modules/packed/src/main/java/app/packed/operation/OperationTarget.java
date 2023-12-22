@@ -67,7 +67,7 @@ public sealed interface OperationTarget {
     /** Represents an operation that invokes a {@link Method method}. */
     sealed interface OfMethod extends OperationTarget permits OperationMethodTarget {
 
-        /** {@return the invokable method.} */
+        /** {@return the underlying method.} */
         Method method();
     }
 
@@ -83,6 +83,7 @@ public sealed interface OperationTarget {
 // OfSpecial()
 
 // Vi har invokers nu. Det er ikke operation
+// Maybe not so quick
 ///** Represents an operation that invokes other (child) operations. */
 //non-sealed interface OfNested extends OperationTarget {}
 

@@ -20,8 +20,8 @@ import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.container.ContainerTreeMirror;
 import app.packed.util.Nullable;
+import app.packed.util.TreeView;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import sandbox.lifetime.ContainerLifetimeCarrierMirror;
 
@@ -76,7 +76,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
      *
      * @see ContainerMirror#beansInSameLifetime()
      */
-    public ContainerTreeMirror tree() {
+    public ContainerMirror.OfTree tree() {
         throw new UnsupportedOperationException();
     }
 
@@ -119,6 +119,14 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
     public Optional<ContainerLifetimeMirror> parent() {
         return Optional.ofNullable(lifetime().treeParent).map(e -> e.mirror());
     }
+
+    /**
+    *
+    */
+   public interface OfTree extends TreeView<ContainerLifetimeMirror> {
+
+   }
+
 }
 
 ///// replaced by Container.beanInSameLifetime

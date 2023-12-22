@@ -15,7 +15,7 @@
  */
 package internal.app.packed.bean;
 
-import app.packed.container.Author;
+import app.packed.container.Operative;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ExtensionSetup;
 
@@ -28,5 +28,5 @@ public sealed interface AuthorSetup permits AssemblySetup, ExtensionSetup {
     boolean isConfigurable();
 
     /** {@return a realm representing the owner.} */
-    Author author();
+    Operative author();
 }

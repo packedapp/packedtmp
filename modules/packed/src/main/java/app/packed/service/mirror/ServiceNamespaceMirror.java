@@ -17,6 +17,7 @@ package app.packed.service.mirror;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceMirror;
@@ -40,12 +41,21 @@ public class ServiceNamespaceMirror extends NamespaceMirror<BaseExtension> {
         throw new UnsupportedOperationException();
     }
 
-    /** {@return a map of all provided services in the domain.} */
-    public Map<Key<?>, ProvidedServiceMirror> providers() {
+    public ServiceContract contract() {
         throw new UnsupportedOperationException();
     }
 
-    public ServiceContract contract() {
+    /** {@return keys for every service that is available in the namespace.} */
+    public Set<Key<?>> keys() {
+        return providers().keySet();
+    }
+
+    /** {@return a map with details of all the provided services in the namespace.} */
+    public Map<Key<?>, ServiceProviderMirror> providers() {
         throw new UnsupportedOperationException();
+    }
+
+    public enum Kind {
+        BEAN, CONTAINER, EXPORTS;
     }
 }

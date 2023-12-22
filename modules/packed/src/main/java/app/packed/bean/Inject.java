@@ -22,8 +22,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.AnnotatedFieldHook;
-import app.packed.extension.BeanHook.AnnotatedMethodHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanFieldHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
+import app.packed.namespace.NamespaceOperation;
 
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use
@@ -46,8 +47,9 @@ import app.packed.extension.BeanHook.AnnotatedMethodHook;
 @Target({ ElementType.CONSTRUCTOR, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedFieldHook(extension = BaseExtension.class)
-@AnnotatedMethodHook(allowInvoke = true, extension = BaseExtension.class)
+@NamespaceOperation
+@AnnotatedBeanFieldHook(extension = BaseExtension.class)
+@AnnotatedBeanMethodHook(allowInvoke = true, extension = BaseExtension.class)
 public @interface Inject {}
 // For en metode er det inject metoden
 

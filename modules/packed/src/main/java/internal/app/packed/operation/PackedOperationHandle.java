@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import app.packed.component.ComponentPath;
 import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
@@ -169,6 +170,12 @@ public final record PackedOperationHandle(OperationSetup operation, @Nullable Be
     @Override
     public Class<? extends Extension<?>> operator() {
         return operation.operator.extensionType;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
+        return operation.componentPath();
     }
 }
 

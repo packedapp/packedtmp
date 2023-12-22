@@ -22,10 +22,12 @@ import java.util.HashMap;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.component.ComponentPath;
+import app.packed.namespace.NamespaceOperator;
 import app.packed.util.Nullable;
+import internal.app.packed.component.Mirrorable;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.types.ClassUtil;
-import sandbox.extension.domain.NamespaceOperator;
 
 /**
  * Internal configuration of an application.
@@ -33,7 +35,7 @@ import sandbox.extension.domain.NamespaceOperator;
  * This class is placed in {@code internal.app.packed.container} because it is so tightly integrated with containers
  * that it made sense to put it here as well.
  */
-public final class ApplicationSetup {
+public final class ApplicationSetup implements Mirrorable<ApplicationMirror> {
 
     /** A magic initializer for {@link BeanMirror}. */
     public static final MagicInitializer<ApplicationSetup> MIRROR_INITIALIZER = MagicInitializer.of(ApplicationMirror.class);
@@ -144,8 +146,8 @@ public final class ApplicationSetup {
         phase = ApplicationBuildPhase.COMPLETED;
     }
 
-
     /** {@return a mirror that can be exposed to end-users.} */
+    @Override
     public ApplicationMirror mirror() {
         return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(ApplicationMirror.class, ApplicationMirror::new, mirrorSupplier), this);
     }
@@ -153,5 +155,9 @@ public final class ApplicationSetup {
     /** The build phase of the application. */
     private enum ApplicationBuildPhase {
         ASSEMBLE, CODEGEN, COMPLETED;
+    }
+
+    public ComponentPath componentPath() {
+        return ComponentPath.Schema.APPLICATION.newPath(container.name);
     }
 }

@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.stream.Stream;
 
-import app.packed.container.Author;
+import app.packed.container.Operative;
 import internal.app.packed.bean.BeanSetup;
 
 /**
@@ -57,5 +57,5 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
         return bean.multiInstall & CLASS_COUNT_MASK;
     }
 
-    public /* primitive */ record BeanClassKey(Author realm, Class<?> beanClass) {}
+    public /* primitive */ record BeanClassKey(Operative realm, Class<?> beanClass) {}
 }

@@ -39,9 +39,10 @@ public final class NonRootContainerBuilder extends NonBootstrapContainerBuilder 
     /** The extension that is installing the container. */
     final Class<? extends Extension<?>> installedBy;
 
-    boolean isUsed;
+    //boolean isUsed;
 
-    boolean newApplication;
+    /** Whether we are creating a new application */
+  //  boolean newApplication;
 
     // Cannot take ExtensionSetup, as BaseExtension is not instantiated for a root container
     private NonRootContainerBuilder(PackedContainerTemplate template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,

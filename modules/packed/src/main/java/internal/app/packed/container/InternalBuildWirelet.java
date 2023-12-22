@@ -46,9 +46,9 @@ public abstract non-sealed class InternalBuildWirelet extends FrameworkWirelet {
         // wirelet = " + this);
     }
 
-    public void onImageInstantiation(ContainerSetup component, ApplicationLaunchContext context) {
+    public void onImageLaunch(ContainerSetup component, ApplicationLaunchContext context) {
         throw new IllegalArgumentException(
-                "The wirelet {" + getClass().getSimpleName() + "} must be specified at build-time. It cannot be specified when instantiating an image");
+                "The wirelet {" + getClass().getSimpleName() + "} must be specified at build-time. It cannot be specified when launching an image");
     }
 
     /**

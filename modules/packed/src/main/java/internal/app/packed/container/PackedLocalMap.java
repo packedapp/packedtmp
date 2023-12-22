@@ -50,7 +50,7 @@ public final class PackedLocalMap {
         }
     }
 
-    public boolean isSet(PackedLocal<?> local, Object key) {
+    public boolean isBound(PackedLocal<?> local, Object key) {
         return locals.contains(new LocalKey(local, key));
     }
 

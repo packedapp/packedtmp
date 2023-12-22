@@ -19,9 +19,9 @@ import java.lang.annotation.Annotation;
 
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanLocal.Accessor;
+import app.packed.bean.BeanLocalAccessor;
 import app.packed.bean.BeanSourceKind;
-import app.packed.container.Author;
+import app.packed.container.Operative;
 import app.packed.extension.BeanElement.BeanClass;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
@@ -48,7 +48,7 @@ import internal.app.packed.util.StringFormatter;
 //// Operationen er configurable indtil onX returnere, man kalder customBinding(int index), eller
 //// Kalder OH.resolveParameters
 //// - Bindings kan ikke overskrives
-public non-sealed abstract class BeanIntrospector implements Accessor {
+public non-sealed abstract class BeanIntrospector implements BeanLocalAccessor {
 
     /**
      * The configuration of this introspector. Is initially null but populated via
@@ -76,7 +76,7 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
     }
 
     /** {@return the owner of the bean.} */
-    public final Author beanAuthor() {
+    public final Operative beanAuthor() {
         return bean().author();
     }
 

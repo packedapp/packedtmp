@@ -29,8 +29,8 @@ import sandbox.extension.container.ContainerHandle;
 /**
  * This class provides container-local variables at build-time.
  * <p>
- * Container locals are typically used for sharing per-bean data between various parts of the application while building
- * it.
+ * Container locals are typically used for sharing (per-container) data between various parts of the application while
+ * building it.
  *
  * <p>
  * A container local support 4 different scopes:
@@ -127,7 +127,7 @@ public abstract sealed class ContainerLocal<T> extends PackedLocal<T> permits Pa
     /**
      * Returns a wirelet that can be used to set the value of this bean local.
      * <p>
-     * The returned wirelet cannot be used at runtime.
+     * Attempting to use the returned wirelet at runtime will result in a WireletException being thrown.
      *
      * @param value
      *            the value to set the local to
@@ -139,7 +139,7 @@ public abstract sealed class ContainerLocal<T> extends PackedLocal<T> permits Pa
      * Creates a new container local with application scope.
      * <p>
      * Application scope means that <strong>all containers in the same application</strong> will always see the same value
-     * for a specific container local.
+     * for the container local.
      *
      * @param <T>
      *            the type of value to store

@@ -17,66 +17,48 @@ package app.packed.application;
 
 import java.util.concurrent.Future;
 
-import app.packed.application.BootstrapApp.Image;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.util.Result;
-import sandbox.extension.container.ContainerCarrierService;
 
 /**
- * Must have a main in a bean with application lifetime.
  *
- * @see app.packed.lifetime.Main
  */
-/// retur typer
+// Problemet med JobApp er jo at vi i virkeligheden gerne vil have
 
-// App
-// * void
-// * Result<void>
-// * Daemon
+// JobApp og JobDaemonApp<T> app
 
-//Job
-// * R        (or exception)
-// * Result<R>
-// * Job<R>
+// Hvor man i JobDaemon kan cancel jobbet
 
+public interface JobApp<T> {
 
-//// 3 active result wise
-// ContainerLifetime <- a base result type (can never be overridden, usually Object.class)
-// Assembly,
-//// Completable
-//// Entrypoint
-// result check
+    Future<T> asFuture();
 
-
-// async / result / checked exception
-
-// Error handling kommer ogsaa ind her...
-// Skal vi catche or returnere???
-// Det vil jeg bootstrap app'en skal tage sig af...
-public final class JobApp {
-
-    /** The bootstrap app. */
-    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(Holder.class, c -> c.managedLifetime().expectsResult(Object.class));
-
-    @SuppressWarnings("unchecked")
-    public static <T> Result<T> compute(Class<T> resultType, Assembly assembly, Wirelet... wirelets) {
-        return (Result<T>) Result.ofFuture(BOOTSTRAP.launch(assembly, wirelets).result);
-    }
-
-    public static <T> Image<T> imageOf(Class<T> resultType, Assembly assembly, Wirelet... wirelets) {
+    static <T> JobApp.Image<T> imageOf(Class<T> resultType, Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    public static <T> T run(Class<T> resultType, Assembly assembly, Wirelet... wirelets) {
-        Holder result = BOOTSTRAP.expectsResult(resultType).launch(assembly, wirelets);
-        Object t = result.result.resultNow();
-        return resultType.cast(t);
-    }
-
-    static <T> Future<T> runAsync(Class<?> resultType, Assembly assembly, Wirelet... wirelets) {
+    static <T> T run(Class<T> resultType, Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    record Holder(@ContainerCarrierService Future<?> result) {}
+    interface Image<T> {
+
+        JobApp<T> start();
+
+        /**
+         * @return
+         */
+        T run();
+
+    }
 }
+
+//
+//static <T> Result<T> compute(Class<T> resultType, Assembly assembly, Wirelet... wirelets) {
+//  throw new UnsupportedOperationException();
+//}
+
+//static <T> Future<T> runAsync(Class<?> resultType, Assembly assembly, Wirelet... wirelets) {
+//    throw new UnsupportedOperationException();
+//}
+//

@@ -26,7 +26,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanKind;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.extension.BeanHook.AnnotatedMethodHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifecycleOrder;
@@ -94,7 +94,7 @@ public class Ddd extends BaseAssembly {
 
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedMethodHook(allowInvoke = true, extension = MyEntityException.class)
+    @AnnotatedBeanMethodHook(allowInvoke = true, extension = MyEntityException.class)
     public @interface MyOnInitialize {
 
         /**

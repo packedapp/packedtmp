@@ -17,6 +17,7 @@ package app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
 import sandbox.extension.operation.OperationHandle;
 
@@ -24,8 +25,8 @@ import sandbox.extension.operation.OperationHandle;
  *
  */
 // Hmm, fungere ikke super godt med Bean.findOperation();
-// Med mindre vi giver muligheden for at saette det ala operation mirror. Evt via builderen..
-public class OperationConfiguration {
+// Med mindre vi giver muligheden for at saette det ala operation mirror. Evt via builderen eller handled..
+public class OperationConfiguration extends ComponentConfiguration {
 
     /** The operation handle. */
     private final OperationHandle handle;
@@ -40,9 +41,7 @@ public class OperationConfiguration {
         this.handle = requireNonNull(handle, "handle is null");
     }
 
-    protected final void checkConfigurable() {
-
-    }
+    protected final void checkConfigurable() {}
 
     /** {@return the underlying operation handle} */
     protected final OperationHandle handle() {
@@ -54,7 +53,7 @@ public class OperationConfiguration {
         return this;
     }
 
-    public Class<? extends Extension<?>> operator() {
+    public final Class<? extends Extension<?>> operator() {
         return handle.operator();
     }
 
@@ -63,11 +62,12 @@ public class OperationConfiguration {
     }
 
     /** {@return the target of the operation.} */
-    public OperationTarget target() {
+    public final OperationTarget target() {
         return handle.target();
     }
 
-    public OperationType type() {
+    /** {@return the tyoe of the operation} */
+    public final OperationType type() {
         return handle.type();
     }
 }

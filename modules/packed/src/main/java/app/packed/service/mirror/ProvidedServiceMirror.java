@@ -15,53 +15,47 @@
  */
 package app.packed.service.mirror;
 
-import static java.util.Objects.requireNonNull;
-
+import java.util.SequencedCollection;
 import java.util.stream.Stream;
 
-import app.packed.namespace.NamespaceOperationMirror;
 import app.packed.util.Key;
-import internal.app.packed.service.ServiceProviderSetup;
 
 /**
- * A mirror that represents a service provision operation.
  *
- * @see Provide
- * @see BaseAssembly#provide(Class)
- * @see ProvideableBeanConfiguration#provide()
  */
-// ServiceProvisionSiteMirror
-// Maaske er export med i path'en istedet for et saelvstaendig mirror
-// Her taenker jeg fx alle de wirelets der mapper fra og til...
-public class ProvidedServiceMirror extends NamespaceOperationMirror {
 
-    /** The service that is provided. */
-    final ServiceProviderSetup service;
+// Har vi et BeanNamespace??? Og hvis vi har peger vi altid paa services derfra?
 
-    public ProvidedServiceMirror(@SuppressWarnings("exports") ServiceProviderSetup ps) {
-        this.service = requireNonNull(ps);
-    }
+// Hvis ikke, har vi saa services tilgaengelig fra forskellige namespaces???
+// Baade Bean og Container
 
-    /** {@return the key of the service.} */
-    public Key<?> key() {
-        return service.entry.key;
-    }
+
+// Hvad hvis den samme service er tilgaengelig under flere keys...
+
+// Det man gerne vil have svar er jo fx hvor i applikationen bliver denne bean brugt som en service...
+
+public interface ProvidedServiceMirror {
+
+    /** {@return the key under which the service is available.} */
+    Key<?> key();
+
+    /** {@return the namespace the service is available in.} */
+    ServiceNamespaceMirror namespace();
 
     /**
-     * Returns a stream of all the places where the provided value is directly used.
-     *
-     * @return
+     * {@return the provider of the service.}
+     * <p>
+     * May either be an operation on a bean.
+     * The bean itself
+     * Or a constant
      */
-    public Stream<ServiceBindingMirror> useSites() {
-        return service.entry.useSiteMirrors();
-    }
+    ServiceProviderMirror provider();
 
-    /** {@inheritDoc} */
-    @Override
-    public ServiceNamespaceMirror namespace() {
-        throw new UnsupportedOperationException();
-    }
+    // Returns the bindings where this particular service is used under the specified key.
+    // Hvis en service er tilgaengelig under forskellige keys...
+    // Saa er ServiceProviderMirror.bindings nok bedre
+    Stream<ServiceBindingMirror> bindings();
+
+    // Ideen er lidt at den her viser. Hvilke exports o.s.v. vi skal igennem
+    SequencedCollection<Object> servicePath();
 }
-
-// provide(Doo.class) -> BeanOperation.element = BeanClass  (Kunne ogsaa vaere constructoren???)
-// provide(Doo.class) -> BeanOperation.element = BeanClass

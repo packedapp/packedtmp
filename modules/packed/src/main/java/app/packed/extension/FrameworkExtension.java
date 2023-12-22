@@ -22,9 +22,9 @@ package app.packed.extension;
  * extension is part of the framework.
  * <p>
  * A framework extension must be places in a {@link Module module} whose {@link Module#getName() name} is contained in
- * {@link Framework#moduleNames()} or the unnamed module.
+ * {@link Framework#moduleNames()} or the unnamed module. Otherwise an {@link InternalExtensionException} will be thrown
+ * when attempting to use the extension.
  *
- * @apiNote This class is not sealed as the framework may consists of multiple modules in the future. Instead membership
- *          may be checked via inclusion in {@link Framework#moduleNames()} or the unnamed module.
+ * @apiNote This class is not sealed as the framework may consists of multiple modules in the future.
  */
 public abstract class FrameworkExtension<E extends FrameworkExtension<E>> extends Extension<E> {}

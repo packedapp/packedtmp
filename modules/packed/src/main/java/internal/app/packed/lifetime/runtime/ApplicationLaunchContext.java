@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.container.Wirelet;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.BindingTypeHook;
+import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ApplicationSetup;
@@ -97,7 +97,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
         if (wirelets != null) {
             for (Wirelet w : wirelets) {
                 if (w instanceof InternalBuildWirelet iw) {
-                    iw.onImageInstantiation(application.container, context);
+                    iw.onImageLaunch(application.container, context);
                 }
             }
         }

@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.AnnotatedMethodHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
 
 /**
  * Indicates that the annotated method should be invoked as part of the targeted bean's initialization.
@@ -54,7 +54,7 @@ import app.packed.extension.BeanHook.AnnotatedMethodHook;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@AnnotatedMethodHook(allowInvoke = true, extension = BaseExtension.class)
+@AnnotatedBeanMethodHook(allowInvoke = true, extension = BaseExtension.class)
 public @interface OnInitialize {
 
     /**

@@ -18,7 +18,7 @@ package app.packed.cli;
 import app.packed.application.App;
 import app.packed.application.BootstrapApp;
 import app.packed.container.Assembly;
-import app.packed.container.BaseWirelets;
+import app.packed.container.Wirelets;
 import app.packed.container.Wirelet;
 
 /**
@@ -46,7 +46,7 @@ public final class CliApp {
     }
 
     public static void mirrorOf(Assembly assembly, String[] args, Wirelet... wirelets) {
-        bootstrap().mirrorOf(assembly, BaseWirelets.argList(args).andThen(wirelets));
+        bootstrap().mirrorOf(assembly, Wirelets.argList(args).andThen(wirelets));
     }
 
     public static int runWithExitCode(Assembly assembly, String[] args) {
@@ -68,10 +68,10 @@ public final class CliApp {
         }
         return ServiceLocatorBootstrap.APP;
     }
-
-    public static final class Result {
-
-    }
+//
+//    public static final class Result {
+//
+//    }
 
     /** An application image for App. */
     public static final class Image {
@@ -99,9 +99,7 @@ public final class CliApp {
         }
     }
 
-
     public class Launcher {
-
         // Tror faktisk vi er chatty som default
         // Sgu da ikke hvis vi er en CLI. Det vil jeg da vaere ret traet af.
         // CliApp.launcher().silent().run();
@@ -110,3 +108,4 @@ public final class CliApp {
         }
     }
 }
+

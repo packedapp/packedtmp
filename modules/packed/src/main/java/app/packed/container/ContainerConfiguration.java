@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.application.OldApplicationPath;
+import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerLocal.LocalAccessor;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeKind;
@@ -22,7 +23,7 @@ import sandbox.extension.container.ContainerHandle;
  */
 // Could let it be extendable. But it would only be usable through methods on extensions. Although
 // An assembly could return an instance of it
-public final class ContainerConfiguration implements LocalAccessor {
+public final class ContainerConfiguration extends ComponentConfiguration implements LocalAccessor {
 
     /**
      * A marker configuration object indicating that an assembly (or composer) has already been used for building a
@@ -83,6 +84,10 @@ public final class ContainerConfiguration implements LocalAccessor {
     @Override
     public int hashCode() {
         return handle.hashCode();
+    }
+
+    public boolean isAssemblyRoot() {
+        return handle.container().isAssemblyRoot();
     }
 
     /**
@@ -161,9 +166,16 @@ public final class ContainerConfiguration implements LocalAccessor {
         return handle.path();
     }
 
+    /**
+     * @param <W>
+     *            the type of wirelet to select
+     * @param wireletClass
+     *            the type of wirelet to select
+     * @return A wirelet selection
+     */
     public <W extends UserWirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
         ClassUtil.checkProperSubclass(UserWirelet.class, wireletClass, "wireletClass");
-        return handle.container().selectWirelets(wireletClass);
+        return handle.container().selectWireletsUnsafe(wireletClass);
     }
 
     /** {@inheritDoc} */

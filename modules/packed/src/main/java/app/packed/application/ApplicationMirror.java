@@ -4,23 +4,24 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentPath;
 import app.packed.container.AssemblyMirror;
-import app.packed.container.AssemblyTreeMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.container.ContainerTreeMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.service.ServiceContract;
-import app.packed.util.TreeView.Node;
+import app.packed.util.TreeView;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ApplicationSetup;
+import internal.app.packed.container.AssemblySetup.PackedAssemblyTreeMirror;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.Mirror;
+import internal.app.packed.container.ContainerSetup.PackedContainerTreeMirror;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -38,10 +39,10 @@ import internal.app.packed.operation.OperationSetup;
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)} for details.
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public class ApplicationMirror implements Mirror {
+public class ApplicationMirror implements ComponentMirror {
 
     /** The application we are mirroring. */
-    final ApplicationSetup application;
+    private final ApplicationSetup application;
 
     /**
      * Create a new application mirror.
@@ -55,13 +56,8 @@ public class ApplicationMirror implements Mirror {
     }
 
     /** {@return a tree representing all the assemblies used for creating this application.} */
-    public AssemblyTreeMirror assemblies() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@return a mirror of the root assembly that defines the application.} */
-    public AssemblyMirror assembly() {
-        return container().assembly();
+    public AssemblyMirror.OfTree assemblies() {
+        return new PackedAssemblyTreeMirror(application.container.assembly, null);
     }
 
     /** {@return the build goal that was used when building the application.} */
@@ -69,26 +65,23 @@ public class ApplicationMirror implements Mirror {
         return application.deployment.goal;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
+        return application.componentPath();
+    }
+
     /** {@return a mirror of the root container in the application.} */
     public ContainerMirror container() {
         return application.container.mirror();
     }
 
-    /** {@return a tree representing all the containers that make up this application.} */
-    public ContainerTreeMirror containers() {
-        throw new UnsupportedOperationException();
+    /** {@return a container tree mirror representing all the containers defined within the application.} */
+    public ContainerMirror.OfTree containers() {
+        return new PackedContainerTreeMirror(application.container, null);
     }
 
-    /** {@return the deployment this application is a part of.} */
-    public DeploymentMirror deployment() {
-        return application.deployment.mirror();
-    }
-
-    public Node<ApplicationMirror> deploymentNode() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@return a collection of any entry points the application may have.} */
+    /** {@return a collection of all entry points the application may have.} */
     public Collection<OperationMirror> entryPoints() {
         return container().lifetime().entryPoints();
     }
@@ -97,6 +90,17 @@ public class ApplicationMirror implements Mirror {
     @Override
     public final boolean equals(Object other) {
         return this == other || other instanceof ApplicationMirror m && application == m.application;
+    }
+
+    /**
+     * Tests if a given extension is used by the application.
+     *
+     * @param extensionClass
+     *            the type of extension
+     * @return true if the extension is used, otherwise false
+     */
+    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionClass) {
+        return container().isExtensionUsed(extensionClass);
     }
 
     /** {@return an unmodifiable {@link Set} view of every extension type that has been used in the application.} */
@@ -133,10 +137,6 @@ public class ApplicationMirror implements Mirror {
 
     public <N extends NamespaceMirror<?>> N namespace(Class<N> type, String name) {
         throw new UnsupportedOperationException();
-    }
-
-    public ComponentPath path() {
-        return ComponentPath.Schema.APPLICATION.newPath(name());
     }
 
     public void print() {
@@ -195,4 +195,37 @@ public class ApplicationMirror implements Mirror {
     public <E extends ExtensionMirror<?>> void useIfPresent(Class<E> type, Consumer<? super E> action) {
         throw new UnsupportedOperationException();
     }
+
+    /**
+    *
+    */
+    // Problemet med ApplicationTree er vel navngivning
+
+    // Hvorfor ikke bare ApplicationMirror.ofTree eller inTree + InSet
+    // Tror ikke denne bliver brugt mere
+    public interface OfTree extends TreeView<ApplicationMirror> {
+
+        /** {@return all the assemblies that make of the application.} */
+        AssemblyMirror.OfTree assemblies();
+    }
+
+    // ApplicationMirror bootstappedBy(); // nah hvad hvis det er et child som root.
+    // Maa have noget paa Application som Host? Ikke parent da det ikke er en Application
+
 }
+
+//
+///** {@return a mirror of the root assembly that defines the application.} */
+//// IDK if we want this or only assemblies
+//public AssemblyMirror assembly() {
+//  return container().assembly();
+//}
+//
+///** {@return the deployment this application is a part of.} */
+//public DeploymentMirror deployment() {
+//  return application.deployment.mirror();
+//}
+//
+//public Node<ApplicationMirror> deploymentNode() {
+//  throw new UnsupportedOperationException();
+//}

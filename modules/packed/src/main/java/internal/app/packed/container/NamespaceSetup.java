@@ -27,7 +27,7 @@ import internal.app.packed.util.MagicInitializer;
 /**
  *
  */
-// Is an application a namespace for Components???
+// Is an application a namespace for Components??? My brain just fried
 public final class NamespaceSetup {
 
     /** The default name of a namespace. */

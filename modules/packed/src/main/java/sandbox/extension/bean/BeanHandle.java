@@ -18,16 +18,19 @@ package sandbox.extension.bean;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.application.OldApplicationPath;
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocal;
-import app.packed.bean.BeanLocal.Accessor;
+import app.packed.bean.BeanLocalAccessor;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.container.Author;
+import app.packed.component.ComponentHandle;
+import app.packed.container.Operative;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
@@ -49,7 +52,7 @@ import sandbox.extension.operation.OperationHandle;
  * @see BeanBuilder#installIfAbsent(Class, java.util.function.Consumer)
  * @see BeanBuilder#installInstance(Object)
  */
-public sealed interface BeanHandle<T> extends ContextualizedElement, Accessor permits PackedBeanHandle {
+public sealed interface BeanHandle<T> extends ComponentHandle, ContextualizedElement , BeanLocalAccessor permits PackedBeanHandle {
 
     /** {@return the bean class.} */
     Class<?> beanClass();
@@ -92,6 +95,10 @@ public sealed interface BeanHandle<T> extends ContextualizedElement, Accessor pe
             throw new UnsupportedOperationException("This method is not supported for beans with a void bean class");
         }
         return (Key<T>) Key.fromClass(beanClass());
+    }
+
+    default <C extends BeanConfiguration> C configure(Function<BeanHandle<T>, C> configure) {
+        return configure.apply(this);
     }
 
     default BeanHandle<T> exportAs(Class<? super T> key) {
@@ -156,7 +163,7 @@ public sealed interface BeanHandle<T> extends ContextualizedElement, Accessor pe
     /**
      * @return
      */
-    Author author();
+    Operative author();
 
     /** {@return the path of the bean.} */
     OldApplicationPath path();

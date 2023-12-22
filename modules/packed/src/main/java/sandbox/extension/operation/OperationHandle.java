@@ -20,9 +20,11 @@ import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 import java.util.function.Supplier;
 
+import app.packed.component.Component;
 import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
+import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationType;
@@ -46,7 +48,7 @@ import internal.app.packed.operation.PackedOperationHandle;
 // Top
 // Non-Top
 // Embedded
-public sealed interface OperationHandle extends ContextualizedElement permits PackedOperationHandle {
+public sealed interface OperationHandle extends Component, ContextualizedElement permits PackedOperationHandle {
 
     // Hmm there is a difference between operating within contexts./
     // And invocation argument contexts
@@ -115,6 +117,10 @@ public sealed interface OperationHandle extends ContextualizedElement permits Pa
     /** {@return the operator of the operation.} */
     Class<? extends Extension<?>> operator();
 
+    default <C extends OperationConfiguration> C configure(Supplier<? super C> configure) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Specializes the mirror that is returned for the operation.
      * <p>
@@ -149,7 +155,7 @@ public sealed interface OperationHandle extends ContextualizedElement permits Pa
     // FullOp
     // ChildOp
     // DelegateTo
-    // (Bounded) EmbeddedOp  (Er aldrig visible...
+    // (Bounded) EmbeddedOp (Er aldrig visible...
 
     public sealed interface Builder permits PackedOperationBuilder {
 

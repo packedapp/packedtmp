@@ -19,19 +19,17 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Supplier;
 
-import app.packed.container.Author;
+import app.packed.container.Operative;
 import app.packed.operation.BindingKind;
 import app.packed.operation.BindingMirror;
 import app.packed.util.Nullable;
-import internal.app.packed.binding.BindingSetup.HookBindingSetup;
-import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.types.ClassUtil;
 
 /** The configuration of an operation's binding. */
-public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindingSetup, ServiceBindingSetup {
+public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetup, BindingSetup.HookBindingSetup, ServiceBindingSetup {
 
     /** A magic initializer for {@link BindingMirror}. */
     public static final MagicInitializer<BindingSetup> MIRROR_INITIALIZER = MagicInitializer.of(BindingMirror.class);
@@ -41,7 +39,7 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
      * <p>
      * May be the application itself if using {@link app.packed.operation.Op#bind(Object)} or similar.
      */
-    public final Author boundBy;
+    public final Operative boundBy;
 
     /** Supplies a mirror for the binding */
     public Supplier<? extends BindingMirror> mirrorSupplier;
@@ -52,7 +50,7 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
     /** The index into {@link OperationSetup#bindings}. */
     public final int operationBindingIndex;
 
-    protected BindingSetup(OperationSetup operation, int operationBindingIndex, Author boundBy) {
+    protected BindingSetup(OperationSetup operation, int operationBindingIndex, Operative boundBy) {
         this.operation = requireNonNull(operation);
         this.operationBindingIndex = operationBindingIndex;
         this.boundBy = requireNonNull(boundBy);
@@ -79,7 +77,7 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
         /** Provider for the binding. */
         public final BindingResolution provider;
 
-        public HookBindingSetup(OperationSetup operation, int index, Author user, BindingResolution provider) {
+        public HookBindingSetup(OperationSetup operation, int index, Operative user, BindingResolution provider) {
             super(operation, index, user);
             this.provider = requireNonNull(provider);
         }
@@ -114,7 +112,7 @@ public abstract sealed class BindingSetup permits ManualBindingSetup, HookBindin
          * @param index
          * @param user
          */
-        public ManualBindingSetup(OperationSetup operation, int index, Author user, BindingResolution provider) {
+        public ManualBindingSetup(OperationSetup operation, int index, Operative user, BindingResolution provider) {
             super(operation, index, user);
             this.provider = provider;
         }

@@ -21,19 +21,22 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
-import app.packed.container.Author;
 import app.packed.container.DelegatingAssembly;
+import app.packed.container.Operative;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.AuthorSetup;
+import internal.app.packed.component.AbstractTreeMirror;
+import internal.app.packed.component.Mirrorable;
 import internal.app.packed.service.CircularServiceDependencyChecker;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.types.ClassUtil;
 
 /** The internal configuration of an assembly. */
-public final class AssemblySetup implements AuthorSetup {
+public final class AssemblySetup implements AuthorSetup , Mirrorable<AssemblyMirror> {
 
     /** A magic initializer for {@link BeanMirror}. */
     public static final MagicInitializer<AssemblySetup> MIRROR_INITIALIZER = MagicInitializer.of(AssemblyMirror.class);
@@ -41,9 +44,11 @@ public final class AssemblySetup implements AuthorSetup {
     /** The assembly instance. */
     public final Assembly assembly;
 
-    public long assemblyTimeFinished;
+    /** The time when the assembly build finished if successful. */
+    public long assemblyBuildFinishedTime;
 
-    public final long assemblyTimeStarted = System.nanoTime();
+    /** The time when the assembly build started. */
+    public final long assemblyBuildStartedTime = System.nanoTime();
 
     /** The (root) container the assembly defines. */
     public final ContainerSetup container;
@@ -64,7 +69,7 @@ public final class AssemblySetup implements AuthorSetup {
     /// Hmm applications er vist separate assembly saa
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>();
 
-    /** Whether or not this assembly is open for configuration. */
+    /** Whether or not this assembly is available for configuration. */
     private boolean isConfigurable = true;
 
     /** A model of the assembly. */
@@ -88,8 +93,8 @@ public final class AssemblySetup implements AuthorSetup {
 
     /** {@inheritDoc} */
     @Override
-    public Author author() {
-        return Author.application();
+    public Operative author() {
+        return Operative.user();
     }
 
     /**
@@ -115,6 +120,7 @@ public final class AssemblySetup implements AuthorSetup {
     }
 
     /** {@return a mirror for this assembly.} */
+    @Override
     public AssemblyMirror mirror() {
         return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(AssemblyMirror.class, AssemblyMirror::new, null), this);
     }
@@ -145,7 +151,7 @@ public final class AssemblySetup implements AuthorSetup {
             // Check application dependency cycles. Or wait???
             CircularServiceDependencyChecker.dependencyCyclesFind(container);
 
-            assemblyTimeFinished = System.nanoTime();
+            assemblyBuildFinishedTime = System.nanoTime();
             // The application has been built successfully, generate code if needed
             container.application.close();
 
@@ -155,7 +161,30 @@ public final class AssemblySetup implements AuthorSetup {
                 e.closeAssembly();
             }
             isConfigurable = false;
-            assemblyTimeFinished = System.nanoTime();
+            assemblyBuildFinishedTime = System.nanoTime();
+        }
+    }
+
+    public Assembly.State state() {
+        throw new UnsupportedOperationException();
+    }
+
+    public static final class PackedAssemblyTreeMirror extends AbstractTreeMirror<AssemblyMirror, AssemblySetup> implements AssemblyMirror.OfTree {
+
+        public PackedAssemblyTreeMirror(AssemblySetup root, @Nullable Predicate<? super AssemblySetup> filter) {
+            super(root, filter);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void print() {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void printWithDuration() {
+            throw new UnsupportedOperationException();
         }
     }
 }

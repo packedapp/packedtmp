@@ -25,13 +25,13 @@ import java.util.List;
 import app.packed.application.App;
 import app.packed.bean.BeanMirror;
 import app.packed.container.BaseAssembly;
-import app.packed.extension.BeanHook.AnnotatedVariableHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanVariableHook;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
 import app.packed.service.Provide;
-import app.packed.service.mirror.ProvidedServiceMirror;
 import app.packed.service.mirror.ServiceBindingMirror;
+import app.packed.service.mirror.oldMaybe.ProvidedServiceMirror;
 
 /**
  *
@@ -107,7 +107,7 @@ public class TestNew extends BaseAssembly {
 
     @Target({ ElementType.PARAMETER })
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedVariableHook(extension = MyExt.class)
+    @AnnotatedBeanVariableHook(extension = MyExt.class)
     @interface XX {
         String value();
     }

@@ -1,5 +1,5 @@
 /*
-v * Copyright (c) 2008 Kasper Nielsen.
+ * Copyright (c) 2008 Kasper Nielsen.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,13 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.EnumSet;
 import java.util.function.Supplier;
 
 import app.packed.extension.ExtensionWirelet;
@@ -27,6 +34,7 @@ import internal.app.packed.container.FrameworkWirelet;
 import internal.app.packed.container.InternalBuildWirelet;
 import internal.app.packed.container.NameCheck;
 import internal.app.packed.container.PackedContainerBuilder;
+import internal.app.packed.container.WrappingWirelet;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /**
@@ -68,6 +76,19 @@ import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
  *
  * @see ContainerConfiguration#selectWirelets(Class)
  */
+// Wirelet specification sites
+
+// Build : Application
+// Build : BootstrapApp (prefix, postfix)
+
+// Build : Link
+// Build : ContainerTemplate  (prefix, postfix)
+
+// Build : Assembly (prefix, postfix)  // Hmm, så kan vi sætte fx navn som postfix, så man ikke kan overskrive det???
+
+// Build : protected List<Wirelet> Assembly.wirelets();  // Istedet for at wrappe den, eller begge dele? Nahh
+
+// Runtime : Launch
 public sealed abstract class Wirelet permits UserWirelet, ExtensionWirelet, FrameworkWirelet {
 
     // How do com
@@ -170,11 +191,18 @@ public sealed abstract class Wirelet permits UserWirelet, ExtensionWirelet, Fram
         return CompositeWirelet.of(wirelets);
     }
 
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    @Inherited
+    @Documented
+    @interface Flags {}
+
     // Nullable -> ignore
     // Skal den evalueres paa build time eller runtime???
     // Maaske 2 forskellige metoder
     // Hvad er usecasen?
-    static Wirelet lazy(Supplier<@Nullable Wirelet> supplier) {
+    static Wirelet lazy(Phase phase, Supplier<@Nullable Wirelet> supplier) {
+        // We probably need a generic WrappingWirelet
         throw new UnsupportedOperationException();
     }
 
@@ -183,9 +211,10 @@ public sealed abstract class Wirelet permits UserWirelet, ExtensionWirelet, Fram
      * <p>
      * This wirelet override any name that might previously have been set, for example, via
      * {@link ContainerConfiguration#named(String)}.
+     * <p>
      *
      * @param name
-     *            the name of the component
+     *            the name of the container
      * @return a wirelet that can be used to override the name of a container
      */
     // String intrapolation? Wirelet.ContainerMirror?
@@ -208,7 +237,7 @@ public sealed abstract class Wirelet permits UserWirelet, ExtensionWirelet, Fram
 
             /** {@inheritDoc} */
             @Override
-            public void onImageInstantiation(ContainerSetup c, ApplicationLaunchContext ic) {
+            public void onImageLaunch(ContainerSetup c, ApplicationLaunchContext ic) {
                 ic.name = name;
             }
 
@@ -222,15 +251,53 @@ public sealed abstract class Wirelet permits UserWirelet, ExtensionWirelet, Fram
         return new ContainerOverrideNameWirelet(name);
     }
 
+    // Mirror?
+    // Descriptor can laves fra en Wirelet...
+    // Mirror kun i forbindelse med Build
+    //// Vil sige den her et mirror tror jeg. Selvom det er interessant om man kan angive den.
+    public interface Descriptor {
+        EnumSet<Phase> phases();
+
+        Class<? extends Wirelet> wireletClass();
+
+    }
+
     //
     static Wirelet ignoreUnconsumed(Wirelet wirelet) {
+
+        class IgnoreUnconsumedWirelet extends WrappingWirelet {
+
+            /**
+             * @param wirelet
+             */
+            protected IgnoreUnconsumedWirelet(Wirelet wirelet) {
+                super(wirelet);
+            }
+        }
+        if (wirelet instanceof IgnoreUnconsumedWirelet) {
+            return wirelet;
+        } else if (wirelet instanceof CompositeWirelet cw) {
+            // If composite wirelet.. Unwrap all. Call ignoreComposite. Create new Composite
+        }
+
+        // There are some issues about flags...
+        // Maybe we can do something specific for wrapping wirelets
+        return new IgnoreUnconsumedWirelet(wirelet);
+
         // Easier said then done I think. If composite wirelet.
         // We much apply to each
 
         // But other than that it is a kind of flag we need to carry around.
         // When apply the wirelet, not trivial. We can't just change flags
         // on the wirelet instance
-        throw new UnsupportedOperationException();
+        // throw new UnsupportedOperationException();
+    }
+
+    // Maybe just have an ApplicationPhase.
+    // What about condensors??? Do we need a further division??
+    // And then we use Runtime instead of LaunchTime
+    public enum Phase {
+        BUILD_TIME, LAUNCH_TIME;
     }
 }
 

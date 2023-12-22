@@ -23,7 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.util.FrameworkNames;
+import app.packed.util.BaseModuleConstants;
 
 /**
  *
@@ -100,10 +100,10 @@ public @interface BeanCustomHook {
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @Inherited
-    @BeanHook
+    @ExtensionMetaHook
     // Logger, Net, File
     // Meta annotation hooks annotations does not have to live on the extension
-    @ForeignAnnotatedFieldHook(annotationClass = "sdfsdf", extensionClass = FrameworkNames.BASE_BASE_EXTENSION)
-    @ForeignAnnotatedFieldHook(annotationClass = "sdfsdf", extensionClass = FrameworkNames.BASE_BASE_EXTENSION)
+    @ForeignAnnotatedFieldHook(annotationClass = "sdfsdf", extensionClass = BaseModuleConstants.BASE_EXTENSION_CLASS)
+    @ForeignAnnotatedFieldHook(annotationClass = "sdfsdf", extensionClass = BaseModuleConstants.BASE_EXTENSION_CLASS)
     public @interface JavaBaseSupport {}
 }

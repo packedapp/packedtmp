@@ -24,7 +24,8 @@ import app.packed.application.OldApplicationPath;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.container.Author;
+import app.packed.component.ComponentPath;
+import app.packed.container.Operative;
 import app.packed.operation.Op;
 import app.packed.util.Key;
 import internal.app.packed.binding.BindingResolution.FromConstant;
@@ -80,7 +81,7 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
 
     /** {@inheritDoc} */
     @Override
-    public Author author() {
+    public Operative author() {
         return bean.author();
     }
 
@@ -146,6 +147,18 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
     public void allowMultiClass() {
         checkIsConfigurable();
         bean.multiInstall = bean.multiInstall | 1 << 31;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
+        return bean.componentPath();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void componentTags(String... tags) {
+        throw new UnsupportedOperationException();
     }
 }
 

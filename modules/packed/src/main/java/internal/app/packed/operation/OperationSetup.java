@@ -31,6 +31,8 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanFactoryMirror;
 import app.packed.bean.BeanKind;
 import app.packed.bean.NonStaticBeanMemberException;
+import app.packed.component.Component;
+import app.packed.component.ComponentPath;
 import app.packed.context.Context;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
@@ -55,7 +57,7 @@ import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 
 /** Represents an operation on a bean. */
-public sealed abstract class OperationSetup implements ContextualizedElementSetup {
+public sealed abstract class OperationSetup implements Component, ContextualizedElementSetup {
 
     /** A magic initializer for {@link OperationMirror}. */
     public static final MagicInitializer<OperationSetup> MIRROR_INITIALIZER = MagicInitializer.of(OperationMirror.class);
@@ -170,6 +172,13 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
     public void forEachContext(BiConsumer<? super Class<? extends Context<?>>, ? super ContextSetup> action) {
         contexts.forEach(action);
         bean.forEachContext(action);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
+        throw new UnsupportedOperationException();
     }
 
     public final MethodHandle generateMethodHandle() {
@@ -365,6 +374,7 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
         public MethodType methodType() {
             return type.toMethodType();
         }
+
     }
 
     /** The parent of a nested operation. */

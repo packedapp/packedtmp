@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.operation.Op;
@@ -42,7 +41,7 @@ import app.packed.util.Key;
 // Imports (styret af requires, og
 // Exports // Maaske alligevel ikke
 
-// Og saa lidt internt???
+// Og saa lidt internt, fx for en bean??????
 
 //Create services
 
@@ -67,47 +66,12 @@ import app.packed.util.Key;
 // Nested class paa ServiceWirelets if that is the only place it is going to be used
 
 // Naeste gang vi implementere den. Bygger vi den langsom...
-public interface ServiceOutgoingTransformer {
+public interface ServiceOutgoingTransformer extends ServiceTransformer.Outgoing {
 
     // Only if process requirements first
-   default ServiceContract contract() {
-       throw new UnsupportedOperationException();
-   }
-
-    /**
-     * A version of {@link #decorate(Key, Function)} that takes a {@code class} key. See other method for details.
-     *
-     * @param <T>
-     *            the type of the service that should be decorated
-     * @param key
-     *            the key of the service that should be decorated
-     * @param decoratingFunction
-     *            the decoration function
-     * @throws NoSuchElementException
-     *             if a service with the specified key does not exist
-     * @see #decorate(Key, Function)
-     */
-    default <T> void decorate(Class<T> key, Function<? super T, ? extends T> decoratingFunction) {
-        decorate(Key.of(key), decoratingFunction);
+    default ServiceContract contract() {
+        throw new UnsupportedOperationException();
     }
-
-    /**
-     * Decorates a service with the specified key using the specified decoration function.
-     * <p>
-     * If the service that is being decorated is constant. The function will be invoked at most
-     *
-     * @param <T>
-     *            the type of the service that should be decorated
-     * @param key
-     *            the key of the service that should be decorated
-     * @param decoratingFunction
-     *            the decoration function
-     * @throws NoSuchElementException
-     *             if a service with the specified key does not exist
-     * @see #decorate(Class, Function)
-     */
-    // TODO must check return type..
-    <T> void decorate(Key<T> key, Function<? super T, ? extends T> decoratingFunction);
 
     /**
      * Returns a set view containing the keys for every service in this registry.
@@ -145,12 +109,6 @@ public interface ServiceOutgoingTransformer {
     // in most situations you probably want to use this one
 
     void map(Op<?> factory);
-
-    default <T> void peek(Class<T> key, Consumer<? super T> consumer) {
-        peek(Key.of(key), consumer);
-    }
-
-    <T> void peek(Key<T> key, Consumer<? super T> consumer);
 
     // provide a constant via an instance
     /**
@@ -365,8 +323,8 @@ public interface ServiceOutgoingTransformer {
     }
 
     /**
-     * Similar to {@link #map(Op)} except that it will automatically remove all dependencies of the factory once the
-     * mapping has finished.
+     * Similar to {@link #map(Op)} except that it will automatically remove all dependencies of the factory once the mapping
+     * has finished.
      *
      * @param factory
      *            the factory

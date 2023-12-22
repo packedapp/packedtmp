@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.AnnotatedMethodHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
@@ -73,7 +73,7 @@ import app.packed.extension.BeanHook.AnnotatedMethodHook;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@AnnotatedMethodHook(allowInvoke = true, extension = BaseExtension.class)
+@AnnotatedBeanMethodHook(allowInvoke = true, extension = BaseExtension.class)
 public @interface OnStart {
 
     String JOIN_ON_AFTER_DEPENDENCIES = "AFTER_DEPENDENCIES";

@@ -44,8 +44,8 @@ import sandbox.extension.operation.OperationTemplate;
 public sealed interface BindableVariable extends BeanElement permits PackedBindableVariable, UnwrappedBindableVariable {
 
     /**
-     * By default binding to static fields are not permitted and any call to one of the bind methods of this interface will
-     * result in an exception being thrown.
+     * By default binding to static fields are not permitted. Any call to one of the bind methods of this interface will
+     * result in an exception being thrown unless this method has been called first.
      * <p>
      * Calling this method has no effect if the underlying variable is not a field.
      *
@@ -76,15 +76,16 @@ public sealed interface BindableVariable extends BeanElement permits PackedBinda
     List<Class<?>> availableInvocationArguments();
 
     /**
-     * Binds the underlying variable to a constant that is computed as part of the application's code generating phase.
+     * Binds the underlying variable to a constant that is computed exactly once. Typically, doing the application's code
+     * generating phase.
      * <p>
-     * If the application does not have a {@link BuildGoal#isCodeGenerating() code generating} phase, for example, if
+     * If the application's {@link BuildGoal#isCodeGenerating() code generating} phase is never executed, for example, if
      * building an {@link app.packed.application.ApplicationMirror}. The specified supplier will never be called.
      * <p>
      * If the specified supplier returns a value that is not assignable to the underlying variable. The runtime will throw a
      * {@link CodegenException} when called.
      * <p>
-     * The specified supplier is never invoked more than once for a single binding.
+     * The specified supplier is never invoked more than once.
      *
      * @param supplier
      *            the supplier of the constant
@@ -236,7 +237,7 @@ public sealed interface BindableVariable extends BeanElement permits PackedBinda
      */
     enum Target {
         /** The variable represents a field. */
-        FIELD, PARAMETER, TYPE_PARAMETER;
+        FIELD, PARAMETER, TYPE_PARAMETER; // What if MethodHandle???
     }
 }
 

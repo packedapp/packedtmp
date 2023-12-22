@@ -18,7 +18,9 @@ package sandbox.extension.operation;
 /**
  *
  */
-public class OperationKind {
+public enum OperationKind {
+
+    FUNCTION;
 
     // Direct?
 

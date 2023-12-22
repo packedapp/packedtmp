@@ -19,7 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
+import app.packed.component.ComponentConfiguration;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerBuilder;
@@ -44,7 +46,7 @@ import internal.app.packed.container.PackedContainerHandle;
  *
  * @see BaseAssembly
  */
-// LinkedAssembly, LinkableAssembly
+// LinkedAssembly, LinkableAssembly, ConfinedAssembly
 public non-sealed abstract class BuildableAssembly extends Assembly {
 
     /**
@@ -64,6 +66,7 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
     private ContainerConfiguration configuration;
 
     /** {@return an assembly finder that can be used to find assemblies on the class- or module-path.} */
+    // Classpath if the assembly is on the classpath, otherwise modulepath
     protected final AssemblyFinder assemblyFinder() {
         return new PackedAssemblyFinder(getClass(), container().handle.container().assembly);
     }
@@ -85,6 +88,10 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
             AssemblySetup assembly = new AssemblySetup(builder, this);
             existing = configuration = new ContainerConfiguration(new PackedContainerHandle(assembly.container));
             try {
+
+                // What is the state of the assembly here??? Pre_Build or building
+                // I think post hooks are included in BEING_BUILT
+
                 // Run AssemblyHook.onPreBuild if hooks are present
                 assembly.model.preBuild(configuration);
 
@@ -108,6 +115,19 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
         }
     }
 
+    // Paa Assembly, ContainerConfiguration, Bean
+    protected final <T extends ComponentConfiguration> Stream<T> componentConfigurations(Class<T> configurationType) {
+
+        // componentConfigurations(EntityBeanConfiguration.class).doo
+
+        // componentConfigurations(ScheduledOperatitionConfiguration.class)
+
+        throw new UnsupportedOperationException();
+    }
+
+//    protected final <T extends ComponentConfiguration> Stream<T> componentConfigurationSingleton(Class<T> configurationType) {
+//
+//    }
     /**
      * Checks that {@link #build()} has not yet been called by the framework.
      * <p>
@@ -145,7 +165,9 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
     }
 
     /**
-     * Returns whether or not {@link #build()} has been called.
+     * Returns whether or not {@link #build()} has already been called.
+     * <p>
+     * If called from within {@link #build()} this method returns true.
      *
      * @return {@code true} if {@link #build()} has not been called yet, otherwise {@code false}
      *
@@ -153,6 +175,11 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
      */
     protected final boolean isPreBuild() {
         return configuration == null;
+    }
+
+    /** {@return the current state of the assembly.} */
+    protected final Assembly.State assemblyState() {
+        throw new UnsupportedOperationException();
     }
 
     /**

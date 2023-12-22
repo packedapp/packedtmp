@@ -44,7 +44,7 @@ public class ContainerMirrorTest extends AppAppTest {
         ContainerMirror c = m.container();
         // Default application mirror is ApplicationMirror
         mirrors().assertIdentical(m, c.application());
-        mirrors().assertIdentical(m.assembly(), c.assembly());
+        mirrors().assertIdentical(m.assemblies().root(), c.assembly());
         mirrors().findSingleBean(c);
 
 

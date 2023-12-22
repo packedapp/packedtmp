@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.extension.BeanHook.AnnotatedVariableHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanVariableHook;
 import app.packed.lifetime.LifecycleOrder;
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
@@ -299,7 +299,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_PARAMETER })
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedVariableHook(extension = BaseExtension.class)
+    @AnnotatedBeanVariableHook(extension = BaseExtension.class)
     public @interface CodeGenerated {}
 }
 

@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.AnnotatedMethodHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
 
 /**
  * Trying to build an application with more than a single method annotated with this annotation will fail with
@@ -40,7 +40,7 @@ import app.packed.extension.BeanHook.AnnotatedMethodHook;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedMethodHook(allowInvoke = true, extension = BaseExtension.class)
+@AnnotatedBeanMethodHook(allowInvoke = true, extension = BaseExtension.class)
 public @interface Main {}
 //A single method. Will be executed.
 //and then shutdown container down again

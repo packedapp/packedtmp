@@ -19,6 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -26,10 +28,14 @@ import java.util.HashMap;
 import java.util.Optional;
 
 import app.packed.application.BuildGoal;
-import app.packed.application.OldApplicationPath;
+import app.packed.component.ComponentPath;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
+import app.packed.extension.Extension.ExtensionProperty;
+import app.packed.namespace.NamespaceOperator;
+import app.packed.namespace.NamespaceTemplate;
 import app.packed.service.ServiceableBeanConfiguration;
+import app.packed.util.BaseModuleConstants;
 import app.packed.util.TreeView;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NamespaceSetup;
@@ -38,8 +44,6 @@ import internal.app.packed.container.PackedNamespaceTemplate;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
 import sandbox.extension.container.ContainerHandle;
-import sandbox.extension.domain.NamespaceOperator;
-import sandbox.extension.domain.NamespaceTemplate;
 
 /**
  * Extensions are main mechanism by which the framework can be extended with new features.
@@ -130,8 +134,8 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /** {@return the path of the container that this extension belongs to.} */
-    protected final OldApplicationPath containerPath() {
-        return extension.container.path();
+    protected final ComponentPath containerPath() {
+        return extension.container.componentPath();
     }
 
     @SuppressWarnings("unchecked")
@@ -353,7 +357,7 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /**
-     * Returns a selection of all wirelets of the specified type that have not already been processed.
+     * Returns a selection of all wirelets of the specified type.
      * <p>
      * If this extension defines any runtime wirelet. A check must also be made at runtime, you must remember to check if
      * there are any unprocessed wirelets at runtime. As this may happen when creating an image
@@ -362,11 +366,16 @@ public abstract class Extension<E extends Extension<E>> {
      *            the type of wirelets to select
      * @param wireletClass
      *            the type of wirelets to select
-     * @return a selection of all container wirelets of the specified type that have not already been processed
+     * @return a selection of all wirelets of the specified type
      * @throws IllegalArgumentException
      *             if the specified class is not located in the same module as the extension itself. Or if the specified
      *             wirelet class is not a proper subclass of ExtensionWirelet.
      */
+    // Think ditch processed. We can call this on repeat
+    // Add it must have Wireletphase = Build
+    // A wirelet must be selected at least once.
+
+    // Maybe have a forEach method as well? forEachWirelet(Class, Consumer);
     protected final <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         // Check that we are a proper subclass of ExtensionWirelet
         ClassUtil.checkProperSubclass(ExtensionWirelet.class, wireletClass, "wireletClass");
@@ -378,9 +387,9 @@ public abstract class Extension<E extends Extension<E>> {
             throw new IllegalArgumentException("The specified wirelet class is not in the same module (" + getClass().getModule().getName() + ") as '"
                     + /* simple extension name */ extension.model.name() + ", wireletClass.getModule() = " + wireletClass.getModule());
         }
-        // At runtime we have already checked T when building the application
+        // At runtime we have already checked that T is in the same module as the extension when building the application
 
-        return extension.container.selectWirelets(wireletClass);
+        return extension.container.selectWireletsUnsafe(wireletClass);
     }
 
     /**
@@ -494,7 +503,38 @@ public abstract class Extension<E extends Extension<E>> {
          */
         String[] optionally() default {};
     }
+
+
+    // For extension properties, they are not validated before the extension is used together with extension defining the property (potentially never)
+    @Repeatable(ExtensionProperty.All.class)
+    public @interface ExtensionProperty {
+
+        // FFF#dsdf <- ExtensionName#PropertyName
+
+        // Properties without # are framework properties
+
+        /** {@return the name of the property} */
+        String name();
+
+        /** {@return the value of the property} */
+        String value();
+
+        /** An annotation that allows for placing multiple {@link ExtensionProperty} annotations on a single assembly. */
+        @Retention(RetentionPolicy.RUNTIME)
+        @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+        @Inherited
+        @Documented
+        @interface All {
+
+            /** An array of property declarations. */
+            ExtensionProperty[] value();
+        }
+    }
 }
+
+@ExtensionProperty(name = BaseModuleConstants.CONFIG_EXTENSION_PROPERTY_DEFAULT_NAME, value = "web")
+class PropUsage {}
+
 //
 ///** {@return instance of this extension that is used in the lifetimes assembly container.} */
 //@SuppressWarnings("unchecked")

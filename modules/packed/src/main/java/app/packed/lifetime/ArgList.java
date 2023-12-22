@@ -18,7 +18,7 @@ package app.packed.lifetime;
 import java.util.List;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.BindingTypeHook;
+import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
 
 /**
  *

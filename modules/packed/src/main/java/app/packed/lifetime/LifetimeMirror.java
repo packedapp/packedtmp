@@ -7,10 +7,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import app.packed.bean.BeanMirror;
+import app.packed.component.Mirror;
 import app.packed.extension.Extension;
 import app.packed.operation.CompositeOperationMirror;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.container.Mirror;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 
@@ -30,6 +30,8 @@ import internal.app.packed.operation.OperationSetup;
 
 // Life cycle - A series of stages through which an organism passes between recurrences of a primary stage.
 //https://thesaurus.plus/related/life_cycle/lifetime
+
+// Lifetime == Scope????
 
 public abstract sealed class LifetimeMirror implements Mirror permits BeanLifetimeMirror, ContainerLifetimeMirror {
 

@@ -3,9 +3,11 @@ module app.packed {
     requires transitive jdk.jfr;
     //  requires jdk.incubator.concurrent; // Sometimes test
 
+    exports app.packed;
     exports app.packed.application;
     exports app.packed.bean;
     exports app.packed.cli;
+    exports app.packed.component;
     exports app.packed.container;
     exports app.packed.context;
     exports app.packed.errorhandling;

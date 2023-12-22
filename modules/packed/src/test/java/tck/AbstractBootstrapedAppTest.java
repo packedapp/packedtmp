@@ -32,8 +32,8 @@ import app.packed.application.BootstrapApp;
 import app.packed.bean.BeanMirror;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
-import app.packed.container.Author;
 import app.packed.container.ContainerMirror;
+import app.packed.container.Operative;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.Op;
@@ -141,7 +141,7 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
 
         /** {@return a mirror for the application.} */
         public AssemblyMirror assembly() {
-            return application().assembly();
+            return application().assemblies().root();
         }
 
         public void assertIdentical(Object expected, Object actual) {
@@ -159,7 +159,7 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         }
 
         public BeanMirror findSingleBean(ContainerMirror c) {
-            List<BeanMirror> beans = c.beans().filter(b -> b.owner() == Author.application()).toList();
+            List<BeanMirror> beans = c.beans().filter(b -> b.owner() == Operative.user()).toList();
             assertThat(beans).hasSize(1);
             return beans.get(0);
         }

@@ -22,9 +22,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.AnnotatedFieldHook;
-import app.packed.extension.BeanHook.AnnotatedMethodHook;
-import app.packed.namespace.NamespaceAnnotation;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanFieldHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
+import app.packed.namespace.sandbox.NamespaceAnnotation;
 
 /**
  * An annotation indicating that an annotated method or field on a bean provides a service to the container in which the
@@ -55,6 +55,8 @@ import app.packed.namespace.NamespaceAnnotation;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @NamespaceAnnotation
-@AnnotatedMethodHook(extension = BaseExtension.class, allowInvoke = true)
-@AnnotatedFieldHook(extension = BaseExtension.class, allowGet = true)
-public @interface Provide {}
+@AnnotatedBeanMethodHook(extension = BaseExtension.class, allowInvoke = true)
+@AnnotatedBeanFieldHook(extension = BaseExtension.class, allowGet = true)
+public @interface Provide {
+    String namespace() default NamespaceAnnotation.DEFAULT_NAMESPACE;
+}

@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.extension.BeanElement;
 import app.packed.extension.BeanIntrospector;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
@@ -29,18 +28,20 @@ import internal.app.packed.container.PackedLocal;
 import sandbox.extension.bean.BeanHandle;
 
 /**
- * This class provides build-time bean-local variables primarily for use by {@link app.packed.extension.Extension
- * extensions}.
+ * This class provides build-time bean-local variables primarily for internal use by
+ * {@link app.packed.extension.Extension extensions}.
  * <p>
  * Bean locals are typically used for sharing per-bean data between various parts of the application while the
  * application is being built. For example, a value can be set for a bean when installing it. And then later be
- * retrieved from a {@link BeanMirror bean mirror} instance. The nested {@link Accessor} interfaces details all the
- * entities that supports bean local storage in its permit clause.
+ * retrieved from a {@link BeanMirror bean mirror} instance.
+ * <p>
+ * The nested {@link Accessor} interfaces details all the entities that supports bean local storage in its permit
+ * clause.
  * <p>
  * Bean locals should generally not be shared outside outside of trusted code.
  * <p>
- * Bean locals should in general only be used while building an application. A notable exception is bean mirrors which
- * may use them for querying at runtime.
+ * Bean locals should only be used while building an application. A notable exception is bean mirrors which may use them
+ * for querying at runtime.
  *
  * @see app.packed.extension.bean.BeanBuilder#setLocal(BeanLocal, Object)
  * @see ContainerLocal
@@ -69,7 +70,7 @@ public final class BeanLocal<T> extends PackedLocal<T> {
      *             if a value has not been set previously for this bean local and an initial value supplier was not
      *             specified when creating the bean local
      */
-    public T get(Accessor accessor) {
+    public T get(BeanLocalAccessor accessor) {
         BeanSetup bean = crack(accessor);
         return bean.locals().get(this, bean);
     }
@@ -82,7 +83,7 @@ public final class BeanLocal<T> extends PackedLocal<T> {
      * @throws NullPointerException
      *             if value is present and the given action is {@code null}
      */
-    public void ifPresent(Accessor accessor, Consumer<? super T> action) {
+    public void ifPresent(BeanLocalAccessor accessor, Consumer<? super T> action) {
         throw new UnsupportedOperationException();
     }
 
@@ -97,9 +98,9 @@ public final class BeanLocal<T> extends PackedLocal<T> {
      *          supplier was specified when creating the local. As such this method rarely makes sense to call if an initial
      *          value supplier was specified when creating the local.
      */
-    public boolean isSet(Accessor accessor) {
+    public boolean isSet(BeanLocalAccessor accessor) {
         BeanSetup bean = crack(accessor);
-        return bean.locals().isSet(this, bean);
+        return bean.locals().isBound(this, bean);
     }
 
     /**
@@ -115,12 +116,12 @@ public final class BeanLocal<T> extends PackedLocal<T> {
      *          supplier was specified when creating the local. As such this method rarely makes sense to call if an initial
      *          value supplier was specified when creating the local.
      */
-    public T orElse(Accessor accessor, T other) {
+    public T orElse(BeanLocalAccessor accessor, T other) {
         BeanSetup bean = crack(accessor);
         return bean.locals().orElse(this, bean, other);
     }
 
-    public <X extends Throwable> T orElseThrow(Accessor accessor, Supplier<? extends X> exceptionSupplier) throws X {
+    public <X extends Throwable> T orElseThrow(BeanLocalAccessor accessor, Supplier<? extends X> exceptionSupplier) throws X {
         BeanSetup bean = crack(accessor);
         return bean.locals().orElseThrow(this, bean, exceptionSupplier);
     }
@@ -133,7 +134,7 @@ public final class BeanLocal<T> extends PackedLocal<T> {
      * @param value
      *            the value to set
      */
-    public void set(Accessor accessor, T value) {
+    public void set(BeanLocalAccessor accessor, T value) {
         BeanSetup bean = crack(accessor);
         bean.locals().set(this, bean, value);
     }
@@ -145,13 +146,13 @@ public final class BeanLocal<T> extends PackedLocal<T> {
      *            the accessor to extract from
      * @return the extracted bean
      */
-    private static BeanSetup crack(Accessor accessor) {
+    private static BeanSetup crack(BeanLocalAccessor accessor) {
         requireNonNull(accessor, "accessor is null");
         return switch (accessor) {
         case BeanConfiguration bc -> BeanSetup.crack(bc);
         case PackedBeanElement bc -> bc.bean();
         case BeanHandle<?> bc -> BeanSetup.crack(bc);
-        case BeanIntrospector bc->BeanSetup.crack(bc);
+        case BeanIntrospector bc -> BeanSetup.crack(bc);
         case BeanMirror bc -> bc.bean;
         default -> throw new Error();
         };
@@ -184,7 +185,7 @@ public final class BeanLocal<T> extends PackedLocal<T> {
     }
 
     /** An entity where bean local values can be stored and retrieved. */
-    public sealed interface Accessor permits BeanConfiguration, BeanElement, BeanHandle, BeanIntrospector, BeanMirror {}
+//    public sealed interface Accessor permits BeanConfiguration, BeanElement, BeanHandle, BeanIntrospector, BeanMirror {}
 }
 
 //https://docs.oracle.com/en/java/javase/20/docs/api/jdk.incubator.concurrent/jdk/incubator/concurrent/ScopedValue.html#get()

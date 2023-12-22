@@ -22,9 +22,6 @@ import java.util.function.Consumer;
 
 import app.packed.extension.Extension;
 import app.packed.util.Key;
-import internal.app.packed.container.PackedContainerTemplatePack.KeyFragment.OfConstant;
-import internal.app.packed.container.PackedContainerTemplatePack.KeyFragment.OfExports;
-import internal.app.packed.container.PackedContainerTemplatePack.KeyFragment.OfExportsOrElse;
 import sandbox.extension.container.ContainerTemplatePack;
 
 /**
@@ -74,7 +71,7 @@ public record PackedContainerTemplatePack(Class<? extends Extension<?>> extensio
         return new PackedContainerTemplatePack(extensionClass(), onUse == null ? action : onUse.andThen((Consumer) action), services);
     }
 
-    public sealed interface KeyFragment permits OfConstant, OfExports, OfExportsOrElse {
+    public sealed interface KeyFragment permits KeyFragment.OfConstant, KeyFragment.OfExports, KeyFragment.OfExportsOrElse {
 
         public record OfConstant(Object constant) implements KeyFragment {}
 

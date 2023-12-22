@@ -21,6 +21,21 @@ import java.util.ServiceLoader;
 import java.util.stream.Stream;
 
 /**
+ * An assembly finder can be used to find one or more assemblies on the class- or module-path.
+ * <p>
+ * Probably 3 ways to do this
+ *
+ * Use a ServiceLoader
+ *
+ * Use this class
+ *
+ * There is some module layer thingies we need to think up
+ *
+ *
+ * <p>
+ *
+ *
+ * What about service loaders?
  *
  */
 // Jeg tror ikke man kan skifte mode...
@@ -50,10 +65,9 @@ import java.util.stream.Stream;
 //// 2. Filtre
 //// 3. En terminal operation
 
-
 // Now
 //// Where to look
-//// What to find
+//// What to find (terminal)
 
 // Where to Look
 //// Paths
@@ -92,7 +106,6 @@ public sealed interface AssemblyFinder permits PackedAssemblyFinder {
         throw new UnsupportedOperationException();
     }
 
-
     // Find exactly one
     // Fails if there are more than one
     <T extends Assembly> T findOne(ServiceLoader<T> loader);
@@ -107,6 +120,7 @@ public sealed interface AssemblyFinder permits PackedAssemblyFinder {
      * @throws BuildException
      *             if an assembly with the specified name was not present or could not be instantiated
      */
+    // findOneNamed
     Assembly findOne(String className);
 
     /**
@@ -129,7 +143,7 @@ public sealed interface AssemblyFinder permits PackedAssemblyFinder {
         return this;
     }
 
-    /** {@return an assembly finder that uses the classpath to find assemblies.} */
+    /** {@return an assembly finder that uses the classpath to find assemblies} */
     static AssemblyFinder onClasspath() {
         throw new UnsupportedOperationException();
     }
@@ -144,7 +158,10 @@ public sealed interface AssemblyFinder permits PackedAssemblyFinder {
         throw new UnsupportedOperationException();
     }
 
-    // default mode er fra Assembly.getModule==Unamanaged ? classpath : modulepath
+    /**
+     * An assembly finder can be used to find assemblies either on the class or module path. But not both.
+     */
+    // I think just have two is methods(), isClassPath, isModulePath
     enum Mode {
         SEARCH_CLASSPATH, SEARCH_MODULEPATH;
     }
@@ -152,8 +169,8 @@ public sealed interface AssemblyFinder permits PackedAssemblyFinder {
 // Skal ogsaa kunne bruges i standalone mode.
 // Her er det vel primaert en enkelt Assembly men leder efter
 
+// default mode er fra Assembly.getModule==Unamanaged ? classpath : modulepath
 interface Zarchive {
-
 
     /**
      * Links all matching assemblies by calling {@link app.packed.extension.BaseExtension#link(Assembly, Wirelet...)} for

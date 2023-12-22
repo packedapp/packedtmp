@@ -78,6 +78,9 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
     /** {@return the list of annotations as an array} */
     Annotation[] toArray();
 
+    // <T extends Annotation> T[] toArray(Map<Integer, T[]>);
+
+
     /** {@return this list as a java.util.list} */
     List<Annotation> toList();
 

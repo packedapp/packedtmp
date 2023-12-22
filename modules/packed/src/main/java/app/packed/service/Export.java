@@ -7,8 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.AnnotatedFieldHook;
-import app.packed.extension.BeanHook.AnnotatedMethodHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanFieldHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
 
 /**
  *
@@ -16,8 +16,8 @@ import app.packed.extension.BeanHook.AnnotatedMethodHook;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedMethodHook(extension = BaseExtension.class, allowInvoke = true)
-@AnnotatedFieldHook(extension = BaseExtension.class, allowGet = true)
+@AnnotatedBeanMethodHook(extension = BaseExtension.class, allowInvoke = true)
+@AnnotatedBeanFieldHook(extension = BaseExtension.class, allowGet = true)
 public @interface Export {
 
     // Overrides the return type

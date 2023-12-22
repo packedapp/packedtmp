@@ -23,12 +23,12 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLocal;
 import app.packed.container.Wirelet;
 import app.packed.extension.BeanElement.BeanMethod;
+import app.packed.namespace.NamespaceTemplate;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.FrameworkExtension;
 import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.container.ContainerHandle.Builder;
 import sandbox.extension.container.ContainerTemplate;
-import sandbox.extension.domain.NamespaceTemplate;
 
 /**
  * An extension that
@@ -37,7 +37,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
     // Vi har 1 per application.. Vi kan fx stadig injecte globalle parameters i enhver lifetime.
     // Det er bare commands der ikke fungere
-    static final NamespaceTemplate<CliExtensionNamespace> DOMAIN = NamespaceTemplate.of(CliExtensionNamespace::new);
+    static final NamespaceTemplate<CliExtensionNamespaceOperator> DOMAIN = NamespaceTemplate.of(CliExtensionNamespaceOperator::new);
 
     static final ContainerLocal<Boolean> LAUNCHED = ContainerLocal.ofContainer();
 

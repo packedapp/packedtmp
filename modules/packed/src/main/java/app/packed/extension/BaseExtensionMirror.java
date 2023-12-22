@@ -7,8 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import app.packed.service.ServiceContract;
-import app.packed.service.mirror.ExportedServiceMirror;
-import app.packed.service.mirror.ProvidedServiceMirror;
+import app.packed.service.mirror.oldMaybe.ExportedServiceMirror;
+import app.packed.service.mirror.oldMaybe.ProvidedServiceMirror;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerSetup;
@@ -55,6 +55,7 @@ public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {
     // Map<K, V> unresolvedOptional?();
 
     /** { @return a map of all the services that are exported by the container.} */
+    @SuppressWarnings("exports")
     public Map<Key<?>, ExportedServiceMirror> serviceExports() {
         LinkedHashMap<Key<?>, ExportedServiceMirror> result = new LinkedHashMap<>();
         for (ExportedService e : container.sm.exports.values()) {
@@ -65,6 +66,7 @@ public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {
     }
 
     /** { @return a map of all the services that are provided internally in the container.} */
+    @SuppressWarnings("exports")
     public Map<Key<?>, ProvidedServiceMirror> serviceProviders() {
         // Not really a map view
         LinkedHashMap<Key<?>, ProvidedServiceMirror> result = new LinkedHashMap<>();

@@ -22,8 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.AnnotatedFieldHook;
-import app.packed.extension.BeanHook.AnnotatedMethodHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanFieldHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
 
 /**
  * Ideen er at provide context fra en bean. Typisk container brug.
@@ -45,8 +45,8 @@ import app.packed.extension.BeanHook.AnnotatedMethodHook;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedMethodHook(extension = BaseExtension.class, allowInvoke = true)
-@AnnotatedFieldHook(extension = BaseExtension.class, allowGet = true)
+@AnnotatedBeanMethodHook(extension = BaseExtension.class, allowInvoke = true)
+@AnnotatedBeanFieldHook(extension = BaseExtension.class, allowGet = true)
 // Skal returnere implementationen
 public @interface ContainerContextProvide {
     // Det kan vi vel extracte fra metode/field signaturen

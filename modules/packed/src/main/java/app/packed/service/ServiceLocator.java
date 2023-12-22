@@ -32,7 +32,7 @@ import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.BindingTypeHook;
+import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.operation.Provider;

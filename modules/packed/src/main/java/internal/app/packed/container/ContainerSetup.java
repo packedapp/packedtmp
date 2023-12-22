@@ -22,9 +22,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import app.packed.application.OldApplicationPath;
+import app.packed.component.Component;
+import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
@@ -32,6 +35,8 @@ import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
+import internal.app.packed.component.AbstractTreeMirror;
+import internal.app.packed.component.Mirrorable;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
@@ -40,10 +45,13 @@ import internal.app.packed.service.ServiceManager;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.PackedNamespacePath;
+import internal.app.packed.util.TreeNode;
+import internal.app.packed.util.TreeNode.ActualNode;
 import internal.app.packed.util.types.ClassUtil;
 
 /** The internal configuration of a container. */
-public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> implements ContextualizedElementSetup {
+public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
+        implements ActualNode<ContainerSetup> , Component , ContextualizedElementSetup , Mirrorable<ContainerMirror> {
 
     /** A magic initializer for {@link ContainerMirror}. */
     public static final MagicInitializer<ContainerSetup> MIRROR_INITIALIZER = MagicInitializer.of(ContainerMirror.class);
@@ -57,7 +65,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
     /** All the beans installed in the container. */
     public final ContainerBeanStore beans = new ContainerBeanStore();
 
-    /** Maintains unique names for beans and child containers. */
+    /** Maintains unique names for child containers. */
     public final HashMap<String, ContainerSetup> children = new HashMap<>();
 
     private HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
@@ -81,6 +89,9 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
     /** The name of the container. */
     public String name;
 
+    /** A tree node representing this container in the application. */
+    public final TreeNode<ContainerSetup> node;
+
     /** The container's service manager. */
     public final ServiceManager sm;
 
@@ -95,10 +106,10 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
     @SuppressWarnings({ "unchecked", "rawtypes" })
     ContainerSetup(PackedContainerBuilder builder, ApplicationSetup application, AssemblySetup assembly) {
         super(builder.parent);
+        this.node = new TreeNode<>(builder.parent, this);
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
         this.mirrorSupplier = builder.containerMirrorSupplier;
-        this.name = builder.name;
 
         builder.locals.forEach((p, o) -> p.locals(this).set((PackedLocal) p, this, o));
 
@@ -110,9 +121,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
         this.sm = new ServiceManager(null, this);
         // If a name has been set using a wirelet, we ignore calls to #named(String)
         this.ignoreRename = builder.nameFromWirelet != null;
-
-        // TODO copy Locals from builder
-
     }
 
     /** {@return the base extension for this container.} */
@@ -120,11 +128,18 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
         return (BaseExtension) useExtension(BaseExtension.class, null).instance();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return a unmodifiable view of all extension types that are in used in no particular order.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
+    /** {@inheritDoc} */
     @Override
     @Nullable
     public ContextSetup findContext(Class<? extends Context<?>> contextClass) {
@@ -132,6 +147,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
         return contexts.get(cl);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void forEachContext(BiConsumer<? super Class<? extends Context<?>>, ? super ContextSetup> action) {
         contexts.forEach(action);
@@ -142,6 +158,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
         return treeParent == null;
     }
 
+    /** {@return whether or not this container is the root container in the assembly} */
     public boolean isAssemblyRoot() {
         // The check for treeParent == null
         // is because AssemblySetup.container is set after BaseExtension is installed
@@ -204,6 +221,12 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
         name = newName;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public TreeNode<ContainerSetup> node() {
+        return node;
+    }
+
     /** {@return the path of this container} */
     public OldApplicationPath path() {
         int depth = depth();
@@ -222,7 +245,8 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
         };
     }
 
-    public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
+    public <T extends Wirelet> WireletSelection<T> selectWireletsUnsafe(Class<T> wireletClass) {
+
 //      WireletWrapper wirelets = extension.container.wirelets;
 //      if (wirelets == null || wirelets.unconsumed() == 0) {
 //          return WireletSelection.of();
@@ -234,13 +258,14 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
     }
 
     /**
-     * If an extension of the specified type has not already been installed, installs it. Returns the extension's context.
+     * Returns the extension setup for an extension of the specified type. Installing the extension if it is not already
+     * installed.
      * <p>
-     * If the requesting extension is non-null. The calller must already have checked that the requested extension is a
+     * If the requesting extension is non-null. The caller must already have checked that the requested extension is a
      * direct dependency of the requesting extension.
      *
      * @param extensionClass
-     *            the type of extension to return a setup for
+     *            the type of extension to return an extension setup for
      * @param requestedByExtension
      *            non-null if it is another extension that is requesting the extension
      * @return the extension setup
@@ -283,5 +308,13 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> imple
             extension = ExtensionSetup.install(extensionClass, this, requestedByExtension);
         }
         return extension;
+    }
+
+    /** Implementation of {@link ContainerMirror.OfTree} */
+    public static final class PackedContainerTreeMirror extends AbstractTreeMirror<ContainerMirror, ContainerSetup> implements ContainerMirror.OfTree {
+
+        public PackedContainerTreeMirror(ContainerSetup root, @Nullable Predicate<? super ContainerSetup> filter) {
+            super(root, filter);
+        }
     }
 }

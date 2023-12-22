@@ -21,7 +21,6 @@ package app.packed.container;
 
 //// Det jo en slags Condensor. Som man kalder igen og igen.
 
-
 //Configuration
 /// Buildtime only
 /// Shared -> Is the wirelet consumed (maybe Consumable)
@@ -29,10 +28,12 @@ package app.packed.container;
 /// TargetSite -> Where it can be used
 /// Scope -> Visibility of the wirelet (can never be cross application)
 
-
 // How do we compose????? Just have a isComposite bit??? And then zeroes
 
-public class WireletFlag {
+// Maybe just have an inheritable annotation... @Wirelet.Flags
+// Default for User allowBuildtime=true, allowRuntime=true, allowShared=false, allowUnconsumed=false
+@Deprecated
+class WireletFlag {
 
     /** Whether or not the wirelet can be used at runtime */
     // May it is actually a two bit? allowRuntime, allowBuildtime
@@ -44,15 +45,20 @@ public class WireletFlag {
     // Supplier<List<Places>>
     //// Hvilket problem er det egentlig vi loeser her???
 
-
     // alternative har vi en metode vi overskriver
     public WireletFlag ALLOW_UNCONSUMED;
 
+    // Allow 0_or_More
+    // Allow 0_1 ??? Giver den her mening
+
+    // Allow_1
+    // Allow_1_or_More
 
     // 1 bit build time only
 
     // 1 bit shared
 
+    ///// WireletSite <--- is this a type
     // X bits <-- where it can be used
     // All containers
     // All Container lifetime roots

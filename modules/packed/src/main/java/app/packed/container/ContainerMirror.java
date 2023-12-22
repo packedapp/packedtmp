@@ -4,6 +4,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -12,15 +13,17 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.DeploymentMirror;
-import app.packed.application.OldApplicationPath;
 import app.packed.bean.BeanMirror;
+import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentPath;
 import app.packed.container.ContainerLocal.LocalAccessor;
 import app.packed.context.Context;
 import app.packed.context.ContextMirror;
+import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.namespace.NamespaceMirror;
@@ -29,7 +32,6 @@ import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.Mirror;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -45,7 +47,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * At runtime you can have a ContainerMirror injected
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public non-sealed class ContainerMirror implements ContextualizedElementMirror , Mirror , LocalAccessor {
+public non-sealed class ContainerMirror implements ComponentMirror , ContextualizedElementMirror , LocalAccessor {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
@@ -78,19 +80,17 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
         this.container = ContainerSetup.MIRROR_INITIALIZER.initialize();
     }
 
-    // Includes extension beans.
+    /** {@return a stream containing all beans defined by the container including beans owned by extensions.} */
+    // We tried for a long if we could add state to the mirrors... But that just doesn't work...
+    // But we do it for extensions... lol
+    // Because
     public Stream<BeanMirror> allBeans() {
-        throw new UnsupportedOperationException();
+        return container.beans.stream().map(b -> b.mirror());
     }
 
     /** {@return the application this container is a part of.} */
     public ApplicationMirror application() {
         return container.application.mirror();
-    }
-
-    /** {@return a node representing this container within an application.} */
-    public TreeView.Node<ContainerMirror> applicationNode() {
-        throw new UnsupportedOperationException();
     }
 
     /** {@return the assembly wherein this container was defined.} */
@@ -101,31 +101,11 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
     /**
      * {@return a view of all beans that owned by the application.}
      * <p>
-     * If you want to include beans that are owned by extensions {@link #allBeans()} can be used instead.
-     *
-     *
-     *
-     * link Collection view of all the beans defined in the container.}
+     * The returned stream does not include beans that are owned by extensions, use {@link #allBeans()} if you need to
+     * include those.
      */
-    // TODO change to immutable collection view
     public Stream<BeanMirror> beans() {
-        // returning stream vs collection... I took a look at the methods in Collection.
-        // And size + isEmpty is the only interesting ones
-        // Arghhh den er sgu rar for Iterable...
-        // https://cr.openjdk.java.net/~smarks/reviews/8148917/IterableOnce0.html
-
-        // not technically a view but will do for now
-//        ArrayList<BeanMirror> beans = new ArrayList<>();
-//        for (var b = container.beanFirst; b != null; b = b.beanSiblingNext) {
-//            beans.add(b.mirror());
-//        }
-//        return List.copyOf(beans).stream();
-
-        return container.beans.stream().map(b -> b.mirror());
-
-        // return CollectionUtil.unmodifiableView(children.values(), c -> c.mirror());
-        // we need a filter on the view...
-        // size, isEmpty, is going to get a bit slower.
+        return allBeans().filter(m -> m.owner() == Operative.user());
     }
 
     /**
@@ -164,6 +144,12 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
         }
         return EnumSet.noneOf(ContainerBoundaryKind.class);
 
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
+        return container.componentPath();
     }
 
     /** {@inheritDoc} */
@@ -243,15 +229,20 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
         throw new UnsupportedOperationException();
     }
 
-    /** {@return the path of the container.} */
-    public OldApplicationPath path() {
-        return container.path();
+    /** {@return a node representing this container in a tree containing all containers in the application.} */
+    public TreeView.Node<ContainerMirror> nodeInApplication() {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<WireletMirror> wirelets() {
+        // On runtime we would need to add runtime wirelets
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "ContainerMirror (" + path() + ")";
+        return "ContainerMirror (" + componentPath() + ")";
     }
 
     /**
@@ -309,7 +300,39 @@ public non-sealed class ContainerMirror implements ContextualizedElementMirror ,
 
         return mirrorClass.cast(mirror);
     }
+
+    /**
+     * Represents one or more containers ordered in a tree with a single node as the root.
+     * <p>
+     * Unless otherwise specified the tree is ordered accordingly to the installation order of each container.
+     */
+    // TODO make sealed, currently there is a bug in Eclipse
+    public non-sealed interface OfTree extends TreeView<ContainerMirror> , ContextScopeMirror {
+
+        // Maaske er det en enum?
+        // isAllOfApplication
+        // isPartialSubtreeOfApplication();
+
+    }
+    // Vi skal have den fordi namespace simpelthen bliver noedt til at definere den
+    // Vi har en main database der bruges i P og saa bruger vi den i C1, C2 bruger den under alias "NotMain", og definere
+    // sin egen main.
+    // C3 definere kun sig egen main
+
+    // Hvis vi siger at et domain er hele appen. Hvad goere vi i C3. Er den tilgaengelig under et "fake" navn???
+    //
+
 }
+
+//// MAYBE MAYBE, but need some use cases
+///** {@return a node representing this container within an application.} */
+
+// maybe nodeInApplication();
+// nodeInAssembly();
+//public TreeView.Node<ContainerMirror> applicationNode() {
+//    throw new UnsupportedOperationException();
+//}
+
 //// Taken from ComponentMirror
 // Now that we have parents...
 // add Optional<Component> tryResolve(CharSequence path);

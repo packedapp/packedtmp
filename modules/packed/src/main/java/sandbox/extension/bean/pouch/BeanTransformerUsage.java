@@ -56,7 +56,7 @@ public class BeanTransformerUsage {
         }
     }
 
-    public class MyProc implements AssemblyHook.Processor {
+    public class MyProc implements AssemblyHook.Interceptor {
 
         @Override
         public void beforeBuild(ContainerConfiguration configuration) {

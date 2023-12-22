@@ -17,17 +17,18 @@ package app.packed.cli;
 
 import java.util.List;
 
-import app.packed.namespace.NamespaceOperationMirror;
+import app.packed.namespace.sandbox.NamespaceOperationMirror;
 
 /**
  * A mirror for a CLI command operation.
  */
 public class CliCommandMirror extends NamespaceOperationMirror {
 
-    final CliExtensionNamespace namespace;
+    final CliExtensionNamespaceOperator namespace;
+
     final CliCommand command;
 
-    CliCommandMirror(CliExtensionNamespace namespace, CliCommand command) {
+    CliCommandMirror(CliExtensionNamespaceOperator namespace, CliCommand command) {
         this.command = command;
         this.namespace = namespace;
     }

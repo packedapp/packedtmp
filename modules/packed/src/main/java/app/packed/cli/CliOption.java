@@ -15,9 +15,12 @@
  */
 package app.packed.cli;
 
+import app.packed.namespace.NamespaceOperation;
+
 /**
  *
  */
+@NamespaceOperation
 public @interface CliOption {
 
 }

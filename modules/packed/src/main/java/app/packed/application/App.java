@@ -28,26 +28,32 @@ import app.packed.container.Wirelet;
  */
 // [Checked|Not-Checked]Launch, Mirror, Launcher, ReuseableLauncher
 
+// Only thing you can get out is information about errors
+
 // App must either have threads running after it has started, or an entry point.
 // Ellers er det et sort hul...
-public final class App {
-
-    /** The bootstrap app. */
-    private static final BootstrapApp<Void> BOOTSTRAP = BootstrapApp.of(c -> c.managedLifetime());
-
-    /** Not today Satan, not today. */
-    private App() {}
+public interface App extends AutoCloseable {
 
     /**
-     * This method is identical to {@link #run(Assembly, Wirelet...)} except that it will not wrapped any checked
-     * exceptions.
+     * Closes the app (synchronously).
+     * <p>
+     * Calling this method is equivalent to calling {@code host().stop()}, but this method is called close in order to
+     * support try-with resources via {@link AutoCloseable}.
+     *
+     **/
+    @Override
+    void close();
+
+    /**
+     * This method is identical to {@link #run(Assembly, Wirelet...)} except that it will never wraps any unhandled
+     * exceptions from the application.
      *
      * @param assembly
      * @param wirelets
      * @throws Throwable
      */
-    public static void checkedRun(Assembly assembly, Wirelet... wirelets) throws Throwable {
-        BOOTSTRAP.launch(assembly, wirelets);
+    static void checkedRun(Assembly assembly, Wirelet... wirelets) throws Throwable {
+        AppImpl.BOOTSTRAP.launch(assembly, wirelets);
     }
 
     /**
@@ -63,8 +69,8 @@ public final class App {
      *            optional wirelets
      * @return an application image that can be used to launch a single instance of the application
      */
-    public static App.Image imageOf(Assembly assembly, Wirelet... wirelets) {
-        return new Image(BOOTSTRAP.imageOf(assembly, wirelets));
+    static App.Image imageOf(Assembly assembly, Wirelet... wirelets) {
+        return new AppImpl.AppImage(AppImpl.BOOTSTRAP.imageOf(assembly, wirelets));
     }
 
     /**
@@ -78,11 +84,19 @@ public final class App {
      * @throws RuntimeException
      *             if the application could not be build
      */
-    public static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        return BOOTSTRAP.mirrorOf(assembly, wirelets);
+    static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
+        return AppImpl.BOOTSTRAP.mirrorOf(assembly, wirelets);
     }
 
-    public static void print(Assembly assembly, Wirelet... wirelets) {
+    /**
+     * Builds an application and prints out its structure using {@code System.out}.
+     *
+     * @param assembly
+     *            the application's assembly
+     * @param wirelets
+     *            optional wirelets
+     */
+    static void print(Assembly assembly, Wirelet... wirelets) {
         // not in final version I think IDK, why not...
         // I think it is super usefull
         //// Maybe have something like enum PrintDetail (Minimal, Normal, Full)
@@ -108,8 +122,12 @@ public final class App {
      * @throws RuntimeException
      *             if the application failed to build or run
      */
-    public static void run(Assembly assembly, Wirelet... wirelets) {
-        BOOTSTRAP.launch(assembly, wirelets);
+    static void run(Assembly assembly, Wirelet... wirelets) {
+        AppImpl.BOOTSTRAP.launch(assembly, wirelets);
+    }
+
+    static App start(Assembly assembly, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -122,24 +140,24 @@ public final class App {
      * @throws RuntimeException
      *             if the application could not be build
      */
-    public static void verify(Assembly assembly, Wirelet... wirelets) {
-        BOOTSTRAP.verify(assembly, wirelets);
+    static void verify(Assembly assembly, Wirelet... wirelets) {
+        AppImpl.BOOTSTRAP.verify(assembly, wirelets);
     }
 
-    /** An application image for App. */
-    public static final class Image {
+    /** An image for App. */
+    interface Image {
 
-        /** The bootstrap image we are delegating to */
-        private final BootstrapApp.Image<?> image;
+        /**
+         * Starts the app and waits until it has fully started.
+         *
+         * @return
+         */
+        App start();
 
-        private Image(BootstrapApp.Image<?> image) {
-            this.image = image;
-        }
+        App start(Wirelet... wirelets);
 
         /** Runs the application represented by this image. */
-        public void run() {
-            image.launch();
-        }
+        void run();
 
         /**
          * Runs the application represented by this image.
@@ -147,8 +165,6 @@ public final class App {
          * @param wirelets
          *            optional wirelets
          */
-        public void run(Wirelet... wirelets) {
-            image.launch(wirelets);
-        }
+        void run(Wirelet... wirelets);
     }
 }

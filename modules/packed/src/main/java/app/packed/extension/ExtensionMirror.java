@@ -11,10 +11,11 @@ import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
 import java.util.stream.Stream;
 
+import app.packed.component.Mirror;
+import app.packed.container.ContainerMirror;
 import app.packed.util.Nullable;
 import app.packed.util.TreeView.Node;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.Mirror;
 
 /**
  * The base class for specialized extension mirrors.
@@ -41,6 +42,8 @@ import internal.app.packed.container.Mirror;
  * @see ContainerMirror#use(Class)
  * @see Extension#newExtensionMirror()
  */
+// Extensions does not have a runtime representation and is hence not a component.
+// Unfortunately, you can argue the same with Assembly...
 public abstract class ExtensionMirror<E extends Extension<E>> implements Mirror {
 
     /*
@@ -142,6 +145,11 @@ public abstract class ExtensionMirror<E extends Extension<E>> implements Mirror 
     /** {@return a descriptor for the extension this mirror is a part of.} */
     public final ExtensionDescriptor extensionDescriptor() {
         return navigator0().extensionDescriptor();
+    }
+
+    /** {@return the root container of this extension mirror.} */
+    public final ContainerMirror container() {
+        return navigator.root().extension.container.mirror();
     }
 
     /** {@return the class of the extension.} */

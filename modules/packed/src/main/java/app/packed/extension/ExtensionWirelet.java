@@ -19,7 +19,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 
 /**
- * Extension wirelets are a wirelets defined by a specific {@link Extension extension}.
+ * Extension wirelets are wirelets that are defined by a specific {@link Extension extension}.
  * <p>
  * At build time use {@link Extension#selectWirelets(Class)}
  * <p>
@@ -39,9 +39,8 @@ public non-sealed abstract class ExtensionWirelet<E extends Extension<E>> extend
      * {@link app.packed.extension.Extension#selectWirelets(Class)} or at runtime using injection of
      * {@link WireletSelection}.
      */
-    @Override
-    protected void onUnconsumed() {
-        // Invoked by the runtime if the wirelet is not processed in some way
+    protected void onUnconsumed(Wirelet.Phase phase) {
+        // Invoked by the runtime if the wirelet is not selected
 
         // look up extension member
         // HOW to know from this method whether or not the extension is in use???
@@ -53,6 +52,12 @@ public non-sealed abstract class ExtensionWirelet<E extends Extension<E>> extend
         // Either the extension is not registered or some other
 
         // Tror vi tester om den er overskrevet
+    }
+
+    Class<E> extensionClass() {
+        // Can be public
+        // ClassValue
+        throw new UnsupportedOperationException();
     }
 
     // ExtensionModel extension;

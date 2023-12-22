@@ -23,17 +23,19 @@ import java.util.Map;
 import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
+import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
 import app.packed.context.Context;
 import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.BindingTypeHook;
+import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
+import app.packed.service.mirror.ServiceProviderMirror;
 import internal.app.packed.binding.BindingSetup;
-import internal.app.packed.container.Mirror;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.operation.OperationSetup;
 import sandbox.operation.mirror.DependenciesMirror;
@@ -50,7 +52,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * </ul>
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public non-sealed class OperationMirror implements ContextualizedElementMirror , Mirror , ContextScopeMirror {
+public non-sealed class OperationMirror implements ComponentMirror, ContextualizedElementMirror , ContextScopeMirror, ServiceProviderMirror {
 
     /** The operation we are mirroring. */
     private final OperationSetup operation;
@@ -147,6 +149,12 @@ public non-sealed class OperationMirror implements ContextualizedElementMirror ,
     /** {@return the type of the operation.} */
     public OperationType type() {
         return operation.type;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
+        return operation.componentPath();
     }
 }
 

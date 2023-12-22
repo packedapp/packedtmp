@@ -19,12 +19,15 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
-import app.packed.bean.BeanMirror;
+import app.packed.service.mirror.oldMaybe.KeyBasedBindingMirror;
 import app.packed.util.Key;
 import internal.app.packed.service.ServiceBindingSetup;
 
 /**
  * A binding of a service.
+ * <p>
+ * I virkeligheden eksistere der ikke noedvendig en service.
+ * Men bindingen er blevet resolvet som en service
  */
 // findAll(SBM.class).filterOn(key.equals(String.class)).toList();
 
@@ -50,11 +53,15 @@ public class ServiceBindingMirror extends KeyBasedBindingMirror {
     }
 
     /** {@return the domain this service is provided from.} */
-    public ServiceNamespaceMirror domain() {
+    public ServiceNamespaceMirror namespace() {
         throw new UnsupportedOperationException();
     }
 
-    /** {@return whether or not the service is required.} */
+    /**
+     * {@return whether or not the service is required.}
+     * <p>
+     * A service might not be required, for example, if it has a default value.
+     */
     public boolean isRequired() {
         return binding.isRequired;
     }
@@ -63,8 +70,14 @@ public class ServiceBindingMirror extends KeyBasedBindingMirror {
         return binding.isResolved();
     }
 
+    /**
+     * A satisfiable binding is binding that is either resolved or not required.
+     * <p>
+     * By default building an application will fail if any service bindings are not satisfiable
+     * @return
+     */
     public boolean isSatisfiable() {
-        return !isRequired() || isResolved();
+        return isResolved() || !isRequired();
     }
 
     /** {@inheritDoc} */
@@ -73,13 +86,14 @@ public class ServiceBindingMirror extends KeyBasedBindingMirror {
         return binding.entry.key;
     }
 
-    public Optional<BeanMirror> providedBy() {
-        throw new UnsupportedOperationException();
-    }
 
     // non null if resolvedx
     // Der er noget med en sti til servicen.
-    public Optional<ServiceMirror> providingService() {
+    public Optional<ProvidedServiceMirror> providingService() {
         throw new UnsupportedOperationException();
     }
 }
+//
+//public Optional<BeanMirror> providedBy() {
+//    throw new UnsupportedOperationException();
+//}

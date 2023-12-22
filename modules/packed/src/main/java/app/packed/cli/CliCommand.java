@@ -22,7 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.function.Consumer;
 
-import app.packed.extension.BeanHook.AnnotatedMethodHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
+import app.packed.namespace.NamespaceOperation;
 
 /**
  *
@@ -30,7 +31,8 @@ import app.packed.extension.BeanHook.AnnotatedMethodHook;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedMethodHook(extension = CliExtension.class)
+@NamespaceOperation
+@AnnotatedBeanMethodHook(extension = CliExtension.class)
 public @interface CliCommand {
 
     /**

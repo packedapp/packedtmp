@@ -296,6 +296,7 @@ public final /* value */ class BootstrapApp<A> {
         return of0(applicationClass, applicationClass, action);
     }
 
+    // Maaske d
     public static BootstrapApp<Void> of(ComposerAction<? super Composer> action) {
         return of(Void.class, action);
     }
@@ -547,6 +548,7 @@ public final /* value */ class BootstrapApp<A> {
      * A launcher is used before an application is launched or an image is created.
      */
     // Creates new Launcher?
+    // It launcher thread safe copy-as?
     public interface Launcher<A> {
 
         Image<A> imageOf(Assembly assembly, Wirelet... wirelets);

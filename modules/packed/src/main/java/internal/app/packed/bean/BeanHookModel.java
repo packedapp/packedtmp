@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Map;
 
 import app.packed.extension.BeanCustomHook;
-import app.packed.extension.BeanHook.AnnotatedVariableHook;
-import app.packed.extension.BeanHook.AnnotatedMethodHook;
-import app.packed.extension.BeanHook.BindingTypeHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanVariableHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
+import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
@@ -42,7 +42,7 @@ public final class BeanHookModel {
 
         @Override
         protected AnnotatedMethod computeValue(Class<?> type) {
-            AnnotatedMethodHook h = type.getAnnotation(AnnotatedMethodHook.class);
+            AnnotatedBeanMethodHook h = type.getAnnotation(AnnotatedBeanMethodHook.class);
             if (h == null) {
                 return null;
             }
@@ -77,7 +77,7 @@ public final class BeanHookModel {
         @Override
         protected AnnotatedParameterType computeValue(Class<?> type) {
 
-            AnnotatedVariableHook h = type.getAnnotation(AnnotatedVariableHook.class);
+            AnnotatedBeanVariableHook h = type.getAnnotation(AnnotatedBeanVariableHook.class);
 
             Class<? extends Annotation> cl = bindings.get(type.getName());
             if (cl != null) {

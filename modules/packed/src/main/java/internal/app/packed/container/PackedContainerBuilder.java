@@ -107,9 +107,9 @@ public abstract class PackedContainerBuilder {
     public ContainerSetup buildNow(Assembly assembly) {
         requireNonNull(assembly, "assembly is null");
 
-        // Calls Assembly.build(AbstractContainerBuilder)
         AssemblySetup as;
         try {
+            // Calls Assembly.build(AbstractContainerBuilder)
             as = (AssemblySetup) MH_ASSEMBLY_BUILD.invokeExact(assembly, this);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
@@ -123,9 +123,11 @@ public abstract class PackedContainerBuilder {
 
     public abstract LifetimeKind lifetimeKind();
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     ContainerSetup newContainer(ApplicationSetup application, AssemblySetup assembly) {
         // All wirelets have been processed when we reaches here
+
+        // Create the new container using this builder
+        ContainerSetup container = new ContainerSetup(this, application, assembly);
 
         String nn = nameFromWirelet;
 
@@ -158,23 +160,19 @@ public abstract class PackedContainerBuilder {
 
         String n = nn;
         if (parent != null) {
-            // TODO fix, we are adding ContainerBuilder not ContainerSetup
-            HashMap<String, Object> c = (HashMap) parent.children;
+            HashMap<String, ContainerSetup> c = parent.children;
             if (c.size() == 0) {
-                c.put(n, this);
+                c.put(n, container);
             } else {
                 int counter = 1;
-                while (c.putIfAbsent(n, this) != null) {
+                while (c.putIfAbsent(n, container) != null) {
                     n = n + counter++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test
                                        // adding 1
                     // million of the same component type
                 }
             }
         }
-        this.name = n;
-
-        // Create the new container using this builder
-        ContainerSetup container = new ContainerSetup(this, application, assembly);
+        this.name = container.name = n;
 
         // BaseExtension is automatically used by every container
         ExtensionSetup.install(BaseExtension.class, container, null);
@@ -184,11 +182,10 @@ public abstract class PackedContainerBuilder {
 
     // Er her fordi den skal fixes paa lang sigt
     ContainerSetup newContainer(AssemblySetup assembly) {
-        if (this instanceof NonRootContainerBuilder installer) {
-            return installer.newContainer(installer.parent.application, assembly);
-        } else {
-            return new ApplicationSetup(this, assembly).container;
-        }
+        return switch (this) {
+        case NonRootContainerBuilder installer -> installer.newContainer(installer.parent.application, assembly);
+        default -> new ApplicationSetup(this, assembly).container;
+        };
     }
 
     /**
@@ -201,13 +198,14 @@ public abstract class PackedContainerBuilder {
         requireNonNull(wirelets, "wirelets is null");
         for (Wirelet wirelet : wirelets) {
             requireNonNull(wirelet, "wirelet is null");
-            if (wirelet instanceof CompositeWirelet cw) {
-                processBuildWirelets(cw.wirelets);
-            } else if (wirelet instanceof InternalBuildWirelet ibw) {
-                ibw.onBuild(this);
-            } else {
-                // A non-build wirelet that will be processed at a later point
-                unconsumedWirelets.add(wirelet);
+            switch (wirelet) {
+            case CompositeWirelet w -> processBuildWirelets(w.wirelets);
+            case InternalBuildWirelet w -> w.onBuild(this);
+
+            // Too map or not to map...
+
+            // A non-build wirelet that will be processed at a later point
+            default -> unconsumedWirelets.add(wirelet);
             }
         }
     }

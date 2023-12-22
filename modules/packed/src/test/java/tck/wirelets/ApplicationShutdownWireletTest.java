@@ -17,7 +17,7 @@ package tck.wirelets;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import app.packed.container.BaseWirelets;
+import app.packed.container.Wirelets;
 import app.packed.container.Wirelet;
 import tck.AppAppTest;
 
@@ -28,7 +28,7 @@ public class ApplicationShutdownWireletTest extends AppAppTest {
 
     public void test() {
         AtomicReference<Thread> ar = new AtomicReference<>();
-        Wirelet w = BaseWirelets.shutdownHook(r -> {
+        Wirelet w = Wirelets.shutdownHook(r -> {
             Thread t = new Thread(r);
             ar.set(t);
             return t;

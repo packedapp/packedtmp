@@ -27,7 +27,7 @@ import internal.app.packed.container.PackedContainerBuilder;
 /**
  * A special assembly type that delegates all calls to another assembly.
  * <p>
- * Some typical use cases for delegating assembly are: TODO
+ * Some typical use cases for delegating assembly are:
  * <ul>
  * <li>Hide methods on an original assembly.</li>
  * <li>Custom configuration of an existing assembly, for example, in test scanerioys specified .</li>
@@ -40,7 +40,7 @@ import internal.app.packed.container.PackedContainerBuilder;
  * <p>
  * Delegating assemblies are never reported from {@link AssemblyMirror#assemblyClass()}, instead the assembly that was
  * delegated to is reported. The delegating assembly(s) can be obtained by calling
- * {@link AssemblyMirror#delegatedFrom()}, which lists any assemblies in order.
+ * {@link AssemblyMirror#delegatedFrom()}, which lists any delegating assemblies in order.
  */
 public non-sealed abstract class DelegatingAssembly extends Assembly {
 
@@ -49,7 +49,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
     AssemblySetup build(PackedContainerBuilder containerBuilder) {
         AssemblyModel.of(getClass()); // Check that this assembly does not use AssemblyHooks
 
-        // Problem with relying on StackOverflowException is that you cannot really what assembly
+        // Problem with relying on StackOverflowException is that you cannot really see what assembly
         // is causing the problems
         if (containerBuilder.delegatingAssemblies.size() == 99) {
             throw new BuildException("Inifite loop suspected, cannot have more than " + containerBuilder.delegatingAssemblies.size()
@@ -98,7 +98,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
     protected abstract Assembly delegateTo();
 
     /**
-     * Constructs a delegating assembly that will prefix all usage of the specified assembly with specified wirelets
+     * Constructs a delegating assembly that will prefix all usage of the specified assembly with the specified wirelets
      *
      * @param assembly
      *            the assembly to add wirelets to
@@ -122,7 +122,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
 
         private WireletPrefixDelegatingAssembly(Assembly assembly, Wirelet[] wirelets) {
             this.assembly = requireNonNull(assembly);
-            this.wirelets = List.of(wirelets).toArray(i -> new Wirelet[i]);
+            this.wirelets = List.of(wirelets).toArray(i -> new Wirelet[i]); // checks for null
         }
 
         /** {@inheritDoc} */
@@ -132,6 +132,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
             return assembly.build(containerBuilder);
         }
 
+        /** {@inheritDoc} */
         @Override
         Assembly extractAssembly(PackedContainerBuilder containerBuilder) {
             containerBuilder.processBuildWirelets(wirelets);

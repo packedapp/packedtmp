@@ -5,15 +5,15 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 
 import app.packed.application.OldApplicationPath;
-import app.packed.bean.BeanLocal.Accessor;
-import app.packed.container.Author;
+import app.packed.component.ComponentConfiguration;
+import app.packed.container.Operative;
 import app.packed.context.Context;
 import app.packed.util.Key;
 import internal.app.packed.bean.PackedBeanHandle;
 import sandbox.extension.bean.BeanHandle;
 
 /** The configuration of a bean, typically returned from the bean's installation site. */
-public non-sealed class BeanConfiguration implements Accessor {
+public non-sealed class BeanConfiguration extends ComponentConfiguration implements BeanLocalAccessor {
 
     /** The bean handle. */
     private final PackedBeanHandle<?> handle;
@@ -25,11 +25,12 @@ public non-sealed class BeanConfiguration implements Accessor {
      *            the bean handle
      */
     public BeanConfiguration(BeanHandle<?> handle) {
+        super(handle);
         this.handle = (PackedBeanHandle<?>) requireNonNull(handle, "handle is null");
     }
 
     /**
-     * Allows to install multiple beans with the same bean class in a container.
+     * Allows to install multiple beans with the same bean class in the same container.
      * <p>
      * Beans that have {@code void} bean class are automatically multi class.
      *
@@ -43,7 +44,7 @@ public non-sealed class BeanConfiguration implements Accessor {
     }
 
     /** {@return the owner of the bean.} */
-    public final Author author() {
+    public final Operative author() {
         return handle.author();
     }
 

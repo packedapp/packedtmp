@@ -21,12 +21,17 @@ import java.util.List;
 import app.packed.namespace.NamespaceMirror;
 
 /**
- * Represents a CLI namespace where commands and global parameters are unique
+ * Represents a CLI namespace where {@link CliCommandMirror commands} and global {@link CliOption options} are unique.
  */
 public class CliNamespaceMirror extends NamespaceMirror<CliExtension> {
 
-    /** {@return all commands in the CLI domain.} */
+    /** {@return all commands within the namespace.} */
     public Collection<CliCommandMirror> commands() {
+        return List.of();
+    }
+
+    /** {@return all commands within the namespace.} */
+    public Collection<CliOption> options() {
         return List.of();
     }
 }

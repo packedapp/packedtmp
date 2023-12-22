@@ -37,7 +37,7 @@ public class ApplicationMirrorTest extends AppAppTest {
     /** We cannot create a usable mirror ourselves. */
     @Test
     public void frameworkMustInitializeMirror() {
-        assertFrameworkInitializes(() -> new ApplicationMirror().assembly());
+        assertFrameworkInitializes(() -> new ApplicationMirror().assemblies().root());
     }
 
     @Test
@@ -49,8 +49,8 @@ public class ApplicationMirrorTest extends AppAppTest {
         // Default application mirror is ApplicationMirror
         assertSame(ApplicationMirror.class, m.getClass());
 
-        mirrors().assertIdentical(m, m.assembly().application());
-        mirrors().assertIdentical(m, m.container().application());
+        mirrors().assertIdentical(m, m.assemblies().root().application());
+        mirrors().assertIdentical(m, m.containers().root().application());
 
         // Only BaseExtension is used
         assertThat(m.extensionTypes()).containsExactly(BaseExtension.class);

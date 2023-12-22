@@ -17,10 +17,27 @@ package app.packed.namespace;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.component.ComponentConfiguration;
+import app.packed.extension.Extension;
+
 /**
+ * The configuration of a namespace.
+ * <p>
+ * Namespace configurations are unique per container|name configuration.
+ *
  *
  */
-public abstract class NamespaceConfiguration {
+
+// Hvad hvis en extension vil configure et namespace....... ARGHHHHH
+// Skal vi have en Author med???
+
+// This must be towards the user? Yes the template (maybe coupled with a NamespaceHandle.Builder) is for extensions
+
+// But still what exactly are we configuring here???
+// We cannot add beans... These must always be added on the extension.
+// Well the c
+
+public abstract class NamespaceConfiguration<E extends Extension<E>> extends ComponentConfiguration {
 
     private final NamespaceHandle handle;
 
@@ -28,11 +45,16 @@ public abstract class NamespaceConfiguration {
         this.handle = requireNonNull(handle);
     }
 
+    /** {@return the extension instance for which this configuration has been created.} */
+    protected final E extension() {
+        throw new UnsupportedOperationException();
+    }
+
     public String name() {
         return handle.name();
     }
 
-    public NamespaceConfiguration named(String name) {
+    public NamespaceConfiguration<E> named(String name) {
         handle.named(name);
         return this;
     }

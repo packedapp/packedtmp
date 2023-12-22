@@ -19,7 +19,9 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.container.Author;
+import app.packed.component.Component;
+import app.packed.component.ComponentPath;
+import app.packed.container.Operative;
 import app.packed.context.Context;
 import app.packed.extension.BeanElement;
 import app.packed.extension.BeanIntrospector;
@@ -53,7 +55,7 @@ import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 
 /** The internal configuration of a bean. */
-public final class BeanSetup implements ContextualizedElementSetup {
+public final class BeanSetup implements ContextualizedElementSetup, Component {
 
     /** A MethodHandle for invoking {@link ExtensionMirror#initialize(ExtensionSetup)}. */
     private static final MethodHandle MH_BEAN_INTROSPECTOR_TO_BEAN = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class, "bean",
@@ -162,7 +164,7 @@ public final class BeanSetup implements ContextualizedElementSetup {
         operation.specializeMirror(() -> new LifecycleOperationMirror());
     }
 
-    public Author author() {
+    public Operative author() {
         return owner.author();
     }
 
@@ -301,4 +303,9 @@ public final class BeanSetup implements ContextualizedElementSetup {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
+        throw new UnsupportedOperationException();
+    }
 }

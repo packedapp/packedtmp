@@ -19,14 +19,14 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
-import app.packed.container.AssemblyTreeMirror;
-import app.packed.container.ContainerTreeMirror;
+import app.packed.component.Mirror;
+import app.packed.container.AssemblyMirror;
+import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.BindingTypeHook;
+import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
 import app.packed.extension.Extension;
-import app.packed.lifetime.ContainerLifetimeTreeMirror;
+import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.container.DeploymentSetup;
-import internal.app.packed.container.Mirror;
 
 /**
  *
@@ -37,7 +37,7 @@ import internal.app.packed.container.Mirror;
 
 // Family < Deployment < Application < Container < Bean < Operation < Binding | Interceptor
 
-//Cluster|Node? < Java Process < Family
+//Cluster|Node? < Java Process(Logical name) < Family
 @BindingTypeHook(extension = BaseExtension.class)
 public class DeploymentMirror implements Mirror {
 
@@ -56,12 +56,12 @@ public class DeploymentMirror implements Mirror {
     }
 
     /** {@return a tree of all the applications that make of the deployment.} */
-    public ApplicationTreeMirror applications() {
+    public ApplicationMirror.OfTree applications() {
         throw new UnsupportedOperationException();
     }
 
     /** {@return a tree of all the assemblies that make of the deployment.} */
-    public AssemblyTreeMirror assemblies() {
+    public AssemblyMirror.OfTree assemblies() {
         throw new UnsupportedOperationException();
     }
 
@@ -70,7 +70,7 @@ public class DeploymentMirror implements Mirror {
     }
 
     /** {@return a tree of all the containers that make of the deployment.} */
-    public ContainerTreeMirror containers() {
+    public ContainerMirror.OfTree containers() {
         throw new UnsupportedOperationException();
     }
 
@@ -86,7 +86,7 @@ public class DeploymentMirror implements Mirror {
         throw new UnsupportedOperationException();
     }
 
-    public ContainerLifetimeTreeMirror lifetimes() {
+    public ContainerLifetimeMirror.OfTree lifetimes() {
         throw new UnsupportedOperationException();
     }
 

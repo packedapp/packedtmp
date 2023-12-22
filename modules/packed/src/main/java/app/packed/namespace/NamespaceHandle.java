@@ -16,8 +16,12 @@
 package app.packed.namespace;
 
 /**
- *
+ * Used by the extension
  */
+// Skal vi baade have Handle og Operator???
+// Operatoren er jo god. Fordi man i 9/10 tilfaelde vil gemme noget information omkring namespaced...
+
+// Og hvis ikke skal vi ikke saa kun have Operator ogsaa for beans, osv
 public interface NamespaceHandle {
 
     String name();

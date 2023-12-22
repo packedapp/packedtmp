@@ -17,9 +17,9 @@ package app.packed.context;
 
 import java.util.Collection;
 
+import app.packed.component.Mirror;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.container.Mirror;
 
 /**
  *

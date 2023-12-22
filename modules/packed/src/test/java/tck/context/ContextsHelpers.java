@@ -18,7 +18,7 @@ package tck.context;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.context.Context;
-import app.packed.extension.BeanHook.BindingTypeHook;
+import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
 import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;

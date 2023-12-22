@@ -1,5 +1,20 @@
+
+Namespace
+  String name
+  Set<ResourceKey> keys();
+  Set<ResourcePath> resourcePaths();
+
+NamespaceResource
+  ResourceKey
+  ComponentPath
+
 We need namespace because stuff with ids is shared across containers.
 
+
+Service.Namespace: ServiceNamespace
+Service: ServiceNamespace/Key
+
+// BeanNamespace -> all beans within a container have a unique name
 
 /// Extra namespaces
 
@@ -20,7 +35,7 @@ Usecases
 - WebServer : Application|?, KDL
 - Config : Application|All
 - JDBC : Some Container|Down | All
-// renames are very very common.
+// renames are very very common. (NamespaceTranslation?)
 /// EventBus -> Translate one event to another.
 /// WebServer -> Prefix one namespace with a name and attach to other (
 /// config - rewrite root

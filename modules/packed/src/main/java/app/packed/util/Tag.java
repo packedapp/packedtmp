@@ -28,6 +28,8 @@ import java.lang.annotation.Target;
 // Classifier??? Labelled
 
 // Maybe just Tag, it is b
+
+// Component Tags??? Then I would rather have @Bean(componentTags="asdasd")
 public @interface Tag {
 
     /**

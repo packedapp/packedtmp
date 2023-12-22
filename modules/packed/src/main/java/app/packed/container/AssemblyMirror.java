@@ -7,13 +7,14 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.DeploymentMirror;
+import app.packed.component.Mirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.BindingTypeHook;
+import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
 import app.packed.util.TreeView;
 import app.packed.util.TreeView.Node;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.Mirror;
+import internal.app.packed.container.ContainerSetup.PackedContainerTreeMirror;
 
 /**
  * A mirror of an assembly.
@@ -67,11 +68,13 @@ public class AssemblyMirror implements Mirror {
      * @return how much time was spend assembling.
      */
     public Duration assemblyDuration() {
-        return Duration.ofNanos(Math.max(0, assembly.assemblyTimeFinished - assembly.assemblyTimeStarted));
+        return Duration.ofNanos(Math.max(0, assembly.assemblyBuildFinishedTime - assembly.assemblyBuildStartedTime));
     }
 
     /** {@return a list of hooks that are applied to containers defined by the assembly.} */
-    // present on ContainerMirror as well? Maybe a ContainerHookMirror, I really think it should be
+    // TODO present on ContainerMirror as well? Maybe a ContainerHookMirror, I really think it should be
+    // Would be nice to see if a given assembly hook was applied to the container.
+    // And the order
     public List<Class<? extends AssemblyHook>> assemblyHooks() {
         return List.of(); // TODO implement
     }
@@ -90,6 +93,10 @@ public class AssemblyMirror implements Mirror {
             for (var e = cs.treeFirstChild; e != null; e = e.treeNextSibling) {
                 children(assembly, e, list);
             }
+
+//            for (ContainerSetup c : cs.node().children()) {
+//                //children(assembly, c, list);
+//            }
         } else {
             list.add(cs.assembly.mirror());
         }
@@ -101,9 +108,9 @@ public class AssemblyMirror implements Mirror {
         return assembly.container.mirror();
     }
 
-    /** {@return a tree of the containers this assembly defines.} */
-    public ContainerTreeMirror containers() {
-        throw new UnsupportedOperationException();
+    /** {@return the tree of containers this assembly defines.} */
+    public ContainerMirror.OfTree containers() {
+        return new PackedContainerTreeMirror(assembly.container, c -> c.assembly == assembly);
     }
 
     public List<Class<? extends DelegatingAssembly>> delegatedFrom() {
@@ -132,9 +139,37 @@ public class AssemblyMirror implements Mirror {
         return assembly.hashCode();
     }
 
+    /** @return true if this assembly is top assembly, otherwise false. */
+    // isApplicationRoot?
+    public boolean isApplicationRoot() {
+        return assembly.container.isApplicationRoot();
+    }
+
     /** {@inheritDoc} */
     @Override
     public String toString() {
         return "Assembly:" + application().name() + ":/";
     }
+
+    /**
+     * Represents a collection of assemblies that are ordered in a rooted tree.
+     * <p>
+     * This
+     */
+
+    // Multi app.
+    // application.assemblies() All assemblies that make of the application. Child applications not included.
+
+    // application.tree().assemblies() <--- Application tree for assemblies
+
+    public interface OfTree extends TreeView<AssemblyMirror> {
+
+        /**
+         *
+         */
+        void print();
+
+        void printWithDuration();
+    }
+
 }

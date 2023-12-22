@@ -48,7 +48,7 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
     /** {@inheritDoc} */
     @Override
     public boolean isPresent(ContainerSetup container) {
-        return locals(container).isSet(this, container);
+        return locals(container).isBound(this, container);
     }
 
     public PackedLocalMap locals(ContainerSetup container) {
@@ -67,6 +67,7 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
     /** {@inheritDoc} */
     @Override
     public Wirelet wireletSetter(T value) {
+        requireNonNull(value, "value is null");
         final class ContainerSetLocalWirelet extends InternalBuildWirelet {
 
             @Override

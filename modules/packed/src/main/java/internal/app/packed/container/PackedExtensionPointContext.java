@@ -15,7 +15,7 @@
  */
 package internal.app.packed.container;
 
-import app.packed.container.Author;
+import app.packed.container.Operative;
 import app.packed.extension.ExtensionPoint.UseSite;
 
 /**
@@ -25,7 +25,7 @@ public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSet
 
     /** {@inheritDoc} */
     @Override
-    public Author author() {
+    public Operative author() {
         return extension.author();
     }
 }

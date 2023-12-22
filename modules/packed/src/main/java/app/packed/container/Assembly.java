@@ -20,11 +20,18 @@ import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerBuilder;
 
 /**
- * An assembly is the basic building block for creating applications on top of the framework.
+ * Assemblies are the basic building block for creating applications in the framework.
  * <p>
- * An assembly provides the instructions for creating an application, and every application in Packed is constructed
- * either directly or indirectly from an assembly. A single assembly can either comprise the entire application or serve
- * as the root of an assembly hierarchy in which each node is responsible for building a part of the application.
+ * An assembly provides the concrete instructions for creating an application, and every application is constructed
+ * either directly or indirectly from one or more assemblies. As such a single assembly can either comprise the entire
+ * application or serve as the root of an assembly hierarchy, in which each node is responsible for building a part of
+ * the application.
+ * <p>
+ * Assemblies does not have a runtime representation. They are a strictly build-time construct. Which is also why they
+ * are not considered as a component.
+ *
+ * state are not carried over to the runtime. And any state that must be carried over to the runtime. Must be done so
+ * doing the build process.
  * <p>
  * Assemblies provide a simply way to package components and build modular application. This is useful, for example,
  * for:
@@ -34,6 +41,10 @@ import internal.app.packed.container.PackedContainerBuilder;
  * <li>Organizing a complex project into distinct sections, such that each section addresses a separate concern.</li>
  * </ul>
  * <p>
+ * (DELETE ME) For more complicated needs an application can itself be split into a hierarchy of application nodes with
+ * a single application as the root.
+ *
+ * <p>
  * There are currently two types of assemblies available:
  * <ul>
  * <li><b>{@link BaseAssembly}</b> which assemblies information about services, and creates injector instances using
@@ -41,11 +52,8 @@ import internal.app.packed.container.PackedContainerBuilder;
  * <li><b>{@link BaseAssembly}</b> which assemblies information about both services and components, and creates
  * container instances using .</li>
  * </ul>
- * A assembly instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with
- * an {@link IllegalStateException}.
- * <p>
- * For more complicated needs an application can itself be split into a hierarchy of application nodes with a single
- * application as the root.
+ * A assembly instance can be used as part of exactly one ({@link #build()} build-process). Attempting to reuse an
+ * assembly will fail with {@link IllegalStateException}.
  * <p>
  * This class cannot be extended directly. If you are developing an application on top of the framework, you would
  * typically extend {@link BaseAssembly} instead.
@@ -56,8 +64,23 @@ public sealed abstract class Assembly permits BuildableAssembly, DelegatingAssem
      * Invoked by the runtime (via a MethodHandle) to build the assembly.
      *
      * @param builder
-     *            a builder for the root container of the assembly
+     *            a container builder for the root container of the assembly
      * @return an assembly configuration object
+     *
+     * @apiNote this method is for internal use only
      */
     abstract AssemblySetup build(PackedContainerBuilder builder);
+
+    /** The state of an {@link Assembly}. */
+    public enum State {
+
+        /** The assembly has not yet been used in a build process. */
+        BEFORE_BUILD,
+
+        /** The assembly is currently being used in a build process. */
+        IN_USE,
+
+        /** The assembly has already been used in a build process (either successfully or unsuccessfully). */
+        AFTER_BUILD;
+    }
 }

@@ -22,4 +22,4 @@ import app.packed.container.Wirelet;
  * <p>
  * This class cannot be extended outside of the framework.
  */
-public abstract sealed class FrameworkWirelet extends Wirelet permits CompositeWirelet, InternalBuildWirelet {}
+public abstract sealed class FrameworkWirelet extends Wirelet permits CompositeWirelet, InternalBuildWirelet, WrappingWirelet {}

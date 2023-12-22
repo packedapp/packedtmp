@@ -9,8 +9,8 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.function.Supplier;
 
+import app.packed.component.Mirror;
 import app.packed.util.Nullable;
-import internal.app.packed.container.Mirror;
 import internal.app.packed.errorhandling.ErrorProcessor;
 import internal.app.packed.util.StringFormatter;
 

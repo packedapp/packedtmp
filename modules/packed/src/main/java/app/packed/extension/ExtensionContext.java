@@ -16,7 +16,7 @@
 package app.packed.extension;
 
 import app.packed.context.Context;
-import app.packed.extension.BeanHook.BindingTypeHook;
+import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 
 /**

@@ -21,12 +21,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.AnnotatedVariableHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanVariableHook;
 
 /**
  *
  */
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
-@AnnotatedVariableHook(extension = BaseExtension.class)
+@AnnotatedBeanVariableHook(extension = BaseExtension.class)
 public @interface ContainerCarrierService {}

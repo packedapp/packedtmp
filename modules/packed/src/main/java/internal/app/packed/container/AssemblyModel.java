@@ -25,11 +25,11 @@ public final /* primitive */ class AssemblyModel {
 
         @Override
         protected AssemblyModel computeValue(Class<?> type) {
-            ArrayList<AssemblyHook.Processor> hooks = new ArrayList<>();
+            ArrayList<AssemblyHook.Interceptor> hooks = new ArrayList<>();
             for (Annotation a : type.getAnnotations()) {
                 if (a instanceof AssemblyHook h) {
-                    for (Class<? extends AssemblyHook.Processor> b : h.value()) {
-                        if (AssemblyHook.Processor.class.isAssignableFrom(b)) {
+                    for (Class<? extends AssemblyHook.Interceptor> b : h.value()) {
+                        if (AssemblyHook.Interceptor.class.isAssignableFrom(b)) {
                             MethodHandle constructor;
 
                             if (!AssemblyModel.class.getModule().canRead(type.getModule())) {
@@ -51,11 +51,11 @@ public final /* primitive */ class AssemblyModel {
                             } catch (IllegalAccessException e) {
                                 throw new BuildException("Can't see it sorry, hook = " + h, e);
                             }
-                            constructor = constructor.asType(MethodType.methodType(AssemblyHook.Processor.class));
+                            constructor = constructor.asType(MethodType.methodType(AssemblyHook.Interceptor.class));
 
-                            AssemblyHook.Processor instance;
+                            AssemblyHook.Interceptor instance;
                             try {
-                                instance = (AssemblyHook.Processor) constructor.invokeExact();
+                                instance = (AssemblyHook.Interceptor) constructor.invokeExact();
                             } catch (Throwable t) {
                                 throw ThrowableUtil.orUndeclared(t);
                             }
@@ -67,28 +67,29 @@ public final /* primitive */ class AssemblyModel {
             if (!hooks.isEmpty() && DelegatingAssembly.class.isAssignableFrom(type)) {
                 throw new BuildException("Delegating assemblies cannot use @" + AssemblyHook.class.getSimpleName() + " annotations, assembly type =" + type);
             }
-            return new AssemblyModel(type, hooks.toArray(s -> new AssemblyHook.Processor[s]));
+            return new AssemblyModel(type, hooks.toArray(s -> new AssemblyHook.Interceptor[s]));
         }
     };
 
     public final BeanHookModel hookModel;
 
     /** Any hooks that have been specified on the assembly. */
-    private final AssemblyHook.Processor[] hooks;
+    private final AssemblyHook.Interceptor[] hooks;
 
-    private AssemblyModel(Class<?> assemblyClass, AssemblyHook.Processor[] hooks) {
+    private AssemblyModel(Class<?> assemblyClass, AssemblyHook.Interceptor[] hooks) {
         this.hooks = requireNonNull(hooks);
         this.hookModel = BeanHookModel.of(assemblyClass);
     }
 
     public void postBuild(ContainerConfiguration configuration) {
-        for (AssemblyHook.Processor h : hooks) {
+        // TODO I think we should run these in reverse order
+        for (AssemblyHook.Interceptor h : hooks) {
             h.afterBuild(configuration);
         }
     }
 
     public void preBuild(ContainerConfiguration configuration) {
-        for (AssemblyHook.Processor h : hooks) {
+        for (AssemblyHook.Interceptor h : hooks) {
             h.beforeBuild(configuration);
         }
     }

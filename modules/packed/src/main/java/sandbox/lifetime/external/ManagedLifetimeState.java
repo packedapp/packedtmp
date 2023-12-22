@@ -33,6 +33,7 @@ import app.packed.lifetime.RunState;
 // Ved ikke hvad metoderne skal hedde hvis man har begge dele paa et App interface.
 
 // ContainerState?
+// RunState.Extended
 public interface ManagedLifetimeState {
 
     /** {@return the actual state of the entity.} */

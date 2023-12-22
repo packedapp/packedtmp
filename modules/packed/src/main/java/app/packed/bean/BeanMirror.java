@@ -12,23 +12,24 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.OldApplicationPath;
-import app.packed.bean.BeanLocal.Accessor;
+import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentPath;
 import app.packed.container.AssemblyMirror;
-import app.packed.container.Author;
 import app.packed.container.ContainerMirror;
+import app.packed.container.Operative;
 import app.packed.context.Context;
 import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.BindingTypeHook;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
-import app.packed.service.mirror.OverriddenServiceBindingMirror;
+import app.packed.service.mirror.ServiceProviderMirror;
+import app.packed.service.mirror.oldMaybe.OverriddenServiceBindingMirror;
 import app.packed.util.Key;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.container.Mirror;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.operation.OperationSetup;
 import sandbox.operation.mirror.DependenciesMirror;
@@ -39,7 +40,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * An instance of BeanMirror can be injected at runtime simply by declaring a dependency on it.
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirror , ContextScopeMirror , Accessor {
+public non-sealed class BeanMirror implements BeanLocalAccessor, ComponentMirror, ContextualizedElementMirror , ContextScopeMirror , ServiceProviderMirror {
 
     /** The bean we are mirroring. */
     final BeanSetup bean;
@@ -60,8 +61,10 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
         return bean.container.application.mirror();
     }
 
-    /** {@return the assembly where the bean is defined.} */
+    /** {@return the assembly where the bean's container is defined.} */
     public AssemblyMirror assembly() {
+        // Extension beans can be defined from any container where extension is used
+        // However, we always return the assembly of the container in which it is registered
         return bean.container.assembly.mirror();
     }
 
@@ -85,6 +88,12 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
     /** {@return the bean source kind} */
     public final BeanSourceKind beanSourceKind() {
         return bean.beanSourceKind;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
+        return bean.componentPath();
     }
 
     /** {@return the container the bean belongs to.} */
@@ -192,22 +201,24 @@ public non-sealed class BeanMirror implements ContextualizedElementMirror , Mirr
      *
      * @return any extension the bean's driver is part of
      */
-    // handledBy, managedBy
+    // handledBy, managedBy (What if the bean is unmanaged, or stateless)
+    // Think it should be similar named on the operation
     Class<? extends Extension<?>> operator() { // registrant
         return bean.installedBy.extensionType;
     }
 
+    @SuppressWarnings("exports")
+    public Map<Key<?>, Collection<OverriddenServiceBindingMirror>> overriddenServices() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return the owner of the bean.} */
-    public final Author owner() {
+    public final Operative owner() {
         return bean.author();
     }
 
     public OldApplicationPath path() {
         return bean.path();
-    }
-
-    public Map<Key<?>, Collection<OverriddenServiceBindingMirror>> overriddenServices() {
-        throw new UnsupportedOperationException();
     }
 
     /**

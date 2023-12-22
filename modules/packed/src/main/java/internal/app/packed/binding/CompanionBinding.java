@@ -15,7 +15,7 @@
  */
 package internal.app.packed.binding;
 
-import app.packed.container.Author;
+import app.packed.container.Operative;
 import app.packed.operation.BindingMirror;
 import internal.app.packed.container.PackedContainerTemplatePack;
 
@@ -43,7 +43,7 @@ public class CompanionBinding {
     // Kan vel kun paa ting man direkte depender paa?
 
     /** {@inheritDoc} */
-    public Author boundBy() {
+    public Operative boundBy() {
        throw new UnsupportedOperationException();
     }
 

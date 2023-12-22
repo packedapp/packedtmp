@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import app.packed.extension.BaseExtension;
-import app.packed.util.FrameworkNames;
+import app.packed.util.BaseModuleConstants;
 
 /**
  *
@@ -29,6 +29,6 @@ public class FrameworkNamesTest {
 
     @Test
     void test() {
-        assertEquals(BaseExtension.class.getCanonicalName(), FrameworkNames.BASE_BASE_EXTENSION);
+        assertEquals(BaseExtension.class.getCanonicalName(), BaseModuleConstants.BASE_EXTENSION_CLASS);
     }
 }

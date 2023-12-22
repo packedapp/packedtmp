@@ -17,23 +17,24 @@ package app.packed.operation;
 
 import java.util.Optional;
 
-import app.packed.container.Author;
+import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentPath;
+import app.packed.container.Operative;
 import app.packed.util.Variable;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
-import internal.app.packed.container.Mirror;
 import sandbox.operation.mirror.BindingProviderKind;
 import sandbox.operation.mirror.BindingTarget;
 import sandbox.operation.mirror.DependenciesMirror;
 
 /**
- * A mirror representing the bound parameter of an operation.
+ * A mirror representing a bound parameter of an operation.
  *
  * @see OperationMirror#bindings()
  */
 @SuppressWarnings("exports") // Uses sandbox classes
-public class BindingMirror implements Mirror {
+public class BindingMirror implements ComponentMirror {
 
     /** The binding we are mirrored. */
     final BindingSetup binding;
@@ -67,15 +68,19 @@ public class BindingMirror implements Mirror {
     }
 
     /**
-     * {@return the operation that declares this binding.} The operation the binding is part of may a nested operation (for
-     * example a composite operation). Check {@link OperationMirror#nestedIn()}.
+     * {@return the operation that declares this binding.}
+     * <p>
+     * The operation the binding is part of may a nested operation (for example a composite operation). Check
+     * {@link OperationMirror#nestedIn()}.
      */
     public OperationMirror operation() {
         return binding.operation.mirror();
     }
 
-    /** {@return the index of this binding into OperationMirror#bindings().} */
-    public final int operationBindingIndex() { // alternative parameterIndex
+    /** {@return the index of parameter this binding is OperationMirror#bindings().} */
+    // Parametere er var.
+    // Bindingen er resultatet naar den er resolvet
+    public final int parameterIndex() { // alternative parameterIndex
         return binding.operationBindingIndex;
     }
 
@@ -92,7 +97,7 @@ public class BindingMirror implements Mirror {
     }
 
     /** {@return the x who created binding.} */
-    public final Author zBoundBy() {
+    public final Operative zBoundBy() {
         return binding.boundBy;
     }
 
@@ -133,6 +138,12 @@ public class BindingMirror implements Mirror {
      */
     public final Optional<BindingTarget> zTarget() {
         return Optional.empty();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
+        throw new UnsupportedOperationException();
     }
 }
 

@@ -15,7 +15,10 @@
  */
 package app.packed.container;
 
+import app.packed.container.Wirelet.Flags;
+
 /**
  * A wirelet that can be used by users of the framework.
  */
+@Flags
 public non-sealed abstract class UserWirelet extends Wirelet {}

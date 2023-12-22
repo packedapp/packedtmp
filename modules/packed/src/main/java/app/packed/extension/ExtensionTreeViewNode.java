@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import app.packed.util.TreeView.Node;
+import app.packed.util.TreeView;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
@@ -32,7 +32,7 @@ import internal.app.packed.container.ExtensionSetup;
  *
  * @see Extension#applicationNavigator()
  */
-final /* primitive */ class ExtensionTreeViewNode<E extends Extension<E>> implements Node<E> {
+final /* primitive */ class ExtensionTreeViewNode<E extends Extension<E>> implements TreeView.Node<E> {
 
     /** We use the extension type mainly for casting. */
     private final Class<E> extensionType;
@@ -91,7 +91,7 @@ final /* primitive */ class ExtensionTreeViewNode<E extends Extension<E>> implem
 //    public root();
 
     @Override
-    public E origin() {
+    public E value() {
         return extensionType.cast(origin.instance());
     }
 

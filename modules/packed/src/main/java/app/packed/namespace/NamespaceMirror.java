@@ -15,11 +15,11 @@
  */
 package app.packed.namespace;
 
-import app.packed.container.Author;
+import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
-import app.packed.container.ContainerTreeMirror;
+import app.packed.container.Operative;
 import app.packed.extension.Extension;
-import internal.app.packed.container.Mirror;
 import internal.app.packed.container.NamespaceSetup;
 
 /**
@@ -28,50 +28,24 @@ import internal.app.packed.container.NamespaceSetup;
 // Kan maaske have en EventRouter? DeliveredEvent = <Domain, Event>
 // Namespace:Cli:main
 // CliExtension.CliCommand:...
-
 // ServiceNamespace::/:main
-public class NamespaceMirror<E extends Extension<E>> implements Mirror {
 
-    /** The domain configuration. */
+// Is abstract for now. Similar to ExtensionMirror
+public abstract class NamespaceMirror<E extends Extension<E>> implements ComponentMirror {
+
+    /*
+     * A namespace does not lists the types of resource keys. As namespaces might have multiple resource types. For example,
+     * CLI has both arguments and commands that are unique. And Hibernate could technically have both Table Names and
+     * EntityClasses <p> A namespace does not have an owner. For example, if two extensions uses an extension who of them
+     * are the owner <p>
+     **/
+
+    /** The namespace configuration. */
     private final NamespaceSetup namespace = NamespaceSetup.MI.initialize();
 
-    // IDK, define is also a bad word
-    /** {@return the extension class that defines the namespace.} */
-    Class<? extends Extension<?>> namespaceExtension() {
-        return namespace.root.extensionType;
-    }
-
-    /**
-     * {@return the local name of this domain for the specified container.}
-     * <p>
-     * Domain instance may be available with different names in different containers.
-     *
-     * @param container
-     *            the container to return a local name for
-     * @throws IllegalArgumentException
-     *             if this domain instance is not available in the specified container
-     */
-    public final String namespaceLocalName(ContainerMirror container) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@return the name of this domain.} */
-    public final String namespaceName() {
-        return namespace.name;
-    }
-
-    /** {@return the owner of this domain instance.} */
-    public final Author namespaceOwner() {
-        return namespace.owner.author();
-    }
-
-    /** {@return the root container of the domain.} */
-    public final ContainerMirror namespaceRoot() {
-        return namespace.root.container.mirror();
-    }
-
-    /** {@return a tree containing every container where this domain instance is present.} */
-    public final ContainerTreeMirror namespaceScope() {
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
         throw new UnsupportedOperationException();
     }
 
@@ -86,6 +60,55 @@ public class NamespaceMirror<E extends Extension<E>> implements Mirror {
     public final int hashCode() {
         return namespace.hashCode();
     }
+
+    // IDK, define is also a bad word
+    // Should be similar named as bean.operator(), operation.operator
+    /** {@return the extension class that owns the namespace.} */
+    Class<? extends Extension<?>> namespaceExtension() {
+        return namespace.root.extensionType;
+    }
+
+    /**
+     * {@return the local name of this namespace for the specified container.}
+     * <p>
+     * Domain instance may be available with different names in different containers.
+     *
+     * @param container
+     *            the container to return a local name for
+     * @throws IllegalArgumentException
+     *             if this namespace instance is not available in the specified container
+     */
+    public final String namespaceLocalName(ContainerMirror container) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@return the name of this name.} */
+    public final String namespaceName() {
+        return namespace.name;
+    }
+
+    /** {@return the root container of the namespace.} */
+    public final ContainerMirror namespaceRoot() {
+        return namespace.root.container.mirror();
+    }
+
+    /** {@return a tree containing every container where this namespace instance is present.} */
+    // And this is where I think we have 2 things.
+    // One where it is available, and one where it is used. And by used I mean???
+    // Hmm, A reference to one of its elements?? Hmm. Maybe where it is used it not very well defined
+    public final ContainerMirror.OfTree namespaceScope() {
+        throw new UnsupportedOperationException();
+    }
 }
-// nameSpaceIDClass -> Nah for a database is it the table name? A class if hibernate?
-// Also, for example, for CLI both arguments and commands are unique. So 2 "keys"
+
+class ZamaspaceMirrorArchive<E extends Extension<E>> extends NamespaceMirror<E> {
+
+    /** {@return the owner of this namespace instance.} */
+    // I don't think there is an owner.
+    // What if a database is used by two extensions only?
+    //
+    public final Operative namespaceOwner() {
+        throw new UnsupportedOperationException();
+    }
+
+}

@@ -19,10 +19,10 @@ import java.util.Collection;
 import java.util.Set;
 
 import app.packed.bean.BeanMirror;
+import app.packed.component.Mirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.container.Mirror;
 
 /**
  *
@@ -52,6 +52,7 @@ import internal.app.packed.container.Mirror;
 // extension beans...
 
 // Tror ikke det her er et mirror
+// Taenker det kan vaere et subinterface fx paa BeanMirror? Og saa bare hedde Dependendies
 public interface DependenciesMirror extends Mirror {
 
     Collection<BeanMirror> beans();

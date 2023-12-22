@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanHook.AnnotatedVariableHook;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanVariableHook;
 
 // I virkeligheden er det jo en slags multi-return fra en operation...
 // Som bliver brugt til at populere en bean...
@@ -43,7 +43,7 @@ import app.packed.extension.BeanHook.AnnotatedVariableHook;
 @Target({ ElementType.PARAMETER, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedVariableHook(extension = BaseExtension.class)
+@AnnotatedBeanVariableHook(extension = BaseExtension.class)
 public @interface AncestorBean {} // childExtension? instead
 
 //Alternativt en ContainerLaucherContext? med context services.
