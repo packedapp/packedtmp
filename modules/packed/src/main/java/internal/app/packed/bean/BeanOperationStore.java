@@ -22,6 +22,7 @@ import java.util.Map;
 import app.packed.lifetime.LifecycleOperationMirror;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.ServiceProviderSetup;
+import internal.app.packed.util.LazyNamer;
 import sandbox.extension.operation.OperationHandle;
 
 /**
