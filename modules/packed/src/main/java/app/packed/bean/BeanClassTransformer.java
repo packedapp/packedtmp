@@ -32,6 +32,12 @@ import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import app.packed.util.Variable;
 
+
+// Hmm maybe this class simply transforms how the class is viewed
+
+// Needs a mirror:D
+
+
 /**
  * Only works on beanClass!=void I think
  */
@@ -58,6 +64,17 @@ import app.packed.util.Variable;
 
 // Targets -> BeanClass, BaseExtension
 
+
+// Thought about having a .scan() method to allow pre and post.
+// But doesnt really work with multiple transformers
+
+
+// Den har vel rigtig meget at goere med interceptors a.la. operations...
+
+// Er vi declarativ. Fx hvis vi nu gerne vil intercepte alle operationer.
+// Men saa nogen lige pludselig tilfoerjer en operation senere hen
+
+// Ved ikke hvor meget den giver mening foerend Leyden
 public interface BeanClassTransformer {
 
     // add(OperationType.of(void.class, SomeService, e->{});
@@ -151,6 +168,7 @@ public interface BeanClassTransformer {
         alwaysTransform(lookup, lookup.lookupClass(), transformation);
     }
 
+    // hmm IDK about this
     static void alwaysTransformSubclassesOf(Lookup lookup, Consumer<? super BeanClassTransformer> transformation) {
         alwaysTransform(lookup, lookup.lookupClass(), transformation);
     }

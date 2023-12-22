@@ -24,6 +24,7 @@ import app.packed.util.Nullable;
 /**
  * The base class for container and bean locals.
  */
+//BuildLocal?
 public abstract sealed class PackedLocal<T> permits BeanLocal, ContainerLocal {
 
     /** An optional supplier that can provide initial values for a bean local. */
