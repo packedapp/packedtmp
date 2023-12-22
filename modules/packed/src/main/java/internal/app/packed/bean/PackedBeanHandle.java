@@ -16,17 +16,12 @@
 package internal.app.packed.bean;
 
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.application.OldApplicationPath;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.container.Operative;
-import app.packed.operation.Op;
 import app.packed.util.Key;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
@@ -162,29 +157,3 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
     }
 }
 
-class ZBeanHandleSandbox<T> {
-
-    public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void decorateInstance(Function<? super T, ? extends T> decorator) {
-        throw new UnsupportedOperationException();
-    }
-
-    public <B> void onInitialize(Class<B> extensionBeanClass, BiConsumer<? super B, ? super T> consumer) {
-        // checkHasInstances
-        // We add a operation to this beanhandle...
-    }
-
-    public <K> OperationHandle overrideService(Key<K> key, K instance) {
-//      if (!beanKind().hasInstances()) {
-//      throw new UnsupportedOperationException();
-//  }
-        throw new UnsupportedOperationException();
-    }
-
-    public void peekInstance(Consumer<? super T> consumer) {
-        throw new UnsupportedOperationException();
-    }
-}

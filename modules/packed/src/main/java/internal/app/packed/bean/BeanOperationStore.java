@@ -25,9 +25,7 @@ import internal.app.packed.service.ServiceProviderSetup;
 import internal.app.packed.util.LazyNamer;
 import sandbox.extension.operation.OperationHandle;
 
-/**
- *
- */
+/** This class handles all operations on a bean. */
 public final class BeanOperationStore {
 
     /**
@@ -60,6 +58,7 @@ public final class BeanOperationStore {
         lifecycleOperations.add(new BeanLifecycleOperation(runOrder, operation));
         operation.specializeMirror(() -> new LifecycleOperationMirror());
     }
+
     /**
      * <p>
      * We lazily calculate
@@ -74,6 +73,5 @@ public final class BeanOperationStore {
         }
         return m;
     }
-
 
 }

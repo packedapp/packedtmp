@@ -117,14 +117,6 @@ public final record PackedOperationHandle(OperationSetup operation, @Nullable Be
         return new PackedBindableVariable(s, operation, index, operation.operator, operation.type.parameter(index));
     }
 
-    /** Checks that the operation is still configurable. */
-    private void checkConfigurable() {
-        // owner or operator, assemblye?
-
-//        if (operation.zIsClosed) {
-//            throw new IllegalStateException("This operation is no longer configurable");
-//        }
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -143,14 +135,14 @@ public final record PackedOperationHandle(OperationSetup operation, @Nullable Be
     @Override
     public void named(String name) {
         requireNonNull(name, "name is null");
-        checkConfigurable();
+        checkIsConfigurable();
         operation.namePrefix = name;
     }
 
     /** {@inheritDoc} */
     @Override
     public void specializeMirror(Supplier<? extends OperationMirror> supplier) {
-        checkConfigurable();
+        checkIsConfigurable();
         operation.mirrorSupplier = requireNonNull(supplier, "supplier is null");
     }
 
@@ -176,6 +168,12 @@ public final record PackedOperationHandle(OperationSetup operation, @Nullable Be
     @Override
     public ComponentPath componentPath() {
         return operation.componentPath();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConfigurable() {
+        return operation.operator.isConfigurable();
     }
 }
 

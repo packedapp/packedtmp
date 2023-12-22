@@ -28,7 +28,6 @@ import app.packed.container.AssemblyMirror;
 import app.packed.container.DelegatingAssembly;
 import app.packed.container.Operative;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.AuthorSetup;
 import internal.app.packed.component.AbstractTreeMirror;
 import internal.app.packed.component.Mirrorable;
 import internal.app.packed.service.CircularServiceDependencyChecker;

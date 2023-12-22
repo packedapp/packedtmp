@@ -50,6 +50,27 @@ import internal.app.packed.operation.PackedOperationHandle;
 // Embedded
 public sealed interface OperationHandle extends Component, ContextualizedElement permits PackedOperationHandle {
 
+    /**
+     * Checks that the container is still configurable, or throws an exception.
+     *
+     * @throws IllegalStateException
+     *             if the container is no longer configurable
+     */
+    default void checkIsConfigurable() {
+        if (!isConfigurable()) {
+            throw new IllegalStateException("This container is no longer configurable");
+        }
+    }
+
+    /**
+     * Returns whether or not the container is still configurable.
+     * <p>
+     * If an assembly was used to create the container. The handle is never configurable.
+     *
+     * @return {@code true} if the bean is still configurable
+     */
+    boolean isConfigurable();
+
     // Hmm there is a difference between operating within contexts./
     // And invocation argument contexts
     // Set<Class<? extends Context<?>>> contexts();

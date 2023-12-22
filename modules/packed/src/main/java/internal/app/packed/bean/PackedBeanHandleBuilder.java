@@ -33,6 +33,7 @@ import app.packed.operation.Op;
 import app.packed.operation.Provider;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import internal.app.packed.container.AuthorSetup;
 import internal.app.packed.container.ContainerBeanStore;
 import internal.app.packed.container.ContainerBeanStore.BeanClassKey;
 import internal.app.packed.container.ContainerSetup;

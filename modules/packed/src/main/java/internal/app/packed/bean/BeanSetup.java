@@ -28,6 +28,7 @@ import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
+import internal.app.packed.container.AuthorSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedLocalMap;
@@ -47,7 +48,12 @@ import internal.app.packed.util.types.ClassUtil;
 import sandbox.extension.bean.BeanHandle;
 import sandbox.extension.operation.OperationTemplate;
 
-/** The internal configuration of a bean. */
+/**
+ * The internal configuration of a bean.
+ *
+ * @implNote The reason this class does not directly implement BeanHandle is because the BeanHandle interface is
+ *           parameterised.
+ */
 public final class BeanSetup implements ContextualizedElementSetup, Component {
 
     /** A MethodHandle for invoking {@link ExtensionMirror#initialize(ExtensionSetup)}. */

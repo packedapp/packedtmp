@@ -11,7 +11,6 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.AuthorSetup;
 import internal.app.packed.service.ServiceManager;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;

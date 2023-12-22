@@ -261,7 +261,15 @@ public sealed interface BeanHandle<T> extends ContextualizedElement , BeanLocalA
 }
 
 interface Zandbox<T> {
+    OperationHandle addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation);
 
+    void decorateInstance(Function<? super T, ? extends T> decorator);
+
+    <B> void onInitialize(Class<B> extensionBeanClass, BiConsumer<? super B, ? super T> consumer);
+
+    <K> OperationHandle overrideService(Key<K> key, K instance);
+
+    void peekInstance(Consumer<? super T> consumer);
     // onClientInitialize
     default <B> void afterInitialize(InstanceBeanConfiguration<B> extensionBean, BiConsumer<? super B, ? super T> consumer) {
         //// Ideen er at man fx kan have en BeanHandle<Driver>.onInitialize(MyEBC, (b,p)->b.drivers[i]=p);

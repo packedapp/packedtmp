@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.container;
 
 import app.packed.container.Operative;
-import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.ExtensionSetup;
 
 /**
  * The owner of a bean. Either the application (via an assembly) or an extension instance.

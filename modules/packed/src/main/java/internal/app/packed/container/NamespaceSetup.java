@@ -21,7 +21,6 @@ import java.util.Map;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.AuthorSetup;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.MagicInitializer;
 
