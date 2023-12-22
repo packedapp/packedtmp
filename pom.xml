@@ -25,7 +25,7 @@
     <version.plugin.invoker>3.5.1</version.plugin.invoker>
     <version.plugin.buildhelper>3.3.0</version.plugin.buildhelper>
     <version.plugin.jar>3.3.0</version.plugin.jar>
-    <version.plugin.site>4.0.0-M6</version.plugin.site>
+    <version.plugin.site>4.0.0-M13</version.plugin.site>
     <version.plugin.exec>3.1.0</version.plugin.exec>
     <version.plugin.plugin>3.6.4</version.plugin.plugin>
     <version.plugin.release>2.5.3</version.plugin.release>
