@@ -67,7 +67,7 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
     @Override
     public List<OperationHandle> lifetimeOperations() {
         if (beanKind() != BeanKind.STATIC && beanSourceKind() != BeanSourceKind.SOURCELESS) {
-            return List.of(bean.operations.get(0).toHandle());
+            return List.of(bean.bos.operations.get(0).toHandle());
         }
         return List.of();
     }

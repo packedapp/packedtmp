@@ -98,7 +98,7 @@ public final class ServiceManager {
                 accessor = o.bean.lifetimeStoreIndex;
                 // test if prototype bean
                 if (accessor == -1 && o.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
-                    o = o.bean.operations.get(0);
+                    o = o.bean.bos.operations.get(0);
                 }
             }
             if (!(o instanceof MemberOperationSetup) && o.bean.beanSourceKind == BeanSourceKind.INSTANCE) {

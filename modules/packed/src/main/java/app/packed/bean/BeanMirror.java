@@ -132,7 +132,7 @@ public non-sealed class BeanMirror implements BeanLocalAccessor, ComponentMirror
     // However custom bean templates may support it
     public Optional<OperationMirror> factoryOperation() {
         if (bean.beanKind != BeanKind.STATIC && bean.beanSourceKind != BeanSourceKind.INSTANCE) {
-            return Optional.of(bean.operations.get(0).mirror());
+            return Optional.of(bean.bos.operations.get(0).mirror());
         }
         return Optional.empty();
     }
@@ -176,7 +176,7 @@ public non-sealed class BeanMirror implements BeanLocalAccessor, ComponentMirror
 
     /** {@return a stream of all of the operations declared by the bean.} */
     public Stream<OperationMirror> operations() {
-        return bean.operations.stream().map(OperationSetup::mirror);
+        return bean.bos.operations.stream().map(OperationSetup::mirror);
     }
 
     /**
@@ -242,7 +242,7 @@ public non-sealed class BeanMirror implements BeanLocalAccessor, ComponentMirror
         @Override
         public Collection<BeanMirror> beans() {
             HashSet<BeanSetup> set = new HashSet<>();
-            for (OperationSetup os : bean.operations) {
+            for (OperationSetup os : bean.bos.operations) {
                 os.forEachBinding(b -> {
                     throw new UnsupportedOperationException();
                 });
@@ -265,7 +265,7 @@ public non-sealed class BeanMirror implements BeanLocalAccessor, ComponentMirror
         @Override
         public Set<Class<? extends Extension<?>>> extensions() {
             HashSet<Class<? extends Extension<?>>> set = new HashSet<>();
-            for (OperationSetup os : bean.operations) {
+            for (OperationSetup os : bean.bos.operations) {
                 os.forEachBinding(b -> {
                     if (b.boundBy.isExtension()) {
                         if (b.boundBy != bean.author()) {

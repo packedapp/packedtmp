@@ -18,6 +18,7 @@ package internal.app.packed.container;
 import java.util.HashMap;
 import java.util.Map;
 
+import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.AuthorSetup;
@@ -28,7 +29,7 @@ import internal.app.packed.util.MagicInitializer;
  *
  */
 // Is an application a namespace for Components??? My brain just fried
-public final class NamespaceSetup {
+public final class NamespaceSetup implements NamespaceHandle {
 
     /** The default name of a namespace. */
     public static final String DEFAULT_NAME = "main";
@@ -54,6 +55,17 @@ public final class NamespaceSetup {
         this.template = template;
         this.root = root;
         this.owner = owner;
+    }
+
+    @Override
+    public String name() {
+        return name;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void named(String name) {
+        this.name = name;
     }
 
     public record NamespaceKey(Class<?> namespaceKind, String name) {}

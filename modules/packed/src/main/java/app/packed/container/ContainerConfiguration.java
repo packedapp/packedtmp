@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.application.OldApplicationPath;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerLocal.LocalAccessor;
@@ -49,6 +48,7 @@ public final class ContainerConfiguration extends ComponentConfiguration impleme
      */
     public ContainerConfiguration(ContainerHandle handle) {
         this.container = (ContainerSetup) requireNonNull(handle, "handle is null");
+        container.initConfiguration(this);
     }
 
     /**
@@ -157,23 +157,6 @@ public final class ContainerConfiguration extends ComponentConfiguration impleme
         /// Fx for at sige (SRExtension.class, ()-> e.setPrivatelyOwned());
         // Er maaske taenkt
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns the full path of the component.
-     * <p>
-     * Once this method has been invoked, the name of the component can no longer be changed via {@link #named(String)}.
-     * <p>
-     * If building an image, the path of the instantiated component might be prefixed with another path.
-     *
-     * <p>
-     * Returns the path of this configuration. Invoking this method will initialize the name of the component. The component
-     * path returned does not maintain any reference to this configuration object.
-     *
-     * @return the path of this configuration.
-     */
-    public OldApplicationPath path() {
-        return container.path();
     }
 
     /**

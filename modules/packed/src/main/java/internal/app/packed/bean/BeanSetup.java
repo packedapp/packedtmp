@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -89,12 +88,7 @@ public final class BeanSetup implements ContextualizedElementSetup, Component {
     /** The extension that installed the bean. */
     public final ExtensionSetup installedBy;
 
-    /**
-     * All lifecycle operations for the bean. Is initially unsorted as operations can be added in any order. But in the end
-     * the list will be sorted in the order of execution. With {@link app.packed.lifetime.RunState#INITIALIZING} lifecycle
-     * operations first, and {@link app.packed.lifetime.RunState#STOPPING} lifecycle operations last.
-     */
-    public final ArrayList<BeanLifecycleOperation> lifecycleOperations = new ArrayList<>();
+    public final BeanOperationStore bos = new BeanOperationStore();
 
     /** The lifetime the component is a part of. */
     public final LifetimeSetup lifetime;
@@ -110,20 +104,6 @@ public final class BeanSetup implements ContextualizedElementSetup, Component {
 
     /** The name of this bean. Should only be updated through {@link #named(String)} */
     String name;
-
-    /**
-     * The unique name of every operation.
-     * <p>
-     * We map a operation setup to a string instead of the other way around. So that
-     * {@link app.packed.operation.OperationMirror#name()} is fast.
-     * <p>
-     * This is lazily generated primarily for use in mirrors. We generate it lazily because calculating the unique names of
-     * operations is actually a bit time consuming.
-     */
-    private volatile Map<OperationSetup, String> operationNames;
-
-    /** Operations declared by the bean. */
-    public final ArrayList<OperationSetup> operations = new ArrayList<>();
 
     /** The owner of the bean. */
     public final AuthorSetup owner;
@@ -160,7 +140,7 @@ public final class BeanSetup implements ContextualizedElementSetup, Component {
     }
 
     public void addLifecycleOperation(BeanLifecycleOrder runOrder, OperationHandle operation) {
-        lifecycleOperations.add(new BeanLifecycleOperation(runOrder, operation));
+        bos.lifecycleOperations.add(new BeanLifecycleOperation(runOrder, operation));
         operation.specializeMirror(() -> new LifecycleOperationMirror());
     }
 
@@ -174,14 +154,14 @@ public final class BeanSetup implements ContextualizedElementSetup, Component {
         } else if (beanKind == BeanKind.CONTAINER) { // we've already checked if instance
             return new FromLifetimeArena(container.lifetime, lifetimeStoreIndex, beanClass);
         } else if (beanKind == BeanKind.UNMANAGED) {
-            return new FromOperationResult(operations.get(0));
+            return new FromOperationResult(bos.operations.get(0));
         }
         throw new Error();
     }
 
     public Set<BeanSetup> dependsOn() {
         HashSet<BeanSetup> result = new HashSet<>();
-        for (OperationSetup os : operations) {
+        for (OperationSetup os : bos.operations) {
             result.addAll(os.dependsOn());
         }
         return result;
@@ -245,20 +225,6 @@ public final class BeanSetup implements ContextualizedElementSetup, Component {
         this.name = newName;
     }
 
-    /**
-     * <p>
-     * We lazily calculate
-     *
-     * @return a map of operation to
-     */
-    public Map<OperationSetup, String> operationNames() {
-        Map<OperationSetup, String> m = operationNames;
-        // operationNames is only valid as
-        if (m == null || m.size() != operationNames.size()) {
-            m = operationNames = LazyNamer.calculate(operations, OperationSetup::namePrefix);
-        }
-        return m;
-    }
 
     /** {@return the path of this component} */
     public OldApplicationPath path() {

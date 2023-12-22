@@ -29,6 +29,7 @@ import java.util.function.Supplier;
 import app.packed.application.OldApplicationPath;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
@@ -98,6 +99,10 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
     /** The container's service manager. */
     public final ServiceManager sm;
 
+    /** The configuration representing this container */
+    @Nullable
+    public ContainerConfiguration configuration;
+
     /**
      * Create a new container.
      *
@@ -124,6 +129,13 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
         this.sm = new ServiceManager(null, this);
         // If a name has been set using a wirelet, we ignore calls to #named(String)
         this.ignoreRename = builder.nameFromWirelet != null;
+    }
+
+    public void initConfiguration(ContainerConfiguration configuration) {
+        if (this.configuration != null) {
+            throw new IllegalStateException("A container handle can only be used once to create a a container configuration");
+        }
+        this.configuration = requireNonNull(configuration);
     }
 
     /**

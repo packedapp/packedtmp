@@ -161,7 +161,7 @@ public final class BeanScanner {
 
         OperationSetup os = new MemberOperationSetup(bean.installedBy, bean, constructor.operationType(), ot,
                 new OperationConstructorTarget(constructor.constructor()), mh);
-        bean.operations.add(os);
+        bean.bos.operations.add(os);
         resolveNow(os);
     }
 
@@ -177,7 +177,7 @@ public final class BeanScanner {
         // We always have instances if we have an op.
         // Make sure the op is resolved
         if (bean.beanSourceKind == BeanSourceKind.OP) {
-            resolveNow(bean.operations.get(0));
+            resolveNow(bean.bos.operations.get(0));
         }
 
         if (!beanClass.isInterface()) {

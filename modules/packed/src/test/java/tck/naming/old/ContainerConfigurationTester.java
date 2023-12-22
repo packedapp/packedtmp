@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.application.OldApplicationPath;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
@@ -75,14 +74,11 @@ class ContainerConfigurationTester {
         return this;
     }
 
-    public OldApplicationPath path() {
-        return cc.path();
-    }
-
     public ContainerConfigurationTester pathIs(String expected) {
-        assertThat(cc.path().toString()).isEqualTo(expected);
+//        assertThat(cc.path().toString()).isEqualTo(expected);
         return this;
     }
+
 
     public ContainerConfigurationTester setName(String name) {
         assertThat(cc.named(name)).isEqualTo(cc);

@@ -202,7 +202,7 @@ public sealed abstract class OperationSetup implements Component, Contextualized
     }
 
     public String name() {
-        return bean.operationNames().get(this);
+        return bean.bos.operationNames().get(this);
     }
 
     public String namePrefix() {
