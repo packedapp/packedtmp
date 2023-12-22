@@ -25,7 +25,7 @@ import internal.app.packed.container.ExtensionSetup;
  * of the introspection.
  */
 // Convert to Record
-public final class BeanScannerExtension implements Comparable<BeanScannerExtension> {
+public final class BeanScannerExtensionRef implements Comparable<BeanScannerExtensionRef> {
 
     /** The extension instance. */
     public final ExtensionSetup extension;
@@ -37,7 +37,7 @@ public final class BeanScannerExtension implements Comparable<BeanScannerExtensi
 
     public final BeanScanner scanner;
 
-    BeanScannerExtension(BeanScanner scanner, ExtensionSetup extension, BeanIntrospector introspector) {
+    BeanScannerExtensionRef(BeanScanner scanner, ExtensionSetup extension, BeanIntrospector introspector) {
         this.extension = extension;
         this.introspector = introspector;
         this.scanner = scanner;
@@ -45,7 +45,7 @@ public final class BeanScannerExtension implements Comparable<BeanScannerExtensi
 
     /** {@inheritDoc} */
     @Override
-    public int compareTo(BeanScannerExtension o) {
+    public int compareTo(BeanScannerExtensionRef o) {
         return extension.compareTo(o.extension);
     }
 

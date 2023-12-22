@@ -35,7 +35,7 @@ import sandbox.extension.operation.OperationTemplate;
 /** Internal implementation of BeanMethod. Discard after use. */
 public final class PackedBeanMethod extends PackedBeanExecutable<Method> implements BeanMethod {
 
-    PackedBeanMethod(BeanScannerExtension contributor, Method method, Annotation[] annotations, boolean allowInvoke) {
+    PackedBeanMethod(BeanScannerExtensionRef contributor, Method method, Annotation[] annotations, boolean allowInvoke) {
         super(contributor, method, annotations);
     }
 
@@ -62,7 +62,7 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
 
         OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, operationType(), template,
                 new OperationMethodTarget(member), methodHandle);
-        extension.scanner.bean.bos.operations.add(operation);
+        extension.scanner.bean.operations.operations.add(operation);
         extension.scanner.unBoundOperations.add(operation);
         return operation.toHandle(extension.scanner);
     }
@@ -86,7 +86,7 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
             Class<? extends Annotation> a1Type = a1.annotationType();
             AnnotatedMethod fh = iBean.hookModel.testMethodAnnotation(a1Type);
             if (fh != null) {
-                BeanScannerExtension contributor = iBean.computeContributor(fh.extensionType());
+                BeanScannerExtensionRef contributor = iBean.computeContributor(fh.extensionType());
 
                 PackedBeanMethod pbm = new PackedBeanMethod(contributor, method, annotations, fh.isInvokable());
                 PackedAnnotationList pac = new PackedAnnotationList(new Annotation[] { a1 });

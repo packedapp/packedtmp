@@ -171,13 +171,13 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     // Should be fully resolved now
     public void processBean(BeanSetup bean) {
-        Collections.sort(bean.bos.lifecycleOperations); // stable sort
+        Collections.sort(bean.operations.lifecycleOperations); // stable sort
         if (bean.beanKind == BeanKind.CONTAINER || bean.beanKind == BeanKind.LAZY) {
             if (bean.beanSourceKind != BeanSourceKind.INSTANCE) {
 
                 // We need a factory method
 
-                OperationSetup os = bean.bos.operations.get(0);
+                OperationSetup os = bean.operations.operations.get(0);
 
                 bean.container.application.addCodegenAction(() -> {
                     MethodHandle mha = os.generateMethodHandle();
@@ -192,7 +192,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
             }
         }
 
-        for (BeanLifecycleOperation lop : bean.bos.lifecycleOperations) {
+        for (BeanLifecycleOperation lop : bean.operations.lifecycleOperations) {
             if (lop.runOrder().runState == RunState.INITIALIZING) {
                 initialization.operations.add(lop.handle());
                 bean.container.application.addCodegenAction(() -> {

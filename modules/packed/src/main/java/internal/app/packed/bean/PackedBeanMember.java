@@ -32,12 +32,12 @@ abstract sealed class PackedBeanMember<M extends Member> extends PackedBeanEleme
     private final PackedAnnotationList annotations;
 
     /** The extension that can create new operations from the member. */
-    final BeanScannerExtension extension;
+    final BeanScannerExtensionRef extension;
 
     /** The member. */
     final M member;
 
-    PackedBeanMember(BeanScannerExtension extension, M member, PackedAnnotationList annotations) {
+    PackedBeanMember(BeanScannerExtensionRef extension, M member, PackedAnnotationList annotations) {
         this.extension = extension;
         this.member = member;
         this.annotations = annotations;

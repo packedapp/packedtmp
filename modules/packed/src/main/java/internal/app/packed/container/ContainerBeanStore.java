@@ -20,7 +20,10 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.stream.Stream;
 
+import app.packed.bean.BeanInstallationException;
+import app.packed.bean.BeanSourceKind;
 import app.packed.container.Operative;
+import internal.app.packed.bean.BeanModel;
 import internal.app.packed.bean.BeanSetup;
 
 /**
@@ -39,6 +42,45 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
     /** All beans installed in the container. */
     public final LinkedHashMap<String, BeanSetup> beans = new LinkedHashMap<>();
 
+    public void installAndSetBeanName(BeanSetup bean, String namePrefix) {
+        String prefix = namePrefix;
+        if (prefix == null) {
+            prefix = "Functional";
+            BeanModel beanModel = bean.beanSourceKind == BeanSourceKind.SOURCELESS ? null : new BeanModel(bean.beanClass);
+
+            if (beanModel != null) {
+                prefix = beanModel.simpleName();
+            }
+        }
+        // TODO virker ikke med functional beans og naming
+        String n = prefix;
+
+        if (bean.beanClass != void.class) {
+            BeanClassKey key = new BeanClassKey(bean.owner.author(), bean.beanClass);
+
+            BeanSetup existingBean = beanClasses.get(key);
+            int counter = 0;
+            if (existingBean != null) {
+                if (!ContainerBeanStore.isMultiInstall(existingBean)) {
+                    // throw new BeanInstallationException("A bean of type [" + bean.beanClass + "] has already been added to " +
+                    // container.path());
+
+                    throw new BeanInstallationException("oops");
+                }
+                counter = ContainerBeanStore.multiInstallCounter(existingBean);
+            }
+
+            if (counter > 0) {
+                n = prefix + counter;
+            }
+            while (beans.putIfAbsent(n, bean) != null) {
+                n = prefix + ++counter;
+            }
+            bean.multiInstall = counter;
+        }
+        bean.name = n;
+    }
+
     /** {@inheritDoc} */
     @Override
     public Iterator<BeanSetup> iterator() {
@@ -47,6 +89,27 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
 
     public Stream<BeanSetup> stream() {
         return beans.values().stream();
+    }
+
+    public void updateBeanName(BeanSetup bean, String newName) {
+        // We start by validating the new name of the component
+        NameCheck.checkComponentName(newName);
+
+        String existingName = bean.name();
+        // Check that this component is still active and the name can be set
+        // Do we actually care? Of course we can only set as long as the realm is open
+        // But other than that why not
+        // Issue should be the container which should probably work identical
+        // And I do think we should have it as the first thing
+
+        if (beans.putIfAbsent(newName, bean) != null) {
+            if (newName.equals(bean.name())) { // tried to set the current name which is okay i guess?
+                return;
+            }
+            throw new IllegalArgumentException("A bean or container with the specified name '" + newName + "' already exists");
+        }
+        beans.remove(existingName);
+        bean.name = newName;
     }
 
     public static boolean isMultiInstall(BeanSetup bean) {
@@ -58,4 +121,57 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
     }
 
     public /* primitive */ record BeanClassKey(Operative realm, Class<?> beanClass) {}
+
+
+
+    // Kunne maaske have en int paa BeanSetup
+    // Og saa i Bean Classes har vi den seneste indsatte
+    // som vi tilsidt checker alle af.
+    // if (count & COUNT_MASK > )
+    // 0 = No MultiInstance, Alone
+    // 1 = Multi instance + Alone
+    // 3 = Multi Instance, <<1 = count
+    static class MultiInstallCounter {
+        int counter;
+    }
 }
+
+//
+//boolean multiInstall = false;
+//if (multiInstall) {
+//  MultiInstallCounter i = (MultiInstallCounter) container.beans.beanClasses.compute(key, (c, o) -> {
+//      if (o == null) {
+//          return new MultiInstallCounter();
+//      } else if (o instanceof BeanSetup) {
+//          throw new BeanInstallationException("Oops");
+//      } else {
+//          ((MultiInstallCounter) o).counter += 1;
+//          return o;
+//      }
+//  });
+//  int next = i.counter;
+//  if (next > 0) {
+//      n = prefix + next;
+//  }
+//  while (container.beans.beans.putIfAbsent(n, bean) != null) {
+//      n = prefix + ++next;
+//      i.counter = next;
+//  }
+//} else {
+//  container.beans.beanClasses.compute(key, (c, o) -> {
+//      if (o == null) {
+//          return bean;
+//      } else if (o instanceof BeanSetup) {
+//          // singular???
+//          throw new BeanInstallationException("A bean of type [" + bean.beanClass + "] has already been added to " + container.path());
+//      } else {
+//          // We already have some multiple beans installed
+//          throw new BeanInstallationException("Oops");
+//      }
+//  });
+//  // Not multi install, so should be able to add it first time
+//  int size = 0;
+//  while (container.beans.beans.putIfAbsent(n, bean) != null) {
+//      n = prefix + ++size;
+//  }
+//}

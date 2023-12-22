@@ -80,7 +80,7 @@ public final class CircularServiceDependencyChecker {
         stack.push(entry);
         for (ServiceBindingSetup binding : bindings) {
             BeanSetup bean = binding.operation.bean;
-            for (ServiceProviderSetup psDep : bean.serviceProviders) {
+            for (ServiceProviderSetup psDep : bean.operations.serviceProviders) {
                 ServiceSetup next = psDep.entry;
                 if (next.hasBeenCheckForDependencyCycles) {
                     continue;

@@ -47,7 +47,7 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
     final boolean allowSet;
 
     /** The extension that can create new operations from the member. */
-    private final BeanScannerExtension extension;
+    private final BeanScannerExtensionRef extension;
 
     /** The field. */
     public final Field field;
@@ -136,7 +136,7 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
         OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, ft, template,
                 new OperationFieldTarget(field, accessMode), mh);
         extension.scanner.unBoundOperations.add(operation);
-        extension.scanner.bean.bos.operations.add(operation);
+        extension.scanner.bean.operations.operations.add(operation);
         return operation.toHandle(extension.scanner);
     }
 

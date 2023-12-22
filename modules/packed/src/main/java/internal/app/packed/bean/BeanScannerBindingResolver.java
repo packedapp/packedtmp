@@ -46,7 +46,7 @@ final class BeanScannerBindingResolver {
         ParameterType hook = iBean.hookModel.testParameterType(v.rawType());
 
         if (hook != null) {
-            BeanScannerExtension contributor = iBean.computeContributor(hook.extensionType());
+            BeanScannerExtensionRef contributor = iBean.computeContributor(hook.extensionType());
             PackedBindableVariable h = new PackedBindableVariable(iBean, operation, index, contributor.extension, v);
 
             contributor.introspector.hookOnVariableType(v.rawType(), new PackedBindableWrappedVariable(h));
@@ -87,7 +87,7 @@ final class BeanScannerBindingResolver {
             Class<? extends Annotation> a1Type = a1.annotationType();
             AnnotatedParameterType hook = introspector.hookModel.testParameterAnnotation(a1Type);
             if (hook != null) {
-                BeanScannerExtension ei = introspector.computeContributor(hook.extensionType());
+                BeanScannerExtensionRef ei = introspector.computeContributor(hook.extensionType());
 
                 PackedBindableVariable h = new PackedBindableVariable(introspector, os, index, ei.extension, var);
                 ei.introspector.hookOnAnnotatedVariable(a1, h);

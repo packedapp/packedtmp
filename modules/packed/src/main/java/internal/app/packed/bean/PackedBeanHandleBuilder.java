@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanMirror;
@@ -63,14 +62,14 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
     /** Stores bean locals while building. */
     final IdentityHashMap<BeanLocal<?>, Object> locals = new IdentityHashMap<>();
 
+    /** A bean mirror supplier */
+    @Nullable
+    Supplier<? extends BeanMirror> mirrorSupplier;
+
     String namePrefix;
 
     /** The owner of the bean. */
     final AuthorSetup owner;
-
-    /** A bean mirror supplier */
-    @Nullable
-    Supplier<? extends BeanMirror> supplier;
 
     /** The bean's template. */
     public final PackedBeanTemplate template;
@@ -98,9 +97,7 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
      * There is technically no reason to not allow this. But we will need to make a copy of the locals if we want to support
      * this.
      */
-    private void checkNotUsed() {
-
-    }
+    private void checkIsBuildable() {}
 
     /** {@inheritDoc} */
     @Override
@@ -169,7 +166,7 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
     public <T> PackedBeanHandleBuilder localSet(BeanLocal<T> local, T value) {
         requireNonNull(local);
         requireNonNull(value);
-        checkNotUsed();
+        checkIsBuildable();
         locals.put(local, value);
         return this;
     }
@@ -199,54 +196,19 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
         if (sourceKind != BeanSourceKind.SOURCELESS && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
         }
-
-
-        // Creates (permanently) lifetime index
+        // Creates Bean
         BeanSetup bean = new BeanSetup(this, beanClass, sourceKind, source);
 
-        String prefix = namePrefix;
-        if (prefix == null) {
-            prefix = "Functional";
-            BeanModel beanModel = sourceKind == BeanSourceKind.SOURCELESS ? null : new BeanModel(beanClass);
-
-            if (beanModel != null) {
-                prefix = beanModel.simpleName();
-            }
-        }
-        // TODO virker ikke med functional beans og naming
-        String n = prefix;
-
-        if (beanClass != void.class) {
-            BeanClassKey key = new BeanClassKey(owner.author(), beanClass);
-
-            BeanSetup existingBean = container.beans.beanClasses.get(key);
-            int counter = 0;
-            if (existingBean != null) {
-                if (!ContainerBeanStore.isMultiInstall(existingBean)) {
-                    // throw new BeanInstallationException("A bean of type [" + bean.beanClass + "] has already been added to " +
-                    // container.path());
-
-                    throw new BeanInstallationException("oops");
-                }
-                counter = ContainerBeanStore.multiInstallCounter(existingBean);
-            }
-
-            if (counter > 0) {
-                n = prefix + counter;
-            }
-            while (container.beans.beans.putIfAbsent(n, bean) != null) {
-                n = prefix + ++counter;
-            }
-            bean.multiInstall = counter;
-        }
-        bean.name = n;
+        // Initialize the name of the bean
+        container.beans.installAndSetBeanName(bean, namePrefix);
 
         // Copy any bean locals that have been set, we need to set this before introspection
         // I think maybe we need to do this as the last action?
-
         for (Entry<BeanLocal<?>, Object> e : locals.entrySet()) {
             container.application.locals.set((BeanLocal) e.getKey(), bean, e.getValue());
         }
+
+        // Creating an operation representing the Op if created from one.
         if (sourceKind == BeanSourceKind.OP) {
             PackedOp<?> op = (PackedOp<?>) bean.beanSource;
             OperationTemplate ot;
@@ -257,14 +219,14 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
             }
 
             OperationSetup os = op.newOperationSetup(bean, bean.installedBy, ot, null);
-            bean.bos.operations.add(os);
+            bean.operations.operations.add(os);
         }
 
         if (bean.owner instanceof ExtensionSetup es && bean.beanKind == BeanKind.CONTAINER) {
             es.sm.addBean(bean);
         }
 
-        // Scan the bean class for annotations unless the bean class is void
+        // Scan the bean class for annotations if it has a source
         if (sourceKind != BeanSourceKind.SOURCELESS) {
             new BeanScanner(bean).introspect();
         }
@@ -276,59 +238,8 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
     @Override
     public PackedBeanHandleBuilder specializeMirror(Supplier<? extends BeanMirror> supplier) {
         requireNonNull(supplier, "supplier is null");
-        checkNotUsed();
-        this.supplier = supplier;
+        checkIsBuildable();
+        this.mirrorSupplier = supplier;
         return this;
     }
-
-    // Kunne maaske have en int paa BeanSetup
-    // Og saa i Bean Classes har vi den seneste indsatte
-    // som vi tilsidt checker alle af.
-    // if (count & COUNT_MASK > )
-    // 0 = No MultiInstance, Alone
-    // 1 = Multi instance + Alone
-    // 3 = Multi Instance, <<1 = count
-    static class MultiInstallCounter {
-        int counter;
-    }
 }
-
-//
-//boolean multiInstall = false;
-//if (multiInstall) {
-//  MultiInstallCounter i = (MultiInstallCounter) container.beans.beanClasses.compute(key, (c, o) -> {
-//      if (o == null) {
-//          return new MultiInstallCounter();
-//      } else if (o instanceof BeanSetup) {
-//          throw new BeanInstallationException("Oops");
-//      } else {
-//          ((MultiInstallCounter) o).counter += 1;
-//          return o;
-//      }
-//  });
-//  int next = i.counter;
-//  if (next > 0) {
-//      n = prefix + next;
-//  }
-//  while (container.beans.beans.putIfAbsent(n, bean) != null) {
-//      n = prefix + ++next;
-//      i.counter = next;
-//  }
-//} else {
-//  container.beans.beanClasses.compute(key, (c, o) -> {
-//      if (o == null) {
-//          return bean;
-//      } else if (o instanceof BeanSetup) {
-//          // singular???
-//          throw new BeanInstallationException("A bean of type [" + bean.beanClass + "] has already been added to " + container.path());
-//      } else {
-//          // We already have some multiple beans installed
-//          throw new BeanInstallationException("Oops");
-//      }
-//  });
-//  // Not multi install, so should be able to add it first time
-//  int size = 0;
-//  while (container.beans.beans.putIfAbsent(n, bean) != null) {
-//      n = prefix + ++size;
-//  }
-//}

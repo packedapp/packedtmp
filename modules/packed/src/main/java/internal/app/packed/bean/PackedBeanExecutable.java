@@ -39,7 +39,7 @@ sealed abstract class PackedBeanExecutable<E extends Executable>
      * @param member
      * @param annotations
      */
-    PackedBeanExecutable(BeanScannerExtension ce, E member, Annotation[] annotations) {
+    PackedBeanExecutable(BeanScannerExtensionRef ce, E member, Annotation[] annotations) {
         super(ce, member, new PackedAnnotationList(annotations));
         this.type = OperationType.fromExecutable(member);
     }

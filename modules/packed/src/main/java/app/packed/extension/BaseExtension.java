@@ -376,16 +376,16 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
                 if (annotation instanceof Inject) {
                     OperationHandle handle = checkNotStaticBean(Inject.class, method);
-                    bean.addLifecycleOperation(BeanLifecycleOrder.INJECT, handle);
+                    bean.operations.addLifecycleOperation(BeanLifecycleOrder.INJECT, handle);
                 } else if (annotation instanceof OnInitialize oi) {
                     OperationHandle handle = checkNotStaticBean(OnInitialize.class, method);
-                    bean.addLifecycleOperation(BeanLifecycleOrder.fromInitialize(oi.order()), handle);
+                    bean.operations.addLifecycleOperation(BeanLifecycleOrder.fromInitialize(oi.order()), handle);
                 } else if (annotation instanceof OnStart oi) {
                     OperationHandle handle = checkNotStaticBean(OnStart.class, method);
-                    bean.addLifecycleOperation(BeanLifecycleOrder.fromStarting(oi.order()), handle);
+                    bean.operations.addLifecycleOperation(BeanLifecycleOrder.fromStarting(oi.order()), handle);
                 } else if (annotation instanceof OnStop oi) {
                     OperationHandle handle = checkNotStaticBean(OnStop.class, method);
-                    bean.addLifecycleOperation(BeanLifecycleOrder.fromStopping(oi.order()), handle);
+                    bean.operations.addLifecycleOperation(BeanLifecycleOrder.fromStopping(oi.order()), handle);
                 } else if (annotation instanceof Provide) {
                     OperationTemplate temp2 = OperationTemplate.defaults().returnType(method.operationType().returnRawType());
                     if (!Modifier.isStatic(method.modifiers())) {

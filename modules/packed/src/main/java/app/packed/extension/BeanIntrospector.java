@@ -28,7 +28,7 @@ import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.BeanScannerExtension;
+import internal.app.packed.bean.BeanScannerExtensionRef;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.util.PackedAnnotationList;
@@ -55,7 +55,7 @@ public non-sealed abstract class BeanIntrospector implements BeanLocalAccessor {
      * {@link #initialize(ExtensionDescriptor, BeanSetup)}.
      */
     @Nullable
-    private BeanScannerExtension setup;
+    private BeanScannerExtensionRef setup;
 
     /**
      * A callback method that is invoked before any calls to any of the {@code hookOn} methods on this class.
@@ -250,7 +250,7 @@ public non-sealed abstract class BeanIntrospector implements BeanLocalAccessor {
      * @throws IllegalStateException
      *             if called more than once
      */
-    final void initialize(BeanScannerExtension ce) {
+    final void initialize(BeanScannerExtensionRef ce) {
         if (this.setup != null) {
             throw new IllegalStateException("This scanner has already been initialized.");
         }
@@ -279,8 +279,8 @@ public non-sealed abstract class BeanIntrospector implements BeanLocalAccessor {
      * @throws IllegalStateException
      *             if called from the constructor of the class
      */
-    private BeanScannerExtension setup() {
-        BeanScannerExtension s = setup;
+    private BeanScannerExtensionRef setup() {
+        BeanScannerExtensionRef s = setup;
         if (s == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of " + getClass());
         }

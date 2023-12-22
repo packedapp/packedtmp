@@ -111,7 +111,7 @@ public final class ServiceSetup {
         operation.mirrorSupplier = () -> new ProvidedServiceMirror(p);
 
         // add the service provider to the bean, this is used for cyclic dependency check later on
-        operation.bean.serviceProviders.add(p);
+        operation.bean.operations.serviceProviders.add(p);
 
         return p;
 

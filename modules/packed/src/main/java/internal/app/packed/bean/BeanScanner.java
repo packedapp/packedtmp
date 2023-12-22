@@ -61,7 +61,7 @@ public final class BeanScanner {
 
     /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
     private static final MethodHandle MH_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class,
-            "initialize", void.class, BeanScannerExtension.class);
+            "initialize", void.class, BeanScannerExtensionRef.class);
 
 //    public static final MagicInitializer<BeanScannerExtension> MI = MagicInitializer.of();
 
@@ -77,7 +77,7 @@ public final class BeanScanner {
 
     /** The various extensions that are part of the reflection process. */
     // We sort it in the end
-    private final IdentityHashMap<Class<? extends Extension<?>>, BeanScannerExtension> extensions = new IdentityHashMap<>();
+    private final IdentityHashMap<Class<? extends Extension<?>>, BeanScannerExtensionRef> extensions = new IdentityHashMap<>();
 
     /** The hook model for the bean. */
     final BeanHookModel hookModel;
@@ -120,7 +120,7 @@ public final class BeanScanner {
      * @param fullAccess
      * @return the contributor
      */
-    BeanScannerExtension computeContributor(Class<? extends Extension<?>> extensionType) {
+    BeanScannerExtensionRef computeContributor(Class<? extends Extension<?>> extensionType) {
         return extensions.computeIfAbsent(extensionType, c -> {
             // Get the extension (installing it if necessary)
             ExtensionSetup extension = bean.container.useExtension(extensionType, null);
@@ -128,7 +128,7 @@ public final class BeanScanner {
             // Create a new introspector
             BeanIntrospector introspector = extension.newBeanIntrospector();
 
-            BeanScannerExtension bse = new BeanScannerExtension(this, extension, introspector);
+            BeanScannerExtensionRef bse = new BeanScannerExtensionRef(this, extension, introspector);
 
             // Call BeanIntrospector#initialize(BeanScannerExtension)
             try {
@@ -161,7 +161,7 @@ public final class BeanScanner {
 
         OperationSetup os = new MemberOperationSetup(bean.installedBy, bean, constructor.operationType(), ot,
                 new OperationConstructorTarget(constructor.constructor()), mh);
-        bean.bos.operations.add(os);
+        bean.operations.operations.add(os);
         resolveNow(os);
     }
 
@@ -177,7 +177,7 @@ public final class BeanScanner {
         // We always have instances if we have an op.
         // Make sure the op is resolved
         if (bean.beanSourceKind == BeanSourceKind.OP) {
-            resolveNow(bean.bos.operations.get(0));
+            resolveNow(bean.operations.operations.get(0));
         }
 
         if (!beanClass.isInterface()) {
@@ -275,7 +275,7 @@ public final class BeanScanner {
         resolveOperations();
 
         // Call into every BeanIntrospector and tell them it is all over
-        for (BeanScannerExtension e : extensions.values()) {
+        for (BeanScannerExtensionRef e : extensions.values()) {
             e.introspector.afterHooks();
         }
     }

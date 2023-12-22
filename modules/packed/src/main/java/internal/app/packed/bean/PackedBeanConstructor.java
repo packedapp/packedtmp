@@ -33,7 +33,7 @@ public final class PackedBeanConstructor extends PackedBeanExecutable<Constructo
      * @param member
      * @param annotations
      */
-    PackedBeanConstructor(BeanScannerExtension ce, Constructor<?> member, Annotation[] annotations) {
+    PackedBeanConstructor(BeanScannerExtensionRef ce, Constructor<?> member, Annotation[] annotations) {
         super(ce, member, annotations);
     }
 

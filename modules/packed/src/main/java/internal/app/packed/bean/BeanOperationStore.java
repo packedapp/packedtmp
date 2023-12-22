@@ -16,9 +16,13 @@
 package internal.app.packed.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import app.packed.lifetime.LifecycleOperationMirror;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.service.ServiceProviderSetup;
+import sandbox.extension.operation.OperationHandle;
 
 /**
  *
@@ -46,7 +50,15 @@ public final class BeanOperationStore {
     /** Operations declared by the bean. */
     public final ArrayList<OperationSetup> operations = new ArrayList<>();
 
+    /** A list of services provided by the bean, used for circular dependency checks. */
+    public final List<ServiceProviderSetup> serviceProviders = new ArrayList<>();
 
+    public boolean providingOperationsVisited;
+
+    public void addLifecycleOperation(BeanLifecycleOrder runOrder, OperationHandle operation) {
+        lifecycleOperations.add(new BeanLifecycleOperation(runOrder, operation));
+        operation.specializeMirror(() -> new LifecycleOperationMirror());
+    }
     /**
      * <p>
      * We lazily calculate
@@ -61,5 +73,6 @@ public final class BeanOperationStore {
         }
         return m;
     }
+
 
 }
