@@ -10,7 +10,7 @@
   <!-- ==================================================================== -->
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <version.plugin.clean>3.2.0</version.plugin.clean>
+    <version.plugin.clean>3.3.2</version.plugin.clean>
     <version.plugin.bundle>5.1.7</version.plugin.bundle>
     <version.plugin.compiler>3.11.0</version.plugin.compiler>
     <version.plugin.install>3.1.0</version.plugin.install>
