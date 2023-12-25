@@ -12,7 +12,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <version.plugin.clean>3.2.0</version.plugin.clean>
     <version.plugin.bundle>5.1.7</version.plugin.bundle>
-    <version.plugin.compiler>3.11.0</version.plugin.compiler>
+    <version.plugin.compiler>3.12.1</version.plugin.compiler>
     <version.plugin.install>3.1.0</version.plugin.install>
     <version.plugin.deploy>3.1.1</version.plugin.deploy>
     <version.plugin.staging>1.6.13</version.plugin.staging>
