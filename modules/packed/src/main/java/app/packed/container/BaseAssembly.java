@@ -217,7 +217,7 @@ public abstract class BaseAssembly extends BuildableAssembly {
      * @return a wirelet selection
      * @see ContainerConfiguration#selectWirelets(Class)
      */
-    protected final <W extends UserWirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
+    protected final <W extends ApplicationWirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
         return container().selectWirelets(wireletClass);
     }
 

@@ -17,6 +17,8 @@ package app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Collection;
+
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
@@ -44,9 +46,32 @@ public class OperationConfiguration extends ComponentConfiguration {
 
     protected final void checkConfigurable() {}
 
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
+        return handle.componentPath();
+    }
+
+    // All operations defined by the same extension
+    protected Collection<OperationConfiguration> sieblings() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public OperationConfiguration componentTag(String... tags) {
+        return this;
+    }
+
     /** {@return the underlying operation handle} */
     protected final OperationHandle handle() {
         return handle;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConfigurable() {
+        return handle.isConfigurable();
     }
 
     public OperationConfiguration named(String name) {
@@ -70,17 +95,5 @@ public class OperationConfiguration extends ComponentConfiguration {
     /** {@return the tyoe of the operation} */
     public final OperationType type() {
         return handle.type();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentPath componentPath() {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentConfiguration componentTag(String... tags) {
-        return null;
     }
 }

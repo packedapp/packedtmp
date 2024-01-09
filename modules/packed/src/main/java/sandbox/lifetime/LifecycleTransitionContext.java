@@ -15,9 +15,9 @@
  */
 package sandbox.lifetime;
 
-import app.packed.lifetime.LifecycleOrder;
 import app.packed.lifetime.RunState;
 import app.packed.lifetime.StopInfo.Reason;
+import app.packed.operation.OperationDependencyOrder;
 
 /**
  * A context that is available to all lifecycle transition operations.
@@ -45,7 +45,7 @@ public interface LifecycleTransitionContext {
      */
     void fork(Runnable r);
 
-    LifecycleOrder order();
+    OperationDependencyOrder order();
 
     Reason startReason();
 

@@ -18,6 +18,10 @@ package app.packed.bean.scope;
 /**
  * A bean scope
  */
+
+// Taenker folk gerne vil bruge den i annotering siden jeg har lavet klassen.
+
+
 // Name
 // Relation to other scopes (For example, session <-> request)
 public abstract class BeanScope {

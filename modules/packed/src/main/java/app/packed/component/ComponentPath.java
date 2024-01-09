@@ -16,11 +16,7 @@
 package app.packed.component;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-import app.packed.extension.BaseExtension;
-import app.packed.extension.Extension;
 import internal.app.packed.component.PackedComponentPath;
 
 // Goals
@@ -90,6 +86,9 @@ import internal.app.packed.component.PackedComponentPath;
  */
 public sealed interface ComponentPath permits PackedComponentPath {
 
+    /** {@return the schema of the path.} */
+    ComponentKind componentKind();
+
     default String fragment(int index) {
         throw new UnsupportedOperationException();
     }
@@ -120,61 +119,5 @@ public sealed interface ComponentPath permits PackedComponentPath {
 
     default List<String> pathFragment(int index) {
         throw new UnsupportedOperationException();
-    }
-
-    default ComponentKind kind() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@return the schema of the path.} */
-    ComponentPath.Schema schema();
-
-    /** The schema of a component path. */
-    public interface Schema {
-        Schema APPLICATION = builder(BaseExtension.class, "Application").requireString("application").build();
-        Schema CONTAINER = builder().requireString("application").requirePath("containerPath").build();
-        Schema BEAN = builder().requireString("application").requirePath("containerPath").requireString("bean").build();
-        Schema OPERATION = builder().requireString("application").requirePath("containerPath").requireString("bean").requireString("operation").build();
-        Schema BINDING = builder().requireString("application").requirePath("containerPath").requireString("bean").requireString("operation")
-                .requireString("binding").build();
-
-        // We could always have one... Just make let BaseExtension own them..
-        // And maybe skip base when printing the name
-        Optional<String> extension();
-
-        /** {@return the various fragments that make of the schema} */
-        List<Map.Entry<String, FragmentKind>> fragments();
-
-        ComponentPath newPath(Object... fragments);
-
-        String prefix();
-
-        /** {@return a new schema builder} */
-        static Schema.Builder builder() {
-            throw new UnsupportedOperationException();
-        }
-
-        static Schema.Builder builder(Class<? extends Extension<?>> extensionType, String componentType) {
-            throw new UnsupportedOperationException();
-        }
-
-        /** A builder for a component path schema. */
-        sealed interface Builder permits PackedComponentPath.ComponentPathSchemaBuilder {
-
-            /** {@return the new schema} */
-            Schema build();
-
-            Builder requireClass(String name);
-
-            Builder requireKey(String name);
-
-            Builder requirePath(String name);
-
-            Builder requireString(String name);
-        }
-
-        enum FragmentKind {
-            CLASS, KEY, PATH, STRING;
-        }
     }
 }

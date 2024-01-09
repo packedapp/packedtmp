@@ -21,7 +21,7 @@ import app.packed.application.OldApplicationPath;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.component.ComponentPath;
-import app.packed.container.Operative;
+import app.packed.component.ComponentOperator;
 import app.packed.util.Key;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
@@ -62,7 +62,7 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
     @Override
     public List<OperationHandle> lifetimeOperations() {
         if (beanKind() != BeanKind.STATIC && beanSourceKind() != BeanSourceKind.SOURCELESS) {
-            return List.of(bean.operations.operations.get(0).toHandle());
+            return List.of(bean.operations.all.get(0).toHandle());
         }
         return List.of();
     }
@@ -76,7 +76,7 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
 
     /** {@inheritDoc} */
     @Override
-    public Operative author() {
+    public ComponentOperator author() {
         return bean.author();
     }
 

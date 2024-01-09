@@ -30,7 +30,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.component.ComponentPath;
-import app.packed.container.Operative;
+import app.packed.component.ComponentOperator;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
@@ -169,7 +169,7 @@ public sealed interface BeanHandle<T> extends ContextualizedElement , BeanLocalA
     /**
      * @return
      */
-    Operative author();
+    ComponentOperator author();
 
     /** {@return the path of the bean.} */
     OldApplicationPath path();

@@ -18,12 +18,26 @@ package app.packed.component;
 /**
  * The abstract configuration of a component.
  */
-// We do not have a common ComponentHandle. Because extensions might define their own
+// We do not have a common ComponentHandle. Because extensions might define their own component configuration.
+
+// Children??? Is it hierarchical???
 public abstract class ComponentConfiguration implements Component {
 
     /** {@return the path of the component} */
     @Override
     public abstract ComponentPath componentPath();
 
+    /**
+     * Adds the specified tags to the set of component tags.
+     *
+     * @param tags
+     *            tags to add to the component
+     * @return this configuration
+     *
+     * @see ComponentMirror#componentTags()
+     */
     public abstract ComponentConfiguration componentTag(String... tags);
+
+    /** {@return whether or not the component is still configurable} */
+    public abstract boolean isConfigurable();
 }

@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanSourceKind;
-import app.packed.container.Operative;
+import app.packed.component.ComponentOperator;
 import internal.app.packed.bean.BeanModel;
 import internal.app.packed.bean.BeanSetup;
 
@@ -120,7 +120,7 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
         return bean.multiInstall & CLASS_COUNT_MASK;
     }
 
-    public /* primitive */ record BeanClassKey(Operative realm, Class<?> beanClass) {}
+    public /* primitive */ record BeanClassKey(ComponentOperator realm, Class<?> beanClass) {}
 
 
 

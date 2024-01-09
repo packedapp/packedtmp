@@ -31,8 +31,10 @@ import internal.app.packed.util.types.ClassUtil;
 // Hvor skal vi bruges
 
 /// Indtil videre har vi de her 2 use cases
+
 // ContainerTemplateAction
 // Context
+// ComponentKind???
 public class ExtensionLookup {
 
     private final Class<? extends Extension<?>> extensionType;

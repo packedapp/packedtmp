@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
+import app.packed.operation.OperationDependencyOrder;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
@@ -60,7 +61,7 @@ public @interface OnStop {
      *
      * @return
      */
-    LifecycleOrder order() default LifecycleOrder.AFTER_DEPENDENCIES;
+    OperationDependencyOrder order() default OperationDependencyOrder.AFTER_DEPENDENCIES;
 
     // Timeout?
     public enum ForkPolicy {

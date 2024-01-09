@@ -20,15 +20,14 @@ import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerBuilder;
 
 /**
- * Assemblies are the basic building block for creating applications in the framework.
+ * Assemblies are the basic building block for creating applications in Packed.
  * <p>
  * An assembly provides the concrete instructions for creating an application, and every application is constructed
  * either directly or indirectly from one or more assemblies. As such a single assembly can either comprise the entire
  * application or serve as the root of an assembly hierarchy, in which each node is responsible for building a part of
  * the application.
  * <p>
- * Assemblies does not have a runtime representation. They are a strictly build-time construct. Which is also why they
- * are not considered as a component.
+ * Assemblies does not have a runtime representation. They are a strictly build-time construct.
  *
  * state are not carried over to the runtime. And any state that must be carried over to the runtime. Must be done so
  * doing the build process.
@@ -55,8 +54,7 @@ import internal.app.packed.container.PackedContainerBuilder;
  * A assembly instance can be used as part of exactly one ({@link #build()} build-process). Attempting to reuse an
  * assembly will fail with {@link IllegalStateException}.
  * <p>
- * This class cannot be extended directly. If you are developing an application on top of the framework, you would
- * typically extend {@link BaseAssembly} instead.
+ * This class cannot be extended directly, you would typically extend {@link BaseAssembly} instead.
  */
 public sealed abstract class Assembly permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
 

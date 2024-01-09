@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package app.packed.lifetime;
 
-import app.packed.component.ComponentOperator;
-import app.packed.extension.ExtensionPoint.UseSite;
+import app.packed.context.Context;
+import app.packed.extension.BaseExtension;
 
 /**
  *
  */
-public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UseSite {
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentOperator author() {
-        return extension.author();
-    }
+// Skal kunne forke ting.
+// Kunne awaite ting
+// Kunne faile
+// OnStartContext???
+// BeanStartContext (saa kan den lidt mere tydeligt bliver brugt af andre annoteringen)
+public interface OnStartContext extends Context<BaseExtension>{
+
+    void fork(Runnable runnable); // what about when to join?
+
+    // Kan man lukke ned normalt under start?
+    // Eller er det altid en cancel
+    void fail(Throwable cause); //hvorfor ikke bare smide den...
 }

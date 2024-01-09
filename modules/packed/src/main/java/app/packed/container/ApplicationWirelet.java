@@ -13,19 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package app.packed.container;
 
-import app.packed.component.ComponentOperator;
-import app.packed.extension.ExtensionPoint.UseSite;
+import app.packed.container.Wirelet.Flags;
 
 /**
- *
+ * A wirelet that can be consumed by the application.
  */
-public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UseSite {
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentOperator author() {
-        return extension.author();
-    }
-}
+@Flags
+public non-sealed abstract class ApplicationWirelet extends Wirelet {}

@@ -62,7 +62,7 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
 
         OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, operationType(), template,
                 new OperationMethodTarget(member), methodHandle);
-        extension.scanner.bean.operations.operations.add(operation);
+        extension.scanner.bean.operations.all.add(operation);
         extension.scanner.unBoundOperations.add(operation);
         return operation.toHandle(extension.scanner);
     }

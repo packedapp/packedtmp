@@ -156,7 +156,7 @@ public class ApplicationMirror implements ComponentMirror {
             sb.append(b.path()).append("");
             sb.append(" [").append(b.beanClass.getName()).append("], owner = " + b.author());
             sb.append("\n");
-            for (OperationSetup os : b.operations.operations) {
+            for (OperationSetup os : b.operations.all) {
                 // sb.append(" ".repeat(b.path().depth()));
                 sb.append("    o ");
                 sb.append(os.mirror());

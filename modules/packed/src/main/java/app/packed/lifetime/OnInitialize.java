@@ -22,6 +22,7 @@ import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
+import app.packed.operation.OperationDependencyOrder;
 
 /**
  * Indicates that the annotated method should be invoked as part of the targeted bean's initialization.
@@ -43,8 +44,8 @@ import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
  * Any method using this annotated will be represented by a {@link LifecycleOperationMirror} with
  * {@link RunState#INITIALIZING} in the mirror API.
  * <p>
- * If there are multiple methods on a single bean that uses this annotations and have the same value for the
- * {@link #order()} attribute. The framework may choose to invoke them in any sequence.
+ * If multiple methods uses this annotation on the same bean and have the same value for the {@link #order()} attribute.
+ * The framework may choose to invoke them in any sequence.
  *
  * @see InitializationContext
  * @see Inject
@@ -68,5 +69,5 @@ public @interface OnInitialize {
      * @return whether or not the annotated method should be run before or after dependent beans in the same lifetime are
      *         initialized.
      */
-    LifecycleOrder order() default LifecycleOrder.BEFORE_DEPENDENCIES;
+    OperationDependencyOrder order() default OperationDependencyOrder.BEFORE_DEPENDENCIES;
 }

@@ -177,7 +177,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
                 // We need a factory method
 
-                OperationSetup os = bean.operations.operations.get(0);
+                OperationSetup os = bean.operations.all.get(0);
 
                 bean.container.application.addCodegenAction(() -> {
                     MethodHandle mha = os.generateMethodHandle();

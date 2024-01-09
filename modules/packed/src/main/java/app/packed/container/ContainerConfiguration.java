@@ -23,7 +23,7 @@ import sandbox.extension.container.ContainerHandle;
  */
 // Could let it be extendable. But it would only be usable through methods on extensions. Although
 // An assembly could return an instance of it
-public final class ContainerConfiguration extends ComponentConfiguration implements LocalAccessor {
+public non-sealed class ContainerConfiguration extends ComponentConfiguration implements LocalAccessor {
 
     /**
      * A marker configuration object indicating that an assembly (or composer) has already been used for building a
@@ -100,6 +100,12 @@ public final class ContainerConfiguration extends ComponentConfiguration impleme
         return container.isAssemblyRoot();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConfigurable() {
+        return container.isConfigurable();
+    }
+
     /**
      * Returns whether or not the specified extension is used by this extension, other extensions, or user code in the same
      * container as this extension.
@@ -166,8 +172,8 @@ public final class ContainerConfiguration extends ComponentConfiguration impleme
      *            the type of wirelet to select
      * @return A wirelet selection
      */
-    public <W extends UserWirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
-        ClassUtil.checkProperSubclass(UserWirelet.class, wireletClass, "wireletClass");
+    public <W extends ApplicationWirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
+        ClassUtil.checkProperSubclass(ApplicationWirelet.class, wireletClass, "wireletClass");
         return container.selectWireletsUnsafe(wireletClass);
     }
 

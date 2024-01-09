@@ -15,8 +15,14 @@
  */
 package app.packed.application;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
+import app.packed.application.AbstractApp.DefaultApp;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.lifetime.RunState;
+import app.packed.lifetime.StopOption;
 
 /**
  * An entry point for... This class contains a number of methods that can be to execute or analyze programs that are
@@ -35,14 +41,40 @@ import app.packed.container.Wirelet;
 public interface App extends AutoCloseable {
 
     /**
+     * Blocks until all tasks within the application have completed after a shutdown request, or the timeout occurs, or the
+     * current thread is interrupted, whichever happens first.
+     *
+     * @param timeout
+     *            the maximum time to wait
+     * @param unit
+     *            the time unit of the timeout argument
+     * @return {@code true} if the application terminated and {@code false} if the timeout elapsed before termination
+     * @throws InterruptedException
+     *             if interrupted while waiting
+     */
+    boolean awaitState(RunState state, long timeout, TimeUnit unit) throws InterruptedException;
+
+    /**
      * Closes the app (synchronously).
      * <p>
      * Calling this method is equivalent to calling {@code host().stop()}, but this method is called close in order to
      * support try-with resources via {@link AutoCloseable}.
      *
+     * <p>
+     * If the app has already terminated, invoking this method has no effect.
+     *
      **/
     @Override
     void close();
+
+    /** {@return the current state of the app} */
+    RunState state();
+
+    // Maybe Options are per App type and then maps into something else???
+    // Cancel makes no sense, for example, well maybe.
+    // pause() makes no sense -> Because we do not have a resume method
+    // But then again restart
+    void stop(StopOption... options);
 
     /**
      * This method is identical to {@link #run(Assembly, Wirelet...)} except that it will never wraps any unhandled
@@ -52,8 +84,9 @@ public interface App extends AutoCloseable {
      * @param wirelets
      * @throws Throwable
      */
-    static void checkedRun(Assembly assembly, Wirelet... wirelets) throws Throwable {
-        AppImpl.BOOTSTRAP.launch(assembly, wirelets);
+    @SuppressWarnings("unused")
+    static void checkedRun(Assembly assembly, Wirelet... wirelets) throws ExecutionException {
+        DefaultApp.BOOTSTRAP.launch(assembly, wirelets);
     }
 
     /**
@@ -61,16 +94,16 @@ public interface App extends AutoCloseable {
      * instance of the application at a later point.
      * <p>
      * If you need to launch multiple instances of the same application. You can specify
-     * {@code ApplicationImageWirelets.resuable()} in the wirelet part of this method.
+     * {@code ApplicationImageWirelets.reusable()} in the wirelet part of this method.
      *
      * @param assembly
      *            the application's assembly
      * @param wirelets
      *            optional wirelets
-     * @return an application image that can be used to launch a single instance of the application
+     * @return an image that can be used to launch a single instance of the application
      */
     static App.Image imageOf(Assembly assembly, Wirelet... wirelets) {
-        return new AppImpl.AppImage(AppImpl.BOOTSTRAP.imageOf(assembly, wirelets));
+        return new DefaultApp.AppImage(DefaultApp.BOOTSTRAP.imageOf(assembly, wirelets));
     }
 
     /**
@@ -85,7 +118,7 @@ public interface App extends AutoCloseable {
      *             if the application could not be build
      */
     static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        return AppImpl.BOOTSTRAP.mirrorOf(assembly, wirelets);
+        return DefaultApp.BOOTSTRAP.mirrorOf(assembly, wirelets);
     }
 
     /**
@@ -123,7 +156,7 @@ public interface App extends AutoCloseable {
      *             if the application failed to build or run
      */
     static void run(Assembly assembly, Wirelet... wirelets) {
-        AppImpl.BOOTSTRAP.launch(assembly, wirelets);
+        DefaultApp.BOOTSTRAP.launch(assembly, wirelets);
     }
 
     static App start(Assembly assembly, Wirelet... wirelets) {
@@ -141,20 +174,11 @@ public interface App extends AutoCloseable {
      *             if the application could not be build
      */
     static void verify(Assembly assembly, Wirelet... wirelets) {
-        AppImpl.BOOTSTRAP.verify(assembly, wirelets);
+        DefaultApp.BOOTSTRAP.verify(assembly, wirelets);
     }
 
     /** An image for App. */
     interface Image {
-
-        /**
-         * Starts the app and waits until it has fully started.
-         *
-         * @return
-         */
-        App start();
-
-        App start(Wirelet... wirelets);
 
         /** Runs the application represented by this image. */
         void run();
@@ -166,5 +190,14 @@ public interface App extends AutoCloseable {
          *            optional wirelets
          */
         void run(Wirelet... wirelets);
+
+        /**
+         * Starts the app and waits until it has fully started.
+         *
+         * @return
+         */
+        App start();
+
+        App start(Wirelet... wirelets);
     }
 }

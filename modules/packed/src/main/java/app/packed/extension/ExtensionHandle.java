@@ -13,22 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime;
-
-import app.packed.context.Context;
-import app.packed.extension.BaseExtension;
+package app.packed.extension;
 
 /**
  *
  */
+// Supports all non callback methods from extension... IDK
+interface ExtensionHandle {
 
-// Skal kunne forke ting.
-// Kunne awaite ting
-// Kunne faile
-public interface StartContext extends Context<BaseExtension>{
-
-
-    // Kan man lukke ned normalt under start?
-    // Eller er det altid en cancel
-    void fail(Throwable cause);
 }

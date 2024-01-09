@@ -89,7 +89,7 @@ import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 // Build : protected List<Wirelet> Assembly.wirelets();  // Istedet for at wrappe den, eller begge dele? Nahh
 
 // Runtime : Launch
-public sealed abstract class Wirelet permits UserWirelet, ExtensionWirelet, FrameworkWirelet {
+public sealed abstract class Wirelet permits ApplicationWirelet, ExtensionWirelet, FrameworkWirelet {
 
     // How do com
     final int flags = 0;

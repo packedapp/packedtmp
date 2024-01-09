@@ -17,6 +17,7 @@ package app.packed.lifetime;
 
 import java.util.List;
 
+import app.packed.operation.OperationDependencyOrder;
 import app.packed.operation.OperationMirror;
 
 /**
@@ -37,7 +38,7 @@ public class LifecycleOperationMirror extends OperationMirror {
         return bean().lifetime();
     }
 
-    public LifecycleOrder isNaturalOrder() {
+    public OperationDependencyOrder isNaturalOrder() {
         throw new UnsupportedOperationException();
     }
 

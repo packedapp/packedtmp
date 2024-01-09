@@ -58,7 +58,7 @@ public interface StopInfo {
 
     /** {@return the previous state of the lifetime before it was stopped.} */
     // Is always starting or running. What if initialized.stop?
-    RunState previousState();
+    RunState fromState();
 
     //// If the lifetime completed normally with a result
 

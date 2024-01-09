@@ -26,7 +26,7 @@ import app.packed.extension.BaseExtension;
 // Ogsaa tilgaengelig fra factory, constructor.
 
 // Den kan ikke rigtig noget. Maaske vi bare skal droppe den
-interface InitializationContext extends Context<BaseExtension> {
+interface BeanInitializationContext extends Context<BaseExtension> {
 
     /**
      * @return

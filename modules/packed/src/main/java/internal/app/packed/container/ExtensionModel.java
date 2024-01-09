@@ -35,7 +35,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import app.packed.Framework;
-import app.packed.container.Operative;
+import app.packed.component.ComponentOperator;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
@@ -98,7 +98,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** The {@link ExtensionDescriptor#orderingDepth() depth} of this extension. */
     private final int ordringDepth;
 
-    private final Operative realm;
+    private final ComponentOperator realm;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -108,7 +108,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      */
     private ExtensionModel(Builder builder) {
         this.extensionClass = builder.extensionClass;
-        this.realm = Operative.extension(extensionClass);
+        this.realm = ComponentOperator.extension(extensionClass);
         this.mhConstructor = builder.mhConstructor;
         this.ordringDepth = builder.depth;
         this.dependencies = Set.copyOf(builder.dependencies);
@@ -241,7 +241,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return ordringDepth;
     }
 
-    public Operative realm() {
+    public ComponentOperator realm() {
         return realm;
     }
 

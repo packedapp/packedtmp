@@ -26,8 +26,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import app.packed.application.BuildGoal;
+import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentOperator;
 import app.packed.component.ComponentPath;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
@@ -136,6 +139,13 @@ public abstract class Extension<E extends Extension<E>> {
     /** {@return the path of the container that this extension belongs to.} */
     protected final ComponentPath containerPath() {
         return extension.container.componentPath();
+    }
+
+    // Ideen er at man kan streame alle componenter configurationer
+    // Baade mirrors or configurations er vel interessante
+    // Alternativ Returnere vi en stream, som Packed selv filtrerer, paa operators og typer
+    protected final void componentConfigurations(ComponentOperator operator, Class<? extends ComponentConfiguration> componentConfigurationClass, Stream.Builder<? super ComponentConfiguration> builder) {
+
     }
 
     @SuppressWarnings("unchecked")

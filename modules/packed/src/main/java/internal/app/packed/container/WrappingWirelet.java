@@ -19,9 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.container.Wirelet;
 
-/**
- *
- */
+/** A wirelet that wraps another wirelet. */
 public non-sealed abstract class WrappingWirelet extends FrameworkWirelet {
 
     /** The wrapped wirelet. */

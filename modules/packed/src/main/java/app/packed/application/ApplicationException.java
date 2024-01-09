@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
-
-import app.packed.container.Wirelet.Flags;
+package app.packed.application;
 
 /**
- * A wirelet that can be used by users of the framework.
+ * Always has a cause.
  */
-@Flags
-public non-sealed abstract class UserWirelet extends Wirelet {}
+// Just use ExecutionException???
+public class ApplicationException extends Exception {
+
+    private static final long serialVersionUID = 1L;
+
+}

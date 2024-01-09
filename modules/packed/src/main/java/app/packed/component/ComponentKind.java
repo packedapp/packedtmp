@@ -15,38 +15,70 @@
  */
 package app.packed.component;
 
-/**
- *
- */
-// https://backstage.io/docs/features/software-catalog/descriptor-format/
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-//Selve component path schemaet skal bygges ind her
-public class ComponentKind {
+import app.packed.extension.BaseExtension;
+import app.packed.extension.Extension;
+import internal.app.packed.component.PackedComponentPath;
+
+/** The schema of a component path. */
+//https://backstage.io/docs/features/software-catalog/descriptor-format/
+public interface ComponentKind {
 
     /** A component kind representing an application. */
-    public static final ComponentKind APPLICATION = null;
-
-    /** A component kind representing a container. */
-    public static final ComponentKind CONTAINER = null;
+    ComponentKind APPLICATION = builder(BaseExtension.class, "Application").requireString("application").build();
 
     /** A component kind representing a bean. */
-    public static final ComponentKind BEAN = null;
-
-    /** A component kind representing an operation. */
-    public static final ComponentKind OPERATION = null;
+    ComponentKind BEAN = builder().requireString("application").requirePath("containerPath").requireString("bean").build();
 
     /** A component kind representing a binding. */
-    public static final ComponentKind BINDING = null;
+    ComponentKind BINDING = builder().requireString("application").requirePath("containerPath").requireString("bean").requireString("operation")
+            .requireString("binding").build();
 
-    /**
-     * @param fragments
-     *            the path fragments
-     * @return a component path representing this component kind and the specified fragments
-     *
-     * @throws IllegalArgumentException
-     *             if the fragments does not match the schema for this component kind
-     */
-    public ComponentPath pathOf(Object... fragments) {
+    /** A component kind representing a container. */
+    ComponentKind CONTAINER = builder().requireString("application").requirePath("containerPath").build();
+
+    /** A component kind representing an operation. */
+    ComponentKind OPERATION = builder().requireString("application").requirePath("containerPath").requireString("bean").requireString("operation").build();
+
+    // We could always have one... Just make let BaseExtension own them..
+    // And maybe skip base when printing the name
+    Optional<String> extension();
+
+    /** {@return the various fragments that make of the schema} */
+    List<Map.Entry<String, ComponentKind.FragmentKind>> fragments();
+
+    ComponentPath newPath(Object... fragments);
+
+    String prefix();
+
+    /** {@return a new schema builder} */
+    static ComponentKind.Builder builder() {
         throw new UnsupportedOperationException();
+    }
+
+    static ComponentKind.Builder builder(Class<? extends Extension<?>> extensionType, String componentType) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** A builder for a component path schema. */
+    sealed interface Builder permits PackedComponentPath.ComponentPathSchemaBuilder {
+
+        /** {@return the new schema} */
+        ComponentKind build();
+
+        ComponentKind.Builder requireClass(String name);
+
+        ComponentKind.Builder requireKey(String name);
+
+        ComponentKind.Builder requirePath(String name);
+
+        ComponentKind.Builder requireString(String name);
+    }
+
+    enum FragmentKind {
+        CLASS, KEY, PATH, STRING;
     }
 }

@@ -23,22 +23,23 @@ import java.util.Set;
  * A component mirror is always defined either by the framework or by an extension.
  * IDK would it make sense to have it as a user??? Fx Importer...
  */
-
-
-
 public interface ComponentMirror extends Mirror {
 
     // All components have names? IDK
     // Maybe you cannot set it though fx app.name=rootcontainer.name
     // String name();
 
+    /** {@return the kind of the component} */
+    default ComponentKind componentKind() {
+        return componentPath().componentKind();
+    }
+    /** {@return the path of the component} */
+    ComponentPath componentPath();
+
     /** {@return a set of any tags that have been set on the component} */
     default Set<String> componentTags() {
         return Set.of();
     }
-
-    /** {@return the path of the component} */
-    ComponentPath componentPath();
 }
 
 

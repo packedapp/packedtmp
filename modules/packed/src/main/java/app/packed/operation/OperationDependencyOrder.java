@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
-
-import app.packed.component.ComponentOperator;
-import app.packed.extension.ExtensionPoint.UseSite;
+package app.packed.operation;
 
 /**
  *
+ * @see OnInitialize
+ * @see OnStart
+ * @see OnStop
  */
-public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UseSite {
+// BeanLifecycleOrder
+// DependencyOrder
+public enum OperationDependencyOrder {
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentOperator author() {
-        return extension.author();
-    }
+    /** The operation will be executed before any dependencies. */
+    BEFORE_DEPENDENCIES,
+
+    /** The operation will be executed after any dependencies. */
+    AFTER_DEPENDENCIES;
 }

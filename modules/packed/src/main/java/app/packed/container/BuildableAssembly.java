@@ -18,10 +18,12 @@ package app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.extension.BaseExtension;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerBuilder;
@@ -115,6 +117,16 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
     }
 
     // Paa Assembly, ContainerConfiguration, Bean
+    /**
+     * Returns a stream of the component configurations defined by this
+     *
+     * @param <T>
+     * @param configurationType
+     * @return
+     *
+     * @throws IllegalArgumentException
+     *             if the specified component type is not a valid component type
+     */
     protected final <T extends ComponentConfiguration> Stream<T> componentConfigurations(Class<T> configurationType) {
 
         // componentConfigurations(EntityBeanConfiguration.class).doo
@@ -216,6 +228,12 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
     protected final void specializeMirror(Supplier<? extends AssemblyMirror> supplier) {
         requireNonNull(supplier, "supplier cannot be null");
         container();
+        throw new UnsupportedOperationException();
+    }
+
+    // Maybe other name
+    protected final void forEach(Consumer<? super ContainerConfiguration> consumer) {
+        forEach(c -> c.use(BaseExtension.class));
         throw new UnsupportedOperationException();
     }
 }

@@ -31,8 +31,10 @@ import internal.app.packed.util.PackedAnnotationList;
  *
  * @see AnnotatedElement
  */
+// TODO need to add repeatable Things
 public sealed interface AnnotationList extends Iterable<Annotation> permits PackedAnnotationList {
 
+    // If repeatable, invoke once perannotation
     default <T extends Annotation> void ifPresent(Class<T> annotationClass, Consumer<T> consumer) {
         T t = readRequired(annotationClass);
         consumer.accept(t);
@@ -51,6 +53,7 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
 
     boolean isPresent(Class<? extends Annotation> annotationClass);
 
+    // Whaaat?
     Annotation[] readAnyOf(Class<?>... annotationTypes);
 
     /**

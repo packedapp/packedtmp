@@ -15,7 +15,7 @@
  */
 package internal.app.packed.container;
 
-import app.packed.container.Operative;
+import app.packed.component.ComponentOperator;
 
 /**
  * The owner of a bean. Either the application (via an assembly) or an extension instance.
@@ -26,5 +26,5 @@ public sealed interface AuthorSetup permits AssemblySetup, ExtensionSetup {
     boolean isConfigurable();
 
     /** {@return a realm representing the owner.} */
-    Operative author();
+    ComponentOperator author();
 }

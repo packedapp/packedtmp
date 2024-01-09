@@ -220,7 +220,7 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
             }
 
             OperationSetup os = op.newOperationSetup(bean, bean.installedBy, ot, null);
-            bean.operations.operations.add(os);
+            bean.operations.all.add(os);
         }
 
         if (bean.owner instanceof ExtensionSetup es && bean.beanKind == BeanKind.CONTAINER) {

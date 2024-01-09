@@ -33,10 +33,21 @@ import java.util.function.Supplier;
 // Men okay det er jo det samme fail, o.s.v.
 public interface StopOption {
 
+    static StopOption cancel() {
+        throw new UnsupportedOperationException();
+    }
+
     static StopOption fail(Supplier<Throwable> cause) {
         throw new UnsupportedOperationException();
     }
 
+    // I think it can only be set for the original stop option
+    static StopOption reason(String reason) {
+        throw new UnsupportedOperationException();
+    }
+
+    // I actually, think it should be the first failure and not the last
+    // if multiple failures are specified
     static StopOption fail(Throwable cause) {
         throw new UnsupportedOperationException();
     }
@@ -58,9 +69,22 @@ public interface StopOption {
         throw new UnsupportedOperationException();
     }
 
+
     static StopOption now(Throwable cause) {
         throw new UnsupportedOperationException();
     }
+
+    static StopOption restart() {
+        // Now == shutdownNow();
+        throw new UnsupportedOperationException();
+    }
+
+    // does not throw UOE
+    static StopOption tryRestart() {
+        // Now == shutdownNow();
+        throw new UnsupportedOperationException();
+    }
+
 
 //        // add Runtime.IsRestartable??
 //        static StopOption restart(Wirelet... wirelets) {

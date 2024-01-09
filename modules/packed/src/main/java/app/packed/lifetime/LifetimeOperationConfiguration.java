@@ -15,21 +15,19 @@
  */
 package app.packed.lifetime;
 
-import app.packed.context.Context;
-import app.packed.extension.BaseExtension;
+import app.packed.operation.OperationConfiguration;
+import sandbox.extension.operation.OperationHandle;
 
 /**
  *
  */
-// Bliver lavet per operation
-public interface StopContext extends Context<BaseExtension> {
+public class LifetimeOperationConfiguration extends OperationConfiguration {
 
     /**
-     * {@return whether or not the whole application is stopping or only the li
+     * @param handle
      */
-    boolean isApplicationStopping();
+    public LifetimeOperationConfiguration(OperationHandle handle) {
+        super(handle);
+    }
 
-    /** {@return Information about why the containing lifetime was stopped.} */
-    StopInfo info();
-    // isApplicationStopping();
 }

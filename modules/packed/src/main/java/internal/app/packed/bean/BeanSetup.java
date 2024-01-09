@@ -17,8 +17,8 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.component.Component;
+import app.packed.component.ComponentOperator;
 import app.packed.component.ComponentPath;
-import app.packed.container.Operative;
 import app.packed.context.Context;
 import app.packed.extension.BeanElement;
 import app.packed.extension.BeanIntrospector;
@@ -54,7 +54,7 @@ import sandbox.extension.operation.OperationTemplate;
  * @implNote The reason this class does not directly implement BeanHandle is because the BeanHandle interface is
  *           parameterised.
  */
-public final class BeanSetup implements ContextualizedElementSetup, Component {
+public final class BeanSetup implements ContextualizedElementSetup , Component {
 
     /** A MethodHandle for invoking {@link ExtensionMirror#initialize(ExtensionSetup)}. */
     private static final MethodHandle MH_BEAN_INTROSPECTOR_TO_BEAN = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class, "bean",
@@ -79,6 +79,10 @@ public final class BeanSetup implements ContextualizedElementSetup, Component {
 
     /** The type of source the installer is created from. */
     public final BeanSourceKind beanSourceKind;
+
+    /** The configuration representing this bean, is set from {@link #initConfiguration(BeanConfiguration)}. */
+    @Nullable
+    public BeanConfiguration configuration;
 
     /** The container this bean is installed in. */
     public final ContainerSetup container;
@@ -135,7 +139,7 @@ public final class BeanSetup implements ContextualizedElementSetup, Component {
         }
     }
 
-    public Operative author() {
+    public ComponentOperator author() {
         return owner.author();
     }
 
@@ -145,7 +149,7 @@ public final class BeanSetup implements ContextualizedElementSetup, Component {
         } else if (beanKind == BeanKind.CONTAINER) { // we've already checked if instance
             return new FromLifetimeArena(container.lifetime, lifetimeStoreIndex, beanClass);
         } else if (beanKind == BeanKind.UNMANAGED) {
-            return new FromOperationResult(operations.operations.get(0));
+            return new FromOperationResult(operations.all.get(0));
         }
         throw new Error();
     }
@@ -158,7 +162,7 @@ public final class BeanSetup implements ContextualizedElementSetup, Component {
 
     public Set<BeanSetup> dependsOn() {
         HashSet<BeanSetup> result = new HashSet<>();
-        for (OperationSetup os : operations.operations) {
+        for (OperationSetup os : operations.all) {
             result.addAll(os.dependsOn());
         }
         return result;
@@ -175,10 +179,26 @@ public final class BeanSetup implements ContextualizedElementSetup, Component {
         return container.findContext(cl);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void forEachContext(BiConsumer<? super Class<? extends Context<?>>, ? super ContextSetup> action) {
         contexts.forEach(action);
         container.forEachContext(action);
+    }
+
+    /**
+     * Initializes the bean configuration.
+     *
+     * @param configuration
+     *
+     * @throws IllegalStateException
+     *             if attempting to create multiple bean configurations for a single bean
+     */
+    public void initConfiguration(BeanConfiguration configuration) {
+        if (this.configuration != null) {
+            throw new IllegalStateException("A bean handle can only be used once to create a a bean configuration");
+        }
+        this.configuration = requireNonNull(configuration);
     }
 
     // Relative to x

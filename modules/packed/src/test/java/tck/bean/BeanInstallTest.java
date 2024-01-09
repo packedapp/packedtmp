@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.container.Operative;
+import app.packed.component.ComponentOperator;
 import app.packed.operation.Op0;
 import tck.AppAppTest;
 
@@ -54,11 +54,11 @@ public class BeanInstallTest extends AppAppTest {
         assertEquals(bc, b.beanClass());
         assertEquals(bsk, b.beanSourceKind());
         assertThat(b.contexts()).isEmpty();
-        assertThat(b.owner()).isSameAs(Operative.user());
+        assertThat(b.declaredBy()).isSameAs(ComponentOperator.application());
         assertEquals(b.container().lifetime(), b.lifetime());
 
         assertEquals("R", b.name());
-        assertEquals("/R", b.path().toString());
+        assertEquals("/R", b.oldPath().toString());
     }
 
 }

@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
-import app.packed.container.Operative;
+import app.packed.component.ComponentOperator;
 import app.packed.util.Variable;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
@@ -97,7 +97,7 @@ public class BindingMirror implements ComponentMirror {
     }
 
     /** {@return the x who created binding.} */
-    public final Operative zBoundBy() {
+    public final ComponentOperator zBoundBy() {
         return binding.boundBy;
     }
 

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.namespace.NamespaceOperator;
 import app.packed.util.Nullable;
@@ -158,6 +159,6 @@ public final class ApplicationSetup implements Mirrorable<ApplicationMirror> {
     }
 
     public ComponentPath componentPath() {
-        return ComponentPath.Schema.APPLICATION.newPath(container.name);
+        return ComponentKind.APPLICATION.newPath(container.name);
     }
 }

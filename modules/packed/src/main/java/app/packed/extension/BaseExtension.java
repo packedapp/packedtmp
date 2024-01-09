@@ -441,7 +441,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                         throw new UnsupportedOperationException("va " + va.rawType());
                     }
                 } else if (annotation instanceof CodeGenerated cg) {
-                    if (beanAuthor().isUser()) {
+                    if (beanAuthor().isApplication()) {
                         throw new BeanInstallationException("@" + CodeGenerated.class.getSimpleName() + " can only be used by extensions");
                     }
                     // Create the key
@@ -465,7 +465,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                 if (ApplicationLaunchContext.class.isAssignableFrom(hook)) {
                     binding.bindContext(ApplicationLaunchContext.class);
                 } else if (hook == ExtensionContext.class) {
-                    if (beanAuthor().isUser()) {
+                    if (beanAuthor().isApplication()) {
                         binding.failWith(hook.getSimpleName() + " can only be injected into extensions");
                     }
 //                    if (binding.availableInvocationArguments().isEmpty() || binding.availableInvocationArguments().get(0) != ExtensionContext.class) {

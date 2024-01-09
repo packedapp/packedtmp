@@ -22,6 +22,7 @@ import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
+import app.packed.operation.OperationDependencyOrder;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
@@ -71,6 +72,13 @@ import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
  * @see OnInitialize
  * @see OnStop
  */
+
+// Lifetime = Whole Application, Non-Application Container Lifetime (ala session), Bean Lifetime
+
+// onBean, onLifetime, onApplication...
+
+// A bean is started when all OnStart methods on the bean has completed successfully
+
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @AnnotatedBeanMethodHook(allowInvoke = true, extension = BaseExtension.class)
@@ -83,11 +91,24 @@ public @interface OnStart {
     /** Can be used, for example, */
     String JOIN_ON_KEEP_RUNNING = "LIFETIME_KEEP_RUNNING";
 
-
     // Fork with default settings, otherwise use Fork
+    /**
+     *
+     * @return whether or not to fork a new thread
+     */
     boolean fork() default false;
 
-    LifecycleOrder order() default LifecycleOrder.BEFORE_DEPENDENCIES;
+    // forkMode
+    // forkAsDaemon (keepRunning) = Mark the bean as keep running,
+
+    /**
+     * Returns how this operation is ordered compared to other start operations.
+     *
+     * @return
+     */
+    // Jeg tror after_dependencies kraever vi monitorer bean state...
+    // Fordi vi siger koer denne metode efter x-bean er started
+    OperationDependencyOrder order() default OperationDependencyOrder.BEFORE_DEPENDENCIES;
 }
 //
 ///**

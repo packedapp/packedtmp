@@ -16,7 +16,7 @@
 package app.packed.bean;
 
 /**
- * Indicates that a {@link BeanKind#STATIC static} bean uses hooks on non-static fields or methods.
+ * Indicates that a {@link BeanKind#STATIC static} bean declares one or more operations via non-static fields or methods.
  * <p>
  * A static bean can only apply hook annotations on static fields or methods as no instances of the bean is available at
  * runtime.

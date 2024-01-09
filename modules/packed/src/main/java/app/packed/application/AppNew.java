@@ -15,11 +15,8 @@
  */
 package app.packed.application;
 
-import java.util.concurrent.TimeUnit;
-
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.RunState;
 import app.packed.lifetime.StopOption;
 import sandbox.lifetime.external.LifecycleController;
 
@@ -34,20 +31,6 @@ import sandbox.lifetime.external.LifecycleController;
  */
 @SuppressWarnings("exports")
 public interface AppNew extends AutoCloseable {
-
-    /**
-     * Blocks until all tasks within the application have completed after a shutdown request, or the timeout occurs, or the
-     * current thread is interrupted, whichever happens first.
-     *
-     * @param timeout
-     *            the maximum time to wait
-     * @param unit
-     *            the time unit of the timeout argument
-     * @return {@code true} if the application terminated and {@code false} if the timeout elapsed before termination
-     * @throws InterruptedException
-     *             if interrupted while waiting
-     */
-    boolean awaitState(RunState state, long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
      * Closes the app (synchronously). Calling this method is equivalent to calling {@code host().stop()}, but this method
@@ -65,10 +48,6 @@ public interface AppNew extends AutoCloseable {
      * @return this application's host.
      */
     LifecycleController lifecycle();
-
-    default void stop(StopOption... options) {
-        lifecycle().stop(options);
-    }
 
     // Maybe Options are per App type and then maps into something else???
     // Cancel makes no sense, for example, well maybe.

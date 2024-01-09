@@ -13,12 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.lifetime;
 
-/** Default implementation of App. */
-final class AppImpl extends AbstractApp {
+import app.packed.context.Context;
+import app.packed.extension.BaseExtension;
 
-    /** The bootstrap app. */
-    static final BootstrapApp<Void> BOOTSTRAP = BootstrapApp.of(c -> c.managedLifetime());
+/**
+ *
+ */
+// Bliver lavet per operation
+// BeanStopContext
+public interface OnStopContext extends Context<BaseExtension> {
 
+    /**
+     * {@return whether or not the whole application is stopping or only the li
+     */
+    boolean isApplicationStopping();
+
+    /** {@return Information about why the containing lifetime was stopped.} */
+    StopInfo info();
+    // isApplicationStopping();
 }

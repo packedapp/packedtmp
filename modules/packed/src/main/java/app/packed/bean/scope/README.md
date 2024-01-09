@@ -1,3 +1,11 @@
+StaticScope vs DynamicScope
+
+----------
+
+
+Jeg vil gerne koere Job inde i en session...
+Saa har JobScope jo ikke defineret at man kan det
+
 
 +++++++++++ Alle scopes har en lifecycle model..... +++++++++++
 ApplicationScope
@@ -16,7 +24,7 @@ Thread based scopes -> WebRequestScop, JobScope  (Kindof TransientScope)
 Laziable Scope = ApplicationScope, SessionScope, PluginScope, JobScope, RequestScope
 Providable Scope = (not static, Not entity)
 Container Scope = ApplicationScope, SessionScope, PluginScope, JobScope
-TopExportable =Application, Transient 
+TopExportable = Application, Transient 
 
 [Thread based -> Only specific threads accesses the scope, typically 1]
 [Laziable Scope -> If it makes sense to create the beans lazily]

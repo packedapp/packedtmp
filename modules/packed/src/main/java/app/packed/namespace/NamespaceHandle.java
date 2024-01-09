@@ -30,4 +30,9 @@ public interface NamespaceHandle {
      * @param name
      */
     void named(String name);
+
+    /**
+     * @return
+     */
+    boolean isConfigurable();
 }

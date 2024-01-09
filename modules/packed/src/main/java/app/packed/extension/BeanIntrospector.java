@@ -21,7 +21,7 @@ import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocalAccessor;
 import app.packed.bean.BeanSourceKind;
-import app.packed.container.Operative;
+import app.packed.component.ComponentOperator;
 import app.packed.extension.BeanElement.BeanClass;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
@@ -76,7 +76,7 @@ public non-sealed abstract class BeanIntrospector implements BeanLocalAccessor {
     }
 
     /** {@return the owner of the bean.} */
-    public final Operative beanAuthor() {
+    public final ComponentOperator beanAuthor() {
         return bean().author();
     }
 

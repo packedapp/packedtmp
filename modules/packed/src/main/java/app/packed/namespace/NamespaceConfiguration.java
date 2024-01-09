@@ -58,4 +58,11 @@ public abstract class NamespaceConfiguration<E extends Extension<E>> extends Com
         handle.named(name);
         return this;
     }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConfigurable() {
+        return handle.isConfigurable();
+    }
 }

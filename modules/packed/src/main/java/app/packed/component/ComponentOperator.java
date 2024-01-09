@@ -1,4 +1,4 @@
-package app.packed.container;
+package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
@@ -30,19 +30,19 @@ import internal.app.packed.util.types.ClassUtil;
  * An operative represents either the user of the framework or a specific extension.
  *
  */
-public /* value */ final class Operative {
+public /* value */ final class ComponentOperator {
 
     /** An application author. */
-    private static final Operative APPLICATION = new Operative(Extension.class);
+    private static final ComponentOperator APPLICATION = new ComponentOperator(Extension.class);
 
     /** Interned realm. */
     // Until we get values in which case it is always interned
-    static final ClassValue<Operative> INTERNED = new ClassValue<Operative>() {
+    static final ClassValue<ComponentOperator> INTERNED = new ClassValue<ComponentOperator>() {
 
         @Override
-        protected Operative computeValue(Class<?> extensionClass) {
+        protected ComponentOperator computeValue(Class<?> extensionClass) {
             ClassUtil.checkProperSubclass(Extension.class, extensionClass, "extensionClass");
-            return new Operative(extensionClass);
+            return new ComponentOperator(extensionClass);
         }
     };
 
@@ -50,7 +50,7 @@ public /* value */ final class Operative {
     @SuppressWarnings("rawtypes")
     private final Class extensionClass;
 
-    private Operative(@SuppressWarnings("rawtypes") Class extensionClass) {
+    private ComponentOperator(@SuppressWarnings("rawtypes") Class extensionClass) {
         this.extensionClass = requireNonNull(extensionClass);
     }
 
@@ -84,14 +84,14 @@ public /* value */ final class Operative {
     }
 
     /** {@return true if this author represents author or the application, otherwise false.} */
-    public boolean isUser() {
+    public boolean isApplication() {
         return extensionClass == Extension.class;
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return isUser() ? "User" : extensionClass.getSimpleName();
+        return isApplication() ? "Application" : extensionClass.getSimpleName();
     }
 
     /**
@@ -103,13 +103,13 @@ public /* value */ final class Operative {
      * @throws IllegalArgumentException
      *             if the specified class is not a proper subclass of Extension
      */
-    public static Operative extension(Class<? extends Extension<?>> extensionClass) {
+    public static ComponentOperator extension(Class<? extends Extension<?>> extensionClass) {
         // ExtensionModel.get().operative???
         return INTERNED.get(extensionClass);
     }
 
     /** {@return the application author.} */
-    public static Operative user() {
+    public static ComponentOperator application() {
         return APPLICATION;
     }
 }

@@ -17,16 +17,21 @@ package app.packed.application;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
+import internal.app.packed.container.ApplicationSetup;
 
 /**
  *
  */
+// By default it is configuration everywhere..
+// Maybe have a freeze()/protect() operation/
 public class ApplicationConfiguration extends ComponentConfiguration {
+
+    ApplicationSetup application;
 
     /** {@inheritDoc} */
     @Override
     public ComponentPath componentPath() {
-        return null;
+        return application.componentPath();
     }
 
     /** {@inheritDoc} */
@@ -35,4 +40,16 @@ public class ApplicationConfiguration extends ComponentConfiguration {
         return null;
     }
 
+    // isConfigurable?? Models
+
+    // Root assembly defines this, and is sharable between all assemblies
+
+    // Per assembly, requires that we can create new application configurations.
+    // when needed
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConfigurable() {
+        throw new UnsupportedOperationException();
+    }
 }

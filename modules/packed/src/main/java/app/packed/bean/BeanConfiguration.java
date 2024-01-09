@@ -3,12 +3,14 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 import app.packed.application.OldApplicationPath;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentOperator;
 import app.packed.component.ComponentPath;
-import app.packed.container.Operative;
 import app.packed.context.Context;
+import app.packed.operation.OperationConfiguration;
 import app.packed.util.Key;
 import internal.app.packed.bean.PackedBeanHandle;
 import sandbox.extension.bean.BeanHandle;
@@ -27,6 +29,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      */
     public BeanConfiguration(BeanHandle<?> handle) {
         this.handle = (PackedBeanHandle<?>) requireNonNull(handle, "handle is null");
+        this.handle.bean().initConfiguration(this);
     }
 
     /**
@@ -58,7 +61,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
 
     /** {@return the owner of the bean.} */
     // Declared by???
-    public final Operative author() {
+    public final ComponentOperator author() {
         return handle.author();
     }
 
@@ -124,6 +127,17 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         return this;
     }
 
+    /** {@return configurations for all operations defined by this bean.} */
+    public Stream<? super OperationConfiguration> operations() {
+        return operations(OperationConfiguration.class);
+    }
+
+    /** {@return configurations for all operations defined by this bean.} */
+    @SuppressWarnings("unchecked")
+    public <T extends OperationConfiguration> Stream<T> operations(Class<? super T> operationType) {
+        return (Stream<T>) operations().filter(e -> operationType.isInstance(e));
+    }
+
     public <K> BeanConfiguration overrideService(Class<K> key, K constant) {
         // Future Functionality:
 
@@ -180,5 +194,11 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     @Override
     public String toString() {
         return handle.toString();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean isConfigurable() {
+        return handle.isConfigurable();
     }
 }

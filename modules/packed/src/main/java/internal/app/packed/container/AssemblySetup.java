@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 
+import app.packed.component.ComponentOperator;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.DelegatingAssembly;
-import app.packed.container.Operative;
 import app.packed.util.Nullable;
 import internal.app.packed.component.AbstractTreeMirror;
 import internal.app.packed.component.Mirrorable;
@@ -92,8 +92,8 @@ public final class AssemblySetup implements AuthorSetup , Mirrorable<AssemblyMir
 
     /** {@inheritDoc} */
     @Override
-    public Operative author() {
-        return Operative.user();
+    public ComponentOperator author() {
+        return ComponentOperator.application();
     }
 
     /**

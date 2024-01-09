@@ -15,13 +15,23 @@
  */
 package app.packed.application;
 
+import java.util.concurrent.TimeUnit;
+
 import app.packed.container.Wirelet;
+import app.packed.lifetime.RunState;
+import app.packed.lifetime.StopOption;
 
 /**
  * Ideen var lidt at man bare extended nogle faa metoder. Og saa havde man en working implementation.
  */
 // IDK
 class AbstractApp implements App {
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean awaitState(RunState state, long timeout, TimeUnit unit) throws InterruptedException {
+        throw new UnsupportedOperationException();
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -38,6 +48,18 @@ class AbstractApp implements App {
      */
     protected final App.Image newImage(BootstrapApp.Image<?> image) {
         return new AppImage(image);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public RunState state() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void stop(StopOption... options) {
+        throw new UnsupportedOperationException();
     }
 
     /** Implementation of {@link app.packed.application.App.Image}. */
@@ -66,5 +88,12 @@ class AbstractApp implements App {
         public App start(Wirelet... wirelets) {
             return null;
         }
+    }
+
+    /** Default implementation of App. */
+    static final class DefaultApp extends AbstractApp {
+
+        /** The bootstrap app. */
+        static final BootstrapApp<Void> BOOTSTRAP = BootstrapApp.of(c -> c.managedLifetime());
     }
 }

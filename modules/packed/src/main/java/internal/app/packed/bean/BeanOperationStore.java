@@ -25,13 +25,16 @@ import internal.app.packed.service.ServiceProviderSetup;
 import internal.app.packed.util.LazyNamer;
 import sandbox.extension.operation.OperationHandle;
 
-/** This class handles all operations on a bean. */
+/** This class manages all operations declared by a bean. */
 public final class BeanOperationStore {
+
+    /** Operations declared by the bean. */
+    public final ArrayList<OperationSetup> all = new ArrayList<>();
 
     /**
      * All lifecycle operations for the bean. Is initially unsorted as operations can be added in any order. But in the end
      * the list will be sorted in the order of execution. With {@link app.packed.lifetime.RunState#INITIALIZING} lifecycle
-     * operations first, and {@link app.packed.lifetime.RunState#STOPPING} lifecycle operations last.
+     * operations first, and {@link app.packed.lifetime.RunState#STOPPING} lifecycle operations at the end.
      */
     public final ArrayList<BeanLifecycleOperation> lifecycleOperations = new ArrayList<>();
 
@@ -46,13 +49,10 @@ public final class BeanOperationStore {
      */
     volatile Map<OperationSetup, String> operationNames;
 
-    /** Operations declared by the bean. */
-    public final ArrayList<OperationSetup> operations = new ArrayList<>();
+    public boolean providingOperationsVisited;
 
     /** A list of services provided by the bean, used for circular dependency checks. */
     public final List<ServiceProviderSetup> serviceProviders = new ArrayList<>();
-
-    public boolean providingOperationsVisited;
 
     public void addLifecycleOperation(BeanLifecycleOrder runOrder, OperationHandle operation) {
         lifecycleOperations.add(new BeanLifecycleOperation(runOrder, operation));
@@ -69,7 +69,7 @@ public final class BeanOperationStore {
         Map<OperationSetup, String> m = operationNames;
         // operationNames is only valid as
         if (m == null || m.size() != operationNames.size()) {
-            m = operationNames = LazyNamer.calculate(operations, OperationSetup::namePrefix);
+            m = operationNames = LazyNamer.calculate(all, OperationSetup::namePrefix);
         }
         return m;
     }

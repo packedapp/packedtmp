@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime;
+package app.packed.bean;
+
+import app.packed.operation.OperationConfiguration;
+import sandbox.extension.operation.OperationHandle;
 
 /**
- *
- * @see OnInitialize
- * @see OnStart
- * @see OnStop
+ * A operation that creates a new bean instance.
  */
-// BeanLifecycleOrder
-public enum LifecycleOrder {
+public class BeanFactoryConfiguration extends OperationConfiguration {
 
-    /** The operation will be executed before any dependencies. */
-    BEFORE_DEPENDENCIES,
-
-    /** The operation will be executed after any dependencies. */
-    AFTER_DEPENDENCIES;
+    /**
+     * @param handle
+     */
+    public BeanFactoryConfiguration(OperationHandle handle) {
+        super(handle);
+    }
 }

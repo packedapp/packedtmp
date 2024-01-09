@@ -21,8 +21,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import app.packed.component.ComponentKind;
+import app.packed.component.ComponentKind.FragmentKind;
 import app.packed.component.ComponentPath;
-import app.packed.component.ComponentPath.Schema.FragmentKind;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
 
@@ -40,17 +40,16 @@ public final /* primitive */ class PackedComponentPath implements ComponentPath 
 
     /** {@inheritDoc} */
     @Override
-    public ComponentPath.Schema schema() {
+    public ComponentKind componentKind() {
         return schema;
     }
 
     public static void main(String[] args) {
-        ComponentPath.Schema.APPLICATION.newPath("sfoo");
-        ComponentKind.APPLICATION.pathOf("sfoo");
+        ComponentKind.APPLICATION.newPath("sfoo");
     }
 
     /** Component path schema builder. */
-    public static final class ComponentPathSchemaBuilder implements ComponentPath.Schema.Builder {
+    public static final class ComponentPathSchemaBuilder implements ComponentKind.Builder {
 
         /** The extension responsible for the schema. */
         @Nullable
@@ -68,7 +67,7 @@ public final /* primitive */ class PackedComponentPath implements ComponentPath 
 
         /** {@inheritDoc} */
         @Override
-        public Schema build() {
+        public ComponentKind build() {
             return new PackedComponentPathSchema(this);
         }
 
@@ -176,7 +175,7 @@ public final /* primitive */ class PackedComponentPath implements ComponentPath 
     /**
      *
      */
-    static class PackedComponentPathSchema implements ComponentPath.Schema {
+    static class PackedComponentPathSchema implements ComponentKind {
 
         final int fragmentCount = 4;
 
@@ -223,6 +222,6 @@ public final /* primitive */ class PackedComponentPath implements ComponentPath 
         }
     }
 
-    record SchemaFragment(String name, ComponentPath.Schema.FragmentKind fragmentKind) {}
+    record SchemaFragment(String name, ComponentKind.FragmentKind fragmentKind) {}
 
 }

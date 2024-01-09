@@ -13,19 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
-
-import app.packed.component.ComponentOperator;
-import app.packed.extension.ExtensionPoint.UseSite;
+package app.packed.container;
 
 /**
  *
  */
-public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UseSite {
+// Ideen er egentlig lidt at man kan bruge den til at filtrer ting istedet for at faa en Class<? super Assembly>
+// Paa den side saa bruger vi jo Class<? super Extension<?>> i flaeng
+interface AssemblyDescriptor {
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentOperator author() {
-        return extension.author();
-    }
 }

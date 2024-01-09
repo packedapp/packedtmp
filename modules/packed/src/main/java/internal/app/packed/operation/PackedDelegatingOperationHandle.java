@@ -70,7 +70,7 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
     public OperationHandle newOperation(ExtensionSetup extension, OperationTemplate template) {
         // checkConfigurable
         OperationSetup os = new MemberOperationSetup(extension, bean, operationType, template, target, methodHandle);
-        bean.operations.operations.add(os);
+        bean.operations.all.add(os);
         scanner.unBoundOperations.add(os);
         return os.toHandle(scanner);
     }

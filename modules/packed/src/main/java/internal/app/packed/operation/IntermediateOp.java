@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
-import app.packed.container.Operative;
+import app.packed.component.ComponentOperator;
 import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
@@ -79,7 +79,7 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
             for (int i = 0; i < indexes.length; i++) {
                 int index = indexes[i];
                 Object argument = arguments[i];
-                os.bindings[index] = new ManualBindingSetup(os, index, Operative.user(), new FromConstant(argument.getClass(), argument));
+                os.bindings[index] = new ManualBindingSetup(os, index, ComponentOperator.application(), new FromConstant(argument.getClass(), argument));
             }
             return os;
         }

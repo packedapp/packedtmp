@@ -18,7 +18,8 @@ package app.packed.lifetime;
 /**
  * An enum containing all valid states of an application, container or bean.
  *
- * There are 4 <b>steady</b> states: {@link #UNINITIALIZED}, {@link #INITIALIZED}, {@link #RUNNING} and {@link #TERMINATED}.
+ * There are 4 <b>steady</b> states: {@link #UNINITIALIZED}, {@link #INITIALIZED}, {@link #RUNNING} and
+ * {@link #TERMINATED}.
  *
  * There are 3 <b>intermediate</b> states: {@link #INITIALIZING}, {@link #STARTING} and {@link #STOPPING}.
  *
@@ -52,8 +53,10 @@ package app.packed.lifetime;
 public enum RunState {
 
     /**
-     * The initial state of a instance. This state is typically used for reading and validating the configuration of the
-     * guest. Throwing an exception or error if some invariant is broken.
+     * The initial state of the lifecycle entity.
+     * <p>
+     * This state is typically used for reading and validating the configuration of the lifecycle entity. Throwing an
+     * exception or error if some invariant is broken.
      * <p>
      * If the guest is successfully finishes the initialization phase, it will move to the {@link #INITIALIZED} state. If it
      * fails, it will move to the {@link #TERMINATED} state.
@@ -71,10 +74,10 @@ public enum RunState {
     INITIALIZING,
 
     /**
-     * This state indicates that the guest has completed the {@link #INITIALIZING} phase successfully.
+     * This state indicates that the lifecycle entity has completed the {@link #INITIALIZING} phase successfully.
      * <p>
-     * The instance will remain in this state until it is started. For example, by the user calling {@link Host#start()}.
-     * After which the instance will transition to the {@link #STARTING} state.
+     * The lifecycle entity will typically remain in this state until it is explicitly started. After which the lifecycle
+     * entity will transition to the {@link #STARTING} state.
      */
     INITIALIZED,
 

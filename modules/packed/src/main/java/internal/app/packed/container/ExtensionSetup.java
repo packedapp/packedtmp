@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.container.Operative;
+import app.packed.component.ComponentOperator;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
@@ -209,7 +209,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
     /** {@inheritDoc} */
     @Override
-    public Operative author() {
+    public ComponentOperator author() {
         return tree.model.realm();
     }
 

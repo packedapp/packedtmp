@@ -28,8 +28,8 @@ import org.junit.jupiter.api.Test;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanMirror;
+import app.packed.component.ComponentOperator;
 import app.packed.container.AssemblyMirror;
-import app.packed.container.Operative;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
@@ -56,7 +56,7 @@ public class RuntimeMirrorInjectionTest extends ServiceLocatorAppTest {
                 assertEquals(bm.container(), cm);
                 assertEquals(cm.assembly(), asm);
                 assertEquals(om.bean(), bm);
-                assertEquals("/Into", bm.path().toString());
+                assertEquals("/Into", bm.oldPath().toString());
 
                 List<?> l = List.of(ApplicationMirror.class, AssemblyMirror.class, ContainerMirror.class, BeanMirror.class, OperationMirror.class);
                 assertEquals(5, om.bindings().size());
@@ -65,7 +65,7 @@ public class RuntimeMirrorInjectionTest extends ServiceLocatorAppTest {
                     assertEquals(om, bim.operation());
                     assertEquals(i, bim.parameterIndex());
                     assertEquals(BindingKind.HOOK, bim.bindingKind());
-                    assertSame(Operative.extension(BaseExtension.class), bim.zBoundBy());
+                    assertSame(ComponentOperator.extension(BaseExtension.class), bim.zBoundBy());
                     assertTrue(bim.variable().annotations().isEmpty());
                     assertEquals(l.get(i), bim.variable().type());
                     assertEquals(l.get(i), bim.variable().rawType());

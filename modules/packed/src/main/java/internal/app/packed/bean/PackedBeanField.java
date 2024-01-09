@@ -136,7 +136,7 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
         OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, ft, template,
                 new OperationFieldTarget(field, accessMode), mh);
         extension.scanner.unBoundOperations.add(operation);
-        extension.scanner.bean.operations.operations.add(operation);
+        extension.scanner.bean.operations.all.add(operation);
         return operation.toHandle(extension.scanner);
     }
 

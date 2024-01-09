@@ -15,8 +15,8 @@
  */
 package internal.app.packed.bean;
 
-import app.packed.lifetime.LifecycleOrder;
 import app.packed.lifetime.RunState;
+import app.packed.operation.OperationDependencyOrder;
 
 public enum BeanLifecycleOrder {
     INJECT(RunState.INITIALIZING), INITIALIZE_PRE_ORDER(RunState.INITIALIZING), INITIALIZE_POST_ORDER(RunState.INITIALIZING),
@@ -28,15 +28,15 @@ public enum BeanLifecycleOrder {
         this.runState = runState;
     }
 
-    public static BeanLifecycleOrder fromInitialize(LifecycleOrder ordering) {
-        return ordering == LifecycleOrder.BEFORE_DEPENDENCIES ? INITIALIZE_PRE_ORDER : BeanLifecycleOrder.INITIALIZE_POST_ORDER;
+    public static BeanLifecycleOrder fromInitialize(OperationDependencyOrder ordering) {
+        return ordering == OperationDependencyOrder.BEFORE_DEPENDENCIES ? INITIALIZE_PRE_ORDER : BeanLifecycleOrder.INITIALIZE_POST_ORDER;
     }
 
-    public static BeanLifecycleOrder fromStarting(LifecycleOrder ordering) {
-        return ordering == LifecycleOrder.BEFORE_DEPENDENCIES ? START_PRE_ORDER : BeanLifecycleOrder.START_POST_ORDER;
+    public static BeanLifecycleOrder fromStarting(OperationDependencyOrder ordering) {
+        return ordering == OperationDependencyOrder.BEFORE_DEPENDENCIES ? START_PRE_ORDER : BeanLifecycleOrder.START_POST_ORDER;
     }
 
-    public static BeanLifecycleOrder fromStopping(LifecycleOrder ordering) {
-        return ordering == LifecycleOrder.BEFORE_DEPENDENCIES ? STOP_PRE_ORDER : BeanLifecycleOrder.STOP_POST_ORDER;
+    public static BeanLifecycleOrder fromStopping(OperationDependencyOrder ordering) {
+        return ordering == OperationDependencyOrder.BEFORE_DEPENDENCIES ? STOP_PRE_ORDER : BeanLifecycleOrder.STOP_POST_ORDER;
     }
 }

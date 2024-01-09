@@ -14,10 +14,10 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.extension.ExtensionMetaHook.AnnotatedBeanVariableHook;
-import app.packed.lifetime.LifecycleOrder;
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationDependencyOrder;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.util.Key;
@@ -73,7 +73,8 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     /**
-     * Registers a code generating supplier whose supplied value can be consumed by a variable annotated with {@link CodeGenerated}.
+     * Registers a code generating supplier whose supplied value can be consumed by a variable annotated with
+     * {@link CodeGenerated}.
      * <p>
      * Internally this mechanisms uses
      *
@@ -169,11 +170,19 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @implNote the implementation may use to return different bean configuration instances for subsequent invocations.
      *           Even for action and the returned bean
      */
+    @SuppressWarnings("unchecked")
     public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
         BeanHandle<T> handle = newBeanForOtherExtension(BeanKind.CONTAINER.template(), context()).installIfAbsent(clazz,
                 h -> action.accept(new InstanceBeanConfiguration<>(h)));
-        return new InstanceBeanConfiguration<>(handle);
+        BeanConfiguration bc = BeanSetup.crack(handle).configuration;
+        if (bc == null) {
+            return new InstanceBeanConfiguration<>(handle);
+        } else if (bc instanceof InstanceBeanConfiguration<?> ibc) {
+            return (InstanceBeanConfiguration<T>) ibc;
+        } else {
+            throw new IllegalStateException();
+        }
     }
 
     public <T> InstanceBeanConfiguration<T> installInstance(T instance) {
@@ -240,11 +249,11 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         return super.extensionSetup().container.lifetime.entryPoints.takeOver(extension(), usedBy());// .registerEntryPoint(usedBy(), isMain);
     }
 
-    public OperationConfiguration runLifecycleOperation(Builder operation, RunState state, LifecycleOrder ordering) {
+    public OperationConfiguration runLifecycleOperation(Builder operation, RunState state, OperationDependencyOrder ordering) {
         throw new UnsupportedOperationException();
     }
 
-    public OperationConfiguration runOnBeanInitialization(Builder operation, LifecycleOrder ordering) {
+    public OperationConfiguration runOnBeanInitialization(Builder operation, OperationDependencyOrder ordering) {
         requireNonNull(ordering, "ordering is null");
         throw new UnsupportedOperationException();
 //        OperationHandle handle = h.newOperation(OperationTemplate.defaults(), context());

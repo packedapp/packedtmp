@@ -81,4 +81,10 @@ public final class NamespaceSetup implements NamespaceHandle {
             super(treeParent);
         }
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConfigurable() {
+        return false;
+    }
 }

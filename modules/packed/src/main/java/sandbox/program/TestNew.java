@@ -53,7 +53,7 @@ public class TestNew extends BaseAssembly {
             b.operations(ProvidedServiceMirror.class).forEach(e -> {
                 List<ServiceBindingMirror> sbm = e.useSites().toList();
                 System.out.println(sbm);
-                System.out.println("Bean " + b.path() + " provides services for key " + e.key());
+                System.out.println("Bean " + b.oldPath() + " provides services for key " + e.key());
                 for (var v : sbm) {
                     System.out.println("Bound to " + v.operation().target());
                 }

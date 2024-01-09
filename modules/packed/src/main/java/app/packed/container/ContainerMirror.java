@@ -16,6 +16,7 @@ import app.packed.application.DeploymentMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentOperator;
 import app.packed.container.ContainerLocal.LocalAccessor;
 import app.packed.context.Context;
 import app.packed.context.ContextMirror;
@@ -105,7 +106,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
      * include those.
      */
     public Stream<BeanMirror> beans() {
-        return allBeans().filter(m -> m.owner() == Operative.user());
+        return allBeans().filter(m -> m.declaredBy() == ComponentOperator.application());
     }
 
     /**

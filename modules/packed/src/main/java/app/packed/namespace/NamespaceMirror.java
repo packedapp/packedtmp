@@ -17,8 +17,8 @@ package app.packed.namespace;
 
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentOperator;
 import app.packed.container.ContainerMirror;
-import app.packed.container.Operative;
 import app.packed.extension.Extension;
 import internal.app.packed.container.NamespaceSetup;
 
@@ -107,7 +107,7 @@ class ZamaspaceMirrorArchive<E extends Extension<E>> extends NamespaceMirror<E> 
     // I don't think there is an owner.
     // What if a database is used by two extensions only?
     //
-    public final Operative namespaceOwner() {
+    public final ComponentOperator namespaceOwner() {
         throw new UnsupportedOperationException();
     }
 
