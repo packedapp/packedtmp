@@ -44,19 +44,19 @@ public class TreeNode<T extends ActualNode<T>> {
 
     /** The (nullable) first child of the node. */
     @Nullable
-    private T firstChild;
+    public T firstChild;
 
     /** The (nullable) last child of the node. */
     @Nullable
-    private T lastChild; // not exposed currently, as there are currently no use cases
+    public T lastChild; // not exposed currently, as there are currently no use cases
 
     /** The (nullable) sibling of the node. */
     @Nullable
-    private T nextSibling;
+    public T nextSibling;
 
     /** Any parent this node may have. Only the root node does not have a parent. */
     @Nullable
-    private final T parent;
+    public final T parent;
 
     final T value;
 

@@ -228,14 +228,14 @@ public final class BeanSetup implements ContextualizedElementSetup , Component {
 
     /** {@return the path of this component} */
     public OldApplicationPath path() {
-        int size = container.depth();
+        int size = container.node.depth();
         String[] paths = new String[size + 1];
         paths[size] = name();
         ContainerSetup c = container;
         // check for null instead...
         for (int i = size - 1; i >= 0; i--) {
-            paths[i] = c.name;
-            c = c.treeParent;
+            paths[i] = c.node.name;
+            c = c.node.parent;
         }
         return new PackedNamespacePath(paths);
     }

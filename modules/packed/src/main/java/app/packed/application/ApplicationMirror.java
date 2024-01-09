@@ -128,7 +128,7 @@ public class ApplicationMirror implements ComponentMirror {
      * @see Wirelet#named(String)
      */
     public String name() {
-        return application.container.name;
+        return application.container.node.name;
     }
 
     public <N extends NamespaceMirror<?>> N namespace(Class<N> type) {
@@ -148,7 +148,7 @@ public class ApplicationMirror implements ComponentMirror {
     }
 
     private void print0(ContainerSetup cs) {
-        for (var e = cs.treeFirstChild; e != null; e = e.treeNextSibling) {
+        for (var e = cs.node.firstChild; e != null; e = e.node.nextSibling) {
             print0(e);
         }
         for (BeanSetup b : cs.beans) {

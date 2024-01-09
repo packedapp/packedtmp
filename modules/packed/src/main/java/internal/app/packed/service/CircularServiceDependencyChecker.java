@@ -44,7 +44,7 @@ public final class CircularServiceDependencyChecker {
         }
 
         // Process nodes in children
-        for (ContainerSetup e = container.treeFirstChild; e != null; e = e.treeNextSibling) {
+        for (ContainerSetup e = container.node.firstChild; e != null; e = e.node.nextSibling) {
             dependencyCyclesFind(stack, dependencies, e);
         }
     }

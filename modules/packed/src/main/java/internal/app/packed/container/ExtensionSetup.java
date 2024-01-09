@@ -232,7 +232,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
      */
     static ExtensionSetup install(Class<? extends Extension<?>> extensionType, ContainerSetup container, @Nullable ExtensionSetup requestedByExtension) {
         // Install the extension recursively into all ancestors in the same application (if not already installed)
-        ExtensionSetup extensionParent = container.isApplicationRoot() ? null : container.treeParent.useExtension(extensionType, requestedByExtension);
+        ExtensionSetup extensionParent = container.isApplicationRoot() ? null : container.node.parent.useExtension(extensionType, requestedByExtension);
 
         ExtensionSetup extension = new ExtensionSetup(extensionParent, container, extensionType);
 

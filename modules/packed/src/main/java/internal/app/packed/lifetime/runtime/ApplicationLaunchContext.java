@@ -49,7 +49,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
     private ApplicationLaunchContext(ApplicationSetup application, WireletSelectionArray<?> wirelets) {
         this.application = application;
         this.wirelets = wirelets;
-        this.name = requireNonNull(application.container.name);
+        this.name = requireNonNull(application.container.node.name);
         this.runner = new ContainerRunner(application);
     }
 

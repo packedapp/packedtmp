@@ -15,8 +15,8 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.DeploymentMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirror;
-import app.packed.component.ComponentPath;
 import app.packed.component.ComponentOperator;
+import app.packed.component.ComponentPath;
 import app.packed.container.ContainerLocal.LocalAccessor;
 import app.packed.context.Context;
 import app.packed.context.ContextMirror;
@@ -118,7 +118,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
 
     /** {@return a set of all boundaries to this container's parent. Or empty if family root.} */
     public EnumSet<ContainerBoundaryKind> bondariesToParent() {
-        ContainerSetup parent = container.treeParent;
+        ContainerSetup parent = container.node.parent;
         if (parent != null) {
             ContainerSetup c = container;
 
@@ -222,7 +222,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
      * @return the name of this container
      */
     public String name() {
-        return container.name;
+        return container.node.name;
     }
 
     /** {@return all the namespaces this container operates within.} */

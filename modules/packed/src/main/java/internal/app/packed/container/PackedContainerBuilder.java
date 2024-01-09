@@ -160,7 +160,7 @@ public abstract class PackedContainerBuilder {
 
         String n = nn;
         if (parent != null) {
-            HashMap<String, ContainerSetup> c = parent.children;
+            HashMap<String, ContainerSetup> c = parent.node.children;
             if (c.size() == 0) {
                 c.put(n, container);
             } else {
@@ -172,7 +172,7 @@ public abstract class PackedContainerBuilder {
                 }
             }
         }
-        this.name = container.name = n;
+        this.name = container.node.name = n;
 
         // BaseExtension is automatically used by every container
         ExtensionSetup.install(BaseExtension.class, container, null);

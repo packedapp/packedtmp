@@ -44,8 +44,8 @@ import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.service.ServiceManager;
-import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.MagicInitializer;
+import internal.app.packed.util.NamedTreeNode;
 import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.TreeNode;
 import internal.app.packed.util.TreeNode.ActualNode;
@@ -54,8 +54,7 @@ import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.operation.OperationHandle;
 
 /** The internal configuration of a container. */
-public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
-        implements ActualNode<ContainerSetup> , ContextualizedElementSetup , Mirrorable<ContainerMirror> , ContainerHandle {
+public final class ContainerSetup implements ActualNode<ContainerSetup> , ContextualizedElementSetup , Mirrorable<ContainerMirror> , ContainerHandle {
 
     /** A magic initializer for {@link ContainerMirror}. */
     public static final MagicInitializer<ContainerSetup> MIRROR_INITIALIZER = MagicInitializer.of(ContainerMirror.class);
@@ -69,8 +68,9 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
     /** All the beans installed in the container. */
     public final ContainerBeanStore beans = new ContainerBeanStore();
 
-    /** Maintains unique names for child containers. */
-    public final HashMap<String, ContainerSetup> children = new HashMap<>();
+    /** The configuration representing this container */
+    @Nullable
+    public ContainerConfiguration configuration;
 
     private HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
 
@@ -90,18 +90,11 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
     /** Supplies a mirror for the container. */
     private final Supplier<? extends ContainerMirror> mirrorSupplier;
 
-    /** The name of the container. */
-    public String name;
-
-    /** A tree node representing this container in the application. */
-    public final TreeNode<ContainerSetup> node;
+    /** A named tree node representing this container in the application. */
+    public final NamedTreeNode<ContainerSetup> node;
 
     /** The container's service manager. */
     public final ServiceManager sm;
-
-    /** The configuration representing this container */
-    @Nullable
-    public ContainerConfiguration configuration;
 
     /**
      * Create a new container.
@@ -113,8 +106,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     ContainerSetup(PackedContainerBuilder builder, ApplicationSetup application, AssemblySetup assembly) {
-        super(builder.parent);
-        this.node = new TreeNode<>(builder.parent, this);
+        this.node = new NamedTreeNode<>(builder.parent, this);
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
         this.mirrorSupplier = builder.containerMirrorSupplier;
@@ -122,20 +114,13 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
         builder.locals.forEach((p, o) -> p.locals(this).set((PackedLocal) p, this, o));
 
         if (builder.template.kind() == PackedContainerKind.PARENT_LIFETIME) {
-            this.lifetime = treeParent.lifetime;
+            this.lifetime = node.parent.lifetime;
         } else {
             this.lifetime = new ContainerLifetimeSetup(builder, this, null);
         }
         this.sm = new ServiceManager(null, this);
         // If a name has been set using a wirelet, we ignore calls to #named(String)
         this.ignoreRename = builder.nameFromWirelet != null;
-    }
-
-    public void initConfiguration(ContainerConfiguration configuration) {
-        if (this.configuration != null) {
-            throw new IllegalStateException("A container handle can only be used once to create a a container configuration");
-        }
-        this.configuration = requireNonNull(configuration);
     }
 
     /**
@@ -189,9 +174,16 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
         contexts.forEach(action);
     }
 
+    public void initConfiguration(ContainerConfiguration configuration) {
+        if (this.configuration != null) {
+            throw new IllegalStateException("A container handle can only be used once to create a a container configuration");
+        }
+        this.configuration = requireNonNull(configuration);
+    }
+
     /** {@return whether or not the container is the root container in the application.} */
     public boolean isApplicationRoot() {
-        return treeParent == null;
+        return node.parent == null;
     }
 
     /** {@return whether or not this container is the root container in the assembly} */
@@ -199,7 +191,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
         // The check for treeParent == null
         // is because AssemblySetup.container is set after BaseExtension is installed
         // for the root container. And we use this method to test
-        return treeParent == null || assembly.container == this;
+        return node.parent == null || assembly.container == this;
     }
 
     /** {@inheritDoc} */
@@ -252,7 +244,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
 
         // Check that this component is still active and the name can be set
 
-        String currentName = name;
+        String currentName = node.name;
 
         // If the name of the component (container) has been set using a wirelet.
         // Any attempt to override will be ignored
@@ -261,13 +253,13 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
         }
 
         // Unless we are the root container. We need to insert or update this container in the parent container
-        if (treeParent != null) {
-            if (treeParent.children.putIfAbsent(newName, this) != null) {
+        if (node.parent != null) {
+            if (node.parent.node.children.putIfAbsent(newName, this) != null) {
                 throw new IllegalArgumentException("A container with the specified name '" + newName + "' already exists in the parent");
             }
-            treeParent.children.remove(currentName);
+            node.parent.node.children.remove(currentName);
         }
-        name = newName;
+        node.name = newName;
     }
 
     /** {@inheritDoc} */
@@ -279,16 +271,16 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup>
     /** {@return the path of this container} */
     @Override
     public OldApplicationPath path() {
-        int depth = depth();
+        int depth = node.depth();
         return switch (depth) {
         case 0 -> OldApplicationPath.ROOT;
-        case 1 -> new PackedNamespacePath(name);
+        case 1 -> new PackedNamespacePath(node.name);
         default -> {
             String[] paths = new String[depth];
             ContainerSetup acc = this;
             for (int i = depth - 1; i >= 0; i--) {
-                paths[i] = acc.name;
-                acc = acc.treeParent;
+                paths[i] = acc.node.name;
+                acc = acc.node.parent;
             }
             yield new PackedNamespacePath(paths);
         }

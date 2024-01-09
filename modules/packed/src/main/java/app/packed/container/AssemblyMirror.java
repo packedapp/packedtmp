@@ -90,7 +90,7 @@ public class AssemblyMirror implements Mirror {
 
     private ArrayList<AssemblyMirror> children(AssemblySetup assembly, ContainerSetup cs, ArrayList<AssemblyMirror> list) {
         if (assembly == cs.assembly) {
-            for (var e = cs.treeFirstChild; e != null; e = e.treeNextSibling) {
+            for (var e = cs.node.firstChild; e != null; e = e.node.nextSibling) {
                 children(assembly, e, list);
             }
 
