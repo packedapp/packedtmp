@@ -11,12 +11,12 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import app.packed.application.OldApplicationPath;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.component.Component;
+import app.packed.component.ComponentKind;
 import app.packed.component.ComponentOperator;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
@@ -42,7 +42,6 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.BeanAccessOperationSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MagicInitializer;
-import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
 import sandbox.extension.bean.BeanHandle;
@@ -157,7 +156,7 @@ public final class BeanSetup implements ContextualizedElementSetup , Component {
     /** {@inheritDoc} */
     @Override
     public ComponentPath componentPath() {
-        throw new UnsupportedOperationException();
+        return ComponentKind.BEAN.pathNew(container.componentPath(), name());
     }
 
     public Set<BeanSetup> dependsOn() {
@@ -225,20 +224,20 @@ public final class BeanSetup implements ContextualizedElementSetup , Component {
     public void named(String newName) {
         container.beans.updateBeanName(this, newName);
     }
-
-    /** {@return the path of this component} */
-    public OldApplicationPath path() {
-        int size = container.node.depth();
-        String[] paths = new String[size + 1];
-        paths[size] = name();
-        ContainerSetup c = container;
-        // check for null instead...
-        for (int i = size - 1; i >= 0; i--) {
-            paths[i] = c.node.name;
-            c = c.node.parent;
-        }
-        return new PackedNamespacePath(paths);
-    }
+//
+//    /** {@return the path of this component} */
+//    public OldApplicationPath path() {
+//        int size = container.node.depth();
+//        String[] paths = new String[size + 1];
+//        paths[size] = name();
+//        ContainerSetup c = container;
+//        // check for null instead...
+//        for (int i = size - 1; i >= 0; i--) {
+//            paths[i] = c.node.name;
+//            c = c.node.parent;
+//        }
+//        return new PackedNamespacePath(paths);
+//    }
 
     /**
      * Extracts a bean setup from a bean configuration.

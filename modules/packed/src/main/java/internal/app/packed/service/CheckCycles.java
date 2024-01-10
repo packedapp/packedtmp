@@ -57,11 +57,11 @@ public class CheckCycles extends BaseAssembly {
 
         BeanMirror b = am.container().beans().iterator().next();
 
-        System.out.println(b.oldPath() + " " + b.dependencies().extensions());
+        System.out.println(b.componentPath() + " " + b.dependencies().extensions());
 
-        c.forEach(e -> System.out.println(e.bean().oldPath() + " provided by " + e.key()));
+        c.forEach(e -> System.out.println(e.bean().componentPath() + " provided by " + e.key()));
 
-        ex.forEach(e -> System.out.println(e.bean().oldPath() + " exported by " + e.key()));
+        ex.forEach(e -> System.out.println(e.bean().componentPath() + " exported by " + e.key()));
     }
 
     public record D() {}

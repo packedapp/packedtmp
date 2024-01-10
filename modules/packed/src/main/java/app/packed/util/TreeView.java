@@ -73,6 +73,8 @@ public interface TreeView<N extends Mirror> {
      * A tree plus a node
      */
     // Det den her kan er at bibeholde treet naar man refererer.
+    // Fx siger AssemblyMirror.applicationNode
+
     // Fx ContainerMirror.children har jo bare alle boern med ligegyldig om filtrerne
     public interface Node<T> extends Iterable<T> {
 
@@ -90,7 +92,7 @@ public interface TreeView<N extends Mirror> {
          */
         boolean isRoot();
 
-        default <S> Node<T> map(Function<T, S> mapper) {
+        default <S> Node<S> map(Function<T, S> mapper) {
             // ContainerSetup -> makeTree -> Root, Predicate
             // containerSetup.map(s->s.mirror())
             throw new UnsupportedOperationException();

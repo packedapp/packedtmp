@@ -26,7 +26,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import app.packed.application.OldApplicationPath;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerConfiguration;
@@ -46,7 +45,6 @@ import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.service.ServiceManager;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.NamedTreeNode;
-import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.TreeNode;
 import internal.app.packed.util.TreeNode.ActualNode;
 import internal.app.packed.util.types.ClassUtil;
@@ -176,7 +174,7 @@ public final class ContainerSetup implements ActualNode<ContainerSetup> , Contex
 
     public void initConfiguration(ContainerConfiguration configuration) {
         if (this.configuration != null) {
-            throw new IllegalStateException("A container handle can only be used once to create a a container configuration");
+            throw new IllegalStateException("A container handle can only be used once to create a container configuration");
         }
         this.configuration = requireNonNull(configuration);
     }
@@ -188,7 +186,7 @@ public final class ContainerSetup implements ActualNode<ContainerSetup> , Contex
 
     /** {@return whether or not this container is the root container in the assembly} */
     public boolean isAssemblyRoot() {
-        // The check for treeParent == null
+        // The check for parent == null
         // is because AssemblySetup.container is set after BaseExtension is installed
         // for the root container. And we use this method to test
         return node.parent == null || assembly.container == this;
@@ -268,24 +266,24 @@ public final class ContainerSetup implements ActualNode<ContainerSetup> , Contex
         return node;
     }
 
-    /** {@return the path of this container} */
-    @Override
-    public OldApplicationPath path() {
-        int depth = node.depth();
-        return switch (depth) {
-        case 0 -> OldApplicationPath.ROOT;
-        case 1 -> new PackedNamespacePath(node.name);
-        default -> {
-            String[] paths = new String[depth];
-            ContainerSetup acc = this;
-            for (int i = depth - 1; i >= 0; i--) {
-                paths[i] = acc.node.name;
-                acc = acc.node.parent;
-            }
-            yield new PackedNamespacePath(paths);
-        }
-        };
-    }
+//    /** {@return the path of this container} */
+//    @Override
+//    public OldApplicationPath path() {
+//        int depth = node.depth();
+//        return switch (depth) {
+//        case 0 -> OldApplicationPath.ROOT;
+//        case 1 -> new PackedNamespacePath(node.name);
+//        default -> {
+//            String[] paths = new String[depth];
+//            ContainerSetup acc = this;
+//            for (int i = depth - 1; i >= 0; i--) {
+//                paths[i] = acc.node.name;
+//                acc = acc.node.parent;
+//            }
+//            yield new PackedNamespacePath(paths);
+//        }
+//        };
+//    }
 
     public <T extends Wirelet> WireletSelection<T> selectWireletsUnsafe(Class<T> wireletClass) {
 

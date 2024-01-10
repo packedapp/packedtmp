@@ -153,7 +153,7 @@ public class ApplicationMirror implements ComponentMirror {
         }
         for (BeanSetup b : cs.beans) {
             StringBuilder sb = new StringBuilder();
-            sb.append(b.path()).append("");
+            sb.append(b.componentPath()).append("");
             sb.append(" [").append(b.beanClass.getName()).append("], owner = " + b.author());
             sb.append("\n");
             for (OperationSetup os : b.operations.all) {

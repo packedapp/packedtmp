@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.stream.Stream;
 
-import app.packed.application.OldApplicationPath;
 import app.packed.util.Nullable;
 
 /** The default implementation of {@link ApplicationPath}. */

@@ -21,7 +21,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import app.packed.component.ComponentKind;
-import app.packed.component.ComponentKind.FragmentKind;
 import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
@@ -45,7 +44,7 @@ public final /* primitive */ class PackedComponentPath implements ComponentPath 
     }
 
     public static void main(String[] args) {
-        ComponentKind.APPLICATION.newPath("sfoo");
+        ComponentKind.APPLICATION.pathNew("sfoo");
     }
 
     /** Component path schema builder. */
@@ -199,13 +198,13 @@ public final /* primitive */ class PackedComponentPath implements ComponentPath 
 
         /** {@inheritDoc} */
         @Override
-        public ComponentPath newPath(Object... fragments) {
+        public ComponentPath pathNew(Object... fragments) {
             return null;
         }
 
         /** {@inheritDoc} */
         @Override
-        public String prefix() {
+        public String pathPrefix() {
             return prefix;
         }
 
@@ -217,11 +216,17 @@ public final /* primitive */ class PackedComponentPath implements ComponentPath 
 
         /** {@inheritDoc} */
         @Override
-        public List<Entry<String, FragmentKind>> fragments() {
+        public List<Entry<String, FragmentKind>> pathFragments() {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentPath pathNew(ComponentPath parent, Object... fragments) {
             return null;
         }
     }
 
-    record SchemaFragment(String name, ComponentKind.FragmentKind fragmentKind) {}
+    record SchemaFragment(String name, ComponentPath.FragmentKind fragmentKind) {}
 
 }

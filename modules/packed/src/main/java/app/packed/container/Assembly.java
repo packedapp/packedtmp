@@ -15,6 +15,7 @@
  */
 package app.packed.container;
 
+import app.packed.application.BuildStep;
 import app.packed.container.AbstractComposer.ComposableAssembly;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerBuilder;
@@ -56,7 +57,7 @@ import internal.app.packed.container.PackedContainerBuilder;
  * <p>
  * This class cannot be extended directly, you would typically extend {@link BaseAssembly} instead.
  */
-public sealed abstract class Assembly permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
+public sealed abstract class Assembly extends BuildStep permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
 
     /**
      * Invoked by the runtime (via a MethodHandle) to build the assembly.
@@ -68,17 +69,4 @@ public sealed abstract class Assembly permits BuildableAssembly, DelegatingAssem
      * @apiNote this method is for internal use only
      */
     abstract AssemblySetup build(PackedContainerBuilder builder);
-
-    /** The state of an {@link Assembly}. */
-    public enum State {
-
-        /** The assembly has not yet been used in a build process. */
-        BEFORE_BUILD,
-
-        /** The assembly is currently being used in a build process. */
-        IN_USE,
-
-        /** The assembly has already been used in a build process (either successfully or unsuccessfully). */
-        AFTER_BUILD;
-    }
 }

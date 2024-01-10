@@ -32,6 +32,7 @@ import app.packed.bean.BeanFactoryMirror;
 import app.packed.bean.BeanKind;
 import app.packed.bean.NonStaticBeanMemberException;
 import app.packed.component.Component;
+import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
 import app.packed.operation.OperationMirror;
@@ -57,7 +58,7 @@ import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 
 /** Represents an operation on a bean. */
-public sealed abstract class OperationSetup implements Component, ContextualizedElementSetup {
+public sealed abstract class OperationSetup implements Component , ContextualizedElementSetup {
 
     /** A magic initializer for {@link OperationMirror}. */
     public static final MagicInitializer<OperationSetup> MIRROR_INITIALIZER = MagicInitializer.of(OperationMirror.class);
@@ -174,11 +175,10 @@ public sealed abstract class OperationSetup implements Component, Contextualized
         bean.forEachContext(action);
     }
 
-
     /** {@inheritDoc} */
     @Override
     public ComponentPath componentPath() {
-        throw new UnsupportedOperationException();
+        return ComponentKind.OPERATION.pathNew(bean.componentPath(), name());
     }
 
     public final MethodHandle generateMethodHandle() {
@@ -201,6 +201,7 @@ public sealed abstract class OperationSetup implements Component, Contextualized
         return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(OperationMirror.class, OperationMirror::new, mirrorSupplier), this);
     }
 
+    /** {@return the name of the operation} */
     public String name() {
         return bean.operations.operationNames().get(this);
     }

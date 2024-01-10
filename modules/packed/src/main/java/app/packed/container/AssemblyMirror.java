@@ -47,6 +47,7 @@ public class AssemblyMirror implements Mirror {
     }
 
     /** {@return the node representing this assembly in the application's tree of assemblies.} */
+    // alternativ. application.assemblies().find(node).get();
     public TreeView.Node<AssemblyMirror> applicationNode() {
         throw new UnsupportedOperationException();
     }

@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import app.packed.application.OldApplicationPath;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentOperator;
 import app.packed.component.ComponentPath;
@@ -171,24 +170,6 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         return this;
     }
 
-    /**
-     * Returns the full path of the component.
-     * <p>
-     * Once this method has been invoked, the name of the component can no longer be changed via {@link #named(String)}.
-     * <p>
-     * If building an image, the path of the instantiated component might be prefixed with another path.
-     *
-     * <p>
-     * Returns the path of this configuration. Invoking this method will initialize the name of the component. The component
-     * path returned does not maintain any reference to this configuration object.
-     *
-     * @return the path of this configuration.
-     */
-    // I'm not sure we want to expose midt build? IDK
-    // If only for user... Maybe is nice for debugging
-    public final OldApplicationPath path() {
-        return handle.path();
-    }
 
     /** {@inheritDoc} */
     @Override

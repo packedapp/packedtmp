@@ -124,11 +124,12 @@ public abstract class PackedContainerBuilder {
     public abstract LifetimeKind lifetimeKind();
 
     ContainerSetup newContainer(ApplicationSetup application, AssemblySetup assembly) {
-        // All wirelets have been processed when we reaches here
+        // All wirelets have been processed when we get here
 
         // Create the new container using this builder
         ContainerSetup container = new ContainerSetup(this, application, assembly);
 
+        // Initializes the name of the container
         String nn = nameFromWirelet;
 
         // Set the name of the container if it was not set by a wirelet
@@ -172,7 +173,8 @@ public abstract class PackedContainerBuilder {
                 }
             }
         }
-        this.name = container.node.name = n;
+//        this.name =
+        container.node.name = n;
 
         // BaseExtension is automatically used by every container
         ExtensionSetup.install(BaseExtension.class, container, null);

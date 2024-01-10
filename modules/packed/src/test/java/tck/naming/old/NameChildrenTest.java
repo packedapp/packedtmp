@@ -34,7 +34,7 @@ public class NameChildrenTest extends AbstractApplicationTest {
 //        AppTester a = appOf(c -> assertThat(c.stateless(Fff.class).getName()).isEqualTo("Fff"));
 //        a.assertPathExist("/Fff");
 
-        AppTester a = appOf(c -> assertThat(c.stateless(Fff.class).path().toString()).isEqualTo("/Fff"));
+        AppTester a = appOf(c -> assertThat(c.stateless(Fff.class).componentPath().toString()).isEqualTo("/Fff"));
         a.assertPathExist("/Fff");
 
         // TODO FIX names for anonymous classes...
@@ -46,12 +46,12 @@ public class NameChildrenTest extends AbstractApplicationTest {
         class Gff {}
         class Fff {}
         AppTester a = appOf(c -> {
-            assertThat(c.stateless(Fff.class).path().toString()).isEqualTo("/Fff");
-            assertThat(c.stateless(Gff.class).path().toString()).isEqualTo("/Gff");
+            assertThat(c.stateless(Fff.class).componentPath().toString()).isEqualTo("/Fff");
+            assertThat(c.stateless(Gff.class).componentPath().toString()).isEqualTo("/Gff");
             for (int i = 1; i < 10; i++) {
-                assertThat(c.stateless(Fff.class).path().toString()).isEqualTo("/Fff" + i);
+                assertThat(c.stateless(Fff.class).componentPath().toString()).isEqualTo("/Fff" + i);
             }
-            assertThat(c.stateless(Gff.class).path().toString()).isEqualTo("/Gff1");
+            assertThat(c.stateless(Gff.class).componentPath().toString()).isEqualTo("/Gff1");
         });
         a.assertPathExist("/Fff");
         for (int i = 1; i < 10; i++) {

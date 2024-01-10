@@ -22,18 +22,22 @@ import app.packed.extension.Extension;
 
 /**
  * A mirror representing a wirelet specified at build- or runtime.
+ *
+ * <p>
+ *
+ * @apiNote composite wirelets are never returned as a single mirror, but always expanded
  */
-// We always strip away CompositeWirelet
+// What about guarded wirelets or wrapped wirelets??? They kind of change
 public interface WireletMirror extends Mirror {
 
-    /** {@return any wirelet that was specified immediately before this wirelet} */
-    Optional<WireletMirror> previous();
+    // If this extension an extension wirelet. The extension the wirelet is a part of
+    Optional<Class<? extends Extension<?>>> extension();
 
     /** {@return any wirelet that was specified immediately after this wirelet} */
     Optional<WireletMirror> next();
 
-    // If this extension an extension wirelet. The extension the wirelet is a part of
-    Optional<Class<? extends Extension<?>>> extension();
+    /** {@return any wirelet that was specified immediately before this wirelet} */
+    Optional<WireletMirror> previous();
 
     /** {@return the implementation of the wirelet.} */
     Class<? extends Wirelet> wireletClass();

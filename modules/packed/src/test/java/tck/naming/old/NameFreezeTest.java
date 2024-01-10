@@ -75,7 +75,7 @@ public class NameFreezeTest extends AbstractApplicationTest {
     public void component_setName_cannotBeCalledAfter_path() {
         checkThrowsISE(c -> {
             BeanConfiguration ci = c.installInstance(1);
-            ci.path();
+            ci.componentPath();
             ci.named("foo");
         }, "Cannot call #setName(String) after name has been initialized via calls to #path()");
     }

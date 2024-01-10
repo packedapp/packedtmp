@@ -48,13 +48,21 @@ public interface ComponentKind {
     Optional<String> extension();
 
     /** {@return the various fragments that make of the schema} */
-    List<Map.Entry<String, ComponentKind.FragmentKind>> fragments();
+    List<Map.Entry<String, ComponentPath.FragmentKind>> pathFragments();
 
-    ComponentPath newPath(Object... fragments);
+    /**
+     * @param parent
+     *            the path of the parent component if this component kind was defined with such a parent
+     * @param fragments
+     * @return
+     */
+    ComponentPath pathNew(ComponentPath parent, Object... fragments);
 
-    String prefix();
+    ComponentPath pathNew(Object... fragments);
 
-    /** {@return a new schema builder} */
+    String pathPrefix();
+
+    /** {@return a new component kind builder} */
     static ComponentKind.Builder builder() {
         throw new UnsupportedOperationException();
     }
@@ -63,10 +71,10 @@ public interface ComponentKind {
         throw new UnsupportedOperationException();
     }
 
-    /** A builder for a component path schema. */
+    /** A builder for a component kind. */
     sealed interface Builder permits PackedComponentPath.ComponentPathSchemaBuilder {
 
-        /** {@return the new schema} */
+        /** {@return the new component kind} */
         ComponentKind build();
 
         ComponentKind.Builder requireClass(String name);
@@ -76,9 +84,5 @@ public interface ComponentKind {
         ComponentKind.Builder requirePath(String name);
 
         ComponentKind.Builder requireString(String name);
-    }
-
-    enum FragmentKind {
-        CLASS, KEY, PATH, STRING;
     }
 }

@@ -25,10 +25,10 @@ import java.util.List;
 import app.packed.application.App;
 import app.packed.bean.BeanMirror;
 import app.packed.container.BaseAssembly;
-import app.packed.extension.ExtensionMetaHook.AnnotatedBeanVariableHook;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMetaHook.AnnotatedBeanVariableHook;
 import app.packed.service.Provide;
 import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.mirror.oldMaybe.ProvidedServiceMirror;
@@ -53,7 +53,7 @@ public class TestNew extends BaseAssembly {
             b.operations(ProvidedServiceMirror.class).forEach(e -> {
                 List<ServiceBindingMirror> sbm = e.useSites().toList();
                 System.out.println(sbm);
-                System.out.println("Bean " + b.oldPath() + " provides services for key " + e.key());
+                System.out.println("Bean " + b.componentPath() + " provides services for key " + e.key());
                 for (var v : sbm) {
                     System.out.println("Bound to " + v.operation().target());
                 }

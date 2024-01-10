@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import app.packed.application.OldApplicationPath;
 import app.packed.component.Component;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerLocal;
@@ -96,7 +95,6 @@ public sealed interface ContainerHandle extends Component , ContainerLocal.Local
      *
      * @return the path of this configuration.
      */
-    OldApplicationPath path();
 
     /**
      * A builder for a container (handle).

@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.application.BuildGoal;
+import app.packed.application.BuildStep;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentOperator;
 import app.packed.component.ComponentPath;
@@ -80,7 +81,7 @@ import sandbox.extension.container.ContainerHandle;
  * @param <E>
  *            The type of the extension subclass
  */
-public abstract class Extension<E extends Extension<E>> {
+public non-sealed abstract class Extension<E extends Extension<E>> extends BuildStep {
 
     /** The internal configuration of the extension. */
     final ExtensionSetup extension;
@@ -144,7 +145,8 @@ public abstract class Extension<E extends Extension<E>> {
     // Ideen er at man kan streame alle componenter configurationer
     // Baade mirrors or configurations er vel interessante
     // Alternativ Returnere vi en stream, som Packed selv filtrerer, paa operators og typer
-    protected final void componentConfigurations(ComponentOperator operator, Class<? extends ComponentConfiguration> componentConfigurationClass, Stream.Builder<? super ComponentConfiguration> builder) {
+    protected final void componentConfigurations(ComponentOperator operator, Class<? extends ComponentConfiguration> componentConfigurationClass,
+            Stream.Builder<? super ComponentConfiguration> builder) {
 
     }
 
@@ -514,8 +516,8 @@ public abstract class Extension<E extends Extension<E>> {
         String[] optionally() default {};
     }
 
-
-    // For extension properties, they are not validated before the extension is used together with extension defining the property (potentially never)
+    // For extension properties, they are not validated before the extension is used together with extension defining the
+    // property (potentially never)
     @Repeatable(ExtensionProperty.All.class)
     public @interface ExtensionProperty {
 

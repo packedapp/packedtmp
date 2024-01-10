@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package internal.app.packed.util;
 
 import app.packed.util.Nullable;
-import internal.app.packed.util.PackedNamespacePath;
 
 /**
  * A component path points to a single component in namespace (tree of named components) expressed as a string
@@ -147,7 +146,4 @@ public interface OldApplicationPath extends Comparable<OldApplicationPath>, /* ,
 
     // TODO hashCode contract
 
-    enum Kind {
-        APPLICATION, ASSEMBLY, BEAN, CONTAINER, OPERATION;
-    }
 }

@@ -102,7 +102,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
     /**
      * {@return a view of all beans that owned by the application.}
      * <p>
-     * The returned stream does not include beans that are owned by extensions, use {@link #allBeans()} if you need to
+     * The returned stream does not include beans that are owned by extensions, call {@link #allBeans()} if you need to
      * include those.
      */
     public Stream<BeanMirror> beans() {

@@ -22,9 +22,9 @@ import internal.app.packed.component.PackedComponentPath;
 // Goals
 //// Uniquely identify a component
 
-//// Supports both framework resources and extension resources
+//// Supports both framework resources and extension resources (Maybe even user resources)
 
-//// We only support static resource
+//// We only support static resources
 
 //// Schema that explains the path and each Fragment
 
@@ -82,11 +82,10 @@ import internal.app.packed.component.PackedComponentPath;
  * The path of a component.
  * <p>
  * All components within a single application has a unique path.
- *
  */
 public sealed interface ComponentPath permits PackedComponentPath {
 
-    /** {@return the schema of the path.} */
+    /** {@return the kind of the component this path represents} */
     ComponentKind componentKind();
 
     default String fragment(int index) {
@@ -119,5 +118,9 @@ public sealed interface ComponentPath permits PackedComponentPath {
 
     default List<String> pathFragment(int index) {
         throw new UnsupportedOperationException();
+    }
+
+    enum FragmentKind {
+        CLASS, KEY, PATH, STRING;
     }
 }

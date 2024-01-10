@@ -17,11 +17,10 @@ package internal.app.packed.bean;
 
 import java.util.List;
 
-import app.packed.application.OldApplicationPath;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
-import app.packed.component.ComponentPath;
 import app.packed.component.ComponentOperator;
+import app.packed.component.ComponentPath;
 import app.packed.util.Key;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
@@ -82,12 +81,6 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
 
     /** {@inheritDoc} */
     @Override
-    public OldApplicationPath path() {
-        return bean.path();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public BeanHandle<T> exportAs(Key<? super T> key) {
         checkIsConfigurable();
         bean.container.sm.export(key, bean.instanceAccessOperation());
@@ -133,7 +126,7 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
         // But is not resolved as a service
 
         // Also if we override twice, would be nice with something like. Already overridden
-        throw new IllegalArgumentException("Bean '"+ path() + "' does not have a dependency for a service with " + key + ". Services that can be overridden: " + bean.container.sm.entries.keySet());
+        throw new IllegalArgumentException("Bean '"+ componentPath() + "' does not have a dependency for a service with " + key + ". Services that can be overridden: " + bean.container.sm.entries.keySet());
     }
 
     /**

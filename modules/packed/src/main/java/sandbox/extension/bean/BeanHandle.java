@@ -21,7 +21,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.application.OldApplicationPath;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocal;
@@ -29,8 +28,8 @@ import app.packed.bean.BeanLocalAccessor;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.component.ComponentPath;
 import app.packed.component.ComponentOperator;
+import app.packed.component.ComponentPath;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
@@ -170,9 +169,6 @@ public sealed interface BeanHandle<T> extends ContextualizedElement , BeanLocalA
      * @return
      */
     ComponentOperator author();
-
-    /** {@return the path of the bean.} */
-    OldApplicationPath path();
 
     /**
      * Provides of the bean as a service.

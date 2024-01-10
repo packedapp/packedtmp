@@ -159,6 +159,6 @@ public final class ApplicationSetup implements Mirrorable<ApplicationMirror> {
     }
 
     public ComponentPath componentPath() {
-        return ComponentKind.APPLICATION.newPath(container.node.name);
+        return ComponentKind.APPLICATION.pathNew(container.node.name);
     }
 }

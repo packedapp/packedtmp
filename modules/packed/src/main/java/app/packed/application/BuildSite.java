@@ -26,6 +26,9 @@ package app.packed.application;
 
 // Altsaa det er vel mere eller mindre end StackTraceElement
 
+// Vil mene
+
+
 // Application, Assembly, Container, Bean, Operation (BuildSite, AnnotatedField, AnnotatedMethod)
 
 // ? Namespace (Is mostly implicitly created). So maybe just the first place it is referenced, for example, first provide
