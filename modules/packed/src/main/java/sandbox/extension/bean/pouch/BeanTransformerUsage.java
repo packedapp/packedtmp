@@ -19,9 +19,9 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.bean.BeanClassTransformer;
 import app.packed.bean.Inject;
-import app.packed.container.AssemblyHook;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerTransformer;
 import app.packed.extension.BaseExtension;
 import app.packed.util.Variable;
 
@@ -56,7 +56,7 @@ public class BeanTransformerUsage {
         }
     }
 
-    public class MyProc implements AssemblyHook.Interceptor {
+    public class MyProc implements ContainerTransformer {
 
         @Override
         public void beforeBuild(ContainerConfiguration configuration) {

@@ -34,11 +34,11 @@ import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import app.packed.Framework;
 import app.packed.component.ComponentOperator;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
+import app.packed.framework.Framework;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.FrameworkExtension;
 import app.packed.extension.InternalExtensionException;

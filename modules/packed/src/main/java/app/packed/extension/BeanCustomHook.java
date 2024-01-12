@@ -38,14 +38,14 @@ import app.packed.util.BaseModuleConstants;
 
 // Masake Paa BEP alligevel
 // CustomHook
+
+//// ServiceBindingHook...
 // CustomBindingHook
 // CustomBindingHook
 
 // IDK maaske hoere den til i .bean alligevel
 
 // Flyt den til BeanHook hvis vi kommer til at supportere dem
-
-
 
 // Alternativt require at custom hooks skal defineres paa den extension hvor de skal bruges...
 // Hmm...

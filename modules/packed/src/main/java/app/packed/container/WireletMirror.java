@@ -17,6 +17,7 @@ package app.packed.container;
 
 import java.util.Optional;
 
+import app.packed.application.ApplicationPhase;
 import app.packed.component.Mirror;
 import app.packed.extension.Extension;
 
@@ -38,6 +39,10 @@ public interface WireletMirror extends Mirror {
 
     /** {@return any wirelet that was specified immediately before this wirelet} */
     Optional<WireletMirror> previous();
+
+    ContainerMirror specificationSite();
+
+    ApplicationPhase specifiedAt();
 
     /** {@return the implementation of the wirelet.} */
     Class<? extends Wirelet> wireletClass();

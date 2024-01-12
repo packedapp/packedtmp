@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed;
+package app.packed.framework;
 
 import static java.util.Objects.requireNonNull;
 
@@ -51,16 +51,14 @@ public final class Framework {
         throw new UnsupportedOperationException();
     }
 
-
-
-    // Maybe just move it to Framework....
-    // Yeah
-
     // Alternative to using module declarations
     // Typically called from a static init of the class
-    public static void makeVisibleToFramework(MethodHandles.Lookup lookup, Class<?> clazz) {
 
+    public static void openClassToFramework(MethodHandles.Lookup lookup) {
+        openClassToFramework(lookup, lookup.lookupClass());
     }
+
+    public static void openClassToFramework(MethodHandles.Lookup lookup, Class<?> clazz) {}
 
     /** Represents a feature release of the framework. */
     public enum Release {

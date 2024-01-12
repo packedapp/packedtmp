@@ -57,7 +57,7 @@ import internal.app.packed.container.PackedContainerBuilder;
  * <p>
  * This class cannot be extended directly, you would typically extend {@link BaseAssembly} instead.
  */
-public sealed abstract class Assembly extends BuildStep permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
+public sealed abstract class Assembly implements BuildStep permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
 
     /**
      * Invoked by the runtime (via a MethodHandle) to build the assembly.

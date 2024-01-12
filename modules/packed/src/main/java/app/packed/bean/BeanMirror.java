@@ -39,7 +39,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * An instance of BeanMirror can be injected at runtime simply by declaring a dependency on it.
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public non-sealed class BeanMirror implements BeanLocalAccessor, ComponentMirror, ContextualizedElementMirror , ContextScopeMirror , ServiceProviderMirror {
+public non-sealed class BeanMirror implements BeanLocalAccessor , ComponentMirror , ContextualizedElementMirror , ContextScopeMirror , ServiceProviderMirror {
 
     /** The bean we are mirroring. */
     final BeanSetup bean;
@@ -60,10 +60,13 @@ public non-sealed class BeanMirror implements BeanLocalAccessor, ComponentMirror
         return bean.container.application.mirror();
     }
 
-    /** {@return the assembly where the bean's container is defined.} */
+    /**
+     * {@return the assembly where the bean's container is defined.}
+     * <p>
+     * In case of beans owned by an extension. The assembly representing the container in which the bean is located is
+     * returned.
+     */
     public AssemblyMirror assembly() {
-        // Extension beans can be defined from any container where the extension is used
-        // However, we always return the assembly of the container in which the bean it is registered
         return bean.container.assembly.mirror();
     }
 
@@ -91,7 +94,7 @@ public non-sealed class BeanMirror implements BeanLocalAccessor, ComponentMirror
 
     /** {@inheritDoc} */
     @Override
-    public ComponentPath componentPath() {
+    public final ComponentPath componentPath() {
         return bean.componentPath();
     }
 

@@ -236,4 +236,8 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
         forEach(c -> c.use(BaseExtension.class));
         throw new UnsupportedOperationException();
     }
+
+    final void openForTransformation(String... modules) {
+
+    }
 }

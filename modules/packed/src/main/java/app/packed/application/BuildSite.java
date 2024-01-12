@@ -33,6 +33,10 @@ package app.packed.application;
 
 // ? Namespace (Is mostly implicitly created). So maybe just the first place it is referenced, for example, first provide
 // Not so much. Binding
+
+// AssemblySite?????
+
+// Maaske har vi ikke previous men bare en liste...
 public interface BuildSite {
 
 }

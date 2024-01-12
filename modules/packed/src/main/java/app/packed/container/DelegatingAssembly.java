@@ -97,6 +97,10 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
     /** {@return the assembly to delegate to.} */
     protected abstract Assembly delegateTo();
 
+    protected final Assembly transform(Assembly assembly, ContainerTransformer transformer) {
+        // uses this .getClass() instead of a Lookup object
+        throw new UnsupportedOperationException();
+    }
     /**
      * Constructs a delegating assembly that will prefix all usage of the specified assembly with the specified wirelets
      *

@@ -13,6 +13,7 @@ import app.packed.application.BuildException;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyHook;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerTransformer;
 import app.packed.container.DelegatingAssembly;
 import internal.app.packed.bean.BeanHookModel;
 import internal.app.packed.util.ThrowableUtil;
@@ -25,11 +26,11 @@ public final /* primitive */ class AssemblyModel {
 
         @Override
         protected AssemblyModel computeValue(Class<?> type) {
-            ArrayList<AssemblyHook.Interceptor> hooks = new ArrayList<>();
+            ArrayList<ContainerTransformer> hooks = new ArrayList<>();
             for (Annotation a : type.getAnnotations()) {
                 if (a instanceof AssemblyHook h) {
-                    for (Class<? extends AssemblyHook.Interceptor> b : h.value()) {
-                        if (AssemblyHook.Interceptor.class.isAssignableFrom(b)) {
+                    for (Class<? extends ContainerTransformer> b : h.value()) {
+                        if (ContainerTransformer.class.isAssignableFrom(b)) {
                             MethodHandle constructor;
 
                             if (!AssemblyModel.class.getModule().canRead(type.getModule())) {
@@ -51,11 +52,11 @@ public final /* primitive */ class AssemblyModel {
                             } catch (IllegalAccessException e) {
                                 throw new BuildException("Can't see it sorry, hook = " + h, e);
                             }
-                            constructor = constructor.asType(MethodType.methodType(AssemblyHook.Interceptor.class));
+                            constructor = constructor.asType(MethodType.methodType(ContainerTransformer.class));
 
-                            AssemblyHook.Interceptor instance;
+                            ContainerTransformer instance;
                             try {
-                                instance = (AssemblyHook.Interceptor) constructor.invokeExact();
+                                instance = (ContainerTransformer) constructor.invokeExact();
                             } catch (Throwable t) {
                                 throw ThrowableUtil.orUndeclared(t);
                             }
@@ -67,29 +68,29 @@ public final /* primitive */ class AssemblyModel {
             if (!hooks.isEmpty() && DelegatingAssembly.class.isAssignableFrom(type)) {
                 throw new BuildException("Delegating assemblies cannot use @" + AssemblyHook.class.getSimpleName() + " annotations, assembly type =" + type);
             }
-            return new AssemblyModel(type, hooks.toArray(s -> new AssemblyHook.Interceptor[s]));
+            return new AssemblyModel(type, hooks.toArray(s -> new ContainerTransformer[s]));
         }
     };
 
     public final BeanHookModel hookModel;
 
     /** Any hooks that have been specified on the assembly. */
-    private final AssemblyHook.Interceptor[] hooks;
+    private final ContainerTransformer[] hooks;
 
-    private AssemblyModel(Class<?> assemblyClass, AssemblyHook.Interceptor[] hooks) {
+    private AssemblyModel(Class<?> assemblyClass, ContainerTransformer[] hooks) {
         this.hooks = requireNonNull(hooks);
         this.hookModel = BeanHookModel.of(assemblyClass);
     }
 
     public void postBuild(ContainerConfiguration configuration) {
         // TODO I think we should run these in reverse order
-        for (AssemblyHook.Interceptor h : hooks) {
+        for (ContainerTransformer h : hooks) {
             h.afterBuild(configuration);
         }
     }
 
     public void preBuild(ContainerConfiguration configuration) {
-        for (AssemblyHook.Interceptor h : hooks) {
+        for (ContainerTransformer h : hooks) {
             h.beforeBuild(configuration);
         }
     }

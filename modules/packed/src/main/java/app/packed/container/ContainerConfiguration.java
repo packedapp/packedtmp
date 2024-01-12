@@ -4,7 +4,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
+import app.packed.bean.BeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerLocal.LocalAccessor;
@@ -49,6 +51,10 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
     public ContainerConfiguration(ContainerHandle handle) {
         this.container = (ContainerSetup) requireNonNull(handle, "handle is null");
         container.initConfiguration(this);
+    }
+
+    public final Stream<BeanConfiguration> beans() {
+        throw new UnsupportedOperationException();
     }
 
     /**

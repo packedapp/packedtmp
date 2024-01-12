@@ -28,7 +28,10 @@ import app.packed.extension.Extension;
 // For example, delayed Codegen kunne også vaere et build step
 
 // Maybe BuildTask is better? But then again Extensions are 2 tasks really
-public abstract sealed class BuildStep permits Assembly, Extension {
+
+// ContainerHook er jo en slags BuildStep...
+// Extension har sådan set 2 build steps...
+public sealed interface BuildStep permits Assembly, Extension {
 
     /** The state of an {@link Assembly}. */
     public enum State {

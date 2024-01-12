@@ -81,7 +81,7 @@ import sandbox.extension.container.ContainerHandle;
  * @param <E>
  *            The type of the extension subclass
  */
-public non-sealed abstract class Extension<E extends Extension<E>> extends BuildStep {
+public non-sealed abstract class Extension<E extends Extension<E>> implements BuildStep {
 
     /** The internal configuration of the extension. */
     final ExtensionSetup extension;

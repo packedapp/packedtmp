@@ -168,6 +168,11 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         extension.container.sm.exportAll = true;
     }
 
+    // Har man brug for andet end class transformer? Er der nogle generalle bean properties??? IDK
+    <T> ServiceableBeanConfiguration<T> transformingInstall(Class<T> implementation, Consumer<? super BeanClassTransformer> transformation) {
+        throw new UnsupportedOperationException();
+
+    }
     /**
      * Installs a bean of the specified type. A single instance of the specified class will be instantiated when the
      * container is initialized.
