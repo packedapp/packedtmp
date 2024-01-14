@@ -20,14 +20,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import app.packed.component.Mirror;
-
 /**
  *
  */
 // Hvis det er kun er mirrors den bliver brugt paa...
 // Saa skal den maaske hedde noget andet
-public interface TreeView<N extends Mirror> {
+
+// extends Iterable<N>???? IDK Not particular useful without more details I think
+public interface TreeView<N> {
 
     default boolean contains(N node) {
         throw new UnsupportedOperationException();
@@ -42,26 +42,32 @@ public interface TreeView<N extends Mirror> {
         throw new UnsupportedOperationException();
     }
 
-    default void forEachNode(Consumer<Node<N>> action) {
-        throw new UnsupportedOperationException();
-    }
-
-    default void forEachNodeWithDepth(BiConsumer<Integer, Node<N>> action) {
-        throw new UnsupportedOperationException();
-    }
-
     default void forEachWithDepth(BiConsumer<Integer, N> action) {
         throw new UnsupportedOperationException();
     }
 
+    default void nodeForEach(Consumer<Node<N>> action) {
+        throw new UnsupportedOperationException();
+    }
+
+    default void nodeForEachWithDepth(BiConsumer<Integer, Node<N>> action) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Maybe just nodeRoot
+    default Node<N> nodeRoot() {
+        throw new UnsupportedOperationException();
+    }
+
+    default Stream<Node<N>> nodeStream() {
+        throw new UnsupportedOperationException();
+    }
+
+    // Hmm???
     default void print(Function<? super N, String> f) {}
 
     /** {@return the root node in the tree.} */
     default N root() {
-        throw new UnsupportedOperationException();
-    }
-
-    default Node<N> rootNode() {
         throw new UnsupportedOperationException();
     }
 
@@ -98,14 +104,14 @@ public interface TreeView<N extends Mirror> {
             throw new UnsupportedOperationException();
         }
 
-        T value();
-
         /**
          * @return
          */
         T root();
 
         Stream<T> stream();
+
+        T value();
     }
 
 ///** {@return an unmodifiable view of all of the children of this component.} */

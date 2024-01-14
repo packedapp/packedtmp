@@ -13,25 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.bean;
 
 /**
  *
  */
+// On Class Or Method
+
+// The idea is, for example,
+
+// @Timed
+// @Get
+//public void someBeanMethod() {}
+
+// Will not create proxy? Or will it.
 
 
-// Ideen er egentlig lidt at man inde fra en assembly. Kan faa fat i alle tilgaengelige component configurationer
-// Fx giv mig alle entity bean configurations, og tilfoej dette tag...
-// Maaske er det i virkeligheden bare en Stream????
+// Anyway the idea is to be able to force a proxy for the bean class
 
-// componentConfigurations()
-// <T> Stream<C componentConfigurations(Class<? extends ComponentConfiguration cl)
-
-
-// Stream assignedTo();
-
-// assembly.componentConfigurations().filterOnOperation().hasTag("foo)
-
-interface ComponentConfigurationSet {
+// Could be a transformer??
+public @interface BeanProxyForced {
 
 }
+

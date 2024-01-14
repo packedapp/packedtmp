@@ -221,6 +221,10 @@ public non-sealed class BeanMirror implements BeanLocalAccessor , ComponentMirro
         throw new UnsupportedOperationException();
     }
 
+    public Optional<BeanProxyMirror> proxy() {
+        return Optional.empty();
+    }
+
     /**
      * @param to
      *            the bean to return a relationship mirror to

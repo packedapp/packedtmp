@@ -102,6 +102,10 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
         return container.hashCode();
     }
 
+    public boolean isApplicationRoot() {
+        return container.isApplicationRoot();
+    }
+
     public boolean isAssemblyRoot() {
         return container.isAssemblyRoot();
     }

@@ -189,7 +189,7 @@ public non-sealed abstract class BeanIntrospector implements BeanLocalAccessor {
      *            a non-empty collection of hooks
      * @param field
      *            an operational field
-     * @see AnnotatedFieldHook
+     * @see app.packed.extension.ExtensionMetaHook.AnnotatedBeanFieldHook
      */
     // Combinations of Field Annotations, Variable Annotations & VariableType
     // Failures? or order of importancez

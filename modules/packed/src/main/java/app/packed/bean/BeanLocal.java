@@ -38,7 +38,7 @@ import sandbox.extension.bean.BeanHandle;
  * The nested {@link Accessor} interfaces details all the entities that supports bean local storage in its permit
  * clause.
  * <p>
- * Bean locals should generally not be shared outside outside of trusted code.
+ * Bean local instances should generally not be shared outside outside of trusted code.
  * <p>
  * Bean locals should only be used while building an application. A notable exception is bean mirrors which may use them
  * for querying at runtime.
@@ -46,6 +46,7 @@ import sandbox.extension.bean.BeanHandle;
  * @see app.packed.extension.bean.BeanBuilder#setLocal(BeanLocal, Object)
  * @see ContainerLocal
  */
+// We do not cache errors from suppliers... These are intended to not be handled at build-time
 public final class BeanLocal<T> extends PackedLocal<T> {
 
     private BeanLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
@@ -83,12 +84,14 @@ public final class BeanLocal<T> extends PackedLocal<T> {
      * @throws NullPointerException
      *             if value is present and the given action is {@code null}
      */
-    public void ifPresent(BeanLocalAccessor accessor, Consumer<? super T> action) {
+    public void ifBound(BeanLocalAccessor accessor, Consumer<? super T> action) {
         throw new UnsupportedOperationException();
     }
 
     /**
-     * Returns whether or not a value has been set or previously initialized in the specified accessor.
+     * Returns whether or not a value has been bound to this local for the bean represented by the specified accessor.
+     *
+     * Was: Returns whether or not a value has been set or previously initialized in the specified accessor.
      *
      * @param accessor
      *            the bean local accessor
@@ -98,18 +101,18 @@ public final class BeanLocal<T> extends PackedLocal<T> {
      *          supplier was specified when creating the local. As such this method rarely makes sense to call if an initial
      *          value supplier was specified when creating the local.
      */
-    public boolean isSet(BeanLocalAccessor accessor) {
+    public boolean isBound(BeanLocalAccessor accessor) {
         BeanSetup bean = crack(accessor);
         return bean.locals().isBound(this, bean);
     }
 
     /**
-     * Returns whether or not a value has been set or previously initialized in the specified accessor.
+     * Returns whether or not a value has been bound or previously initialized in the specified accessor.
      *
      * @param accessor
      *            the bean local accessor
      * @param other
-     *            the value to return if a value has not been set previously
+     *            the value to return if a value has not been bound previously
      * @return true if a value has been set or initialized, otherwise false
      *
      * @apiNote Calling this method will <strong>never</strong> initialize the value of the local even if a initial value
@@ -127,12 +130,12 @@ public final class BeanLocal<T> extends PackedLocal<T> {
     }
 
     /**
-     * Sets the value of this local for the specified bean.
+     * Sets the bound value of this local for the bean represented by the specified accessor.
      *
      * @param bean
      *            the bean
      * @param value
-     *            the value to set
+     *            the value to bind
      */
     public void set(BeanLocalAccessor accessor, T value) {
         BeanSetup bean = crack(accessor);

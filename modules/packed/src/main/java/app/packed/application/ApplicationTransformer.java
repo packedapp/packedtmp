@@ -18,6 +18,6 @@ package app.packed.application;
 /**
  *
  */
-public class ApplicationTransformer {
+public interface ApplicationTransformer {
 
 }

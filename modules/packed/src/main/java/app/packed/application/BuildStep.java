@@ -15,34 +15,13 @@
  */
 package app.packed.application;
 
-import app.packed.container.Assembly;
-import app.packed.extension.Extension;
-
 /**
  *
  */
-// Den er jo ikke kun build step. Det er også ejer af ting...
-// Maaske har vi ikke author, men build step istedet for...
 
-// Is it ComposerStep????
-// For example, delayed Codegen kunne også vaere et build step
+// fx Bean.SetName
+// fx Container.SetName
+//
+public class BuildStep {
 
-// Maybe BuildTask is better? But then again Extensions are 2 tasks really
-
-// ContainerHook er jo en slags BuildStep...
-// Extension har sådan set 2 build steps...
-public sealed interface BuildStep permits Assembly, Extension {
-
-    /** The state of an {@link Assembly}. */
-    public enum State {
-
-        /** The assembly has not yet been used in a build process. */
-        BEFORE_BUILD,
-
-        /** The assembly is currently being used in a build process. */
-        IN_USE,
-
-        /** The assembly has already been used in a build process (either successfully or unsuccessfully). */
-        AFTER_BUILD;
-    }
 }

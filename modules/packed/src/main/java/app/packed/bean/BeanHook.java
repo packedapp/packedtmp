@@ -27,8 +27,8 @@ import java.lang.annotation.Target;
 import app.packed.application.ApplicationHook.ApplicationIs;
 import app.packed.application.BuildGoal;
 import app.packed.component.ComponentMetaHook;
-import app.packed.component.ContainerHook.ContainerIs;
-import app.packed.container.AssemblyHook.AssemblyIs;
+import app.packed.container.AssemblyHook.AssemblyMatcher;
+import app.packed.container.ContainerHook.ContainerMatcher;
 
 /**
  *
@@ -47,9 +47,9 @@ public @interface BeanHook {
 
     ApplicationIs[] ifApplication() default {};
 
-    AssemblyIs[] ifAssembly() default {};
+    AssemblyMatcher[] ifAssembly() default {};
 
-    ContainerIs[] ifContainer() default {};
+    ContainerMatcher[] ifContainer() default {};
 
     BeanIs[] ifBean() default {};
 
@@ -59,6 +59,8 @@ public @interface BeanHook {
 
     /**
      * {@return the transformer that should be applied to the container(s) defined by the assembly}
+     * <p>
+     * If a meta hook. The annotated annotation
      * <p>
      * Implementations must be visible and instantiable to the framework. If using the module system this means that the
      * implementation should be accessible to the module of the framework and have a public constructor. Or the package in
@@ -79,7 +81,7 @@ public @interface BeanHook {
         // The assembly is always the application assembly
         // I don't know about this here...
         // Ideen var at man kunne sige noget om at applikations assemblyen var annoteret med X
-        AssemblyIs[] applicationAssemblyIs() default {};
+        AssemblyMatcher[] applicationAssemblyIs() default {};
 
         // Do we have a Seperate buildIs???? Maybe I think so
         BuildGoal[] buildGoalsAnyOf() default { BuildGoal.IMAGE, BuildGoal.LAUNCH, BuildGoal.MIRROR, BuildGoal.VERIFY };
@@ -95,4 +97,20 @@ public @interface BeanHook {
         /** An array of assembly hook declarations. */
         BeanHook[] value();
     }
+}
+
+//
+// @BeanHook(MyFooContainer.class)
+// Problemet er vi gerne vil laese ifApplication o.s.v. fra annoteringen.
+//
+@interface InstallXNumberOfBeans {
+
+    ApplicationIs[] ifApplication() default {};
+
+    AssemblyMatcher[] ifAssembly() default {};
+
+    ContainerMatcher[] ifContainer() default {};
+
+    int numberOfBeansToInstall();
+
 }

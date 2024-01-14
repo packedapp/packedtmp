@@ -15,10 +15,15 @@
  */
 package app.packed.bean;
 
-import app.packed.extension.BeanElement;
-import app.packed.extension.BeanIntrospector;
-import sandbox.extension.bean.BeanHandle;
+/**
+ *
+ */
 
-/** An entity where bean local values can be stored and retrieved. */
-// Used to be an inner interface on BeanLocal, but eclipse compiled complained on it
-public sealed interface BeanLocalAccessor permits BeanConfiguration, BeanElement, BeanHandle, BeanIntrospector, BeanMirror {}
+// Hidden Class?
+// ClassLoader
+// Eager/Lazy
+// Module? Well same module
+// Nestmate <-- then we can access private fields, if nes
+public interface BeanProxyStrategy {
+
+}

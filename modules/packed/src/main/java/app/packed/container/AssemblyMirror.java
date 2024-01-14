@@ -10,6 +10,7 @@ import app.packed.application.DeploymentMirror;
 import app.packed.component.Mirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
+import app.packed.util.AnnotationList;
 import app.packed.util.TreeView;
 import app.packed.util.TreeView.Node;
 import internal.app.packed.container.AssemblySetup;
@@ -39,6 +40,19 @@ public class AssemblyMirror implements Mirror {
     public AssemblyMirror() {
         // Will fail if the assembly mirror is not initialized by the framework
         this.assembly = AssemblySetup.MIRROR_INITIALIZER.initialize();
+    }
+
+    /**
+     *
+     * This list only containers relevant annotations that are understod by the framework.
+     * Or does it? IDK
+     *
+     * @return
+     *
+     * @see Class#getAnnotations()
+     */
+    public AnnotationList annotations() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@return the application this assembly contributes to.} */

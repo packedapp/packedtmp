@@ -39,11 +39,11 @@ import internal.app.packed.container.PackedContainerBuilder;
  *
  * BeanHook
  * <p>
- * Packed has no features that requires annotation based fields or methods on assemblies. And the framework will never
- * perform any kind of reflection based introspection of assembly subclasses.
+ * Packed has no features that requires annotation based fields or methods on assembly classes. And the framework will
+ * never perform any kind of reflection based introspection of assembly subclasses.
  * <p>
- * An assembly can never be used more than once. Trying to do so will result in an {@link IllegalStateException} being
- * thrown.
+ * An assembly can only be used once. Trying to reuse the assembly instance will result in an
+ * {@link IllegalStateException} being thrown.
  *
  * @see BaseAssembly
  */
@@ -72,10 +72,15 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
         return new PackedAssemblyFinder(getClass(), container().container.assembly);
     }
 
+    /** {@return the current state of the assembly.} */
+    protected final Assembly.State assemblyState() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * This method must be overridden by the application developer in order to configure the application.
      * <p>
-     * This method is never invoked more than once for a given assembly instance.
+     * This method will never be invoked more than once for a given assembly instance.
      * <p>
      * Note: This method should never be invoked directly by the user.
      */
@@ -116,6 +121,25 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
         }
     }
 
+//    protected final <T extends ComponentConfiguration> Stream<T> componentConfigurationSingleton(Class<T> configurationType) {
+//
+//    }
+    /**
+     * Checks that {@link #build()} has not yet been called by the framework.
+     * <p>
+     * This method is typically used by assemblies that define configuration methods that can only be called before
+     * {@link #build()} is invoked.
+     *
+     * @throws IllegalStateException
+     *             if {@link #build()} has already been invoked
+     * @see #isPreBuild()
+     */
+    protected final void checkIsPreBuild() {
+        if (!isPreBuild()) {
+            throw new IllegalStateException("This method must be called before the assembly is used to build an application");
+        }
+    }
+
     // Paa Assembly, ContainerConfiguration, Bean
     /**
      * Returns a stream of the component configurations defined by this
@@ -134,25 +158,6 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
         // componentConfigurations(ScheduledOperatitionConfiguration.class)
 
         throw new UnsupportedOperationException();
-    }
-
-//    protected final <T extends ComponentConfiguration> Stream<T> componentConfigurationSingleton(Class<T> configurationType) {
-//
-//    }
-    /**
-     * Checks that {@link #build()} has not yet been called by the framework.
-     * <p>
-     * This method is typically used by assemblies that define configuration methods that can only be called before
-     * {@link #build()} is invoked.
-     *
-     * @throws IllegalStateException
-     *             if {@link #build()} has already been invoked
-     * @see #isPreBuild()
-     */
-    protected final void checkIsPreBuild() {
-        if (!isPreBuild()) {
-            throw new IllegalStateException("This method must be called before the assembly is used to build an application");
-        }
     }
 
     /**
@@ -175,6 +180,12 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
         return c;
     }
 
+    // Think just have a containers() method...
+    protected final void forEach(Consumer<? super ContainerConfiguration> consumer) {
+        forEach(c -> c.use(BaseExtension.class));
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns whether or not {@link #build()} has already been called.
      * <p>
@@ -186,11 +197,6 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
      */
     protected final boolean isPreBuild() {
         return configuration == null;
-    }
-
-    /** {@return the current state of the assembly.} */
-    protected final Assembly.State assemblyState() {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -217,6 +223,10 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
         container().container.assembly.lookup(lookup);
     }
 
+    final void openForTransformation(String... modules) {
+
+    }
+
     /**
      * Specializes the {@link AssemblyMirror} that represents this assembly.
      *
@@ -229,15 +239,5 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
         requireNonNull(supplier, "supplier cannot be null");
         container();
         throw new UnsupportedOperationException();
-    }
-
-    // Maybe other name
-    protected final void forEach(Consumer<? super ContainerConfiguration> consumer) {
-        forEach(c -> c.use(BaseExtension.class));
-        throw new UnsupportedOperationException();
-    }
-
-    final void openForTransformation(String... modules) {
-
     }
 }

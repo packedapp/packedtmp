@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.application.ApplicationHook.ApplicationIs;
-import app.packed.container.AssemblyHook.AssemblyIs;
+import app.packed.container.AssemblyHook.AssemblyMatcher;
 
 /**
  *
@@ -64,14 +64,14 @@ public @interface ApplicationHook {
         // The assembly is always the application assembly
         // I don't know about this here...
         // Ideen var at man kunne sige noget om at applikations assemblyen var annoteret med X
-        AssemblyIs[] applicationAssemblyIs() default {};
+        AssemblyMatcher[] applicationAssemblyIs() default {};
 
         // Do we have a Seperate buildIs???? Maybe I think so
         BuildGoal[] buildGoalsAnyOf() default { BuildGoal.IMAGE, BuildGoal.LAUNCH, BuildGoal.MIRROR, BuildGoal.VERIFY };
     }
 }
 
-@ApplicationHook(ifApplication = @ApplicationIs(applicationAssemblyIs = @AssemblyIs(annotatedWithAny = Deprecated.class)), value = ApplicationTransformer.class)
+@ApplicationHook(ifApplication = @ApplicationIs(applicationAssemblyIs = @AssemblyMatcher(annotatedWithAny = Deprecated.class)), value = ApplicationTransformer.class)
 class TestIt {
 
 }

@@ -15,8 +15,11 @@
  */
 package app.packed.application;
 
+import java.util.function.Consumer;
+
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
+import app.packed.container.Assembly;
 import internal.app.packed.container.ApplicationSetup;
 
 /**
@@ -24,6 +27,7 @@ import internal.app.packed.container.ApplicationSetup;
  */
 // By default it is configuration everywhere..
 // Maybe have a freeze()/protect() operation/
+
 public class ApplicationConfiguration extends ComponentConfiguration {
 
     ApplicationSetup application;
@@ -52,4 +56,21 @@ public class ApplicationConfiguration extends ComponentConfiguration {
     public boolean isConfigurable() {
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * If no name is set, uses the name of the root container
+     *
+     * @param name
+     */
+    public void named(String name) {
+
+    }
+
+
+    public void allowAll() {}
+
+    // matcher
+
+    // replace with AssemblyModel (or AssemblyDescriptor)
+    public void allowAll(Consumer<? super Class<? extends Assembly>> c) {}
 }

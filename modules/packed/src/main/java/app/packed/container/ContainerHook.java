@@ -1,6 +1,5 @@
 package app.packed.container;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -8,6 +7,8 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import app.packed.container.AssemblyHook.AssemblyMatcher;
 
 /**
  * An annotation that can be places on an assembly.
@@ -24,25 +25,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Repeatable(AssemblyHook.All.class)
-public @interface AssemblyHook {
+@Repeatable(ContainerHook.All.class)
+public @interface ContainerHook {
 
-    /**
-     * Whether or not the hook applies only to the top container defined by the assembly. The default value is
-     * {@code false}.
-     *
-     * @return whether or not the hook should be applied to all containers defined by the assembly or only the top level
-     *         container
-     *
-     * @see ContainerConfiguration#isAssemblyRoot()
-     */
-    // We include all containers defined by the assembly per default. Because this is how BeanHooks would work.
-    // And this is also how a would work
-
-    // Hmm naar vi begynder fx at bruge namespaces saa virker den jo ikke super godt.
-    // Taenker vi gerne vil kunne se apply on toplevel namespace only (per default)
-    // Maaske skal vi have en annotering per transformer??
-    boolean applyToTopAssemblyContainerOnly() default false;
+    AssemblyMatcher[] matchAssembly() default {};
 
     /**
      * {@return the transformer that should be applied to the container(s) defined by the assembly}
@@ -61,28 +47,46 @@ public @interface AssemblyHook {
     @interface All {
 
         /** An array of assembly hook declarations. */
-        AssemblyHook[] value();
+        ContainerHook[] value();
     }
 
+    @interface ContainerMatcher {
 
-    @interface AssemblyMatcher {
+        String ifContainerInPath()
 
-        Class<? extends Annotation>[] annotatedWithAny() default {};
+        default "*"; // Regexp on container path
+        // Would it be nice to be able to do it with beans as well??
+        // For example, if I cannot modify the bean. So like a " full path
+        // Nah, I think just specifying the class would be fine
 
-        boolean rootInApplicationOnly() default false;
+        String[] taggedWith() default {};
 
-        // Can we have marker interfaces on assemblies??? I don't think so
-        Class<?>[] ofType() default {};
+        boolean rootInApplication() default false;
 
-        // I don't think we allow wildcards
         /**
-         * @return
-         * @see Module#getName()
+         * @return the container is only matched if it is the root container in the assembly
          */
-        String[] inModule() default {};
+        boolean rootInAssembly() default false;
     }
+}
+
+// Hvordan kan vi extract dette.
+// Taenker vi kigger paa fields, og proever at matche, og proever at lave en
+// Alternativ kan man selv tilfoeje det via en transformer??? IDK
+@ContainerHook(ContainerTransformer.class)
+@interface MyHook {
+    AssemblyMatcher[] matchAssembly() default {};
+}
+
+@ContainerHook(matchAssembly = @AssemblyMatcher(inModule = "foo.base"), value = ContainerTransformer.class)
+@MyHook(matchAssembly = @AssemblyMatcher(inModule = "foo.base"))
+abstract class MyAss extends BaseAssembly {
 
 }
+
+//// Hmm Maybe we need an assembly hook... IDK
+//// Alternative have Class<Assembly> as default value
+//Class<? extends Assembly>[] definedInAssemblyOfType() default {};
 
 //Include on Assembly??? as Assembly.Hook??? Naah, we have BeanHook as well I believe
 

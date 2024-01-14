@@ -15,18 +15,18 @@
  */
 package app.packed.container;
 
-import app.packed.application.BuildStep;
+import app.packed.application.BuildTask;
 import app.packed.container.AbstractComposer.ComposableAssembly;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerBuilder;
 
 /**
- * Assemblies are the basic building block for creating applications in Packed.
+ * Assemblies are the basic building block for defining an application in Packed.
  * <p>
  * An assembly provides the concrete instructions for creating an application, and every application is constructed
  * either directly or indirectly from one or more assemblies. As such a single assembly can either comprise the entire
- * application or serve as the root of an assembly hierarchy, in which each node is responsible for building a part of
- * the application.
+ * application or serve as the root of a hierarchy of assembly nodes, where each node is responsible for building a part
+ * of the application.
  * <p>
  * Assemblies does not have a runtime representation. They are a strictly build-time construct.
  *
@@ -57,7 +57,7 @@ import internal.app.packed.container.PackedContainerBuilder;
  * <p>
  * This class cannot be extended directly, you would typically extend {@link BaseAssembly} instead.
  */
-public sealed abstract class Assembly implements BuildStep permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
+public sealed abstract class Assembly implements BuildTask permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
 
     /**
      * Invoked by the runtime (via a MethodHandle) to build the assembly.

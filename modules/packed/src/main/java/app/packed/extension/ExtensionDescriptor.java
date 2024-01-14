@@ -31,6 +31,7 @@ import internal.app.packed.container.ExtensionModel;
  * Unlike {@link ExtensionMirror} which contains information about a particular <strong>usage</strong> of an extension.
  * The information provided by this descriptor are static information about the extension itself.
  */
+// Rename to ExtensionModel????
 public sealed interface ExtensionDescriptor permits ExtensionModel {
 
     /** {@return an immutable unordered set containing every dependency the extension declares.} */

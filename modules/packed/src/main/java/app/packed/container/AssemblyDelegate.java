@@ -13,12 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.container;
 
-import app.packed.extension.BeanElement;
-import app.packed.extension.BeanIntrospector;
-import sandbox.extension.bean.BeanHandle;
+import java.util.function.Consumer;
 
-/** An entity where bean local values can be stored and retrieved. */
-// Used to be an inner interface on BeanLocal, but eclipse compiled complained on it
-public sealed interface BeanLocalAccessor permits BeanConfiguration, BeanElement, BeanHandle, BeanIntrospector, BeanMirror {}
+/**
+ *
+ */
+@FunctionalInterface
+public interface AssemblyDelegate extends Consumer<AssemblyConfiguration> {
+
+
+    public enum Option {
+
+    }
+}

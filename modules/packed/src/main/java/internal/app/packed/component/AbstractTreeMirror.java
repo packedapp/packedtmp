@@ -52,8 +52,8 @@ public class AbstractTreeMirror<T extends Mirror, N extends Mirrorable<T>> imple
     }
 
     @Override
-    public Node<T> rootNode() {
-        return TreeView.super.rootNode();
+    public Node<T> nodeRoot() {
+        return TreeView.super.nodeRoot();
     }
 
     public static class MirrorNode<T extends Mirror, N extends Mirrorable<T>> implements TreeView.Node<T> {
