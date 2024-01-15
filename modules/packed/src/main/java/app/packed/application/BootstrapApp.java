@@ -26,11 +26,11 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.application.BootstrapApp.Image;
+import app.packed.assembly.AbstractComposer;
+import app.packed.assembly.Assembly;
+import app.packed.assembly.AbstractComposer.ComposerAction;
 import app.packed.bean.BeanKind;
 import app.packed.build.BuildGoal;
-import app.packed.container.AbstractComposer;
-import app.packed.container.AbstractComposer.ComposerAction;
-import app.packed.container.Assembly;
 import app.packed.container.ContainerLocal;
 import app.packed.container.Wirelet;
 import app.packed.extension.FrameworkExtension;

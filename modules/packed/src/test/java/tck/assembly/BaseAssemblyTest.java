@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Test;
 
 import app.packed.application.App;
-import app.packed.container.BaseAssembly;
+import app.packed.assembly.BaseAssembly;
 import tck.AppAppTest;
 import tck.TckAssemblies.HelloWorldAssembly;
 

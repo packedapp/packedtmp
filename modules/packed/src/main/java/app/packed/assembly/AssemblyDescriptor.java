@@ -13,20 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.assembly;
 
 /**
- * A component is generic xxx
- * <p>
- * All components have a unique component path that disguished from any other component with a single application (deployment).
+ *
  */
+// Ideen er egentlig lidt at man kan bruge den til at filtrer ting istedet for at faa en Class<? super Assembly>
+// Paa den side saa bruger vi jo Class<? super Extension<?>> i flaeng
+interface AssemblyDescriptor {
 
-// Maybe BeanHandle, BeanMirror, BeanConfiguration all extend this interface
-// I'm not sure it is super useful.. And maybe more con
-public interface Component {
-
-    /** {@return the path of the component} */
-    ComponentPath componentPath();
 }
-// Owner does not make on a component. Who owns an extension (if it is a component).
-// Who owns a namespace?let us say two extensions shares one.

@@ -18,7 +18,7 @@ package sandbox.program;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
 import app.packed.application.BootstrapApp.Image;
-import app.packed.container.Assembly;
+import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint;
 import app.packed.service.ServiceLocator;

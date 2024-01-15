@@ -18,6 +18,10 @@ package app.packed.container;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.application.App;
+import app.packed.assembly.Assembly;
+import app.packed.assembly.AssemblyTransformations;
+import app.packed.assembly.BaseAssembly;
+import app.packed.assembly.DelegatingAssembly;
 import app.packed.bean.BeanLocal;
 import app.packed.service.ServiceableBeanConfiguration;
 

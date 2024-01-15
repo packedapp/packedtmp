@@ -26,10 +26,10 @@ import java.util.function.Consumer;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
-import app.packed.container.AbstractComposer;
-import app.packed.container.AbstractComposer.ComposableAssembly;
-import app.packed.container.AbstractComposer.ComposerAction;
-import app.packed.container.Assembly;
+import app.packed.assembly.AbstractComposer;
+import app.packed.assembly.Assembly;
+import app.packed.assembly.AbstractComposer.ComposableAssembly;
+import app.packed.assembly.AbstractComposer.ComposerAction;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionMetaHook.BindingTypeHook;

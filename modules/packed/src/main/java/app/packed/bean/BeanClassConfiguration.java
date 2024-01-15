@@ -27,7 +27,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import app.packed.container.Assembly;
+import app.packed.assembly.Assembly;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import app.packed.util.Variable;

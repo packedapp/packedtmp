@@ -1,4 +1,4 @@
-package app.packed.container;
+package app.packed.assembly;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
@@ -8,6 +8,8 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import app.packed.container.ContainerTransformer;
 
 /**
  * An annotation that can be places on an assembly.

@@ -18,9 +18,9 @@ package sandbox.extension.sandbox;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.application.App;
+import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanKind;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.container.BaseAssembly;
 import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;

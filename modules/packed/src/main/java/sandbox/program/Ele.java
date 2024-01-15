@@ -15,7 +15,7 @@
  */
 package sandbox.program;
 
-import app.packed.container.BaseAssembly;
+import app.packed.assembly.BaseAssembly;
 import app.packed.extension.Extension;
 
 /**

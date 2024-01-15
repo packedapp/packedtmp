@@ -20,7 +20,7 @@ import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 import java.util.function.Supplier;
 
-import app.packed.component.Component;
+import app.packed.component.ComponentPath;
 import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
@@ -48,7 +48,9 @@ import internal.app.packed.operation.PackedOperationHandle;
 // Top
 // Non-Top
 // Embedded
-public sealed interface OperationHandle extends Component, ContextualizedElement permits PackedOperationHandle {
+public sealed interface OperationHandle extends ContextualizedElement permits PackedOperationHandle {
+
+    ComponentPath componentPath();
 
     /**
      * Checks that the container is still configurable, or throws an exception.

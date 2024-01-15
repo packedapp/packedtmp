@@ -15,7 +15,7 @@
  */
 package app.packed.application;
 
-import app.packed.container.Assembly;
+import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.StopOption;
 import sandbox.lifetime.external.LifecycleController;

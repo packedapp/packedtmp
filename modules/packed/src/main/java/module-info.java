@@ -4,6 +4,7 @@ module app.packed {
     //  requires jdk.incubator.concurrent; // Sometimes test
 
     exports app.packed.application;
+    exports app.packed.assembly;
     exports app.packed.bean;
     exports app.packed.build;
     exports app.packed.cli;

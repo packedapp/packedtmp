@@ -18,7 +18,7 @@ package app.packed.application;
 import java.util.concurrent.Future;
 
 import app.packed.application.BootstrapApp.Image;
-import app.packed.container.Assembly;
+import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.util.Result;
 import sandbox.extension.container.ContainerCarrierService;

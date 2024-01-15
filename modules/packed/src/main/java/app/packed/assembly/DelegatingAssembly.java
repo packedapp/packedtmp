@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.assembly;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
 import app.packed.build.BuildException;
+import app.packed.container.ContainerTransformer;
+import app.packed.container.Wirelet;
 import internal.app.packed.container.AssemblyModel;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerBuilder;

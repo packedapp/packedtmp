@@ -22,7 +22,7 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import app.packed.container.Assembly;
+import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;

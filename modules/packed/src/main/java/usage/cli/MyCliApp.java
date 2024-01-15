@@ -16,8 +16,8 @@
 package usage.cli;
 
 import app.packed.application.App;
+import app.packed.assembly.BaseAssembly;
 import app.packed.cli.CliCommand;
-import app.packed.container.BaseAssembly;
 
 /**
  *

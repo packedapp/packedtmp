@@ -29,7 +29,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.application.App;
-import app.packed.container.BaseAssembly;
+import app.packed.assembly.BaseAssembly;
 
 /**
  *

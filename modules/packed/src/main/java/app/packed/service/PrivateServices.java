@@ -15,7 +15,7 @@
  */
 package app.packed.service;
 
-import app.packed.container.AssemblyHook;
+import app.packed.assembly.AssemblyHook;
 import app.packed.container.ContainerTransformer;
 
 /**

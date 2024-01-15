@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.container.BaseAssembly;
+import app.packed.assembly.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;

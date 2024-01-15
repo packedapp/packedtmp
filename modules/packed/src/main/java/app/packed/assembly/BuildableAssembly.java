@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.assembly;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,6 +23,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.container.ContainerConfiguration;
 import app.packed.extension.BaseExtension;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
@@ -69,7 +70,7 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
     /** {@return an assembly finder that can be used to find assemblies on the class- or module-path.} */
     // Classpath if the assembly is on the classpath, otherwise modulepath
     protected final AssemblyFinder assemblyFinder() {
-        return new PackedAssemblyFinder(getClass(), container().container.assembly);
+        return new PackedAssemblyFinder(getClass(), Assembly.crack(container()).assembly);
     }
 
     /** {@return the current state of the assembly.} */
@@ -113,11 +114,11 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
                 assembly.model.postBuild(configuration);
             } finally {
                 // Sets #configuration to a marker object that indicates the assembly has been used
-                existing = ContainerConfiguration.USED;
+                existing = Assembly.USED;
             }
             assembly.postBuild();
             return assembly;
-        } else if (existing == ContainerConfiguration.USED) {
+        } else if (existing == Assembly.USED) {
             // Assembly has already been used (successfully or unsuccessfully)
             throw new IllegalStateException("This assembly has already been used, assembly = " + getClass());
         } else {
@@ -179,7 +180,7 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
         ContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of an assembly");
-        } else if (c == ContainerConfiguration.USED) {
+        } else if (c == Assembly.USED) {
             throw new IllegalStateException("This method must be called from within the #build() method of an assembly.");
         }
         return c;
@@ -225,7 +226,7 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
-        container().container.assembly.lookup(lookup);
+        Assembly.crack(container()).assembly.lookup(lookup);
     }
 
     final void openForTransformation(String... modules) {

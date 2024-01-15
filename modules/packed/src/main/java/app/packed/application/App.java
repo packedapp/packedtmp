@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.application.AbstractApp.DefaultApp;
-import app.packed.container.Assembly;
+import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.RunState;
 import app.packed.lifetime.StopOption;

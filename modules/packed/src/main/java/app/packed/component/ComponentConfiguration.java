@@ -21,10 +21,9 @@ package app.packed.component;
 // We do not have a common ComponentHandle. Because extensions might define their own component configuration.
 
 // Children??? Is it hierarchical???
-public abstract class ComponentConfiguration implements Component {
+public abstract class ComponentConfiguration {
 
     /** {@return the path of the component} */
-    @Override
     public abstract ComponentPath componentPath();
 
     /**

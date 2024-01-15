@@ -11,10 +11,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.assembly.AssemblyMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentOperator;
 import app.packed.component.ComponentPath;
-import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.context.Context;
 import app.packed.context.ContextMirror;

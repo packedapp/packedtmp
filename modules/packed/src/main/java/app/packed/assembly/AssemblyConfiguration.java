@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.assembly;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 
+import app.packed.container.ContainerConfiguration;
 import app.packed.util.TreeView;
 import internal.app.packed.container.AssemblySetup;
 

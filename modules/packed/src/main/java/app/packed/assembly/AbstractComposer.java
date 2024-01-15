@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.assembly;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 
+import app.packed.container.ContainerConfiguration;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
@@ -69,7 +70,7 @@ public abstract class AbstractComposer {
         ContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of an assembly");
-        } else if (c == ContainerConfiguration.USED) {
+        } else if (c == Assembly.USED) {
             throw new IllegalStateException("Cannot call this method outside of ComposerAction::build(Composer)");
         }
         return c;
@@ -97,7 +98,7 @@ public abstract class AbstractComposer {
      */
     public final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
-        configuration().container.assembly.lookup(lookup);
+        Assembly.crack(configuration()).assembly.lookup(lookup);
     }
 
     protected void preCompose() {}
@@ -151,11 +152,11 @@ public abstract class AbstractComposer {
                     a.model.postBuild(cc);
                 } finally {
                     // Sets #configuration to a marker object that indicates the assembly has been used
-                    composer.configuration = ContainerConfiguration.USED;
+                    composer.configuration = Assembly.USED;
                 }
                 a.postBuild();
                 return a;
-            } else if (existing == ContainerConfiguration.USED) {
+            } else if (existing == Assembly.USED) {
                 // Assembly has already been used (successfully or unsuccessfully)
                 throw new IllegalStateException("This assembly has already been used, assembly = " + getClass());
             } else {

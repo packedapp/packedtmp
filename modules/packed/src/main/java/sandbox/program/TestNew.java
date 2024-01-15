@@ -23,8 +23,8 @@ import java.lang.annotation.Target;
 import java.util.List;
 
 import app.packed.application.App;
+import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanMirror;
-import app.packed.container.BaseAssembly;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;

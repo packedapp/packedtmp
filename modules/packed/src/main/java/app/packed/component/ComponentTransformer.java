@@ -17,7 +17,7 @@ package app.packed.component;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.container.Assembly;
+import app.packed.assembly.Assembly;
 
 /**
  *

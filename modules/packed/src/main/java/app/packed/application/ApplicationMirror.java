@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import app.packed.assembly.AssemblyMirror;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
-import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;

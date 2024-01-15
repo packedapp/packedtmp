@@ -8,7 +8,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.container.AssemblyHook.AssemblyMatcher;
+import app.packed.assembly.BaseAssembly;
+import app.packed.assembly.AssemblyHook.AssemblyMatcher;
 
 /**
  * An annotation that can be places on an assembly.

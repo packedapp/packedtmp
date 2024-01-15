@@ -1,6 +1,6 @@
 package internal.app.packed.jfr;
 
-import app.packed.container.Assembly;
+import app.packed.assembly.Assembly;
 
 /**
     *

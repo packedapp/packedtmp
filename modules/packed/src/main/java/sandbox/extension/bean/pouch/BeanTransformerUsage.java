@@ -17,9 +17,9 @@ package sandbox.extension.bean.pouch;
 
 import java.lang.invoke.MethodHandles;
 
+import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanClassConfiguration;
 import app.packed.bean.Inject;
-import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerTransformer;
 import app.packed.extension.BaseExtension;

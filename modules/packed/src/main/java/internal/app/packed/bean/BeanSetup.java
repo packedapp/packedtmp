@@ -15,7 +15,6 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.component.Component;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentOperator;
 import app.packed.component.ComponentPath;
@@ -54,7 +53,7 @@ import sandbox.extension.operation.OperationTemplate;
  * @implNote The reason this class does not directly implement BeanHandle is because the BeanHandle interface is
  *           parameterised.
  */
-public final class BeanSetup implements ContextualizedElementSetup , Component, PackedLocalSource {
+public final class BeanSetup implements ContextualizedElementSetup , PackedLocalSource {
 
     /** A MethodHandle for invoking {@link ExtensionMirror#initialize(ExtensionSetup)}. */
     private static final MethodHandle MH_BEAN_INTROSPECTOR_TO_BEAN = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class, "bean",
@@ -155,7 +154,6 @@ public final class BeanSetup implements ContextualizedElementSetup , Component, 
     }
 
     /** {@inheritDoc} */
-    @Override
     public ComponentPath componentPath() {
         return ComponentKind.BEAN.pathNew(container.componentPath(), name());
     }

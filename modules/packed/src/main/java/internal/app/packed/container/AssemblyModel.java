@@ -9,12 +9,12 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 
+import app.packed.assembly.Assembly;
+import app.packed.assembly.AssemblyHook;
+import app.packed.assembly.DelegatingAssembly;
 import app.packed.build.BuildException;
-import app.packed.container.Assembly;
-import app.packed.container.AssemblyHook;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerTransformer;
-import app.packed.container.DelegatingAssembly;
 import internal.app.packed.bean.BeanHookModel;
 import internal.app.packed.util.ThrowableUtil;
 

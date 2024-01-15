@@ -17,6 +17,9 @@ package app.packed.container;
 
 import java.lang.invoke.MethodHandles;
 
+import app.packed.assembly.Assembly;
+import app.packed.assembly.AssemblyMirror;
+
 /**
  * An assembly hook is super cool
  *

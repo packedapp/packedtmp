@@ -17,7 +17,7 @@ package sandbox.extension.application.old;
 
 import java.util.function.Supplier;
 
-import app.packed.container.Assembly;
+import app.packed.assembly.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.extension.FrameworkExtension;

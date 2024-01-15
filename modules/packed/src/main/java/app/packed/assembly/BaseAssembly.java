@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.assembly;
 
+import app.packed.container.ApplicationWirelet;
+import app.packed.container.Wirelet;
+import app.packed.container.WireletSelection;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanCustomHook.JavaBaseSupport;
 import app.packed.extension.Extension;

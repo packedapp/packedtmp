@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import app.packed.component.Component;
-import app.packed.container.Assembly;
+import app.packed.assembly.Assembly;
+import app.packed.component.ComponentPath;
 import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerLocalAccessor;
 import app.packed.container.ContainerMirror;
@@ -27,7 +27,9 @@ import sandbox.extension.operation.OperationHandle;
  * <p>
  * A lot of methods on this class is also available on {@link ContainerBuilder}.
  */
-public sealed interface ContainerHandle extends Component , ContainerLocalAccessor permits ContainerSetup {
+public sealed interface ContainerHandle extends ContainerLocalAccessor permits ContainerSetup {
+
+    ComponentPath componentPath();
 
     /**
      * Checks that the container is still configurable, or throws an exception.

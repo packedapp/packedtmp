@@ -19,8 +19,8 @@ import java.util.Collection;
 
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
+import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanMirror;
-import app.packed.container.BaseAssembly;
 import app.packed.extension.BaseExtensionMirror;
 import app.packed.service.Export;
 import app.packed.service.Provide;

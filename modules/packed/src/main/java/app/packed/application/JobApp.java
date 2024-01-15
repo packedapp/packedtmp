@@ -17,7 +17,7 @@ package app.packed.application;
 
 import java.util.concurrent.Future;
 
-import app.packed.container.Assembly;
+import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 
 /**

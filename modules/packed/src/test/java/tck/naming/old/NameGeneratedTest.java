@@ -20,7 +20,7 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.BaseAssembly;
+import app.packed.assembly.BaseAssembly;
 import app.packed.container.Wirelet;
 
 /** Tests that a proper name is generated if the name of a container is not explicitly set. */

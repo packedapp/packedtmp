@@ -29,10 +29,10 @@ import org.junit.jupiter.api.function.Executable;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BootstrapApp;
+import app.packed.assembly.Assembly;
+import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentOperator;
-import app.packed.container.Assembly;
-import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;

@@ -25,10 +25,10 @@ import java.util.IdentityHashMap;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.assembly.Assembly;
+import app.packed.assembly.DelegatingAssembly;
 import app.packed.build.BuildGoal;
-import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
-import app.packed.container.DelegatingAssembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.lifetime.LifetimeKind;

@@ -17,8 +17,8 @@ package tck;
 
 import java.util.function.Consumer;
 
-import app.packed.container.Assembly;
-import app.packed.container.BaseAssembly;
+import app.packed.assembly.Assembly;
+import app.packed.assembly.BaseAssembly;
 import app.packed.extension.BaseExtension;
 import tck.TckBeans.HelloMainBean;
 

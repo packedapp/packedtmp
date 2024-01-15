@@ -26,10 +26,10 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentOperator;
-import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionMetaHook.BindingTypeHook;

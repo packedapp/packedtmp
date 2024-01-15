@@ -23,8 +23,8 @@ import java.lang.annotation.Target;
 
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
+import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanKind;
-import app.packed.container.BaseAssembly;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
 import app.packed.extension.BeanIntrospector;

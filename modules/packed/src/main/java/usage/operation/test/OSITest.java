@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.time.LocalDateTime;
 
 import app.packed.application.App;
-import app.packed.container.BaseAssembly;
+import app.packed.assembly.BaseAssembly;
 import app.packed.extension.ExtensionMetaHook.AnnotatedBeanVariableHook;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.BindableVariable;

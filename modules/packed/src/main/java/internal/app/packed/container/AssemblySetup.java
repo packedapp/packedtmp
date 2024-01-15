@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 
+import app.packed.assembly.Assembly;
+import app.packed.assembly.AssemblyMirror;
+import app.packed.assembly.DelegatingAssembly;
 import app.packed.component.ComponentOperator;
-import app.packed.container.Assembly;
-import app.packed.container.AssemblyMirror;
-import app.packed.container.DelegatingAssembly;
 import app.packed.util.Nullable;
 import internal.app.packed.component.AbstractTreeMirror;
 import internal.app.packed.component.Mirrorable;

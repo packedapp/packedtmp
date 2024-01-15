@@ -17,7 +17,7 @@ package sandbox.program;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.BaseAssembly;
+import app.packed.assembly.BaseAssembly;
 import app.packed.lifetime.Main;
 import app.packed.lifetime.OnInitialize;
 import app.packed.lifetime.OnStart;

@@ -15,7 +15,7 @@
  */
 package app.packed.build;
 
-import app.packed.container.Assembly;
+import app.packed.assembly.Assembly;
 import app.packed.extension.Extension;
 
 /**

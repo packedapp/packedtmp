@@ -16,7 +16,7 @@
 package usage.container;
 
 import app.packed.application.App;
-import app.packed.container.BaseAssembly;
+import app.packed.assembly.BaseAssembly;
 import app.packed.container.Wirelets;
 import app.packed.lifetime.Main;
 

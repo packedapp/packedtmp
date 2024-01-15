@@ -13,12 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.assembly;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
+
+import app.packed.assembly.AbstractComposer.ComposableAssembly;
 import app.packed.build.BuildTask;
-import app.packed.container.AbstractComposer.ComposableAssembly;
+import app.packed.container.ContainerConfiguration;
 import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerBuilder;
+import internal.app.packed.util.LookupUtil;
 
 /**
  * Assemblies are the basic building block for defining an application in Packed.
@@ -57,7 +63,33 @@ import internal.app.packed.container.PackedContainerBuilder;
  * <p>
  * This class cannot be extended directly, you would typically extend {@link BaseAssembly} instead.
  */
+// Move to build?? or maybe own package
 public sealed abstract class Assembly implements BuildTask permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
+
+    /**
+     * A marker configuration object indicating that an assembly (or composer) has already been used for building a
+     * container. Should never be exposed to end-users.
+     */
+    static final ContainerConfiguration USED;
+
+    /** A handle that can access BeanConfiguration#handle. */
+    static final VarHandle VH_CONTAINER_CONFIGURATION_TO_CONTAINER_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerConfiguration.class,
+            "container", ContainerSetup.class);
+
+    static ContainerSetup crack(ContainerConfiguration cc) {
+        return (ContainerSetup) VH_CONTAINER_CONFIGURATION_TO_CONTAINER_SETUP.get(cc);
+    }
+
+    static {
+        try {
+            MethodHandles.Lookup l= MethodHandles.lookup();
+            l = MethodHandles.privateLookupIn(ContainerConfiguration.class, l);
+            VarHandle h = l.findStaticVarHandle(ContainerConfiguration.class, "USED", ContainerConfiguration.class);
+            USED = (ContainerConfiguration) h.get();
+        } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     /**
      * Invoked by the runtime (via a MethodHandle) to build the assembly.

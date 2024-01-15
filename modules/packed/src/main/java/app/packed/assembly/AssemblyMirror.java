@@ -1,4 +1,4 @@
-package app.packed.container;
+package app.packed.assembly;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.DeploymentMirror;
 import app.packed.component.Mirror;
+import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
 import app.packed.util.AnnotationList;

@@ -18,9 +18,9 @@ package app.packed.application;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.component.Mirror;
-import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionMetaHook.BindingTypeHook;

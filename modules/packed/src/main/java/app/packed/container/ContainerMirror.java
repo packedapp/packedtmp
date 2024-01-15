@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.DeploymentMirror;
+import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentOperator;

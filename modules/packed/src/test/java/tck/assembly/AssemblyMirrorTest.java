@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.AssemblyMirror;
+import app.packed.assembly.AssemblyMirror;
 import tck.AppAppTest;
 import tck.TckAssemblies;
 

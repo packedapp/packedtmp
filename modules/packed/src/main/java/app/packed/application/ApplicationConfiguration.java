@@ -17,9 +17,9 @@ package app.packed.application;
 
 import java.util.function.Consumer;
 
+import app.packed.assembly.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
-import app.packed.container.Assembly;
 import internal.app.packed.container.ApplicationSetup;
 
 /**

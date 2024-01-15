@@ -18,8 +18,8 @@ package app.packed.cli;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
+import app.packed.assembly.Assembly;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op;

@@ -18,7 +18,7 @@ package tck.naming.old;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.application.BootstrapApp.Image;
-import app.packed.container.BaseAssembly;
+import app.packed.assembly.BaseAssembly;
 import app.packed.container.Wirelet;
 import sandbox.program.ProgramX;
 

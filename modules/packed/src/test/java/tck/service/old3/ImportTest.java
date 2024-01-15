@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import app.packed.container.BaseAssembly;
+import app.packed.assembly.BaseAssembly;
 import app.packed.operation.Op1;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Key;

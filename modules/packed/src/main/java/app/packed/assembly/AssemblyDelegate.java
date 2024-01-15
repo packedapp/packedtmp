@@ -13,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.assembly;
+
+import java.util.function.Consumer;
 
 /**
  *
  */
-// Ideen er egentlig lidt at man kan bruge den til at filtrer ting istedet for at faa en Class<? super Assembly>
-// Paa den side saa bruger vi jo Class<? super Extension<?>> i flaeng
-interface AssemblyDescriptor {
+@FunctionalInterface
+public interface AssemblyDelegate extends Consumer<AssemblyConfiguration> {
 
+
+    public enum Option {
+
+    }
 }

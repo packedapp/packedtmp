@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import app.packed.assembly.Assembly;
 import app.packed.build.BuildGoal;
-import app.packed.container.Assembly;
 import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;

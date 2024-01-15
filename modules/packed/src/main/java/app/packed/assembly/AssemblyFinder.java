@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.assembly;
 
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
 import java.util.ServiceLoader;
 import java.util.stream.Stream;
+
+import app.packed.container.Wirelet;
 
 /**
  * An assembly finder can be used to find one or more assemblies on the class- or module-path.

@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.BaseAssembly;
+import app.packed.assembly.BaseAssembly;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op0;
 import app.packed.service.ServiceLocator;
