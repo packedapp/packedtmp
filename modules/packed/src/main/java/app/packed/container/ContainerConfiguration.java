@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import app.packed.bean.BeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
-import app.packed.container.ContainerLocal.LocalAccessor;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.util.Nullable;
@@ -25,7 +24,7 @@ import sandbox.extension.container.ContainerHandle;
  */
 // Could let it be extendable. But it would only be usable through methods on extensions. Although
 // An assembly could return an instance of it
-public non-sealed class ContainerConfiguration extends ComponentConfiguration implements LocalAccessor {
+public non-sealed class ContainerConfiguration extends ComponentConfiguration implements ContainerLocalAccessor {
 
     /**
      * A marker configuration object indicating that an assembly (or composer) has already been used for building a

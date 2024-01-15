@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 import app.packed.component.Component;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerLocal;
+import app.packed.container.ContainerLocalAccessor;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.errorhandling.ErrorHandler;
@@ -26,7 +27,7 @@ import sandbox.extension.operation.OperationHandle;
  * <p>
  * A lot of methods on this class is also available on {@link ContainerBuilder}.
  */
-public sealed interface ContainerHandle extends Component , ContainerLocal.LocalAccessor permits ContainerSetup {
+public sealed interface ContainerHandle extends Component , ContainerLocalAccessor permits ContainerSetup {
 
     /**
      * Checks that the container is still configurable, or throws an exception.

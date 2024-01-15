@@ -16,11 +16,16 @@
 package app.packed.component;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import app.packed.bean.BeanLocal;
+import app.packed.bean.BeanLocalAccessor;
 
 /**
  *
  */
-public interface ComponentLocal<A, T> {
+//We do not cache errors from suppliers... These are intended to not be handled at build-time
+public sealed interface ComponentLocal<A, T> permits BeanLocal {
 
     /**
      * Returns the local value from the specified accessor.
@@ -81,4 +86,46 @@ public interface ComponentLocal<A, T> {
      *          value supplier was specified when creating the local.
      */
     T orElse(A accessor, T other);
+
+
+    /**
+     * If a value is present, performs the given action with the value, otherwise does nothing.
+     *
+     * @param action
+     *            the action to be performed, if a value is present
+     * @throws NullPointerException
+     *             if value is present and the given action is {@code null}
+     */
+    default void ifBound(BeanLocalAccessor accessor, Consumer<? super T> action) {
+
+    }
+
+
+
+    /**
+     * Sets the bound value of this local for the bean represented by the specified accessor.
+     *
+     * @param bean
+     *            the bean
+     * @param value
+     *            the value to bind
+     */
+    default void set(BeanLocalAccessor accessor, T value) {
+
+    }
+
+    @SuppressWarnings("unused")
+    default <X extends Throwable> T orElseThrow(BeanLocalAccessor accessor, Supplier<? extends X> exceptionSupplier) throws X {
+        throw new UnsupportedOperationException();
+    }
+
+    // I think these are nice. We can use use for transformers. Add something for pre-transform.
+    // Remove them for post, no need to keep them around
+    default T remove(BeanLocalAccessor accessor) {
+        throw new UnsupportedOperationException();
+    }
+
+
+  //https://docs.oracle.com/en/java/javase/20/docs/api/jdk.incubator.concurrent/jdk/incubator/concurrent/ScopedValue.html#get()
+
 }

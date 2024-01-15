@@ -17,7 +17,6 @@ import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentOperator;
 import app.packed.component.ComponentPath;
-import app.packed.container.ContainerLocal.LocalAccessor;
 import app.packed.context.Context;
 import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
@@ -48,7 +47,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * At runtime you can have a ContainerMirror injected
  */
 @BindingTypeHook(extension = BaseExtension.class)
-public non-sealed class ContainerMirror implements ComponentMirror , ContextualizedElementMirror , LocalAccessor {
+public non-sealed class ContainerMirror implements ComponentMirror , ContextualizedElementMirror , ContainerLocalAccessor {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {

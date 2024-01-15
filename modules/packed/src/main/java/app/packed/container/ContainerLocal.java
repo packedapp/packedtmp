@@ -24,7 +24,6 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerLocal;
 import internal.app.packed.container.PackedComponentLocal;
-import sandbox.extension.container.ContainerHandle;
 
 /**
  * This class provides container-local variables at build-time.
@@ -75,7 +74,7 @@ public abstract sealed class ContainerLocal<T> extends PackedComponentLocal<T> p
      *             if a value has not been set previously for this container local and an initial value supplier was not
      *             specified when creating the container local
      */
-    public T get(LocalAccessor accessor) {
+    public T get(ContainerLocalAccessor accessor) {
         throw new UnsupportedOperationException();
     }
 
@@ -98,7 +97,7 @@ public abstract sealed class ContainerLocal<T> extends PackedComponentLocal<T> p
      * @throws NullPointerException
      *             if value is present and the given action is {@code null}
      */
-    public void ifPresent(LocalAccessor accessor, Consumer<? super T> action) {
+    public void ifPresent(ContainerLocalAccessor accessor, Consumer<? super T> action) {
         throw new UnsupportedOperationException();
     }
 
@@ -229,11 +228,4 @@ public abstract sealed class ContainerLocal<T> extends PackedComponentLocal<T> p
     public static <T> ContainerLocal<T> ofFamily() {
         throw new UnsupportedOperationException();
     }
-
-    /** An entity where bean local values can be stored and retrieved. */
-    // Extension?
-
-    // En god maade at traekke sig selv ud...
-    // ContainerLocal<FooExtension> myLocal = FooExtension.local();
-    public sealed interface LocalAccessor permits ContainerConfiguration, ContainerHandle, ContainerMirror {}
 }

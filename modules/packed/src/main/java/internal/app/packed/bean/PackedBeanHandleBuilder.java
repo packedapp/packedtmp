@@ -206,7 +206,7 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
         // Copy any bean locals that have been set, we need to set this before introspection
         // I think maybe we need to do this as the last action?
         for (Entry<BeanLocal<?>, Object> e : locals.entrySet()) {
-            container.application.locals.set((BeanLocal) e.getKey(), bean, e.getValue());
+            container.application.locals.set((PackedBeanLocal) e.getKey(), bean, e.getValue());
         }
 
         // Creating an operation representing the Op if created from one.

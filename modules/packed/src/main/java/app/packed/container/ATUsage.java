@@ -18,16 +18,22 @@ package app.packed.container;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.application.App;
+import app.packed.bean.BeanLocal;
+import app.packed.service.ServiceableBeanConfiguration;
 
 /**
  *
  */
 public class ATUsage extends BaseAssembly {
 
+    static final BeanLocal<String> L = BeanLocal.of();
+
     /** {@inheritDoc} */
     @Override
     protected void build() {
         assembly().containers().forEach(c -> c.beans().forEach(b -> b.operations().forEach(o -> o.componentPath())));
+
+        ServiceableBeanConfiguration<String> i = install(String.class);
 
     }
 

@@ -13,23 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.container;
 
-import java.util.function.Supplier;
+import sandbox.extension.container.ContainerHandle;
 
-import app.packed.util.Nullable;
-import internal.app.packed.container.PackedComponentLocal;
+/** An entity where bean local values can be stored and retrieved. */
+// Extension?
 
-/**
- *
- */
-public class PackedBeanLocal<T> extends PackedComponentLocal<T> {
-
-    /**
-     * @param initialValueSupplier
-     */
-    protected PackedBeanLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
-        super(initialValueSupplier);
-    }
-
-}
+// En god maade at traekke sig selv ud...
+// ContainerLocal<FooExtension> myLocal = FooExtension.local();
+public sealed interface ContainerLocalAccessor permits ContainerConfiguration, ContainerHandle, ContainerMirror {}

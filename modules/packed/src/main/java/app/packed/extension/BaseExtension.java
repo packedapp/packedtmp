@@ -19,7 +19,6 @@ import app.packed.bean.BeanClassConfiguration;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.Inject;
 import app.packed.bean.ManagedBeanRequiredException;
@@ -52,6 +51,7 @@ import app.packed.util.Variable;
 import internal.app.packed.bean.BeanLifecycleOrder;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandleBuilder;
+import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.bean.PackedBindableWrappedVariable;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.container.NonRootContainerBuilder;
@@ -102,7 +102,7 @@ import sandbox.lifetime.external.LifecycleController;
 public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /** A bean local for variables that use {@link app.packed.extension.BaseExtensionPoint.CodeGenerated}. */
-    private static final BeanLocal<Map<Key<?>, BindableVariable>> CODEGEN = BeanLocal.of(() -> new HashMap<>());
+    private static final PackedBeanLocal<Map<Key<?>, BindableVariable>> CODEGEN = new PackedBeanLocal<>(() -> new HashMap<>());
 
     // We use an initial value for now, because we share FromLinks and the boolean fields
     // But right now we only have a single field
