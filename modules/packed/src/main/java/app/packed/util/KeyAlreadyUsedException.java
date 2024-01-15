@@ -15,7 +15,7 @@
  */
 package app.packed.util;
 
-import app.packed.application.BuildException;
+import app.packed.build.BuildException;
 
 /** An exception that is typically thrown when attempting to provide multiple services using the same key. */
 public class KeyAlreadyUsedException extends BuildException {

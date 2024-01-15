@@ -38,6 +38,9 @@ import app.packed.extension.Extension;
 import app.packed.util.Nullable;
 import internal.app.packed.component.AbstractTreeMirror;
 import internal.app.packed.component.Mirrorable;
+import internal.app.packed.component.PackedComponentLocal;
+import internal.app.packed.component.PackedLocalMap;
+import internal.app.packed.component.PackedLocalSource;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
@@ -52,7 +55,7 @@ import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.operation.OperationHandle;
 
 /** The internal configuration of a container. */
-public final class ContainerSetup implements ActualNode<ContainerSetup> , ContextualizedElementSetup , Mirrorable<ContainerMirror> , ContainerHandle {
+public final class ContainerSetup implements ActualNode<ContainerSetup> , ContextualizedElementSetup , Mirrorable<ContainerMirror> , ContainerHandle, PackedLocalSource {
 
     /** A magic initializer for {@link ContainerMirror}. */
     public static final MagicInitializer<ContainerSetup> MIRROR_INITIALIZER = MagicInitializer.of(ContainerMirror.class);
@@ -356,5 +359,11 @@ public final class ContainerSetup implements ActualNode<ContainerSetup> , Contex
         public PackedContainerTreeMirror(ContainerSetup root, @Nullable Predicate<? super ContainerSetup> filter) {
             super(root, filter);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedLocalMap locals() {
+        return null;
     }
 }

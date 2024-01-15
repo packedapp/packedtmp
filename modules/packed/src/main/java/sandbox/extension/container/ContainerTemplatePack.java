@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.application.BuildException;
+import app.packed.build.BuildException;
 import app.packed.container.ContainerLocal;
 import app.packed.extension.Extension;
 import app.packed.util.Key;

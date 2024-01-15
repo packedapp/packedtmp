@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.application.BuildException;
+import app.packed.build.BuildException;
 import app.packed.operation.Op0;
 import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;

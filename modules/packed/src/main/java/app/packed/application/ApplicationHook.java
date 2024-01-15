@@ -24,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.application.ApplicationHook.ApplicationIs;
+import app.packed.build.BuildGoal;
 import app.packed.container.AssemblyHook.AssemblyMatcher;
 
 /**

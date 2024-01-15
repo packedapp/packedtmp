@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
-import app.packed.application.BuildException;
+import app.packed.build.BuildException;
 import app.packed.container.Assembly;
 
 /**

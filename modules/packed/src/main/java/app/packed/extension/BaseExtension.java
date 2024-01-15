@@ -13,7 +13,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.BuildException;
 import app.packed.application.DeploymentMirror;
 import app.packed.bean.BeanClassConfiguration;
 import app.packed.bean.BeanConfiguration;
@@ -22,6 +21,7 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.Inject;
 import app.packed.bean.ManagedBeanRequiredException;
+import app.packed.build.BuildException;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerConfiguration;

@@ -25,7 +25,7 @@ import java.util.IdentityHashMap;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.BuildGoal;
+import app.packed.build.BuildGoal;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.DelegatingAssembly;

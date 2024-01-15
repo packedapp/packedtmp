@@ -15,7 +15,7 @@
  */
 package app.packed.extension;
 
-import app.packed.application.BuildException;
+import app.packed.build.BuildException;
 
 /**
  * An exception typically thrown to indicate an internal malfunction of an extension.

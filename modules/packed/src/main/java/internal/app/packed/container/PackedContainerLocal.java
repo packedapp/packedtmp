@@ -17,15 +17,21 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import app.packed.bean.BeanLocal;
 import app.packed.container.ContainerLocal;
+import app.packed.container.ContainerLocalAccessor;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.component.PackedComponentLocal;
+import internal.app.packed.component.PackedLocalMap;
 
 /** Implementation of {@link ContainerLocal}. */
 // Tror foerst vi skal beslutte os om vi har initial value
-public final class PackedContainerLocal<T> extends ContainerLocal<T> {
+public final class PackedContainerLocal<T> extends PackedComponentLocal<ContainerLocalAccessor, T> implements ContainerLocal<T> {
 
     /** The scope of this container local. */
     private final LocalScope scope;
@@ -35,8 +41,18 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
         this.scope = requireNonNull(scope);
     }
 
+    public T get(BeanSetup bean) {
+        return get(bean.container);
+    }
+
+
     /** {@inheritDoc} */
     @Override
+    public T get(ContainerLocalAccessor accessor) {
+        return null;
+    }
+
+    /** {@inheritDoc} */
     public T get(ContainerSetup container) {
         return locals(container).get(this, container);
     }
@@ -47,6 +63,15 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
 
     /** {@inheritDoc} */
     @Override
+    public void ifPresent(ContainerLocalAccessor accessor, Consumer<? super T> action) {}
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isBound(ContainerLocalAccessor accessor) {
+        return false;
+    }
+
+    /** {@inheritDoc} */
     public boolean isPresent(ContainerSetup container) {
         return locals(container).isBound(this, container);
     }
@@ -59,9 +84,27 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
         };
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public T orElse(ContainerLocalAccessor accessor, T other) {
+        return null;
+    }
+
     public void set(ContainerSetup container, T value) {
         requireNonNull(container);
         locals(container).set(this, container, value);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanLocal<T> toBeanLocal() {
+        return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Wirelet wireletConditionalGetter(T expectedValue, Wirelet wirelet) {
+        return null;
     }
 
     /** {@inheritDoc} */
@@ -89,5 +132,12 @@ public final class PackedContainerLocal<T> extends ContainerLocal<T> {
     // ContainerBoundaryKind
     public enum LocalScope {
         APPLICATION, CONTAINER, CONTAINER_LIFETIME, DEPLOYMENT;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected PackedLocalMap extract(ContainerLocalAccessor accessor) {
+        throw new UnsupportedOperationException();
     }
 }

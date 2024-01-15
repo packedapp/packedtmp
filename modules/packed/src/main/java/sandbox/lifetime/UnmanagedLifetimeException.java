@@ -15,7 +15,7 @@
  */
 package sandbox.lifetime;
 
-import app.packed.application.BuildException;
+import app.packed.build.BuildException;
 
 /**
  *

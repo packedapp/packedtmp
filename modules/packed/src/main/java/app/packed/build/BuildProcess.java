@@ -13,11 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package app.packed.build;
 
 /**
  *
  */
-public class AbstractTree<T> {
+// Ideen er lidt at man kan faa access til Build info.
+
+// Og fx hvis vi har hot reload tilfoeje en klasse to watch udover selve assemblies
+
+// Er den defineret i en ThreadLocal??
+// Tjah hvorfor ikke... Men tjah hvorfor
+interface BuildProcess {
 
 }

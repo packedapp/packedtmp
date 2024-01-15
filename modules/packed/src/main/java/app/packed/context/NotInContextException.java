@@ -15,7 +15,7 @@
  */
 package app.packed.context;
 
-import app.packed.application.BuildException;
+import app.packed.build.BuildException;
 
 /**
  *

@@ -15,7 +15,7 @@
  */
 package app.packed.bean;
 
-import app.packed.application.BuildException;
+import app.packed.build.BuildException;
 
 /** A build-time exception used to indicate that the installation of a bean failed. */
 public class BeanInstallationException extends BuildException {

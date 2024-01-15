@@ -1,6 +1,6 @@
 package sandbox.lifetime.old;
 
-import app.packed.application.BuildGoal;
+import app.packed.build.BuildGoal;
 
 // Input DAW (Application)Driver (Root)Assembly Wirelets
 

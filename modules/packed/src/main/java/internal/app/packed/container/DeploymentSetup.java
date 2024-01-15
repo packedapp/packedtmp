@@ -17,8 +17,9 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.application.BuildGoal;
 import app.packed.application.DeploymentMirror;
+import app.packed.build.BuildGoal;
+import internal.app.packed.component.PackedLocalMap;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.types.ClassUtil;
 

@@ -15,15 +15,11 @@
  */
 package app.packed.container;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanLocal;
-import app.packed.util.Nullable;
-import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.container.ContainerSetup;
+import app.packed.component.ComponentLocal;
 import internal.app.packed.container.PackedContainerLocal;
-import internal.app.packed.container.PackedComponentLocal;
 
 /**
  * This class provides container-local variables at build-time.
@@ -46,81 +42,13 @@ import internal.app.packed.container.PackedComponentLocal;
  * @see app.packed.container.ContainerMirror
  * @see BeanLocal
  */
-public abstract sealed class ContainerLocal<T> extends PackedComponentLocal<T> permits PackedContainerLocal {
+public sealed interface ContainerLocal<T> extends ComponentLocal<ContainerLocalAccessor, T> permits PackedContainerLocal {
 
-    protected ContainerLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
-        super(initialValueSupplier);
-    }
-
-    protected T get(BeanSetup bean) {
-        return get(bean.container);
-    }
-
-    /**
-     * Returns the container local value from the specified accessor.
-     * <p>
-     * If no value has been set for this local previously, this method will:
-     * <ul>
-     * <li>Initialize lazily, if an initial value supplier was used when creating this local.</li>
-     * <li>Fail with {@link java.util.NoSuchElementException}, if no initial value supplier was used when creating this
-     * local.</li>
-     * </ul>
-     *
-     * @param accessor
-     *            the container local accessor
-     * @return the value of the container local
-     *
-     * @throws java.util.NoSuchElementException
-     *             if a value has not been set previously for this container local and an initial value supplier was not
-     *             specified when creating the container local
-     */
-    public T get(ContainerLocalAccessor accessor) {
+    default BeanLocal<T> toBeanLocal() {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * @param container
-     *            the container to return the value for
-     * @return the value
-     */
-    protected abstract T get(ContainerSetup container);
-
-//    public T get(Extension<?> extension) {
-//        return get(extension.extension.container);
-//    }
-
-    /**
-     * If a value is present, performs the given action with the value, otherwise does nothing.
-     *
-     * @param action
-     *            the action to be performed, if a value is present
-     * @throws NullPointerException
-     *             if value is present and the given action is {@code null}
-     */
-    public void ifPresent(ContainerLocalAccessor accessor, Consumer<? super T> action) {
-        throw new UnsupportedOperationException();
-    }
-
-    protected boolean isPresent(BeanSetup bean) {
-        return isPresent(bean.container);
-    }
-
-    protected abstract boolean isPresent(ContainerSetup container);
-
-//    public boolean isPresent(Extension<?> extension) {
-//        return isPresent(extension.extension.container);
-//    }
-
-    protected void set(BeanSetup bean, T value) {
-        throw new UnsupportedOperationException();
-    }
-
-    // The use case is?
-    public BeanLocal<T> toBeanLocal() {
-        throw new UnsupportedOperationException();
-    }
-
-    Wirelet wireletConditionalGetter(T expectedValue, Wirelet wirelet) {
+    default Wirelet wireletConditionalGetter(T expectedValue, Wirelet wirelet) {
         throw new UnsupportedOperationException();
     }
 
@@ -133,7 +61,7 @@ public abstract sealed class ContainerLocal<T> extends PackedComponentLocal<T> p
      *            the value to set the local to
      * @return the new wirelet
      */
-    public abstract Wirelet wireletSetter(T value);
+    Wirelet wireletSetter(T value);
 
     /**
      * Creates a new container local with application scope.
@@ -145,7 +73,7 @@ public abstract sealed class ContainerLocal<T> extends PackedComponentLocal<T> p
      *            the type of value to store
      * @return the new container local with application scope
      */
-    public static <T> ContainerLocal<T> ofApplication() {
+    static <T> ContainerLocal<T> ofApplication() {
         return PackedContainerLocal.of(PackedContainerLocal.LocalScope.APPLICATION);
     }
 
@@ -179,11 +107,11 @@ public abstract sealed class ContainerLocal<T> extends PackedComponentLocal<T> p
      *            the type of value to store
      * @return the new container local
      */
-    public static <T> ContainerLocal<T> ofContainer() {
+    static <T> ContainerLocal<T> ofContainer() {
         return PackedContainerLocal.of(PackedContainerLocal.LocalScope.CONTAINER);
     }
 
-    public static <T> ContainerLocal<T> ofContainer(Supplier<? extends T> initialValueSupplier) {
+    static <T> ContainerLocal<T> ofContainer(Supplier<? extends T> initialValueSupplier) {
         return PackedContainerLocal.of(PackedContainerLocal.LocalScope.CONTAINER, initialValueSupplier);
     }
 
@@ -205,7 +133,7 @@ public abstract sealed class ContainerLocal<T> extends PackedComponentLocal<T> p
 //        return PackedContainerLocal.of(PackedContainerLocal.Scope.CONTAINER_LIFETIME, initialValueSupplier);
 //    }
 
-    public static <T> ContainerLocal<T> ofDeployment() {
+    static <T> ContainerLocal<T> ofDeployment() {
         throw new UnsupportedOperationException();
     }
 
@@ -225,7 +153,7 @@ public abstract sealed class ContainerLocal<T> extends PackedComponentLocal<T> p
     // Der bruger den.
     // Vi skal nok ogsaa gemme dem i en CHM fordi vi ikke rigtig ved hvornaar der bliver skrevet til den.
 
-    public static <T> ContainerLocal<T> ofFamily() {
+    static <T> ContainerLocal<T> ofFamily() {
         throw new UnsupportedOperationException();
     }
 }

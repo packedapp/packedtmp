@@ -32,9 +32,8 @@ public class ATUsage extends BaseAssembly {
     @Override
     protected void build() {
         assembly().containers().forEach(c -> c.beans().forEach(b -> b.operations().forEach(o -> o.componentPath())));
-
         ServiceableBeanConfiguration<String> i = install(String.class);
-
+        i.operations().count();
     }
 
     public static void main(String[] args) {

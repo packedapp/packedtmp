@@ -28,8 +28,8 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.application.BuildGoal;
-import app.packed.application.BuildTask;
+import app.packed.build.BuildGoal;
+import app.packed.build.BuildTask;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentOperator;
 import app.packed.component.ComponentPath;

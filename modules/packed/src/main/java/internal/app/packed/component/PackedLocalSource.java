@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package internal.app.packed.component;
+
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.container.ContainerSetup;
 
 /**
  *
  */
-// Ideen er lidt at man kan faa access til Build info.
+public sealed interface PackedLocalSource permits ContainerSetup, BeanSetup {
 
-// Og fx hvis vi har hot reload tilfoeje en klasse to watch udover selve assemblies
-
-// Er den defineret i en ThreadLocal??
-// Tjah hvorfor ikke... Men tjah hvorfor
-interface BuildProcess {
-
+    PackedLocalMap locals();
 }

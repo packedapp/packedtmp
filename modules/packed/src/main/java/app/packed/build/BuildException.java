@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.build;
 
 /**
  * A generic build exception that may be thrown when building an application.

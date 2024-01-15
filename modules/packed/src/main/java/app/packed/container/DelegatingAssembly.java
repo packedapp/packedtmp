@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.application.BuildException;
+import app.packed.build.BuildException;
 import internal.app.packed.container.AssemblyModel;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerBuilder;

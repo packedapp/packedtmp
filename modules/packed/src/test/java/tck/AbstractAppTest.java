@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-import app.packed.application.BuildGoal;
+import app.packed.build.BuildGoal;
 import app.packed.container.BaseAssembly;
 import app.packed.container.BuildableAssembly;
 import app.packed.container.ContainerConfiguration;

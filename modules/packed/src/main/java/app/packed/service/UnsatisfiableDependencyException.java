@@ -15,7 +15,7 @@
  */
 package app.packed.service;
 
-import app.packed.application.BuildException;
+import app.packed.build.BuildException;
 
 /** An exception thrown at build-time when a valid binding could not be created for an operation. */
 // Valid but the

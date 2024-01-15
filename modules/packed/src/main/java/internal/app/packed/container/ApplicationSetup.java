@@ -27,6 +27,7 @@ import app.packed.component.ComponentPath;
 import app.packed.namespace.NamespaceOperator;
 import app.packed.util.Nullable;
 import internal.app.packed.component.Mirrorable;
+import internal.app.packed.component.PackedLocalMap;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.types.ClassUtil;
 

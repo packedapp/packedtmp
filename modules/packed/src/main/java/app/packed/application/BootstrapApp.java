@@ -27,6 +27,7 @@ import java.util.function.Supplier;
 
 import app.packed.application.BootstrapApp.Image;
 import app.packed.bean.BeanKind;
+import app.packed.build.BuildGoal;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.Assembly;

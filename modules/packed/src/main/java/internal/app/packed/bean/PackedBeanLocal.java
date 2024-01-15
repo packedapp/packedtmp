@@ -28,19 +28,20 @@ import app.packed.bean.BeanLocalAccessor;
 import app.packed.bean.BeanMirror;
 import app.packed.extension.BeanIntrospector;
 import app.packed.util.Nullable;
-import internal.app.packed.container.PackedComponentLocal;
+import internal.app.packed.component.PackedComponentLocal;
+import internal.app.packed.component.PackedLocalMap;
 import internal.app.packed.util.LookupUtil;
 import sandbox.extension.bean.BeanHandle;
 
 /**
  *
  */
-public final class PackedBeanLocal<T> extends PackedComponentLocal<T> implements BeanLocal<T> {
 
+public final class PackedBeanLocal<T> extends PackedComponentLocal<BeanLocalAccessor, T> implements BeanLocal<T> {
 
     /** A handle that can access BeanConfiguration#handle. */
-    private static final VarHandle VH_BEAN_MIRROR_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanMirror.class, "bean",
-            BeanSetup.class);
+    private static final VarHandle VH_BEAN_MIRROR_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanMirror.class, "bean", BeanSetup.class);
+
     /**
      * @param initialValueSupplier
      */
@@ -54,6 +55,17 @@ public final class PackedBeanLocal<T> extends PackedComponentLocal<T> implements
         BeanSetup bean = crack(accessor);
         return bean.locals().get(this, bean);
     }
+
+    @Override
+    protected PackedLocalMap extract(BeanLocalAccessor accessor) {
+        BeanSetup bean = crack(accessor);
+        return bean.locals();
+    }
+
+    protected BeanSetup extractKey(BeanLocalAccessor accessor) {
+        return crack(accessor);
+    }
+
 
     /**
      * If a value is present, performs the given action with the value, otherwise does nothing.

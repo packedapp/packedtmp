@@ -15,7 +15,7 @@
  */
 package app.packed.bean;
 
-import app.packed.application.BuildException;
+import app.packed.build.BuildException;
 
 /**
  * An exception that is typically thrown when trying to install a stateless (static or foreign) bean that makes use of

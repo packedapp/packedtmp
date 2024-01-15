@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-import app.packed.application.BuildException;
+import app.packed.build.BuildException;
 import internal.app.packed.container.AssemblySetup;
 
 /**

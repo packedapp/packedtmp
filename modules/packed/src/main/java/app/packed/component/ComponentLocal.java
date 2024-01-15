@@ -19,16 +19,17 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanLocal;
-import app.packed.bean.BeanLocalAccessor;
+import app.packed.container.ContainerLocal;
+import internal.app.packed.component.PackedComponentLocal;
 
 /**
  *
  */
 //We do not cache errors from suppliers... These are intended to not be handled at build-time
-public sealed interface ComponentLocal<A, T> permits BeanLocal {
+public sealed interface ComponentLocal<A, T> permits PackedComponentLocal, BeanLocal, ContainerLocal {
 
     /**
-     * Returns the local value from the specified accessor.
+     * Returns the local value via the specified accessor.
      * <p>
      * If no value has been set for this local previously, this method will:
      * <ul>
@@ -55,6 +56,18 @@ public sealed interface ComponentLocal<A, T> permits BeanLocal {
      * @throws NullPointerException
      *             if value is present and the given action is {@code null}
      */
+    default void ifBound(A accessor, Consumer<? super T> action) {
+
+    }
+
+    /**
+     * If a value is present, performs the given action with the value, otherwise does nothing.
+     *
+     * @param action
+     *            the action to be performed, if a value is present
+     * @throws NullPointerException
+     *             if value is present and the given action is {@code null}
+     */
     default void ifPresent(A accessor, Consumer<? super T> action) {}
 
     /**
@@ -72,6 +85,7 @@ public sealed interface ComponentLocal<A, T> permits BeanLocal {
      */
     boolean isBound(A accessor);
 
+
     /**
      * Returns whether or not a value has been bound or previously initialized in the specified accessor.
      *
@@ -88,19 +102,17 @@ public sealed interface ComponentLocal<A, T> permits BeanLocal {
     T orElse(A accessor, T other);
 
 
-    /**
-     * If a value is present, performs the given action with the value, otherwise does nothing.
-     *
-     * @param action
-     *            the action to be performed, if a value is present
-     * @throws NullPointerException
-     *             if value is present and the given action is {@code null}
-     */
-    default void ifBound(BeanLocalAccessor accessor, Consumer<? super T> action) {
 
+    @SuppressWarnings("unused")
+    default <X extends Throwable> T orElseThrow(A accessor, Supplier<? extends X> exceptionSupplier) throws X {
+        throw new UnsupportedOperationException();
     }
 
-
+    // I think these are nice. We can use use for transformers. Add something for pre-transform.
+    // Remove them for post, no need to keep them around
+    default T remove(A accessor) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Sets the bound value of this local for the bean represented by the specified accessor.
@@ -110,19 +122,8 @@ public sealed interface ComponentLocal<A, T> permits BeanLocal {
      * @param value
      *            the value to bind
      */
-    default void set(BeanLocalAccessor accessor, T value) {
+    default void set(A accessor, T value) {
 
-    }
-
-    @SuppressWarnings("unused")
-    default <X extends Throwable> T orElseThrow(BeanLocalAccessor accessor, Supplier<? extends X> exceptionSupplier) throws X {
-        throw new UnsupportedOperationException();
-    }
-
-    // I think these are nice. We can use use for transformers. Add something for pre-transform.
-    // Remove them for post, no need to keep them around
-    default T remove(BeanLocalAccessor accessor) {
-        throw new UnsupportedOperationException();
     }
 
 

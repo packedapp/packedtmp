@@ -15,7 +15,7 @@
  */
 package app.packed.service;
 
-import app.packed.application.BuildException;
+import app.packed.build.BuildException;
 
 /**
  * An exception thrown at build time to indicate a dependency cycle between multiple service providers.

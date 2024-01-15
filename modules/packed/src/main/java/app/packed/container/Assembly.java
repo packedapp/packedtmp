@@ -15,7 +15,7 @@
  */
 package app.packed.container;
 
-import app.packed.application.BuildTask;
+import app.packed.build.BuildTask;
 import app.packed.container.AbstractComposer.ComposableAssembly;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerBuilder;

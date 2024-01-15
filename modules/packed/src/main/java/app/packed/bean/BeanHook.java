@@ -25,7 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.application.ApplicationHook.ApplicationIs;
-import app.packed.application.BuildGoal;
+import app.packed.build.BuildGoal;
 import app.packed.component.ComponentMetaHook;
 import app.packed.container.AssemblyHook.AssemblyMatcher;
 import app.packed.container.ContainerHook.ContainerMatcher;

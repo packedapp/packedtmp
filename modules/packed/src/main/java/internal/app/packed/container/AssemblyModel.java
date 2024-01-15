@@ -9,7 +9,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 
-import app.packed.application.BuildException;
+import app.packed.build.BuildException;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyHook;
 import app.packed.container.ContainerConfiguration;
