@@ -16,6 +16,7 @@
 package app.packed.assembly;
 
 import app.packed.container.ApplicationWirelet;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.BaseExtension;
@@ -49,6 +50,20 @@ public abstract class BaseAssembly extends BuildableAssembly {
      */
     protected final BaseExtension base() {
         return use(BaseExtension.class);
+    }
+
+    /**
+     * Returns the configuration of the root container defined by this assembly.
+     * <p>
+     * This method can only be called from within the {@link #build()} method. Trying to call it outside of {@link #build()}
+     * will throw an {@link IllegalStateException}.
+     *
+     * @return the configuration of the container
+     * @throws IllegalStateException
+     *             if called from outside of the {@link #build()} method
+     */
+    protected final ContainerConfiguration container() {
+        return assembly().assembly.container.configuration;
     }
 
     protected final void exportAll() {

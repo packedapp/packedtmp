@@ -18,13 +18,8 @@ package app.packed.assembly;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
-import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
-import app.packed.extension.BaseExtension;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerBuilder;
@@ -52,36 +47,40 @@ import internal.app.packed.container.PackedContainerBuilder;
 public non-sealed abstract class BuildableAssembly extends Assembly {
 
     /**
-     * The configuration of the container that this assembly defines.
+     * The configuration of the assembly.
      * <p>
      * The value of this field goes through 3 states:
      * <p>
      * <ul>
      * <li>Initially, this field is null, indicating that the assembly has not yet been used to build anything.</li>
-     * <li>Then, as a part of the build process, it is initialized with a container configuration object.</li>
-     * <li>Finally, {@link ContainerConfiguration#USED} is set to indicate that the assembly has been used.</li>
+     * <li>Then, as a part of the build process, it is initialized with an assembly configuration object.</li>
+     * <li>Finally, {@link AssemblyConfiguration#USED} is set to indicate that the assembly has been used.</li>
      * </ul>
      * <p>
      * This field is updated via var handle {@link #VH_CONFIGURATION}.
      */
     @Nullable
-    private ContainerConfiguration configuration;
+    private AssemblyConfiguration configuration;
 
-    /** {@return an assembly finder that can be used to find assemblies on the class- or module-path.} */
-    // Classpath if the assembly is on the classpath, otherwise modulepath
-    protected final AssemblyFinder assemblyFinder() {
-        return new PackedAssemblyFinder(getClass(), Assembly.crack(container()).assembly);
-    }
-
-    /** {@return the current state of the assembly.} */
-    protected final Assembly.State assemblyState() {
-        throw new UnsupportedOperationException();
-    }
-
+    /**
+     * Returns the configuration of the assembly.
+     * <p>
+     * This method can only be called from within the {@link #build()} method. Trying to call it outside of {@link #build()}
+     * will throw an {@link IllegalStateException}.
+     *
+     * @return the configuration of the assembly
+     * @throws IllegalStateException
+     *             if called from outside of the {@link #build()} method
+     */
     protected final AssemblyConfiguration assembly() {
-        throw new UnsupportedOperationException();
+        AssemblyConfiguration c = configuration;
+        if (c == null) {
+            throw new IllegalStateException("This method cannot be called from the constructor of an assembly");
+        } else if (c == Assembly.USED) {
+            throw new IllegalStateException("This method must be called from within the #build() method of an assembly.");
+        }
+        return c;
     }
-
 
     /**
      * This method must be overridden by the application developer in order to configure the application.
@@ -95,23 +94,26 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
     /** {@inheritDoc} */
     @Override
     AssemblySetup build(PackedContainerBuilder builder) {
-        Object existing = configuration;
+        AssemblyConfiguration existing = configuration;
         if (existing == null) {
             AssemblySetup assembly = new AssemblySetup(builder, this);
-            existing = configuration = new ContainerConfiguration(assembly.container);
+            new ContainerConfiguration(assembly.container);
+
+            existing = configuration = new AssemblyConfiguration(assembly);
+
             try {
 
                 // What is the state of the assembly here??? Pre_Build or building
                 // I think post hooks are included in BEING_BUILT
 
                 // Run AssemblyHook.onPreBuild if hooks are present
-                assembly.model.preBuild(configuration);
+                assembly.model.preBuild(existing);
 
                 // Call the actual build() method
                 build();
 
                 // Run AssemblyHook.onPostBuild if hooks are present
-                assembly.model.postBuild(configuration);
+                assembly.model.postBuild(existing);
             } finally {
                 // Sets #configuration to a marker object that indicates the assembly has been used
                 existing = Assembly.USED;
@@ -127,9 +129,6 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
         }
     }
 
-//    protected final <T extends ComponentConfiguration> Stream<T> componentConfigurationSingleton(Class<T> configurationType) {
-//
-//    }
     /**
      * Checks that {@link #build()} has not yet been called by the framework.
      * <p>
@@ -144,52 +143,6 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
         if (!isPreBuild()) {
             throw new IllegalStateException("This method must be called before the assembly is used to build an application");
         }
-    }
-
-    // Paa Assembly, ContainerConfiguration, Bean
-    /**
-     * Returns a stream of the component configurations defined by this
-     *
-     * @param <T>
-     * @param configurationType
-     * @return
-     *
-     * @throws IllegalArgumentException
-     *             if the specified component type is not a valid component type
-     */
-    protected final <T extends ComponentConfiguration> Stream<T> componentConfigurations(Class<T> configurationType) {
-
-        // componentConfigurations(EntityBeanConfiguration.class).doo
-
-        // componentConfigurations(ScheduledOperatitionConfiguration.class)
-
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns the configuration of the main container defined by this assembly.
-     * <p>
-     * This method can only be called from within the {@link #build()} method. Trying to call it outside of {@link #build()}
-     * will throw an {@link IllegalStateException}.
-     *
-     * @return the configuration of the container
-     * @throws IllegalStateException
-     *             if called from outside of the {@link #build()} method
-     */
-    protected final ContainerConfiguration container() {
-        ContainerConfiguration c = configuration;
-        if (c == null) {
-            throw new IllegalStateException("This method cannot be called from the constructor of an assembly");
-        } else if (c == Assembly.USED) {
-            throw new IllegalStateException("This method must be called from within the #build() method of an assembly.");
-        }
-        return c;
-    }
-
-    // Think just have a containers() method...
-    protected final void forEach(Consumer<? super ContainerConfiguration> consumer) {
-        forEach(c -> c.use(BaseExtension.class));
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -226,24 +179,10 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
-        Assembly.crack(container()).assembly.lookup(lookup);
+        assembly().assembly.lookup(lookup);
     }
 
     final void openForTransformation(String... modules) {
 
-    }
-
-    /**
-     * Specializes the {@link AssemblyMirror} that represents this assembly.
-     *
-     * @param supplier
-     *            the mirror supplier
-     * @throws IllegalStateException
-     *             if called from outside of {@link #build()}
-     */
-    protected final void specializeMirror(Supplier<? extends AssemblyMirror> supplier) {
-        requireNonNull(supplier, "supplier cannot be null");
-        container();
-        throw new UnsupportedOperationException();
     }
 }

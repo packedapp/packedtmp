@@ -20,7 +20,7 @@ import java.nio.file.Path;
 import java.util.ServiceLoader;
 import java.util.stream.Stream;
 
-import app.packed.container.Wirelet;
+import internal.app.packed.container.PackedAssemblyFinder;
 
 /**
  * An assembly finder can be used to find one or more assemblies on the class- or module-path.
@@ -154,7 +154,7 @@ public sealed interface AssemblyFinder permits PackedAssemblyFinder {
      * {@return an assembly finder that uses the modulepath to find assemblies.}
      *
      * @param caller
-     *            a lookup object that is used for visibility and for instantiating assembly instances
+     *            a lookup object that is used for class visibility and for instantiating assembly instances
      */
     static AssemblyFinder onModulepath(MethodHandles.Lookup caller) {
         throw new UnsupportedOperationException();
@@ -172,23 +172,23 @@ public sealed interface AssemblyFinder permits PackedAssemblyFinder {
 // Her er det vel primaert en enkelt Assembly men leder efter
 
 // default mode er fra Assembly.getModule==Unamanaged ? classpath : modulepath
-interface Zarchive {
-
-    /**
-     * Links all matching assemblies by calling {@link app.packed.extension.BaseExtension#link(Assembly, Wirelet...)} for
-     * every assembly.
-     *
-     * @param wirelets
-     *            optional wirelets to apply for each assembly
-     *
-     * @throws UnsupportedOperationException
-     *             if used in stand-alone mode.
-     */
-    // Vi supportere ikke linking direkte...
-    // findAll().foreach(e->link(e));
-    void linkAll(Wirelet... wirelets);
-
-    default void linkOne(String moduleName, String className, Wirelet... wirelets) {
-
-    }
-}
+//interface Zarchive {
+//
+//    /**
+//     * Links all matching assemblies by calling {@link app.packed.extension.BaseExtension#link(Assembly, Wirelet...)} for
+//     * every assembly.
+//     *
+//     * @param wirelets
+//     *            optional wirelets to apply for each assembly
+//     *
+//     * @throws UnsupportedOperationException
+//     *             if used in stand-alone mode.
+//     */
+//    // Vi supportere ikke linking direkte...
+//    // findAll().foreach(e->link(e));
+//    void linkAll(Wirelet... wirelets);
+//
+//    default void linkOne(String moduleName, String className, Wirelet... wirelets) {
+//
+//    }
+//}

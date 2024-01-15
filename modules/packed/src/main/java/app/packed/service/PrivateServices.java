@@ -16,18 +16,18 @@
 package app.packed.service;
 
 import app.packed.assembly.AssemblyHook;
-import app.packed.container.ContainerTransformer;
+import app.packed.assembly.AssemblyTransformer;
 
 /**
  * Ideen er lidt at let kunne modificere en Assembly til lave sit eget service namespace
  */
-@AssemblyHook(applyToTopAssemblyContainerOnly = true, value = MyProc.class)
+@AssemblyHook(value = MyProc.class)
 @interface PrivateServices {
     boolean requireUpstreamExports() default true;
 
     boolean requireDownstreamExports() default false;
 }
 
-class MyProc implements ContainerTransformer {
+class MyProc implements AssemblyTransformer {
 
 }

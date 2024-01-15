@@ -62,6 +62,8 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
         if (assembly == null) {
             throw new BuildException(
                     "Delagating assembly: " + getClass() + " cannot return null from " + DelegatingAssembly.class.getSimpleName() + "::delegateTo");
+        } else if (assembly == this) {
+            throw new BuildException("Delagating assembly: " + getClass() + " cannot return this");
         }
 
         // Add this assembly to the list of delegating assemblies
@@ -103,6 +105,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
         // uses this .getClass() instead of a Lookup object
         throw new UnsupportedOperationException();
     }
+
     /**
      * Constructs a delegating assembly that will prefix all usage of the specified assembly with the specified wirelets
      *

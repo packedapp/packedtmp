@@ -16,6 +16,7 @@
 package usage.container;
 
 import app.packed.application.App;
+import app.packed.assembly.AssemblyFinder;
 import app.packed.assembly.BaseAssembly;
 
 /**
@@ -31,15 +32,11 @@ public class AssemblyFinderUsage extends BaseAssembly {
 //                "app.packed.application.usage.HelloWorldAssembly");
         // beanFinder
         // Maybe it should be used standalone here
-        link(assemblyFinder().paths("/Users/kaspernielsen/packed-workspace/packed-usage-on-modulepath/bin").findOne("app.packed.usage",
-                "app.packed.application.usage.HelloWorldAssembly"));
+        AssemblyFinder f = assembly().assemblyFinder().paths("/Users/kaspernielsen/packed-workspace/packed-usage-on-modulepath/bin");
+        link(f.findOne("app.packed.usage", "app.packed.application.usage.HelloWorldAssembly"));
     }
 
     public static void main(String[] args) {
         App.run(new AssemblyFinderUsage());
-
-//        App.imageOf(AssemblyFinder.onClasspath().findOne("foofs.sdfsdf"));
-
-        // ®App.mirrorOf(new AssemblyFinderUsage()).assemblies().print();
     }
 }

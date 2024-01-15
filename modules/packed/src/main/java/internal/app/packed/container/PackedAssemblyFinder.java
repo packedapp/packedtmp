@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.assembly;
+package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,8 +25,9 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+import app.packed.assembly.Assembly;
+import app.packed.assembly.AssemblyFinder;
 import app.packed.build.BuildException;
-import internal.app.packed.container.AssemblySetup;
 
 /**
  *
@@ -34,7 +35,7 @@ import internal.app.packed.container.AssemblySetup;
 
 // Tror maaske vi skal implementere en Class og en module thingy
 
-final class PackedAssemblyFinder implements AssemblyFinder {
+public final class PackedAssemblyFinder implements AssemblyFinder {
 
     AssemblySetup as;
 
@@ -45,7 +46,7 @@ final class PackedAssemblyFinder implements AssemblyFinder {
 
     ClassLoader parentLoader;
 
-    PackedAssemblyFinder(Class<?> clazz, AssemblySetup as) {
+    public PackedAssemblyFinder(Class<?> clazz, AssemblySetup as) {
         this.clazz = clazz;
         this.as = as;
         this.parentLoader = clazz.getClassLoader();

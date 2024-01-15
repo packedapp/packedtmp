@@ -9,8 +9,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.container.ContainerTransformer;
-
 /**
  * An annotation that can be places on an assembly.
  *
@@ -30,30 +28,13 @@ import app.packed.container.ContainerTransformer;
 public @interface AssemblyHook {
 
     /**
-     * Whether or not the hook applies only to the top container defined by the assembly. The default value is
-     * {@code false}.
-     *
-     * @return whether or not the hook should be applied to all containers defined by the assembly or only the top level
-     *         container
-     *
-     * @see ContainerConfiguration#isAssemblyRoot()
-     */
-    // We include all containers defined by the assembly per default. Because this is how BeanHooks would work.
-    // And this is also how a would work
-
-    // Hmm naar vi begynder fx at bruge namespaces saa virker den jo ikke super godt.
-    // Taenker vi gerne vil kunne se apply on toplevel namespace only (per default)
-    // Maaske skal vi have en annotering per transformer??
-    boolean applyToTopAssemblyContainerOnly() default false;
-
-    /**
      * {@return the transformer that should be applied to the container(s) defined by the assembly}
      * <p>
      * Implementations must be visible and instantiable to the framework. If using the module system this means that the
      * implementation should be accessible to the module of the framework and have a public constructor. Or the package in
      * which the implementation is located must be open to the framework.
      */
-    Class<? extends ContainerTransformer>[] value();
+    Class<? extends AssemblyTransformer>[] value();
 
     /** An annotation that allows for placing multiple {@link AssemblyHook} annotations on a single assembly. */
     @Retention(RetentionPolicy.RUNTIME)
@@ -66,15 +47,9 @@ public @interface AssemblyHook {
         AssemblyHook[] value();
     }
 
-
     @interface AssemblyMatcher {
 
         Class<? extends Annotation>[] annotatedWithAny() default {};
-
-        boolean rootInApplicationOnly() default false;
-
-        // Can we have marker interfaces on assemblies??? I don't think so
-        Class<?>[] ofType() default {};
 
         // I don't think we allow wildcards
         /**
@@ -82,6 +57,11 @@ public @interface AssemblyHook {
          * @see Module#getName()
          */
         String[] inModule() default {};
+
+        // Can we have marker interfaces on assemblies??? I don't think so
+        Class<?>[] ofType() default {};
+
+        boolean rootInApplicationOnly() default false;
     }
 
 }

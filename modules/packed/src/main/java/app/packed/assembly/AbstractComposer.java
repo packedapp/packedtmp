@@ -49,7 +49,7 @@ public abstract class AbstractComposer {
      * This field is updated via var handle {@link #VH_CONFIGURATION}.
      */
     @Nullable
-    ContainerConfiguration configuration;
+    AssemblyConfiguration configuration;
 
     /** {@return the base extension.} */
     protected BaseExtension base() {
@@ -67,13 +67,13 @@ public abstract class AbstractComposer {
      *             if called from outside of {@link ComposerAction#build(AbstractComposer)}
      */
     protected ContainerConfiguration configuration() {
-        ContainerConfiguration c = configuration;
+        AssemblyConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of an assembly");
         } else if (c == Assembly.USED) {
             throw new IllegalStateException("Cannot call this method outside of ComposerAction::build(Composer)");
         }
-        return c;
+        return c.assembly.container.configuration;
     }
 
     /**
@@ -138,18 +138,19 @@ public abstract class AbstractComposer {
             Object existing = composer.configuration;
             if (existing == null) {
                 AssemblySetup a = new AssemblySetup(builder, this);
-                ContainerConfiguration cc = composer.configuration = new ContainerConfiguration(a.container);
+                new ContainerConfiguration(a.container);
+                composer.configuration = new AssemblyConfiguration(a);
                 try {
                     composer.preCompose();
 
                     // Run AssemblyHook.onPreBuild if hooks are present
-                    a.model.preBuild(cc);
+                    a.model.preBuild(composer.configuration);
 
                     // Call actions build method with this composer
                     action.build(composer);
 
                     // Run AssemblyHook.onPostBuild if hooks are present
-                    a.model.postBuild(cc);
+                    a.model.postBuild(composer.configuration);
                 } finally {
                     // Sets #configuration to a marker object that indicates the assembly has been used
                     composer.configuration = Assembly.USED;

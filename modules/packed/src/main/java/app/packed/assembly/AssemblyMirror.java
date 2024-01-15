@@ -21,7 +21,7 @@ import internal.app.packed.container.ContainerSetup.PackedContainerTreeMirror;
 /**
  * A mirror of an assembly.
  * <p>
- * An instance of AssemblyMirror can be injected at runtime simply by declaring a dependency on it.
+ * An instance of AssemblyMirror can be injected into a bean at runtime simply by declaring a dependency on it.
  *
  * @see ApplicationMirror#assembly()
  * @see ContainerMirror#assembly()
@@ -45,8 +45,7 @@ public class AssemblyMirror implements Mirror {
 
     /**
      *
-     * This list only containers relevant annotations that are understod by the framework.
-     * Or does it? IDK
+     * This list only containers relevant annotations that are understod by the framework. Or does it? IDK
      *
      * @return
      *

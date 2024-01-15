@@ -18,10 +18,16 @@ package app.packed.assembly;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
+import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
+import app.packed.extension.BaseExtension;
 import app.packed.util.TreeView;
 import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.container.PackedAssemblyFinder;
 
 /**
  * The configuration of an assembly.
@@ -31,13 +37,26 @@ public class AssemblyConfiguration {
 
     AssemblySetup assembly;
 
+    AssemblyConfiguration(AssemblySetup assembly) {
+        this.assembly = assembly;
+    }
+
+
+    /** {@return an assembly finder that can be used to find assemblies on the class- or module-path.} */
+    // Classpath if the assembly is on the classpath, otherwise modulepath
+    public final AssemblyFinder assemblyFinder() {
+        return new PackedAssemblyFinder(getClass(), assembly);
+    }
+
+
+//  protected final <T extends ComponentConfiguration> Stream<T> componentConfigurationSingleton(Class<T> configurationType) {
+//
+//  }
+
     /** {@return an assembly finder that can be used to find assemblies on the class- or module-path.} */
     // Classpath if the assembly is on the classpath, otherwise modulepath
 
     // Maybe this is on the container level???? And not Assembly Level
-    protected final AssemblyFinder assemblyFinder() {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * A tree with all the containers defined by the assembly.
@@ -48,13 +67,60 @@ public class AssemblyConfiguration {
         throw new UnsupportedOperationException();
     }
 
+
+    // Think just have a containers() method...
+    public final void forEach(Consumer<? super ContainerConfiguration> consumer) {
+        forEach(c -> c.use(BaseExtension.class));
+        throw new UnsupportedOperationException();
+    }
+
     // The delegate is always provided by others
     public void delegate(AssemblyDelegate delegate, AssemblyDelegate.Option... options) {
 
-       // external methods that needs parameters should always return an assembly delegate,
+        // external methods that needs parameters should always return an assembly delegate,
     }
 
     public final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
+    }
+
+
+    /**
+     * Specializes the {@link AssemblyMirror} that represents this assembly.
+     *
+     * @param supplier
+     *            the mirror supplier
+     * @throws IllegalStateException
+     *             if called from outside of {@link #build()}
+     */
+    public final void specializeMirror(Supplier<? extends AssemblyMirror> supplier) {
+        requireNonNull(supplier, "supplier cannot be null");
+        throw new UnsupportedOperationException();
+    }
+
+
+    /** {@return the current state of the assembly.} */
+    protected final Assembly.State assemblyState() {
+        throw new UnsupportedOperationException();
+    }
+
+    // Paa Assembly, ContainerConfiguration, Bean
+    /**
+     * Returns a stream of the component configurations defined by this
+     *
+     * @param <T>
+     * @param configurationType
+     * @return
+     *
+     * @throws IllegalArgumentException
+     *             if the specified component type is not a valid component type
+     */
+    public final <T extends ComponentConfiguration> Stream<T> componentConfigurations(Class<T> configurationType) {
+
+        // componentConfigurations(EntityBeanConfiguration.class).doo
+
+        // componentConfigurations(ScheduledOperatitionConfiguration.class)
+
+        throw new UnsupportedOperationException();
     }
 }

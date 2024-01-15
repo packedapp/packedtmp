@@ -15,13 +15,9 @@
  */
 package app.packed.assembly;
 
-import app.packed.container.ContainerConfiguration;
-
 /**
  *
  */
-
-// HMMMM
 public interface AssemblyTransformer {
 
     /**
@@ -30,21 +26,13 @@ public interface AssemblyTransformer {
      * @param configuration
      *            the configuration of the container
      */
-    default void beforeBuild(ContainerConfiguration configuration) {}
+    default void beforeBuild(AssemblyConfiguration configuration) {}
 
-}
-//Ideen er egentlig lidt at man inde fra en assembly. Kan faa fat i alle tilgaengelige component configurationer
-//Fx giv mig alle entity bean configurations, og tilfoej dette tag...
-//Maaske er det i virkeligheden bare en Stream???? Eller et TreeView
-
-//componentConfigurations()
-//<T> Stream<C componentConfigurations(Class<? extends ComponentConfiguration cl)
-
-
-//Stream assignedTo();
-
-//assembly.componentConfigurations().filterOnOperation().hasTag("foo)
-
-interface ComponentConfigurationSet {
-
+    /**
+     * Invoked immediately before the runtime calls {@link Assembly#build()}.
+     *
+     * @param configuration
+     *            the configuration of the container
+     */
+    default void afterBuild(AssemblyConfiguration configuration) {}
 }

@@ -63,14 +63,13 @@ import internal.app.packed.util.LookupUtil;
  * <p>
  * This class cannot be extended directly, you would typically extend {@link BaseAssembly} instead.
  */
-// Move to build?? or maybe own package
 public sealed abstract class Assembly implements BuildTask permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
 
     /**
      * A marker configuration object indicating that an assembly (or composer) has already been used for building a
      * container. Should never be exposed to end-users.
      */
-    static final ContainerConfiguration USED;
+    static final AssemblyConfiguration USED = new AssemblyConfiguration(null);
 
     /** A handle that can access BeanConfiguration#handle. */
     static final VarHandle VH_CONTAINER_CONFIGURATION_TO_CONTAINER_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerConfiguration.class,
@@ -80,16 +79,6 @@ public sealed abstract class Assembly implements BuildTask permits BuildableAsse
         return (ContainerSetup) VH_CONTAINER_CONFIGURATION_TO_CONTAINER_SETUP.get(cc);
     }
 
-    static {
-        try {
-            MethodHandles.Lookup l= MethodHandles.lookup();
-            l = MethodHandles.privateLookupIn(ContainerConfiguration.class, l);
-            VarHandle h = l.findStaticVarHandle(ContainerConfiguration.class, "USED", ContainerConfiguration.class);
-            USED = (ContainerConfiguration) h.get();
-        } catch (ReflectiveOperationException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
 
     /**
      * Invoked by the runtime (via a MethodHandle) to build the assembly.
