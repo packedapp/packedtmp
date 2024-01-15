@@ -14,10 +14,13 @@ import app.packed.util.Key;
 import internal.app.packed.bean.PackedBeanHandle;
 import sandbox.extension.bean.BeanHandle;
 
-/** The configuration of a bean, typically returned from the bean's installation site. */
+/**
+ * The configuration of a bean, typically returned from the bean's installation site or via
+ * {@link app.packed.container.ContainerConfiguration#beans()}.
+ */
 public non-sealed class BeanConfiguration extends ComponentConfiguration implements BeanLocalAccessor {
 
-    /** The bean handle. */
+    /** The bean handle. We don't store BeanSetup directly because it is not generified */
     private final PackedBeanHandle<?> handle;
 
     /**
@@ -45,19 +48,6 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         return this;
     }
 
-    /** {@return the path of the component} */
-    @Override
-    public final ComponentPath componentPath() {
-        return handle.componentPath();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanConfiguration componentTag(String... tags) {
-        handle.componentTags(tags);
-        return this;
-    }
-
     /** {@return the owner of the bean.} */
     // Declared by???
     public final ComponentOperator author() {
@@ -72,6 +62,19 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     /** {@return the kind of bean that is being configured.} */
     public final BeanKind beanKind() {
         return handle.beanKind();
+    }
+
+    /** {@return the path of the component} */
+    @Override
+    public final ComponentPath componentPath() {
+        return handle.componentPath();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanConfiguration componentTag(String... tags) {
+        handle.componentTags(tags);
+        return this;
     }
 
     /**
@@ -104,6 +107,12 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         return handle.hashCode();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public final boolean isConfigurable() {
+        return handle.isConfigurable();
+    }
+
     /**
      * Sets the name of the bean. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name is
      * case sensitive.
@@ -127,13 +136,13 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     }
 
     /** {@return configurations for all operations defined by this bean.} */
-    public Stream<? super OperationConfiguration> operations() {
-        return operations(OperationConfiguration.class);
+    public final Stream<? extends OperationConfiguration> operations() {
+        return handle.bean().operations.all.stream().map(m -> m.configuration).filter(e -> e != null);
     }
 
     /** {@return configurations for all operations defined by this bean.} */
     @SuppressWarnings("unchecked")
-    public <T extends OperationConfiguration> Stream<T> operations(Class<? super T> operationType) {
+    public final <T extends OperationConfiguration> Stream<T> operations(Class<? super T> operationType) {
         return (Stream<T>) operations().filter(e -> operationType.isInstance(e));
     }
 
@@ -170,16 +179,9 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         return this;
     }
 
-
     /** {@inheritDoc} */
     @Override
     public String toString() {
         return handle.toString();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final boolean isConfigurable() {
-        return handle.isConfigurable();
     }
 }

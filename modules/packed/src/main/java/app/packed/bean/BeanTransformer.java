@@ -18,15 +18,6 @@ package app.packed.bean;
 /**
  *
  */
-// Represents the bean after transformations...
-public interface BeanClassMirror {
-
-    Class<?> beanClass();
-
-    // Has there been any transformations??
-    boolean isTransformed();
+public interface BeanTransformer {
 
 }
-
-// Transformed ->
-// BeanProxy

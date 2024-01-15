@@ -24,11 +24,7 @@ import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
 import sandbox.extension.operation.OperationHandle;
 
-/**
- *
- */
-// Hmm, fungere ikke super godt med Bean.findOperation();
-// Med mindre vi giver muligheden for at saette det ala operation mirror. Evt via builderen eller handled..
+/** The configuration of an operation. */
 public class OperationConfiguration extends ComponentConfiguration {
 
     /** The operation handle. */
@@ -50,11 +46,6 @@ public class OperationConfiguration extends ComponentConfiguration {
     @Override
     public ComponentPath componentPath() {
         return handle.componentPath();
-    }
-
-    // All operations defined by the same extension
-    protected Collection<OperationConfiguration> sieblings() {
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -79,6 +70,7 @@ public class OperationConfiguration extends ComponentConfiguration {
         return this;
     }
 
+    /** {@return the extension that operates the operation} */
     public final Class<? extends Extension<?>> operator() {
         return handle.operator();
     }
@@ -87,12 +79,17 @@ public class OperationConfiguration extends ComponentConfiguration {
         return this;
     }
 
+    // All operations defined by the same extension
+    protected Collection<OperationConfiguration> sieblings() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return the target of the operation.} */
     public final OperationTarget target() {
         return handle.target();
     }
 
-    /** {@return the tyoe of the operation} */
+    /** {@return the type of the operation} */
     public final OperationType type() {
         return handle.type();
     }

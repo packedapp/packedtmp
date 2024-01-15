@@ -17,7 +17,7 @@ package sandbox.extension.bean.pouch;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.bean.BeanClassTransformer;
+import app.packed.bean.BeanClassConfiguration;
 import app.packed.bean.Inject;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
@@ -71,7 +71,7 @@ public class BeanTransformerUsage {
     public class MyBean {
 
         static {
-            BeanClassTransformer.alwaysTransform(MethodHandles.lookup(), c -> {
+            BeanClassConfiguration.alwaysTransform(MethodHandles.lookup(), c -> {
                 c.addFunction(Variable.of(Void.class), () -> {
                     System.out.println();
                     return null;

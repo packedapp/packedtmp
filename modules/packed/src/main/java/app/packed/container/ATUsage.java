@@ -26,7 +26,10 @@ public class ATUsage extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override
-    protected void build() {}
+    protected void build() {
+        assembly().containers().forEach(c -> c.beans().forEach(b -> b.operations().forEach(o -> o.componentPath())));
+
+    }
 
     public static void main(String[] args) {
         Assembly u = new ATUsage();

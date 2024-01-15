@@ -109,7 +109,7 @@ public final class ContainerSetup implements ActualNode<ContainerSetup> , Contex
         this.assembly = requireNonNull(assembly);
         this.mirrorSupplier = builder.containerMirrorSupplier;
 
-        builder.locals.forEach((p, o) -> p.locals(this).set((PackedLocal) p, this, o));
+        builder.locals.forEach((p, o) -> p.locals(this).set((PackedComponentLocal) p, this, o));
 
         if (builder.template.kind() == PackedContainerKind.PARENT_LIFETIME) {
             this.lifetime = node.parent.lifetime;

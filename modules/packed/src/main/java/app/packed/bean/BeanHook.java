@@ -66,7 +66,7 @@ public @interface BeanHook {
      * implementation should be accessible to the module of the framework and have a public constructor. Or the package in
      * which the implementation is located must be open to the framework.
      */
-    Class<? extends BeanClassTransformer>[] value();
+    Class<? extends BeanClassConfiguration>[] value();
 
     @interface BeanIs {
 

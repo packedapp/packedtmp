@@ -20,11 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import app.packed.component.ComponentLocal;
 import app.packed.extension.BeanIntrospector;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanElement;
-import internal.app.packed.container.PackedLocal;
+import internal.app.packed.container.PackedComponentLocal;
 import sandbox.extension.bean.BeanHandle;
 
 /**
@@ -47,30 +48,14 @@ import sandbox.extension.bean.BeanHandle;
  * @see ContainerLocal
  */
 // We do not cache errors from suppliers... These are intended to not be handled at build-time
-public final class BeanLocal<T> extends PackedLocal<T> {
+public final class BeanLocal<T> extends PackedComponentLocal<T> implements ComponentLocal<BeanLocalAccessor, T> {
 
     private BeanLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
         super(initialValueSupplier);
     }
 
-    /**
-     * Returns the bean local value from the specified accessor.
-     * <p>
-     * If no value has been set for this local previously, this method will:
-     * <ul>
-     * <li>Initialize lazily, if an initial value supplier was used when creating this local.</li>
-     * <li>Fail with {@link java.util.NoSuchElementException}, if no initial value supplier was used when creating this
-     * local.</li>
-     * </ul>
-     *
-     * @param accessor
-     *            the bean local accessor
-     * @return the value of the bean local
-     *
-     * @throws java.util.NoSuchElementException
-     *             if a value has not been set previously for this bean local and an initial value supplier was not
-     *             specified when creating the bean local
-     */
+    /** {@inheritDoc} */
+    @Override
     public T get(BeanLocalAccessor accessor) {
         BeanSetup bean = crack(accessor);
         return bean.locals().get(this, bean);
@@ -101,6 +86,7 @@ public final class BeanLocal<T> extends PackedLocal<T> {
      *          supplier was specified when creating the local. As such this method rarely makes sense to call if an initial
      *          value supplier was specified when creating the local.
      */
+    @Override
     public boolean isBound(BeanLocalAccessor accessor) {
         BeanSetup bean = crack(accessor);
         return bean.locals().isBound(this, bean);
@@ -119,6 +105,7 @@ public final class BeanLocal<T> extends PackedLocal<T> {
      *          supplier was specified when creating the local. As such this method rarely makes sense to call if an initial
      *          value supplier was specified when creating the local.
      */
+    @Override
     public T orElse(BeanLocalAccessor accessor, T other) {
         BeanSetup bean = crack(accessor);
         return bean.locals().orElse(this, bean, other);
@@ -127,6 +114,12 @@ public final class BeanLocal<T> extends PackedLocal<T> {
     public <X extends Throwable> T orElseThrow(BeanLocalAccessor accessor, Supplier<? extends X> exceptionSupplier) throws X {
         BeanSetup bean = crack(accessor);
         return bean.locals().orElseThrow(this, bean, exceptionSupplier);
+    }
+
+    // I think these are nice. We can use use for transformers. Add something for pre-transform.
+    // Remove them for post, no need to keep them around
+    public T remove(BeanLocalAccessor accessor) {
+        throw new UnsupportedOperationException();
     }
 
     /**

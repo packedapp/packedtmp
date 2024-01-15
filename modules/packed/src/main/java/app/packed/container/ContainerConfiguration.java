@@ -53,7 +53,14 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
         container.initConfiguration(this);
     }
 
-    public final Stream<BeanConfiguration> beans() {
+    /**
+     * {@return a stream of all the beans installed in this container}
+     * <p>
+     * This does not include beans owned by extensions.
+     *
+     * @see ContainerMirror#beans()
+     */
+    public final Stream<? extends BeanConfiguration> beans() {
         throw new UnsupportedOperationException();
     }
 

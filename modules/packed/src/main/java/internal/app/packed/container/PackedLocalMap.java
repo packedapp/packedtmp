@@ -31,7 +31,7 @@ public final class PackedLocalMap {
     /** This map containing every local. */
     private final ConcurrentHashMap<LocalKey, Object> locals = new ConcurrentHashMap<>();
 
-    public <T> T get(PackedLocal<T> local, Object key) {
+    public <T> T get(PackedComponentLocal<T> local, Object key) {
         requireNonNull(local, "local is null");
         T t = getNullable(local, key);
         if (t == null) {
@@ -41,7 +41,7 @@ public final class PackedLocalMap {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> @Nullable T getNullable(PackedLocal<T> local, Object key) {
+    private <T> @Nullable T getNullable(PackedComponentLocal<T> local, Object key) {
         Supplier<? extends T> ivs = local.initialValueSupplier;
         if (ivs == null) {
             return (T) locals.get(new LocalKey(local, key));
@@ -50,16 +50,16 @@ public final class PackedLocalMap {
         }
     }
 
-    public boolean isBound(PackedLocal<?> local, Object key) {
+    public boolean isBound(PackedComponentLocal<?> local, Object key) {
         return locals.contains(new LocalKey(local, key));
     }
 
-    public <T> @Nullable T orElse(PackedLocal<T> local, Object key, T other) {
+    public <T> @Nullable T orElse(PackedComponentLocal<T> local, Object key, T other) {
         T t = getNullable(local, key);
         return t == null ? other : t;
     }
 
-    public <X extends Throwable, T> @Nullable T orElseThrow(PackedLocal<T> local, Object key, Supplier<? extends X> exceptionSupplier) throws X {
+    public <X extends Throwable, T> @Nullable T orElseThrow(PackedComponentLocal<T> local, Object key, Supplier<? extends X> exceptionSupplier) throws X {
         T t = getNullable(local, key);
         if (t == null) {
             throw exceptionSupplier.get();
@@ -67,7 +67,7 @@ public final class PackedLocalMap {
         return t;
     }
 
-    public <T> void set(PackedLocal<T> local, Object key, T value) {
+    public <T> void set(PackedComponentLocal<T> local, Object key, T value) {
         requireNonNull(value, "value is null");
 
         // But writing initial value is okay???
@@ -75,5 +75,5 @@ public final class PackedLocalMap {
         locals.put(new LocalKey(local, key), value);
     }
 
-    private record LocalKey(PackedLocal<?> local, Object value) {}
+    private record LocalKey(PackedComponentLocal<?> local, Object value) {}
 }

@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package internal.app.packed.container;
+
+import java.util.function.Supplier;
+
+import app.packed.util.Nullable;
 
 /**
- *
+ * The base class for container and bean locals.
  */
-// Represents the bean after transformations...
-public interface BeanClassMirror {
+//BuildLocal?
+public abstract class PackedComponentLocal<T> {
 
-    Class<?> beanClass();
+    /** An optional supplier that can provide initial values for a bean local. */
+    final @Nullable Supplier<? extends T> initialValueSupplier;
 
-    // Has there been any transformations??
-    boolean isTransformed();
-
+    protected PackedComponentLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
+        this.initialValueSupplier = initialValueSupplier;
+    }
 }
-
-// Transformed ->
-// BeanProxy

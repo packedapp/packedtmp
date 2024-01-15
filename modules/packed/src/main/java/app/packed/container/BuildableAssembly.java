@@ -77,6 +77,11 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
         throw new UnsupportedOperationException();
     }
 
+    protected final AssemblyConfiguration assembly() {
+        throw new UnsupportedOperationException();
+    }
+
+
     /**
      * This method must be overridden by the application developer in order to configure the application.
      * <p>

@@ -195,7 +195,7 @@ public final class BeanSetup implements ContextualizedElementSetup , Component {
      */
     public void initConfiguration(BeanConfiguration configuration) {
         if (this.configuration != null) {
-            throw new IllegalStateException("A bean handle can only be used once to create a a bean configuration");
+            throw new IllegalStateException("A bean handle can only be used once to create a bean configuration");
         }
         this.configuration = requireNonNull(configuration);
     }

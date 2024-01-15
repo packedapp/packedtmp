@@ -75,7 +75,8 @@ import app.packed.util.Variable;
 // Men saa nogen lige pludselig tilfoerjer en operation senere hen
 
 // Ved ikke hvor meget den giver mening foerend Leyden
-public interface BeanClassTransformer {
+
+public interface BeanClassConfiguration {
 
     // add(OperationType.of(void.class, SomeService, e->{});
     void addFunction(OperationType type, Object function);
@@ -159,17 +160,17 @@ public interface BeanClassTransformer {
     // I don't think we allow for unregistering it
 
     // Can be used to augment extension beans that are open to you
-    static void alwaysTransform(Lookup lookup, Class<?> beanClass, Consumer<? super BeanClassTransformer> transformation) {
+    static void alwaysTransform(Lookup lookup, Class<?> beanClass, Consumer<? super BeanClassConfiguration> transformation) {
         throw new UnsupportedOperationException();
     }
 
     // What about subclassing?
-    static void alwaysTransform(Lookup lookup, Consumer<? super BeanClassTransformer> transformation) {
+    static void alwaysTransform(Lookup lookup, Consumer<? super BeanClassConfiguration> transformation) {
         alwaysTransform(lookup, lookup.lookupClass(), transformation);
     }
 
     // hmm IDK about this
-    static void alwaysTransformSubclassesOf(Lookup lookup, Consumer<? super BeanClassTransformer> transformation) {
+    static void alwaysTransformSubclassesOf(Lookup lookup, Consumer<? super BeanClassConfiguration> transformation) {
         alwaysTransform(lookup, lookup.lookupClass(), transformation);
     }
 

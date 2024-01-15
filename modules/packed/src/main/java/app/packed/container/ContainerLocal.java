@@ -23,7 +23,7 @@ import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerLocal;
-import internal.app.packed.container.PackedLocal;
+import internal.app.packed.container.PackedComponentLocal;
 import sandbox.extension.container.ContainerHandle;
 
 /**
@@ -47,7 +47,7 @@ import sandbox.extension.container.ContainerHandle;
  * @see app.packed.container.ContainerMirror
  * @see BeanLocal
  */
-public abstract sealed class ContainerLocal<T> extends PackedLocal<T> permits PackedContainerLocal {
+public abstract sealed class ContainerLocal<T> extends PackedComponentLocal<T> permits PackedContainerLocal {
 
     protected ContainerLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
         super(initialValueSupplier);
@@ -116,6 +116,7 @@ public abstract sealed class ContainerLocal<T> extends PackedLocal<T> permits Pa
         throw new UnsupportedOperationException();
     }
 
+    // The use case is?
     public BeanLocal<T> toBeanLocal() {
         throw new UnsupportedOperationException();
     }
@@ -143,7 +144,7 @@ public abstract sealed class ContainerLocal<T> extends PackedLocal<T> permits Pa
      *
      * @param <T>
      *            the type of value to store
-     * @return the new container local
+     * @return the new container local with application scope
      */
     public static <T> ContainerLocal<T> ofApplication() {
         return PackedContainerLocal.of(PackedContainerLocal.LocalScope.APPLICATION);

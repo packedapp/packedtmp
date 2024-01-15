@@ -20,21 +20,15 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.util.TreeView;
+import internal.app.packed.container.AssemblySetup;
 
 /**
- *
+ * The configuration of an assembly.
  */
 // Is not a component... Syntes stadig maaske, IDK???
 public class AssemblyConfiguration {
 
-    /**
-     * A tree with all the containers defined by the assembly.
-     *
-     * @return
-     */
-    public TreeView<ContainerConfiguration> containers() {
-        throw new UnsupportedOperationException();
-    }
+    AssemblySetup assembly;
 
     /** {@return an assembly finder that can be used to find assemblies on the class- or module-path.} */
     // Classpath if the assembly is on the classpath, otherwise modulepath
@@ -44,13 +38,22 @@ public class AssemblyConfiguration {
         throw new UnsupportedOperationException();
     }
 
-    public final void lookup(Lookup lookup) {
-        requireNonNull(lookup, "lookup cannot be null");
+    /**
+     * A tree with all the containers defined by the assembly.
+     *
+     * @return
+     */
+    public TreeView<? extends ContainerConfiguration> containers() {
+        throw new UnsupportedOperationException();
     }
 
     // The delegate is always provided by others
     public void delegate(AssemblyDelegate delegate, AssemblyDelegate.Option... options) {
 
        // external methods that needs parameters should always return an assembly delegate,
+    }
+
+    public final void lookup(Lookup lookup) {
+        requireNonNull(lookup, "lookup cannot be null");
     }
 }

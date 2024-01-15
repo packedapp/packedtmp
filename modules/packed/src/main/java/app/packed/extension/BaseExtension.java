@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildException;
 import app.packed.application.DeploymentMirror;
-import app.packed.bean.BeanClassTransformer;
+import app.packed.bean.BeanClassConfiguration;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
@@ -169,7 +169,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     // Har man brug for andet end class transformer? Er der nogle generalle bean properties??? IDK
-    <T> ServiceableBeanConfiguration<T> transformingInstall(Class<T> implementation, Consumer<? super BeanClassTransformer> transformation) {
+    <T> ServiceableBeanConfiguration<T> transformingInstall(Class<T> implementation, Consumer<? super BeanClassConfiguration> transformation) {
         throw new UnsupportedOperationException();
 
     }
@@ -640,7 +640,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     // transformAllBeans() <-- includes extension beans... (Must be open)
-    public Runnable transformAllBeans(Consumer<? super BeanClassTransformer> transformer) {
+    public Runnable transformAllBeans(Consumer<? super BeanClassConfiguration> transformer) {
         throw new UnsupportedOperationException();
     }
 
@@ -654,7 +654,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return A runnable that be can run after which the transformer will no longer be applied when installing beans.
      */
     // Also a version with BeanClass?? , Class<?>... beanClasses (
-    public Runnable transformBeans(Consumer<? super BeanClassTransformer> transformer) {
+    public Runnable transformBeans(Consumer<? super BeanClassConfiguration> transformer) {
         throw new UnsupportedOperationException();
     }
 
@@ -666,7 +666,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @param transformer
      *            the bean transformer
      */
-    public void transformNextBean(Consumer<? super BeanClassTransformer> transformer) {}
+    public void transformNextBean(Consumer<? super BeanClassConfiguration> transformer) {}
 
     static class FromLinks {
         boolean exportServices;

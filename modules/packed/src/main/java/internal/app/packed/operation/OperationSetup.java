@@ -35,6 +35,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
+import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationType;
@@ -88,6 +89,26 @@ public sealed abstract class OperationSetup implements Component , Contextualize
 
     /** Supplies a mirror for the operation */
     public Supplier<? extends OperationMirror> mirrorSupplier;
+
+    /** The configuration representing this operation, is set from {@link #initConfiguration(BeanConfiguration)}. */
+    @Nullable
+    public OperationConfiguration configuration;
+
+    /**
+     * Initializes the bean configuration.
+     *
+     * @param configuration
+     *
+     * @throws IllegalStateException
+     *             if attempting to create multiple bean configurations for a single bean
+     */
+    public void initConfiguration(OperationConfiguration configuration) {
+        if (this.configuration != null) {
+            throw new IllegalStateException("A operation handle can only be used once to create a a operation configuration");
+        }
+        this.configuration = requireNonNull(configuration);
+    }
+
 
     /**
      * The name prefix of the operation.

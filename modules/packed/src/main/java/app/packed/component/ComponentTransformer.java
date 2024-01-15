@@ -37,6 +37,13 @@ import app.packed.container.Assembly;
 
 //Can be applied as AssemblyTransformer
 
+
+
+// Questions
+//// 1. Stateless  (+ Locals) vs Statefull
+//// 2. Pre/post? More control.
+//// 3. Context or protected methods?
+
 public abstract class ComponentTransformer {
 
     // Ville måske være godt at kunne få info ned...

@@ -17,6 +17,7 @@ package app.packed.container;
 
 import java.lang.invoke.MethodHandles;
 
+import app.packed.bean.BeanTransformer;
 import app.packed.component.ComponentTransformer;
 
 /**
@@ -42,10 +43,6 @@ public final class AssemblyTransformations {
 
     public static Assembly transformRecursively(MethodHandles.Lookup caller, Assembly assembly, BeanTransformer transformer) {
         return assembly;
-    }
-
-    public interface BeanTransformer {
-
     }
 
     // Hvis du er en lifecycle operation i container X. Så gør foo
