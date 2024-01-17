@@ -59,7 +59,7 @@ public class BeanTransformerUsage {
     public class MyProc implements ContainerTransformer {
 
         @Override
-        public void beforeBuild(ContainerConfiguration configuration) {
+        public void onNew(ContainerConfiguration configuration) {
             configuration.use(BaseExtension.class).transformBeans(c -> {
 
                 // replace Jakarta.inject -> Doo.inject.class;

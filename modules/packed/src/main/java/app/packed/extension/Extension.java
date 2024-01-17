@@ -29,7 +29,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.build.BuildGoal;
-import app.packed.build.BuildTask;
+import app.packed.build.BuildSource;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentOperator;
 import app.packed.component.ComponentPath;
@@ -81,7 +81,7 @@ import sandbox.extension.container.ContainerHandle;
  * @param <E>
  *            The type of the extension subclass
  */
-public non-sealed abstract class Extension<E extends Extension<E>> implements BuildTask {
+public non-sealed abstract class Extension<E extends Extension<E>> implements BuildSource {
 
     /** The internal configuration of the extension. */
     final ExtensionSetup extension;

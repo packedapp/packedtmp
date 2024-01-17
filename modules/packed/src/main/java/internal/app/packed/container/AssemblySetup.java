@@ -30,6 +30,8 @@ import app.packed.component.ComponentOperator;
 import app.packed.util.Nullable;
 import internal.app.packed.component.AbstractTreeMirror;
 import internal.app.packed.component.Mirrorable;
+import internal.app.packed.component.PackedLocalKeyAndSource;
+import internal.app.packed.component.PackedLocalMap;
 import internal.app.packed.service.CircularServiceDependencyChecker;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.TreeNode;
@@ -37,7 +39,7 @@ import internal.app.packed.util.TreeNode.ActualNode;
 import internal.app.packed.util.types.ClassUtil;
 
 /** The internal configuration of an assembly. */
-public final class AssemblySetup implements ActualNode<AssemblySetup> , AuthorSetup , Mirrorable<AssemblyMirror> {
+public final class AssemblySetup implements PackedLocalKeyAndSource, ActualNode<AssemblySetup> , AuthorSetup , Mirrorable<AssemblyMirror> {
 
     /** A magic initializer for {@link BeanMirror}. */
     public static final MagicInitializer<AssemblySetup> MIRROR_INITIALIZER = MagicInitializer.of(AssemblyMirror.class);
@@ -196,5 +198,11 @@ public final class AssemblySetup implements ActualNode<AssemblySetup> , AuthorSe
     @Override
     public TreeNode<AssemblySetup> node() {
         return node;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedLocalMap locals() {
+        return container.locals();
     }
 }

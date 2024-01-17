@@ -16,12 +16,14 @@
 package internal.app.packed.component;
 
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.container.ApplicationSetup;
+import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 
 /**
  *
  */
-public sealed interface PackedLocalSource permits ContainerSetup, BeanSetup {
+public sealed interface PackedLocalKeyAndSource permits ContainerSetup, BeanSetup, AssemblySetup, ApplicationSetup {
 
     PackedLocalMap locals();
 }

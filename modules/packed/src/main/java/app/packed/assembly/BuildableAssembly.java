@@ -103,9 +103,6 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
 
             try {
 
-                // What is the state of the assembly here??? Pre_Build or building
-                // I think post hooks are included in BEING_BUILT
-
                 // Run AssemblyHook.onPreBuild if hooks are present
                 assembly.model.preBuild(existing);
 

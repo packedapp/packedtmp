@@ -18,6 +18,12 @@ package app.packed.bean;
 /**
  *
  */
+
+// @AllEntityBean(requeire foo...
 public interface BeanTransformer {
 
+    // before being returned to the user
+
+    // Argh besvaerligt at
+    default void onNew(BeanConfiguration bean) {}
 }

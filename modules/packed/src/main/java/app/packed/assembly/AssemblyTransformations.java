@@ -47,7 +47,7 @@ public final class AssemblyTransformations {
     }
 
     // Hvis du er en lifecycle operation i container X. Så gør foo
-    public class OperationTransformer extends ComponentTransformer {
+    public class OperationTransformer implements ComponentTransformer {
 
     }
 }

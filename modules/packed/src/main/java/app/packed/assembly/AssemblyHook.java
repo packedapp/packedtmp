@@ -9,6 +9,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.build.BuildHook;
+import app.packed.build.BuildHook.BuildHookTarget;
+
 /**
  * An annotation that can be places on an assembly.
  *
@@ -25,6 +28,7 @@ import java.lang.annotation.Target;
 @Documented
 @Inherited
 @Repeatable(AssemblyHook.All.class)
+@BuildHook(BuildHookTarget.ASSEMBLY)
 public @interface AssemblyHook {
 
     /**
@@ -47,6 +51,9 @@ public @interface AssemblyHook {
         AssemblyHook[] value();
     }
 
+    /**
+     * An annotation
+     */
     @interface AssemblyMatcher {
 
         Class<? extends Annotation>[] annotatedWithAny() default {};
@@ -61,19 +68,6 @@ public @interface AssemblyHook {
         // Can we have marker interfaces on assemblies??? I don't think so
         Class<?>[] ofType() default {};
 
-        boolean rootInApplicationOnly() default false;
+        boolean applicationRootOnly() default false;
     }
-
 }
-
-//Include on Assembly??? as Assembly.Hook??? Naah, we have BeanHook as well I believe
-
-// Just make a check in beforeBuild
-//// The annotation can only be placed on the assembly that defines the application
-//// Maybe just make
-//boolean requiresApplicationAssembly() default false;
-
-// After og before, Inner or Outer kan ogsaa bruge den med lifecycle
-// boolean applyBeforeSubclasses() default true;
-
-//Consumer<ContainerMirror>[] verifiers() default {};

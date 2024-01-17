@@ -18,6 +18,7 @@ package app.packed.component;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.assembly.Assembly;
+import app.packed.build.BuildSource;
 
 /**
  *
@@ -37,14 +38,12 @@ import app.packed.assembly.Assembly;
 
 //Can be applied as AssemblyTransformer
 
-
-
 // Questions
 //// 1. Stateless  (+ Locals) vs Statefull
 //// 2. Pre/post? More control.
 //// 3. Context or protected methods?
 
-public abstract class ComponentTransformer {
+public non-sealed interface ComponentTransformer extends BuildSource {
 
     // Ville måske være godt at kunne få info ned...
     // Ellers må vi jo have oplysningerne på ContainerConfiguration og så tage den med.
@@ -52,12 +51,12 @@ public abstract class ComponentTransformer {
     // Det ville være rigtig fedt at kunne se hvem der havde transformeret hvad
 
     // Det ville også være fint at have hvem og hvad seperaret
-    public final Assembly transformRecursively(MethodHandles.Lookup caller, Assembly assembly) {
+    static Assembly transformRecursively(MethodHandles.Lookup caller, Assembly assembly) {
         return assembly;
     }
 
     // Ideen er lidt at vi kan define transformers der kan bruges paa beans...
-    public static abstract class BeanLevelTransformer extends ComponentTransformer {
+    public static abstract class BeanLevelTransformer implements ComponentTransformer {
 
     }
 }

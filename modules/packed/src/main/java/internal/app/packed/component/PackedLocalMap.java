@@ -31,7 +31,7 @@ public final class PackedLocalMap {
     /** This map containing every local. */
     private final ConcurrentHashMap<LocalKey, Object> locals = new ConcurrentHashMap<>();
 
-    public <T> T get(PackedComponentLocal<?, T> local, Object key) {
+    public <T> T get(PackedComponentLocal<?, T> local, PackedLocalKeyAndSource key) {
         requireNonNull(local, "local is null");
         T t = getNullable(local, key);
         if (t == null) {

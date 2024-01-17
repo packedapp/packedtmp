@@ -27,6 +27,7 @@ import app.packed.component.ComponentPath;
 import app.packed.namespace.NamespaceOperator;
 import app.packed.util.Nullable;
 import internal.app.packed.component.Mirrorable;
+import internal.app.packed.component.PackedLocalKeyAndSource;
 import internal.app.packed.component.PackedLocalMap;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.types.ClassUtil;
@@ -37,7 +38,7 @@ import internal.app.packed.util.types.ClassUtil;
  * This class is placed in {@code internal.app.packed.container} because it is so tightly integrated with containers
  * that it made sense to put it here as well.
  */
-public final class ApplicationSetup implements Mirrorable<ApplicationMirror> {
+public final class ApplicationSetup implements PackedLocalKeyAndSource, Mirrorable<ApplicationMirror> {
 
     /** A magic initializer for {@link BeanMirror}. */
     public static final MagicInitializer<ApplicationSetup> MIRROR_INITIALIZER = MagicInitializer.of(ApplicationMirror.class);
@@ -161,5 +162,11 @@ public final class ApplicationSetup implements Mirrorable<ApplicationMirror> {
 
     public ComponentPath componentPath() {
         return ComponentKind.APPLICATION.pathNew(container.node.name);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedLocalMap locals() {
+        return locals;
     }
 }

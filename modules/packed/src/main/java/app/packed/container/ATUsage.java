@@ -45,7 +45,7 @@ public class ATUsage extends BaseAssembly {
         ContainerTransformer ct = new ContainerTransformer() {
 
             @Override
-            public void afterBuild(ContainerConfiguration configuration) {
+            public void onNew(ContainerConfiguration configuration) {
                 configuration.named(configuration.componentPath().nameFragment(3).toString() + "1");
             }
         };
@@ -64,7 +64,7 @@ public class ATUsage extends BaseAssembly {
             ContainerTransformer ct = new ContainerTransformer() {
 
                 @Override
-                public void afterBuild(ContainerConfiguration configuration) {
+                public void onNew(ContainerConfiguration configuration) {
                     configuration.named(configuration.componentPath().nameFragment(3).toString() + "1");
                 }
             };

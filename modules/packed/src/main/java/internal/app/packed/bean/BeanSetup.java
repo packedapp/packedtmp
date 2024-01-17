@@ -28,7 +28,7 @@ import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.component.PackedLocalMap;
-import internal.app.packed.component.PackedLocalSource;
+import internal.app.packed.component.PackedLocalKeyAndSource;
 import internal.app.packed.container.AuthorSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -53,7 +53,7 @@ import sandbox.extension.operation.OperationTemplate;
  * @implNote The reason this class does not directly implement BeanHandle is because the BeanHandle interface is
  *           parameterised.
  */
-public final class BeanSetup implements ContextualizedElementSetup , PackedLocalSource {
+public final class BeanSetup implements ContextualizedElementSetup , PackedLocalKeyAndSource {
 
     /** A MethodHandle for invoking {@link ExtensionMirror#initialize(ExtensionSetup)}. */
     private static final MethodHandle MH_BEAN_INTROSPECTOR_TO_BEAN = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class, "bean",

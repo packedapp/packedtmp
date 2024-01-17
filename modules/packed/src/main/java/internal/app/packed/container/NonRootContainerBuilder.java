@@ -124,17 +124,19 @@ public final class NonRootContainerBuilder extends NonBootstrapContainerBuilder 
         return LifetimeKind.MANAGED;
     }
 
-    @SuppressWarnings("unchecked")
     public <T> Builder localConsume(ContainerLocal<T> local, Consumer<T> action) {
-        PackedContainerLocal<?> pcl = (PackedContainerLocal<?>) local;
-        action.accept((T) pcl.get(this));
-        return this;
+//        PackedAbstractContainerLocal<?> cl = (PackedAbstractContainerLocal<?>) local;
+
+//        cl.g
+//        action.accept((T) cl.get(this));
+//        return this;
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> Builder localSet(ContainerLocal<T> local, T value) {
-        locals.put((PackedContainerLocal<?>) local, value);
+        locals.put((PackedAbstractContainerLocal<?>) local, value);
         return this;
     }
 

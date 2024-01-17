@@ -129,6 +129,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      */
     public <T> InstanceBeanConfiguration<T> install(Op<T> op) {
         BeanHandle<T> handle = newBeanForOtherExtension(BeanKind.CONTAINER.template(), context()).install(op);
+        // return handle.initialize(IBC::new);
         return new InstanceBeanConfiguration<>(handle);
     }
 

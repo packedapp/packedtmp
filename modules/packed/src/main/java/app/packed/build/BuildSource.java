@@ -16,6 +16,7 @@
 package app.packed.build;
 
 import app.packed.assembly.Assembly;
+import app.packed.component.ComponentTransformer;
 import app.packed.extension.Extension;
 
 /**
@@ -31,18 +32,6 @@ import app.packed.extension.Extension;
 
 // ContainerHook er jo en slags BuildStep...
 // Extension har sådan set 2 build steps...
-public sealed interface BuildTask permits Assembly, Extension {
+public sealed interface BuildSource permits Assembly, Extension, ComponentTransformer {
 
-    /** The state of an {@link Assembly}. */
-    public enum State {
-
-        /** The assembly has not yet been used in a build process. */
-        BEFORE_BUILD,
-
-        /** The assembly is currently being used in a build process. */
-        IN_USE,
-
-        /** The assembly has already been used in a build process (either successfully or unsuccessfully). */
-        AFTER_BUILD;
-    }
 }

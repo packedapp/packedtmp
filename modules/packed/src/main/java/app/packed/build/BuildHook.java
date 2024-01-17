@@ -18,27 +18,18 @@ package app.packed.build;
 /**
  *
  */
+public @interface BuildHook {
+    BuildHookTarget[] value();
 
-// fx Bean.SetName
-// fx Container.SetName
-//
-public class BuildStep {
-
-
-
-    // Hmmm. Saa har vi disse niveau, der bliver gradvist mere komplekse...
-
-    // Assembly  (Alt kan føres tilbage til en assembly)
-    // Application, Extension (ejer)
-    // Assembly, Extension, Transformer/Delegate (
-    public enum BuildStepOwner {
+    public enum BuildHookTarget {
         ASSEMBLY,
 
         EXTENSION,
 
-        TRANSFORMER,
+        BEAN, // BeanClass?
 
-        DELEGATE // Don't know about this. Basically, I think this another kind of transformer???
+        BEAN_ANNOTATION,
 
+        BEAN_AUTO_SERVICE
     }
 }

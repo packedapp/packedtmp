@@ -65,7 +65,7 @@ public abstract class PackedContainerBuilder {
     public final ArrayList<Class<? extends DelegatingAssembly>> delegatingAssemblies = new ArrayList<>();
 
     /** Container locals that the container is initialized with. */
-    final IdentityHashMap<PackedContainerLocal<?>, Object> locals = new IdentityHashMap<>();
+    final IdentityHashMap<PackedAbstractContainerLocal<?>, Object> locals = new IdentityHashMap<>();
 
     /** The name of the container. */
     String name;

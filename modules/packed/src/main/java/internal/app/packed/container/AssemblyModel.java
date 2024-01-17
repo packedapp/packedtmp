@@ -15,7 +15,6 @@ import app.packed.assembly.AssemblyHook;
 import app.packed.assembly.AssemblyTransformer;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.build.BuildException;
-import app.packed.container.ContainerTransformer;
 import internal.app.packed.bean.BeanHookModel;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -31,7 +30,7 @@ public final /* primitive */ class AssemblyModel {
             for (Annotation a : type.getAnnotations()) {
                 if (a instanceof AssemblyHook h) {
                     for (Class<? extends AssemblyTransformer> b : h.value()) {
-                        if (ContainerTransformer.class.isAssignableFrom(b)) {
+                        if (AssemblyTransformer.class.isAssignableFrom(b)) {
                             MethodHandle constructor;
 
                             if (!AssemblyModel.class.getModule().canRead(type.getModule())) {
@@ -73,25 +72,25 @@ public final /* primitive */ class AssemblyModel {
         }
     };
 
+    /** Any hooks that have been specified on the assembly. */
+    private final AssemblyTransformer[] assemblyTransformers;
+
     public final BeanHookModel hookModel;
 
-    /** Any hooks that have been specified on the assembly. */
-    private final AssemblyTransformer[] hooks;
-
     private AssemblyModel(Class<?> assemblyClass, AssemblyTransformer[] hooks) {
-        this.hooks = requireNonNull(hooks);
+        this.assemblyTransformers = requireNonNull(hooks);
         this.hookModel = BeanHookModel.of(assemblyClass);
     }
 
     public void postBuild(AssemblyConfiguration configuration) {
         // TODO I think we should run these in reverse order
-        for (AssemblyTransformer h : hooks) {
+        for (AssemblyTransformer h : assemblyTransformers) {
             h.afterBuild(configuration);
         }
     }
 
     public void preBuild(AssemblyConfiguration configuration) {
-        for (AssemblyTransformer h : hooks) {
+        for (AssemblyTransformer h : assemblyTransformers) {
             h.beforeBuild(configuration);
         }
     }

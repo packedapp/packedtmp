@@ -30,11 +30,8 @@ import app.packed.context.Context;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
 // or Maybe just interface BeanHooks?
-
 // TODO I think the name is bad. I would think it was hooks I could place on my bean class.
-
 // ExtensionHooks?? Og saa AnnotatedFieldHook -> AnnotatedBeanFieldHook
-
 //Problemet er AssemblyHook som jo kan implementeres af users
 public @interface ExtensionMetaHook {
 

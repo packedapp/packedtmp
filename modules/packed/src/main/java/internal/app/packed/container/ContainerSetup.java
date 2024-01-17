@@ -17,6 +17,8 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -39,13 +41,14 @@ import app.packed.util.Nullable;
 import internal.app.packed.component.AbstractTreeMirror;
 import internal.app.packed.component.Mirrorable;
 import internal.app.packed.component.PackedComponentLocal;
+import internal.app.packed.component.PackedLocalKeyAndSource;
 import internal.app.packed.component.PackedLocalMap;
-import internal.app.packed.component.PackedLocalSource;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.service.ServiceManager;
+import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.NamedTreeNode;
 import internal.app.packed.util.TreeNode;
@@ -55,7 +58,7 @@ import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.operation.OperationHandle;
 
 /** The internal configuration of a container. */
-public final class ContainerSetup implements ActualNode<ContainerSetup> , ContextualizedElementSetup , Mirrorable<ContainerMirror> , ContainerHandle, PackedLocalSource {
+public final class ContainerSetup implements ActualNode<ContainerSetup> , ContextualizedElementSetup , Mirrorable<ContainerMirror> , ContainerHandle, PackedLocalKeyAndSource {
 
     /** A magic initializer for {@link ContainerMirror}. */
     public static final MagicInitializer<ContainerSetup> MIRROR_INITIALIZER = MagicInitializer.of(ContainerMirror.class);
@@ -112,7 +115,7 @@ public final class ContainerSetup implements ActualNode<ContainerSetup> , Contex
         this.assembly = requireNonNull(assembly);
         this.mirrorSupplier = builder.containerMirrorSupplier;
 
-        builder.locals.forEach((p, o) -> p.locals(this).set((PackedComponentLocal) p, this, o));
+        builder.locals.forEach((p, o) -> locals().set((PackedComponentLocal) p, this, o));
 
         if (builder.template.kind() == PackedContainerKind.PARENT_LIFETIME) {
             this.lifetime = node.parent.lifetime;
@@ -364,6 +367,34 @@ public final class ContainerSetup implements ActualNode<ContainerSetup> , Contex
     /** {@inheritDoc} */
     @Override
     public PackedLocalMap locals() {
-        return null;
+        return application.locals;
+    }
+
+    /** A handle that can access ContainerConfiguration#container. */
+    private static final VarHandle VH_CONTAINER_CONFIGURATION_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerConfiguration.class, "container",
+            ContainerSetup.class);
+
+    /** A handle that can access ContainerMirror#container. */
+    private static final VarHandle VH_CONTAINER_MIRROR_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerMirror.class, "container",
+            ContainerSetup.class);
+
+
+    /**
+     * Extracts a bean setup from a bean configuration.
+     *
+     * @param configuration
+     *            the configuration to extract from
+     * @return the bean setup
+     */
+    public static ContainerSetup crack(ContainerConfiguration configuration) {
+        return (ContainerSetup) VH_CONTAINER_CONFIGURATION_TO_SETUP.get(configuration);
+    }
+
+    public static ContainerSetup crack(ContainerHandle handle) {
+        return ((ContainerSetup) handle);
+    }
+
+    public static ContainerSetup crack(ContainerMirror mirror) {
+        return (ContainerSetup) VH_CONTAINER_MIRROR_TO_SETUP.get(mirror);
     }
 }

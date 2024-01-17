@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
 import app.packed.assembly.AbstractComposer.ComposableAssembly;
-import app.packed.build.BuildTask;
+import app.packed.build.BuildSource;
 import app.packed.container.ContainerConfiguration;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
@@ -63,7 +63,7 @@ import internal.app.packed.util.LookupUtil;
  * <p>
  * This class cannot be extended directly, you would typically extend {@link BaseAssembly} instead.
  */
-public sealed abstract class Assembly implements BuildTask permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
+public sealed abstract class Assembly implements BuildSource permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
 
     /**
      * A marker configuration object indicating that an assembly (or composer) has already been used for building a
@@ -79,6 +79,22 @@ public sealed abstract class Assembly implements BuildTask permits BuildableAsse
         return (ContainerSetup) VH_CONTAINER_CONFIGURATION_TO_CONTAINER_SETUP.get(cc);
     }
 
+
+    // Hmm vi har lagt op til transformers bliver instantieret once...
+    // Saa har de jo ikke en state
+
+    /** The state of an {@link Assembly}. */
+    public enum State {
+
+        /** The assembly has not yet been used in a build process. */
+        BEFORE_BUILD,
+
+        /** The assembly is currently being used in a build process. */
+        IN_USE,
+
+        /** The assembly has already been used in a build process (either successfully or unsuccessfully). */
+        AFTER_BUILD;
+    }
 
     /**
      * Invoked by the runtime (via a MethodHandle) to build the assembly.

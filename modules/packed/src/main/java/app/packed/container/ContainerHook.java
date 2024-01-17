@@ -8,8 +8,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.assembly.BaseAssembly;
 import app.packed.assembly.AssemblyHook.AssemblyMatcher;
+import app.packed.assembly.BaseAssembly;
+import app.packed.build.BuildHook;
+import app.packed.build.BuildHook.BuildHookTarget;
 
 /**
  * An annotation that can be places on an assembly.
@@ -27,6 +29,7 @@ import app.packed.assembly.AssemblyHook.AssemblyMatcher;
 @Documented
 @Inherited
 @Repeatable(ContainerHook.All.class)
+@BuildHook(BuildHookTarget.ASSEMBLY)
 public @interface ContainerHook {
 
     AssemblyMatcher[] matchAssembly() default {};

@@ -20,6 +20,10 @@ import java.util.function.Consumer;
 /**
  *
  */
+
+// Ideen er hvis man kalder ud til untrusted kode...
+// Men gør vi det?
+
 @FunctionalInterface
 public interface AssemblyDelegate extends Consumer<AssemblyConfiguration> {
 

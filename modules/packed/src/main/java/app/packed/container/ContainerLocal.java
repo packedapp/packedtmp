@@ -19,7 +19,9 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanLocal;
 import app.packed.component.ComponentLocal;
-import internal.app.packed.container.PackedContainerLocal;
+import internal.app.packed.container.PackedAbstractContainerLocal;
+import internal.app.packed.container.PackedAbstractContainerLocal.PackedApplicationLocal;
+import internal.app.packed.container.PackedAbstractContainerLocal.PackedContainerLocal;
 
 /**
  * This class provides container-local variables at build-time.
@@ -42,7 +44,7 @@ import internal.app.packed.container.PackedContainerLocal;
  * @see app.packed.container.ContainerMirror
  * @see BeanLocal
  */
-public sealed interface ContainerLocal<T> extends ComponentLocal<ContainerLocalAccessor, T> permits PackedContainerLocal {
+public sealed interface ContainerLocal<T> extends ComponentLocal<ContainerLocalAccessor, T> permits PackedAbstractContainerLocal {
 
     default BeanLocal<T> toBeanLocal() {
         throw new UnsupportedOperationException();
@@ -74,7 +76,7 @@ public sealed interface ContainerLocal<T> extends ComponentLocal<ContainerLocalA
      * @return the new container local with application scope
      */
     static <T> ContainerLocal<T> ofApplication() {
-        return PackedContainerLocal.of(PackedContainerLocal.LocalScope.APPLICATION);
+        return new PackedApplicationLocal<T>(null);
     }
 
     /**
@@ -108,11 +110,11 @@ public sealed interface ContainerLocal<T> extends ComponentLocal<ContainerLocalA
      * @return the new container local
      */
     static <T> ContainerLocal<T> ofContainer() {
-        return PackedContainerLocal.of(PackedContainerLocal.LocalScope.CONTAINER);
+        return new PackedContainerLocal<>(null);
     }
 
     static <T> ContainerLocal<T> ofContainer(Supplier<? extends T> initialValueSupplier) {
-        return PackedContainerLocal.of(PackedContainerLocal.LocalScope.CONTAINER, initialValueSupplier);
+        return new PackedContainerLocal<>(initialValueSupplier);
     }
 
     /**
@@ -125,17 +127,17 @@ public sealed interface ContainerLocal<T> extends ComponentLocal<ContainerLocalA
      *            the type of value to store
      * @return the new container local
      */
-    static <T> ContainerLocal<T> ofContainerLifetime() {
-        return PackedContainerLocal.of(PackedContainerLocal.LocalScope.CONTAINER_LIFETIME);
-    }
+//    static <T> ContainerLocal<T> ofContainerLifetime() {
+//        return PackedAbstractContainerLocal.of(PackedContainerLocal.PackedAbstractContainerLocal.CONTAINER_LIFETIME);
+//    }
 
 //    public static <T> ContainerLocal<T> ofContainerLifetime(Supplier<? extends T> initialValueSupplier) {
 //        return PackedContainerLocal.of(PackedContainerLocal.Scope.CONTAINER_LIFETIME, initialValueSupplier);
 //    }
 
-    static <T> ContainerLocal<T> ofDeployment() {
-        throw new UnsupportedOperationException();
-    }
+//    static <T> ContainerLocal<T> ofDeployment() {
+//        throw new UnsupportedOperationException();
+//    }
 
     // Vi mangler nok en local der tillader at rekursive leder efter vaerdier...
     // Hvor man kan overskrive det per container.

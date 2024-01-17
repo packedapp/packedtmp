@@ -135,22 +135,22 @@ public abstract class AbstractComposer {
                         + BuildableAssembly.class.getSimpleName() + " instead");
             }
 
-            Object existing = composer.configuration;
+            AssemblyConfiguration existing = composer.configuration;
             if (existing == null) {
                 AssemblySetup a = new AssemblySetup(builder, this);
                 new ContainerConfiguration(a.container);
-                composer.configuration = new AssemblyConfiguration(a);
+                composer.configuration = existing = new AssemblyConfiguration(a);
                 try {
                     composer.preCompose();
 
                     // Run AssemblyHook.onPreBuild if hooks are present
-                    a.model.preBuild(composer.configuration);
+                    a.model.preBuild(existing);
 
                     // Call actions build method with this composer
                     action.build(composer);
 
                     // Run AssemblyHook.onPostBuild if hooks are present
-                    a.model.postBuild(composer.configuration);
+                    a.model.postBuild(existing);
                 } finally {
                     // Sets #configuration to a marker object that indicates the assembly has been used
                     composer.configuration = Assembly.USED;

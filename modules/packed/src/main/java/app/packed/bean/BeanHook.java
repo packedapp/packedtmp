@@ -27,7 +27,8 @@ import java.lang.annotation.Target;
 import app.packed.application.ApplicationHook.ApplicationIs;
 import app.packed.assembly.AssemblyHook.AssemblyMatcher;
 import app.packed.build.BuildGoal;
-import app.packed.component.ComponentMetaHook;
+import app.packed.build.BuildHook;
+import app.packed.build.BuildHook.BuildHookTarget;
 import app.packed.container.ContainerHook.ContainerMatcher;
 
 /**
@@ -38,11 +39,12 @@ import app.packed.container.ContainerHook.ContainerMatcher;
 @Documented
 @Inherited
 @Repeatable(BeanHook.All.class)
-@ComponentMetaHook
 // BeanClassHook?????
 
 // Ellers er det && between all the iffs
 // Alternative have an boolean useAndBetweenIfs default true
+
+@BuildHook({ BuildHookTarget.ASSEMBLY, BuildHookTarget.EXTENSION, BuildHookTarget.BEAN })
 public @interface BeanHook {
 
     ApplicationIs[] ifApplication() default {};

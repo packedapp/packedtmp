@@ -15,30 +15,15 @@
  */
 package app.packed.build;
 
+import app.packed.assembly.Assembly;
+
 /**
  *
  */
+// May have a stack trace attached
+public interface BuildAction {
 
-// fx Bean.SetName
-// fx Container.SetName
-//
-public class BuildStep {
+    Class<? extends Assembly> assembly();
 
-
-
-    // Hmmm. Saa har vi disse niveau, der bliver gradvist mere komplekse...
-
-    // Assembly  (Alt kan føres tilbage til en assembly)
-    // Application, Extension (ejer)
-    // Assembly, Extension, Transformer/Delegate (
-    public enum BuildStepOwner {
-        ASSEMBLY,
-
-        EXTENSION,
-
-        TRANSFORMER,
-
-        DELEGATE // Don't know about this. Basically, I think this another kind of transformer???
-
-    }
+    Class<? extends BuildSource> source();
 }
