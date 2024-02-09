@@ -7,11 +7,10 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.function.Consumer;
 
-import app.packed.assembly.AssemblyHook.AssemblyMatcher;
 import app.packed.assembly.BaseAssembly;
-import app.packed.build.BuildHook;
-import app.packed.build.BuildHook.BuildHookTarget;
+import app.packed.assembly.TransformAssembly.AssemblyMatcher;
 
 /**
  * An annotation that can be places on an assembly.
@@ -28,9 +27,9 @@ import app.packed.build.BuildHook.BuildHookTarget;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Repeatable(ContainerHook.All.class)
-@BuildHook(BuildHookTarget.ASSEMBLY)
-public @interface ContainerHook {
+@Repeatable(TransformContainer.All.class)
+//@BuildHook(BuildHookTarget.ASSEMBLY)
+public @interface TransformContainer {
 
     AssemblyMatcher[] matchAssembly() default {};
 
@@ -43,6 +42,8 @@ public @interface ContainerHook {
      */
     Class<? extends ContainerTransformer>[] value();
 
+    Class<? extends Consumer<ContainerMirror>>[] predicateClass() default{};
+
     /** An annotation that allows for placing multiple {@link AssemblyHook} annotations on a single assembly. */
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
@@ -51,7 +52,7 @@ public @interface ContainerHook {
     @interface All {
 
         /** An array of assembly hook declarations. */
-        ContainerHook[] value();
+        TransformContainer[] value();
     }
 
     @interface ContainerMatcher {
@@ -77,14 +78,14 @@ public @interface ContainerHook {
 // Hvordan kan vi extract dette.
 // Taenker vi kigger paa fields, og proever at matche, og proever at lave en
 // Alternativ kan man selv tilfoeje det via en transformer??? IDK
-@ContainerHook(ContainerTransformer.class)
-@interface MyHook {
+@TransformContainer(ContainerTransformer.class)
+@interface ZyHook {
     AssemblyMatcher[] matchAssembly() default {};
 }
 
-@ContainerHook(matchAssembly = @AssemblyMatcher(inModule = "foo.base"), value = ContainerTransformer.class)
-@MyHook(matchAssembly = @AssemblyMatcher(inModule = "foo.base"))
-abstract class MyAss extends BaseAssembly {
+@TransformContainer(matchAssembly = @AssemblyMatcher(inModule = "foo.base"), value = ContainerTransformer.class)
+@ZyHook(matchAssembly = @AssemblyMatcher(inModule = "foo.base"))
+abstract class ZyAss extends BaseAssembly {
 
 }
 

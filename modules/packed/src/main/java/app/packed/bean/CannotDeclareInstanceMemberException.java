@@ -21,9 +21,10 @@ package app.packed.bean;
  * A static bean can only apply hook annotations on static fields or methods as no instances of the bean is available at
  * runtime.
  */
+// was NonStaticBeanMemberException
 // was StaticBeanMemberRequiredException
 // was BeanMemberNotDeclaredStaticException
-public class NonStaticBeanMemberException extends BeanInstallationException {
+public class CannotDeclareInstanceMemberException extends BeanInstallationException {
 
     private static final long serialVersionUID = 1L;
 
@@ -35,7 +36,7 @@ public class NonStaticBeanMemberException extends BeanInstallationException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public NonStaticBeanMemberException(String message) {
+    public CannotDeclareInstanceMemberException(String message) {
         super(message);
     }
 
@@ -48,7 +49,7 @@ public class NonStaticBeanMemberException extends BeanInstallationException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public NonStaticBeanMemberException(String message, Throwable cause) {
+    public CannotDeclareInstanceMemberException(String message, Throwable cause) {
         super(message, cause);
     }
 }

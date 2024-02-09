@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Stream;
 
+import app.packed.build.CodegenGenerated;
 import app.packed.component.Mirror;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
@@ -38,18 +39,19 @@ public interface BeanProxyMirror extends Mirror {
     /** {@return the bean that is proxied} */
     BeanMirror bean();
 
+    //I think we might also have operations that are overridden
     Stream<OperationMirror> proxiedOperations();
 
-    // Is lazily generated. But now we force compilation
-    // ComputedConstant<Class<? super BeanProxy>>???
-    // Maybe we have a separate ClassGenerating interface???
-    Class<? super BeanProxy> proxyClass();
+    /** {@return the generated proxy class} */
+    // Problemet med BuildGenerated er OperationTarget
+    // Som vel ogsaa er en slags future. Hvis
+    CodegenGenerated<Class<? super BeanProxy>> proxyClass();
 
     /** {@return fields that are introduced by the proxy class} */
-    List<IntroducedField> introducedFields();
+    List<ProxyField> introducedFields();
 
     /** A field that is introduced on the proxy class. */
-    interface IntroducedField {
+    interface ProxyField {
 
         /** {@return annotations on the field} */
         AnnotationList annotations();
@@ -61,10 +63,9 @@ public interface BeanProxyMirror extends Mirror {
         String name();
 
         /** {@return the type of the field} */
-        Class<?> type();
+        Class<?> type(); // Maybe this could be generated as well??? hmmm
 
-        // ComputedConstant???
-        Field resolve();
+        CodegenGenerated<Field> field();
     }
 }
 

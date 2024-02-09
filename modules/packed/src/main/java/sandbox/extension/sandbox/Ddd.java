@@ -26,7 +26,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanKind;
 import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
+import app.packed.extension.BeanClassActivator.AnnotatedBeanMethodActivator;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.lifetime.OnInitialize;
@@ -82,7 +82,7 @@ public class Ddd extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void hookOnAnnotatedMethod(Annotation hooks, BeanMethod on) {
+                public void activatedByAnnotatedMethod(Annotation hooks, BeanMethod on) {
               //      base().runOnBeanInject(on.newDelegatingOperation());
 
                    // base().runOnBeanInject(on.newOperation());
@@ -94,7 +94,7 @@ public class Ddd extends BaseAssembly {
 
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedBeanMethodHook(allowInvoke = true, extension = MyEntityException.class)
+    @AnnotatedBeanMethodActivator(allowInvoke = true, extension = MyEntityException.class)
     public @interface MyOnInitialize {
 
         /**

@@ -13,17 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.component;
-
-import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.container.ApplicationSetup;
-import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.ContainerSetup;
+package app.packed.assembly;
 
 /**
  *
  */
-public sealed interface PackedLocalKeyAndSource permits ContainerSetup, BeanSetup, AssemblySetup, ApplicationSetup {
 
-    PackedLocalMap locals();
+// Ideen er lidt at vi har alle delegates her der bliver merged
+public interface AssemblyDescriptor {
+
+    // Will call all DelegatingAssembly.delegateTo
+    static AssemblyDescriptor of(Assembly assembly) {
+        throw new UnsupportedOperationException();
+    }
 }
+//???
+//static AssemblyDescriptor of(Class<? extends Assembly> assembly) {
+//    throw new UnsupportedOperationException();
+//}
+

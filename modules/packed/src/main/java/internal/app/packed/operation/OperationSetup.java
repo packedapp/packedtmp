@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanFactoryMirror;
 import app.packed.bean.BeanKind;
-import app.packed.bean.NonStaticBeanMemberException;
+import app.packed.bean.CannotDeclareInstanceMemberException;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
@@ -341,7 +341,7 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
                 OperationMemberTarget<?> member, MethodHandle methodHandle) {
             super(operator, bean, operationType, template, null);
             if (bean.beanKind == BeanKind.STATIC && !Modifier.isStatic(member.modifiers())) {
-                throw new NonStaticBeanMemberException("Cannot create operation for non-static member " + member);
+                throw new CannotDeclareInstanceMemberException("Cannot create operation for non-static member " + member);
             }
             this.target = requireNonNull(member);
             this.methodHandle = requireNonNull(methodHandle);

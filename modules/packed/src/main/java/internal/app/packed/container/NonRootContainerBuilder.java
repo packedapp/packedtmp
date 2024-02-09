@@ -136,7 +136,7 @@ public final class NonRootContainerBuilder extends NonBootstrapContainerBuilder 
     /** {@inheritDoc} */
     @Override
     public <T> Builder localSet(ContainerLocal<T> local, T value) {
-        locals.put((PackedAbstractContainerLocal<?>) local, value);
+        locals.put((PackedContainerLocal<?>) local, value);
         return this;
     }
 

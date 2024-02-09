@@ -15,8 +15,6 @@
  */
 package internal.app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +28,8 @@ import app.packed.component.ComponentOperator;
 import app.packed.util.Nullable;
 import internal.app.packed.component.AbstractTreeMirror;
 import internal.app.packed.component.Mirrorable;
-import internal.app.packed.component.PackedLocalKeyAndSource;
 import internal.app.packed.component.PackedLocalMap;
+import internal.app.packed.component.PackedLocalMap.KeyAndLocalMapSource;
 import internal.app.packed.service.CircularServiceDependencyChecker;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.TreeNode;
@@ -39,7 +37,7 @@ import internal.app.packed.util.TreeNode.ActualNode;
 import internal.app.packed.util.types.ClassUtil;
 
 /** The internal configuration of an assembly. */
-public final class AssemblySetup implements PackedLocalKeyAndSource, ActualNode<AssemblySetup> , AuthorSetup , Mirrorable<AssemblyMirror> {
+public final class AssemblySetup implements KeyAndLocalMapSource , ActualNode<AssemblySetup> , AuthorSetup , Mirrorable<AssemblyMirror> {
 
     /** A magic initializer for {@link BeanMirror}. */
     public static final MagicInitializer<AssemblySetup> MIRROR_INITIALIZER = MagicInitializer.of(AssemblyMirror.class);
@@ -52,6 +50,8 @@ public final class AssemblySetup implements PackedLocalKeyAndSource, ActualNode<
 
     /** The time when the assembly build started. */
     public final long assemblyBuildStartedTime = System.nanoTime();
+
+    public final List<AssemblyBuildTransformer> buildTransformers = new ArrayList<>();
 
     /** The (root) container the assembly defines. */
     public final ContainerSetup container;
@@ -73,11 +73,12 @@ public final class AssemblySetup implements PackedLocalKeyAndSource, ActualNode<
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>();
 
     /** Whether or not this assembly is available for configuration. */
-    private boolean isConfigurable = true;
+    private boolean isConfigurable = true; // Kind of like a state I would say
 
     /** A model of the assembly. */
     public final AssemblyModel model;
 
+    /** This assembly represented as a node in a tree with all the assemblies in the application. */
     public final TreeNode<AssemblySetup> node;
 
     /**
@@ -115,20 +116,32 @@ public final class AssemblySetup implements PackedLocalKeyAndSource, ActualNode<
         return isConfigurable;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public PackedLocalMap locals() {
+        return container.locals();
+    }
+
     /**
      * @param lookup
      *            the lookup to use
      * @see Assembly#lookup(Lookup)
      * @see AbstractComposer#lookup(Lookup)
      */
-    public void lookup(Lookup lookup) {
-        this.customLookup = requireNonNull(lookup, "lookup is null");
+    public void lookup(@Nullable Lookup lookup) {
+        this.customLookup = lookup;// requireNonNull(lookup, "lookup is null");
     }
 
     /** {@return a mirror for this assembly.} */
     @Override
     public AssemblyMirror mirror() {
         return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(AssemblyMirror.class, AssemblyMirror::new, null), this);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public TreeNode<AssemblySetup> node() {
+        return node;
     }
 
     /** Does post processing after we have called into the assembly to build. */
@@ -175,34 +188,11 @@ public final class AssemblySetup implements PackedLocalKeyAndSource, ActualNode<
         throw new UnsupportedOperationException();
     }
 
+    /** An implementation of a tree of assembly mirrors. */
     public static final class PackedAssemblyTreeMirror extends AbstractTreeMirror<AssemblyMirror, AssemblySetup> implements AssemblyMirror.OfTree {
 
         public PackedAssemblyTreeMirror(AssemblySetup root, @Nullable Predicate<? super AssemblySetup> filter) {
             super(root, filter);
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public void print() {
-            throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public void printWithDuration() {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public TreeNode<AssemblySetup> node() {
-        return node;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public PackedLocalMap locals() {
-        return container.locals();
     }
 }

@@ -13,22 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.assembly;
+package internal.app.packed.container;
 
-import java.util.function.Consumer;
+import app.packed.assembly.AssemblyPropagator;
+import app.packed.build.BuildTransformer;
 
 /**
  *
  */
-
-// Ideen er hvis man kalder ud til untrusted kode...
-// Men gør vi det?
-
-@FunctionalInterface
-public interface AssemblyDelegate extends Consumer<AssemblyConfiguration> {
-
-
-    public enum Option {
-
-    }
-}
+public record AssemblyBuildTransformer(BuildTransformer transformer, AssemblyPropagator propagator) {}

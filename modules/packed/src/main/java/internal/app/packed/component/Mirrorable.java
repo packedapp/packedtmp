@@ -15,7 +15,7 @@
  */
 package internal.app.packed.component;
 
-/** Something that has a {@link internal.app.packed.container.Mirror}. */
+/** Something which as a {@link internal.app.packed.container.Mirror}. */
 public interface Mirrorable<T> {
 
     /** {@return a mirror} */

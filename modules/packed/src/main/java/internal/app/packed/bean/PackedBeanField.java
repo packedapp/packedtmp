@@ -150,7 +150,7 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
     }
 
     void onHook() {
-        extension.introspector.hookOnAnnotatedField(hooks, this);
+        extension.introspector.activatedByAnnotatedField(hooks, this);
     }
 
     /** {@inheritDoc} */

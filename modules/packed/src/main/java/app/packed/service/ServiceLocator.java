@@ -32,7 +32,7 @@ import app.packed.assembly.AbstractComposer.ComposableAssembly;
 import app.packed.assembly.AbstractComposer.ComposerAction;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
+import app.packed.extension.BeanClassActivator.BindingClassActivator;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.operation.Provider;
@@ -108,7 +108,7 @@ import sandbox.extension.container.ContainerCarrierService;
  * <p>
  * Unless otherwise specified the set of services provided by a service locator is unchangeable.
  */
-@BindingTypeHook(extension = BaseExtension.class)
+@BindingClassActivator(extension = BaseExtension.class)
 public interface ServiceLocator {
 
     /**

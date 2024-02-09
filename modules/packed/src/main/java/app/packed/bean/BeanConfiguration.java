@@ -18,7 +18,7 @@ import sandbox.extension.bean.BeanHandle;
  * The configuration of a bean, typically returned from the bean's installation site or via
  * {@link app.packed.container.ContainerConfiguration#beans()}.
  */
-public non-sealed class BeanConfiguration extends ComponentConfiguration implements BeanLocalAccessor {
+public non-sealed class BeanConfiguration implements ComponentConfiguration, BeanLocalAccessor {
 
     /** The bean handle. We don't store BeanSetup directly because it is not generified */
     private final PackedBeanHandle<?> handle;
@@ -94,6 +94,15 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     @Override
     public final boolean equals(Object obj) {
         return obj instanceof BeanConfiguration bc && handle == bc.handle;
+    }
+
+    /**
+     * {@return a stream of any bean instance factories this bean has.}
+     * <p>
+     * Static beans will always return an empty stream.
+     */
+    public final Stream<BeanFactoryConfiguration> factories() {
+        return operations(BeanFactoryConfiguration.class);
     }
 
     /** {@return the bean handle that was used to create this configuration.} */

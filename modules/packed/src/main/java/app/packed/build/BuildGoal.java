@@ -16,7 +16,7 @@
 package app.packed.build;
 
 /**
- * The goal of a build task.
+ * The goal of a build process. Or task??? Can we say just build an image from this part of the application
  */
 public enum BuildGoal {
 
@@ -53,6 +53,25 @@ public enum BuildGoal {
         return this == LAUNCH || this == IMAGE;
     }
 }
+
+//Ideen er lidt at man kan faa access til Build info.
+
+//Og fx hvis vi har hot reload tilfoeje en klasse to watch udover selve assemblies
+
+//Er den defineret i en ThreadLocal??
+//Tjah hvorfor ikke... Men tjah hvorfor
+
+//En overordnet "process" som maaske kan koere over flere omgange
+//Saa har vi en BuildTask som jo bare et traa....
+
+//Altsaa vi har jo altid en rod taenker jeg. Men saa kan vi have tasks som er delayed??
+//Og codegen er jo noget andet... Er ikke sikker på vi registrere de tasks som mirrors
+//Har vi en forrest???
+interface BuildProcess {
+
+}
+
+
 ///**
 //* The goal is to build an application image that can be launched multiple times.
 //*

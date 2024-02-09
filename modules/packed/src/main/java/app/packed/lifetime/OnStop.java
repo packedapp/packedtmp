@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
+import app.packed.extension.BeanClassActivator.AnnotatedBeanMethodActivator;
 import app.packed.operation.OperationDependencyOrder;
 
 /**
@@ -38,7 +38,7 @@ import app.packed.operation.OperationDependencyOrder;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedBeanMethodHook(allowInvoke = true, extension = BaseExtension.class)
+@AnnotatedBeanMethodActivator(allowInvoke = true, extension = BaseExtension.class)
 
 // Some examples:
 // https://stackoverflow.com/questions/26547532/how-to-shutdown-a-spring-boot-application-in-a-correct-way

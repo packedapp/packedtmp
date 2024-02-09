@@ -82,7 +82,7 @@ public interface TreeView<N> {
     // Fx siger AssemblyMirror.applicationNode
 
     // Fx ContainerMirror.children har jo bare alle boern med ligegyldig om filtrerne
-    public interface Node<T> extends Iterable<T> {
+    public interface Node<N> extends Iterable<N> {
 
         /** {@return the number of nodes in the tree.} */
         int count();
@@ -98,7 +98,7 @@ public interface TreeView<N> {
          */
         boolean isRoot();
 
-        default <S> Node<S> map(Function<T, S> mapper) {
+        default <S> Node<S> map(Function<N, S> mapper) {
             // ContainerSetup -> makeTree -> Root, Predicate
             // containerSetup.map(s->s.mirror())
             throw new UnsupportedOperationException();
@@ -107,11 +107,11 @@ public interface TreeView<N> {
         /**
          * @return
          */
-        T root();
+        N root();
 
-        Stream<T> stream();
+        Stream<N> stream();
 
-        T value();
+        N value();
     }
 
 ///** {@return an unmodifiable view of all of the children of this component.} */

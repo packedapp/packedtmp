@@ -32,7 +32,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentOperator;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
+import app.packed.extension.BeanClassActivator.BindingClassActivator;
 import app.packed.operation.BindingKind;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.OperationMirror;
@@ -80,7 +80,7 @@ public class RuntimeMirrorInjectionTest extends ServiceLocatorAppTest {
 
     @Test
     public void unknownMirror() {
-        @BindingTypeHook(extension = BaseExtension.class)
+        @BindingClassActivator(extension = BaseExtension.class)
         record MirrorAlien() {}
 
         hooks().onAnnotatedField((l, b) -> b.newGetOperation(OperationTemplate.defaults()));

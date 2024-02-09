@@ -9,12 +9,16 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.DeploymentMirror;
+import app.packed.assembly.Assemblies;
+import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
+import app.packed.build.BuildTransformerMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentOperator;
 import app.packed.component.ComponentPath;
@@ -23,8 +27,8 @@ import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
+import app.packed.extension.BeanClassActivator.BindingClassActivator;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.namespace.NamespaceMirror;
@@ -47,7 +51,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * <p>
  * At runtime you can have a ContainerMirror injected
  */
-@BindingTypeHook(extension = BaseExtension.class)
+@BindingClassActivator(extension = BaseExtension.class)
 public non-sealed class ContainerMirror implements ComponentMirror , ContextualizedElementMirror , ContainerLocalAccessor {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
@@ -81,10 +85,9 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
         this.container = ContainerSetup.MIRROR_INITIALIZER.initialize();
     }
 
-    /** {@return a stream containing all beans defined by the container including beans owned by extensions.} */
+    /** {@return a stream containing all beans defined by the container including beans that are declared by extensions.} */
     // We tried for a long if we could add state to the mirrors... But that just doesn't work...
-    // But we do it for extensions... lol
-    // Because
+    // But we do it for extensions... Which also doesn't work super nicely
     public Stream<BeanMirror> allBeans() {
         return container.beans.stream().map(b -> b.mirror());
     }
@@ -100,10 +103,10 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
     }
 
     /**
-     * {@return a view of all beans that owned by the application.}
+     * {@return a stream of all beans that are declared by the application.}
      * <p>
-     * The returned stream does not include beans that are owned by extensions, call {@link #allBeans()} if you need to
-     * include those.
+     * Notice: The returned stream does not include beans that are declared by extensions, use {@link #allBeans()} if you
+     * need to include those.
      */
     public Stream<BeanMirror> beans() {
         return allBeans().filter(m -> m.declaredBy() == ComponentOperator.application());
@@ -170,7 +173,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
         return this == other || other instanceof ContainerMirror m && container == m.container;
     }
 
-    /** {@return a {@link Set} view of every extension type that have been used in the container.} */
+    /** {@return a {@link Set} view of all extensions that are used in the container.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return container.extensionTypes();
     }
@@ -235,15 +238,15 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
         throw new UnsupportedOperationException();
     }
 
-    public List<WireletMirror> wirelets() {
-        // On runtime we would need to add runtime wirelets
-        throw new UnsupportedOperationException();
-    }
-
     /** {@inheritDoc} */
     @Override
     public String toString() {
         return "ContainerMirror (" + componentPath() + ")";
+    }
+
+    /** {@return the transformers that has been applied to this container.} */
+    public Stream<BuildTransformerMirror> transformers() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -267,6 +270,11 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
             throw new NoSuchElementException(extensionMirrorType + " is not present in this container");
         }
         return op.get();
+    }
+
+    public List<WireletMirror> wirelets() {
+        // On runtime we would need to add runtime wirelets
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -323,6 +331,9 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
     // Hvis vi siger at et domain er hele appen. Hvad goere vi i C3. Er den tilgaengelig under et "fake" navn???
     //
 
+    public static Assembly verifiable(Assembly assembly, Consumer<? super ContainerMirror> verifier) {
+        return Assemblies.verifiable(assembly, ContainerMirror.class, verifier);
+    }
 }
 
 //// MAYBE MAYBE, but need some use cases

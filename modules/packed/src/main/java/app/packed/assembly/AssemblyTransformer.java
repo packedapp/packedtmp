@@ -15,13 +15,18 @@
  */
 package app.packed.assembly;
 
+import app.packed.build.BuildTransformer;
+import app.packed.util.AnnotationListTransformer;
+
 /**
  *
  */
-public interface AssemblyTransformer {
+public non-sealed interface AssemblyTransformer extends BuildTransformer {
+
+    default void transformAnnotations(AnnotationListTransformer transformer) {}
 
     /**
-     * Invoked immediately before the runtime calls {@link Assembly#build()}.
+     * Invoked immediately before the runtime calls {@link BuildableAssembly#build()}.
      *
      * @param configuration
      *            the configuration of the container
@@ -29,7 +34,7 @@ public interface AssemblyTransformer {
     default void beforeBuild(AssemblyConfiguration configuration) {}
 
     /**
-     * Invoked immediately before the runtime calls {@link Assembly#build()}.
+     * Invoked immediately before the runtime calls {@link BuildableAssembly#build()}.
      *
      * @param configuration
      *            the configuration of the container

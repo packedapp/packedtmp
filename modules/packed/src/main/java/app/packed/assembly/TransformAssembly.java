@@ -9,9 +9,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.build.BuildHook;
-import app.packed.build.BuildHook.BuildHookTarget;
-
 /**
  * An annotation that can be places on an assembly.
  *
@@ -27,9 +24,9 @@ import app.packed.build.BuildHook.BuildHookTarget;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Repeatable(AssemblyHook.All.class)
-@BuildHook(BuildHookTarget.ASSEMBLY)
-public @interface AssemblyHook {
+@Repeatable(TransformAssembly.All.class)
+//@BuildHook(BuildHookTarget.ASSEMBLY)
+public @interface TransformAssembly {
 
     /**
      * {@return the transformer that should be applied to the container(s) defined by the assembly}
@@ -48,14 +45,16 @@ public @interface AssemblyHook {
     @interface All {
 
         /** An array of assembly hook declarations. */
-        AssemblyHook[] value();
+        TransformAssembly[] value();
     }
 
     /**
      * An annotation
      */
+    // How does this work with Delegating Assemblies?
     @interface AssemblyMatcher {
 
+        // Include Delegating???I think so
         Class<? extends Annotation>[] annotatedWithAny() default {};
 
         // I don't think we allow wildcards

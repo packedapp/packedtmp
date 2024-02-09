@@ -19,7 +19,7 @@ import app.packed.operation.OperationConfiguration;
 import sandbox.extension.operation.OperationHandle;
 
 /**
- * A operation that creates a new bean instance.
+ * A configuration for an operation that creates a new bean instance.
  */
 public class BeanFactoryConfiguration extends OperationConfiguration {
 

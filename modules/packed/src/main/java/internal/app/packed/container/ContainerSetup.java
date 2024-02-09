@@ -31,6 +31,7 @@ import java.util.function.Supplier;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerLocalAccessor;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
@@ -41,8 +42,8 @@ import app.packed.util.Nullable;
 import internal.app.packed.component.AbstractTreeMirror;
 import internal.app.packed.component.Mirrorable;
 import internal.app.packed.component.PackedComponentLocal;
-import internal.app.packed.component.PackedLocalKeyAndSource;
 import internal.app.packed.component.PackedLocalMap;
+import internal.app.packed.component.PackedLocalMap.KeyAndLocalMapSource;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
@@ -58,10 +59,19 @@ import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.operation.OperationHandle;
 
 /** The internal configuration of a container. */
-public final class ContainerSetup implements ActualNode<ContainerSetup> , ContextualizedElementSetup , Mirrorable<ContainerMirror> , ContainerHandle, PackedLocalKeyAndSource {
+public final class ContainerSetup
+        implements ActualNode<ContainerSetup> , ContextualizedElementSetup , Mirrorable<ContainerMirror> , ContainerHandle , KeyAndLocalMapSource {
 
     /** A magic initializer for {@link ContainerMirror}. */
     public static final MagicInitializer<ContainerSetup> MIRROR_INITIALIZER = MagicInitializer.of(ContainerMirror.class);
+
+    /** A handle that can access ContainerConfiguration#container. */
+    private static final VarHandle VH_CONTAINER_CONFIGURATION_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerConfiguration.class,
+            "container", ContainerSetup.class);
+
+    /** A handle that can access ContainerMirror#container. */
+    private static final VarHandle VH_CONTAINER_MIRROR_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerMirror.class, "container",
+            ContainerSetup.class);
 
     /** The application this container is a part of. */
     public final ApplicationSetup application;
@@ -115,6 +125,7 @@ public final class ContainerSetup implements ActualNode<ContainerSetup> , Contex
         this.assembly = requireNonNull(assembly);
         this.mirrorSupplier = builder.containerMirrorSupplier;
 
+        // I think we need to check application/assembly scope
         builder.locals.forEach((p, o) -> locals().set((PackedComponentLocal) p, this, o));
 
         if (builder.template.kind() == PackedContainerKind.PARENT_LIFETIME) {
@@ -227,6 +238,31 @@ public final class ContainerSetup implements ActualNode<ContainerSetup> , Contex
         return List.of();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public PackedLocalMap locals() {
+        return application.locals;
+    }
+
+//    /** {@return the path of this container} */
+//    @Override
+//    public OldApplicationPath path() {
+//        int depth = node.depth();
+//        return switch (depth) {
+//        case 0 -> OldApplicationPath.ROOT;
+//        case 1 -> new PackedNamespacePath(node.name);
+//        default -> {
+//            String[] paths = new String[depth];
+//            ContainerSetup acc = this;
+//            for (int i = depth - 1; i >= 0; i--) {
+//                paths[i] = acc.node.name;
+//                acc = acc.node.parent;
+//            }
+//            yield new PackedNamespacePath(paths);
+//        }
+//        };
+//    }
+
     /** {@return a new container mirror.} */
     @Override
     public ContainerMirror mirror() {
@@ -271,25 +307,6 @@ public final class ContainerSetup implements ActualNode<ContainerSetup> , Contex
     public TreeNode<ContainerSetup> node() {
         return node;
     }
-
-//    /** {@return the path of this container} */
-//    @Override
-//    public OldApplicationPath path() {
-//        int depth = node.depth();
-//        return switch (depth) {
-//        case 0 -> OldApplicationPath.ROOT;
-//        case 1 -> new PackedNamespacePath(node.name);
-//        default -> {
-//            String[] paths = new String[depth];
-//            ContainerSetup acc = this;
-//            for (int i = depth - 1; i >= 0; i--) {
-//                paths[i] = acc.node.name;
-//                acc = acc.node.parent;
-//            }
-//            yield new PackedNamespacePath(paths);
-//        }
-//        };
-//    }
 
     public <T extends Wirelet> WireletSelection<T> selectWireletsUnsafe(Class<T> wireletClass) {
 
@@ -356,29 +373,6 @@ public final class ContainerSetup implements ActualNode<ContainerSetup> , Contex
         return extension;
     }
 
-    /** Implementation of {@link ContainerMirror.OfTree} */
-    public static final class PackedContainerTreeMirror extends AbstractTreeMirror<ContainerMirror, ContainerSetup> implements ContainerMirror.OfTree {
-
-        public PackedContainerTreeMirror(ContainerSetup root, @Nullable Predicate<? super ContainerSetup> filter) {
-            super(root, filter);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public PackedLocalMap locals() {
-        return application.locals;
-    }
-
-    /** A handle that can access ContainerConfiguration#container. */
-    private static final VarHandle VH_CONTAINER_CONFIGURATION_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerConfiguration.class, "container",
-            ContainerSetup.class);
-
-    /** A handle that can access ContainerMirror#container. */
-    private static final VarHandle VH_CONTAINER_MIRROR_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerMirror.class, "container",
-            ContainerSetup.class);
-
-
     /**
      * Extracts a bean setup from a bean configuration.
      *
@@ -394,7 +388,23 @@ public final class ContainerSetup implements ActualNode<ContainerSetup> , Contex
         return ((ContainerSetup) handle);
     }
 
+    public static ContainerSetup crack(ContainerLocalAccessor accessor) {
+        return switch (accessor) {
+        case ContainerConfiguration bc -> crack(bc);
+        case ContainerHandle bc -> crack(bc);
+        case ContainerMirror bc -> crack(bc);
+        };
+    }
+
     public static ContainerSetup crack(ContainerMirror mirror) {
         return (ContainerSetup) VH_CONTAINER_MIRROR_TO_SETUP.get(mirror);
+    }
+
+    /** Implementation of {@link ContainerMirror.OfTree} */
+    public static final class PackedContainerTreeMirror extends AbstractTreeMirror<ContainerMirror, ContainerSetup> implements ContainerMirror.OfTree {
+
+        public PackedContainerTreeMirror(ContainerSetup root, @Nullable Predicate<? super ContainerSetup> filter) {
+            super(root, filter);
+        }
     }
 }

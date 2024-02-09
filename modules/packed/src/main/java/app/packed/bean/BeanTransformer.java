@@ -15,15 +15,26 @@
  */
 package app.packed.bean;
 
+import app.packed.build.BuildTransformer;
+
 /**
  *
  */
 
 // @AllEntityBean(requeire foo...
-public interface BeanTransformer {
+public non-sealed interface BeanTransformer extends BuildTransformer {
+
+    default void preScan(BeanClassMutator bean) {}
 
     // before being returned to the user
 
-    // Argh besvaerligt at
-    default void onNew(BeanConfiguration bean) {}
+    // Argh besvaerligt at (at hvad?)
+    default void onNew(TransformerChain tc, BeanConfiguration bean) {}
+
+    interface TransformerChain {
+        void endNow();
+
+        // After any children in the transformer chain
+        void doFinally(Runnable r);
+    }
 }

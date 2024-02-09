@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyConfiguration;
-import app.packed.assembly.AssemblyHook;
+import app.packed.assembly.TransformAssembly;
 import app.packed.assembly.AssemblyTransformer;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.build.BuildException;
@@ -28,7 +28,7 @@ public final /* primitive */ class AssemblyModel {
         protected AssemblyModel computeValue(Class<?> type) {
             ArrayList<AssemblyTransformer> hooks = new ArrayList<>();
             for (Annotation a : type.getAnnotations()) {
-                if (a instanceof AssemblyHook h) {
+                if (a instanceof TransformAssembly h) {
                     for (Class<? extends AssemblyTransformer> b : h.value()) {
                         if (AssemblyTransformer.class.isAssignableFrom(b)) {
                             MethodHandle constructor;
@@ -66,7 +66,7 @@ public final /* primitive */ class AssemblyModel {
                 }
             }
             if (!hooks.isEmpty() && DelegatingAssembly.class.isAssignableFrom(type)) {
-                throw new BuildException("Delegating assemblies cannot use @" + AssemblyHook.class.getSimpleName() + " annotations, assembly type =" + type);
+                throw new BuildException("Delegating assemblies cannot use @" + TransformAssembly.class.getSimpleName() + " annotations, assembly type =" + type);
             }
             return new AssemblyModel(type, hooks.toArray(s -> new AssemblyTransformer[s]));
         }

@@ -15,9 +15,32 @@
  */
 package app.packed.application;
 
+import app.packed.assembly.Assembly;
+import app.packed.build.BuildTransformer;
+import app.packed.container.ContainerMirror;
+
 /**
  *
  */
-public interface ApplicationTransformer {
+public non-sealed interface ApplicationTransformer extends BuildTransformer {
 
+    void onNew(ApplicationConfiguration configuration);
+}
+
+class MyA implements ApplicationTransformer {
+    static final ApplicationLocal<String> AS = ApplicationLocal.of();
+
+    /** {@inheritDoc} */
+    @Override
+    public void onNew(ApplicationConfiguration configuration) {
+        AS.get(configuration);
+    }
+
+    public void onNew(ContainerMirror configuration) {
+        AS.get(configuration);
+    }
+
+    public void onNew(Assembly assembly) {
+        AS.get(assembly);
+    }
 }

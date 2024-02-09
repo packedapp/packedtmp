@@ -10,8 +10,8 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
+import app.packed.extension.BeanClassActivator.BindingClassActivator;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.namespace.NamespaceMirror;
@@ -39,8 +39,8 @@ import internal.app.packed.operation.OperationSetup;
  * Like many other mirrors classes the type of application mirror being returned can be specialized. See
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)} for details.
  */
-@BindingTypeHook(extension = BaseExtension.class)
-public class ApplicationMirror implements ComponentMirror {
+@BindingClassActivator(extension = BaseExtension.class)
+public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationLocalAccessor {
 
     /** The application we are mirroring. */
     private final ApplicationSetup application;

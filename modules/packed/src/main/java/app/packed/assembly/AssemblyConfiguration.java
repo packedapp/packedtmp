@@ -18,13 +18,11 @@ package app.packed.assembly;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
-import app.packed.extension.BaseExtension;
 import app.packed.util.TreeView;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedAssemblyFinder;
@@ -41,49 +39,48 @@ public class AssemblyConfiguration {
         this.assembly = assembly;
     }
 
-
     /** {@return an assembly finder that can be used to find assemblies on the class- or module-path.} */
     // Classpath if the assembly is on the classpath, otherwise modulepath
+    // Maybe this is on the container level???? And not Assembly Level
     public final AssemblyFinder assemblyFinder() {
         return new PackedAssemblyFinder(getClass(), assembly);
     }
-
 
 //  protected final <T extends ComponentConfiguration> Stream<T> componentConfigurationSingleton(Class<T> configurationType) {
 //
 //  }
 
-    /** {@return an assembly finder that can be used to find assemblies on the class- or module-path.} */
-    // Classpath if the assembly is on the classpath, otherwise modulepath
+    /** {@return the current state of the assembly.} */
+    protected final Assembly.State assemblyState() {
+        throw new UnsupportedOperationException();
+    }
 
-    // Maybe this is on the container level???? And not Assembly Level
-
+    // Paa Assembly, ContainerConfiguration, Bean
     /**
-     * A tree with all the containers defined by the assembly.
+     * Returns a stream of the component configurations defined by this
      *
-     * @return
+     * @param <T>
+     *            type of configurations to return
+     * @param configurationType
+     *            type of configurations to return
+     * @return a stream of the selected configuration types
+     *
+     * @throws UnsupportedOperationException
+     *             if configurations of the specified component type are not supported from this method
      */
-    public TreeView<? extends ContainerConfiguration> containers() {
+    public final <T extends ComponentConfiguration> Stream<T> configurations(Class<T> configurationType) {
         throw new UnsupportedOperationException();
     }
 
-
-    // Think just have a containers() method...
-    public final void forEach(Consumer<? super ContainerConfiguration> consumer) {
-        forEach(c -> c.use(BaseExtension.class));
+    /** {@return a tree view of all the containers defined by the assembly} */
+    public final TreeView<? extends ContainerConfiguration> containers() {
         throw new UnsupportedOperationException();
     }
 
-    // The delegate is always provided by others
-    public void delegate(AssemblyDelegate delegate, AssemblyDelegate.Option... options) {
-
-        // external methods that needs parameters should always return an assembly delegate,
-    }
-
+    // I think maybe allow null to revert back to Assembly Based lookup
     public final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
     }
-
 
     /**
      * Specializes the {@link AssemblyMirror} that represents this assembly.
@@ -97,30 +94,12 @@ public class AssemblyConfiguration {
         requireNonNull(supplier, "supplier cannot be null");
         throw new UnsupportedOperationException();
     }
-
-
-    /** {@return the current state of the assembly.} */
-    protected final Assembly.State assemblyState() {
-        throw new UnsupportedOperationException();
-    }
-
-    // Paa Assembly, ContainerConfiguration, Bean
-    /**
-     * Returns a stream of the component configurations defined by this
-     *
-     * @param <T>
-     * @param configurationType
-     * @return
-     *
-     * @throws IllegalArgumentException
-     *             if the specified component type is not a valid component type
-     */
-    public final <T extends ComponentConfiguration> Stream<T> componentConfigurations(Class<T> configurationType) {
-
-        // componentConfigurations(EntityBeanConfiguration.class).doo
-
-        // componentConfigurations(ScheduledOperatitionConfiguration.class)
-
-        throw new UnsupportedOperationException();
-    }
 }
+
+
+//
+//// Think just have a containers() method...
+//public final void forEach(Consumer<? super ContainerConfiguration> consumer) {
+//    forEach(c -> c.use(BaseExtension.class));
+//    throw new UnsupportedOperationException();
+//}

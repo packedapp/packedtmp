@@ -19,7 +19,9 @@ package app.packed.bean;
  *
  */
 // Represents the bean after transformations...
-public interface BeanClassMirror {
+// Tror maaske det er mere debug?? IDK
+// Tror ikke det er super let at mappe
+interface BeanClassMirror {
 
     Class<?> beanClass();
 

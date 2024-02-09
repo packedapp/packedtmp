@@ -13,32 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.build;
+package app.packed.assembly;
 
 /**
  *
  */
 
-// fx Bean.SetName
-// fx Container.SetName
-//
-public class BuildStep {
+// Vi har alle nodes hvor det bliver evalueret (N)
+// Og alle nodes hvor det bliver (optional) applied
 
+// Saa det er faktisk 2 trees...
+public interface PropagationTreeView<N, A> {
 
-
-    // Hmmm. Saa har vi disse niveau, der bliver gradvist mere komplekse...
-
-    // Assembly  (Alt kan føres tilbage til en assembly)
-    // Application, Extension (ejer)
-    // Assembly, Extension, Transformer/Delegate (
-    public enum BuildStepOwner {
-        ASSEMBLY,
-
-        EXTENSION,
-
-        TRANSFORMER,
-
-        DELEGATE // Don't know about this. Basically, I think this another kind of transformer???
-
-    }
 }

@@ -23,9 +23,9 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLocal;
 import app.packed.container.Wirelet;
 import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.namespace.NamespaceTemplate;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.FrameworkExtension;
+import app.packed.namespace.NamespaceTemplate;
 import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.container.ContainerHandle.Builder;
 import sandbox.extension.container.ContainerTemplate;
@@ -39,7 +39,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
     // Det er bare commands der ikke fungere
     static final NamespaceTemplate<CliExtensionNamespaceOperator> DOMAIN = NamespaceTemplate.of(CliExtensionNamespaceOperator::new);
 
-    static final ContainerLocal<Boolean> LAUNCHED = ContainerLocal.ofContainer();
+    static final ContainerLocal<Boolean> LAUNCHED = ContainerLocal.of();
 
     /** No. */
     CliExtension() {}
@@ -63,11 +63,11 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
             /** {@inheritDoc} */
             @Override
-            public void hookOnAnnotatedMethod(Annotation hook, BeanMethod method) {
+            public void activatedByAnnotatedMethod(Annotation hook, BeanMethod method) {
                 if (hook instanceof CliCommand c) {
                     domain(DOMAIN).process(CliExtension.this, c, method);
                 } else {
-                    super.hookOnAnnotatedMethod(hook, method);
+                    super.activatedByAnnotatedMethod(hook, method);
                 }
             }
         };

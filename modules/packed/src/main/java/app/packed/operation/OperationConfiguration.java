@@ -25,7 +25,7 @@ import app.packed.extension.Extension;
 import sandbox.extension.operation.OperationHandle;
 
 /** The configuration of an operation. */
-public class OperationConfiguration extends ComponentConfiguration {
+public class OperationConfiguration implements ComponentConfiguration {
 
     /** The operation handle. */
     private final OperationHandle handle;

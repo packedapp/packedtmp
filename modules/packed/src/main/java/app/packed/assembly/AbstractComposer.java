@@ -24,6 +24,7 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.NonRootContainerBuilder;
 import internal.app.packed.container.PackedContainerBuilder;
 
@@ -98,7 +99,7 @@ public abstract class AbstractComposer {
      */
     public final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
-        Assembly.crack(configuration()).assembly.lookup(lookup);
+        ContainerSetup.crack(configuration()).assembly.lookup(lookup);
     }
 
     protected void preCompose() {}

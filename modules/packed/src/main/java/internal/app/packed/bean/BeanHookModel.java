@@ -23,10 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import app.packed.extension.BeanCustomHook;
-import app.packed.extension.ExtensionMetaHook.AnnotatedBeanVariableHook;
-import app.packed.extension.ExtensionMetaHook.AnnotatedBeanMethodHook;
-import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
+import app.packed.extension.BeanCustomActivator;
+import app.packed.extension.BeanClassActivator.AnnotatedBeanVariableActivator;
+import app.packed.extension.BeanClassActivator.AnnotatedBeanMethodActivator;
+import app.packed.extension.BeanClassActivator.BindingClassActivator;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
@@ -42,7 +42,7 @@ public final class BeanHookModel {
 
         @Override
         protected AnnotatedMethod computeValue(Class<?> type) {
-            AnnotatedBeanMethodHook h = type.getAnnotation(AnnotatedBeanMethodHook.class);
+            AnnotatedBeanMethodActivator h = type.getAnnotation(AnnotatedBeanMethodActivator.class);
             if (h == null) {
                 return null;
             }
@@ -77,7 +77,7 @@ public final class BeanHookModel {
         @Override
         protected AnnotatedParameterType computeValue(Class<?> type) {
 
-            AnnotatedBeanVariableHook h = type.getAnnotation(AnnotatedBeanVariableHook.class);
+            AnnotatedBeanVariableActivator h = type.getAnnotation(AnnotatedBeanVariableActivator.class);
 
             Class<? extends Annotation> cl = bindings.get(type.getName());
             if (cl != null) {
@@ -104,7 +104,7 @@ public final class BeanHookModel {
 
         @Override
         protected ParameterType computeValue(Class<?> type) {
-            BindingTypeHook h = type.getAnnotation(BindingTypeHook.class);
+            BindingClassActivator h = type.getAnnotation(BindingClassActivator.class);
             Class<? extends Annotation> cl = bindings.get(type.getName());
             if (cl != null) {
                 Class<?> declaringClass = cl.getDeclaringClass();
@@ -138,7 +138,7 @@ public final class BeanHookModel {
         this.parent = requireNonNull(parent);
         List<AssemblyMetaHolder> holders = new ArrayList<>();
         for (Annotation a : annotations) {
-            if (a.annotationType().isAnnotationPresent(BeanCustomHook.class)) {
+            if (a.annotationType().isAnnotationPresent(BeanCustomActivator.class)) {
                 holders.add(new AssemblyMetaHolder(a.annotationType()));
             }
         }

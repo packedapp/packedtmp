@@ -23,7 +23,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.component.Mirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
+import app.packed.extension.BeanClassActivator.BindingClassActivator;
 import app.packed.extension.Extension;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.container.DeploymentSetup;
@@ -38,7 +38,7 @@ import internal.app.packed.container.DeploymentSetup;
 // Family < Deployment < Application < Container < Bean < Operation < Binding | Interceptor
 
 //Cluster|Node? < Java Process(Logical name) < Family
-@BindingTypeHook(extension = BaseExtension.class)
+@BindingClassActivator(extension = BaseExtension.class)
 public class DeploymentMirror implements Mirror {
 
     /** The deployment we are mirroring. */

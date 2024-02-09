@@ -18,18 +18,17 @@ package app.packed.build;
 /**
  *
  */
-public @interface BuildHook {
-    BuildHookTarget[] value();
+//// Possible ways to implement this
+// Only on the root assembly
+// Local to the assembly
+// Inherited by child assemblies.
+// Inherited by child assemblies. Which may override  settings
 
-    public enum BuildHookTarget {
-        ASSEMBLY,
+// This interface should not change the semantic meaning of applications
+// Should it be overridable by Wirelets???
 
-        EXTENSION,
+// CodegenProfile. Generate eagerly, lazily?? Why not just always lazily?
+// Because of memory???
+@interface CodegenProfile {
 
-        BEAN, // BeanClass?
-
-        BEAN_ANNOTATION,
-
-        BEAN_AUTO_SERVICE
-    }
 }

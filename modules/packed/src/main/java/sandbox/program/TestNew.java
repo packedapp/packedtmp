@@ -28,7 +28,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMetaHook.AnnotatedBeanVariableHook;
+import app.packed.extension.BeanClassActivator.AnnotatedBeanVariableActivator;
 import app.packed.service.Provide;
 import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.mirror.oldMaybe.ProvidedServiceMirror;
@@ -93,12 +93,12 @@ public class TestNew extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void hookOnAnnotatedVariable(Annotation hook, BindableVariable h) {
+                public void activatedByAnnotatedVariable(Annotation hook, BindableVariable h) {
                     if (hook.annotationType() == XX.class) {
                         String str = h.annotations().readRequired(XX.class).value();
                         h.bindConstant(str.toUpperCase());
                     } else {
-                        super.hookOnAnnotatedVariable(hook, h);
+                        super.activatedByAnnotatedVariable(hook, h);
                     }
                 }
             };
@@ -107,7 +107,7 @@ public class TestNew extends BaseAssembly {
 
     @Target({ ElementType.PARAMETER })
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedBeanVariableHook(extension = MyExt.class)
+    @AnnotatedBeanVariableActivator(extension = MyExt.class)
     @interface XX {
         String value();
     }

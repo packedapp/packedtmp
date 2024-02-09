@@ -23,7 +23,7 @@ package app.packed.bean;
 // ClassLoader
 // Eager/Lazy
 // Module? Well same module
-// Nestmate <-- then we can access private fields, if nes
+// Nestmate <-- then we can access private fields, if needed
 public interface BeanProxyStrategy {
 
 }

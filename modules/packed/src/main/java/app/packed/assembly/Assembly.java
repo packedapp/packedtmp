@@ -15,41 +15,30 @@
  */
 package app.packed.assembly;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
-
+import app.packed.application.ApplicationLocalAccessor;
 import app.packed.assembly.AbstractComposer.ComposableAssembly;
 import app.packed.build.BuildSource;
-import app.packed.container.ContainerConfiguration;
 import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerBuilder;
-import internal.app.packed.util.LookupUtil;
 
 /**
- * Assemblies are the basic building block for defining an application in Packed.
+ * Assemblies are the basic building block for defining applications in Packed.
  * <p>
  * An assembly provides the concrete instructions for creating an application, and every application is constructed
- * either directly or indirectly from one or more assemblies. As such a single assembly can either comprise the entire
- * application or serve as the root of a hierarchy of assembly nodes, where each node is responsible for building a part
- * of the application.
- * <p>
- * Assemblies does not have a runtime representation. They are a strictly build-time construct.
- *
- * state are not carried over to the runtime. And any state that must be carried over to the runtime. Must be done so
- * doing the build process.
+ * either directly or indirectly from one or more assemblies. As such a single assembly can either comprise the build
+ * instructions for an entire application or serve as the root of a hierarchy of assembly nodes, where each node is
+ * responsible for building a part of the application.
  * <p>
  * Assemblies provide a simply way to package components and build modular application. This is useful, for example,
  * for:
  * <ul>
  * <li>Sharing functionality across multiple injectors and/or containers.</li>
  * <li>Hiding implementation details from users.</li>
- * <li>Organizing a complex project into distinct sections, such that each section addresses a separate concern.</li>
+ * <li>Organizing a complex application into distinct sections, such that each section addresses a separate
+ * concern.</li>
  * </ul>
  * <p>
- * (DELETE ME) For more complicated needs an application can itself be split into a hierarchy of application nodes with
- * a single application as the root.
- *
+ * Assemblies does not have a runtime representation, they are only used at build time.
  * <p>
  * There are currently two types of assemblies available:
  * <ul>
@@ -63,38 +52,13 @@ import internal.app.packed.util.LookupUtil;
  * <p>
  * This class cannot be extended directly, you would typically extend {@link BaseAssembly} instead.
  */
-public sealed abstract class Assembly implements BuildSource permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
+public sealed abstract class Assembly implements BuildSource , ApplicationLocalAccessor permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
 
     /**
-     * A marker configuration object indicating that an assembly (or composer) has already been used for building a
-     * container. Should never be exposed to end-users.
+     * A marker configuration object indicating that an assembly (or composer) has already been used for building. Should
+     * never be exposed to end-users.
      */
     static final AssemblyConfiguration USED = new AssemblyConfiguration(null);
-
-    /** A handle that can access BeanConfiguration#handle. */
-    static final VarHandle VH_CONTAINER_CONFIGURATION_TO_CONTAINER_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerConfiguration.class,
-            "container", ContainerSetup.class);
-
-    static ContainerSetup crack(ContainerConfiguration cc) {
-        return (ContainerSetup) VH_CONTAINER_CONFIGURATION_TO_CONTAINER_SETUP.get(cc);
-    }
-
-
-    // Hmm vi har lagt op til transformers bliver instantieret once...
-    // Saa har de jo ikke en state
-
-    /** The state of an {@link Assembly}. */
-    public enum State {
-
-        /** The assembly has not yet been used in a build process. */
-        BEFORE_BUILD,
-
-        /** The assembly is currently being used in a build process. */
-        IN_USE,
-
-        /** The assembly has already been used in a build process (either successfully or unsuccessfully). */
-        AFTER_BUILD;
-    }
 
     /**
      * Invoked by the runtime (via a MethodHandle) to build the assembly.
@@ -106,4 +70,17 @@ public sealed abstract class Assembly implements BuildSource permits BuildableAs
      * @apiNote this method is for internal use only
      */
     abstract AssemblySetup build(PackedContainerBuilder builder);
+
+    /** The state of an {@link Assembly}. */
+    public enum State {
+
+        /** The assembly has already been used in a build process (either successfully or unsuccessfully). */
+        AFTER_BUILD,
+
+        /** The assembly has not yet been used in a build process. */
+        BEFORE_BUILD,
+
+        /** The assembly is currently being used in a build process. */
+        IN_USE;
+    }
 }

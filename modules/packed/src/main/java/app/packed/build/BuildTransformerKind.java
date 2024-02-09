@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.build;
 
 /**
  *
  */
-public @interface BeanClassHook {
-
+// I think this a more generic enum. And add Namespace or similar
+public enum BuildTransformerKind {
+    APPLICATION, ASSEMBLY, CONTAINER, BEAN, OPERATION;
 }

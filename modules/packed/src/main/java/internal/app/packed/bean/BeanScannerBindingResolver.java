@@ -50,7 +50,7 @@ final class BeanScannerBindingResolver {
             BeanScannerExtensionRef contributor = iBean.computeContributor(hook.extensionType());
             PackedBindableVariable h = new PackedBindableVariable(iBean, operation, index, contributor.extension, v);
 
-            contributor.introspector.hookOnVariableType(v.rawType(), new PackedBindableWrappedVariable(h));
+            contributor.introspector.activatedByVariableType(v.rawType(), new PackedBindableWrappedVariable(h));
             if (operation.bindings[index] != null) {
                 return;
             }
@@ -91,7 +91,7 @@ final class BeanScannerBindingResolver {
                 BeanScannerExtensionRef ei = introspector.computeContributor(hook.extensionType());
 
                 PackedBindableVariable h = new PackedBindableVariable(introspector, os, index, ei.extension, var);
-                ei.introspector.hookOnAnnotatedVariable(a1, h);
+                ei.introspector.activatedByAnnotatedVariable(a1, h);
                 return true;
             }
         }

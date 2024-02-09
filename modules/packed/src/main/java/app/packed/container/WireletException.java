@@ -42,6 +42,8 @@ package app.packed.container;
 
 // Was BuildTimeWireletNotAllowedException
 // LaunchTimeWireletRequiredException
+
+// Do we want an InvalidWireletScopeException??
 public class WireletException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

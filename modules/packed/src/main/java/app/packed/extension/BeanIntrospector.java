@@ -57,6 +57,110 @@ public non-sealed abstract class BeanIntrospector implements BeanLocalAccessor {
     @Nullable
     private BeanScannerExtensionRef setup;
 
+    public void activatedByAnnotatedClass(Annotation annotated, BeanClass clazz) {}
+
+    // Replace set with something like AnnotatedHookSet
+    /**
+     *
+     * The default implementation calls {@link #hookOnAnnotatedClass(Annotation, OperationalClass)}
+     *
+     * @param hooks
+     *            the annotation(s) that hook
+     * @param an
+     */
+    public void activatedByAnnotatedClass(AnnotationList annotations, BeanClass clazz) {
+        for (Annotation a : annotations) {
+            activatedByAnnotatedClass(a, clazz);
+        }
+    }
+
+    /**
+     * This method is called by the similar named method {@link #hookOnAnnotatedField(AnnotationList, BeanField)} for every
+     * annotation.
+     *
+     * @param annotation
+     *            the annotation
+     * @param field
+     *            an operational field
+     */
+    public void activatedByAnnotatedField(Annotation annotation, BeanField field) {
+        throw new BeanInstallationException(extension().fullName() + " does not know how to handle " + annotation.annotationType() + " on " + field);
+    }
+
+    /**
+     * A callback method that is called by the framework when a bean is being installed for fields that are annotated with
+     * one or more field hook annotation belonging to the extension:
+     * <p>
+     * The default implementation simply calls {@link #hookOnAnnotatedField(Annotation, BeanField)} for each separately
+     * applied annotation. And in most
+     * <p>
+     * This method should be overridden only if there are annotations that can be applied multiple times to the same field.
+     * Or i
+     *
+     * annotation. And
+     *
+     * is annotated with an annotation that itself is annotated with {@link AnnotatedFieldHook} and where
+     * {@link AnnotatedFieldHook#extension()} matches the type of this extension.
+     * <p>
+     * This method is never invoked more than once for a given field and extension. Even if there are multiple matching hook
+     * annotations on the same field.
+     *
+     * @param hooks
+     *            a non-empty list of field activating annotations
+     * @param field
+     *            an operational field
+     * @see app.packed.extension.ExtensionMetaHook.AnnotatedBeanFieldHook
+     */
+    // Combinations of Field Annotations, Variable Annotations & VariableType
+    // Failures? or order of importancez
+    // What about meta data annotations? Maybe this is mostly applicable to binding class hooks
+    public void activatedByAnnotatedField(AnnotationList hooks, BeanField field) {
+        for (Annotation a : hooks) {
+            activatedByAnnotatedField(a, field);
+        }
+    }
+
+    // can we attach information to the method???
+    // fx @Lock(sdfsdfsdf) uden @Query???
+    public void activatedByAnnotatedMethod(Annotation hook, BeanMethod method) {
+        // Test if getClass()==BeanScanner forgot to implement
+        // Not we want to return generic bean scanner from newBeanScanner
+        throw new InternalExtensionException(extension().fullName() + " failed to handle method annotation(s) " + hook);
+    }
+
+    /**
+     * @param on
+     *
+     * @see AnnotatedMethodHook
+     */
+    public void activatedByAnnotatedMethod(AnnotationList hooks, BeanMethod method) {
+        for (Annotation a : hooks) {
+            activatedByAnnotatedMethod(a, method);
+        }
+    }
+
+    /**
+     * <p>
+     * A variable can never be annotated with more than 1 operational
+     *
+     * @param variable
+     *            a binding
+     *
+     * @see AnnotatedBindingHook
+     */
+    public void activatedByAnnotatedVariable(Annotation hook, BindableVariable binder) {
+        throw new BeanInstallationException(extension().fullName() + " failed to handle parameter hook annotation(s) " + hook);
+    }
+
+    /**
+     * @param v
+     *
+     * @see BindingTypeHook
+     */
+    public void activatedByVariableType(Class<?> hook, UnwrappedBindableVariable binder) {
+        throw new BeanInstallationException(extension().fullName() + " cannot handle type hook " + StringFormatter.format(hook));
+    }
+
     /**
      * A callback method that is invoked before any calls to any of the {@code hookOn} methods on this class.
      * <p>
@@ -69,6 +173,12 @@ public non-sealed abstract class BeanIntrospector implements BeanLocalAccessor {
     BeanSetup bean() {
         return setup().scanner.bean;
     }
+
+//    public boolean hasAttachment(Class<?> attachmentType) {
+//        requireNonNull(attachmentType);
+//        Map<Class<?>, Object> a = setup().bean.attachments;
+//        return a != null && a.containsKey(attachmentType);
+//    }
 
     /** {@return an annotation reader for the bean class.} */
     public final AnnotationList beanAnnotations() {
@@ -116,12 +226,6 @@ public non-sealed abstract class BeanIntrospector implements BeanLocalAccessor {
      */
     public void beforeHooks() {}
 
-//    public boolean hasAttachment(Class<?> attachmentType) {
-//        requireNonNull(attachmentType);
-//        Map<Class<?>, Object> a = setup().bean.attachments;
-//        return a != null && a.containsKey(attachmentType);
-//    }
-
     private ExtensionDescriptor extension() {
         return setup().extension.model;
     }
@@ -135,109 +239,6 @@ public non-sealed abstract class BeanIntrospector implements BeanLocalAccessor {
      */
     public final void failWith(String postFix) {
         throw new BeanInstallationException("OOPS " + postFix);
-    }
-
-    public void hookOnAnnotatedClass(Annotation annotated, BeanClass clazz) {}
-
-    // Replace set with something like AnnotatedHookSet
-    /**
-     *
-     * The default implementation calls {@link #hookOnAnnotatedClass(Annotation, OperationalClass)}
-     *
-     * @param hooks
-     *            the annotation(s) that hook
-     * @param an
-     */
-    public void hookOnAnnotatedClass(AnnotationList annotations, BeanClass clazz) {
-        for (Annotation a : annotations) {
-            hookOnAnnotatedClass(a, clazz);
-        }
-    }
-
-    /**
-     * This method is called by the similar named method {@link #hookOnAnnotatedField(AnnotationList, BeanField)} for every
-     * annotation.
-     *
-     * @param annotation
-     *            the annotation
-     * @param field
-     *            an operational field
-     */
-    public void hookOnAnnotatedField(Annotation annotation, BeanField field) {
-        throw new BeanInstallationException(extension().fullName() + " does not know how to handle " + annotation.annotationType() + " on " + field);
-    }
-
-    /**
-     * A callback method that is called by the framework when a bean is being installed for fields that are annotated with
-     * one or more field hook annotation belonging to the extension:
-     * <p>
-     * The default implementation simply calls {@link #hookOnAnnotatedField(Annotation, BeanField)} for each separately
-     * applied annotation. And in most
-     * <p>
-     * This method should be overridden only if there are annotations that can be applied multiple times to the same field.
-     * Or i
-     *
-     * annotation. And
-     *
-     * is annotated with an annotation that itself is annotated with {@link AnnotatedFieldHook} and where
-     * {@link AnnotatedFieldHook#extension()} matches the type of this extension.
-     * <p>
-     * This method is never invoked more than once for a given field and extension. Even if there are multiple matching hook
-     * annotations on the same field.
-     *
-     * @param hooks
-     *            a non-empty collection of hooks
-     * @param field
-     *            an operational field
-     * @see app.packed.extension.ExtensionMetaHook.AnnotatedBeanFieldHook
-     */
-    // Combinations of Field Annotations, Variable Annotations & VariableType
-    // Failures? or order of importancez
-    public void hookOnAnnotatedField(AnnotationList hooks, BeanField field) {
-        for (Annotation a : hooks) {
-            hookOnAnnotatedField(a, field);
-        }
-    }
-
-    // can we attach information to the method???
-    // fx @Lock(sdfsdfsdf) uden @Query???
-    public void hookOnAnnotatedMethod(Annotation hook, BeanMethod method) {
-        // Test if getClass()==BeanScanner forgot to implement
-        // Not we want to return generic bean scanner from newBeanScanner
-        throw new InternalExtensionException(extension().fullName() + " failed to handle method annotation(s) " + hook);
-    }
-
-    /**
-     * @param on
-     *
-     * @see AnnotatedMethodHook
-     */
-    public void hookOnAnnotatedMethod(AnnotationList hooks, BeanMethod method) {
-        for (Annotation a : hooks) {
-            hookOnAnnotatedMethod(a, method);
-        }
-    }
-
-    /**
-     * <p>
-     * A variable can never be annotated with more than 1 operational
-     *
-     * @param variable
-     *            a binding
-     *
-     * @see AnnotatedBindingHook
-     */
-    public void hookOnAnnotatedVariable(Annotation hook, BindableVariable binder) {
-        throw new BeanInstallationException(extension().fullName() + " failed to handle parameter hook annotation(s) " + hook);
-    }
-
-    /**
-     * @param v
-     *
-     * @see BindingTypeHook
-     */
-    public void hookOnVariableType(Class<?> hook, UnwrappedBindableVariable binder) {
-        throw new BeanInstallationException(extension().fullName() + " cannot handle type hook " + StringFormatter.format(hook));
     }
 
     /**

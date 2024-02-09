@@ -16,7 +16,8 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.DeploymentMirror;
 import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyMirror;
-import app.packed.bean.BeanClassConfiguration;
+import app.packed.assembly.AssemblyPropagator;
+import app.packed.bean.BeanClassMutator;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
@@ -24,6 +25,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.Inject;
 import app.packed.bean.ManagedBeanRequiredException;
 import app.packed.build.BuildException;
+import app.packed.build.BuildTransformer;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerMirror;
@@ -106,7 +108,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     // We use an initial value for now, because we share FromLinks and the boolean fields
     // But right now we only have a single field
-    static final ContainerLocal<FromLinks> FROM_LINKS = ContainerLocal.ofContainer(FromLinks::new);
+    static final ContainerLocal<FromLinks> FROM_LINKS = ContainerLocal.of(FromLinks::new);
 
     final ArrayList<BindableVariable> varsToResolve = new ArrayList<>();
 
@@ -169,10 +171,11 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     // Har man brug for andet end class transformer? Er der nogle generalle bean properties??? IDK
-    <T> ServiceableBeanConfiguration<T> transformingInstall(Class<T> implementation, Consumer<? super BeanClassConfiguration> transformation) {
+    <T> ServiceableBeanConfiguration<T> transformingInstall(Class<T> implementation, Consumer<? super BeanClassMutator> transformation) {
         throw new UnsupportedOperationException();
 
     }
+
     /**
      * Installs a bean of the specified type. A single instance of the specified class will be instantiated when the
      * container is initialized.
@@ -289,6 +292,22 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         link0().build(assembly, wirelets);
     }
 
+    public void linkTransformed(Assembly assembly, BuildTransformer... transformers) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void linkTransformed(Assembly assembly, AssemblyPropagator ap, BuildTransformer... transformers) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void linkTransformed(Assembly assembly, BuildTransformer[] transformers, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void linkTransformed(Assembly assembly, AssemblyPropagator ap, BuildTransformer[] transformers, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Creates a new container that strongly linked to the lifetime of this container.
      *
@@ -296,6 +315,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      *            optional wirelets
      * @return configuration for the new container
      */
+    // addContainer???
     public ContainerConfiguration link(Wirelet... wirelets) {
         ContainerHandle handle = link0().build(wirelets);
         return new ContainerConfiguration(handle);
@@ -350,7 +370,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             /** Handles {@link Inject}. */
             @Override
-            public void hookOnAnnotatedField(Annotation hook, BeanField field) {
+            public void activatedByAnnotatedField(Annotation hook, BeanField field) {
                 if (hook instanceof Inject) {
                     // checkNotStatic
                     // Det er jo inject service!???
@@ -370,13 +390,13 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     OperationSetup operation = OperationSetup.crack(field.newGetOperation(OperationTemplate.defaults()));
                     extension.container.sm.provide(key, operation, new FromOperationResult(operation));
                 } else {
-                    super.hookOnAnnotatedField(hook, field);
+                    super.activatedByAnnotatedField(hook, field);
                 }
             }
 
             /** Handles {@link Inject}, {@link OnInitialize}, {@link OnStart} and {@link OnStop}. */
             @Override
-            public void hookOnAnnotatedMethod(Annotation annotation, BeanMethod method) {
+            public void activatedByAnnotatedMethod(Annotation annotation, BeanMethod method) {
                 BeanSetup bean = bean();
 
                 if (annotation instanceof Inject) {
@@ -426,13 +446,13 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     MainThreadOfControl mc = bean.container.lifetime.entryPoints.entryPoint.mainThread();
                     runOnCodegen(() -> mc.generatedMethodHandle = os.generateMethodHandle());
                 } else {
-                    super.hookOnAnnotatedMethod(annotation, method);
+                    super.activatedByAnnotatedMethod(annotation, method);
                 }
             }
 
             /** Handles {@link ContainerGuest}, {@link InvocationArgument} and {@link CodeGenerated}. */
             @Override
-            public void hookOnAnnotatedVariable(Annotation annotation, BindableVariable v) {
+            public void activatedByAnnotatedVariable(Annotation annotation, BindableVariable v) {
                 if (annotation instanceof ContainerCarrierService) {
                     Variable va = v.variable();
                     if (va.rawType().equals(String.class)) {
@@ -459,12 +479,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     }
                     varsToResolve.add(v);
                 } else {
-                    super.hookOnAnnotatedVariable(annotation, v);
+                    super.activatedByAnnotatedVariable(annotation, v);
                 }
             }
 
             @Override
-            public void hookOnVariableType(Class<?> hook, UnwrappedBindableVariable binding) {
+            public void activatedByVariableType(Class<?> hook, UnwrappedBindableVariable binding) {
                 OperationSetup operation = ((PackedBindableWrappedVariable) binding).v.operation;
 
                 if (ApplicationLaunchContext.class.isAssignableFrom(hook)) {
@@ -640,7 +660,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     // transformAllBeans() <-- includes extension beans... (Must be open)
-    public Runnable transformAllBeans(Consumer<? super BeanClassConfiguration> transformer) {
+    public Runnable transformAllBeans(Consumer<? super BeanClassMutator> transformer) {
         throw new UnsupportedOperationException();
     }
 
@@ -654,7 +674,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return A runnable that be can run after which the transformer will no longer be applied when installing beans.
      */
     // Also a version with BeanClass?? , Class<?>... beanClasses (
-    public Runnable transformBeans(Consumer<? super BeanClassConfiguration> transformer) {
+    public Runnable transformBeans(Consumer<? super BeanClassMutator> transformer) {
         throw new UnsupportedOperationException();
     }
 
@@ -666,7 +686,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @param transformer
      *            the bean transformer
      */
-    public void transformNextBean(Consumer<? super BeanClassConfiguration> transformer) {}
+    public void transformNextBean(Consumer<? super BeanClassMutator> transformer) {}
 
     static class FromLinks {
         boolean exportServices;

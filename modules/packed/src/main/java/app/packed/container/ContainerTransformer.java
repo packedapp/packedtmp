@@ -16,8 +16,12 @@
 package app.packed.container;
 
 import java.lang.invoke.MethodHandles;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import app.packed.assembly.Assembly;
+import app.packed.assembly.AssemblyPropagator;
+import app.packed.build.BuildTransformer;
 import app.packed.extension.Extension;
 
 /**
@@ -29,7 +33,32 @@ import app.packed.extension.Extension;
  * The realm of the container configuration will be this class. Any value specified to
  * {@link Assembly#lookup(MethodHandles.Lookup)} will be reset before next context or the actual build method
  */
-public interface ContainerTransformer {
+// This is user facing. (Not for extensions)
+// What about AssemblyTransformer.preBuildt vs ContainerTransformer.onNew???
+// I think this means we need to call these other transformers before other prebuilts...
+
+public non-sealed interface ContainerTransformer extends BuildTransformer {
+
+    // Don't know what I can do here
+    default void onApplicationClose(ContainerConfiguration configuration) {}
+
+    /**
+     * Invoked immediately before the runtime calls {@link Assembly#build()}.
+     *
+     * @param configuration
+     *            the configuration of the container
+     */
+    default void onAssemblyClose(ContainerConfiguration configuration) {}
+
+    /**
+     * Invoked by the framework when a new extension is added to the container.
+     * <p>
+     * This method never invoked for {@link app.packed.extension.BaseExtension}, as this extension is always present. Maybe this is okay
+     *
+     * @param extension
+     *            the extension that was added
+     */
+    default void onExtensionAdded(Extension<?> extension) {}
 
     /**
      * Invoked immediately after a new container is created.
@@ -42,27 +71,12 @@ public interface ContainerTransformer {
      * @param configuration
      *            the configuration of the container
      */
-
-    // I think base extension is the only thing that is installed
-
     // What if an extension installs new extensions from onNew?? I guess, we just need to line up
     default void onNew(ContainerConfiguration configuration) {}
 
-    // BaseExtension is not called here?
-    // We take Extension. Because you can always just call configuration.use(extensionClass)? if had an extensionClass as a
-    // parameter instead
-    default void onExtensionAdded(Extension<?> extension) {}
-
-    /**
-     * Invoked immediately before the runtime calls {@link Assembly#build()}.
-     *
-     * @param configuration
-     *            the configuration of the container
-     */
-    default void onAssemblyClose(ContainerConfiguration configuration) {}
-
-    // Don't know what I can do here
-    default void onApplicationClose(ContainerConfiguration configuration) {}
+    default Assembly transformRecursively(MethodHandles.Lookup caller, Assembly assembly) {
+        return assembly;
+    }
 
     /**
      * When an application has finished building this method is called to check.
@@ -80,9 +94,34 @@ public interface ContainerTransformer {
     // ? T
     // Do we take a ApplicationVerify thingy where we can register issues??? IDK
     // ContainerMirror
+    // I think this a generic thingy...
+    // We shouldn't need
+    // predicateClass == Predicate<? extends Consumer<ContainerMirror>>>
     default void verify(ContainerMirror mirror) {}
 
-    default Assembly transformRecursively(MethodHandles.Lookup caller, Assembly assembly) {
+    // Doesn't really work... We need to aggreate them
+
+    static Assembly interceptOnNew(Assembly assembly, AssemblyPropagator ap, Consumer<? super ContainerConfiguration> c) {
         return assembly;
     }
+
+    // Will create a fake BuildTransformer
+    // Super cool. But I think it is really having something that implement BuildTransformer
+    // At least for the mirrors
+    static Assembly interceptOnNew(Assembly assembly, Consumer<? super ContainerConfiguration> c) {
+        return interceptOnNew(assembly, AssemblyPropagator.LOCAL, c);
+    }
+
+    static Assembly transformRecursively(Supplier<? extends BuildTransformer> c, Assembly assembly) {
+
+        // Must report this line as the build transformer source...
+        interceptOnNew(assembly, f -> f.named("sdf"));
+
+        return assembly;
+    }
+}
+
+// Whenever an extension of the specified type is installed, do X
+interface ExtensionHook {
+
 }

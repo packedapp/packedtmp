@@ -18,7 +18,7 @@ package sandbox.extension.bean.pouch;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.BeanClassConfiguration;
+import app.packed.bean.BeanClassMutator;
 import app.packed.bean.Inject;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerTransformer;
@@ -35,19 +35,19 @@ public class BeanTransformerUsage {
         /** {@inheritDoc} */
         @Override
         protected void build() {
-            base().transformNextBean(c -> c.ignoreAllFields(f -> f.getName().equals("foo")));
+            base().transformNextBean(c -> c.hideAllFields(f -> f.getName().equals("foo")));
 
             install(String.class);
 
             // Ignore all fields annotated with @Inject
             // AssemblyHook?
-            base().transformBeans(c -> c.ignoreAllFields(f -> f.isAnnotationPresent(Inject.class)));
+            base().transformBeans(c -> c.hideAllFields(f -> f.isAnnotationPresent(Inject.class)));
 
             Runnable cancel = base().transformBeans(c -> {
                 if (c.beanClass().getPackageName().equals("foobar")) {
                     System.out.println(c.beanClass());
                 }
-                c.ignoreAllFields(f -> f.isAnnotationPresent(Inject.class));
+                c.hideAllFields(f -> f.isAnnotationPresent(Inject.class));
             });
 
             install(String.class);
@@ -71,7 +71,7 @@ public class BeanTransformerUsage {
     public class MyBean {
 
         static {
-            BeanClassConfiguration.alwaysTransform(MethodHandles.lookup(), c -> {
+            BeanClassMutator.forceTransform(MethodHandles.lookup(), c -> {
                 c.addFunction(Variable.of(Void.class), () -> {
                     System.out.println();
                     return null;

@@ -81,6 +81,9 @@ import sandbox.extension.container.ContainerHandle;
  * @param <E>
  *            The type of the extension subclass
  */
+
+//Nooooo, if fx Logging is a custom BindingHook on Assembly.
+// We also need to have this fucker on Extension. Or maybe allow no customization on extension beans
 public non-sealed abstract class Extension<E extends Extension<E>> implements BuildSource {
 
     /** The internal configuration of the extension. */

@@ -7,10 +7,11 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.DeploymentMirror;
+import app.packed.build.BuildTransformerMirror;
 import app.packed.component.Mirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
+import app.packed.extension.BeanClassActivator.BindingClassActivator;
 import app.packed.util.AnnotationList;
 import app.packed.util.TreeView;
 import app.packed.util.TreeView.Node;
@@ -26,7 +27,7 @@ import internal.app.packed.container.ContainerSetup.PackedContainerTreeMirror;
  * @see ApplicationMirror#assembly()
  * @see ContainerMirror#assembly()
  */
-@BindingTypeHook(extension = BaseExtension.class)
+@BindingClassActivator(extension = BaseExtension.class)
 public class AssemblyMirror implements Mirror {
 
     /** The assembly we are mirroring. */
@@ -43,14 +44,23 @@ public class AssemblyMirror implements Mirror {
         this.assembly = AssemblySetup.MIRROR_INITIALIZER.initialize();
     }
 
+    public Stream<BuildTransformerMirror> declaredTransformers() {
+        throw new UnsupportedOperationException();
+    }
+
+    public Stream<BuildTransformerMirror> transformers() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      *
-     * This list only containers relevant annotations that are understod by the framework. Or does it? IDK
+     * This list only containers relevant annotations that are understod by the framework. Or does it? I think it should contain all annotations
      *
      * @return
      *
      * @see Class#getAnnotations()
      */
+    // This list may be heavily changed by a delegating assembly
     public AnnotationList annotations() {
         throw new UnsupportedOperationException();
     }
@@ -90,7 +100,7 @@ public class AssemblyMirror implements Mirror {
     // TODO present on ContainerMirror as well? Maybe a ContainerHookMirror, I really think it should be
     // Would be nice to see if a given assembly hook was applied to the container.
     // And the order
-    public List<Class<? extends AssemblyHook>> assemblyHooks() {
+    public List<Class<? extends TransformAssembly>> assemblyHooks() {
         return List.of(); // TODO implement
     }
 
@@ -119,6 +129,7 @@ public class AssemblyMirror implements Mirror {
     }
 
     /** {@return the root container this assembly defines.} */
+    // I think remove it from now, and replace with containers().root()
     public ContainerMirror container() {
         return assembly.container.mirror();
     }
@@ -182,9 +193,9 @@ public class AssemblyMirror implements Mirror {
         /**
          *
          */
-        void print();
+        default void print() {}
 
-        void printWithDuration();
+        default void printWithDuration() {}
     }
 
 }

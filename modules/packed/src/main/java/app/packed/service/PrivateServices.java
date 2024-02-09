@@ -15,13 +15,13 @@
  */
 package app.packed.service;
 
-import app.packed.assembly.AssemblyHook;
+import app.packed.assembly.TransformAssembly;
 import app.packed.assembly.AssemblyTransformer;
 
 /**
  * Ideen er lidt at let kunne modificere en Assembly til lave sit eget service namespace
  */
-@AssemblyHook(value = MyProc.class)
+@TransformAssembly(value = MyProc.class)
 @interface PrivateServices {
     boolean requireUpstreamExports() default true;
 

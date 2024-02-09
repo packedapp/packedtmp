@@ -21,8 +21,8 @@ import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
+import app.packed.extension.BeanClassActivator.BindingClassActivator;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.service.mirror.ServiceProviderMirror;
@@ -38,7 +38,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * <p>
  * An instance of BeanMirror can be injected at runtime simply by declaring a dependency on it.
  */
-@BindingTypeHook(extension = BaseExtension.class)
+@BindingClassActivator(extension = BaseExtension.class)
 public non-sealed class BeanMirror implements BeanLocalAccessor , ComponentMirror , ContextualizedElementMirror , ContextScopeMirror , ServiceProviderMirror {
 
     /** The bean we are mirroring. */
@@ -212,6 +212,7 @@ public non-sealed class BeanMirror implements BeanLocalAccessor , ComponentMirro
     // handledBy, managedBy (What if the bean is unmanaged, or stateless)
     // Think it should be similar named on the operation
 
+    // intermediary
     Class<? extends Extension<?>> operator() { // registrant
         return bean.installedBy.extensionType;
     }
@@ -221,6 +222,7 @@ public non-sealed class BeanMirror implements BeanLocalAccessor , ComponentMirro
         throw new UnsupportedOperationException();
     }
 
+    /** {@return any proxy class that is created for the bean instance.} */
     public Optional<BeanProxyMirror> proxy() {
         return Optional.empty();
     }

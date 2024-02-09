@@ -15,15 +15,20 @@
  */
 package app.packed.build;
 
+import java.util.function.Supplier;
+
 /**
  *
  */
-// Ideen er lidt at man kan faa access til Build info.
+// Ideen er lidt det kan vaere en reference til en klasse eller lignende.
+// Som ikke noedvendigvis er tilgaengelig foerend senere.
 
-// Og fx hvis vi har hot reload tilfoeje en klasse to watch udover selve assemblies
+// Replace with ComputedConstant???
+// Maybe it is PotentiallyBuildGenerated...
+// Sometimes we might reference, for example, String.
+// One concrete Example is ProxyField.type...
 
-// Er den defineret i en ThreadLocal??
-// Tjah hvorfor ikke... Men tjah hvorfor
-interface BuildProcess {
+//Altsaa hvis vi supportere
+public interface CodegenGenerated<T> extends Supplier<T> {
 
 }

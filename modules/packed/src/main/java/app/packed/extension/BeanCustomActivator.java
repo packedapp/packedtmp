@@ -23,10 +23,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.extension.BeanClassActivator.AnnotatedBeanMethodActivator;
 import app.packed.util.BaseModuleConstants;
 
 /**
  *
+ * Custom activators.
+ *
+ * Are activators that are not placed on the activating target annotation. But on a bean,
+ * {@link app.packed.assembly.Assembly assembly} or {@link Extension extension} class.
  */
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -49,7 +54,7 @@ import app.packed.util.BaseModuleConstants;
 
 // Alternativt require at custom hooks skal defineres paa den extension hvor de skal bruges...
 // Hmm...
-public @interface BeanCustomHook {
+public @interface BeanCustomActivator {
 
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RetentionPolicy.RUNTIME)
@@ -96,11 +101,38 @@ public @interface BeanCustomHook {
         }
     }
 
+    // Forskellen paa den rigtige activator
+    // Vi kan have flere af disse
+    // Vi kan specify hvilken annotation der skal mappes
+
+    // Alternativ smide annotationClass paa activatoren
+    // Og saa have en stor meta annotation der tager AnnotatedBeanMethodActivator[] annotatedMethods();
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Documented
+    @Inherited
+    @Repeatable(ForeignAnnotatedFieldActivator.All.class)
+    @interface ForeignAnnotatedFieldActivator {
+
+        String annotationClass();
+
+        // Nah, think just copy methods...
+        AnnotatedBeanMethodActivator activator();
+
+        @Retention(RetentionPolicy.RUNTIME)
+        @Target(ElementType.ANNOTATION_TYPE)
+        @Inherited
+        @Documented
+        @interface All {
+            ForeignAnnotatedFieldActivator[] value();
+        }
+    }
+
     @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @Inherited
-    @ExtensionMetaHook
+    @BeanClassActivator
     // Logger, Net, File
     // Meta annotation hooks annotations does not have to live on the extension
     @ForeignAnnotatedFieldHook(annotationClass = "sdfsdf", extensionClass = BaseModuleConstants.BASE_EXTENSION_CLASS)

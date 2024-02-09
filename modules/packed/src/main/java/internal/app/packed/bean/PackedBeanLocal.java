@@ -17,28 +17,16 @@ package internal.app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanLocalAccessor;
-import app.packed.bean.BeanMirror;
-import app.packed.extension.BeanIntrospector;
 import app.packed.util.Nullable;
 import internal.app.packed.component.PackedComponentLocal;
-import internal.app.packed.component.PackedLocalKeyAndSource;
-import internal.app.packed.util.LookupUtil;
-import sandbox.extension.bean.BeanHandle;
+import internal.app.packed.component.PackedLocalMap.KeyAndLocalMapSource;
 
-/**
- *
- */
+/** Implementation of BeanLocal. */
 public final class PackedBeanLocal<T> extends PackedComponentLocal<BeanLocalAccessor, T> implements BeanLocal<T> {
-
-    /** A handle that can access BeanConfiguration#handle. */
-    private static final VarHandle VH_BEAN_MIRROR_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanMirror.class, "bean", BeanSetup.class);
 
     /**
      * @param initialValueSupplier
@@ -55,15 +43,8 @@ public final class PackedBeanLocal<T> extends PackedComponentLocal<BeanLocalAcce
      * @return the extracted bean
      */
     @Override
-    protected PackedLocalKeyAndSource extract(BeanLocalAccessor accessor) {
+    protected KeyAndLocalMapSource extract(BeanLocalAccessor accessor) {
         requireNonNull(accessor, "accessor is null");
-        return switch (accessor) {
-        case BeanConfiguration bc -> BeanSetup.crack(bc);
-        case PackedBeanElement bc -> bc.bean();
-        case BeanHandle<?> bc -> BeanSetup.crack(bc);
-        case BeanIntrospector bc -> BeanSetup.crack(bc);
-        case BeanMirror bc -> (BeanSetup) VH_BEAN_MIRROR_TO_SETUP.get(bc);
-        default -> throw new Error();
-        };
+        return BeanSetup.crack(accessor);
     }
 }

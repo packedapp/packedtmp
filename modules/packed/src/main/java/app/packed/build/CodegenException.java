@@ -18,6 +18,7 @@ package app.packed.build;
 /**
  * An exception that is typically thrown during the code generating phase of an application.
  */
+// This is abnormal. Kind of like if C2 failed
 public class CodegenException extends BuildException {
 
     private static final long serialVersionUID = -9153170517785461951L;

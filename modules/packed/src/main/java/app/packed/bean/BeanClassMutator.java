@@ -28,6 +28,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import app.packed.assembly.Assembly;
+import app.packed.extension.BeanElement;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import app.packed.util.Variable;
@@ -38,8 +39,10 @@ import app.packed.util.Variable;
 // Needs a mirror:D
 
 
+// Maybe we just allow ignore/hide for now
+
 /**
- * Only works on beanClass!=void I think
+ * Only works on non {@link BeanSourceKind#SOURCELESS} beans.
  */
 // Annotation must be visible to Faetter guf if adding or modifying
 // Annotations (Remove, Transform, Add) for Class, Method, Fields, Constructor, Parameter
@@ -62,7 +65,7 @@ import app.packed.util.Variable;
 // Hmm, tror vi maa have en OperationTransformer...
 // Also with naming and stuff
 
-// Targets -> BeanClass, BaseExtension
+// Targets -> BeanClass, BaseExtensionde
 
 
 // Thought about having a .scan() method to allow pre and post.
@@ -76,7 +79,9 @@ import app.packed.util.Variable;
 
 // Ved ikke hvor meget den giver mening foerend Leyden
 
-public interface BeanClassConfiguration {
+// How do we handle super classes???
+
+public interface BeanClassMutator {
 
     // add(OperationType.of(void.class, SomeService, e->{});
     void addFunction(OperationType type, Object function);
@@ -118,9 +123,12 @@ public interface BeanClassConfiguration {
 
     void computeMethodSignature(Method method, Function<? super OperationType, ? extends OperationType> function);
 
-    void ignoreAllFields(Predicate<? super Field> method);
+    // maybe hide instead of ignore
+    void hideAllFields(Predicate<? super Field> method);
 
-    void ignoreAllMethods(Predicate<? super Method> method);
+    void hideAllConstructors(Predicate<? super Method> method);
+
+    void hideAllMethods(Predicate<? super Method> method);
 
     // on Bean class or members
 
@@ -131,7 +139,7 @@ public interface BeanClassConfiguration {
      * @param annotationType
      * @param targets
      */
-    void ignoreAnnotations(Class<? extends Annotation> annotationType, ElementType... targets);
+    void hideAnnotations(Class<? extends Annotation> annotationType, ElementType... targets);
 
     void lookup(Function<Class<?>, Lookup> lookupFunction);
 
@@ -151,7 +159,7 @@ public interface BeanClassConfiguration {
     void setAddBeforeScan();
 
     // Hmm, skipMethod + skipFields???
-    void skipScan();
+    void skipScan(@SuppressWarnings("unchecked") Class<? extends BeanElement>... elements);
 
     // Will include the bean class and everyone of its super classes.
     // Object.class is never scanned.
@@ -159,19 +167,25 @@ public interface BeanClassConfiguration {
 
     // I don't think we allow for unregistering it
 
+
+    // Force transformer of the bean class always
+    // Do we support interfaces??? For example, with default methods?
+    // I don't think so
+    // It is actually the same with super classes of a bean...
+
     // Can be used to augment extension beans that are open to you
-    static void alwaysTransform(Lookup lookup, Class<?> beanClass, Consumer<? super BeanClassConfiguration> transformation) {
+    static void forceTransform(Lookup lookup, Class<?> beanClass, Consumer<? super BeanClassMutator> transformation) {
         throw new UnsupportedOperationException();
     }
 
     // What about subclassing?
-    static void alwaysTransform(Lookup lookup, Consumer<? super BeanClassConfiguration> transformation) {
-        alwaysTransform(lookup, lookup.lookupClass(), transformation);
+    static void forceTransform(Lookup lookup, Consumer<? super BeanClassMutator> transformation) {
+        forceTransform(lookup, lookup.lookupClass(), transformation);
     }
 
     // hmm IDK about this
-    static void alwaysTransformSubclassesOf(Lookup lookup, Consumer<? super BeanClassConfiguration> transformation) {
-        alwaysTransform(lookup, lookup.lookupClass(), transformation);
+    static void forceTransformSubclassesOf(Lookup lookup, Consumer<? super BeanClassMutator> transformation) {
+        forceTransform(lookup, lookup.lookupClass(), transformation);
     }
 
 }

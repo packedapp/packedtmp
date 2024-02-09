@@ -15,11 +15,11 @@
  */
 package app.packed.container;
 
+import app.packed.application.ApplicationLocalAccessor;
 import sandbox.extension.container.ContainerHandle;
 
-/** An entity where bean local values can be stored and retrieved. */
-// Extension?
-
-// En god maade at traekke sig selv ud...
-// ContainerLocal<FooExtension> myLocal = FooExtension.local();
-public sealed interface ContainerLocalAccessor permits ContainerConfiguration, ContainerHandle, ContainerMirror {}
+/** An accessor where {@link ContainerLocal container local} values can be stored and retrieved. */
+public sealed interface ContainerLocalAccessor extends ApplicationLocalAccessor permits ContainerConfiguration, ContainerHandle, ContainerMirror {}
+//Extension?
+//En god maade at traekke sig selv ud...
+//ContainerLocal<FooExtension> myLocal = FooExtension.local();

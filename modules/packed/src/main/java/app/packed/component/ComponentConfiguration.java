@@ -21,10 +21,10 @@ package app.packed.component;
 // We do not have a common ComponentHandle. Because extensions might define their own component configuration.
 
 // Children??? Is it hierarchical???
-public abstract class ComponentConfiguration {
+public interface ComponentConfiguration {
 
     /** {@return the path of the component} */
-    public abstract ComponentPath componentPath();
+    ComponentPath componentPath();
 
     /**
      * Adds the specified tags to the set of component tags.
@@ -35,8 +35,12 @@ public abstract class ComponentConfiguration {
      *
      * @see ComponentMirror#componentTags()
      */
-    public abstract ComponentConfiguration componentTag(String... tags);
+    ComponentConfiguration componentTag(String... tags);
 
-    /** {@return whether or not the component is still configurable} */
-    public abstract boolean isConfigurable();
+    /**
+     * {@return whether or not the component is still configurable}
+     * <p>
+     * Typically this is determined by whether or not the defining assembly of the component is still configurable.
+     */
+    boolean isConfigurable();
 }

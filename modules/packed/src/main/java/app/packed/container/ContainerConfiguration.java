@@ -24,7 +24,7 @@ import sandbox.extension.container.ContainerHandle;
  */
 // Could let it be extendable. But it would only be usable through methods on extensions. Although
 // An assembly could return an instance of it
-public non-sealed class ContainerConfiguration extends ComponentConfiguration implements ContainerLocalAccessor {
+public non-sealed class ContainerConfiguration implements ComponentConfiguration, ContainerLocalAccessor {
 
     /**
      * A marker configuration object indicating that an assembly (or composer) has already been used for building a

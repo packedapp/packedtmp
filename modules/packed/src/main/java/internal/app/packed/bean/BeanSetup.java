@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanLocalAccessor;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.component.ComponentKind;
@@ -28,7 +29,7 @@ import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.component.PackedLocalMap;
-import internal.app.packed.component.PackedLocalKeyAndSource;
+import internal.app.packed.component.PackedLocalMap.KeyAndLocalMapSource;
 import internal.app.packed.container.AuthorSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -53,7 +54,7 @@ import sandbox.extension.operation.OperationTemplate;
  * @implNote The reason this class does not directly implement BeanHandle is because the BeanHandle interface is
  *           parameterised.
  */
-public final class BeanSetup implements ContextualizedElementSetup , PackedLocalKeyAndSource {
+public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocalMapSource {
 
     /** A MethodHandle for invoking {@link ExtensionMirror#initialize(ExtensionSetup)}. */
     private static final MethodHandle MH_BEAN_INTROSPECTOR_TO_BEAN = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class, "bean",
@@ -65,6 +66,9 @@ public final class BeanSetup implements ContextualizedElementSetup , PackedLocal
     /** A handle that can access BeanConfiguration#handle. */
     private static final VarHandle VH_BEAN_CONFIGURATION_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanConfiguration.class, "handle",
             PackedBeanHandle.class);
+
+    /** A handle that can access BeanConfiguration#handle. */
+    private static final VarHandle VH_BEAN_MIRROR_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanMirror.class, "bean", BeanSetup.class);
 
     /** The bean class, is typical void.class for functional beans. */
     public final Class<?> beanClass;
@@ -260,11 +264,31 @@ public final class BeanSetup implements ContextualizedElementSetup , PackedLocal
     }
 
     public static BeanSetup crack(BeanIntrospector introspector) {
-        // Call ExtensionMirror#initialize(ExtensionSetup)
         try {
             return (BeanSetup) MH_BEAN_INTROSPECTOR_TO_BEAN.invokeExact(introspector);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
+    }
+
+    /**
+     * Extracts the actual bean setup from the specified accessor.
+     *
+     * @param accessor
+     *            the accessor to extract from
+     * @return the extracted bean
+     */
+    public static BeanSetup crack(BeanLocalAccessor accessor) {
+        return switch (accessor) {
+        case BeanConfiguration b -> crack(b);
+        case BeanElement b -> crack(b);
+        case BeanHandle<?> b -> crack(b);
+        case BeanIntrospector b -> crack(b);
+        case BeanMirror b -> crack(b);
+        };
+    }
+
+    public static BeanSetup crack(BeanMirror mirror) {
+        return (BeanSetup) VH_BEAN_MIRROR_TO_SETUP.get(mirror);
     }
 }

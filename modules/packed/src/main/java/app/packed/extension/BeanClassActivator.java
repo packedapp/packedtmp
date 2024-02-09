@@ -33,7 +33,13 @@ import app.packed.context.Context;
 // TODO I think the name is bad. I would think it was hooks I could place on my bean class.
 // ExtensionHooks?? Og saa AnnotatedFieldHook -> AnnotatedBeanFieldHook
 //Problemet er AssemblyHook som jo kan implementeres af users
-public @interface ExtensionMetaHook {
+
+// ExtensionActivator in the .bean package
+
+// Stuff on a bean that will activate an extension
+
+// Something with Activator? ExtensionActivator
+public @interface BeanClassActivator {
 
     /**
      * <p>
@@ -46,8 +52,8 @@ public @interface ExtensionMetaHook {
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @ExtensionMetaHook
-    public @interface AnnotatedBeanVariableHook {
+    @BeanClassActivator
+    public @interface AnnotatedBeanVariableActivator {
 
         /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
         Class<? extends Extension<?>> extension();
@@ -82,8 +88,8 @@ public @interface ExtensionMetaHook {
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @ExtensionMetaHook
-    public @interface AnnotatedBeanClassHook {
+    @BeanClassActivator
+    public @interface AnnotatedBeanClassActivator {
 
         /** Whether or not the sidecar is allow to get the contents of a field. */
         /**
@@ -107,9 +113,9 @@ public @interface ExtensionMetaHook {
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @ExtensionMetaHook
+    @BeanClassActivator
     // I don't think we are going to support meta annotations that have both type use and field use
-    public @interface AnnotatedBeanFieldHook {
+    public @interface AnnotatedBeanFieldActivator {
 
         /** Whether or not the owning extension is allow to get the contents of the field. */
         boolean allowGet() default false;
@@ -125,13 +131,19 @@ public @interface ExtensionMetaHook {
     }
 
     /**
-     * An annotation that indicates that the target is a method hook annotation.
+     * An annotation that indicates that when a the target annotation is placed on a method. It will activate the specified
+     * {@link #extension()}. If the extension is not already in use by the bean's container. The extension will
+     * implicitly automatically be added to the container.
+     *
+     * given the target is a method hook annotation.
+     * <p>
+     * By default this applying
      */
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @ExtensionMetaHook
-    public @interface AnnotatedBeanMethodHook {
+    @BeanClassActivator
+    public @interface AnnotatedBeanMethodActivator {
 
         /**
          * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
@@ -142,6 +154,7 @@ public @interface ExtensionMetaHook {
          * @return whether or not the implementation is allowed to invoke the target method
          *
          */
+        // What are the use cases for not allowing invoke?
         // maybe just invokable = true, idk og saa Field.gettable and settable
         // invocationAccess
         boolean allowInvoke() default false; // allowIntercept...
@@ -161,14 +174,19 @@ public @interface ExtensionMetaHook {
 
     /**
      *
+     * <p>
+     * If the type is a generic type. It will match it independent on any actual types.
+     * There is no support for for refining this. It must be handled in the extension.
      */
     @Target(ElementType.TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @ExtensionMetaHook
-    public @interface BindingTypeHook {
+    @BeanClassActivator
+    // Type was replaced by Class. Because
+    public @interface BindingClassActivator {
 
         /** The extension this hook is a part of. Must be located in the same module as the annotated type. */
+        // Maybe allow any module. And then have a String tags() section @BCA(extension=BaseExtension, tags="ProvideAlternative") @MyProvide
         Class<? extends Extension<?>> extension();
 
         /**

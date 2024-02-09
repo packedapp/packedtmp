@@ -37,7 +37,7 @@ import app.packed.extension.Extension;
 // We cannot add beans... These must always be added on the extension.
 // Well the c
 
-public abstract class NamespaceConfiguration<E extends Extension<E>> extends ComponentConfiguration {
+public abstract class NamespaceConfiguration<E extends Extension<E>> implements ComponentConfiguration {
 
     private final NamespaceHandle handle;
 

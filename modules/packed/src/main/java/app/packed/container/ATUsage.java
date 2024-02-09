@@ -18,8 +18,8 @@ package app.packed.container;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.application.App;
+import app.packed.assembly.Assemblies;
 import app.packed.assembly.Assembly;
-import app.packed.assembly.AssemblyTransformations;
 import app.packed.assembly.BaseAssembly;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.bean.BeanLocal;
@@ -50,7 +50,7 @@ public class ATUsage extends BaseAssembly {
             }
         };
 
-        u = AssemblyTransformations.transformRecursively(MethodHandles.lookup(), u, ct);
+        u = Assemblies.transform(MethodHandles.lookup(), u, ct);
         u = ct.transformRecursively(MethodHandles.lookup(), u);
 
         App.run(u);
@@ -70,7 +70,7 @@ public class ATUsage extends BaseAssembly {
             };
 
             // Could be a procted method without the lookup object... just using the getClass() instead as the caller
-            return AssemblyTransformations.transformRecursively(MethodHandles.lookup(), new ATUsage(), ct);
+            return Assemblies.transform(MethodHandles.lookup(), new ATUsage(), ct);
         }
 
     }

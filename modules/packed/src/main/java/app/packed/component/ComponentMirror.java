@@ -20,8 +20,8 @@ import java.util.Set;
 /**
  * A mirror representing a component.
  * <p>
- * A component mirror is always defined either by the framework or by an extension.
- * IDK would it make sense to have it as a user??? Fx Importer...
+ * A component mirror is always defined either by the framework or by an extension. IDK would it make sense to have it
+ * as a user??? Fx Importer...
  */
 public interface ComponentMirror extends Mirror {
 
@@ -33,6 +33,7 @@ public interface ComponentMirror extends Mirror {
     default ComponentKind componentKind() {
         return componentPath().componentKind();
     }
+
     /** {@return the path of the component} */
     ComponentPath componentPath();
 
@@ -40,8 +41,22 @@ public interface ComponentMirror extends Mirror {
     default Set<String> componentTags() {
         return Set.of();
     }
+
+    /** {@return the build step that installed the component} */
+    // Installation is a runtime concept... You don't install an extension, you add it
+    // What about assemblies, you link them??
+//    default BuildStepMirror installationStep() {
+//        throw new UnsupportedOperationException();
+//    }
 }
 
+
+// AtomicInteger
+//// Er de forloebende?? Altsaa naar vi laver parallel med mange componenter er det vel ikke helt simpelt
+//default int componentId() {
+//    throw new UnsupportedOperationException();
+//}
+//
 
 //Does a component always have a runtime representation???
 //Assembly and Extension does not have a runtime representation...
@@ -50,12 +65,10 @@ public interface ComponentMirror extends Mirror {
 //Saa det bliver en FrameworkComponentMirror hvilket ikke er korrekt...
 //Saa enten skal den linke til operationen
 
-
 // Wirelets are not components
 // Extensions are not components (They are not part of an application)
 
 // Hmm Assemblies are components now even though they are not part of the runtime atm
-
 
 //// Does not immediately make sense
 // Relations? A,B, RelationsShip  (How defines the relationship??? Is it always bi-directional)

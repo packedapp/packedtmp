@@ -17,18 +17,25 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Supplier;
 
+import app.packed.application.ApplicationConfiguration;
+import app.packed.application.ApplicationLocalAccessor;
 import app.packed.application.ApplicationMirror;
+import app.packed.assembly.Assembly;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
+import app.packed.container.ContainerLocalAccessor;
 import app.packed.namespace.NamespaceOperator;
 import app.packed.util.Nullable;
 import internal.app.packed.component.Mirrorable;
-import internal.app.packed.component.PackedLocalKeyAndSource;
 import internal.app.packed.component.PackedLocalMap;
+import internal.app.packed.component.PackedLocalMap.KeyAndLocalMapSource;
+import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.types.ClassUtil;
 
@@ -38,7 +45,7 @@ import internal.app.packed.util.types.ClassUtil;
  * This class is placed in {@code internal.app.packed.container} because it is so tightly integrated with containers
  * that it made sense to put it here as well.
  */
-public final class ApplicationSetup implements PackedLocalKeyAndSource, Mirrorable<ApplicationMirror> {
+public final class ApplicationSetup implements KeyAndLocalMapSource , Mirrorable<ApplicationMirror> {
 
     /** A magic initializer for {@link BeanMirror}. */
     public static final MagicInitializer<ApplicationSetup> MIRROR_INITIALIZER = MagicInitializer.of(ApplicationMirror.class);
@@ -67,7 +74,7 @@ public final class ApplicationSetup implements PackedLocalKeyAndSource, Mirrorab
      */
     int extensionIdCounter;
 
-    /** This map maintains every {@link app.packed.extension.ContainerLocal} for the whole application. */
+    /** This map maintains every local for the whole application. */
     public final PackedLocalMap locals = new PackedLocalMap();
 
     /** Supplies mirrors for the application. */
@@ -168,5 +175,31 @@ public final class ApplicationSetup implements PackedLocalKeyAndSource, Mirrorab
     @Override
     public PackedLocalMap locals() {
         return locals;
+    }
+
+    public static ApplicationSetup crack(ApplicationLocalAccessor accessor) {
+        requireNonNull(accessor, "accessor is null");
+        return switch (accessor) {
+        case ApplicationConfiguration a -> ApplicationSetup.crack(a);
+        case ApplicationMirror a -> ApplicationSetup.crack(a);
+        case Assembly b -> throw new UnsupportedOperationException();
+        case ContainerLocalAccessor b -> ContainerSetup.crack(b).application;
+        };
+    }
+
+    /** A handle that can access ApplicationConfiguration#application. */
+    private static final VarHandle VH_APPLICATION_CONFIGURATION_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ApplicationConfiguration.class,
+            "application", ApplicationSetup.class);
+
+    /** A handle that can access ApplicationMirror#application. */
+    private static final VarHandle VH_APPLICATION_MIRROR_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ApplicationMirror.class, "application",
+            ApplicationSetup.class);
+
+    public static ApplicationSetup crack(ApplicationMirror mirror) {
+        return (ApplicationSetup) VH_APPLICATION_MIRROR_TO_SETUP.get(mirror);
+    }
+
+    public static ApplicationSetup crack(ApplicationConfiguration configuration) {
+        return (ApplicationSetup) VH_APPLICATION_CONFIGURATION_TO_SETUP.get(configuration);
     }
 }

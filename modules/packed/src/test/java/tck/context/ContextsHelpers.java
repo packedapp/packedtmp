@@ -18,7 +18,7 @@ package tck.context;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.context.Context;
-import app.packed.extension.ExtensionMetaHook.BindingTypeHook;
+import app.packed.extension.BeanClassActivator.BindingClassActivator;
 import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
@@ -28,7 +28,7 @@ import tck.HookTestingExtension;
 /** Various context class and their templates that can be used where applicable. */
 public class ContextsHelpers {
 
-    @BindingTypeHook(extension = HookTestingExtension.class)
+    @BindingClassActivator(extension = HookTestingExtension.class)
     public record NoImplContext(int i) implements Context<HookTestingExtension> {
         /** A template. */
         public static final ContextTemplate CT = ContextTemplate.of(MethodHandles.lookup(), NoImplContext.class, NoImplContext.class);

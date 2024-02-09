@@ -226,7 +226,7 @@ public sealed interface BeanElement extends BeanLocalAccessor permits PackedBean
         boolean hasInvokeAccess();
 
         /** {@return the underlying method.} */
-        Method method();
+        Method method();  // Optional??? If fake, well we
 
         /**
          * Creates a new builder for an operation that can invoke the underlying method.

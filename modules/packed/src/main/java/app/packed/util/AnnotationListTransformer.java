@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.build;
-
-import app.packed.assembly.Assembly;
+package app.packed.util;
 
 /**
  *
  */
-// May have a stack trace attached
-public interface BuildAction {
 
-    Class<? extends Assembly> assembly();
-
-    Class<? extends BuildSource> source();
+// <T> <- Where T is the target? IDK
+public interface AnnotationListTransformer {
+    // I think we want something about the target...
+    AnnotationList transform(AnnotationList source);
 }

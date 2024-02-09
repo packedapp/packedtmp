@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.extension.ExtensionMetaHook.AnnotatedBeanVariableHook;
+import app.packed.extension.BeanClassActivator.AnnotatedBeanVariableActivator;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
@@ -63,7 +63,7 @@ public class OSITest extends BaseAssembly {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedBeanVariableHook(extension = MyExt.class)
+    @AnnotatedBeanVariableActivator(extension = MyExt.class)
     @interface BuildTime {}
 
     static class MyExt extends Extension<MyExt> {
@@ -73,7 +73,7 @@ public class OSITest extends BaseAssembly {
         protected BeanIntrospector newBeanIntrospector() {
             return new BeanIntrospector() {
                 @Override
-                public void hookOnAnnotatedVariable(Annotation hook, BindableVariable d) {
+                public void activatedByAnnotatedVariable(Annotation hook, BindableVariable d) {
                     if (hook instanceof BuildTime) {
                         d.checkAssignableTo(LocalDateTime.class);
                         // d.bindConstant(LocalDateTime.now());
@@ -86,7 +86,7 @@ public class OSITest extends BaseAssembly {
                         d.checkAssignableTo(LocalDateTime.class);
                         d.bindOp(new Op0<>(LocalDateTime::now) {});
                     } else {
-                        super.hookOnAnnotatedVariable(hook, d);
+                        super.activatedByAnnotatedVariable(hook, d);
                     }
                 }
             };
@@ -98,10 +98,10 @@ public class OSITest extends BaseAssembly {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedBeanVariableHook(extension = MyExt.class)
+    @AnnotatedBeanVariableActivator(extension = MyExt.class)
     @interface Now {}
 
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedBeanVariableHook(extension = MyExt.class)
+    @AnnotatedBeanVariableActivator(extension = MyExt.class)
     @interface InitializationTime {}
 }
