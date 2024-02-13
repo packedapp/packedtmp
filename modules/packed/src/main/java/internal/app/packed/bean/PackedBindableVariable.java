@@ -106,7 +106,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
 
     private void bind(BindingResolution provider) {
         assert (operation.bindings[index] == null);
-        operation.bindings[index] = new HookBindingSetup(operation, index, bindingExtension.author(), provider);
+        operation.bindings[index] = new HookBindingSetup(operation, index, bindingExtension.authority(), provider);
     }
 
     /** {@inheritDoc} */

@@ -15,7 +15,7 @@
  */
 package app.packed.assembly;
 
-import app.packed.application.ApplicationLocalAccessor;
+import app.packed.application.ApplicationLocal;
 import app.packed.assembly.AbstractComposer.ComposableAssembly;
 import app.packed.build.BuildSource;
 import internal.app.packed.container.AssemblySetup;
@@ -52,7 +52,7 @@ import internal.app.packed.container.PackedContainerBuilder;
  * <p>
  * This class cannot be extended directly, you would typically extend {@link BaseAssembly} instead.
  */
-public sealed abstract class Assembly implements BuildSource , ApplicationLocalAccessor permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
+public sealed abstract class Assembly implements BuildSource , ApplicationLocal.ApplicationLocalAccessor permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
 
     /**
      * A marker configuration object indicating that an assembly (or composer) has already been used for building. Should

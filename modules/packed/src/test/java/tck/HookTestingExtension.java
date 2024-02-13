@@ -31,11 +31,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 
-import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanClassActivator.AnnotatedBeanFieldActivator;
 import app.packed.extension.BeanClassActivator.AnnotatedBeanMethodActivator;
+import app.packed.bean.CodeGenerated;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.UnwrappedBindableVariable;
 import app.packed.extension.Extension;
@@ -71,7 +71,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
         ink.putIfAbsent(name, oh);
 
         base().installIfAbsent(HookBean.class, b -> {
-            base().addCodeGenerated(b, new Key<Map<String, MethodHandle>>() {}, () -> {
+            base().addCodeGenerator(b, new Key<Map<String, MethodHandle>>() {}, () -> {
                 return CollectionUtil.copyOf(ink, v -> v.generateMethodHandle());
             });
         });

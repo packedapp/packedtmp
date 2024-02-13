@@ -26,16 +26,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import app.packed.build.BuildGoal;
 import app.packed.build.BuildSource;
+import app.packed.component.Authority;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentOperator;
 import app.packed.component.ComponentPath;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.Extension.ExtensionProperty;
+import app.packed.namespace.NamespaceConfiguration;
+import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceOperator;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.service.ServiceableBeanConfiguration;
@@ -140,17 +143,17 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
         }
     }
 
-    /** {@return the path of the container that this extension belongs to.} */
-    protected final ComponentPath containerPath() {
-        return extension.container.componentPath();
-    }
-
     // Ideen er at man kan streame alle componenter configurationer
     // Baade mirrors or configurations er vel interessante
     // Alternativ Returnere vi en stream, som Packed selv filtrerer, paa operators og typer
-    protected final void componentConfigurations(ComponentOperator operator, Class<? extends ComponentConfiguration> componentConfigurationClass,
+    protected final void componentConfigurations(Authority operator, Class<? extends ComponentConfiguration> componentConfigurationClass,
             Stream.Builder<? super ComponentConfiguration> builder) {
 
+    }
+
+    /** {@return the path of the container that this extension belongs to.} */
+    protected final ComponentPath containerPath() {
+        return extension.container.componentPath();
     }
 
     @SuppressWarnings("unchecked")
@@ -161,6 +164,18 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
             NamespaceSetup ds = new NamespaceSetup(t, extension, extension);
             return NamespaceSetup.MI.run(t.supplier, ds);
         });
+    }
+
+    /**
+     * {@return The short name of the extension}
+     * <p>
+     * If there are multiple extensions with the same short name in a single application the framework will name them
+     * uniquely.
+     *
+     * @implNote Typically, by postfixing
+     */
+    protected final String extensionName() {
+        return extension.tree.name;
     }
 
     /**
@@ -265,6 +280,16 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      *             if the extension defines an extension point but does not override this method.
      */
     protected ExtensionPoint<E> newExtensionPoint() {
+        // I think it is the same as newExtensionMirror an internal excetion
+        throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
+    }
+
+    // Eneste problem er vi ikke cache dem... Brugerne kunne selv cache dem...
+    // Altsaa vi vil jo gerne lave namespacet lazily...
+    // Hmm, hvis vi nu installere foreste service i et barn... Bor root vel stadig vaere application root
+    // Ja med mindre, man siger noway hosay
+    // Saa maaske bare en template???
+    protected final <T extends NamespaceConfiguration<?>> T namespace(NamespaceHandle handle, Supplier<T> supplier) {
         // I think it is the same as newExtensionMirror an internal excetion
         throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
     }

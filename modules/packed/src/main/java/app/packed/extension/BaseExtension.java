@@ -8,7 +8,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -22,6 +21,7 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.CodeGenerated;
 import app.packed.bean.Inject;
 import app.packed.bean.ManagedBeanRequiredException;
 import app.packed.build.BuildException;
@@ -30,7 +30,6 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
-import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.lifetime.Main;
@@ -39,13 +38,12 @@ import app.packed.lifetime.OnStart;
 import app.packed.lifetime.OnStop;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
-import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.Provider;
 import app.packed.service.Export;
 import app.packed.service.Provide;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
+import app.packed.service.ServiceNamespaceConfiguration;
 import app.packed.service.ServiceOutgoingTransformer;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.util.Key;
@@ -62,8 +60,6 @@ import internal.app.packed.entrypoint.OldEntryPointSetup.MainThreadOfControl;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.PackedServiceLocator;
-import internal.app.packed.util.CollectionUtil;
-import internal.app.packed.util.MethodHandleUtil;
 import sandbox.extension.bean.BeanHandle;
 import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.container.ContainerCarrierService;
@@ -110,13 +106,26 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     // But right now we only have a single field
     static final ContainerLocal<FromLinks> FROM_LINKS = ContainerLocal.of(FromLinks::new);
 
+    // Codegen vars that we need to resolve
     final ArrayList<BindableVariable> varsToResolve = new ArrayList<>();
 
     /** All your base are belong to us. */
     BaseExtension() {}
 
+//    Map<Key<?>, Supplier<?>> codegens = new HashMap<>();
+
+//    <K> void addCodeGenerated(Key<K> key, Supplier<? extends K> supplier) {
+    // We need per extension...
+//        if (codegens.putIfAbsent(key, supplier) != null) {
+//            throw new IllegalStateException("A supplier has previously been provided for key [key = " + key + "]");
+//        }
+//    }
+
     <K> void addCodeGenerated(BeanSetup bean, Key<K> key, Supplier<? extends K> supplier) {
-        Map<Key<?>, BindableVariable> m = bean.container.application.locals.get(CODEGEN, bean);
+//        if (true) {
+//            addCodeGenerated(key, supplier);
+//        }
+        Map<Key<?>, BindableVariable> m = bean.locals().get(CODEGEN, bean);
         BindableVariable var = m.get(key);
         if (var == null) {
             throw new IllegalArgumentException("The specified bean must have an injection site that uses @" + CodeGenerated.class.getSimpleName() + " " + key
@@ -188,6 +197,10 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     public <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
         BeanHandle<T> handle = install0(BeanKind.CONTAINER.template()).install(implementation);
         return handle.configure(ServiceableBeanConfiguration::new);
+    }
+
+    public <T> ServiceableBeanConfiguration<T> install2(Class<T> implementation) {
+        return install0(BeanKind.CONTAINER.template()).install(implementation, () -> new ServiceableBeanConfiguration<T>()).configuration();
     }
 
     /**
@@ -266,6 +279,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     void lifetimeExportServiceLocator() {
         // Create a new bean that holds the ServiceLocator to export
         // will fail if installed multiple times
+
         BeanHandle<PackedServiceLocator> h = newBeanBuilderSelf(BeanKind.CONTAINER.template()).install(PackedServiceLocator.class)
                 .exportAs(ServiceLocator.class);
 
@@ -335,7 +349,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     /**
-     * Returns a special bean installer that can install beans with BaseExtension as both the owner and installer.
+     * Returns a special bean builder that can install beans for BaseExtension. Where BaseExtension is both the owner and
+     * installer.
      *
      * @param template
      *            a template for the bean
@@ -542,6 +557,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         super.onAssemblyClose();
 
         for (BindableVariable v : varsToResolve) {
+//            Supplier<?> sup = codegens.get(v.toKey());
+//            if (sup == null) {
+//                throw new InternalExtensionException(v.toKey() + " not bound for bean ");
+//            }
+//            v.bindComputedConstant(sup);
+
             if (!v.isBound()) {
                 throw new InternalExtensionException(v.toKey() + " not bound for bean ");
             }
@@ -551,55 +572,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         if (isLifetimeRoot()) {
             extension.container.lifetime.orderDependencies();
         }
-    }
-
-    <T> OperationConfiguration provide(Class<T> key, Provider<? extends T> provider) {
-        return provide(Key.of(key), provider);
-    }
-
-    <T> OperationConfiguration provide(Key<T> key, Provider<? extends T> provider) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Provides every service from the specified service locator.
-     *
-     * @param locator
-     *            the service locator to provide services from
-     * @throws KeyAlreadyInUseException
-     *             if the service locator provides any keys that are already in use
-     */
-    public Set<Key<?>> provideAll(ServiceLocator locator) {
-        requireNonNull(locator, "locator is null");
-        checkIsConfigurable();
-        Map<Key<?>, MethodHandle> result = new HashMap<>();
-        if (locator instanceof PackedServiceLocator psl) {
-            result = CollectionUtil.copyOf(psl.entries(), e -> e.bindTo(psl.context()));
-        } else {
-            result = CollectionUtil.copyOf(locator.toProviderMap(), p -> MethodHandleUtil.PROVIDER_GET.bindTo(p));
-        }
-        // I think we will insert a functional bean that provides all the services
-        extension.container.sm.provideAll(result);
-        return result.keySet(); // can probably return something more clever?
-    }
-
-    /**
-     * @param <T>
-     *            the type of the provided service
-     * @param key
-     *            the key for which to provide the constant for
-     * @param constant
-     *            the constant to provide
-     * @return a configuration representing the operation
-     */
-    <T> OperationConfiguration provideConstant(Class<T> key, T constant) {
-        return provideConstant(Key.of(key), constant);
-    }
-
-    <T> OperationConfiguration provideConstant(Key<T> key, T constant) {
-        // Nah skaber den forvirring? Nej det syntes det er rart
-        // at have muligheden for ikke at scanne
-        throw new UnsupportedOperationException();
     }
 
     // requires bliver automatisk anchoret...
@@ -656,6 +628,19 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     public void requiresOptionally(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
         checkIsConfigurable();
+        throw new UnsupportedOperationException();
+    }
+
+    public ServiceNamespaceConfiguration newServiceNamespace(Object configuration) {
+        return serviceNamespace("main");
+    }
+
+    public ServiceNamespaceConfiguration serviceNamespace() {
+        return serviceNamespace("main");
+    }
+
+    public ServiceNamespaceConfiguration serviceNamespace(String name) {
+        // Will automatically create one with default settings
         throw new UnsupportedOperationException();
     }
 

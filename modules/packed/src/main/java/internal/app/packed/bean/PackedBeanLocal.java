@@ -22,11 +22,11 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanLocalAccessor;
 import app.packed.util.Nullable;
-import internal.app.packed.component.PackedComponentLocal;
-import internal.app.packed.component.PackedLocalMap.KeyAndLocalMapSource;
+import internal.app.packed.build.PackedBuildLocal;
+import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
 
 /** Implementation of BeanLocal. */
-public final class PackedBeanLocal<T> extends PackedComponentLocal<BeanLocalAccessor, T> implements BeanLocal<T> {
+public final class PackedBeanLocal<T> extends PackedBuildLocal<BeanLocalAccessor, T> implements BeanLocal<T> {
 
     /**
      * @param initialValueSupplier

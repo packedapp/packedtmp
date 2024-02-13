@@ -17,9 +17,9 @@ package app.packed.operation;
 
 import java.util.Optional;
 
+import app.packed.component.Authority;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
-import app.packed.component.ComponentOperator;
 import app.packed.util.Variable;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
@@ -57,6 +57,12 @@ public class BindingMirror implements ComponentMirror {
 
     /** {@inheritDoc} */
     @Override
+    public final ComponentPath componentPath() {
+        return binding.componentPath();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public final boolean equals(Object other) {
         return this == other || other instanceof BindingMirror m && binding == m.binding;
     }
@@ -77,10 +83,10 @@ public class BindingMirror implements ComponentMirror {
         return binding.operation.mirror();
     }
 
-    /** {@return the index of parameter this binding is OperationMirror#bindings().} */
+    /** {@return the index of parameter this binding into OperationMirror#bindings().} */
     // Parametere er var.
     // Bindingen er resultatet naar den er resolvet
-    public final int parameterIndex() { // alternative parameterIndex
+    public final int parameterIndex() {
         return binding.operationBindingIndex;
     }
 
@@ -97,7 +103,7 @@ public class BindingMirror implements ComponentMirror {
     }
 
     /** {@return the x who created binding.} */
-    public final ComponentOperator zBoundBy() {
+    public final Authority zBoundBy() {
         return binding.boundBy;
     }
 
@@ -138,12 +144,6 @@ public class BindingMirror implements ComponentMirror {
      */
     public final Optional<BindingTarget> zTarget() {
         return Optional.empty();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentPath componentPath() {
-        throw new UnsupportedOperationException();
     }
 }
 

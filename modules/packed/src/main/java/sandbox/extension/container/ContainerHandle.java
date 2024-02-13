@@ -5,9 +5,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import app.packed.assembly.Assembly;
-import app.packed.component.ComponentPath;
+import app.packed.component.ComponentHandle;
 import app.packed.container.ContainerLocal;
-import app.packed.container.ContainerLocalAccessor;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.errorhandling.ErrorHandler;
@@ -27,21 +26,7 @@ import sandbox.extension.operation.OperationHandle;
  * <p>
  * A lot of methods on this class is also available on {@link ContainerBuilder}.
  */
-public sealed interface ContainerHandle extends ContainerLocalAccessor permits ContainerSetup {
-
-    ComponentPath componentPath();
-
-    /**
-     * Checks that the container is still configurable, or throws an exception.
-     *
-     * @throws IllegalStateException
-     *             if the container is no longer configurable
-     */
-    default void checkIsConfigurable() {
-        if (!isConfigurable()) {
-            throw new IllegalStateException("This container is no longer configurable");
-        }
-    }
+public sealed interface ContainerHandle extends ComponentHandle, ContainerLocal.ContainerLocalAccessor permits ContainerSetup {
 
     /**
      * {@return an unmodifiable view of the extensions that are currently used by this container.}
@@ -51,15 +36,6 @@ public sealed interface ContainerHandle extends ContainerLocalAccessor permits C
      * @see ContainerMirror#extensionsTypes()
      */
     Set<Class<? extends Extension<?>>> extensionTypes();
-
-    /**
-     * Returns whether or not the container is still configurable.
-     * <p>
-     * If an assembly was used to create the container. The handle is never configurable.
-     *
-     * @return {@code true} if the bean is still configurable
-     */
-    boolean isConfigurable();
 
     /**
      * Returns whether or not the specified extension is used by this extension, other extensions, or user code in the same
@@ -222,6 +198,7 @@ public sealed interface ContainerHandle extends ContainerLocalAccessor permits C
          * @return this builder
          */
         // Do we allow non-container scope??? I don't think so
+        // initializeLocalWith??
         <T> Builder localSet(ContainerLocal<T> containerLocal, T value);
 
         /**
@@ -266,3 +243,26 @@ public sealed interface ContainerHandle extends ContainerLocalAccessor permits C
         }
     }
 }
+
+//ComponentPath componentPath();
+//
+///**
+//* Checks that the container is still configurable, or throws an exception.
+//*
+//* @throws IllegalStateException
+//*             if the container is no longer configurable
+//*/
+//default void checkIsConfigurable() {
+//  if (!isConfigurable()) {
+//      throw new IllegalStateException("This container is no longer configurable");
+//  }
+//}
+//
+///**
+//* Returns whether or not the container is still configurable.
+//* <p>
+//* If an assembly was used to create the container. The handle is never configurable.
+//*
+//* @return {@code true} if the bean is still configurable
+//*/
+//boolean isConfigurable();

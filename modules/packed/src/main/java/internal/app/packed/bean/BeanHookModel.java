@@ -23,10 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import app.packed.extension.BeanCustomActivator;
-import app.packed.extension.BeanClassActivator.AnnotatedBeanVariableActivator;
 import app.packed.extension.BeanClassActivator.AnnotatedBeanMethodActivator;
+import app.packed.extension.BeanClassActivator.AnnotatedBeanVariableActivator;
 import app.packed.extension.BeanClassActivator.BindingClassActivator;
+import app.packed.extension.BeanCustomActivator;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;

@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
-
-import app.packed.component.ComponentOperator;
+package app.packed.extension;
 
 /**
- * The owner of a bean. Either the application (via an assembly) or an extension instance.
+ *
  */
-public sealed interface AuthorSetup permits AssemblySetup, ExtensionSetup {
+// Problemet er her mother fucking if assembly is open
+@interface ExtensionActivator {
+    String extensionName();
 
-    /** {@return whether or not the bean is still configurable.} */
-    boolean isConfigurable();
+    String innerClassName();
+}
 
-    /** {@return a realm representing the owner.} */
-    ComponentOperator author();
+// Must be an inner class...
+// In this way we have the original extension
+
+// Maybe just a Consumer.. Then we use it both for assemblies and extensions
+interface ExtensionActivated<E extends ExtensionPoint<?>> {
+    void onActivation(E extension);
 }

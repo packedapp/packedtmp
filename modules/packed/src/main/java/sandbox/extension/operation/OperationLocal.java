@@ -19,6 +19,6 @@ package sandbox.extension.operation;
  *
  */
 // Nok primaert brugbart for OperationMirror...
-public class OperationLocal {
+public interface OperationLocal {
 
 }

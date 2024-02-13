@@ -20,16 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationLocal;
-import app.packed.application.ApplicationLocalAccessor;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
-import internal.app.packed.component.PackedComponentLocal;
-import internal.app.packed.component.PackedLocalMap.KeyAndLocalMapSource;
+import internal.app.packed.build.PackedBuildLocal;
+import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
 
-/**
- *
- */
-public final class PackedApplicationLocal<T> extends PackedComponentLocal<ApplicationLocalAccessor, T> implements ApplicationLocal<T> {
+/** Implementation of {@link ApplicationLocal}. */
+public final class PackedApplicationLocal<T> extends PackedBuildLocal<ApplicationLocal.ApplicationLocalAccessor, T> implements ApplicationLocal<T> {
 
     /**
      * @param initialValueSupplier
@@ -46,7 +43,7 @@ public final class PackedApplicationLocal<T> extends PackedComponentLocal<Applic
 
     /** {@inheritDoc} */
     @Override
-    protected KeyAndLocalMapSource extract(ApplicationLocalAccessor accessor) {
+    protected KeyAndLocalMapSource extract(ApplicationLocal.ApplicationLocalAccessor accessor) {
         requireNonNull(accessor, "accessor is null");
         return ApplicationSetup.crack(accessor);
     }

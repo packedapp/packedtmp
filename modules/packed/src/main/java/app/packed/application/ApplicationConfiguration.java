@@ -28,7 +28,7 @@ import internal.app.packed.container.ApplicationSetup;
 // By default it is configuration everywhere..
 // Maybe have a freeze()/protect() operation/
 
-public non-sealed class ApplicationConfiguration implements ComponentConfiguration, ApplicationLocalAccessor {
+public non-sealed class ApplicationConfiguration implements ComponentConfiguration, ApplicationLocal.ApplicationLocalAccessor {
 
     ApplicationSetup application;
 

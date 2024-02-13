@@ -88,6 +88,8 @@ import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 // Build : protected List<Wirelet> Assembly.wirelets();  // Istedet for at wrappe den, eller begge dele? Nahh
 
+// TrustedWirelet -> A wirelet that is defined within an assembly
+
 // Runtime : Launch
 public sealed abstract class Wirelet permits ApplicationWirelet, ExtensionWirelet, FrameworkWirelet {
 

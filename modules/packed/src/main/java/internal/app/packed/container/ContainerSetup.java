@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerLocalAccessor;
+import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
@@ -39,11 +39,11 @@ import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
+import internal.app.packed.build.PackedBuildLocal;
+import internal.app.packed.build.PackedLocalMap;
+import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
 import internal.app.packed.component.AbstractTreeMirror;
 import internal.app.packed.component.Mirrorable;
-import internal.app.packed.component.PackedComponentLocal;
-import internal.app.packed.component.PackedLocalMap;
-import internal.app.packed.component.PackedLocalMap.KeyAndLocalMapSource;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
@@ -126,7 +126,7 @@ public final class ContainerSetup
         this.mirrorSupplier = builder.containerMirrorSupplier;
 
         // I think we need to check application/assembly scope
-        builder.locals.forEach((p, o) -> locals().set((PackedComponentLocal) p, this, o));
+        builder.locals.forEach((p, o) -> locals().set((PackedBuildLocal) p, this, o));
 
         if (builder.template.kind() == PackedContainerKind.PARENT_LIFETIME) {
             this.lifetime = node.parent.lifetime;
@@ -241,7 +241,7 @@ public final class ContainerSetup
     /** {@inheritDoc} */
     @Override
     public PackedLocalMap locals() {
-        return application.locals;
+        return application.locals();
     }
 
 //    /** {@return the path of this container} */
@@ -388,7 +388,7 @@ public final class ContainerSetup
         return ((ContainerSetup) handle);
     }
 
-    public static ContainerSetup crack(ContainerLocalAccessor accessor) {
+    public static ContainerSetup crack(ContainerLocal.ContainerLocalAccessor accessor) {
         return switch (accessor) {
         case ContainerConfiguration bc -> crack(bc);
         case ContainerHandle bc -> crack(bc);

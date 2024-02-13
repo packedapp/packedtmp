@@ -19,9 +19,10 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
+import app.packed.bean.CodeGenerated;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.extension.BaseExtensionPoint.CodeGenerated;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.lifetime.OnInitialize;
@@ -54,6 +55,7 @@ public class MhExt extends BaseAssembly {
         final MethodHandle mh;
 
         public EBean(ExtensionContext context, @CodeGenerated MethodHandle f) throws Throwable {
+            System.out.println("Got computed F");
             System.out.println(f.type());
             this.mh = f;
         }
@@ -73,14 +75,16 @@ public class MhExt extends BaseAssembly {
         BeanHandle<?> h;
 
         public void ownL(Class<?> cl) {
-            h = base().newBeanForUser(BeanKind.UNMANAGED.template()).install(cl);
+            h = base().newBean(BeanKind.UNMANAGED.template()).install(cl, BeanConfiguration::new).handle();
         }
 
         @Override
         public void onAssemblyClose() {
             InstanceBeanConfiguration<EBean> b = base().install(EBean.class);
 
-            base().addCodeGenerated(b, MethodHandle.class, () -> {
+            //Codegenerated.push(b,
+
+            base().addCodeGenerator(b, MethodHandle.class, () -> {
                 if (h != null) {
                     OperationHandle oh = h.lifetimeOperations().get(0);
                     System.out.println(oh);

@@ -17,9 +17,9 @@ package app.packed.build;
 
 import app.packed.application.ApplicationTransformer;
 import app.packed.assembly.AssemblyTransformer;
-import app.packed.assembly.OperationTransformer;
 import app.packed.bean.BeanTransformer;
 import app.packed.container.ContainerTransformer;
+import app.packed.operation.OperationTransformer;
 
 /**
  *

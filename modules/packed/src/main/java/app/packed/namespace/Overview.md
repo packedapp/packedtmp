@@ -1,4 +1,13 @@
+----
+  Namespace
+  NamespaceNode
 
+
+
+
+
+
+------
 Namespace
   String name
   Set<ResourceKey> keys();

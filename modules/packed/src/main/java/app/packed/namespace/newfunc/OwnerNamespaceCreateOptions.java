@@ -13,16 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.assembly;
+package app.packed.namespace.newfunc;
 
 /**
  *
  */
+public interface OwnerNamespaceCreateOptions {
 
-// Vi har alle nodes hvor det bliver evalueret (N)
-// Og alle nodes hvor det bliver (optional) applied
-
-// Saa det er faktisk 2 trees...
-public interface PropagationTreeView<N, A> {
-
+    // ------ Generic ---
+    // Name (name of the namespace)
+    // Propagation (containers/assemblies)
+    // Permissions
+    // Some kind of interactions with previous namespaces... This a bit complicated, is it parent or child or both that are responsible
 }
+// Some way to query, if we are creating a new or inheriting one
+
+
+// @NewNamespace(ServiceNamespaceConfiguration.class, "main"); <--- Maybe preferable. On the otherhand are we leaking internal shit
+
+

@@ -43,4 +43,12 @@ public interface ComponentConfiguration {
      * Typically this is determined by whether or not the defining assembly of the component is still configurable.
      */
     boolean isConfigurable();
+
+
+    // A unique component id for the component in the application, once installed it will not change
+    // Path can be updated because of naming
+    // Long???
+    default long componentId() {
+        return 0;
+    }
 }

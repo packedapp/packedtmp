@@ -19,8 +19,8 @@ import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.build.BuildTransformerMirror;
+import app.packed.component.Authority;
 import app.packed.component.ComponentMirror;
-import app.packed.component.ComponentOperator;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
 import app.packed.context.ContextMirror;
@@ -52,7 +52,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * At runtime you can have a ContainerMirror injected
  */
 @BindingClassActivator(extension = BaseExtension.class)
-public non-sealed class ContainerMirror implements ComponentMirror , ContextualizedElementMirror , ContainerLocalAccessor {
+public non-sealed class ContainerMirror implements ComponentMirror , ContextualizedElementMirror , ContainerLocal.ContainerLocalAccessor {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
@@ -109,7 +109,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
      * need to include those.
      */
     public Stream<BeanMirror> beans() {
-        return allBeans().filter(m -> m.declaredBy() == ComponentOperator.application());
+        return allBeans().filter(m -> m.declaredBy() == Authority.application());
     }
 
     /**
@@ -310,6 +310,13 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
         return mirrorClass.cast(mirror);
     }
 
+    public static Assembly verifiable(Assembly assembly, Consumer<? super ContainerMirror> verifier) {
+        return Assemblies.verifiable(assembly, ContainerMirror.class, verifier);
+    }
+
+    // Hvis vi siger at et domain er hele appen. Hvad goere vi i C3. Er den tilgaengelig under et "fake" navn???
+    //
+
     /**
      * Represents one or more containers ordered in a tree with a single node as the root.
      * <p>
@@ -318,6 +325,10 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
     // TODO make sealed, currently there is a bug in Eclipse
     public non-sealed interface OfTree extends TreeView<ContainerMirror> , ContextScopeMirror {
 
+        // Must form a tree as well
+        default AssemblyMirror.OfTree assemblies() {
+            throw new UnsupportedOperationException();
+        }
         // Maaske er det en enum?
         // isAllOfApplication
         // isPartialSubtreeOfApplication();
@@ -327,13 +338,6 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
     // Vi har en main database der bruges i P og saa bruger vi den i C1, C2 bruger den under alias "NotMain", og definere
     // sin egen main.
     // C3 definere kun sig egen main
-
-    // Hvis vi siger at et domain er hele appen. Hvad goere vi i C3. Er den tilgaengelig under et "fake" navn???
-    //
-
-    public static Assembly verifiable(Assembly assembly, Consumer<? super ContainerMirror> verifier) {
-        return Assemblies.verifiable(assembly, ContainerMirror.class, verifier);
-    }
 }
 
 //// MAYBE MAYBE, but need some use cases

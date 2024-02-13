@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.extension.BaseExtensionPoint.CodeGenerated;
+import app.packed.bean.CodeGenerated;
 import app.packed.extension.ExtensionContext;
 import app.packed.operation.Provider;
 import app.packed.service.ServiceLocator;

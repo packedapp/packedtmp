@@ -15,6 +15,7 @@
  */
 package app.packed.util;
 
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -66,12 +67,24 @@ public interface TreeView<N> {
     // Hmm???
     default void print(Function<? super N, String> f) {}
 
+    default <S> TreeView<S> map(Function<N, S> mapper) {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return the root node in the tree.} */
     default N root() {
         throw new UnsupportedOperationException();
     }
 
     default Stream<N> stream() {
+        throw new UnsupportedOperationException();
+    }
+
+    default TreeView<Map.Entry<N, Boolean>> activityTree(Iterable<? super N> active) {
+        // Ideen er lidt at have et tree. Og saa dem der er aktiv in a tree...
+
+        // toSet
+        // map-> n-> n, n.isInSet()
         throw new UnsupportedOperationException();
     }
 

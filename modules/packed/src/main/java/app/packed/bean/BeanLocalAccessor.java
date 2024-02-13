@@ -21,4 +21,7 @@ import sandbox.extension.bean.BeanHandle;
 
 /** An entity where bean local values can be stored and retrieved. */
 // Used to be an inner interface on BeanLocal, but eclipse compiled complained on it
+
+// Remove BeanMirror and allow beanMirror.handle
+
 public sealed interface BeanLocalAccessor permits BeanConfiguration, BeanElement, BeanHandle, BeanIntrospector, BeanMirror {}

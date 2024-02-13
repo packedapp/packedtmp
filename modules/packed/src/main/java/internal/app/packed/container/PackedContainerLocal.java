@@ -20,14 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Supplier;
 
 import app.packed.container.ContainerLocal;
-import app.packed.container.ContainerLocalAccessor;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
-import internal.app.packed.component.PackedComponentLocal;
-import internal.app.packed.component.PackedLocalMap.KeyAndLocalMapSource;
+import internal.app.packed.build.PackedBuildLocal;
+import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
 
 /** Implementation of {@link ContainerLocal}. */
-public final class PackedContainerLocal<T> extends PackedComponentLocal<ContainerLocalAccessor, T> implements ContainerLocal<T> {
+public final class PackedContainerLocal<T> extends PackedBuildLocal<ContainerLocal.ContainerLocalAccessor, T> implements ContainerLocal<T> {
 
     public PackedContainerLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
         super(initialValueSupplier);
@@ -35,7 +34,7 @@ public final class PackedContainerLocal<T> extends PackedComponentLocal<Containe
 
     /** {@inheritDoc} */
     @Override
-    protected KeyAndLocalMapSource extract(ContainerLocalAccessor accessor) {
+    protected KeyAndLocalMapSource extract(ContainerLocal.ContainerLocalAccessor accessor) {
         requireNonNull(accessor, "accessor is null");
         return ContainerSetup.crack(accessor);
     }

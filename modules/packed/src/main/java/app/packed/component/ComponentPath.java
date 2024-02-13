@@ -103,6 +103,22 @@ public sealed interface ComponentPath permits PackedComponentPath {
         throw new UnsupportedOperationException();
     }
 
+    default ComponentPath parentType() {
+        // Hmm in a tree the naming is not great.
+        // Fx Container.parent() <- I would assume the parent container...
+
+        // Maybe we have two. One for trees, and one for
+        throw new UnsupportedOperationException();
+    }
+
+    default ComponentPath parentIfInTree() {
+        // Hmm in a tree the naming is not great.
+        // Fx Container.parent() <- I would assume the parent container...
+
+        // Maybe we have two. One for trees, and one for
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * @param fragmentName
      *            the name of the fragment
@@ -120,6 +136,9 @@ public sealed interface ComponentPath permits PackedComponentPath {
         throw new UnsupportedOperationException();
     }
 
+    // ComponentIdKind... It is more like a name. IDK but the name of a container is string, not path
+    // So Hmm
+    // Must have a unique relations to its parent if it has one. Or otherwise the authority component
     enum FragmentKind {
         CLASS, KEY, PATH, STRING;
     }

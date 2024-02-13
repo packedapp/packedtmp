@@ -25,6 +25,10 @@ import app.packed.operation.OperationMirror;
 // Hmm, how is this different from a resource????????????????
 // Im not sure this class exists have this here...
 // Instead we have
+
+// Yes, er vi altid tilknyttet en bean???
+// Maske er operation Optional
+
 public abstract class NamespaceOperationMirror extends OperationMirror {
 
     public abstract NamespaceMirror<?> namespace();

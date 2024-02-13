@@ -15,11 +15,8 @@
  */
 package app.packed.namespace;
 
-import java.util.Set;
-
 import app.packed.extension.Extension;
 import app.packed.util.TreeView.Node;
-import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.NamespaceSetup;
 
 /**
@@ -28,13 +25,26 @@ import internal.app.packed.container.NamespaceSetup;
  */
 // Ideen bag den her er jo at det er lettest at have en klasse man kan overskrive.
 // Hvor man kan gemme info direkte paa operatoren... istedet for at have en masse pinde
+
+// Tror ikke vi kommer uden om, at have nogle callback metoder ogsaa
+
+// onClose
+
 public abstract class NamespaceOperator<E extends Extension<E>> {
+
+    protected NamespaceHandle handle;
 
     /** The domain configuration. */
     private final NamespaceSetup namespace = NamespaceSetup.MI.initialize();
 
-    Set<ContainerSetup> containers() {
-        return Set.of();
+    protected abstract <N extends NamespaceConfiguration<E>> N configuration();
+
+    public final boolean isInApplicationLifetime(Extension<?> extension) {
+        return true;
+    }
+
+    public NamespaceMirror<E> mirror() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -48,17 +58,11 @@ public abstract class NamespaceOperator<E extends Extension<E>> {
         throw new UnsupportedOperationException();
     }
 
-    public final boolean isInApplicationLifetime(Extension<?> extension) {
-        return true;
-    }
-
-    public NamespaceMirror<E> mirror() {
-        throw new UnsupportedOperationException();
-    }
+    protected void onAssemblyClose(E rootExtension, boolean isNamespaceRoot) {}
 
     /** {@return the root extension of this domain.} */
     @SuppressWarnings("unchecked")
-    public final E root() {
+    public final E rootExtension() {
         return (E) namespace.root.instance();
     }
 }

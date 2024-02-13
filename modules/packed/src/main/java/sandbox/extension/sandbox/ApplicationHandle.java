@@ -15,6 +15,8 @@
  */
 package sandbox.extension.sandbox;
 
+import app.packed.component.ComponentHandle;
+
 /**
  *
  */
@@ -22,6 +24,6 @@ package sandbox.extension.sandbox;
 // Kan ikke saette ContainerMirror, men skal vaere ApplicationMirror
 
 // Men hvis man kun goer det paa
-public interface ApplicationHandle {
+public interface ApplicationHandle extends ComponentHandle {
 
 }

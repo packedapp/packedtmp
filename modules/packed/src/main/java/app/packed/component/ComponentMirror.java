@@ -35,6 +35,12 @@ public interface ComponentMirror extends Mirror {
     }
 
     /** {@return the path of the component} */
+    // Giver mening hvis vi faar Applications.components();
+    default Authority componentOwner() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@return the path of the component} */
     ComponentPath componentPath();
 
     /** {@return a set of any tags that have been set on the component} */
@@ -49,7 +55,6 @@ public interface ComponentMirror extends Mirror {
 //        throw new UnsupportedOperationException();
 //    }
 }
-
 
 // AtomicInteger
 //// Er de forloebende?? Altsaa naar vi laver parallel med mange componenter er det vel ikke helt simpelt

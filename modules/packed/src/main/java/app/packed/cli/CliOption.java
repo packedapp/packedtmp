@@ -15,7 +15,7 @@
  */
 package app.packed.cli;
 
-import app.packed.namespace.NamespaceOperation;
+import app.packed.namespace.sandbox.NamespaceOperation;
 
 /**
  *

@@ -20,11 +20,10 @@ import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 import java.util.function.Supplier;
 
-import app.packed.component.ComponentPath;
+import app.packed.component.ComponentHandle;
 import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
-import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationType;
@@ -48,30 +47,30 @@ import internal.app.packed.operation.PackedOperationHandle;
 // Top
 // Non-Top
 // Embedded
-public sealed interface OperationHandle extends ContextualizedElement permits PackedOperationHandle {
+public sealed interface OperationHandle extends ComponentHandle, ContextualizedElement permits PackedOperationHandle {
 
-    ComponentPath componentPath();
-
-    /**
-     * Checks that the container is still configurable, or throws an exception.
-     *
-     * @throws IllegalStateException
-     *             if the container is no longer configurable
-     */
-    default void checkIsConfigurable() {
-        if (!isConfigurable()) {
-            throw new IllegalStateException("This container is no longer configurable");
-        }
-    }
-
-    /**
-     * Returns whether or not the container is still configurable.
-     * <p>
-     * If an assembly was used to create the container. The handle is never configurable.
-     *
-     * @return {@code true} if the bean is still configurable
-     */
-    boolean isConfigurable();
+//    ComponentPath componentPath();
+//
+//    /**
+//     * Checks that the container is still configurable, or throws an exception.
+//     *
+//     * @throws IllegalStateException
+//     *             if the container is no longer configurable
+//     */
+//    default void checkIsConfigurable() {
+//        if (!isConfigurable()) {
+//            throw new IllegalStateException("This container is no longer configurable");
+//        }
+//    }
+//
+//    /**
+//     * Returns whether or not the container is still configurable.
+//     * <p>
+//     * If an assembly was used to create the container. The handle is never configurable.
+//     *
+//     * @return {@code true} if the bean is still configurable
+//     */
+//    boolean isConfigurable();
 
     // Hmm there is a difference between operating within contexts./
     // And invocation argument contexts
@@ -140,9 +139,9 @@ public sealed interface OperationHandle extends ContextualizedElement permits Pa
     /** {@return the operator of the operation.} */
     Class<? extends Extension<?>> operator();
 
-    default <C extends OperationConfiguration> C configure(Supplier<? super C> configure) {
-        throw new UnsupportedOperationException();
-    }
+//    default <C extends OperationConfiguration> C configure(Supplier<? super C> configure) {
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * Specializes the mirror that is returned for the operation.

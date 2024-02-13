@@ -27,8 +27,8 @@ import java.util.function.Supplier;
 
 import app.packed.application.BootstrapApp.Image;
 import app.packed.assembly.AbstractComposer;
-import app.packed.assembly.Assembly;
 import app.packed.assembly.AbstractComposer.ComposerAction;
+import app.packed.assembly.Assembly;
 import app.packed.bean.BeanKind;
 import app.packed.build.BuildGoal;
 import app.packed.container.ContainerLocal;
@@ -372,13 +372,13 @@ public final /* value */ class BootstrapApp<A> {
 
         <T> void newApplication(Class<T> guestBean) {
             // We need the attachment, because ContainerGuest is on
-            Builder bi = base().newBeanForUser(ZBT);
+            Builder bi = base().newBean(ZBT);
             newApplication(bi.install(guestBean));
         }
 
         <T> void newApplication(Op<T> guestBean) {
             // We need the attachment, because ContainerGuest is on
-            Builder bi = base().newBeanForUser(ZBT);
+            Builder bi = base().newBean(ZBT);
             newApplication(bi.install(guestBean));
         }
     }

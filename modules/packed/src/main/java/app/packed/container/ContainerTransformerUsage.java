@@ -28,7 +28,7 @@ import app.packed.service.ServiceableBeanConfiguration;
 /**
  *
  */
-public class ATUsage extends BaseAssembly {
+class ContainerTransformerUsage extends BaseAssembly {
 
     static final BeanLocal<String> L = BeanLocal.of();
 
@@ -41,7 +41,7 @@ public class ATUsage extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        Assembly u = new ATUsage();
+        Assembly u = new ContainerTransformerUsage();
         ContainerTransformer ct = new ContainerTransformer() {
 
             @Override
@@ -70,9 +70,7 @@ public class ATUsage extends BaseAssembly {
             };
 
             // Could be a procted method without the lookup object... just using the getClass() instead as the caller
-            return Assemblies.transform(MethodHandles.lookup(), new ATUsage(), ct);
+            return Assemblies.transform(MethodHandles.lookup(), new ContainerTransformerUsage(), ct);
         }
-
     }
-
 }

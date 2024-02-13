@@ -16,8 +16,8 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocalAccessor;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
+import app.packed.component.Authority;
 import app.packed.component.ComponentKind;
-import app.packed.component.ComponentOperator;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
 import app.packed.extension.BeanElement;
@@ -28,9 +28,9 @@ import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
-import internal.app.packed.component.PackedLocalMap;
-import internal.app.packed.component.PackedLocalMap.KeyAndLocalMapSource;
-import internal.app.packed.container.AuthorSetup;
+import internal.app.packed.build.PackedLocalMap;
+import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
+import internal.app.packed.container.AuthoritySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.context.ContextInfo;
@@ -62,6 +62,9 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
 
     /** A magic initializer for {@link BeanMirror}. */
     public static final MagicInitializer<BeanSetup> MIRROR_INITIALIZER = MagicInitializer.of(BeanMirror.class);
+
+    /** A magic initializer for {@link BeanConfiguration}. */
+    public static final MagicInitializer<BeanSetup> CONFIGURATION_INITIALIZER = MagicInitializer.of(BeanConfiguration.class);
 
     /** A handle that can access BeanConfiguration#handle. */
     private static final VarHandle VH_BEAN_CONFIGURATION_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanConfiguration.class, "handle",
@@ -114,7 +117,12 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
     public final BeanOperationStore operations = new BeanOperationStore();
 
     /** The owner of the bean. */
-    public final AuthorSetup owner;
+    public final AuthoritySetup owner;
+
+    @Override
+    public String toString() {
+        return "Bean Name " + name;
+    }
 
     /** Create a new bean. */
     BeanSetup(PackedBeanHandleBuilder installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
@@ -142,8 +150,17 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
         }
     }
 
-    public ComponentOperator author() {
-        return owner.author();
+    public static BeanSetup initFromBeanConfiguration(BeanConfiguration configuration) {
+        BeanSetup bs = BeanSetup.CONFIGURATION_INITIALIZER.initialize();
+        if (bs.configuration != null) {
+            throw new IllegalStateException("A bean handle can only be used once to create a bean configuration");
+        }
+        bs.configuration = requireNonNull(configuration);
+        return bs;
+    }
+
+    public Authority owner() {
+        return owner.authority();
     }
 
     public BindingResolution beanInstanceBindingProvider() {
@@ -212,7 +229,7 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
     /** {@return a map of locals for the bean} */
     @Override
     public PackedLocalMap locals() {
-        return container.application.locals;
+        return container.locals();
     }
 
     /** {@return a new mirror.} */

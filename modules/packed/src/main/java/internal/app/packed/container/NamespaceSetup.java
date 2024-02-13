@@ -18,6 +18,7 @@ package internal.app.packed.container;
 import java.util.HashMap;
 import java.util.Map;
 
+import app.packed.component.ComponentPath;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.util.Nullable;
@@ -42,7 +43,7 @@ public final class NamespaceSetup implements NamespaceHandle {
     public String name = DEFAULT_NAME;
 
     /** The owner of the name space. */
-    public final AuthorSetup owner;
+    public final AuthoritySetup owner;
 
     /** The extension and root container of the namespace. */
     public final ExtensionSetup root;
@@ -50,7 +51,7 @@ public final class NamespaceSetup implements NamespaceHandle {
     /** The namespace template */
     public final PackedNamespaceTemplate<?> template;
 
-    public NamespaceSetup(PackedNamespaceTemplate<?> template, ExtensionSetup root, AuthorSetup owner) {
+    public NamespaceSetup(PackedNamespaceTemplate<?> template, ExtensionSetup root, AuthoritySetup owner) {
         this.template = template;
         this.root = root;
         this.owner = owner;
@@ -61,11 +62,11 @@ public final class NamespaceSetup implements NamespaceHandle {
         return name;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void named(String name) {
-        this.name = name;
-    }
+//    /** {@inheritDoc} */
+//    @Override
+//    public void named(String name) {
+//        this.name = name;
+//    }
 
     public record NamespaceKey(Class<?> namespaceKind, String name) {}
     // Tror maaske vi har nogle strategies
@@ -86,5 +87,11 @@ public final class NamespaceSetup implements NamespaceHandle {
     @Override
     public boolean isConfigurable() {
         return false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
+        return null;
     }
 }

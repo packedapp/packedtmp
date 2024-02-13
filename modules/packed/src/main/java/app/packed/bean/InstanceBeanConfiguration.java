@@ -32,6 +32,8 @@ import sandbox.extension.bean.BeanHandle;
  */
 public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 
+    public InstanceBeanConfiguration() {}
+
     /**
      * Creates a new InstanceBeanConfiguration.
      *
@@ -52,7 +54,7 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     protected final BeanHandle<T> instanceHandle() {
-        return (BeanHandle<T>) super.handle();
+        return (BeanHandle<T>) handle();
     }
 
     /** {@inheritDoc} */

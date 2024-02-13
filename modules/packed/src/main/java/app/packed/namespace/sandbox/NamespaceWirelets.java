@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.assembly;
+package app.packed.namespace.sandbox;
 
-import app.packed.build.BuildTransformer;
+/**
+ *
+ */
+public class NamespaceWirelets {
 
-// Hvis du er en lifecycle operation i container X. Så gør foo
-public non-sealed interface OperationTransformer extends BuildTransformer {
-
+    // rename
 }

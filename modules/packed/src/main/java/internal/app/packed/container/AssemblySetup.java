@@ -24,12 +24,12 @@ import java.util.function.Predicate;
 import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.assembly.DelegatingAssembly;
-import app.packed.component.ComponentOperator;
+import app.packed.component.Authority;
 import app.packed.util.Nullable;
+import internal.app.packed.build.PackedLocalMap;
+import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
 import internal.app.packed.component.AbstractTreeMirror;
 import internal.app.packed.component.Mirrorable;
-import internal.app.packed.component.PackedLocalMap;
-import internal.app.packed.component.PackedLocalMap.KeyAndLocalMapSource;
 import internal.app.packed.service.CircularServiceDependencyChecker;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.TreeNode;
@@ -37,7 +37,7 @@ import internal.app.packed.util.TreeNode.ActualNode;
 import internal.app.packed.util.types.ClassUtil;
 
 /** The internal configuration of an assembly. */
-public final class AssemblySetup implements KeyAndLocalMapSource , ActualNode<AssemblySetup> , AuthorSetup , Mirrorable<AssemblyMirror> {
+public final class AssemblySetup implements KeyAndLocalMapSource , ActualNode<AssemblySetup> , AuthoritySetup , Mirrorable<AssemblyMirror> {
 
     /** A magic initializer for {@link BeanMirror}. */
     public static final MagicInitializer<AssemblySetup> MIRROR_INITIALIZER = MagicInitializer.of(AssemblyMirror.class);
@@ -100,8 +100,8 @@ public final class AssemblySetup implements KeyAndLocalMapSource , ActualNode<As
 
     /** {@inheritDoc} */
     @Override
-    public ComponentOperator author() {
-        return ComponentOperator.application();
+    public Authority authority() {
+        return Authority.application();
     }
 
     /**

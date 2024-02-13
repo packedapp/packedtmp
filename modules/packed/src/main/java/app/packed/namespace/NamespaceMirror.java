@@ -15,9 +15,11 @@
  */
 package app.packed.namespace;
 
+import java.util.stream.Stream;
+
+import app.packed.component.Authority;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
-import app.packed.component.ComponentOperator;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import internal.app.packed.container.NamespaceSetup;
@@ -31,6 +33,9 @@ import internal.app.packed.container.NamespaceSetup;
 // ServiceNamespace::/:main
 
 // Is abstract for now. Similar to ExtensionMirror
+
+// I think a namespace can have restrictions Map<Permission, Set<Container>>
+
 public abstract class NamespaceMirror<E extends Extension<E>> implements ComponentMirror {
 
     /*
@@ -41,7 +46,12 @@ public abstract class NamespaceMirror<E extends Extension<E>> implements Compone
      **/
 
     /** The namespace configuration. */
-    private final NamespaceSetup namespace = NamespaceSetup.MI.initialize();
+    private final NamespaceSetup namespace;
+
+    protected NamespaceMirror() {
+        this.namespace = NamespaceSetup.MI.initialize();
+
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -63,6 +73,7 @@ public abstract class NamespaceMirror<E extends Extension<E>> implements Compone
 
     // IDK, define is also a bad word
     // Should be similar named as bean.operator(), operation.operator
+    // Maybe we do allow user namespaces...
     /** {@return the extension class that owns the namespace.} */
     Class<? extends Extension<?>> namespaceExtension() {
         return namespace.root.extensionType;
@@ -87,6 +98,14 @@ public abstract class NamespaceMirror<E extends Extension<E>> implements Compone
         return namespace.name;
     }
 
+    /** {@return the owner of this namespace instance.} */
+    // I don't think there is an owner.
+    // What if a database is used by two extensions only?
+    // Maybe the DatabaseExtension itself??
+    public final Authority namespaceOwner() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return the root container of the namespace.} */
     public final ContainerMirror namespaceRoot() {
         return namespace.root.container.mirror();
@@ -94,21 +113,20 @@ public abstract class NamespaceMirror<E extends Extension<E>> implements Compone
 
     /** {@return a tree containing every container where this namespace instance is present.} */
     // And this is where I think we have 2 things.
-    // One where it is available, and one where it is used. And by used I mean???
+    // One where it is available, and one where it is active. And by used I mean???
     // Hmm, A reference to one of its elements?? Hmm. Maybe where it is used it not very well defined
     public final ContainerMirror.OfTree namespaceScope() {
+        throw new UnsupportedOperationException();
+    }
+
+
+    // All containers that are active, are containers that use the namespace in some way
+    // PartialTreeView
+    public final Stream<ContainerMirror> namespaceActiveContainers() {
         throw new UnsupportedOperationException();
     }
 }
 
 class ZamaspaceMirrorArchive<E extends Extension<E>> extends NamespaceMirror<E> {
-
-    /** {@return the owner of this namespace instance.} */
-    // I don't think there is an owner.
-    // What if a database is used by two extensions only?
-    //
-    public final ComponentOperator namespaceOwner() {
-        throw new UnsupportedOperationException();
-    }
 
 }

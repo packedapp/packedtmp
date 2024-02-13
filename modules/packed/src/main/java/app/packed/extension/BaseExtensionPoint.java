@@ -2,10 +2,6 @@ package app.packed.extension;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -13,7 +9,6 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.extension.BeanClassActivator.AnnotatedBeanVariableActivator;
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
@@ -68,15 +63,21 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     // Maaske supportere begge ting?
     // Det eneste jeg kunne forstille mig at man ikke ville container wide var hvis man havde en bean
     // per X. Men taenker men saa har et arrays
-    public <K> void addCodeGenerated(BeanConfiguration bean, Class<K> key, Supplier<? extends K> supplier) {
-        addCodeGenerated(bean, Key.of(key), supplier);
+
+    // Hmm, vi faar ogsaa foerst fejl senere saa. Men siden det er en extension. Er det nok ikke det store problem i praksis
+    // Evt. Bliver den bare aldrig kaldt.... Det er fint
+    public <K> void addCodeGenerator(BeanConfiguration bean, Class<K> key, Supplier<? extends K> supplier) {
+        addCodeGenerator(bean, Key.of(key), supplier);
     }
 
     /**
      * Registers a code generating supplier whose supplied value can be consumed by a variable annotated with
-     * {@link CodeGenerated}.
+     * {@link CodeGenerated} at runtime for any bean in the underlying container.
      * <p>
      * Internally this mechanisms uses
+     *
+     * <p>
+     * The value if the code generator is not available outside of the underlying container.
      *
      * @param <K>
      *            the type of value the supplier produces
@@ -97,7 +98,11 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @see CodeGenerated
      * @see BindableVariable#bindGeneratedConstant(Supplier)
      */
-    public <K> void addCodeGenerated(BeanConfiguration bean, Key<K> key, Supplier<? extends K> supplier) {
+    // It is so simple maybe add it to bean configuration
+    // Or maybe a subset space...
+    // BeanConfiguration overrideService(Class<? extends Annotation>> subset, Key, Supplier);
+
+    public <K> void addCodeGenerator(BeanConfiguration bean, Key<K> key, Supplier<? extends K> supplier) {
         requireNonNull(bean, "bean is null");
         requireNonNull(key, "key is null");
         requireNonNull(supplier, "supplier is null");
@@ -116,7 +121,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     public <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = newBeanForOtherExtension(BeanKind.CONTAINER.template(), context()).install(implementation);
+        BeanHandle<T> handle = newBeanForDependantExtension(BeanKind.CONTAINER.template(), context()).install(implementation);
         return new ServiceableBeanConfiguration<>(handle);
     }
 
@@ -128,7 +133,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public <T> InstanceBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<T> handle = newBeanForOtherExtension(BeanKind.CONTAINER.template(), context()).install(op);
+        BeanHandle<T> handle = newBeanForDependantExtension(BeanKind.CONTAINER.template(), context()).install(op);
         // return handle.initialize(IBC::new);
         return new InstanceBeanConfiguration<>(handle);
     }
@@ -174,7 +179,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     @SuppressWarnings("unchecked")
     public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
-        BeanHandle<T> handle = newBeanForOtherExtension(BeanKind.CONTAINER.template(), context()).installIfAbsent(clazz,
+        BeanHandle<T> handle = newBeanForDependantExtension(BeanKind.CONTAINER.template(), context()).installIfAbsent(clazz,
                 h -> action.accept(new InstanceBeanConfiguration<>(h)));
         BeanConfiguration bc = BeanSetup.crack(handle).configuration;
         if (bc == null) {
@@ -187,7 +192,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     public <T> InstanceBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = newBeanForOtherExtension(BeanKind.CONTAINER.template(), context()).installInstance(instance);
+        BeanHandle<T> handle = newBeanForDependantExtension(BeanKind.CONTAINER.template(), context()).installInstance(instance);
         return new InstanceBeanConfiguration<>(handle);
     }
 
@@ -206,20 +211,8 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public BeanConfiguration installStatic(Class<?> beanClass) {
-        BeanHandle<?> handle = newBeanForOtherExtension(BeanKind.STATIC.template(), context()).install(beanClass);
+        BeanHandle<?> handle = newBeanForDependantExtension(BeanKind.STATIC.template(), context()).install(beanClass);
         return new BeanConfiguration(handle);
-    }
-
-    /**
-     * Creates a new extension bean installer.
-     *
-     * @param template
-     *            a template for the bean's lifetime
-     * @return the installer
-     */
-    public BeanHandle.Builder newBeanForOtherExtension(BeanTemplate template, UseSite forExtension) {
-        requireNonNull(forExtension, "forExtension is null");
-        return new PackedBeanHandleBuilder(extension().extension, ((PackedExtensionPointContext) forExtension).usedBy(), template);
     }
 
     /**
@@ -229,8 +222,21 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            a template for the bean's lifetime
      * @return the installer
      */
-    public BeanHandle.Builder newBeanForUser(BeanTemplate template) {
+    public BeanHandle.Builder newBean(BeanTemplate template) {
         return new PackedBeanHandleBuilder(extension().extension, extension().extension.container.assembly, template);
+    }
+
+    /**
+     * Creates a new extension bean installer.
+     *
+     * @param template
+     *            a template for the bean's lifetime
+     * @return the installer
+     */
+    // Skal den her overhovede vaere public???
+    public BeanHandle.Builder newBeanForDependantExtension(BeanTemplate template, UseSite forExtension) {
+        requireNonNull(forExtension, "forExtension is null");
+        return new PackedBeanHandleBuilder(extension().extension, ((PackedExtensionPointContext) forExtension).usedBy(), template);
     }
 
     /**
@@ -292,25 +298,6 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     private static ContainerTemplatePack.Builder baseBuilder(String name) {
         return ContainerTemplatePack.builder(MethodHandles.lookup(), BaseExtension.class, name);
     }
-
-    /**
-     * This annotation is used to indicate that the value of a annotated variable (field or parameter) of a bean is
-     * constructed doing the code generation phase of the application.
-     * <p>
-     * Values for a specific bean must be provided either via {@link BaseExtensionPoint}
-     *
-     * <p>
-     * This annotation can only be used by extensions.
-     *
-     * @see BindableVariable#bindGeneratedConstant(java.util.function.Supplier)
-     * @see BaseExtensionPoint#addCodeGenerated(app.packed.bean.BeanConfiguration, Class, java.util.function.Supplier)
-     * @see BaseExtensionPoint#addCodeGenerated(app.packed.bean.BeanConfiguration, app.packed.bindings.Key,
-     *      java.util.function.Supplier)
-     */
-    @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_PARAMETER })
-    @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedBeanVariableActivator(extension = BaseExtension.class)
-    public @interface CodeGenerated {}
 }
 
 //// onExtension E newContainer(Wirelet wirelets); // adds this to the container and returns it

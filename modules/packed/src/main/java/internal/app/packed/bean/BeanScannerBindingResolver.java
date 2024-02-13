@@ -22,7 +22,7 @@ import app.packed.util.Variable;
 import internal.app.packed.bean.BeanHookModel.AnnotatedParameterType;
 import internal.app.packed.bean.BeanHookModel.ParameterType;
 import internal.app.packed.binding.InternalDependency;
-import internal.app.packed.container.AuthorSetup;
+import internal.app.packed.container.AuthoritySetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 
@@ -60,7 +60,7 @@ final class BeanScannerBindingResolver {
         InternalDependency ia = InternalDependency.fromVariable(v);
 
         BeanSetup bean = operation.bean;
-        AuthorSetup owner = operation.bean.owner;
+        AuthoritySetup owner = operation.bean.owner;
 
         Class<? extends Extension<?>> e = owner instanceof ExtensionSetup es ? es.extensionType : null;
         if (operation.embeddedInto != null) {

@@ -70,6 +70,13 @@ public @interface BeanClassActivator {
          */
         Class<? extends Context<?>>[] requiresContext() default {};
 
+        // I think it would be super nice to indicate that we simply uses a key based local namespace
+        // Nothing fancy freeflowing key
+        // Maybe this is actually two different annotations???
+        // Should we have something about we use a KeyBasedScheme? Or a free
+        // For example Codegenerated...
+        boolean checkKeyRepresentation() default true;
+
         enum Mode {
 
             // Tror maaske vi skal overskrive en eller anden klasse

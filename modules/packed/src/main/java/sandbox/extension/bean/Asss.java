@@ -13,13 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package sandbox.extension.bean;
 
-import app.packed.application.ApplicationLocalAccessor;
-import sandbox.extension.container.ContainerHandle;
+import app.packed.application.App;
+import app.packed.assembly.BaseAssembly;
 
-/** An accessor where {@link ContainerLocal container local} values can be stored and retrieved. */
-public sealed interface ContainerLocalAccessor extends ApplicationLocalAccessor permits ContainerConfiguration, ContainerHandle, ContainerMirror {}
-//Extension?
-//En god maade at traekke sig selv ud...
-//ContainerLocal<FooExtension> myLocal = FooExtension.local();
+/**
+ *
+ */
+public class Asss extends BaseAssembly {
+
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {
+        installInstance("fooo");
+        install(Foo.class);
+        install(Boo.class);
+
+        container().beans().forEach(e -> System.out.println(e.toString()));
+    }
+
+    public static void main(String[] args) {
+        App.mirrorOf(new Asss());
+    }
+
+    public record Foo(String s) {}
+
+    public record Boo(Foo f) {}
+
+}

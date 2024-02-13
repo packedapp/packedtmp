@@ -30,19 +30,20 @@ import internal.app.packed.util.types.ClassUtil;
  * An operative represents either the user of the framework or a specific extension.
  *
  */
-public /* value */ final class ComponentOperator {
+// Was ComponentOperatpr, ComponentAutority, ComponentOwner
+public /* value */ final class Authority {
 
     /** An application author. */
-    private static final ComponentOperator APPLICATION = new ComponentOperator(Extension.class);
+    private static final Authority APPLICATION = new Authority(Extension.class);
 
     /** Interned realm. */
     // Until we get values in which case it is always interned
-    static final ClassValue<ComponentOperator> INTERNED = new ClassValue<ComponentOperator>() {
+    static final ClassValue<Authority> INTERNED = new ClassValue<Authority>() {
 
         @Override
-        protected ComponentOperator computeValue(Class<?> extensionClass) {
+        protected Authority computeValue(Class<?> extensionClass) {
             ClassUtil.checkProperSubclass(Extension.class, extensionClass, "extensionClass");
-            return new ComponentOperator(extensionClass);
+            return new Authority(extensionClass);
         }
     };
 
@@ -50,7 +51,7 @@ public /* value */ final class ComponentOperator {
     @SuppressWarnings("rawtypes")
     private final Class extensionClass;
 
-    private ComponentOperator(@SuppressWarnings("rawtypes") Class extensionClass) {
+    private Authority(@SuppressWarnings("rawtypes") Class extensionClass) {
         this.extensionClass = requireNonNull(extensionClass);
     }
 
@@ -103,13 +104,13 @@ public /* value */ final class ComponentOperator {
      * @throws IllegalArgumentException
      *             if the specified class is not a proper subclass of Extension
      */
-    public static ComponentOperator extension(Class<? extends Extension<?>> extensionClass) {
+    public static Authority extension(Class<? extends Extension<?>> extensionClass) {
         // ExtensionModel.get().operative???
         return INTERNED.get(extensionClass);
     }
 
     /** {@return the application author.} */
-    public static ComponentOperator application() {
+    public static Authority application() {
         return APPLICATION;
     }
 }

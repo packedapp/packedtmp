@@ -13,3 +13,16 @@ public interface Mirror {}
 //Maybe seal it, and the have
 //findAll(Class<? extends Mirror>);
 //FrameworkMirror? Mhhhh we can never stop than
+
+
+
+
+/**
+ *
+ */
+
+// Application, Assembly?, Container, Bean, Operation, Binding?
+// What is the usecase. Should also have BaseComponentConfiguration???
+interface BaseComponentMirror extends ComponentMirror {
+
+}

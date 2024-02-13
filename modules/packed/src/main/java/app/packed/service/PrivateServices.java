@@ -15,8 +15,8 @@
  */
 package app.packed.service;
 
-import app.packed.assembly.TransformAssembly;
 import app.packed.assembly.AssemblyTransformer;
+import app.packed.assembly.TransformAssembly;
 
 /**
  * Ideen er lidt at let kunne modificere en Assembly til lave sit eget service namespace

@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.component;
+package internal.app.packed.build;
 
 import java.util.function.Supplier;
 
-import app.packed.component.ComponentLocal;
+import app.packed.build.BuildLocal;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.PackedBeanLocal;
-import internal.app.packed.component.PackedLocalMap.KeyAndLocalMapSource;
-import internal.app.packed.container.PackedApplicationLocal;
-import internal.app.packed.container.PackedContainerLocal;
+import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
 
 /** The base class for component locals. */
-public abstract sealed class PackedComponentLocal<A, T> implements ComponentLocal<A, T> permits PackedApplicationLocal, PackedContainerLocal, PackedBeanLocal {
+public abstract non-sealed class PackedBuildLocal<A, T> implements BuildLocal<A, T> /*permits PackedApplicationLocal, PackedContainerLocal, PackedBeanLocal */ {
 
     /** An optional supplier that can provide initial values for a bean local. */
     final @Nullable Supplier<? extends T> initialValueSupplier;
 
-    protected PackedComponentLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
+    protected PackedBuildLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
         this.initialValueSupplier = initialValueSupplier;
     }
 

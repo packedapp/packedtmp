@@ -17,8 +17,10 @@ package app.packed.container;
 
 import java.util.function.Supplier;
 
-import app.packed.component.ComponentLocal;
+import app.packed.application.ApplicationLocal;
+import app.packed.build.BuildLocal;
 import internal.app.packed.container.PackedContainerLocal;
+import sandbox.extension.container.ContainerHandle;
 
 /**
  * This class provides container-local variables at build-time.
@@ -31,7 +33,7 @@ import internal.app.packed.container.PackedContainerLocal;
  * @see app.packed.extension.container.ContainerBuilder#setLocal(ContainerLocal, Object)
  * @see app.packed.container.ContainerMirror
  */
-public sealed interface ContainerLocal<T> extends ComponentLocal<ContainerLocalAccessor, T> permits PackedContainerLocal {
+public sealed interface ContainerLocal<T> extends BuildLocal<ContainerLocal.ContainerLocalAccessor, T> permits PackedContainerLocal {
 
     /**
      * Returns a wirelet that will set the value of this container local, overriding any previous set value.
@@ -59,6 +61,19 @@ public sealed interface ContainerLocal<T> extends ComponentLocal<ContainerLocalA
     static <T> ContainerLocal<T> of(Supplier<? extends T> initialValueSupplier) {
         return new PackedContainerLocal<>(initialValueSupplier);
     }
+
+    /** An accessor where {@link ContainerLocal container local} values can be stored and retrieved. */
+    public sealed interface ContainerLocalAccessor extends ApplicationLocal.ApplicationLocalAccessor
+            permits ContainerConfiguration, ContainerHandle, ContainerMirror {}
+
+    // Extension?
+    // En god maade at traekke sig selv ud...
+    // ContainerLocal<FooExtension> myLocal = FooExtension.local();
+
+    // ExtensionLocal(Application) // Map<Extension, T>
+    // ExtensionLocal(Container) // Map<Extension, T>
+
+    // AuthorLocal, FX med namespaces Map<Author, T>
 }
 //
 //// A wirelet that will only applied if the value of the local is the specified value.
@@ -82,7 +97,6 @@ public sealed interface ContainerLocal<T> extends ComponentLocal<ContainerLocalA
 //default BeanLocal<T> toBeanLocal() {
 //  throw new UnsupportedOperationException();
 //}
-
 
 //static <T> ContainerLocal<T> ofContainerLifetime() {
 //    return PackedAbstractContainerLocal.of(PackedContainerLocal.PackedAbstractContainerLocal.CONTAINER_LIFETIME);

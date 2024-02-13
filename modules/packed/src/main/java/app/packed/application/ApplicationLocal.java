@@ -17,13 +17,13 @@ package app.packed.application;
 
 import java.util.function.Supplier;
 
-import app.packed.component.ComponentLocal;
+import app.packed.assembly.Assembly;
+import app.packed.build.BuildLocal;
+import app.packed.container.ContainerLocal;
 import app.packed.container.Wirelet;
 
-/**
- *
- */
-public non-sealed interface ApplicationLocal<T> extends ComponentLocal<ApplicationLocalAccessor, T> {
+/** A component local that has application scope. */
+public non-sealed interface ApplicationLocal<T> extends BuildLocal<ApplicationLocal.ApplicationLocalAccessor, T> {
 
     /**
      * Returns a wirelet that can be used to set the value of this application local.
@@ -40,13 +40,13 @@ public non-sealed interface ApplicationLocal<T> extends ComponentLocal<Applicati
     Wirelet wireletSetter(T value);
 
     /**
-     * Creates a new container local with container scope.
+     * Creates a new local with application scope.
      * <p>
-     * Container scope means that a separate value is stored for every container
+     * Application scope means that a separate value is stored for every application.
      *
      * @param <T>
-     *            the type of value to store
-     * @return the new container local
+     *            the type of values to store
+     * @return the new application local
      */
     static <T> ApplicationLocal<T> of() {
         throw new UnsupportedOperationException();
@@ -62,8 +62,10 @@ public non-sealed interface ApplicationLocal<T> extends ComponentLocal<Applicati
      *            the type of value to store
      * @return the new container local with application scope
      */
-
     static <T> ApplicationLocal<T> of(Supplier<? extends T> initialValueSupplier) {
         throw new UnsupportedOperationException();
     }
+
+    /** An entity where {@link ApplicationLocal application local} values can be manipulated. */
+    public sealed interface ApplicationLocalAccessor permits ContainerLocal.ContainerLocalAccessor, ApplicationConfiguration, ApplicationMirror, Assembly {}
 }

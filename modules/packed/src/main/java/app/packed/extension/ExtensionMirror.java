@@ -59,6 +59,7 @@ public abstract class ExtensionMirror<E extends Extension<E>> implements Mirror 
      * {@link #initialize(ExtensionNavigatorImpl)}
      */
     @Nullable
+    // Move to magic setup
     private ExtensionTreeViewNode<E> navigator;
 
     /**

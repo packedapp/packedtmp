@@ -28,6 +28,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
 // Maybe a nested annotation on Namespace
+
+// Ideen er vist lidt at markere annoteringer der arbejder inde for et namespace...
+// Og maaske implicit vil skabe et.. Hvad med inject? Laver vel ikke noedvendig et service namespace
+// Det er vel bare provide
+
+// Eller ogsaa er det til at aendre namespacet on usage
 public @interface NamespaceAnnotation {
     String DEFAULT_NAMESPACE = "main";
 }

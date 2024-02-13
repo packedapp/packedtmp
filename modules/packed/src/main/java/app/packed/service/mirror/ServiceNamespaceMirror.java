@@ -36,7 +36,9 @@ import app.packed.util.Key;
 // Maaske er det ikke et namespace...
 public class ServiceNamespaceMirror extends NamespaceMirror<BaseExtension> {
 
-    // Where is my exported services used
+    // Where is my exported services used..
+    // Only local???
+    // And what about Linage
     public Map<Key<?>, Collection<ServiceBindingMirror>> bindings() {
         throw new UnsupportedOperationException();
     }

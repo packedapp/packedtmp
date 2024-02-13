@@ -18,6 +18,7 @@ package app.packed.namespace;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import app.packed.namespace.sandbox.BuildPermission;
 import internal.app.packed.container.PackedNamespaceTemplate;
 
 /**
@@ -32,7 +33,19 @@ public interface NamespaceTemplate<T extends NamespaceOperator<?>> {
     // Taenker maaske man skal kunne foersporge paa det.
     // Give me all domains of typeX
 
+    // Magic Initializer for Extension + Authority
+
+    // Igen man skal kunne iterere over dem
+    // Or directly on the operator...
+    // NamespaceConfiguration<?> Extension.newNamespace(Operator a, Class<? extends NamespaceConfiguration<?>> c, Authority a)
+    void addConfigure(Function<Object, NamespaceConfiguration<?>> a);
+
     <N extends NamespaceMirror<?>> NamespaceTemplate<T> mirrorType(Class<N> mirrorType, Function<? super T, ? extends N> mirrorSuppliers);
+
+    @SuppressWarnings("exports")
+    default void addPermission(BuildPermission permissions) {
+        // Default values??? for example, root only
+    }
 
     static <T extends NamespaceOperator<?>> NamespaceTemplate<T> of(Supplier<T> supplier) {
         return PackedNamespaceTemplate.of(supplier);

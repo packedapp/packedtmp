@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.component;
+package internal.app.packed.build;
 
 import static java.util.Objects.requireNonNull;
 
@@ -26,6 +26,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.ExtensionSetup;
 
 /**
  * A map of component locals. We typically have one shared for the whole applications
@@ -36,7 +37,7 @@ public final class PackedLocalMap {
     /** This map containing every local. */
     private final ConcurrentHashMap<LocalKey, Object> locals = new ConcurrentHashMap<>();
 
-    public <T> T get(PackedComponentLocal<?, T> local, KeyAndLocalMapSource key) {
+    public <T> T get(PackedBuildLocal<?, T> local, KeyAndLocalMapSource key) {
         requireNonNull(local, "local is null");
         T t = getNullable(local, key);
         if (t == null) {
@@ -46,7 +47,7 @@ public final class PackedLocalMap {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> @Nullable T getNullable(PackedComponentLocal<?, T> local, Object key) {
+    private <T> @Nullable T getNullable(PackedBuildLocal<?, T> local, Object key) {
         Supplier<? extends T> ivs = local.initialValueSupplier;
         if (ivs == null) {
             return (T) locals.get(new LocalKey(local, key));
@@ -55,16 +56,16 @@ public final class PackedLocalMap {
         }
     }
 
-    public boolean isBound(PackedComponentLocal<?, ?> local, Object key) {
+    public boolean isBound(PackedBuildLocal<?, ?> local, Object key) {
         return locals.contains(new LocalKey(local, key));
     }
 
-    public <T> @Nullable T orElse(PackedComponentLocal<?, T> local, Object key, T other) {
+    public <T> @Nullable T orElse(PackedBuildLocal<?, T> local, Object key, T other) {
         T t = getNullable(local, key);
         return t == null ? other : t;
     }
 
-    public <X extends Throwable, T> @Nullable T orElseThrow(PackedComponentLocal<?, T> local, Object key, Supplier<? extends X> exceptionSupplier) throws X {
+    public <X extends Throwable, T> @Nullable T orElseThrow(PackedBuildLocal<?, T> local, Object key, Supplier<? extends X> exceptionSupplier) throws X {
         T t = getNullable(local, key);
         if (t == null) {
             throw exceptionSupplier.get();
@@ -72,7 +73,7 @@ public final class PackedLocalMap {
         return t;
     }
 
-    public <T> void set(PackedComponentLocal<?, T> local, Object key, T value) {
+    public <T> void set(PackedBuildLocal<?, T> local, Object key, T value) {
         requireNonNull(value, "value is null");
 
         // But writing initial value is okay???
@@ -80,9 +81,9 @@ public final class PackedLocalMap {
         locals.put(new LocalKey(local, key), value);
     }
 
-    private record LocalKey(PackedComponentLocal<?, ?> local, Object key) {}
+    private record LocalKey(PackedBuildLocal<?, ?> local, Object key) {}
 
-    public sealed interface KeyAndLocalMapSource permits ContainerSetup, BeanSetup, AssemblySetup, ApplicationSetup {
+    public sealed interface KeyAndLocalMapSource permits ContainerSetup, BeanSetup, AssemblySetup, ApplicationSetup, ExtensionSetup {
         PackedLocalMap locals();
     }
 }

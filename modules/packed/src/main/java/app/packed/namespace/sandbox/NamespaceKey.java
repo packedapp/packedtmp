@@ -15,12 +15,20 @@
  */
 package app.packed.namespace.sandbox;
 
+import app.packed.component.Authority;
+
 /**
  *
  */
 
-// String name;
-// Author owner;
-
 // Ideen er vist at baade Users og Extensions kan have et "main" namespace for fx services.
-public class NamespaceKey {}
+// Ved ikke om vi skal bruge bruge den i sidste ende
+public record NamespaceKey(Authority authority, String name) {}
+
+// Problemet er lidt her at vi ikke kan skrive et fyldestgoerende navn
+// Eftersom vi kan have flere extensions med samme navn...
+// Saa den er maaske ikke super brugbar
+
+
+// main <-- for user
+// $ConfigExtension$main  should be obvious

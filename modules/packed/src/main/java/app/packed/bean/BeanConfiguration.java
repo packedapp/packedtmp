@@ -3,14 +3,16 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import app.packed.component.Authority;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentOperator;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
 import app.packed.operation.OperationConfiguration;
 import app.packed.util.Key;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandle;
 import sandbox.extension.bean.BeanHandle;
 
@@ -18,10 +20,15 @@ import sandbox.extension.bean.BeanHandle;
  * The configuration of a bean, typically returned from the bean's installation site or via
  * {@link app.packed.container.ContainerConfiguration#beans()}.
  */
-public non-sealed class BeanConfiguration implements ComponentConfiguration, BeanLocalAccessor {
+public non-sealed class BeanConfiguration implements ComponentConfiguration , BeanLocalAccessor {
 
     /** The bean handle. We don't store BeanSetup directly because it is not generified */
     private final PackedBeanHandle<?> handle;
+
+    public BeanConfiguration() {
+        // Will fail if the bean configuration is not initialized from within the framework
+        this.handle = new PackedBeanHandle<>(BeanSetup.initFromBeanConfiguration(this));
+    }
 
     /**
      * Create a new bean configuration using the specified handle.
@@ -48,10 +55,46 @@ public non-sealed class BeanConfiguration implements ComponentConfiguration, Bea
         return this;
     }
 
+    public <K> void addCodeGenerator(Class<K> key, Supplier<? extends K> supplier) {
+        addCodeGenerator(Key.of(key), supplier);
+    }
+
+    /**
+     * Registers a code generating supplier whose supplied value can be consumed by a variable annotated with
+     * {@link CodeGenerated} at runtime for any bean in the underlying container.
+     * <p>
+     * Internally this mechanisms uses
+     *
+     * <p>
+     * The value if the code generator is not available outside of the underlying container.
+     *
+     * @param <K>
+     *            the type of value the supplier produces
+     * @param bean
+     *            the bean to bind the supplier to
+     * @param key
+     *            the type of key used together with {@link CodeGenerated}
+     * @param supplier
+     *            the supplier generating the value
+     *
+     * @throws IllegalArgumentException
+     *             if the specified bean is not owned by this extension. Or if the specified bean is not part of the same
+     *             container as this extension. Or if the specified bean does not have an injection site matching the
+     *             specified key.
+     * @throws IllegalStateException
+     *             if a supplier has already been registered for the specified key in the same container, or if the
+     *             extension is no longer configurable.
+     * @see CodeGenerated
+     * @see BindableVariable#bindGeneratedConstant(Supplier)
+     */
+    public <K> void addCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return the owner of the bean.} */
     // Declared by???
-    public final ComponentOperator author() {
-        return handle.author();
+    public final Authority author() {
+        return handle.owner();
     }
 
     /** {@return the bean class.} */

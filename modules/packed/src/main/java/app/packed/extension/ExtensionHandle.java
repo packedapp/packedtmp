@@ -19,6 +19,7 @@ package app.packed.extension;
  *
  */
 // Supports all non callback methods from extension... IDK
+// So an ExtensionConfiguration???
 interface ExtensionHandle {
 
 }

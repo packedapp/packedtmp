@@ -3,6 +3,7 @@ package app.packed.application;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import app.packed.assembly.AssemblyMirror;
 import app.packed.build.BuildGoal;
@@ -40,7 +41,7 @@ import internal.app.packed.operation.OperationSetup;
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)} for details.
  */
 @BindingClassActivator(extension = BaseExtension.class)
-public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationLocalAccessor {
+public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationLocal.ApplicationLocalAccessor {
 
     /** The application we are mirroring. */
     private final ApplicationSetup application;
@@ -87,6 +88,10 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         return new PackedContainerTreeMirror(application.container, null);
     }
 
+    // All mirrors "owned" by the user
+    public Stream<ComponentMirror> components() {
+        throw new UnsupportedOperationException();
+    }
     /** {@return a collection of all entry points the application may have.} */
     public Collection<OperationMirror> entryPoints() {
         return container().lifetime().entryPoints();
@@ -137,6 +142,18 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         return application.container.node.name;
     }
 
+
+    // ApplicationMirror
+    // All namespaces with root container
+    // All namespaces in the whole application
+    // All namespaces with a non-user owner
+
+    // Alternatively all keysspaces not owned by the application must be prefixed with $
+    // $FooExtension$main I think I like this better
+    // NamespaceKey <Type, Owner?, ContainerPath, Name>
+
+
+    // Application owned namespace...
     public <N extends NamespaceMirror<?>> N namespace(Class<N> type) {
         return namespace(type, "main");
     }
@@ -160,7 +177,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         for (BeanSetup b : cs.beans) {
             StringBuilder sb = new StringBuilder();
             sb.append(b.componentPath()).append("");
-            sb.append(" [").append(b.beanClass.getName()).append("], owner = " + b.author());
+            sb.append(" [").append(b.beanClass.getName()).append("], owner = " + b.owner());
             sb.append("\n");
             for (OperationSetup os : b.operations.all) {
                 // sb.append(" ".repeat(b.path().depth()));

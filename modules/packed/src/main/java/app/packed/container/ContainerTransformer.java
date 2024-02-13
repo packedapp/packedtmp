@@ -63,6 +63,9 @@ public non-sealed interface ContainerTransformer extends BuildTransformer {
     /**
      * Invoked immediately after a new container is created.
      * <p>
+     * In general it is bad practice to install new beans from this method. As the assembly itself might want to set up some stuff
+     *
+     * <p>
      * For assemblies with multiple processors. The processors for this method will be invoked in the reverse order of
      * {@link #beforeBuild(ContainerConfiguration)}.
      * <p>

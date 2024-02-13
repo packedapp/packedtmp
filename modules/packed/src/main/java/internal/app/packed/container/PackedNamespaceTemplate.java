@@ -18,6 +18,7 @@ package internal.app.packed.container;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import app.packed.namespace.NamespaceConfiguration;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.namespace.NamespaceOperator;
 import app.packed.namespace.NamespaceTemplate;
@@ -41,4 +42,8 @@ public final class PackedNamespaceTemplate<T extends NamespaceOperator<?>> imple
     public static <T extends NamespaceOperator<?>> PackedNamespaceTemplate<T> of(Supplier<T> supplier) {
         return new PackedNamespaceTemplate<>(supplier);
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public void addConfigure(Function<Object, NamespaceConfiguration<?>> a) {}
 }

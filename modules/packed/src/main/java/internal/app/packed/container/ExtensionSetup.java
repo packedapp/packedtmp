@@ -5,12 +5,14 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.component.ComponentOperator;
+import app.packed.component.Authority;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
+import internal.app.packed.build.PackedLocalMap;
+import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
 import internal.app.packed.service.ServiceManager;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
@@ -25,7 +27,7 @@ import internal.app.packed.util.ThrowableUtil;
  * This class implements {@link Comparable} in order to provide a deterministic order between extensions in the same
  * container.
  */
-public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> implements AuthorSetup , Comparable<ExtensionSetup> {
+public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> implements KeyAndLocalMapSource , AuthoritySetup , Comparable<ExtensionSetup> {
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class,
@@ -66,7 +68,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     public final ServiceManager sm;
 
     /** The extension realm this extension is a part of. */
-    private final ExtensionTree tree;
+    public final ExtensionTree tree;
 
     /**
      * Creates a new extension setup.
@@ -83,7 +85,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         this.container = requireNonNull(container);
         this.extensionType = requireNonNull(extensionType);
         if (parent == null) {
-            this.tree = new ExtensionTree(container, extensionType);
+            this.tree = new ExtensionTree(container.application, extensionType);
             this.sm = new ServiceManager(null, null);
         } else {
             this.tree = parent.tree;
@@ -209,7 +211,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
     /** {@inheritDoc} */
     @Override
-    public ComponentOperator author() {
+    public Authority authority() {
         return tree.model.realm();
     }
 
@@ -254,8 +256,14 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         return extension;
     }
 
+    /** {@return a map of locals for the bean} */
+    @Override
+    public PackedLocalMap locals() {
+        return container.locals();
+    }
+
     /** A single instance of this class exists per extension per application. */
-    private static final class ExtensionTree {
+    public static final class ExtensionTree {
 
         /**
          * The extension id. This id may be used when ordering extensions if there are multiple extensions with the same
@@ -269,6 +277,8 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         /** A model of the extension. */
         private final ExtensionModel model;
 
+        public final String name;
+
         /**
          * Creates a new ExtensionTree.
          *
@@ -277,9 +287,15 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
          * @param extensionType
          *            the type of extension
          */
-        private ExtensionTree(ContainerSetup container, Class<? extends Extension<?>> extensionType) {
-            this.applicationExtensionId = container.application.extensionIdCounter++;
+        private ExtensionTree(ApplicationSetup application, Class<? extends Extension<?>> extensionType) {
+            this.applicationExtensionId = application.extensionIdCounter++;
             this.model = ExtensionModel.of(extensionType);
+            String name = model.name();
+            int suffix = 1;
+            while (application.extensions.putIfAbsent(name, extensionType) != null) {
+                name = model.name() + suffix++;
+            }
+            this.name = name;
         }
     }
 }

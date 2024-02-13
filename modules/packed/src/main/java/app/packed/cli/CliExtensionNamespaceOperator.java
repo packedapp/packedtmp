@@ -59,4 +59,11 @@ class CliExtensionNamespaceOperator extends NamespaceOperator<CliExtension> {
         }
         // OT.DEFAULTS.entryPoint();
     }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    protected CliNamespaceConfiguration configuration() {
+        return new CliNamespaceConfiguration(handle);
+    }
 }

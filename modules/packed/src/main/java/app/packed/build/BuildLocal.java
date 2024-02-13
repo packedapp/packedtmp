@@ -13,30 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.build;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationLocal;
 import app.packed.bean.BeanLocal;
+import app.packed.component.AuthorityLocal;
 import app.packed.container.ContainerLocal;
-import internal.app.packed.component.PackedComponentLocal;
+import internal.app.packed.build.PackedBuildLocal;
 
 /**
- *
+ * Build locals
  * <p>
  * What about ISE do we support valid points you can use a local???
  *
- *
  * <p>
- * Component locals are only intended to be used by secure code. Hence there is no support for checking the values that
- * are stored with it.
+ * Build locals are only intended to be used by secure code. Hence there is no support for checking the values that are
+ * stored with it.
  * <p>
  * Component locals are only intended to be used at build time. If you need to share state at runtime the right way to
  * do so is by installing a shared bean of some kind
  * <p>
- * We do not cache errors from suppliers... These are intended to not be handled at build-time.
+ * Notice: Build locals do do not cache any errors thrown from initial suppliers... These are intended to not be handled
+ * at build-time.
  */
 
 // Locals vs Wirelets, there is some overlap. Which have quite figured out
@@ -44,9 +45,8 @@ import internal.app.packed.component.PackedComponentLocal;
 // Locals cannot have a mirror, wirelets would be able to have it
 
 // AssemblyLocal -> But is an Assembly a component?
-
 // Maybe BuildLocal instead of ComponentLocal???
-public sealed interface ComponentLocal<A, T> permits PackedComponentLocal, ApplicationLocal, ContainerLocal, BeanLocal {
+public sealed interface BuildLocal<A, T> permits PackedBuildLocal, ApplicationLocal, ContainerLocal, BeanLocal, AuthorityLocal {
 
     /**
      * Returns the local value via the specified accessor.

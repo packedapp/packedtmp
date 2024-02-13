@@ -21,20 +21,22 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationConfiguration;
-import app.packed.application.ApplicationLocalAccessor;
+import app.packed.application.ApplicationLocal;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.Assembly;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
-import app.packed.container.ContainerLocalAccessor;
+import app.packed.container.ContainerLocal;
+import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceOperator;
 import app.packed.util.Nullable;
+import internal.app.packed.build.PackedLocalMap;
+import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
 import internal.app.packed.component.Mirrorable;
-import internal.app.packed.component.PackedLocalMap;
-import internal.app.packed.component.PackedLocalMap.KeyAndLocalMapSource;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.types.ClassUtil;
@@ -74,8 +76,10 @@ public final class ApplicationSetup implements KeyAndLocalMapSource , Mirrorable
      */
     int extensionIdCounter;
 
-    /** This map maintains every local for the whole application. */
-    public final PackedLocalMap locals = new PackedLocalMap();
+    final Map<String, Class<? extends Extension<?>>> extensions = new HashMap<>();
+
+    /** This map maintains all locals for the entire application. */
+    private final PackedLocalMap locals = new PackedLocalMap();
 
     /** Supplies mirrors for the application. */
     private final Supplier<? extends ApplicationMirror> mirrorSupplier;
@@ -177,13 +181,13 @@ public final class ApplicationSetup implements KeyAndLocalMapSource , Mirrorable
         return locals;
     }
 
-    public static ApplicationSetup crack(ApplicationLocalAccessor accessor) {
+    public static ApplicationSetup crack(ApplicationLocal.ApplicationLocalAccessor accessor) {
         requireNonNull(accessor, "accessor is null");
         return switch (accessor) {
         case ApplicationConfiguration a -> ApplicationSetup.crack(a);
         case ApplicationMirror a -> ApplicationSetup.crack(a);
         case Assembly b -> throw new UnsupportedOperationException();
-        case ContainerLocalAccessor b -> ContainerSetup.crack(b).application;
+        case ContainerLocal.ContainerLocalAccessor b -> ContainerSetup.crack(b).application;
         };
     }
 

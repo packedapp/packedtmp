@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanClassActivator.AnnotatedBeanFieldActivator;
 import app.packed.extension.BeanClassActivator.AnnotatedBeanMethodActivator;
-import app.packed.namespace.NamespaceOperation;
+import app.packed.namespace.sandbox.NamespaceOperation;
 
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use

@@ -12,8 +12,8 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
+import app.packed.component.Authority;
 import app.packed.component.ComponentMirror;
-import app.packed.component.ComponentOperator;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
 import app.packed.context.Context;
@@ -110,9 +110,9 @@ public non-sealed class BeanMirror implements BeanLocalAccessor , ComponentMirro
     }
 
     /** {@return the owner of the bean.} */
-    // was owner
-    public final ComponentOperator declaredBy() {
-        return bean.author();
+    // was owner. Maybe owner again
+    public final Authority declaredBy() {
+        return bean.owner();
     }
 
     /** {@return the dependencies this bean introduces.} */
@@ -273,7 +273,7 @@ public non-sealed class BeanMirror implements BeanLocalAccessor , ComponentMirro
             for (OperationSetup os : bean.operations.all) {
                 os.forEachBinding(b -> {
                     if (b.boundBy.isExtension()) {
-                        if (b.boundBy != bean.author()) {
+                        if (b.boundBy != bean.owner()) {
                             set.add((b.boundBy.extension()));
                         }
                     }
@@ -359,7 +359,7 @@ public non-sealed class BeanMirror implements BeanLocalAccessor , ComponentMirro
         }
 
         public boolean isInSameRealm() {
-            return from.author().equals(to.author());
+            return from.owner().equals(to.owner());
         }
 
         /** {@return the reverse relationship.} */

@@ -24,9 +24,10 @@ import java.lang.annotation.Target;
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
-import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanClassActivator.AnnotatedBeanMethodActivator;
+import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.lifetime.OnInitialize;
@@ -65,7 +66,7 @@ public class Ddd extends BaseAssembly {
         MyEntityException() {}
 
         public void addEntityBean(Class<?> entityBean) {
-            child().base().newBeanForUser(BeanKind.MANANGED.template()).install(entityBean);
+            child().base().newBean(BeanKind.MANANGED.template()).install(entityBean, BeanConfiguration::new);
         }
 
         MyEntityException child() {

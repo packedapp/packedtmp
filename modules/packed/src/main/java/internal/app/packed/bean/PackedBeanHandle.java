@@ -19,7 +19,7 @@ import java.util.List;
 
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
-import app.packed.component.ComponentOperator;
+import app.packed.component.Authority;
 import app.packed.component.ComponentPath;
 import app.packed.util.Key;
 import internal.app.packed.binding.BindingResolution.FromConstant;
@@ -75,8 +75,8 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentOperator author() {
-        return bean.author();
+    public Authority owner() {
+        return bean.owner();
     }
 
     /** {@inheritDoc} */
@@ -115,7 +115,7 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
             List<ServiceBindingSetup> l = ss.removeBindingsForBean(bean);
             if (!l.isEmpty()) {
                 for (ServiceBindingSetup s : l) {
-                    s.operation.bindings[s.operationBindingIndex] = new ManualBindingSetup(s.operation, s.operationBindingIndex, s.operation.bean.author(),
+                    s.operation.bindings[s.operationBindingIndex] = new ManualBindingSetup(s.operation, s.operationBindingIndex, s.operation.bean.owner(),
                             new FromConstant(instance.getClass(), instance));
                 }
                 return;
@@ -126,7 +126,8 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
         // But is not resolved as a service
 
         // Also if we override twice, would be nice with something like. Already overridden
-        throw new IllegalArgumentException("Bean '"+ componentPath() + "' does not have a dependency for a service with " + key + ". Services that can be overridden: " + bean.container.sm.entries.keySet());
+        throw new IllegalArgumentException("Bean '" + componentPath() + "' does not have a dependency for a service with " + key
+                + ". Services that can be overridden: " + bean.container.sm.entries.keySet());
     }
 
     /**
@@ -149,4 +150,3 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
         throw new UnsupportedOperationException();
     }
 }
-

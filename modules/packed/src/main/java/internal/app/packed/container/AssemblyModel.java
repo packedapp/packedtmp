@@ -11,9 +11,9 @@ import java.util.ArrayList;
 
 import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyConfiguration;
-import app.packed.assembly.TransformAssembly;
 import app.packed.assembly.AssemblyTransformer;
 import app.packed.assembly.DelegatingAssembly;
+import app.packed.assembly.TransformAssembly;
 import app.packed.build.BuildException;
 import internal.app.packed.bean.BeanHookModel;
 import internal.app.packed.util.ThrowableUtil;

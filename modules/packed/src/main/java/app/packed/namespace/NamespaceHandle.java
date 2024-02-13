@@ -15,24 +15,23 @@
  */
 package app.packed.namespace;
 
+import app.packed.component.ComponentHandle;
+
 /**
  * Used by the extension
  */
 // Skal vi baade have Handle og Operator???
 // Operatoren er jo god. Fordi man i 9/10 tilfaelde vil gemme noget information omkring namespaced...
+// Og fordi jeg ogsaa tror vi faar nogle callbacks...
 
 // Og hvis ikke skal vi ikke saa kun have Operator ogsaa for beans, osv
-public interface NamespaceHandle {
+public interface NamespaceHandle extends ComponentHandle {
 
     String name();
 
-    /**
-     * @param name
-     */
-    void named(String name);
+//    /**
+//     * @param name
+//     */
+//    void named(String name);
 
-    /**
-     * @return
-     */
-    boolean isConfigurable();
 }

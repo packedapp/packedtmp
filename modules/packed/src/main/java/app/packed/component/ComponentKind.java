@@ -71,6 +71,13 @@ public interface ComponentKind {
         throw new UnsupportedOperationException();
     }
 
+    // I think everyone except base components must have a parent component
+    // So all components are formed as a tree. With the application as the root...
+    static ComponentKind.Builder builder(ComponentKind parent, Class<? extends Extension<?>> extensionType, String componentType) {
+        throw new UnsupportedOperationException();
+    }
+
+
     /** A builder for a component kind. */
     sealed interface Builder permits PackedComponentPath.ComponentPathSchemaBuilder {
 

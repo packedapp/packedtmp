@@ -28,8 +28,9 @@ import app.packed.bean.BeanLocalAccessor;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.component.ComponentOperator;
-import app.packed.component.ComponentPath;
+import app.packed.component.Authority;
+import app.packed.component.ComponentHandle;
+import app.packed.component.InstalledComponent;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
@@ -51,7 +52,9 @@ import sandbox.extension.operation.OperationHandle;
  * @see BeanBuilder#installIfAbsent(Class, java.util.function.Consumer)
  * @see BeanBuilder#installInstance(Object)
  */
-public sealed interface BeanHandle<T> extends ContextualizedElement , BeanLocalAccessor permits PackedBeanHandle {
+
+// I think we will remove <T> T
+public sealed interface BeanHandle<T> extends ComponentHandle , ContextualizedElement , BeanLocalAccessor permits PackedBeanHandle {
 
     /** {@return the bean class.} */
     Class<?> beanClass();
@@ -62,25 +65,11 @@ public sealed interface BeanHandle<T> extends ContextualizedElement , BeanLocalA
     /** {@return the bean source kind.} */
     BeanSourceKind beanSourceKind();
 
-    /** {@return the path of the component} */
-    ComponentPath componentPath();
-
     // Primarily specified by the user and for used for building or mirrors
     void componentTags(String... tags);
 
-    /**
-     * Checks that the bean is still configurable or throws an {@link IllegalStateException} if not
-     * <p>
-     * A bean declared by the application is configurable as long as the assembly from which it was installed is
-     * configurable. A bean declared by the application is configurable as long as the extension is configurable.
-     *
-     * @throws IllegalStateException
-     *             if the bean is no longer configurable
-     */
-    default void checkIsConfigurable() {
-        if (!isConfigurable()) {
-            throw new IllegalStateException("The bean is no longer configurable");
-        }
+    default <C extends BeanConfiguration> C configure(Function<BeanHandle<T>, C> configure) {
+        return configure.apply(this);
     }
 
     /**
@@ -102,10 +91,6 @@ public sealed interface BeanHandle<T> extends ContextualizedElement , BeanLocalA
         return (Key<T>) Key.fromClass(beanClass());
     }
 
-    default <C extends BeanConfiguration> C configure(Function<BeanHandle<T>, C> configure) {
-        return configure.apply(this);
-    }
-
     default BeanHandle<T> exportAs(Class<? super T> key) {
         return exportAs(Key.of(key));
     }
@@ -123,13 +108,6 @@ public sealed interface BeanHandle<T> extends ContextualizedElement , BeanLocalA
      * @see #serviceProvideAs(Key)
      */
     BeanHandle<T> exportAs(Key<? super T> key);
-
-    /**
-     * Returns whether or not the bean is still configurable.
-     *
-     * @return {@code true} if the bean is still configurable
-     */
-    boolean isConfigurable();
 
     /**
      * Returns a list of operation handles that corresponds to the {@link BeanTemplate#lifetimeOperations() lifetime
@@ -165,10 +143,8 @@ public sealed interface BeanHandle<T> extends ContextualizedElement , BeanLocalA
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * @return
-     */
-    ComponentOperator author();
+    /** {@return the owner of the bean} */
+    Authority owner();
 
     /**
      * Provides of the bean as a service.
@@ -200,11 +176,10 @@ public sealed interface BeanHandle<T> extends ContextualizedElement , BeanLocalA
      * @see BaseExtensionPoint#newBean(BeanKind)
      * @see BaseExtensionPoint#newBeanForExtension(BeanKind, app.packed.extension.ExtensionPoint.UseSite)
      */
+    // The reason we have Builder and not just 1 class. Is because of the scanning.
+    // It is super confusing what you can do before and after
+    // But maybe this is better...
     public sealed interface Builder permits PackedBeanHandleBuilder {
-
-        default BeanHandle<?> installFunctional() {
-            throw new UnsupportedOperationException();
-        }
 
         /**
          * Installs the bean using the specified class as the bean source.
@@ -219,14 +194,34 @@ public sealed interface BeanHandle<T> extends ContextualizedElement , BeanLocalA
          */
         <T> BeanHandle<T> install(Class<T> beanClass);
 
+        /**
+         * @param <T>
+         * @param <C>
+         * @param beanClass
+         * @param newConfiguration
+         *            a supplier for the configuration that should be returned to the owner of the new bean
+         * @return
+         */
+        <T, C extends BeanConfiguration> InstalledComponent<BeanHandle<T>, C> install(Class<T> beanClass, Supplier<? extends C> newConfiguration);
+
         <T> BeanHandle<T> install(Op<T> operation);
 
         // These things can never be multi
+        // AbsentInstalledComponent(boolean wasInstalled)
         <T> BeanHandle<T> installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle<T>> onInstall);
+
+        // We will need to remove <T> from BeanHandle, unless we want to specify a class when we create the handle
+        default <T, C extends BeanConfiguration> C installIfAbsent2(Class<T> beanClass, Function<? super BeanHandle<T>, C> onInstall) {
+            throw new UnsupportedOperationException();
+        }
 
         // instance = introspected bean
         // constant = non-introspected bean
         <T> BeanHandle<T> installInstance(T instance);
+
+        BeanHandle<?> installSourceless();
+
+        Builder namePrefix(String prefix);
 
         /**
          * Sets the value of the specified bean local for the new bean.
@@ -239,9 +234,7 @@ public sealed interface BeanHandle<T> extends ContextualizedElement , BeanLocalA
          *            the value of the local
          * @return this builder
          */
-        <T> Builder localSet(BeanLocal<T> local, T value);
-
-        Builder namePrefix(String prefix);
+        <T> Builder setLocal(BeanLocal<T> local, T value);
 
         /**
          * Sets a supplier that creates a special bean mirror instead of a generic {@code BeanMirror} if a mirror for the bean
@@ -259,13 +252,6 @@ public sealed interface BeanHandle<T> extends ContextualizedElement , BeanLocalA
 interface Zandbox<T> {
     OperationHandle addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation);
 
-    void decorateInstance(Function<? super T, ? extends T> decorator);
-
-    <B> void onInitialize(Class<B> extensionBeanClass, BiConsumer<? super B, ? super T> consumer);
-
-    <K> OperationHandle overrideService(Key<K> key, K instance);
-
-    void peekInstance(Consumer<? super T> consumer);
     // onClientInitialize
     default <B> void afterInitialize(InstanceBeanConfiguration<B> extensionBean, BiConsumer<? super B, ? super T> consumer) {
         //// Ideen er at man fx kan have en BeanHandle<Driver>.onInitialize(MyEBC, (b,p)->b.drivers[i]=p);
@@ -279,9 +265,17 @@ interface Zandbox<T> {
         // Take runState???
     }
 
+    void decorateInstance(Function<? super T, ? extends T> decorator);
+
+    <B> void onInitialize(Class<B> extensionBeanClass, BiConsumer<? super B, ? super T> consumer);
+
     default Class<? extends Extension<?>> operator() {
         return BaseExtension.class;
     }
+
+    <K> OperationHandle overrideService(Key<K> key, K instance);
+
+    void peekInstance(Consumer<? super T> consumer);
 
     default void runOnInitialized(Op<?> op) {
         // First parameter must be assignable to the created instance, IDK

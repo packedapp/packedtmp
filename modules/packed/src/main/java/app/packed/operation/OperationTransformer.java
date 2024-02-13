@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.namespace;
+package app.packed.operation;
 
-/**
- *
- */
-public @interface NamespaceOperation {
+import app.packed.build.BuildTransformer;
+
+// Hvis du er en lifecycle operation i container X. Så gør foo
+public non-sealed interface OperationTransformer extends BuildTransformer {
 
 }

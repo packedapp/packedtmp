@@ -24,16 +24,18 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
+import app.packed.component.InstalledComponent;
 import app.packed.extension.InternalExtensionException;
 import app.packed.operation.Op;
 import app.packed.operation.Provider;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import internal.app.packed.container.AuthorSetup;
+import internal.app.packed.container.AuthoritySetup;
 import internal.app.packed.container.ContainerBeanStore;
 import internal.app.packed.container.ContainerBeanStore.BeanClassKey;
 import internal.app.packed.container.ContainerSetup;
@@ -70,7 +72,7 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
     String namePrefix;
 
     /** The owner of the bean. */
-    final AuthorSetup owner;
+    final AuthoritySetup owner;
 
     /** The bean's template. */
     public final PackedBeanTemplate template;
@@ -85,7 +87,7 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
      * @param template
      *            a lifetime template for the new bean
      */
-    public PackedBeanHandleBuilder(ExtensionSetup installingExtension, AuthorSetup owner, BeanTemplate template) {
+    public PackedBeanHandleBuilder(ExtensionSetup installingExtension, AuthoritySetup owner, BeanTemplate template) {
         this.container = installingExtension.container;
         this.installingExtension = requireNonNull(installingExtension);
         this.owner = requireNonNull(owner);
@@ -108,6 +110,13 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
     }
 
     /** {@inheritDoc} */
+    @Override
+    public <T, C extends BeanConfiguration> InstalledComponent<BeanHandle<T>, C> install(Class<T> beanClass, Supplier<? extends C> newConfiguration) {
+        BeanHandle<T> h = newBean(beanClass, BeanSourceKind.CLASS, beanClass);
+        return new InstalledComponent<BeanHandle<T>, C>(h, newConfiguration.get());
+    }
+
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public <T> BeanHandle<T> install(Op<T> op) {
@@ -121,7 +130,7 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
     public <T> BeanHandle<T> installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle<T>> onInstall) {
         requireNonNull(beanClass, "beanClass is null");
 
-        BeanClassKey e = new BeanClassKey(owner.author(), beanClass);
+        BeanClassKey e = new BeanClassKey(owner.authority(), beanClass);
         BeanSetup existingBean = container.beans.beanClasses.get(e);
         if (existingBean != null) {
             if (ContainerBeanStore.isMultiInstall(existingBean)) {
@@ -155,21 +164,12 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
      *          support adding operations at will
      * @see app.packed.bean.BeanSourceKind#SOURCELESS
      */
-    public BeanHandle<Void> installSourceless() {
+    @Override
+    public BeanHandle<?> installSourceless() {
         if (template.kind() != BeanKind.STATIC) {
             throw new InternalExtensionException("Only static beans can be source less");
         }
         return newBean(void.class, BeanSourceKind.SOURCELESS, null);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> PackedBeanHandleBuilder localSet(BeanLocal<T> local, T value) {
-        requireNonNull(local);
-        requireNonNull(value);
-        checkIsBuildable();
-        locals.put(local, value);
-        return this;
     }
 
     /** {@inheritDoc} */
@@ -206,7 +206,7 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
         // Copy any bean locals that have been set, we need to set this before introspection
         // I think maybe we need to do this as the last action?
         for (Entry<BeanLocal<?>, Object> e : locals.entrySet()) {
-            container.application.locals.set((PackedBeanLocal) e.getKey(), bean, e.getValue());
+            container.locals().set((PackedBeanLocal) e.getKey(), bean, e.getValue());
         }
 
         // Creating an operation representing the Op if created from one.
@@ -233,6 +233,16 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
         }
 
         return new PackedBeanHandle<>(bean);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> PackedBeanHandleBuilder setLocal(BeanLocal<T> local, T value) {
+        requireNonNull(local);
+        requireNonNull(value);
+        checkIsBuildable();
+        locals.put(local, value);
+        return this;
     }
 
     /** {@inheritDoc} */

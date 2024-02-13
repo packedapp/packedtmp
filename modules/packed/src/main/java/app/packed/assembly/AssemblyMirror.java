@@ -190,6 +190,11 @@ public class AssemblyMirror implements Mirror {
 
     public interface OfTree extends TreeView<AssemblyMirror> {
 
+        default ContainerMirror.OfTree containers() {
+            throw new UnsupportedOperationException();
+        }
+
+
         /**
          *
          */

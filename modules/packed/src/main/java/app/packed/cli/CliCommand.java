@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 import java.util.function.Consumer;
 
 import app.packed.extension.BeanClassActivator.AnnotatedBeanMethodActivator;
-import app.packed.namespace.NamespaceOperation;
+import app.packed.namespace.sandbox.NamespaceOperation;
 
 /**
  *

@@ -15,7 +15,7 @@
  */
 package internal.app.packed.binding;
 
-import app.packed.component.ComponentOperator;
+import app.packed.component.Authority;
 import app.packed.operation.BindingMirror;
 import internal.app.packed.container.PackedContainerTemplatePack;
 
@@ -43,7 +43,7 @@ public class CompanionBinding {
     // Kan vel kun paa ting man direkte depender paa?
 
     /** {@inheritDoc} */
-    public ComponentOperator boundBy() {
+    public Authority boundBy() {
        throw new UnsupportedOperationException();
     }
 

@@ -20,5 +20,6 @@ import app.packed.container.Wirelet.Flags;
 /**
  * A wirelet that can be consumed by the application.
  */
+// Is very convoluted with wirelets that can only specified for an application
 @Flags
 public non-sealed abstract class ApplicationWirelet extends Wirelet {}

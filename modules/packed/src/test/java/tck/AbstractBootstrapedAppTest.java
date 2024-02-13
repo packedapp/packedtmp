@@ -32,7 +32,7 @@ import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.component.ComponentOperator;
+import app.packed.component.Authority;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
@@ -159,7 +159,7 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         }
 
         public BeanMirror findSingleBean(ContainerMirror c) {
-            List<BeanMirror> beans = c.beans().filter(b -> b.declaredBy() == ComponentOperator.application()).toList();
+            List<BeanMirror> beans = c.beans().filter(b -> b.declaredBy() == Authority.application()).toList();
             assertThat(beans).hasSize(1);
             return beans.get(0);
         }
