@@ -121,7 +121,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     public <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = newBeanForDependantExtension(BeanKind.CONTAINER.template(), context()).install(implementation);
+        BeanHandle handle = newBeanForDependantExtension(BeanKind.CONTAINER.template(), context()).install(implementation);
         return new ServiceableBeanConfiguration<>(handle);
     }
 
@@ -133,7 +133,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public <T> InstanceBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<T> handle = newBeanForDependantExtension(BeanKind.CONTAINER.template(), context()).install(op);
+        BeanHandle handle = newBeanForDependantExtension(BeanKind.CONTAINER.template(), context()).install(op);
         // return handle.initialize(IBC::new);
         return new InstanceBeanConfiguration<>(handle);
     }
@@ -179,7 +179,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     @SuppressWarnings("unchecked")
     public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
-        BeanHandle<T> handle = newBeanForDependantExtension(BeanKind.CONTAINER.template(), context()).installIfAbsent(clazz,
+        BeanHandle handle = newBeanForDependantExtension(BeanKind.CONTAINER.template(), context()).installIfAbsent(clazz,
                 h -> action.accept(new InstanceBeanConfiguration<>(h)));
         BeanConfiguration bc = BeanSetup.crack(handle).configuration;
         if (bc == null) {
@@ -192,7 +192,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     }
 
     public <T> InstanceBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = newBeanForDependantExtension(BeanKind.CONTAINER.template(), context()).installInstance(instance);
+        BeanHandle handle = newBeanForDependantExtension(BeanKind.CONTAINER.template(), context()).installInstance(instance);
         return new InstanceBeanConfiguration<>(handle);
     }
 
@@ -211,7 +211,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public BeanConfiguration installStatic(Class<?> beanClass) {
-        BeanHandle<?> handle = newBeanForDependantExtension(BeanKind.STATIC.template(), context()).install(beanClass);
+        BeanHandle handle = newBeanForDependantExtension(BeanKind.STATIC.template(), context()).install(beanClass);
         return new BeanConfiguration(handle);
     }
 

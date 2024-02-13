@@ -195,7 +195,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = install0(BeanKind.CONTAINER.template()).install(implementation);
+        BeanHandle handle = install0(BeanKind.CONTAINER.template()).install(implementation);
         return handle.configure(ServiceableBeanConfiguration::new);
     }
 
@@ -212,7 +212,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @see CommonContainerAssembly#install(Op)
      */
     public <T> ServiceableBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<T> handle = install0(BeanKind.CONTAINER.template()).install(op);
+        BeanHandle handle = install0(BeanKind.CONTAINER.template()).install(op);
         return new ServiceableBeanConfiguration<>(handle);
     }
 
@@ -232,27 +232,27 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return this configuration
      */
     public <T> ServiceableBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = install0(BeanKind.CONTAINER.template()).installInstance(instance);
+        BeanHandle handle = install0(BeanKind.CONTAINER.template()).installInstance(instance);
         return new ServiceableBeanConfiguration<>(handle);
     }
 
     public <T> ServiceableBeanConfiguration<T> installLazy(Class<T> implementation) {
-        BeanHandle<T> handle = install0(BeanKind.LAZY.template()).install(implementation);
+        BeanHandle handle = install0(BeanKind.LAZY.template()).install(implementation);
         return new ServiceableBeanConfiguration<>(handle); // Providable???
     }
 
     public <T> ServiceableBeanConfiguration<T> installLazy(Op<T> op) {
-        BeanHandle<T> handle = install0(BeanKind.LAZY.template()).install(op);
+        BeanHandle handle = install0(BeanKind.LAZY.template()).install(op);
         return new ServiceableBeanConfiguration<>(handle); // Providable???
     }
 
     public <T> ServiceableBeanConfiguration<T> installPrototype(Class<T> implementation) {
-        BeanHandle<T> handle = install0(BeanKind.UNMANAGED.template()).install(implementation);
+        BeanHandle handle = install0(BeanKind.UNMANAGED.template()).install(implementation);
         return new ServiceableBeanConfiguration<>(handle);
     }
 
     public <T> ServiceableBeanConfiguration<T> installPrototype(Op<T> op) {
-        BeanHandle<T> handle = install0(BeanKind.UNMANAGED.template()).install(op);
+        BeanHandle handle = install0(BeanKind.UNMANAGED.template()).install(op);
         return new ServiceableBeanConfiguration<>(handle);
     }
 
@@ -267,7 +267,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @see BeanSourceKind#CLASS
      */
     public BeanConfiguration installStatic(Class<?> implementation) {
-        BeanHandle<?> handle = install0(BeanKind.STATIC.template()).install(implementation);
+        BeanHandle handle = install0(BeanKind.STATIC.template()).install(implementation);
         return new BeanConfiguration(handle);
     }
 
@@ -280,7 +280,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         // Create a new bean that holds the ServiceLocator to export
         // will fail if installed multiple times
 
-        BeanHandle<PackedServiceLocator> h = newBeanBuilderSelf(BeanKind.CONTAINER.template()).install(PackedServiceLocator.class)
+        BeanHandle h = newBeanBuilderSelf(BeanKind.CONTAINER.template()).install(PackedServiceLocator.class)
                 .exportAs(ServiceLocator.class);
 
         // PackedServiceLocator needs a Map<Key, MethodHandle> which is created in the code generation phase

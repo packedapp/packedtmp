@@ -23,11 +23,11 @@ import sandbox.extension.bean.BeanHandle;
 public non-sealed class BeanConfiguration implements ComponentConfiguration , BeanLocalAccessor {
 
     /** The bean handle. We don't store BeanSetup directly because it is not generified */
-    private final PackedBeanHandle<?> handle;
+    private final PackedBeanHandle handle;
 
     public BeanConfiguration() {
         // Will fail if the bean configuration is not initialized from within the framework
-        this.handle = new PackedBeanHandle<>(BeanSetup.initFromBeanConfiguration(this));
+        this.handle = new PackedBeanHandle(BeanSetup.initFromBeanConfiguration(this));
     }
 
     /**
@@ -36,8 +36,8 @@ public non-sealed class BeanConfiguration implements ComponentConfiguration , Be
      * @param handle
      *            the bean handle
      */
-    public BeanConfiguration(BeanHandle<?> handle) {
-        this.handle = (PackedBeanHandle<?>) requireNonNull(handle, "handle is null");
+    public BeanConfiguration(BeanHandle handle) {
+        this.handle = (PackedBeanHandle) requireNonNull(handle, "handle is null");
         this.handle.bean().initConfiguration(this);
     }
 
@@ -149,7 +149,7 @@ public non-sealed class BeanConfiguration implements ComponentConfiguration , Be
     }
 
     /** {@return the bean handle that was used to create this configuration.} */
-    protected final BeanHandle<?> handle() {
+    protected final BeanHandle handle() {
         return handle;
     }
 

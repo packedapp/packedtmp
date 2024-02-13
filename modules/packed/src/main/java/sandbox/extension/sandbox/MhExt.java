@@ -72,7 +72,7 @@ public class MhExt extends BaseAssembly {
 
         MyE() {}
 
-        BeanHandle<?> h;
+        BeanHandle h;
 
         public void ownL(Class<?> cl) {
             h = base().newBean(BeanKind.UNMANAGED.template()).install(cl, BeanConfiguration::new).handle();

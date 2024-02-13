@@ -104,22 +104,22 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
 
     /** {@inheritDoc} */
     @Override
-    public <T> BeanHandle<T> install(Class<T> beanClass) {
+    public <T> BeanHandle install(Class<T> beanClass) {
         requireNonNull(beanClass, "beanClass is null");
         return newBean(beanClass, BeanSourceKind.CLASS, beanClass);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T, C extends BeanConfiguration> InstalledComponent<BeanHandle<T>, C> install(Class<T> beanClass, Supplier<? extends C> newConfiguration) {
-        BeanHandle<T> h = newBean(beanClass, BeanSourceKind.CLASS, beanClass);
-        return new InstalledComponent<BeanHandle<T>, C>(h, newConfiguration.get());
+    public <T, C extends BeanConfiguration> InstalledComponent<BeanHandle, C> install(Class<T> beanClass, Supplier<? extends C> newConfiguration) {
+        BeanHandle h = newBean(beanClass, BeanSourceKind.CLASS, beanClass);
+        return new InstalledComponent<BeanHandle, C>(h, newConfiguration.get());
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> BeanHandle<T> install(Op<T> op) {
+    public <T> BeanHandle install(Op<T> op) {
         PackedOp<?> pop = PackedOp.crack(op);
         Class<?> beanClass = pop.type.returnRawType();
         return newBean((Class<T>) beanClass, BeanSourceKind.OP, pop);
@@ -127,7 +127,7 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
 
     /** {@inheritDoc} */
     @Override
-    public <T> BeanHandle<T> installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle<T>> onInstall) {
+    public <T> BeanHandle installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle> onInstall) {
         requireNonNull(beanClass, "beanClass is null");
 
         BeanClassKey e = new BeanClassKey(owner.authority(), beanClass);
@@ -136,10 +136,10 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
             if (ContainerBeanStore.isMultiInstall(existingBean)) {
                 throw new IllegalArgumentException("MultiInstall Bean");
             } else {
-                return new PackedBeanHandle<>(existingBean);
+                return new PackedBeanHandle(existingBean);
             }
         }
-        BeanHandle<T> handle = newBean(beanClass, BeanSourceKind.CLASS, beanClass);
+        BeanHandle handle = newBean(beanClass, BeanSourceKind.CLASS, beanClass);
         onInstall.accept(handle);
         return handle;
     }
@@ -147,7 +147,7 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> BeanHandle<T> installInstance(T instance) {
+    public <T> BeanHandle installInstance(T instance) {
         requireNonNull(instance, "instance is null");
         Class<?> beanClass = instance.getClass();
         return newBean((Class<T>) beanClass, BeanSourceKind.INSTANCE, instance);
@@ -165,7 +165,7 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
      * @see app.packed.bean.BeanSourceKind#SOURCELESS
      */
     @Override
-    public BeanHandle<?> installSourceless() {
+    public BeanHandle installSourceless() {
         if (template.kind() != BeanKind.STATIC) {
             throw new InternalExtensionException("Only static beans can be source less");
         }
@@ -193,7 +193,7 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
      * @return a handle for the bean
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private <T> BeanHandle<T> newBean(Class<T> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
+    private <T> BeanHandle newBean(Class<T> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
         if (sourceKind != BeanSourceKind.SOURCELESS && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
         }
@@ -232,7 +232,7 @@ public final class PackedBeanHandleBuilder implements BeanHandle.Builder {
             new BeanScanner(bean).introspect();
         }
 
-        return new PackedBeanHandle<>(bean);
+        return new PackedBeanHandle(bean);
     }
 
     /** {@inheritDoc} */

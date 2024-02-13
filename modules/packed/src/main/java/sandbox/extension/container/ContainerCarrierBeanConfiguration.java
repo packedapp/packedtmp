@@ -32,7 +32,7 @@ public final class ContainerCarrierBeanConfiguration<T> extends InstanceBeanConf
      *            the bean handle
      */
     // TODO Package private I think
-    public ContainerCarrierBeanConfiguration(BeanHandle<T> handle) {
+    public ContainerCarrierBeanConfiguration(BeanHandle handle) {
         super(handle);
     }
 

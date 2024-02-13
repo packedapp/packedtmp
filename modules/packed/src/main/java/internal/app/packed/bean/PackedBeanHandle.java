@@ -31,7 +31,7 @@ import sandbox.extension.bean.BeanHandle;
 import sandbox.extension.operation.OperationHandle;
 
 /** Implementation of {@link BeanHandle}. */
-public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
+public record PackedBeanHandle(BeanSetup bean) implements BeanHandle {
 
     /** {@inheritDoc} */
     @Override
@@ -81,7 +81,7 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
 
     /** {@inheritDoc} */
     @Override
-    public BeanHandle<T> exportAs(Key<? super T> key) {
+    public BeanHandle exportAs(Key<?> key) {
         checkIsConfigurable();
         bean.container.sm.export(key, bean.instanceAccessOperation());
         return this;
@@ -89,7 +89,7 @@ public record PackedBeanHandle<T>(BeanSetup bean) implements BeanHandle<T> {
 
     /** {@inheritDoc} */
     @Override
-    public void provideAs(Key<? super T> key) {
+    public void provideAs(Key<?> key) {
         Key<?> k = InternalServiceUtil.checkKey(bean.beanClass, key);
         checkIsConfigurable();
 

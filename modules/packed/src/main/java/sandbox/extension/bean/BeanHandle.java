@@ -52,9 +52,7 @@ import sandbox.extension.operation.OperationHandle;
  * @see BeanBuilder#installIfAbsent(Class, java.util.function.Consumer)
  * @see BeanBuilder#installInstance(Object)
  */
-
-// I think we will remove <T> T
-public sealed interface BeanHandle<T> extends ComponentHandle , ContextualizedElement , BeanLocalAccessor permits PackedBeanHandle {
+public sealed interface BeanHandle extends ComponentHandle , ContextualizedElement , BeanLocalAccessor permits PackedBeanHandle {
 
     /** {@return the bean class.} */
     Class<?> beanClass();
@@ -68,7 +66,7 @@ public sealed interface BeanHandle<T> extends ComponentHandle , ContextualizedEl
     // Primarily specified by the user and for used for building or mirrors
     void componentTags(String... tags);
 
-    default <C extends BeanConfiguration> C configure(Function<BeanHandle<T>, C> configure) {
+    default <C extends BeanConfiguration> C configure(Function<BeanHandle, C> configure) {
         return configure.apply(this);
     }
 
@@ -83,15 +81,14 @@ public sealed interface BeanHandle<T> extends ComponentHandle , ContextualizedEl
      * @see #exportAs(Key)
      * @see #provideAs(Key)
      */
-    @SuppressWarnings("unchecked")
-    default Key<T> defaultKey() {
+    default Key<?> defaultKey() {
         if (beanClass() == void.class) {
             throw new UnsupportedOperationException("This method is not supported for beans with a void bean class");
         }
-        return (Key<T>) Key.fromClass(beanClass());
+        return Key.fromClass(beanClass());
     }
 
-    default BeanHandle<T> exportAs(Class<? super T> key) {
+    default BeanHandle exportAs(Class<?> key) {
         return exportAs(Key.of(key));
     }
 
@@ -107,7 +104,7 @@ public sealed interface BeanHandle<T> extends ComponentHandle , ContextualizedEl
      * @see #defaultKey()
      * @see #serviceProvideAs(Key)
      */
-    BeanHandle<T> exportAs(Key<? super T> key);
+    BeanHandle exportAs(Key<?> key);
 
     /**
      * Returns a list of operation handles that corresponds to the {@link BeanTemplate#lifetimeOperations() lifetime
@@ -165,7 +162,7 @@ public sealed interface BeanHandle<T> extends ComponentHandle , ContextualizedEl
      * @see ProvideableBeanConfiguration#provideAs(Class)
      * @see ProvideableBeanConfiguration#provideAs(Key)
      */
-    void provideAs(Key<? super T> key);
+    void provideAs(Key<?> key);
 
     /**
      * An installer for installing beans into a container.
@@ -192,7 +189,7 @@ public sealed interface BeanHandle<T> extends ComponentHandle , ContextualizedEl
          *
          * @see app.packed.bean.BeanSourceKind#CLASS
          */
-        <T> BeanHandle<T> install(Class<T> beanClass);
+        <T> BeanHandle install(Class<T> beanClass);
 
         /**
          * @param <T>
@@ -202,24 +199,24 @@ public sealed interface BeanHandle<T> extends ComponentHandle , ContextualizedEl
          *            a supplier for the configuration that should be returned to the owner of the new bean
          * @return
          */
-        <T, C extends BeanConfiguration> InstalledComponent<BeanHandle<T>, C> install(Class<T> beanClass, Supplier<? extends C> newConfiguration);
+        <T, C extends BeanConfiguration> InstalledComponent<BeanHandle, C> install(Class<T> beanClass, Supplier<? extends C> newConfiguration);
 
-        <T> BeanHandle<T> install(Op<T> operation);
+        <T> BeanHandle install(Op<T> operation);
 
         // These things can never be multi
         // AbsentInstalledComponent(boolean wasInstalled)
-        <T> BeanHandle<T> installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle<T>> onInstall);
+        <T> BeanHandle installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle> onInstall);
 
         // We will need to remove <T> from BeanHandle, unless we want to specify a class when we create the handle
-        default <T, C extends BeanConfiguration> C installIfAbsent2(Class<T> beanClass, Function<? super BeanHandle<T>, C> onInstall) {
+        default <T, C extends BeanConfiguration> C installIfAbsent2(Class<T> beanClass, Function<? super BeanHandle, C> onInstall) {
             throw new UnsupportedOperationException();
         }
 
         // instance = introspected bean
         // constant = non-introspected bean
-        <T> BeanHandle<T> installInstance(T instance);
+        <T> BeanHandle installInstance(T instance);
 
-        BeanHandle<?> installSourceless();
+        BeanHandle installSourceless();
 
         Builder namePrefix(String prefix);
 

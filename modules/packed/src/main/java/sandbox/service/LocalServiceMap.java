@@ -55,7 +55,7 @@ public interface LocalServiceMap {
 
     void produceOptionalService(Key<?> key, OperationHandle handle);
 
-    <T> void provideBeanInstance(Key<T> key, BeanHandle<T> handle);
+    <T> void provideBeanInstance(Key<T> key, BeanHandle handle);
 
     <T> void provideConstant(Key<T> key, T constant);
 

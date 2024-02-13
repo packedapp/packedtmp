@@ -30,7 +30,7 @@ class ApplicationHostConfiguration<T> extends InstanceBeanConfiguration<T> {
     /**
      * @param handle
      */
-    public ApplicationHostConfiguration(BeanHandle<T> handle) {
+    public ApplicationHostConfiguration(BeanHandle handle) {
         super(handle);
     }
 

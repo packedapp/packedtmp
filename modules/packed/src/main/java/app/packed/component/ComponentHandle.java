@@ -18,6 +18,8 @@ package app.packed.component;
 /**
  *
  */
+
+// Abstract Class????
 public interface ComponentHandle {
 
     /**

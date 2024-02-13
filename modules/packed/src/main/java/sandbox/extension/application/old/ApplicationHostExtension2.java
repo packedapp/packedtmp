@@ -53,7 +53,7 @@ class ApplicationHostExtension2 extends FrameworkExtension<ApplicationHostExtens
 
     ApplicationHostExtension2() {}
 
-    private <T> ApplicationHostConfiguration<T> newApplication(BeanHandle<T> handle) {
+    private <T> ApplicationHostConfiguration<T> newApplication(BeanHandle handle) {
         runOnCodegen(() -> mh = handle.lifetimeOperations().get(0).generateMethodHandle());
 
         return handle.configure(ApplicationHostConfiguration::new);

@@ -366,7 +366,7 @@ public final /* value */ class BootstrapApp<A> {
 
         MethodHandle mh;
 
-        private <T> void newApplication(BeanHandle<T> handle) {
+        private <T> void newApplication(BeanHandle handle) {
             runOnCodegen(() -> mh = handle.lifetimeOperations().get(0).generateMethodHandle());
         }
 

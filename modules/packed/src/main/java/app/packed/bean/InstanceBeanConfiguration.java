@@ -40,7 +40,7 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
      * @param handle
      *            the bean handle
      */
-    public InstanceBeanConfiguration(BeanHandle<T> handle) {
+    public InstanceBeanConfiguration(BeanHandle handle) {
         super(handle);
     }
 
@@ -49,12 +49,6 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
     public InstanceBeanConfiguration<T> allowMultiClass() {
         super.allowMultiClass();
         return this;
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    protected final BeanHandle<T> instanceHandle() {
-        return (BeanHandle<T>) handle();
     }
 
     /** {@inheritDoc} */

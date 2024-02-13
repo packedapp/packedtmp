@@ -268,7 +268,7 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
      * @return the bean setup
      */
     public static BeanSetup crack(BeanConfiguration configuration) {
-        PackedBeanHandle<?> handle = (PackedBeanHandle<?>) VH_BEAN_CONFIGURATION_TO_HANDLE.get(configuration);
+        PackedBeanHandle handle = (PackedBeanHandle) VH_BEAN_CONFIGURATION_TO_HANDLE.get(configuration);
         return handle.bean();
     }
 
@@ -276,8 +276,8 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
         return ((PackedBeanElement) element).bean();
     }
 
-    public static BeanSetup crack(BeanHandle<?> handle) {
-        return ((PackedBeanHandle<?>) handle).bean();
+    public static BeanSetup crack(BeanHandle handle) {
+        return ((PackedBeanHandle) handle).bean();
     }
 
     public static BeanSetup crack(BeanIntrospector introspector) {
@@ -299,7 +299,7 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
         return switch (accessor) {
         case BeanConfiguration b -> crack(b);
         case BeanElement b -> crack(b);
-        case BeanHandle<?> b -> crack(b);
+        case BeanHandle b -> crack(b);
         case BeanIntrospector b -> crack(b);
         case BeanMirror b -> crack(b);
         };

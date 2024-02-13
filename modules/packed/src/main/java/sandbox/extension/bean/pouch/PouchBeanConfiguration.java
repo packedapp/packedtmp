@@ -43,11 +43,11 @@ public class PouchBeanConfiguration<T> extends ServiceableBeanConfiguration<T> {
     /**
      * @param handle
      */
-    public PouchBeanConfiguration(BeanHandle<T> handle) {
+    public PouchBeanConfiguration(BeanHandle handle) {
         super(handle);
     }
 
-    public Collection<BeanHandle<?>> manages() {
+    public Collection<BeanHandle> manages() {
         return List.of();
     }
 }

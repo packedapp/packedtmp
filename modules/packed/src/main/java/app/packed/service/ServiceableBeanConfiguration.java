@@ -33,7 +33,7 @@ public class ServiceableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      * @param handle
      *            the bean handle this configuration wraps
      */
-    public ServiceableBeanConfiguration(BeanHandle<T> handle) {
+    public ServiceableBeanConfiguration(BeanHandle handle) {
         super(handle);
     }
 
@@ -45,8 +45,9 @@ public class ServiceableBeanConfiguration<T> extends InstanceBeanConfiguration<T
     }
 
     /** {@return the default key that services will be provided as.} */
+    @SuppressWarnings("unchecked")
     public Key<T> defaultKey() {
-        return instanceHandle().defaultKey();
+        return (Key<T>) handle().defaultKey();
     }
 
     public ServiceableBeanConfiguration<T> export() {
@@ -58,7 +59,7 @@ public class ServiceableBeanConfiguration<T> extends InstanceBeanConfiguration<T
     }
 
     public ServiceableBeanConfiguration<T> exportAs(Key<? super T> key) {
-        instanceHandle().exportAs(key);
+        handle().exportAs(key);
         return this;
     }
 
@@ -96,7 +97,7 @@ public class ServiceableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      * @see #provideAs(Class)
      */
     public ServiceableBeanConfiguration<T> provideAs(Key<? super T> key) {
-        instanceHandle().provideAs(key);
+        handle().provideAs(key);
         return this;
     }
 }
