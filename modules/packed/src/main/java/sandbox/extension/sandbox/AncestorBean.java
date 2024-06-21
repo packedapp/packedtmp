@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanClassActivator.AnnotatedBeanVariableActivator;
+import app.packed.extension.BeanTrigger.AnnotatedVariableBeanTrigger;
 
 // I virkeligheden er det jo en slags multi-return fra en operation...
 // Som bliver brugt til at populere en bean...
@@ -33,9 +33,14 @@ import app.packed.extension.BeanClassActivator.AnnotatedBeanVariableActivator;
 
 //Alternativt, hvis man proever at injecte sig selv.. faar man en parent...
 
+// MAN SKAL MAASKE have markeret en bean som saadan? Maaske har vi en seperat Baen der kan dette
+// Evt. en annotering. Den skal markeres paa en eller anden maade fordi det bryder lidt encapsulation
 
 
 // Maaske i virkeligheden 2...
+
+
+// Hmm dvs den ikke skal provides???
 
 /**
  *
@@ -43,7 +48,7 @@ import app.packed.extension.BeanClassActivator.AnnotatedBeanVariableActivator;
 @Target({ ElementType.PARAMETER, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedBeanVariableActivator(extension = BaseExtension.class)
+@AnnotatedVariableBeanTrigger(extension = BaseExtension.class)
 public @interface AncestorBean {} // childExtension? instead
 
 //Alternativt en ContainerLaucherContext? med context services.

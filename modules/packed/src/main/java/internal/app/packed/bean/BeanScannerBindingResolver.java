@@ -31,26 +31,35 @@ import internal.app.packed.operation.OperationSetup;
  */
 final class BeanScannerBindingResolver {
 
-    static void resolveBinding(BeanScanner iBean, OperationSetup operation, int index) {
+    static void resolveBinding(BeanScanner scanner, OperationSetup operation, int index) {
         // Extracts the variable we want to resolve
         Variable v = operation.type.parameter(index);
 
+        Annotation[] annotations = v.annotations().toArray();
+        for (Annotation a1 : annotations) {
+            Class<? extends Annotation> a1Type = a1.annotationType();
+            AnnotatedParameterType hook = scanner.hookModel.testParameterAnnotation(a1Type);
+            if (hook != null) {
+                BeanScannerExtensionRef ei = scanner.computeContributor(hook.extensionType());
 
-        // First, see if there are AnnotatedVariableHooks on the variable
-        if (tryResolveWithBindingAnnotation(iBean, v, operation, index)) {
-            return;
+                PackedBindableVariable h = new PackedBindableVariable(scanner, operation, index, ei.extension, v);
+                ei.introspector.activatedByAnnotatedVariable(a1, h);
+                return;
+            }
         }
 
         // Peel it
 
         // Next, see if there are any VariableTypeHooks on the variable
-        ParameterType hook = iBean.hookModel.testParameterType(v.rawType());
+        ParameterType hook = scanner.hookModel.testParameterType(v.rawType());
 
         if (hook != null) {
-            BeanScannerExtensionRef contributor = iBean.computeContributor(hook.extensionType());
-            PackedBindableVariable h = new PackedBindableVariable(iBean, operation, index, contributor.extension, v);
+            BeanScannerExtensionRef contributor = scanner.computeContributor(hook.extensionType());
+            PackedBindableVariable h = new PackedBindableVariable(scanner, operation, index, contributor.extension, v);
 
-            contributor.introspector.activatedByVariableType(v.rawType(), new PackedBindableWrappedVariable(h));
+            Class<?> cl = v.rawType();
+            contributor.introspector.activatedByVariableType(cl, hook.definingIfInherited() == null ? cl : hook.definingIfInherited(),
+                    new PackedBindableWrappedVariable(h));
             if (operation.bindings[index] != null) {
                 return;
             }
@@ -73,28 +82,5 @@ final class BeanScannerBindingResolver {
             ExtensionSetup es = operation.bean.container.extensions.get(e);
             operation.bindings[index] = es.sm.bind(ia.key(), !ia.isOptional(), operation, index);
         }
-    }
-
-    /**
-     * Look for hook annotations on a variable)
-     *
-     * @param var
-     *            the method to look for annotations on
-     * @return
-     */
-    private static boolean tryResolveWithBindingAnnotation(BeanScanner introspector, Variable var, OperationSetup os, int index) {
-        Annotation[] annotations = var.annotations().toArray();
-        for (Annotation a1 : annotations) {
-            Class<? extends Annotation> a1Type = a1.annotationType();
-            AnnotatedParameterType hook = introspector.hookModel.testParameterAnnotation(a1Type);
-            if (hook != null) {
-                BeanScannerExtensionRef ei = introspector.computeContributor(hook.extensionType());
-
-                PackedBindableVariable h = new PackedBindableVariable(introspector, os, index, ei.extension, var);
-                ei.introspector.activatedByAnnotatedVariable(a1, h);
-                return true;
-            }
-        }
-        return false;
     }
 }

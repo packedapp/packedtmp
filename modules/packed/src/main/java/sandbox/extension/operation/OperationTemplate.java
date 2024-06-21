@@ -20,6 +20,7 @@ import java.lang.invoke.MethodType;
 import java.util.Map;
 
 import app.packed.bean.BeanKind;
+import app.packed.extension.ExtensionPoint.UseSite;
 import app.packed.operation.OperationType;
 import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.operation.PackedOperationTemplate;
@@ -104,6 +105,11 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
 
     // Tror ikke laengere man kan lave dem direkte paa den her maade...
     static OperationTemplate defaults() {
+        return PackedOperationTemplate.DEFAULTS;
+    }
+
+
+    static OperationTemplate delegating(UseSite useSite) {
         return PackedOperationTemplate.DEFAULTS;
     }
 

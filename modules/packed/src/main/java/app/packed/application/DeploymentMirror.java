@@ -20,10 +20,10 @@ import java.util.stream.Stream;
 
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.component.Mirror;
+import app.packed.build.BuildMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanClassActivator.BindingClassActivator;
+import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.container.DeploymentSetup;
@@ -31,15 +31,15 @@ import internal.app.packed.container.DeploymentSetup;
 /**
  *
  */
-// A deployment is basically a tree of applications.
+// A deployment is basically a tree of applications that have been built together
 
 // We may have multiple deployments
 
 // Family < Deployment < Application < Container < Bean < Operation < Binding | Interceptor
 
 //Cluster|Node? < Java Process(Logical name) < Family
-@BindingClassActivator(extension = BaseExtension.class)
-public class DeploymentMirror implements Mirror {
+@BindingClassBeanTrigger(extension = BaseExtension.class)
+public class DeploymentMirror implements BuildMirror {
 
     /** The deployment we are mirroring. */
     private final DeploymentSetup deployment;

@@ -20,7 +20,7 @@ package internal.app.packed.container;
  */
 
 //not sure its useful actually
-public abstract class NonBootstrapContainerBuilder extends PackedContainerBuilder {
+public abstract class NonBootstrapContainerBuilder extends PackedContainerInstaller {
 
     /**
      * @param template

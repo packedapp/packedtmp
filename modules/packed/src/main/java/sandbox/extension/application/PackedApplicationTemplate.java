@@ -15,6 +15,9 @@
  */
 package sandbox.extension.application;
 
+import app.packed.application.ApplicationLocal;
+import sandbox.extension.container.ContainerTemplate;
+
 /**
  *
  */
@@ -27,4 +30,26 @@ public final class PackedApplicationTemplate implements ApplicationTemplate {
     PackedApplicationTemplate ROOT_MANAGED;
 
     PackedApplicationTemplate ROOT_UNMANAGED;
+
+    public record PackedApplicationTemplateConfigurator(PackedApplicationTemplate template) implements ApplicationTemplate.Configurator {
+
+        /** {@inheritDoc} */
+        @Override
+        public Configurator container(ContainerTemplate template) {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Configurator removeable() {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public <T> Configurator setLocal(ApplicationLocal<T> local, T value) {
+            return null;
+        }
+
+    }
 }

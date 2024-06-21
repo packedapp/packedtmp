@@ -32,7 +32,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.component.Authority;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanClassActivator.BindingClassActivator;
+import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.operation.BindingKind;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.OperationMirror;
@@ -65,7 +65,7 @@ public class RuntimeMirrorInjectionTest extends ServiceLocatorAppTest {
                     assertEquals(om, bim.operation());
                     assertEquals(i, bim.parameterIndex());
                     assertEquals(BindingKind.HOOK, bim.bindingKind());
-                    assertSame(Authority.extension(BaseExtension.class), bim.zBoundBy());
+                    assertSame(Authority.extension(BaseExtension.class), bim.boundBy());
                     assertTrue(bim.variable().annotations().isEmpty());
                     assertEquals(l.get(i), bim.variable().type());
                     assertEquals(l.get(i), bim.variable().rawType());
@@ -80,7 +80,7 @@ public class RuntimeMirrorInjectionTest extends ServiceLocatorAppTest {
 
     @Test
     public void unknownMirror() {
-        @BindingClassActivator(extension = BaseExtension.class)
+        @BindingClassBeanTrigger(extension = BaseExtension.class)
         record MirrorAlien() {}
 
         hooks().onAnnotatedField((l, b) -> b.newGetOperation(OperationTemplate.defaults()));

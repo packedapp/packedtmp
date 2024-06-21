@@ -58,6 +58,8 @@ import internal.app.packed.component.PackedComponentPath;
 // Bean:appName:/:MyBean,  Bean:appName:/MyAssembly:BooBean
 // Operation:appName:/:MyBean:getStuff
 // Binding:appName:/:MyBean:getStuff:0
+
+//// Not a component Just [ExtensionName] [ContainerPath]
 // Extension:appName:Container:ExtensionName (SimpleClassName uniqiefied
 
 // Names, Classes, Keys, ...

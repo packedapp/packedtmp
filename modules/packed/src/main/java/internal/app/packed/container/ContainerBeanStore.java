@@ -55,6 +55,8 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
         // TODO virker ikke med functional beans og naming
         String n = prefix;
 
+        n = prefixExtension(bean, n);
+
         if (bean.beanClass != void.class) {
             BeanClassKey key = new BeanClassKey(bean.owner.authority(), bean.beanClass);
 
@@ -96,6 +98,10 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
         NameCheck.checkComponentName(newName);
 
         String existingName = bean.name();
+
+        // Make sure to prefix extension beans with the name of the extension
+        newName = prefixExtension(bean, newName);
+
         // Check that this component is still active and the name can be set
         // Do we actually care? Of course we can only set as long as the realm is open
         // But other than that why not
@@ -112,6 +118,20 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
         bean.name = newName;
     }
 
+    /**
+     * Prefix extension beans with the name of the extension.
+     *
+     * @param bean
+     * @param newName
+     * @return
+     */
+    private String prefixExtension(BeanSetup bean, String newName) {
+        if (bean.owner instanceof ExtensionSetup es) {
+            newName = es.tree.name + "#" + newName;
+        }
+        return newName;
+    }
+
     public static boolean isMultiInstall(BeanSetup bean) {
         return false;
     }
@@ -121,8 +141,6 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
     }
 
     public /* primitive */ record BeanClassKey(Authority realm, Class<?> beanClass) {}
-
-
 
     // Kunne maaske have en int paa BeanSetup
     // Og saa i Bean Classes har vi den seneste indsatte

@@ -5,24 +5,31 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
+import app.packed.bean.BeanBuildHook;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocalAccessor;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
+import app.packed.bean.ComputedConstant;
+import app.packed.build.hook.BuildHook;
 import app.packed.component.Authority;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
 import app.packed.extension.BeanElement;
 import app.packed.extension.BeanIntrospector;
+import app.packed.extension.BindableVariable;
 import app.packed.operation.OperationType;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromConstant;
@@ -30,6 +37,8 @@ import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.build.PackedLocalMap;
 import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
+import internal.app.packed.component.ComponentSetup;
+import internal.app.packed.component.PackedComponentTwin;
 import internal.app.packed.container.AuthoritySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -54,24 +63,27 @@ import sandbox.extension.operation.OperationTemplate;
  * @implNote The reason this class does not directly implement BeanHandle is because the BeanHandle interface is
  *           parameterised.
  */
-public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocalMapSource {
+public final class BeanSetup extends ComponentSetup implements PackedComponentTwin , ContextualizedElementSetup , KeyAndLocalMapSource {
 
-    /** A MethodHandle for invoking {@link ExtensionMirror#initialize(ExtensionSetup)}. */
+    /** A bean local for variables that use {@link app.packed.extension.BaseExtensionPoint.CodeGenerated}. */
+    public static final PackedBeanLocal<Map<Key<?>, BindableVariable>> CODEGEN = new PackedBeanLocal<>(() -> new HashMap<>());
+
+    /** A MethodHandle for invoking {@link BeanIntrospector#bean}. */
     private static final MethodHandle MH_BEAN_INTROSPECTOR_TO_BEAN = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class, "bean",
             BeanSetup.class);
 
     /** A magic initializer for {@link BeanMirror}. */
     public static final MagicInitializer<BeanSetup> MIRROR_INITIALIZER = MagicInitializer.of(BeanMirror.class);
 
-    /** A magic initializer for {@link BeanConfiguration}. */
-    public static final MagicInitializer<BeanSetup> CONFIGURATION_INITIALIZER = MagicInitializer.of(BeanConfiguration.class);
-
-    /** A handle that can access BeanConfiguration#handle. */
+    /** A handle that can access {@link BeanConfiguration#handle}. */
     private static final VarHandle VH_BEAN_CONFIGURATION_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanConfiguration.class, "handle",
             PackedBeanHandle.class);
 
     /** A handle that can access BeanConfiguration#handle. */
     private static final VarHandle VH_BEAN_MIRROR_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanMirror.class, "bean", BeanSetup.class);
+
+    // TODO Specialized bindings we will look up before a service
+    public final HashMap<Key<?>, ?> beanBindings = new HashMap<>();
 
     /** The bean class, is typical void.class for functional beans. */
     public final Class<?> beanClass;
@@ -88,7 +100,7 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
 
     /** The configuration representing this bean, is set from {@link #initConfiguration(BeanConfiguration)}. */
     @Nullable
-    public BeanConfiguration configuration;
+    private BeanConfiguration configuration;
 
     /** The container this bean is installed in. */
     public final ContainerSetup container;
@@ -119,13 +131,8 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
     /** The owner of the bean. */
     public final AuthoritySetup owner;
 
-    @Override
-    public String toString() {
-        return "Bean Name " + name;
-    }
-
     /** Create a new bean. */
-    BeanSetup(PackedBeanHandleBuilder installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
+    BeanSetup(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
         this.beanKind = requireNonNull(installer.template.kind());
         this.beanClass = requireNonNull(beanClass);
         this.beanSource = beanSource;
@@ -150,17 +157,23 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
         }
     }
 
-    public static BeanSetup initFromBeanConfiguration(BeanConfiguration configuration) {
-        BeanSetup bs = BeanSetup.CONFIGURATION_INITIALIZER.initialize();
-        if (bs.configuration != null) {
-            throw new IllegalStateException("A bean handle can only be used once to create a bean configuration");
-        }
-        bs.configuration = requireNonNull(configuration);
-        return bs;
-    }
+    public <K> void addCodeGenerated(Key<K> key, Supplier<? extends K> supplier) {
+        requireNonNull(key, "key is null");
+        requireNonNull(supplier, "supplier is null");
 
-    public Authority owner() {
-        return owner.authority();
+//      if (true) {
+//          addCodeGenerated(key, supplier);
+//      }
+        Map<Key<?>, BindableVariable> m = locals().get(BeanSetup.CODEGEN, this);
+        BindableVariable var = m.get(key);
+        if (var == null) {
+            throw new IllegalArgumentException("The specified bean must have an injection site that uses @" + ComputedConstant.class.getSimpleName() + " " + key
+                    + ". Available " + m.keySet());
+        } else if (var.isBound()) {
+            throw new IllegalStateException("A supplier has previously been provided for key [key = " + key + ", bean = " + this + "]");
+        }
+
+        var.bindComputedConstant(supplier);
     }
 
     public BindingResolution beanInstanceBindingProvider() {
@@ -175,8 +188,17 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
     }
 
     /** {@inheritDoc} */
+    @Override
     public ComponentPath componentPath() {
         return ComponentKind.BEAN.pathNew(container.componentPath(), name());
+    }
+
+    public BeanConfiguration configuration() {
+        BeanConfiguration bc = configuration;
+        if (bc == null) {
+            throw new IllegalStateException("Cannot call this method from the constructor of the bean configuration");
+        }
+        return bc;
     }
 
     public Set<BeanSetup> dependsOn() {
@@ -205,6 +227,10 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
         container.forEachContext(action);
     }
 
+    public Iterable<BuildHook> hooks() {
+        return Collections.emptyList();
+    }
+
     /**
      * Initializes the bean configuration.
      *
@@ -213,11 +239,12 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
      * @throws IllegalStateException
      *             if attempting to create multiple bean configurations for a single bean
      */
-    public void initConfiguration(BeanConfiguration configuration) {
+    void initConfiguration(BeanConfiguration configuration) {
         if (this.configuration != null) {
-            throw new IllegalStateException("A bean handle can only be used once to create a bean configuration");
+            throw new IllegalStateException("A bean installer can only be used to create a single bean");
         }
         this.configuration = requireNonNull(configuration);
+        this.container.assembly.model.hooks.forEach(BeanBuildHook.class, h -> h.onNew(configuration));
     }
 
     // Relative to x
@@ -242,6 +269,8 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
         return name;
     }
 
+    // I think we name beans BaseExtension#main
+    // I think we name beans SchedulingExtension#main
     public void named(String newName) {
         container.beans.updateBeanName(this, newName);
     }
@@ -260,6 +289,15 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
 //        return new PackedNamespacePath(paths);
 //    }
 
+    public Authority owner() {
+        return owner.authority();
+    }
+
+    @Override
+    public String toString() {
+        return "Bean Name " + name;
+    }
+
     /**
      * Extracts a bean setup from a bean configuration.
      *
@@ -268,7 +306,7 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
      * @return the bean setup
      */
     public static BeanSetup crack(BeanConfiguration configuration) {
-        PackedBeanHandle handle = (PackedBeanHandle) VH_BEAN_CONFIGURATION_TO_HANDLE.get(configuration);
+        PackedBeanHandle<?> handle = (PackedBeanHandle<?>) VH_BEAN_CONFIGURATION_TO_HANDLE.get(configuration);
         return handle.bean();
     }
 
@@ -276,8 +314,8 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
         return ((PackedBeanElement) element).bean();
     }
 
-    public static BeanSetup crack(BeanHandle handle) {
-        return ((PackedBeanHandle) handle).bean();
+    public static BeanSetup crack(BeanHandle<?> handle) {
+        return ((PackedBeanHandle<?>) handle).bean();
     }
 
     public static BeanSetup crack(BeanIntrospector introspector) {
@@ -299,7 +337,7 @@ public final class BeanSetup implements ContextualizedElementSetup , KeyAndLocal
         return switch (accessor) {
         case BeanConfiguration b -> crack(b);
         case BeanElement b -> crack(b);
-        case BeanHandle b -> crack(b);
+        case BeanHandle<?> b -> crack(b);
         case BeanIntrospector b -> crack(b);
         case BeanMirror b -> crack(b);
         };

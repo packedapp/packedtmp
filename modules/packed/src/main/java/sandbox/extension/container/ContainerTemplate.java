@@ -18,11 +18,19 @@ package sandbox.extension.container;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
+import app.packed.assembly.Assembly;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLocal;
+import app.packed.container.ContainerMirror;
+import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.operation.Op1;
 import app.packed.util.Key;
+import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.context.publish.ContextTemplate;
@@ -84,49 +92,59 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
     ContainerTemplate UNMANAGED = new PackedContainerTemplate(PackedContainerKind.UNMANAGED);
 
 
+    ContainerTemplate reconfigure(Consumer<? super Configurator> configure);
+
+
     ContainerTemplate.Descriptor descriptor();
 
-    default <T> ContainerTemplate carrierProvideConstant(Class<T> key, T arg) {
-        return carrierProvideConstant(Key.of(key), arg);
-    }
 
-    /**
-     * @see FromLifetimeChannel
-     */
-    default <T> ContainerTemplate carrierProvideConstant(Key<T> key, T arg) {
-        throw new UnsupportedOperationException();
-    }
+    public interface Configurator {
 
-    /**
-     * Creates a new template that We need to set the holder type. Otherwise we cannot calculate
-     * <p>
-     * A bean representing the will automatically be created. If you need speciel configuration for the bean. You can
-     * manually create one using {@link app.packed.extension.BaseExtensionPoint#containerHolderInstall(Class, boolean)}
-     *
-     * @param beanClass
-     *            the type of the lifetime bean
-     * @return the new template
-     *
-     * @throws UnsupportedOperationException
-     *             on container templates that do not have any lifetime operations
-     */
-    ContainerTemplate carrierType(Class<?> beanClass);
-
-    // Har kun visibility for the installing extension
-    ContainerTemplate lifetimeOperationAddContext(int index, ContextTemplate template);
-
-
-    default <T> ContainerTemplate localSet(ContainerLocal<T> containerLocal, T value) {
-        throw new UnsupportedOperationException();
-    }
-
-    ContainerTemplate withPack(ContainerTemplatePack pack);
-
-    default ContainerTemplate withPack(ContainerTemplatePack... packs) {
-        for (ContainerTemplatePack p : packs) {
-            withPack(p);
+        default <T> Configurator carrierProvideConstant(Class<T> key, T arg) {
+            return carrierProvideConstant(Key.of(key), arg);
         }
-        return this;
+
+        /**
+         * @see FromLifetimeChannel
+         */
+        default <T> Configurator carrierProvideConstant(Key<T> key, T arg) {
+            throw new UnsupportedOperationException();
+        }
+
+        default <T> Configurator localSet(ContainerLocal<T> containerLocal, T value) {
+            throw new UnsupportedOperationException();
+        }
+
+        /**
+         * Creates a new template that We need to set the holder type. Otherwise we cannot calculate
+         * <p>
+         * A bean representing the will automatically be created. If you need speciel configuration for the bean. You can
+         * manually create one using {@link app.packed.extension.BaseExtensionPoint#containerHolderInstall(Class, boolean)}
+         *
+         * @param beanClass
+         *            the type of the lifetime bean
+         * @return the new template
+         *
+         * @throws UnsupportedOperationException
+         *             on container templates that do not have any lifetime operations
+         */
+        Configurator carrierType(Class<?> beanClass);
+        // Har kun visibility for the installing extension
+        Configurator lifetimeOperationAddContext(int index, ContextTemplate template);
+
+        Configurator withPack(ContainerTemplateLink pack);
+
+
+        default Configurator withPack(ContainerTemplateLink... packs) {
+            for (ContainerTemplateLink p : packs) {
+                withPack(p);
+            }
+            return this;
+        }
+
+        default Configurator zRequireUseOfExtension(String errorMessage) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     interface Descriptor {
@@ -140,9 +158,150 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          */
         Set<Key<?>> carrierKeys();
 
-
         /** {@return a list of the lifetime operation of this container template.} */
         List<OperationTemplate> lifetimeOperations();
+    }
+
+    /**
+     * A builder for a container (handle).
+     *
+     * @see BaseExtensionPoint#addCodeGenerated(BeanConfiguration, Class, Supplier)
+     * @see BaseExtensionPoint#beanInstallerForExtension(app.packed.extension.bean.BeanTemplate,
+     *      app.packed.extension.ExtensionPoint.UseSite)
+     */
+    sealed interface Installer permits PackedContainerInstaller {
+
+        /**
+         * Creates a new container using the specified assembly.
+         * <p>
+         * The container handle returned by this method is no longer {@link ContainerHandle#isConfigurable() configurable}.
+         * Configuration of the new container must be done prior to calling this method.
+         *
+         * @param assembly
+         *            the assembly to link
+         * @param wirelets
+         *            optional wirelets
+         * @return a container handle representing the new container
+         *
+         * @see #build(Wirelet...)
+         */
+        <T extends ContainerConfiguration> ContainerHandle<?> build(Assembly assembly, Function<? super ContainerTemplate.Installer, T> configurationCreator,
+                Wirelet... wirelets);
+
+        /**
+         * Creates the new container and adds this extension to the new container.
+         * <p>
+         * The extension in new the container can be obtained by calling {@link Extension#fromHandle(ContainerHandle)}
+         *
+         * @return a container handle representing the new container
+         *
+         * @see app.packed.extension.Extension#fromHandle(ContainerHandle)
+         */
+
+        <T extends ContainerConfiguration> ContainerHandle<?> buildAndUseThisExtension(Function<? super ContainerTemplate.Installer, T> configurationCreator,
+                Wirelet... wirelets);
+
+        /**
+         * Provides constants per Carrier Instance for this particular container builder
+         *
+         * @param <T>
+         * @param key
+         * @param arg
+         * @return
+         *
+         * @see ExtensionLink#ofConstant(Class, Object)
+         */
+        default <T> Installer carrierProvideConstant(Class<T> key, T constant) {
+            return carrierProvideConstant(Key.of(key), constant);
+        }
+
+        // Only Managed-Operation does not require a wrapper
+        // For now this method is here. Might move it to the actual CHC at some point
+
+        // Hmm, don't know if need a carrier instance, if we have implicit construction
+        // /**
+        // * @return
+        // * @throws UnsupportedOperationException
+        // * if a carrier type was not defined in the container template
+        // */
+        // default ContainerCarrierConfiguration<?> carrierInstance() {
+        // throw new UnsupportedOperationException();
+        // }
+
+        /**
+         * @see FromLifetimeChannel
+         */
+        <T> Installer carrierProvideConstant(Key<T> key, T constant);
+
+        /**
+         *
+         * @param holderConfiguration
+         * @return
+         * @see app.packed.extension.BaseExtensionPoint#installContainerHolder(Class)
+         * @throws IllegalArgumentException
+         *             if the holder class of the bean does not match the holder type set when creating the container template.
+         */
+        // LifetimeCarrier?
+        default Installer carrierUse(ComponentGuestAdaptorBeanConfiguration<?> holderConfiguration) {
+            // Gaar udfra vi maa definere wrapper beanen alene...Eller som minimum
+            // supportere det
+            // Hvis vi vil dele den...
+
+            // Det betyder ogsaa vi skal lave en wrapper bean alene
+            return this;
+        }
+
+        /**
+         * Creates a new configurable container.
+         *
+         * @param wirelets
+         *            optional wirelets
+         * @return a container handle representing the new container
+         *
+         * @see #install(Assembly, Wirelet...)
+         */
+        <T extends ContainerConfiguration> ContainerHandle<?> install(Function<? super ContainerTemplate.Installer, T> configurationCreator,
+                Wirelet... wirelets);
+
+        /**
+         * Sets the value of the specified container local for the container being built.
+         *
+         * @param <T>
+         *            the type of value the container local holds
+         * @param local
+         *            the container local to set
+         * @param value
+         *            the value of the local
+         * @return this builder
+         */
+        // Do we allow non-container scope??? I don't think so
+        // initializeLocalWith??
+        <T> Installer localSet(ContainerLocal<T> containerLocal, T value);
+
+        /**
+         * <p>
+         * TODO: How do we handle conflicts? I don't think we should fail
+         * <p>
+         * TODO This is probably overridable by Wirelet.named()
+         * <p>
+         * Beans not-capitalized? Containers capitalized
+         *
+         * @param name
+         *            the name of the container
+         * @return this builder
+         */
+        Installer named(String name);
+
+        /**
+         * Sets a supplier that creates a special container mirror instead of the generic {@code ContainerMirror} when
+         * requested.
+         *
+         * @param supplier
+         *            the supplier used to create the container mirror
+         * @apiNote the specified supplier may be called multiple times for the same bean. In which case an equivalent mirror
+         *          must be returned
+         */
+        Installer specializeMirror(Supplier<? extends ContainerMirror> supplier);
     }
 
 }

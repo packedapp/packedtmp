@@ -24,6 +24,8 @@ import app.packed.util.Key;
 /**
  *
  */
+// Giver kun meningen hvis man frequent reconfigure...
+//Hvad man ikke goer...
 public final class PackedContainerTemplatePackList {
 
     public final List<PackedContainerTemplatePack> packs;

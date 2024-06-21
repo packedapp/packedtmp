@@ -32,14 +32,14 @@ import app.packed.assembly.AbstractComposer.ComposerAction;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanClassActivator.BindingClassActivator;
+import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.operation.Provider;
 import app.packed.util.Key;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.service.PackedServiceLocator;
-import sandbox.extension.container.ContainerCarrierService;
+import sandbox.extension.container.guest.GuestIntoAdaptor;
 
 /**
  * An service locator is a holder of services, where each service can be looked up by a {@link Key} at runtime.
@@ -108,7 +108,7 @@ import sandbox.extension.container.ContainerCarrierService;
  * <p>
  * Unless otherwise specified the set of services provided by a service locator is unchangeable.
  */
-@BindingClassActivator(extension = BaseExtension.class)
+@BindingClassBeanTrigger(extension = BaseExtension.class)
 public interface ServiceLocator {
 
     /**
@@ -315,7 +315,7 @@ public interface ServiceLocator {
      */
     private static BootstrapApp<ServiceLocator> bootstrap() {
         class ServiceLocatorBootstrap {
-            private static final BootstrapApp<ServiceLocator> APP = BootstrapApp.of(new Op1<@ContainerCarrierService ServiceLocator, ServiceLocator>(e -> e) {},
+            private static final BootstrapApp<ServiceLocator> APP = BootstrapApp.of(new Op1<@GuestIntoAdaptor ServiceLocator, ServiceLocator>(e -> e) {},
                     c -> {});
         }
         return ServiceLocatorBootstrap.APP;

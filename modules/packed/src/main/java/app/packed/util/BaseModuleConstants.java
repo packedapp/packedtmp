@@ -15,7 +15,7 @@
  */
 package app.packed.util;
 
-import app.packed.framework.FrameworkNames;
+import app.packed.FrameworkNames;
 
 /**
  *

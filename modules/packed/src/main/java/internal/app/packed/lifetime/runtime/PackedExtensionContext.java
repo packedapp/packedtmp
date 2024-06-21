@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanClassActivator.BindingClassActivator;
+import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.InternalExtensionException;
 import internal.app.packed.util.LookupUtil;
@@ -29,7 +29,7 @@ import internal.app.packed.util.LookupUtil;
  * All strongly connected components relate to the same pod.
  */
 // Long term, this might just be an Object[] array. But for now its a class, in case we need stuff that isn't stored in the array.
-@BindingClassActivator(extension = BaseExtension.class)
+@BindingClassBeanTrigger(extension = BaseExtension.class)
 public final /* primitive */ class PackedExtensionContext implements ExtensionContext {
 
     /** A method handle for calling {@link #read(int)} at runtime. */

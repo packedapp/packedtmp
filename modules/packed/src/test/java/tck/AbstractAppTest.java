@@ -32,10 +32,10 @@ import app.packed.assembly.BuildableAssembly;
 import app.packed.build.BuildGoal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.LifetimeKind;
+import app.packed.lifetime.LifecycleKind;
 import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.PackedContainerBuilder;
+import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
 import sandbox.extension.operation.OperationHandle;
@@ -141,7 +141,7 @@ abstract class AbstractAppTest<A> {
     final State3Build stateBuild() {
         InternalTestState st = state;
         if (st instanceof State1Setup p) {
-            throw new IllegalStateException("Application has already been configured");
+            throw new IllegalStateException("Application has already been configured, " + p);
         } else if (st instanceof State2Building sb) {
             State3Build sbb = new State3Build(sb);
             this.state = sbb;
@@ -220,7 +220,7 @@ abstract class AbstractAppTest<A> {
     /**
      * A special container builder used for testing purposes.
      */
-    private static class TestableContainerBuilder extends PackedContainerBuilder {
+    private static class TestableContainerBuilder extends PackedContainerInstaller {
 
         final AssemblySetup assembly;
 
@@ -243,7 +243,7 @@ abstract class AbstractAppTest<A> {
             }
             assembly = new AssemblySetup(this, ba);
             // Do
-            cc = new ContainerConfiguration(assembly.container);
+            cc = assembly.container.configuration;
 
         }
 
@@ -255,8 +255,8 @@ abstract class AbstractAppTest<A> {
 
         /** {@inheritDoc} */
         @Override
-        public LifetimeKind lifetimeKind() {
-            return LifetimeKind.UNMANAGED;
+        public LifecycleKind lifetimeKind() {
+            return LifecycleKind.UNMANAGED;
         }
     }
 

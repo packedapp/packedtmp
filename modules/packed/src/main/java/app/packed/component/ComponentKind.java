@@ -21,31 +21,35 @@ import java.util.Optional;
 
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import internal.app.packed.component.PackedComponentPath;
+import internal.app.packed.component.PackedComponentKind;
 
-/** The schema of a component path. */
+/** The type of a component. */
 //https://backstage.io/docs/features/software-catalog/descriptor-format/
 public interface ComponentKind {
 
     /** A component kind representing an application. */
-    ComponentKind APPLICATION = builder(BaseExtension.class, "Application").requireString("application").build();
+    ComponentKind APPLICATION = builder("Application", BaseExtension.class, "Application").requireFragmentString("application").build();
 
     /** A component kind representing a bean. */
-    ComponentKind BEAN = builder().requireString("application").requirePath("containerPath").requireString("bean").build();
+    ComponentKind BEAN = builder("Bean").requireFragmentString("application").requireFragmentPath("containerPath").requireFragmentString("bean").build();
 
     /** A component kind representing a binding. */
-    ComponentKind BINDING = builder().requireString("application").requirePath("containerPath").requireString("bean").requireString("operation")
-            .requireString("binding").build();
+    ComponentKind BINDING = builder("Binding").requireFragmentString("application").requireFragmentPath("containerPath").requireFragmentString("bean").requireFragmentString("operation")
+            .requireFragmentString("binding").build();
 
     /** A component kind representing a container. */
-    ComponentKind CONTAINER = builder().requireString("application").requirePath("containerPath").build();
+    ComponentKind CONTAINER = builder("Container").requireFragmentString("application").requireFragmentPath("containerPath").build();
 
     /** A component kind representing an operation. */
-    ComponentKind OPERATION = builder().requireString("application").requirePath("containerPath").requireString("bean").requireString("operation").build();
+    ComponentKind OPERATION = builder("Operation").requireFragmentString("application").requireFragmentPath("containerPath").requireFragmentString("bean").requireFragmentString("operation")
+            .build();
 
     // We could always have one... Just make let BaseExtension own them..
     // And maybe skip base when printing the name
     Optional<String> extension();
+
+    /** {@return the name of the component kind} */
+    String name();
 
     /** {@return the various fragments that make of the schema} */
     List<Map.Entry<String, ComponentPath.FragmentKind>> pathFragments();
@@ -63,33 +67,32 @@ public interface ComponentKind {
     String pathPrefix();
 
     /** {@return a new component kind builder} */
-    static ComponentKind.Builder builder() {
+    static ComponentKind.Builder builder(String name) {
         throw new UnsupportedOperationException();
     }
 
-    static ComponentKind.Builder builder(Class<? extends Extension<?>> extensionType, String componentType) {
+    static ComponentKind.Builder builder(String name, Class<? extends Extension<?>> extensionType, String componentType) {
         throw new UnsupportedOperationException();
     }
 
     // I think everyone except base components must have a parent component
     // So all components are formed as a tree. With the application as the root...
-    static ComponentKind.Builder builder(ComponentKind parent, Class<? extends Extension<?>> extensionType, String componentType) {
+    static ComponentKind.Builder builder(String name, ComponentKind parent, Class<? extends Extension<?>> extensionType, String componentType) {
         throw new UnsupportedOperationException();
     }
 
-
     /** A builder for a component kind. */
-    sealed interface Builder permits PackedComponentPath.ComponentPathSchemaBuilder {
+    sealed interface Builder permits PackedComponentKind.PackedComponentKindBuilder {
 
         /** {@return the new component kind} */
         ComponentKind build();
 
-        ComponentKind.Builder requireClass(String name);
+        ComponentKind.Builder requireFragmentClass(String name);
 
-        ComponentKind.Builder requireKey(String name);
+        ComponentKind.Builder requireFragmentKey(String name);
 
-        ComponentKind.Builder requirePath(String name);
+        ComponentKind.Builder requireFragmentPath(String name);
 
-        ComponentKind.Builder requireString(String name);
+        ComponentKind.Builder requireFragmentString(String name);
     }
 }

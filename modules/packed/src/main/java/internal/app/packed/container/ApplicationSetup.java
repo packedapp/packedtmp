@@ -24,19 +24,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import app.packed.application.ApplicationBuildHook;
 import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationLocal;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.Assembly;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLocal;
 import app.packed.extension.Extension;
-import app.packed.namespace.NamespaceOperator;
+import app.packed.namespace.NamespaceTwin;
 import app.packed.util.Nullable;
 import internal.app.packed.build.PackedLocalMap;
 import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
+import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.Mirrorable;
+import internal.app.packed.component.PackedComponentTwin;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.types.ClassUtil;
@@ -47,7 +51,7 @@ import internal.app.packed.util.types.ClassUtil;
  * This class is placed in {@code internal.app.packed.container} because it is so tightly integrated with containers
  * that it made sense to put it here as well.
  */
-public final class ApplicationSetup implements KeyAndLocalMapSource , Mirrorable<ApplicationMirror> {
+public final class ApplicationSetup extends ComponentSetup implements PackedComponentTwin , KeyAndLocalMapSource , Mirrorable<ApplicationMirror> {
 
     /** A magic initializer for {@link BeanMirror}. */
     public static final MagicInitializer<ApplicationSetup> MIRROR_INITIALIZER = MagicInitializer.of(ApplicationMirror.class);
@@ -68,14 +72,24 @@ public final class ApplicationSetup implements KeyAndLocalMapSource , Mirrorable
     /** The deployment the application is part of. */
     public final DeploymentSetup deployment;
 
+    /** The configuration of the application. */
+    public ApplicationConfiguration configuration;
+
     /**
      * All extensions used in an application has a unique instance id attached. This is used in case we have multiple
      * extension with the same canonical name. Which may happen if different containers uses the "same" extension but
      * defined in different class loaders. We then compare the extension id of the extensions as a last resort when sorting
      * them.
      */
+    // We actually have a unique name now, so maybe we can skip this counter
     int extensionIdCounter;
 
+    /**
+     * All extensions in the application, uniquely named.
+     * <p>
+     * The only time where we might see collisions is if we load 2 extensions with same name, but with different class
+     * loaders.
+     */
     final Map<String, Class<? extends Extension<?>>> extensions = new HashMap<>();
 
     /** This map maintains all locals for the entire application. */
@@ -85,10 +99,13 @@ public final class ApplicationSetup implements KeyAndLocalMapSource , Mirrorable
     private final Supplier<? extends ApplicationMirror> mirrorSupplier;
 
     // Maybe move to container?? Or maybe a DomainManager class? IDK
-    public final HashMap<PackedNamespaceTemplate<?>, NamespaceOperator<?>> namespaces = new HashMap<>();
+    public final HashMap<PackedNamespaceTemplate<?>, NamespaceTwin<?, ?>> namespaces = new HashMap<>();
 
     /** The current phase of the application's build process. */
     private ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
+
+    /** All hooks applied on the application. */
+    public final ArrayList<ApplicationBuildHook> hooks = new ArrayList<>();
 
     /**
      * Create a new application.
@@ -98,11 +115,11 @@ public final class ApplicationSetup implements KeyAndLocalMapSource , Mirrorable
      * @param assembly
      *            the assembly that defines the application
      */
-    public ApplicationSetup(PackedContainerBuilder containerBuilder, AssemblySetup assembly) {
+    public ApplicationSetup(PackedContainerInstaller containerBuilder, AssemblySetup assembly) {
         this.deployment = new DeploymentSetup(this, containerBuilder);
         this.codegenActions = deployment.goal.isCodeGenerating() ? new ArrayList<>() : null;
         this.mirrorSupplier = containerBuilder.applicationMirrorSupplier;
-        this.container = containerBuilder.newContainer(this, assembly);
+        this.container = containerBuilder.newContainer(containerBuilder, this, assembly, ContainerConfiguration::new);
     }
 
     /**
@@ -171,6 +188,7 @@ public final class ApplicationSetup implements KeyAndLocalMapSource , Mirrorable
         ASSEMBLE, CODEGEN, COMPLETED;
     }
 
+    @Override
     public ComponentPath componentPath() {
         return ComponentKind.APPLICATION.pathNew(container.node.name);
     }

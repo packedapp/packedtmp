@@ -26,14 +26,14 @@ import java.lang.annotation.Target;
 import java.util.EnumSet;
 import java.util.function.Supplier;
 
-import app.packed.extension.ExtensionWirelet;
+import app.packed.extension.BaseExtension;
+import app.packed.extension.BeanTrigger.InheritableBindingClassBeanTrigger;
 import app.packed.util.Nullable;
 import internal.app.packed.container.CompositeWirelet;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.FrameworkWirelet;
 import internal.app.packed.container.InternalBuildWirelet;
 import internal.app.packed.container.NameCheck;
-import internal.app.packed.container.PackedContainerBuilder;
+import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.WrappingWirelet;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
@@ -65,7 +65,7 @@ import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
  * As a general rule, wirelet implementations must be immutable and safe to access by multiple concurrent threads.
  * Unless otherwise specified wirelets are reusable.
  * <p>
- * Wirelets are divided into 3 main types:
+ * Wirelets are divided into 3 main types: (Naaah think we ditch it)
  *
  * User Wirelet: These wirelets are defined by users of the framework.
  *
@@ -76,6 +76,19 @@ import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
  *
  * @see ContainerConfiguration#selectWirelets(Class)
  */
+
+// Important thinks.
+// * Wirelets themselves are stateless and immutable
+// * We need to able to specify where the wirelet can be used
+// * We need to able to check if the wirelet is consumed at the site where it is used. It should be by default an error to not be consumed
+
+
+//// I think fixed
+// * Should be usable at both build-time and launch??? An example is MainWirelet(String[] args)
+// What are the alternatives
+
+
+
 // Wirelet specification sites
 
 // Build : Application
@@ -91,7 +104,14 @@ import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 // TrustedWirelet -> A wirelet that is defined within an assembly
 
 // Runtime : Launch
-public sealed abstract class Wirelet permits ApplicationWirelet, ExtensionWirelet, FrameworkWirelet {
+
+// Was sealed and allowed ApplicationWirelet, ExtensionWirelet and Framework Wirelet.
+// But was really difficult to explain application vs extension wirelet.
+// So now the "User" wirelet is just plain wirelet
+
+// Specified class must be visible when querying
+@InheritableBindingClassBeanTrigger(extension = BaseExtension.class)
+public abstract class Wirelet {
 
     // How do com
     final int flags = 0;
@@ -245,7 +265,7 @@ public sealed abstract class Wirelet permits ApplicationWirelet, ExtensionWirele
 
             /** {@inheritDoc} */
             @Override
-            protected void onBuild(PackedContainerBuilder installer) {
+            protected void onBuild(PackedContainerInstaller installer) {
                 installer.nameFromWirelet = name;// has already been validated
             }
         }
@@ -279,6 +299,7 @@ public sealed abstract class Wirelet permits ApplicationWirelet, ExtensionWirele
         if (wirelet instanceof IgnoreUnconsumedWirelet) {
             return wirelet;
         } else if (wirelet instanceof CompositeWirelet cw) {
+            throw new UnsupportedOperationException("" + cw);
             // If composite wirelet.. Unwrap all. Call ignoreComposite. Create new Composite
         }
 

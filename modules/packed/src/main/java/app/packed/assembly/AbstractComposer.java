@@ -25,8 +25,8 @@ import app.packed.extension.Extension;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.NonRootContainerBuilder;
-import internal.app.packed.container.PackedContainerBuilder;
+import internal.app.packed.container.LeafContainerBuilder;
+import internal.app.packed.container.PackedContainerInstaller;
 
 /**
  * A composer is
@@ -130,8 +130,8 @@ public abstract class AbstractComposer {
          *            the configuration to use for the assembling process
          */
         @Override
-        AssemblySetup build(PackedContainerBuilder builder) {
-            if (builder instanceof NonRootContainerBuilder installer) {
+        AssemblySetup build(PackedContainerInstaller builder) {
+            if (builder instanceof @SuppressWarnings("unused") LeafContainerBuilder installer) {
                 throw new IllegalArgumentException("Cannot link an instance of " + ComposableAssembly.class + ", assembly must extend "
                         + BuildableAssembly.class.getSimpleName() + " instead");
             }
@@ -139,13 +139,12 @@ public abstract class AbstractComposer {
             AssemblyConfiguration existing = composer.configuration;
             if (existing == null) {
                 AssemblySetup a = new AssemblySetup(builder, this);
-                new ContainerConfiguration(a.container);
-                composer.configuration = existing = new AssemblyConfiguration(a);
+                AssemblyConfiguration as = composer.configuration = existing = new AssemblyConfiguration(a);
                 try {
                     composer.preCompose();
 
+                    a.model.hooks.forEach(AssemblyBuildHook.class, h -> h.beforeBuild(as));
                     // Run AssemblyHook.onPreBuild if hooks are present
-                    a.model.preBuild(existing);
 
                     // Call actions build method with this composer
                     action.build(composer);

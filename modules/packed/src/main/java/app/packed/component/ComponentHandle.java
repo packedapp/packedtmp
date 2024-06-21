@@ -15,12 +15,16 @@
  */
 package app.packed.component;
 
+import app.packed.application.ApplicationHandle;
+import app.packed.namespace.NamespaceHandle;
+import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.container.ContainerHandle;
+import sandbox.extension.operation.OperationHandle;
+
 /**
  *
  */
-
-// Abstract Class????
-public interface ComponentHandle {
+public sealed interface ComponentHandle permits ApplicationHandle, ContainerHandle, BeanHandle, OperationHandle, NamespaceHandle {
 
     /**
      * Checks that the bean is still configurable or throws an {@link IllegalStateException} if not
@@ -33,7 +37,7 @@ public interface ComponentHandle {
      */
     default void checkIsConfigurable() {
         if (!isConfigurable()) {
-            throw new IllegalStateException("The bean is no longer configurable");
+            throw new IllegalStateException("The " + componentKind().name() + " is no longer configurable");
         }
     }
 
@@ -46,4 +50,7 @@ public interface ComponentHandle {
      * @return {@code true} if the bean is still configurable
      */
     boolean isConfigurable();
+
+    /** {@return the type of component} */
+    ComponentKind componentKind();
 }

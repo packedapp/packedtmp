@@ -31,7 +31,7 @@ import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanClassActivator.BindingClassActivator;
+import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.service.mirror.ServiceProviderMirror;
@@ -51,7 +51,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * <li>Must be located in the same module as the extension it is a member of.</li>
  * </ul>
  */
-@BindingClassActivator(extension = BaseExtension.class)
+@BindingClassBeanTrigger(extension = BaseExtension.class)
 public non-sealed class OperationMirror implements ComponentMirror, ContextualizedElementMirror , ContextScopeMirror, ServiceProviderMirror {
 
     /** The operation we are mirroring. */

@@ -15,15 +15,18 @@
  */
 package app.packed.assembly;
 
-import app.packed.extension.BeanCustomActivator.JavaBaseSupport;
+import app.packed.build.hook.AllowBuildHooksFromParentAssembly;
+import app.packed.extension.BeanMetaBeanTrigger.JavaBaseSupport;
 
 /**
  *
  * <p>
- * This class is also annotated with {@link app.packed.extension.BeanCustomHook.JavaBaseSupport} which provide
+ * This class is annotated with {@link app.packed.extension.BeanCustomHook.JavaBaseSupport} which provide various
+ * default bindings for beans
  *
- * @apiNote We never return BaseAssembly directly from any method. As this would make the class difficult to extend
- *          unless we defined all methods as non-final.
+ * @apiNote We never return BaseAssembly from any method, as this would make the class difficult to extend.
  */
 @JavaBaseSupport
+@AllowBuildHooksFromParentAssembly
+//Open for testing?? Testing classes boer vaere i samme modul???
 public abstract class BaseAssembly extends AbstractBaseAssembly {}

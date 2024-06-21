@@ -43,7 +43,9 @@ import internal.app.packed.build.PackedBuildLocal;
 import internal.app.packed.build.PackedLocalMap;
 import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
 import internal.app.packed.component.AbstractTreeMirror;
+import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.Mirrorable;
+import internal.app.packed.component.PackedComponentTwin;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
@@ -59,8 +61,8 @@ import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.operation.OperationHandle;
 
 /** The internal configuration of a container. */
-public final class ContainerSetup
-        implements ActualNode<ContainerSetup> , ContextualizedElementSetup , Mirrorable<ContainerMirror> , ContainerHandle , KeyAndLocalMapSource {
+public final class ContainerSetup extends ComponentSetup
+        implements PackedComponentTwin, ActualNode<ContainerSetup> , ContextualizedElementSetup , Mirrorable<ContainerMirror> , KeyAndLocalMapSource {
 
     /** A magic initializer for {@link ContainerMirror}. */
     public static final MagicInitializer<ContainerSetup> MIRROR_INITIALIZER = MagicInitializer.of(ContainerMirror.class);
@@ -119,7 +121,7 @@ public final class ContainerSetup
      *            the assembly the defines the container
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ContainerSetup(PackedContainerBuilder builder, ApplicationSetup application, AssemblySetup assembly) {
+    ContainerSetup(PackedContainerInstaller builder, ApplicationSetup application, AssemblySetup assembly) {
         this.node = new NamedTreeNode<>(builder.parent, this);
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
@@ -170,7 +172,6 @@ public final class ContainerSetup
     }
 
     /** {@return a unmodifiable view of all extension types that are in used in no particular order.} */
-    @Override
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
     }
@@ -210,13 +211,11 @@ public final class ContainerSetup
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isConfigurable() {
         return assembly.isConfigurable();
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionClass) {
         requireNonNull(extensionClass, "extensionClass is null");
         return extensions.containsKey(extensionClass);
@@ -233,7 +232,6 @@ public final class ContainerSetup
      *
      * @return a list of lifetime operations if the container has its own lifetime
      */
-    @Override
     public List<OperationHandle> lifetimeOperations() {
         return List.of();
     }
@@ -276,7 +274,9 @@ public final class ContainerSetup
      *            the new name of the container
      */
     public void named(String newName) {
-        checkIsConfigurable();
+        if (!isConfigurable()) {
+            throw new IllegalStateException("The component is no longer configurable");
+        }
         // TODO start by checking isConfigurable
 
         // We start by validating the new name of the component
@@ -384,14 +384,14 @@ public final class ContainerSetup
         return (ContainerSetup) VH_CONTAINER_CONFIGURATION_TO_SETUP.get(configuration);
     }
 
-    public static ContainerSetup crack(ContainerHandle handle) {
-        return ((ContainerSetup) handle);
+    public static ContainerSetup crack(ContainerHandle<?> handle) {
+        return ((PackedContainerHandle<?>) handle).container();
     }
 
     public static ContainerSetup crack(ContainerLocal.ContainerLocalAccessor accessor) {
         return switch (accessor) {
         case ContainerConfiguration bc -> crack(bc);
-        case ContainerHandle bc -> crack(bc);
+        case ContainerHandle<?> bc -> crack(bc);
         case ContainerMirror bc -> crack(bc);
         };
     }

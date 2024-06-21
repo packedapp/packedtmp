@@ -20,9 +20,9 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import app.packed.lifetime.BeanLifetimeMirror;
-import app.packed.lifetime.LifetimeKind;
+import app.packed.lifetime.LifecycleKind;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.PackedBeanHandleBuilder;
+import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -39,7 +39,7 @@ public final class BeanLifetimeSetup implements LifetimeSetup {
     /** */
     public final List<FuseableOperation> lifetimes;
 
-    public BeanLifetimeSetup(BeanSetup bean, PackedBeanHandleBuilder installer) {
+    public BeanLifetimeSetup(BeanSetup bean, PackedBeanInstaller installer) {
         if (installer.template.bot() == null) {
             this.lifetimes = List.of();
         } else {
@@ -50,7 +50,7 @@ public final class BeanLifetimeSetup implements LifetimeSetup {
 
     /** {@inheritDoc} */
     @Override
-    public LifetimeKind lifetimeKind() {
+    public LifecycleKind lifetimeKind() {
         throw new UnsupportedOperationException();
     }
 

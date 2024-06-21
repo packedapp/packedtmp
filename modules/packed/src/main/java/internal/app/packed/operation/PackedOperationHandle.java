@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
@@ -117,7 +118,6 @@ public final record PackedOperationHandle(OperationSetup operation, @Nullable Be
         return new PackedBindableVariable(s, operation, index, operation.operator, operation.type.parameter(index));
     }
 
-
     /** {@inheritDoc} */
     @Override
     public MethodHandle generateMethodHandle() {
@@ -174,6 +174,19 @@ public final record PackedOperationHandle(OperationSetup operation, @Nullable Be
     @Override
     public boolean isConfigurable() {
         return operation.operator.isConfigurable();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void generateMethodHandleOnCodegen(Consumer<? super MethodHandle> assigner) {
+        checkIsConfigurable();
+        operation.bean.container.application.addCodegenAction(() -> assigner.accept(generateMethodHandle()));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentKind componentKind() {
+        return ComponentKind.OPERATION;
     }
 }
 

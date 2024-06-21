@@ -33,7 +33,7 @@ public class NewApplicationWirelet {
         throw new UnsupportedOperationException();
     }
 
-
+    // Taenker man maa dable i ApplicationTemplate hvis man vil lave ny apps...
     public static Wirelet newApplication() {
         throw new UnsupportedOperationException();
     }

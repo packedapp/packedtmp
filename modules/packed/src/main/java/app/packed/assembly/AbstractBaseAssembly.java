@@ -15,7 +15,8 @@
  */
 package app.packed.assembly;
 
-import app.packed.container.ApplicationWirelet;
+import java.util.Optional;
+
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
@@ -25,7 +26,7 @@ import app.packed.operation.Op;
 import app.packed.service.ServiceableBeanConfiguration;
 
 /**
- * Extends {@link BuildableAssembly} with shortcuts for many commonly used methods on {@link BaseExtension} and
+ * Extends {@link BuildableAssembly} with shortcuts for commonly used methods on {@link BaseExtension} and
  * {@link ContainerConfiguration}.
  * <p>
  * For example, instead of calling {@code use(BaseExtension.class).provide(FooBean.class)} you can just call
@@ -106,19 +107,6 @@ public abstract class AbstractBaseAssembly extends BuildableAssembly {
      */
     protected final <T> ServiceableBeanConfiguration<T> installInstance(T instance) {
         return base().installInstance(instance);
-    }
-
-    /**
-     * Returns whether or not the specified extension is in use.
-     *
-     * @param extensionType
-     *            the extension class to test
-     * @return whether or not the specified extension is in use
-     * @throws IllegalArgumentException
-     *             if the specified extension type is {@link Extension}
-     */
-    protected final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-        return container().isExtensionUsed(extensionType);
     }
 
     /**
@@ -217,6 +205,10 @@ public abstract class AbstractBaseAssembly extends BuildableAssembly {
         return base().installPrototype(factory).provide();
     }
 
+    protected final <T extends Wirelet> Optional<T> selectWirelet(Class<T> wireletClass) {
+        return selectWirelets(wireletClass).last();
+    }
+
     /**
      * Selects all wirelets that available and {@link Class#isAssignableFrom(Class) assignable} to the specified wirelet
      * class.
@@ -228,7 +220,7 @@ public abstract class AbstractBaseAssembly extends BuildableAssembly {
      * @return a wirelet selection
      * @see ContainerConfiguration#selectWirelets(Class)
      */
-    protected final <W extends ApplicationWirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
+    protected final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
         return container().selectWirelets(wireletClass);
     }
 
@@ -359,3 +351,16 @@ public abstract class AbstractBaseAssembly extends BuildableAssembly {
 //protected final <T> ExportedServiceConfiguration<T> export(Key<T> key) {
 //  return service().export(key);
 //}
+///**
+//* Returns whether or not the specified extension is in use.
+//*
+//* @param extensionType
+//*            the extension class to test
+//* @return whether or not the specified extension is in use
+//* @throws IllegalArgumentException
+//*             if the specified extension type is {@link Extension}
+//*/
+//protected final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
+// return container().isExtensionUsed(extensionType);
+//}
+

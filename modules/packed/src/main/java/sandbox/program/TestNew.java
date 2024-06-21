@@ -25,7 +25,7 @@ import java.util.List;
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanMirror;
-import app.packed.extension.BeanClassActivator.AnnotatedBeanVariableActivator;
+import app.packed.extension.BeanTrigger.AnnotatedVariableBeanTrigger;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
@@ -107,7 +107,7 @@ public class TestNew extends BaseAssembly {
 
     @Target({ ElementType.PARAMETER })
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedBeanVariableActivator(extension = MyExt.class)
+    @AnnotatedVariableBeanTrigger(extension = MyExt.class)
     @interface XX {
         String value();
     }

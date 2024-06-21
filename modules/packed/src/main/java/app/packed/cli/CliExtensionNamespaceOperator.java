@@ -20,14 +20,14 @@ import java.util.LinkedHashMap;
 import app.packed.bean.BeanInstallationException;
 import app.packed.cli.CliCommand.Builder;
 import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.namespace.NamespaceOperator;
+import app.packed.namespace.NamespaceTwin;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
  * A CLI domain is a domain where all CLI commands are unique. Typically there is never more than one per application.
  */
-class CliExtensionNamespaceOperator extends NamespaceOperator<CliExtension> {
+class CliExtensionNamespaceOperator extends NamespaceTwin<CliExtension, CliNamespaceConfiguration> {
 
     /** All the commands within the domain. */
     final LinkedHashMap<String, PackedCliCommand> commands = new LinkedHashMap<>();
@@ -61,9 +61,8 @@ class CliExtensionNamespaceOperator extends NamespaceOperator<CliExtension> {
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     @Override
-    protected CliNamespaceConfiguration configuration() {
+    protected CliNamespaceConfiguration onNewNode() {
         return new CliNamespaceConfiguration(handle);
     }
 }

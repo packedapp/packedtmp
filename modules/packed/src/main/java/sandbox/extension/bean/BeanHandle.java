@@ -15,6 +15,7 @@
  */
 package sandbox.extension.bean;
 
+import java.lang.invoke.MethodHandle;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -23,36 +24,41 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanLocalAccessor;
-import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.component.Authority;
 import app.packed.component.ComponentHandle;
-import app.packed.component.InstalledComponent;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.util.Key;
 import internal.app.packed.bean.PackedBeanHandle;
-import internal.app.packed.bean.PackedBeanHandleBuilder;
 import internal.app.packed.context.publish.ContextualizedElement;
 import sandbox.extension.operation.OperationHandle;
 
 /**
- * A bean handle is a build-time reference to an installed bean.
+ * A bean handle is a build-time reference to an installed bean. Typically they are returned by the framework when an
+ * extension installs a bean on behalf of another extension or the user.
  * <p>
- * Instances of {@code BeanHandle} should never be exposed outside of the extension that created the bean. Instead a
- * handle should be returned wrapped in {@link BeanConfiguration} (or a subclass hereof).
- *
- * @see BeanBuilder#install(Class)
- * @see BeanBuilder#install(Op)
- * @see BeanBuilder#installIfAbsent(Class, java.util.function.Consumer)
- * @see BeanBuilder#installInstance(Object)
+ * Instances of {@code BeanHandle} should not be exposed outside of the extension that created the bean. Instead the
+ * extension should expose instances of {@link #configuration() bean configuration} to the other extension or user.
  */
-public sealed interface BeanHandle extends ComponentHandle , ContextualizedElement , BeanLocalAccessor permits PackedBeanHandle {
+public sealed interface BeanHandle<C extends BeanConfiguration> extends ComponentHandle , ContextualizedElement , BeanLocalAccessor permits PackedBeanHandle {
+
+    // Or a Bean Service???
+
+    /**
+     * Adds a "service"
+     *
+     * @param <K>
+     * @param key
+     * @param supplier
+     */
+    // Is lazy, or eager?
+    // Eager_never_fail, Eager_fail_if_not_used, Lazy_whenFirstUsed, LazyFailIfNotUsed, Some default for the container?
+    <K> void addComputedConstant(Key<K> key, Supplier<? extends K> supplier);
 
     /** {@return the bean class.} */
     Class<?> beanClass();
@@ -66,9 +72,8 @@ public sealed interface BeanHandle extends ComponentHandle , ContextualizedEleme
     // Primarily specified by the user and for used for building or mirrors
     void componentTags(String... tags);
 
-    default <C extends BeanConfiguration> C configure(Function<BeanHandle, C> configure) {
-        return configure.apply(this);
-    }
+    /** {@return the bean's configuration} */
+    C configuration();
 
     /**
      * Returns the key that the bean will be made available under as default if provided as service.
@@ -88,8 +93,8 @@ public sealed interface BeanHandle extends ComponentHandle , ContextualizedEleme
         return Key.fromClass(beanClass());
     }
 
-    default BeanHandle exportAs(Class<?> key) {
-        return exportAs(Key.of(key));
+    default void exportAs(Class<?> key) {
+        exportAs(Key.of(key));
     }
 
     /**
@@ -104,7 +109,7 @@ public sealed interface BeanHandle extends ComponentHandle , ContextualizedEleme
      * @see #defaultKey()
      * @see #serviceProvideAs(Key)
      */
-    BeanHandle exportAs(Key<?> key);
+    void exportAs(Key<?> key);
 
     /**
      * Returns a list of operation handles that corresponds to the {@link BeanTemplate#lifetimeOperations() lifetime
@@ -133,7 +138,10 @@ public sealed interface BeanHandle extends ComponentHandle , ContextualizedEleme
      * @param function
      *            the user defined function that should be invoked
      * @return a new operation handle handle
+     * @throws IllegalArgumentException
+     *             if the specified function does not implement a functional interface
      */
+    // Skal vel ogsaa have en template her...
     default OperationHandle.Builder newFunctionalOperation(Object function) {
         // De giver faktisk ret god mening at tage funktionen nu
         // Det er jo ligesom at BeanMethod giver metoden videre til builderen
@@ -163,88 +171,13 @@ public sealed interface BeanHandle extends ComponentHandle , ContextualizedEleme
      * @see ProvideableBeanConfiguration#provideAs(Key)
      */
     void provideAs(Key<?> key);
-
-    /**
-     * An installer for installing beans into a container.
-     * <p>
-     * The various install methods can be called multiple times to install multiple beans. However, the use cases for this
-     * are limited.
-     *
-     * @see BaseExtensionPoint#newBean(BeanKind)
-     * @see BaseExtensionPoint#newBeanForExtension(BeanKind, app.packed.extension.ExtensionPoint.UseSite)
-     */
-    // The reason we have Builder and not just 1 class. Is because of the scanning.
-    // It is super confusing what you can do before and after
-    // But maybe this is better...
-    public sealed interface Builder permits PackedBeanHandleBuilder {
-
-        /**
-         * Installs the bean using the specified class as the bean source.
-         *
-         * @param <T>
-         *            the type of bean
-         * @param beanClass
-         *            the bean class
-         * @return a bean handle representing the installed bean
-         *
-         * @see app.packed.bean.BeanSourceKind#CLASS
-         */
-        <T> BeanHandle install(Class<T> beanClass);
-
-        /**
-         * @param <T>
-         * @param <C>
-         * @param beanClass
-         * @param newConfiguration
-         *            a supplier for the configuration that should be returned to the owner of the new bean
-         * @return
-         */
-        <T, C extends BeanConfiguration> InstalledComponent<BeanHandle, C> install(Class<T> beanClass, Supplier<? extends C> newConfiguration);
-
-        <T> BeanHandle install(Op<T> operation);
-
-        // These things can never be multi
-        // AbsentInstalledComponent(boolean wasInstalled)
-        <T> BeanHandle installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle> onInstall);
-
-        // We will need to remove <T> from BeanHandle, unless we want to specify a class when we create the handle
-        default <T, C extends BeanConfiguration> C installIfAbsent2(Class<T> beanClass, Function<? super BeanHandle, C> onInstall) {
-            throw new UnsupportedOperationException();
-        }
-
-        // instance = introspected bean
-        // constant = non-introspected bean
-        <T> BeanHandle installInstance(T instance);
-
-        BeanHandle installSourceless();
-
-        Builder namePrefix(String prefix);
-
-        /**
-         * Sets the value of the specified bean local for the new bean.
-         *
-         * @param <T>
-         *            the type of value the bean local holds
-         * @param local
-         *            the bean local to set
-         * @param value
-         *            the value of the local
-         * @return this builder
-         */
-        <T> Builder setLocal(BeanLocal<T> local, T value);
-
-        /**
-         * Sets a supplier that creates a special bean mirror instead of a generic {@code BeanMirror} if a mirror for the bean
-         * is requested.
-         *
-         * @param supplier
-         *            the supplier used to create the bean mirror
-         * @apiNote the specified supplier may be called multiple times for the same bean. In which case an equivalent mirror
-         *          must be returned
-         */
-        Builder specializeMirror(Supplier<? extends BeanMirror> supplier);
-    }
 }
+
+// Operations
+// Call an operation at some point in the lifecycle
+//// Take other (extension) bean instance
+//// Take
+// Replace instance after creation
 
 interface Zandbox<T> {
     OperationHandle addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation);
@@ -272,8 +205,19 @@ interface Zandbox<T> {
 
     <K> OperationHandle overrideService(Key<K> key, K instance);
 
+    /**
+     * @param consumer
+     * @throws UnsupportedOperationException
+     *             if the bean does not have or creates any instances
+     */
+    // Vi har ikke laengere typen, saa maaske bare MH
+    // Eller ogsaa skal vi tage en class
     void peekInstance(Consumer<? super T> consumer);
 
+    // (BeanClass) void
+    void peekInstance(MethodHandle methodHandle);
+
+    // Altssa, er det ikke en bare en
     default void runOnInitialized(Op<?> op) {
         // First parameter must be assignable to the created instance, IDK
     }

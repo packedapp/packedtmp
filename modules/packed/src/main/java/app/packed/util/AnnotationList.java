@@ -31,7 +31,8 @@ import internal.app.packed.util.PackedAnnotationList;
  *
  * @see AnnotatedElement
  */
-// TODO need to add repeatable Things
+// TODO need to add repeatable annotations
+// Maybe have two implements, an eager and a lazy one
 public sealed interface AnnotationList extends Iterable<Annotation> permits PackedAnnotationList {
 
     // If repeatable, invoke once perannotation
@@ -40,7 +41,7 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
         consumer.accept(t);
     }
 
-    /** {@return whether or not there are any annotations to read.} */
+    /** {@return whether or not there are any annotations in the list.} */
     boolean isEmpty();
 
     /**
@@ -51,6 +52,12 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
      */
     boolean isPresent(Annotation annotation);
 
+    /**
+     * {@return {@code true} if this list contains the one or more annotations of the specified type}
+     *
+     * @param annotation
+     *            annotation whose presence is to be tested
+     */
     boolean isPresent(Class<? extends Annotation> annotationClass);
 
     // Whaaat?
@@ -83,10 +90,10 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
 
     // <T extends Annotation> T[] toArray(Map<Integer, T[]>);
 
-
     /** {@return this list as a java.util.list} */
     List<Annotation> toList();
 
+    // Why not of(AnnotatedElement element)
     /**
      * Returns a list of all annotations on the specified class.
      *
@@ -148,6 +155,10 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
         return annotations.length == 0 ? of() : new PackedAnnotationList(annotations);
     }
 
+    default AnnotationList transform(Consumer<? super AnnotationList.Transformer> transformation) {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return an empty annotation list.} */
     static AnnotationList of() {
         return PackedAnnotationList.EMPTY;
@@ -175,6 +186,11 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
         requireNonNull(annotation1, "annotation1 is null");
         requireNonNull(annotation2, "annotation2 is null");
         return new PackedAnnotationList(new Annotation[] { annotation1, annotation2 });
+    }
+
+    interface Transformer {
+
+        Transformer remove(Class<? extends Annotation> annotationTypes);
     }
 }
 // Q) Skal vi bruge den udefra beans???

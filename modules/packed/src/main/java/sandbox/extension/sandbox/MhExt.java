@@ -21,12 +21,13 @@ import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
-import app.packed.bean.CodeGenerated;
+import app.packed.bean.ComputedConstant;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.lifetime.OnInitialize;
 import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.operation.OperationHandle;
 
 /**
@@ -54,7 +55,7 @@ public class MhExt extends BaseAssembly {
     public static class EBean {
         final MethodHandle mh;
 
-        public EBean(ExtensionContext context, @CodeGenerated MethodHandle f) throws Throwable {
+        public EBean(ExtensionContext context, @ComputedConstant MethodHandle f) throws Throwable {
             System.out.println("Got computed F");
             System.out.println(f.type());
             this.mh = f;
@@ -72,19 +73,20 @@ public class MhExt extends BaseAssembly {
 
         MyE() {}
 
-        BeanHandle h;
+        BeanHandle<?> h;
 
         public void ownL(Class<?> cl) {
-            h = base().newBean(BeanKind.UNMANAGED.template()).install(cl, BeanConfiguration::new).handle();
+            BeanTemplate.Installer builder = base().newApplicationBean(BeanKind.UNMANAGED.template());
+            h = builder.install(cl, BeanConfiguration::new);
         }
 
         @Override
         public void onAssemblyClose() {
             InstanceBeanConfiguration<EBean> b = base().install(EBean.class);
 
-            //Codegenerated.push(b,
+            // Codegenerated.push(b,
 
-            base().addCodeGenerator(b, MethodHandle.class, () -> {
+            b.bindCodeGenerator(MethodHandle.class, () -> {
                 if (h != null) {
                     OperationHandle oh = h.lifetimeOperations().get(0);
                     System.out.println(oh);

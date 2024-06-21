@@ -36,6 +36,7 @@ import internal.app.packed.container.NamespaceSetup;
 
 // I think a namespace can have restrictions Map<Permission, Set<Container>>
 
+// Do we also need a NamespaceNodeMirror????
 public abstract class NamespaceMirror<E extends Extension<E>> implements ComponentMirror {
 
     /*
@@ -123,6 +124,10 @@ public abstract class NamespaceMirror<E extends Extension<E>> implements Compone
     // All containers that are active, are containers that use the namespace in some way
     // PartialTreeView
     public final Stream<ContainerMirror> namespaceActiveContainers() {
+        throw new UnsupportedOperationException();
+    }
+
+    public final Stream<ContainerMirror> namespaceActiveBeans() {
         throw new UnsupportedOperationException();
     }
 }

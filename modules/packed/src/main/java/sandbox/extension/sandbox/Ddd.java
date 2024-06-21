@@ -26,9 +26,10 @@ import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
-import app.packed.extension.BeanClassActivator.AnnotatedBeanMethodActivator;
+import app.packed.container.ContainerConfiguration;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanIntrospector;
+import app.packed.extension.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.lifetime.OnInitialize;
 import app.packed.operation.OperationDependencyOrder;
@@ -43,8 +44,9 @@ public class Ddd extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
+        new Exception().printStackTrace();
         install(Oi.class);
-      //  use(MyEntityException.class).addEntityBean(String.class);
+        // use(MyEntityException.class).addEntityBean(String.class);
     }
 
     public static void main(String[] args) {
@@ -66,13 +68,14 @@ public class Ddd extends BaseAssembly {
         MyEntityException() {}
 
         public void addEntityBean(Class<?> entityBean) {
-            child().base().newBean(BeanKind.MANANGED.template()).install(entityBean, BeanConfiguration::new);
+            child().base().newApplicationBean(BeanKind.MANANGED.template()).install(entityBean, BeanConfiguration::new);
         }
 
         MyEntityException child() {
             MyEntityException c = child;
             if (c == null) {
-                ContainerHandle h = base().newContainer(ContainerTemplate.DEFAULT).named("EntityBeans").buildAndUseThisExtension();
+                ContainerHandle<?> h = base().newContainer(ContainerTemplate.DEFAULT).named("EntityBeans")
+                        .buildAndUseThisExtension(ContainerConfiguration::new);
                 c = child = fromHandle(h).get();
             }
             return c;
@@ -83,10 +86,10 @@ public class Ddd extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void activatedByAnnotatedMethod(Annotation hooks, BeanMethod on) {
-              //      base().runOnBeanInject(on.newDelegatingOperation());
+                public void triggeredByAnnotatedMethod(Annotation hooks, BeanMethod on) {
+                    // base().runOnBeanInject(on.newDelegatingOperation());
 
-                   // base().runOnBeanInject(on.newOperation());
+                    // base().runOnBeanInject(on.newOperation());
                 }
             };
         }
@@ -95,7 +98,7 @@ public class Ddd extends BaseAssembly {
 
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedBeanMethodActivator(allowInvoke = true, extension = MyEntityException.class)
+    @AnnotatedMethodBeanTrigger(allowInvoke = true, extension = MyEntityException.class)
     public @interface MyOnInitialize {
 
         /**

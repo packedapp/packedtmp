@@ -22,31 +22,14 @@ import java.util.function.Consumer;
 
 import app.packed.extension.Extension;
 import app.packed.util.Key;
-import sandbox.extension.container.ContainerTemplatePack;
+import sandbox.extension.container.ContainerTemplateLink;
 
 /**
  * Represent a communication channel between a parent container lifetime and a child container lifetime. This class is
  * exposed as {@link ContainerLifetimeChannel}.
  */
-public record PackedContainerTemplatePack(Class<? extends Extension<?>> extensionClass, Consumer<? super NonRootContainerBuilder> onUse,
-        Map<Key<?>, PackedContainerTemplatePack.KeyFragment> services) implements ContainerTemplatePack {
-
-    // is used in the (unlikely) scenario with multiple links
-    // that each provide something with the same key
-    @Override
-    public ContainerTemplatePack rekey(Key<?> from, Key<?> to) {
-        // from key must exist
-        // Advanced operation
-        // no case checks are performed
-        // or maybe we do anywhere, should probably be simple
-        throw new UnsupportedOperationException();
-    }
-
-    public void build(NonRootContainerBuilder builder) {
-        if (onUse != null) {
-            onUse.accept(builder);
-        }
-    }
+public record PackedContainerTemplatePack(Class<? extends Extension<?>> extension, Consumer<? super LeafContainerBuilder> onUse,
+        Map<Key<?>, PackedContainerTemplatePack.KeyFragment> services) implements ContainerTemplateLink {
 
     /** {@inheritDoc} */
     @Override
@@ -63,21 +46,21 @@ public record PackedContainerTemplatePack(Class<? extends Extension<?>> extensio
             newServices.put(key, fragment);
             s = Map.copyOf(newServices);
         }
-        return new PackedContainerTemplatePack(extensionClass(), onUse, s);
+        return new PackedContainerTemplatePack(extension(), onUse, s);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public PackedContainerTemplatePack withUse(Consumer<? super NonRootContainerBuilder> action) {
-        return new PackedContainerTemplatePack(extensionClass(), onUse == null ? action : onUse.andThen((Consumer) action), services);
+    public PackedContainerTemplatePack withUse(Consumer<? super LeafContainerBuilder> action) {
+        return new PackedContainerTemplatePack(extension(), onUse == null ? action : onUse.andThen((Consumer) action), services);
     }
 
-    public sealed interface KeyFragment permits KeyFragment.OfConstant, KeyFragment.OfExports, KeyFragment.OfExportsOrElse {
+    public sealed interface KeyFragment {
 
-        public record OfConstant(Object constant) implements KeyFragment {}
+        record OfConstant(Object constant) implements KeyFragment {}
 
-        public record OfExports() implements KeyFragment {}
+        record OfExports() implements KeyFragment {}
 
-        public record OfExportsOrElse(Object alternative) implements KeyFragment {}
+        record OfExportsOrElse(Object alternative) implements KeyFragment {}
     }
 }
 

@@ -17,6 +17,7 @@ package app.packed.application;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import app.packed.application.AbstractApp.DefaultApp;
 import app.packed.assembly.Assembly;
@@ -177,7 +178,21 @@ public interface App extends AutoCloseable {
         DefaultApp.BOOTSTRAP.verify(assembly, wirelets);
     }
 
+    // Problemet er lidt her at hvis App bestemmer noget som helst... andet en et raw interface
+    // Saa skal vi ogsaa bruge den naar vi tester. Fordi ellers er det jo en anden application
+
+    // Paa en eller anden maade vil vi teste nogle ting
+    // Er det her???? Eller et andet sted?
+    // Altsaa meningen er vel vi bygger en app med alt muligt gejl
+
+    // Maaske Brug Verify...
+    // Og koer den med Tester.xyz IDK. Super godt sporgsmaal
+    static void test(Assembly assembly, Consumer<? /* TestObject */> cno, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
     /** An image for App. */
+    // Mirror???? Would be nice to know what is in the image...
     interface Image {
 
         /** Runs the application represented by this image. */
@@ -188,6 +203,8 @@ public interface App extends AutoCloseable {
          *
          * @param wirelets
          *            optional wirelets
+         * @throws app.packed.container.WireletException
+         *             if a build wirelet is exposed
          */
         void run(Wirelet... wirelets);
 

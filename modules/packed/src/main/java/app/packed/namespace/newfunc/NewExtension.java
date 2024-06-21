@@ -15,7 +15,6 @@
  */
 package app.packed.namespace.newfunc;
 
-import app.packed.component.InstalledComponent;
 import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceConfiguration;
 import app.packed.namespace.NamespaceHandle;
@@ -25,11 +24,14 @@ import app.packed.namespace.NamespaceHandle;
  */
 public class NewExtension<E extends Extension<?>> {
 
-    protected <N extends NamespaceConfiguration<?>> InstalledComponent<NamespaceHandle, N> namespace(Class<N> namespaceClass) {
+//    protected <T extends NamespaceConfiguration<?>> BeanHandle<T> namespace(Class<?> beanClass, Function<? super BeanHandle.Installer, T> configurationCreator);
+
+
+    protected <N extends NamespaceConfiguration<?>> NamespaceHandle<N> namespace(Class<N> namespaceClass) {
         return namespace(namespaceClass, "main");
     }
 
-    protected <N extends NamespaceConfiguration<?>> InstalledComponent<NamespaceHandle, N> namespace(Class<N> namespaceClass, String name) {
+    protected <N extends NamespaceConfiguration<?>> NamespaceHandle<N> namespace(Class<N> namespaceClass, String name) {
         throw new UnsupportedOperationException();
     }
 }

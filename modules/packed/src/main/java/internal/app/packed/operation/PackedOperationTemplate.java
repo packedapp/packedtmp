@@ -78,7 +78,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
             throw new IllegalArgumentException("This template already contains the context " + context.contextClass());
         }
         m = Map.copyOf(m);
-        MethodType mt = methodType.appendParameterTypes(context.implementationClass());
+        MethodType mt = methodType.appendParameterTypes(context.contextImplementationClass());
         return new PackedOperationTemplate(m, extensionContext, beanInstanceIndex, mt, ignoreReturn);
     }
 

@@ -41,7 +41,7 @@ public final class DeploymentSetup {
 
     public final PackedLocalMap locales = new PackedLocalMap();
 
-    DeploymentSetup(ApplicationSetup root, PackedContainerBuilder containerBuilder) {
+    DeploymentSetup(ApplicationSetup root, PackedContainerInstaller containerBuilder) {
         this.root = requireNonNull(root);
         this.goal = containerBuilder.goal();
     }

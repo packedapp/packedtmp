@@ -16,6 +16,7 @@
 package app.packed.bean;
 
 /** This enum represents the various type of bean sources that can be used when installing a bean. */
+// Add Virtual/Synthetic??? How is this compared to Sourceless
 public enum BeanSourceKind {
 
     /**

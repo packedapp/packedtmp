@@ -31,6 +31,7 @@ import app.packed.assembly.Assembly;
 import app.packed.extension.BeanElement;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
+import app.packed.util.AnnotationList;
 import app.packed.util.Variable;
 
 
@@ -81,7 +82,10 @@ import app.packed.util.Variable;
 
 // How do we handle super classes???
 
+// extends SyntheticBean???
 public interface BeanClassMutator {
+
+    AnnotationList annotations();
 
     // add(OperationType.of(void.class, SomeService, e->{});
     void addFunction(OperationType type, Object function);

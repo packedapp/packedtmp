@@ -19,10 +19,6 @@ Kan enten laves brugeren eller af en extension som saa vil eje alle containere
 
 // Features
 
-
-
-
-
 LazyBuild -> Byg naar (og hvis) den skal bruges. Vi bliver noedt til at supportere service proxies
 
 

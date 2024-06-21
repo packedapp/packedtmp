@@ -22,6 +22,8 @@ package app.packed.assembly;
  */
 // Is Propagation common outside of just assemblies
 public interface AssemblyPropagator {
+
+    // RECURSIVELY?
     AssemblyPropagator ALL = new All();
     AssemblyPropagator LOCAL = new Local();
 

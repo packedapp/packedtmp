@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanClassActivator.BindingClassActivator;
+import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import internal.app.packed.container.WireletSelectionArray;
 
 /**
@@ -29,7 +29,7 @@ import internal.app.packed.container.WireletSelectionArray;
  * The framework provides no automatic way to guard against use of multiple wirelets of the same type. Typically you
  * would just select the {@link #last()} one if this is an issue.
  */
-@BindingClassActivator(extension = BaseExtension.class)
+@BindingClassBeanTrigger(extension = BaseExtension.class)
 public sealed interface WireletSelection<W extends Wirelet> extends Iterable<W> permits WireletSelectionArray {
 
     /** {@return the first wirelet in this selection or empty {@code Optional}, if no wirelets are present} */

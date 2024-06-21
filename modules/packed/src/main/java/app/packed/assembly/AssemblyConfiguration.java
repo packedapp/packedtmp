@@ -31,9 +31,9 @@ import internal.app.packed.container.PackedAssemblyFinder;
  * The configuration of an assembly.
  */
 // Is not a component... Syntes stadig maaske, IDK???
-public class AssemblyConfiguration {
+public final class AssemblyConfiguration {
 
-    AssemblySetup assembly;
+    final AssemblySetup assembly;
 
     AssemblyConfiguration(AssemblySetup assembly) {
         this.assembly = assembly;
@@ -42,7 +42,7 @@ public class AssemblyConfiguration {
     /** {@return an assembly finder that can be used to find assemblies on the class- or module-path.} */
     // Classpath if the assembly is on the classpath, otherwise modulepath
     // Maybe this is on the container level???? And not Assembly Level
-    public final AssemblyFinder assemblyFinder() {
+    public AssemblyFinder assemblyFinder() {
         return new PackedAssemblyFinder(getClass(), assembly);
     }
 
@@ -51,7 +51,7 @@ public class AssemblyConfiguration {
 //  }
 
     /** {@return the current state of the assembly.} */
-    protected final Assembly.State assemblyState() {
+    protected Assembly.State assemblyState() {
         throw new UnsupportedOperationException();
     }
 
@@ -68,17 +68,22 @@ public class AssemblyConfiguration {
      * @throws UnsupportedOperationException
      *             if configurations of the specified component type are not supported from this method
      */
-    public final <T extends ComponentConfiguration> Stream<T> configurations(Class<T> configurationType) {
+    public <T extends ComponentConfiguration> Stream<T> configurations(Class<T> configurationType) {
         throw new UnsupportedOperationException();
     }
 
+    // Maybe just containers().root();
+    public ContainerConfiguration containerRoot() {
+        return assembly.container.configuration;
+    }
+
     /** {@return a tree view of all the containers defined by the assembly} */
-    public final TreeView<? extends ContainerConfiguration> containers() {
+    public TreeView<? extends ContainerConfiguration> containers() {
         throw new UnsupportedOperationException();
     }
 
     // I think maybe allow null to revert back to Assembly Based lookup
-    public final void lookup(Lookup lookup) {
+    public void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
     }
 
@@ -90,12 +95,11 @@ public class AssemblyConfiguration {
      * @throws IllegalStateException
      *             if called from outside of {@link #build()}
      */
-    public final void specializeMirror(Supplier<? extends AssemblyMirror> supplier) {
+    public void specializeMirror(Supplier<? extends AssemblyMirror> supplier) {
         requireNonNull(supplier, "supplier cannot be null");
         throw new UnsupportedOperationException();
     }
 }
-
 
 //
 //// Think just have a containers() method...

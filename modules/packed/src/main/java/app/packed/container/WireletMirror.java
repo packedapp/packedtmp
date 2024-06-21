@@ -17,19 +17,21 @@ package app.packed.container;
 
 import java.util.Optional;
 
-import app.packed.application.ApplicationPhase;
-import app.packed.component.Mirror;
+import app.packed.build.BuildMirror;
 import app.packed.extension.Extension;
 
 /**
- * A mirror representing a wirelet specified at build- or runtime.
- *
+ * A mirror representing a wirelet that was specified at build-time.
  * <p>
+ * NOTICE: As by design (build) mirror classes cannot be used to introspect which wirelets that have been specified at
+ * runtime.
  *
- * @apiNote composite wirelets are never returned as a single mirror, but always expanded
+ * @apiNote composite wirelets are never returned as a single mirror, they are always expanded to the individual
+ *          wirelets
  */
 // What about guarded wirelets or wrapped wirelets??? They kind of change
-public interface WireletMirror extends Mirror {
+// The bad thing about calling it a mirror. Is that it is not great for runtime
+public interface WireletMirror extends BuildMirror {
 
     // If this extension an extension wirelet. The extension the wirelet is a part of
     Optional<Class<? extends Extension<?>>> extension();
@@ -41,8 +43,6 @@ public interface WireletMirror extends Mirror {
     Optional<WireletMirror> previous();
 
     ContainerMirror specificationSite();
-
-    ApplicationPhase specifiedAt();
 
     /** {@return the implementation of the wirelet.} */
     Class<? extends Wirelet> wireletClass();

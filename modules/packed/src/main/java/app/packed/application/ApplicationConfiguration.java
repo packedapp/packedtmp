@@ -19,8 +19,9 @@ import java.util.function.Consumer;
 
 import app.packed.assembly.Assembly;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentPath;
+import app.packed.component.ComponentHandle;
 import internal.app.packed.container.ApplicationSetup;
+import internal.app.packed.container.PackedApplicationHandle;
 
 /**
  *
@@ -28,21 +29,16 @@ import internal.app.packed.container.ApplicationSetup;
 // By default it is configuration everywhere..
 // Maybe have a freeze()/protect() operation/
 
-public non-sealed class ApplicationConfiguration implements ComponentConfiguration, ApplicationLocal.ApplicationLocalAccessor {
+public final class ApplicationConfiguration extends ComponentConfiguration implements ApplicationLocal.ApplicationLocalAccessor {
 
-    ApplicationSetup application;
+    final ApplicationSetup application;
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentPath componentPath() {
-        return application.componentPath();
+    public ApplicationConfiguration(ApplicationHandle handle) {
+        this.application = ((PackedApplicationHandle) handle).application();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentConfiguration componentTag(String... tags) {
-        return null;
-    }
+
+    public void allowAll() {}
 
     // isConfigurable?? Models
 
@@ -51,10 +47,21 @@ public non-sealed class ApplicationConfiguration implements ComponentConfigurati
     // Per assembly, requires that we can create new application configurations.
     // when needed
 
+    // replace with AssemblyModel (or AssemblyDescriptor)
+    public void allowAll(Consumer<? super Class<? extends Assembly>> c) {}
+
     /** {@inheritDoc} */
     @Override
-    public boolean isConfigurable() {
-        throw new UnsupportedOperationException();
+    protected ComponentHandle componentHandle() {
+        return new PackedApplicationHandle(application);
+    }
+
+    // matcher
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentConfiguration componentTag(String... tags) {
+        return null;
     }
 
     /**
@@ -65,12 +72,4 @@ public non-sealed class ApplicationConfiguration implements ComponentConfigurati
     public void named(String name) {
 
     }
-
-
-    public void allowAll() {}
-
-    // matcher
-
-    // replace with AssemblyModel (or AssemblyDescriptor)
-    public void allowAll(Consumer<? super Class<? extends Assembly>> c) {}
 }

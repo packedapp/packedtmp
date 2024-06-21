@@ -22,7 +22,7 @@ import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
 import app.packed.util.Key;
 import internal.app.packed.bean.BeanSetup;
-import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.bean.BeanTemplate;
 
 /**
  * The configuration of bean that have instances at runtime. This is all beans except for {@link BeanKind#STATIC beans}.
@@ -32,15 +32,13 @@ import sandbox.extension.bean.BeanHandle;
  */
 public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 
-    public InstanceBeanConfiguration() {}
-
     /**
      * Creates a new InstanceBeanConfiguration.
      *
      * @param handle
      *            the bean handle
      */
-    public InstanceBeanConfiguration(BeanHandle handle) {
+    public InstanceBeanConfiguration(BeanTemplate.Installer handle) {
         super(handle);
     }
 
@@ -60,14 +58,14 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public <K> InstanceBeanConfiguration<T> overrideService(Class<K> key, K instance) {
-        return overrideService(Key.of(key), instance);
+    public <K> InstanceBeanConfiguration<T> bindInstance(Class<K> key, K instance) {
+        return bindInstance(Key.of(key), instance);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <K> InstanceBeanConfiguration<T> overrideService(Key<K> key, K instance) {
-        super.overrideService(key, instance);
+    public <K> InstanceBeanConfiguration<T> bindInstance(Key<K> key, K instance) {
+        super.bindInstance(key, instance);
         return this;
     }
 

@@ -7,11 +7,12 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.DeploymentMirror;
-import app.packed.build.BuildTransformerMirror;
-import app.packed.component.Mirror;
+import app.packed.build.BuildCodeSourceMirror;
+import app.packed.build.hook.BuildHookMirror;
+import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanClassActivator.BindingClassActivator;
+import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.util.AnnotationList;
 import app.packed.util.TreeView;
 import app.packed.util.TreeView.Node;
@@ -27,8 +28,8 @@ import internal.app.packed.container.ContainerSetup.PackedContainerTreeMirror;
  * @see ApplicationMirror#assembly()
  * @see ContainerMirror#assembly()
  */
-@BindingClassActivator(extension = BaseExtension.class)
-public class AssemblyMirror implements Mirror {
+@BindingClassBeanTrigger(extension = BaseExtension.class)
+public non-sealed class AssemblyMirror implements BuildCodeSourceMirror {
 
     /** The assembly we are mirroring. */
     private final AssemblySetup assembly;
@@ -44,17 +45,10 @@ public class AssemblyMirror implements Mirror {
         this.assembly = AssemblySetup.MIRROR_INITIALIZER.initialize();
     }
 
-    public Stream<BuildTransformerMirror> declaredTransformers() {
-        throw new UnsupportedOperationException();
-    }
-
-    public Stream<BuildTransformerMirror> transformers() {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      *
-     * This list only containers relevant annotations that are understod by the framework. Or does it? I think it should contain all annotations
+     * This list only containers relevant annotations that are understod by the framework. Or does it? I think it should
+     * contain all annotations
      *
      * @return
      *
@@ -96,12 +90,9 @@ public class AssemblyMirror implements Mirror {
         return Duration.ofNanos(Math.max(0, assembly.assemblyBuildFinishedTime - assembly.assemblyBuildStartedTime));
     }
 
-    /** {@return a list of hooks that are applied to containers defined by the assembly.} */
-    // TODO present on ContainerMirror as well? Maybe a ContainerHookMirror, I really think it should be
-    // Would be nice to see if a given assembly hook was applied to the container.
-    // And the order
-    public List<Class<? extends TransformAssembly>> assemblyHooks() {
-        return List.of(); // TODO implement
+    /** {@return a stream of all build hooks that have been applied to the assembly} */
+    public Stream<BuildHookMirror> buildHooks() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -128,6 +119,22 @@ public class AssemblyMirror implements Mirror {
         return list;
     }
 
+    /** {@return a list of hooks that are applied to containers defined by the assembly.} */
+    // TODO present on ContainerMirror as well? Maybe a ContainerHookMirror, I really think it should be
+    // Would be nice to see if a given assembly hook was applied to the container.
+    // And the order
+//    public List<Class<? extends TransformAssembly>> assemblyHooks() {
+//        return List.of(); // TODO implement
+//    }
+
+    // do we need a allComponents() that includes not-developer components
+    public TreeView<ComponentMirror> components() {
+        // Ideen er vi itererer over alle componenter
+        // Men ApplicationMirror<-AssemblyMirror<-ContainerMirror
+        // AssemblyMirror er lidt dum... Maaske er det ikke et trae
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return the root container this assembly defines.} */
     // I think remove it from now, and replace with containers().root()
     public ContainerMirror container() {
@@ -137,6 +144,21 @@ public class AssemblyMirror implements Mirror {
     /** {@return the tree of containers this assembly defines.} */
     public ContainerMirror.OfTree containers() {
         return new PackedContainerTreeMirror(assembly.container, c -> c.assembly == assembly);
+    }
+
+    public Stream<BuildHookMirror> declaredBuildHooks() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * <p>
+     * This list only contains assembly build hooks that are left after
+     * {@link AssemblyBuildHook#transformBuildHooks(AssemblyDescriptor, List)} has been executed for all assembly hooks
+     *
+     * @return
+     */
+    public List<BuildHookMirror> declaredBuildHooks2() {
+        return List.of();
     }
 
     public List<Class<? extends DelegatingAssembly>> delegatedFrom() {
@@ -193,7 +215,6 @@ public class AssemblyMirror implements Mirror {
         default ContainerMirror.OfTree containers() {
             throw new UnsupportedOperationException();
         }
-
 
         /**
          *

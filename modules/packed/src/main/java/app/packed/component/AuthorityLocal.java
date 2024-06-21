@@ -22,12 +22,23 @@ import app.packed.build.BuildLocal;
  */
 // ContainerScope, ApplicationScope
 // Do we support stuff that is not components????
+// Det er vel mere paa Bean niveau. Giver ikke mening paa container/application scope
 
-// Is Authority a component??? Hmmm
+// Jeg tror faktisk ikke den giver mening.
+// Maaske vi kan have den paa BuildLocal??? get(Authority, );
+// Alternativt, har folk bare et HashMap<Authority, ) paa en BuildLocal
+
+// USECASES????
+// I think, for example, ServiceNamespace
+
+
+// Maybe it is a special ApplicationLocal.of(authority) instead
+// I think I like the this instead of a separate interface
+
 public non-sealed interface AuthorityLocal<T> extends BuildLocal<AuthorityLocal.AuthorityLocalAccessor, T> {
 
     // Explicitly on the authority
-    T get(Authority authority);
+    T get(Authority authority); //wtf???
 
     // All omkring beans vil jeg mene...
     // Extension???

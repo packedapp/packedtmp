@@ -22,8 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanClassActivator.AnnotatedBeanFieldActivator;
-import app.packed.extension.BeanClassActivator.AnnotatedBeanMethodActivator;
+import app.packed.extension.BeanTrigger.AnnotatedFieldBeanTrigger;
+import app.packed.extension.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.namespace.sandbox.NamespaceAnnotation;
 
 /**
@@ -55,8 +55,8 @@ import app.packed.namespace.sandbox.NamespaceAnnotation;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @NamespaceAnnotation
-@AnnotatedBeanMethodActivator(extension = BaseExtension.class, allowInvoke = true)
-@AnnotatedBeanFieldActivator(extension = BaseExtension.class, allowGet = true)
+@AnnotatedMethodBeanTrigger(extension = BaseExtension.class, allowInvoke = true)
+@AnnotatedFieldBeanTrigger(extension = BaseExtension.class, allowGet = true)
 public @interface Provide {
     String namespace() default NamespaceAnnotation.DEFAULT_NAMESPACE;
 }

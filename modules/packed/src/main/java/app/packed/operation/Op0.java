@@ -38,15 +38,15 @@ import java.util.function.Supplier;
 public abstract class Op0<R> extends CapturingOp<R> {
 
     /**
-     * Creates a new op, that use the specified supplier to provide values.
+     * Creates a new op, that use the specified function to provide values.
      *
-     * @param supplier
-     *            the supplier that will provide values for the op.
+     * @param function
+     *            the function that will provide values for the op.
      * @throws IllegalArgumentException
      *             if the type variable R could not be determined.
      */
-    protected Op0(Supplier<? extends R> supplier) {
-        super(requireNonNull(supplier, "supplier is null"));
+    protected Op0(Supplier<? extends R> function) {
+        super(requireNonNull(function, "function is null"));
     }
 }
 //

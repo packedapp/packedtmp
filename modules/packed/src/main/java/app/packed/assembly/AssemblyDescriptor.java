@@ -20,6 +20,8 @@ package app.packed.assembly;
  */
 
 // Ideen er lidt at vi har alle delegates her der bliver merged
+// Immutable Build time information....
+//
 public interface AssemblyDescriptor {
 
     // Will call all DelegatingAssembly.delegateTo

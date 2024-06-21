@@ -199,7 +199,7 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         public static BootstrapAppInternals extractInternals(BootstrapApp<?> app) {
             try {
                 Object holder = read(app, "setup");
-                return new BootstrapAppInternals(read(holder, "mirrorSupplier"), read(holder, "template"), read(holder, "mh"));
+                return new BootstrapAppInternals(read(holder, "mirrorSupplier"), read(holder, "template"), read(holder, "applicationLauncher"));
             } catch (ReflectiveOperationException e) {
                 throw new AssertionError(e);
             }

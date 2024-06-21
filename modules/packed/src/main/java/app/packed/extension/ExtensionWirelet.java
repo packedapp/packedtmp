@@ -32,7 +32,9 @@ import app.packed.container.WireletSelection;
  *
  * @see Extension#selectWirelets(Class)
  */
-public non-sealed abstract class ExtensionWirelet<E extends Extension<E>> extends Wirelet {
+// Maybe ditch it and only allow wirelets
+// Maybe keep it and just be like. Advised to use this to get better exception messages
+public abstract class ExtensionWirelet<E extends Extension<E>> extends Wirelet {
 
     /**
      * Invoked by the runtime if the wirelet is not consumed. Either at build-time using

@@ -89,7 +89,7 @@ public final class AssemblySetup implements KeyAndLocalMapSource , ActualNode<As
      * @param assembly
      *            the assembly instance
      */
-    public AssemblySetup(PackedContainerBuilder builder, Assembly assembly) {
+    public AssemblySetup(PackedContainerInstaller builder, Assembly assembly) {
         assert (!(assembly instanceof DelegatingAssembly));
         this.node = new TreeNode<>(builder.parent == null ? null : builder.parent.assembly, this);
         this.assembly = assembly;

@@ -17,7 +17,7 @@ package app.packed.service;
 
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.util.Key;
-import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.bean.BeanTemplate;
 
 /**
  * A configuration of a container bean.
@@ -25,15 +25,13 @@ import sandbox.extension.bean.BeanHandle;
 // ServiceableBeanConfiguration?
 public class ServiceableBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
-    public ServiceableBeanConfiguration() {}
-
     /**
      * Create a new bean configuration.
      *
      * @param handle
      *            the bean handle this configuration wraps
      */
-    public ServiceableBeanConfiguration(BeanHandle handle) {
+    public ServiceableBeanConfiguration(BeanTemplate.Installer handle) {
         super(handle);
     }
 
@@ -47,7 +45,7 @@ public class ServiceableBeanConfiguration<T> extends InstanceBeanConfiguration<T
     /** {@return the default key that services will be provided as.} */
     @SuppressWarnings("unchecked")
     public Key<T> defaultKey() {
-        return (Key<T>) handle().defaultKey();
+        return (Key<T>) beanHandle().defaultKey();
     }
 
     public ServiceableBeanConfiguration<T> export() {
@@ -59,7 +57,7 @@ public class ServiceableBeanConfiguration<T> extends InstanceBeanConfiguration<T
     }
 
     public ServiceableBeanConfiguration<T> exportAs(Key<? super T> key) {
-        handle().exportAs(key);
+        beanHandle().exportAs(key);
         return this;
     }
 
@@ -97,7 +95,7 @@ public class ServiceableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      * @see #provideAs(Class)
      */
     public ServiceableBeanConfiguration<T> provideAs(Key<? super T> key) {
-        handle().provideAs(key);
+        beanHandle().provideAs(key);
         return this;
     }
 }

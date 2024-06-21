@@ -11,7 +11,7 @@ import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
 import java.util.stream.Stream;
 
-import app.packed.component.Mirror;
+import app.packed.build.BuildCodeSourceMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.util.Nullable;
 import app.packed.util.TreeView.Node;
@@ -44,7 +44,7 @@ import internal.app.packed.container.ExtensionSetup;
  */
 // Extensions does not have a runtime representation and is hence not a component.
 // Unfortunately, you can argue the same with Assembly...
-public abstract class ExtensionMirror<E extends Extension<E>> implements Mirror {
+public abstract non-sealed class ExtensionMirror<E extends Extension<E>> implements BuildCodeSourceMirror {
 
     /*
      * When naming methods in this class try to avoid using trivial names such as {@code name}, {@code type}, {@code stream}

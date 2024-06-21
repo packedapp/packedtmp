@@ -22,8 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanClassActivator.AnnotatedBeanFieldActivator;
-import app.packed.extension.BeanClassActivator.AnnotatedBeanMethodActivator;
+import app.packed.extension.BeanTrigger.AnnotatedFieldBeanTrigger;
+import app.packed.extension.BeanTrigger.AnnotatedMethodBeanTrigger;
 
 /**
  * Ideen er at provide context fra en bean. Typisk container brug.
@@ -45,8 +45,8 @@ import app.packed.extension.BeanClassActivator.AnnotatedBeanMethodActivator;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedBeanMethodActivator(extension = BaseExtension.class, allowInvoke = true)
-@AnnotatedBeanFieldActivator(extension = BaseExtension.class, allowGet = true)
+@AnnotatedMethodBeanTrigger(extension = BaseExtension.class, allowInvoke = true)
+@AnnotatedFieldBeanTrigger(extension = BaseExtension.class, allowGet = true)
 // Skal returnere implementationen
 public @interface ContainerContextProvide {
     // Det kan vi vel extracte fra metode/field signaturen

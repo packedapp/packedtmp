@@ -19,10 +19,10 @@ import java.util.function.Function;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.context.Context;
-import app.packed.lifetime.LifetimeKind;
+import app.packed.lifetime.LifecycleKind;
 import app.packed.lifetime.StopOption;
 import internal.app.packed.container.InternalBuildWirelet;
-import internal.app.packed.container.PackedContainerBuilder;
+import internal.app.packed.container.PackedContainerInstaller;
 
 /**
  * Wirelets that can be used when building an application.
@@ -68,7 +68,7 @@ public final class Wirelets {
     }
 
     // Should probably be a lifetime wirelet
-    public static Wirelet conditionalOnApplicationLifetimeKind(LifetimeKind kind, Wirelet w) {
+    public static Wirelet conditionalOnApplicationLifetimeKind(LifecycleKind kind, Wirelet w) {
         throw new UnsupportedOperationException();
     }
 
@@ -92,7 +92,7 @@ public final class Wirelets {
 
             /** {@inheritDoc} */
             @Override
-            protected void onBuild(PackedContainerBuilder builder) {
+            protected void onBuild(PackedContainerInstaller builder) {
                 checkIsApplication(builder, this); // maybe explicit error msg
                 builder.optionBuildApplicationLazy = true;
             }
@@ -131,7 +131,7 @@ public final class Wirelets {
 
             /** {@inheritDoc} */
             @Override
-            protected void onBuild(PackedContainerBuilder builder) {
+            protected void onBuild(PackedContainerInstaller builder) {
                 checkIsApplication(builder, this); // maybe explicit error msg
                 builder.optionBuildReusableImage = true;
             }
@@ -158,7 +158,7 @@ public final class Wirelets {
 
             /** {@inheritDoc} */
             @Override
-            protected void onBuild(PackedContainerBuilder installer) {}
+            protected void onBuild(PackedContainerInstaller installer) {}
         }
         return new ApplicationShutdownHookWirelet();
     }

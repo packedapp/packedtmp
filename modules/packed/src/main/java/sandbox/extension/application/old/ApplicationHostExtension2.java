@@ -25,7 +25,6 @@ import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import sandbox.extension.bean.BeanHandle;
-import sandbox.extension.bean.BeanHandle.Builder;
 import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.operation.OperationTemplate;
 
@@ -42,8 +41,7 @@ import sandbox.extension.operation.OperationTemplate;
 //ApplicationInstaller?
 class ApplicationHostExtension2 extends FrameworkExtension<ApplicationHostExtension2> {
 
-    static final ContextTemplate CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationLaunchContext.class,
-            ApplicationLaunchContext.class);
+    static final ContextTemplate CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationLaunchContext.class, ApplicationLaunchContext.class);
 
     static final OperationTemplate ot = OperationTemplate.raw().withContext(CIT).returnTypeObject();
 
@@ -53,26 +51,36 @@ class ApplicationHostExtension2 extends FrameworkExtension<ApplicationHostExtens
 
     ApplicationHostExtension2() {}
 
-    private <T> ApplicationHostConfiguration<T> newApplication(BeanHandle handle) {
+    @SuppressWarnings("unused")
+    private <T> ApplicationHostConfiguration<T> newApplication(BeanHandle<?> handle) {
         runOnCodegen(() -> mh = handle.lifetimeOperations().get(0).generateMethodHandle());
 
-        return handle.configure(ApplicationHostConfiguration::new);
-
+        // return handle.configure(ApplicationHostConfiguration::new);
+        return null;
 //        return new ApplicationHostConfiguration<>(handle);
     }
 
-    public <T> ApplicationHostConfiguration<T> newApplication(Class<T> guestBean) {
-        // We need the attachment, because ContainerGuest is on
-        Builder bi = base().newBean(BLT);
-        return newApplication(bi.install(guestBean));
+//    public <T> ApplicationHostConfiguration<T> newApplication(Class<T> guestBean) {
+//        // We need the attachment, because ContainerGuest is on
+//        Builder bi = base().newBean(BLT);
+//        BeanHandle handle = bi.oldInstall(guestBean);
+//        runOnCodegen(() -> mh = handle.lifetimeOperations().get(0).generateMethodHandle());
+//
+//        return handle.configure(ApplicationHostConfiguration::new);
+//    }
+
+    public <T> ApplicationHostConfiguration<T> newApplicationX(Class<T> guestBean) {
+        BeanHandle<ApplicationHostConfiguration<T>> handle = base().newApplicationBean(BLT).install(guestBean, ApplicationHostConfiguration::new);
+        handle.lifetimeOperations().get(0).generateMethodHandleOnCodegen(m -> mh = m);
+        return handle.configuration();
     }
 
     public <T> ApplicationHostConfiguration<T> newApplication(Op<T> guestBean) {
-        // We need the attachment, because ContainerGuest is on
-        Builder bi = base().newBean(BLT);
-        return newApplication(bi.install(guestBean));
+        throw new UnsupportedOperationException();
+//        // We need the attachment, because ContainerGuest is on
+//        Builder bi = base().newBean(BLT);
+//        return newApplication(bi.install(guestBean));
     }
-
 
 }
 // installPermanent

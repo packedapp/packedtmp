@@ -27,13 +27,13 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.extension.ExtensionContext;
 import app.packed.lifetime.ContainerLifetimeMirror;
-import app.packed.lifetime.LifetimeKind;
+import app.packed.lifetime.LifecycleKind;
 import app.packed.lifetime.RunState;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanLifecycleOperation;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.PackedContainerBuilder;
+import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.entrypoint.OldContainerEntryPointManager;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
@@ -86,7 +86,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
      * @param origin
      * @param parent
      */
-    public ContainerLifetimeSetup(PackedContainerBuilder installer, ContainerSetup newContainer, @Nullable ContainerLifetimeSetup parent) {
+    public ContainerLifetimeSetup(PackedContainerInstaller installer, ContainerSetup newContainer, @Nullable ContainerLifetimeSetup parent) {
         super(parent);
         this.lifetimes = FuseableOperation.of(List.of(OperationTemplate.defaults())); // obviously wrong
         this.initialization = new FuseableOperation(OperationTemplate.defaults());
@@ -111,7 +111,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     /** {@inheritDoc} */
     @Override
-    public LifetimeKind lifetimeKind() {
+    public LifecycleKind lifetimeKind() {
         throw new UnsupportedOperationException();
     }
 

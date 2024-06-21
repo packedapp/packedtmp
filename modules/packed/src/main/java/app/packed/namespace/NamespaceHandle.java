@@ -25,7 +25,9 @@ import app.packed.component.ComponentHandle;
 // Og fordi jeg ogsaa tror vi faar nogle callbacks...
 
 // Og hvis ikke skal vi ikke saa kun have Operator ogsaa for beans, osv
-public interface NamespaceHandle extends ComponentHandle {
+public non-sealed interface NamespaceHandle<C extends NamespaceConfiguration<?>> extends ComponentHandle {
+
+    C configuration();
 
     String name();
 
@@ -34,4 +36,6 @@ public interface NamespaceHandle extends ComponentHandle {
 //     */
 //    void named(String name);
 
+
+    interface ContainerNode {}
 }

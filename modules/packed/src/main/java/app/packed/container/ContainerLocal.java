@@ -45,6 +45,10 @@ public sealed interface ContainerLocal<T> extends BuildLocal<ContainerLocal.Cont
      *            the value to set the local to
      * @return the new wirelet
      */
+    // Hmm, extension wirelet??
+    // Maybe on wirelet???
+
+    // Problemet er consumption... Vi checker jo ikke om en wirelet er blevet laest
     Wirelet wireletSetter(T value);
 
     /**

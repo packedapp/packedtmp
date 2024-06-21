@@ -19,7 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.component.Authority;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentPath;
+import app.packed.component.ComponentHandle;
+import app.packed.container.ContainerPropagator;
 import app.packed.extension.Extension;
 import app.packed.util.TreeView;
 
@@ -29,7 +30,7 @@ import app.packed.util.TreeView;
  * Namespace configurations are unique per container|name configuration.
  *
  * <p>
- * Since namespaces may be shared across assemblies. Each container gets their own configuration instance.
+ * Since a namespace can be shared between multiple may be shared across assemblies. Each container gets their own configuration instance.
  *
  */
 
@@ -50,7 +51,13 @@ import app.packed.util.TreeView;
 
 // We have an NamespaceConfiguration per extension and per authority
 // We do not distinguish about whether or not the user is the user or an Extension
-public abstract class NamespaceConfiguration<E extends Extension<E>> implements ComponentConfiguration {
+
+// Namespace by itself it not particular usefull, but all other component configuration are not abstract
+// They may also serve as an activity record. Whenever a Conf is created we are active...
+// Also if we have onXX we need to maintain them once created
+
+// This is not called NamespaceNodeConfiguration because we dont want ServiceNamespaceNodeConfiguration
+public class NamespaceConfiguration<E extends Extension<E>> extends ComponentConfiguration {
 
 
     // CRAP! Maaden man installere beans fra brugere, og extensions er jo helt forskelligt....
@@ -61,18 +68,13 @@ public abstract class NamespaceConfiguration<E extends Extension<E>> implements 
     E extension;
 
     // The handle is for whole namespace. Visible only to the extension itself
-    private final NamespaceHandle handle;
+    private final NamespaceHandle<?> handle;
 
-    protected NamespaceConfiguration(NamespaceHandle handle) {
+    protected NamespaceConfiguration(NamespaceHandle<?> handle) {
         this.handle = requireNonNull(handle);
     }
 
     protected final Authority authority() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public ComponentConfiguration componentTag(String... tags) {
         throw new UnsupportedOperationException();
     }
 
@@ -84,21 +86,20 @@ public abstract class NamespaceConfiguration<E extends Extension<E>> implements 
 
     }
 
-    protected final void checkIsConfigurable() {
-        if (!isConfigurable()) {
-            throw new IllegalStateException("The bean is no longer configurable");
-        }
-    }
+//    @Override
+//    public final ComponentPath componentPath() {
+//        // We have the unique name of the extension/namespace
+//        // We have the path of the container
+//        // We have the name of the namespace
+//
+//        // Maybe namespace types need a unique name similar to extensions within an application
+//        // I think they are specific type of componentKind for each namespace
+//        return null;
+//    }
 
     @Override
-    public final ComponentPath componentPath() {
-        // We have the unique name of the extension/namespace
-        // We have the path of the container
-        // We have the name of the namespace
-
-        // Maybe namespace types need a unique name similar to extensions within an application
-        // I think they are specific type of componentKind for each namespace
-        return null;
+    public ComponentConfiguration componentTag(String... tags) {
+        throw new UnsupportedOperationException();
     }
 
     /** {@return the extension instance for which this configuration has been created.} */
@@ -106,18 +107,20 @@ public abstract class NamespaceConfiguration<E extends Extension<E>> implements 
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean isConfigurable() {
-        return handle.isConfigurable();
+    public String name() {
+        return handle.name();
+    }
+
+    protected final TreeView.Node<Extension<?>> node() {
+        throw new UnsupportedOperationException();
     }
 
     // Unless Explicitly set
     // Kan vi rename efter den er blevet bundet???
     // Kan risikere kollisioner i en assembly laengere nede
 
-    public String name() {
-        return handle.name();
+    public NamespaceConfiguration<E> noPropagation(){
+        return propagate(ContainerPropagator.LOCAL);
     }
 
     // Der er et eller andet naar vi laver namespaces efter at have linket... En container
@@ -129,8 +132,14 @@ public abstract class NamespaceConfiguration<E extends Extension<E>> implements 
 //        return this;
 //    }
 
-    protected final TreeView.Node<Extension<?>> node() {
+    public NamespaceConfiguration<E> propagate(ContainerPropagator propagator){
         throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected ComponentHandle componentHandle() {
+        return handle;
     }
 }
 

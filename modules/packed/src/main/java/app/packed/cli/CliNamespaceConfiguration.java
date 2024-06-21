@@ -19,14 +19,14 @@ import app.packed.namespace.NamespaceConfiguration;
 import app.packed.namespace.NamespaceHandle;
 
 /**
- *
+ * A CLI namespace where all commands and general options are unique.
  */
 public class CliNamespaceConfiguration extends NamespaceConfiguration<CliExtension> {
 
     /**
      * @param handle
      */
-    protected CliNamespaceConfiguration(NamespaceHandle handle) {
+    protected CliNamespaceConfiguration(NamespaceHandle<?> handle) {
         super(handle);
     }
 

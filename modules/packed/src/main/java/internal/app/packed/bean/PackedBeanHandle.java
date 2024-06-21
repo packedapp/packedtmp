@@ -16,10 +16,13 @@
 package internal.app.packed.bean;
 
 import java.util.List;
+import java.util.function.Supplier;
 
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.component.Authority;
+import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.util.Key;
 import internal.app.packed.binding.BindingResolution.FromConstant;
@@ -31,7 +34,7 @@ import sandbox.extension.bean.BeanHandle;
 import sandbox.extension.operation.OperationHandle;
 
 /** Implementation of {@link BeanHandle}. */
-public record PackedBeanHandle(BeanSetup bean) implements BeanHandle {
+public /* value */ record PackedBeanHandle<B extends BeanConfiguration>(BeanSetup bean) implements BeanHandle<B> {
 
     /** {@inheritDoc} */
     @Override
@@ -81,10 +84,9 @@ public record PackedBeanHandle(BeanSetup bean) implements BeanHandle {
 
     /** {@inheritDoc} */
     @Override
-    public BeanHandle exportAs(Key<?> key) {
+    public void exportAs(Key<?> key) {
         checkIsConfigurable();
         bean.container.sm.export(key, bean.instanceAccessOperation());
-        return this;
     }
 
     /** {@inheritDoc} */
@@ -148,5 +150,28 @@ public record PackedBeanHandle(BeanSetup bean) implements BeanHandle {
     @Override
     public void componentTags(String... tags) {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @param key
+     * @param supplier
+     */
+    @Override
+    public <K> void addComputedConstant(Key<K> key, Supplier<? extends K> supplier) {
+        checkIsConfigurable();
+        bean.addCodeGenerated(key, supplier);
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public B configuration() {
+        return (B) bean.configuration();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentKind componentKind() {
+        return ComponentKind.BEAN;
     }
 }

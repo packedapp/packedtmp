@@ -18,7 +18,7 @@ package app.packed.lifetime;
 import java.util.List;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanClassActivator.BindingClassActivator;
+import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 
 /**
  *
@@ -40,7 +40,7 @@ import app.packed.extension.BeanClassActivator.BindingClassActivator;
 // Hvad goere vi med child lifetimes? Maaske er den kun til gaeneglig i app lifetimen...
 // Det tror jeg faktisk
 
-@BindingClassActivator(extension = BaseExtension.class)
+@BindingClassBeanTrigger(extension = BaseExtension.class)
 public /* primitive */ class ArgList {
     private final String[] args;
 

@@ -22,8 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import app.packed.extension.BeanClassActivator.AnnotatedBeanFieldActivator;
-import app.packed.extension.BeanClassActivator.AnnotatedBeanVariableActivator;
+import app.packed.extension.BeanTrigger.AnnotatedFieldBeanTrigger;
+import app.packed.extension.BeanTrigger.AnnotatedVariableBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
@@ -39,7 +39,7 @@ final class BeanHookCache {
 
         @Override
         protected HookOnFieldAnnotation computeValue(Class<?> type) {
-            AnnotatedBeanFieldActivator hook = type.getAnnotation(AnnotatedBeanFieldActivator.class);
+            AnnotatedFieldBeanTrigger hook = type.getAnnotation(AnnotatedFieldBeanTrigger.class);
             if (hook == null) {
                 return null;
             }
@@ -54,7 +54,7 @@ final class BeanHookCache {
 
         @Override
         protected HookOnAnnotatedBinding computeValue(Class<?> type) {
-            AnnotatedBeanVariableActivator hook = type.getAnnotation(AnnotatedBeanVariableActivator.class);
+            AnnotatedVariableBeanTrigger hook = type.getAnnotation(AnnotatedVariableBeanTrigger.class);
             if (hook == null) {
                 return null; // Annotation not annotated with AnnotatedVariableHook
             }

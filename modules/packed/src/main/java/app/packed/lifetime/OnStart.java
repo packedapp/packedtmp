@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanClassActivator.AnnotatedBeanMethodActivator;
+import app.packed.extension.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.operation.OperationDependencyOrder;
 
 /**
@@ -81,7 +81,7 @@ import app.packed.operation.OperationDependencyOrder;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@AnnotatedBeanMethodActivator(allowInvoke = true, extension = BaseExtension.class)
+@AnnotatedMethodBeanTrigger(allowInvoke = true, extension = BaseExtension.class)
 public @interface OnStart {
 
     String JOIN_ON_AFTER_DEPENDENCIES = "AFTER_DEPENDENCIES";
@@ -93,13 +93,14 @@ public @interface OnStart {
 
     // Fork with default settings, otherwise use Fork
     /**
-     *
-     * @return whether or not to fork a new thread
+     * {@return whether or not a new thread should be forked when running the annotated method.}
      */
     boolean fork() default false;
 
     // forkMode
     // forkAsDaemon (keepRunning) = Mark the bean as keep running,
+
+    String lifetime() default "bean"; // The lifetime the bean is in
 
     /**
      * Returns how this operation is ordered compared to other start operations.

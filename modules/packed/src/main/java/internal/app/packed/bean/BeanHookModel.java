@@ -23,10 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import app.packed.extension.BeanClassActivator.AnnotatedBeanMethodActivator;
-import app.packed.extension.BeanClassActivator.AnnotatedBeanVariableActivator;
-import app.packed.extension.BeanClassActivator.BindingClassActivator;
-import app.packed.extension.BeanCustomActivator;
+import app.packed.extension.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.extension.BeanTrigger.AnnotatedVariableBeanTrigger;
+import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
+import app.packed.extension.BeanTrigger.InheritableBindingClassBeanTrigger;
+import app.packed.extension.BeanMetaBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
@@ -42,7 +43,7 @@ public final class BeanHookModel {
 
         @Override
         protected AnnotatedMethod computeValue(Class<?> type) {
-            AnnotatedBeanMethodActivator h = type.getAnnotation(AnnotatedBeanMethodActivator.class);
+            AnnotatedMethodBeanTrigger h = type.getAnnotation(AnnotatedMethodBeanTrigger.class);
             if (h == null) {
                 return null;
             }
@@ -70,14 +71,13 @@ public final class BeanHookModel {
 
     private final Map<String, Class<? extends Annotation>> bindings;
 
-
     /** A cache of any extensions a particular annotation activates. */
     private final ClassValue<AnnotatedParameterType> PARAMETER_ANNOTATION_CACHE = new ClassValue<>() {
 
         @Override
         protected AnnotatedParameterType computeValue(Class<?> type) {
 
-            AnnotatedBeanVariableActivator h = type.getAnnotation(AnnotatedBeanVariableActivator.class);
+            AnnotatedVariableBeanTrigger h = type.getAnnotation(AnnotatedVariableBeanTrigger.class);
 
             Class<? extends Annotation> cl = bindings.get(type.getName());
             if (cl != null) {
@@ -104,7 +104,11 @@ public final class BeanHookModel {
 
         @Override
         protected ParameterType computeValue(Class<?> type) {
-            BindingClassActivator h = type.getAnnotation(BindingClassActivator.class);
+            BindingClassBeanTrigger h = type.getAnnotation(BindingClassBeanTrigger.class);
+
+            InheritableBindingClassBeanTrigger ih = type.getAnnotation(InheritableBindingClassBeanTrigger.class);
+
+            // Customer class name bindings
             Class<? extends Annotation> cl = bindings.get(type.getName());
             if (cl != null) {
                 Class<?> declaringClass = cl.getDeclaringClass();
@@ -113,15 +117,27 @@ public final class BeanHookModel {
                 }
                 @SuppressWarnings("unchecked")
                 Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) declaringClass;
-                return new ParameterType(extensionClass);
+                return new ParameterType(extensionClass, null);
             }
 
-            if (h == null) {
+            if (h == null && ih == null) {
                 return null;
             }
 
+            Class<?> inherited = null;
+            if (ih != null) {
+                Class<?> clazz = type;
+                while (clazz != null) {
+                    if (clazz.getDeclaredAnnotation(InheritableBindingClassBeanTrigger.class) != null) {
+                        break;
+                    }
+                    clazz = clazz.getSuperclass();
+                }
+                inherited = clazz;
+            }
+            Class<? extends Extension<?>> clz = h == null ? ih.extension() : h.extension();
             // checkExtensionClass(type, h.extension());
-            return new ParameterType(h.extension());
+            return new ParameterType(clz, inherited);
         }
     };
 
@@ -138,7 +154,7 @@ public final class BeanHookModel {
         this.parent = requireNonNull(parent);
         List<AssemblyMetaHolder> holders = new ArrayList<>();
         for (Annotation a : annotations) {
-            if (a.annotationType().isAnnotationPresent(BeanCustomActivator.class)) {
+            if (a.annotationType().isAnnotationPresent(BeanMetaBeanTrigger.class)) {
                 holders.add(new AssemblyMetaHolder(a.annotationType()));
             }
         }
@@ -182,5 +198,5 @@ public final class BeanHookModel {
 
     record AnnotatedParameterType(Class<? extends Extension<?>> extensionType) {}
 
-    record ParameterType(Class<? extends Extension<?>> extensionType) {}
+    record ParameterType(Class<? extends Extension<?>> extensionType, Class<?> definingIfInherited) {}
 }

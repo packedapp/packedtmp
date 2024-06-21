@@ -20,12 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.util.Collection;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentPath;
+import app.packed.component.ComponentHandle;
 import app.packed.extension.Extension;
 import sandbox.extension.operation.OperationHandle;
 
 /** The configuration of an operation. */
-public class OperationConfiguration implements ComponentConfiguration {
+public class OperationConfiguration extends ComponentConfiguration {
 
     /** The operation handle. */
     private final OperationHandle handle;
@@ -42,11 +42,6 @@ public class OperationConfiguration implements ComponentConfiguration {
 
     protected final void checkConfigurable() {}
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentPath componentPath() {
-        return handle.componentPath();
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -57,12 +52,6 @@ public class OperationConfiguration implements ComponentConfiguration {
     /** {@return the underlying operation handle} */
     protected final OperationHandle handle() {
         return handle;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isConfigurable() {
-        return handle.isConfigurable();
     }
 
     public OperationConfiguration named(String name) {
@@ -92,5 +81,11 @@ public class OperationConfiguration implements ComponentConfiguration {
     /** {@return the type of the operation} */
     public final OperationType type() {
         return handle.type();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected ComponentHandle componentHandle() {
+        return handle;
     }
 }

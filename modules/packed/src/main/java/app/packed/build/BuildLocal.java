@@ -28,6 +28,9 @@ import internal.app.packed.build.PackedBuildLocal;
  * Build locals
  * <p>
  * What about ISE do we support valid points you can use a local???
+ * <p>
+ * Can I set a build local whenever I want or ISE????
+ * I would say no, but then again...
  *
  * <p>
  * Build locals are only intended to be used by secure code. Hence there is no support for checking the values that are
@@ -36,22 +39,26 @@ import internal.app.packed.build.PackedBuildLocal;
  * Component locals are only intended to be used at build time. If you need to share state at runtime the right way to
  * do so is by installing a shared bean of some kind
  * <p>
- * Notice: Build locals do do not cache any errors thrown from initial suppliers... These are intended to not be handled
- * at build-time.
+ * Notice: Build locals do do not cache errors thrown from initial suppliers... These are intended to not be handled
+ * at build-time. Naah, tror vi gemmer them...
  */
 
-// Locals vs Wirelets, there is some overlap. Which have quite figured out
+// Adopt method naming from ComputedConstant
 
-// Locals cannot have a mirror, wirelets would be able to have it
+// Locals vs Wirelets, there is some overlap. Which we quite haven't figured out yet
+//// Locals never have a mirror, wirelets would be able to have it
+//// Locals are rarely used by application developers, wirelets are
+//// Locals are build only , wirelets are both build and
 
-// AssemblyLocal -> But is an Assembly a component?
-// Maybe BuildLocal instead of ComponentLocal???
+
+// Or ComponentLocal. Depends on where we end of with Authority, Assembly, and so on
+// BuildProcessLocal???
 public sealed interface BuildLocal<A, T> permits PackedBuildLocal, ApplicationLocal, ContainerLocal, BeanLocal, AuthorityLocal {
 
     /**
-     * Returns the local value via the specified accessor.
+     * Returns the current value of this local for the entity represented by the specified accessor.
      * <p>
-     * If no value has been set for this local previously, this method will:
+     * If no value has been set previously for this local, this method will:
      * <ul>
      * <li>Initialize lazily, if an initial value supplier was specified when creating this local.</li>
      * <li>Fail with {@link java.util.NoSuchElementException}, if no initial value supplier was specified when creating this

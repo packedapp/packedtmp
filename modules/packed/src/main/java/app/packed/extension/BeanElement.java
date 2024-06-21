@@ -153,10 +153,13 @@ public sealed interface BeanElement extends BeanLocalAccessor permits PackedBean
         /** {@return the underlying field.} */
         Field field();
 
+        // I think we will skip the builder approach again
         default Builder newGetOperation() {
             throw new UnsupportedOperationException();
         }
 
+        // Tror lidt problemet med delegating operations. Er vi ikke ved om vi skal have field/get/set
+        // Maaske giver vi bare en bean field?
         /**
          * Creates a new operation that can read the underlying field.
          * <p>
@@ -243,6 +246,8 @@ public sealed interface BeanElement extends BeanLocalAccessor permits PackedBean
          * @see BeanMethodHook#allowInvoke()
          * @see BeanClassHook#allowFullPrivilegeAccess()
          */
+        // Replace with OperationTemplate.delagating(useSite)
+        // and the OperationHandle.delagtingTo
         OperationHandle.Builder newOperation();
 
         /**

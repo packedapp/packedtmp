@@ -29,8 +29,8 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import app.packed.build.BuildCodeSource;
 import app.packed.build.BuildGoal;
-import app.packed.build.BuildSource;
 import app.packed.component.Authority;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
@@ -39,8 +39,8 @@ import app.packed.container.WireletSelection;
 import app.packed.extension.Extension.ExtensionProperty;
 import app.packed.namespace.NamespaceConfiguration;
 import app.packed.namespace.NamespaceHandle;
-import app.packed.namespace.NamespaceOperator;
 import app.packed.namespace.NamespaceTemplate;
+import app.packed.namespace.NamespaceTwin;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.util.BaseModuleConstants;
 import app.packed.util.TreeView;
@@ -87,7 +87,7 @@ import sandbox.extension.container.ContainerHandle;
 
 //Nooooo, if fx Logging is a custom BindingHook on Assembly.
 // We also need to have this fucker on Extension. Or maybe allow no customization on extension beans
-public non-sealed abstract class Extension<E extends Extension<E>> implements BuildSource {
+public non-sealed abstract class Extension<E extends Extension<E>> implements BuildCodeSource {
 
     /** The internal configuration of the extension. */
     final ExtensionSetup extension;
@@ -157,9 +157,9 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
     }
 
     @SuppressWarnings("unchecked")
-    protected final <D extends NamespaceOperator<E>> D domain(NamespaceTemplate<D> template) {
+    protected final <D extends NamespaceTwin<E, ?>> D namespace(NamespaceTemplate<D> template) {
         PackedNamespaceTemplate<D> t = (PackedNamespaceTemplate<D>) template;
-        HashMap<PackedNamespaceTemplate<?>, NamespaceOperator<?>> m = extension.container.application.namespaces;
+        HashMap<PackedNamespaceTemplate<?>, NamespaceTwin<?, ?>> m = extension.container.application.namespaces;
         return (D) m.computeIfAbsent(t, e -> {
             NamespaceSetup ds = new NamespaceSetup(t, extension, extension);
             return NamespaceSetup.MI.run(t.supplier, ds);
@@ -187,9 +187,9 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      * @return the extension or empty
      */
     @SuppressWarnings("unchecked")
-    protected final Optional<E> fromHandle(ContainerHandle handle) {
+    protected final Optional<E> fromHandle(ContainerHandle<?> handle) {
         requireNonNull(handle, "handle is null");
-        ExtensionSetup s = ((ContainerSetup) handle).extensions.get(extension.extensionType);
+        ExtensionSetup s = ContainerSetup.crack(handle).extensions.get(extension.extensionType);
         return s == null ? Optional.empty() : Optional.ofNullable((E) s.instance());
     }
 
@@ -289,7 +289,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
     // Hmm, hvis vi nu installere foreste service i et barn... Bor root vel stadig vaere application root
     // Ja med mindre, man siger noway hosay
     // Saa maaske bare en template???
-    protected final <T extends NamespaceConfiguration<?>> T namespace(NamespaceHandle handle, Supplier<T> supplier) {
+    protected final <T extends NamespaceConfiguration<?>> T namespace(NamespaceHandle<?> handle, Supplier<T> supplier) {
         // I think it is the same as newExtensionMirror an internal excetion
         throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
     }
@@ -341,6 +341,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      * @see #checkIsPreLinkage()
      */
     // When the realm in which the extension's container is located is closed
+    // Maybe we also have an onAssemblyClosed() <--- where you cannot install any more extensions
     protected void onAssemblyClose() {
         ExtensionSetup s = extension;
         for (ExtensionSetup c = s.treeFirstChild; c != null; c = c.treeNextSibling) {
@@ -416,6 +417,11 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
     // A wirelet must be selected at least once.
 
     // Maybe have a forEach method as well? forEachWirelet(Class, Consumer);
+
+    protected final <T extends Wirelet> Optional<T> selectWirelet(Class<T> wireletClass) {
+        return selectWirelets(wireletClass).last();
+    }
+
     protected final <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         // Check that we are a proper subclass of ExtensionWirelet
         ClassUtil.checkProperSubclass(ExtensionWirelet.class, wireletClass, "wireletClass");

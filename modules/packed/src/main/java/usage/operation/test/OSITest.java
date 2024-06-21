@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.extension.BeanClassActivator.AnnotatedBeanVariableActivator;
+import app.packed.extension.BeanTrigger.AnnotatedVariableBeanTrigger;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
@@ -63,7 +63,7 @@ public class OSITest extends BaseAssembly {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedBeanVariableActivator(extension = MyExt.class)
+    @AnnotatedVariableBeanTrigger(extension = MyExt.class)
     @interface BuildTime {}
 
     static class MyExt extends Extension<MyExt> {
@@ -98,10 +98,10 @@ public class OSITest extends BaseAssembly {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedBeanVariableActivator(extension = MyExt.class)
+    @AnnotatedVariableBeanTrigger(extension = MyExt.class)
     @interface Now {}
 
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedBeanVariableActivator(extension = MyExt.class)
+    @AnnotatedVariableBeanTrigger(extension = MyExt.class)
     @interface InitializationTime {}
 }

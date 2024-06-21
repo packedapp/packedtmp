@@ -15,6 +15,8 @@
  */
 package app.packed.util;
 
+import java.lang.reflect.AnnotatedElement;
+
 /**
  *
  */
@@ -22,5 +24,6 @@ package app.packed.util;
 // <T> <- Where T is the target? IDK
 public interface AnnotationListTransformer {
     // I think we want something about the target...
-    AnnotationList transform(AnnotationList source);
+    // Target may have already been transformed... annotations contains the annotations that should be transformed
+    AnnotationList transform(AnnotatedElement target, AnnotationList annotations);
 }

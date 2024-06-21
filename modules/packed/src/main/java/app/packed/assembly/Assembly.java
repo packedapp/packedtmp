@@ -17,9 +17,9 @@ package app.packed.assembly;
 
 import app.packed.application.ApplicationLocal;
 import app.packed.assembly.AbstractComposer.ComposableAssembly;
-import app.packed.build.BuildSource;
+import app.packed.build.BuildCodeSource;
 import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.PackedContainerBuilder;
+import internal.app.packed.container.PackedContainerInstaller;
 
 /**
  * Assemblies are the basic building block for defining applications in Packed.
@@ -52,24 +52,26 @@ import internal.app.packed.container.PackedContainerBuilder;
  * <p>
  * This class cannot be extended directly, you would typically extend {@link BaseAssembly} instead.
  */
-public sealed abstract class Assembly implements BuildSource , ApplicationLocal.ApplicationLocalAccessor permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
+@AssemblySecurityModel(AssemblySecurityModel.Default.class)
+public sealed abstract class Assembly implements BuildCodeSource , ApplicationLocal.ApplicationLocalAccessor
+        permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
 
     /**
-     * A marker configuration object indicating that an assembly (or composer) has already been used for building. Should
-     * never be exposed to end-users.
+     * A marker configuration object indicating that an assembly (or composer) has already been used in a build process.
+     * Should never be exposed to end-users.
      */
     static final AssemblyConfiguration USED = new AssemblyConfiguration(null);
 
     /**
-     * Invoked by the runtime (via a MethodHandle) to build the assembly.
+     * Invoked by the runtime (via a MethodHandle) in order to execute the build instructions of the assembly.
      *
      * @param builder
      *            a container builder for the root container of the assembly
-     * @return an assembly configuration object
+     * @return an (internal) assembly configuration object
      *
      * @apiNote this method is for internal use only
      */
-    abstract AssemblySetup build(PackedContainerBuilder builder);
+    abstract AssemblySetup build(PackedContainerInstaller builder);
 
     /** The state of an {@link Assembly}. */
     public enum State {
@@ -81,6 +83,10 @@ public sealed abstract class Assembly implements BuildSource , ApplicationLocal.
         BEFORE_BUILD,
 
         /** The assembly is currently being used in a build process. */
-        IN_USE;
+        BUILDING;
+
+        public static State of(Assembly assembly) {
+            throw new UnsupportedOperationException();
+        }
     }
 }

@@ -43,7 +43,6 @@ public class AssemblyMirrorTest extends AppAppTest {
         assertThat(m.assemblyDuration()).isPositive();
         assertEquals(m.container(), m.application().container());
         assertThat(m.delegatedFrom()).isEmpty();
-        assertThat(m.assemblyHooks()).isEmpty();
         assertThat(m.toString()).isEqualTo("Assembly:HelloWorld:/");
     }
 }

@@ -41,6 +41,23 @@ public final class ThrowableUtil {
     }
 
     /**
+     * Throws the specified throwable if it is an {@link Error} or a {@link RuntimeException}. Otherwise returns the
+     * specified throwable.
+     *
+     * @param throwable
+     *            the throwable
+     * @return the specified throwable if it not an Error or a RuntimeException
+     */
+    public static UndeclaredThrowableException exceptionOrUndeclared(Throwable throwable) throws Exception {
+        if (throwable instanceof Exception re) {
+            throw re;
+        } else if (throwable instanceof Error er) {
+            throw er;
+        }
+        return new UndeclaredThrowableException(throwable);
+    }
+
+    /**
      * Throws the specified throwable ignore whatever type it has
      *
      * @param throwable

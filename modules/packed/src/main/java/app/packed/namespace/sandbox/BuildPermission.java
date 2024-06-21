@@ -45,9 +45,21 @@ package app.packed.namespace.sandbox;
 
 ////// No container should have more than 3 beans. I mean that is not a good instruction mechanism...
 ////// When should we validate it? Efter time a new bean is added? How would you even specificy it
-
+////// For transformers, you would get onInstall() {} containerConfigurations.beans().size()==3 -> Fail
 
 // Can we connect them to locals???
+
+
+// Extension + Name
+
+// Do permission have a component path?? Nahh, not really needed
+
+// Are these binary??? Yes/No
+
+// BuildPermission
+
+// It makes sense to be kind of logging points as well
+// install Bean
 public class BuildPermission {
 
     public static final BuildPermission CONFIGURE = null;

@@ -98,7 +98,7 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
      * @param function
      *            the function instance
      */
-    protected CapturingOp(Object function) {
+    CapturingOp(Object function) {
         requireNonNull(function, "function is null"); // should have already been checked by subclasses
         Top top = TOP.get(getClass());
         this.op = new FunctionInvocationOp<>(top.ot, top.create(function), top.base.samType, function.getClass().getMethods()[0]);

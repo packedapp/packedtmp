@@ -22,7 +22,7 @@ package app.packed.operation;
  * @see OnStop
  */
 // BeanLifecycleOrder
-// DependencyOrder
+// DependencyOrder <---
 public enum OperationDependencyOrder {
 
     /** The operation will be executed before any dependencies. */

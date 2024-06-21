@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
+import app.packed.build.action.BuildActionMirror;
 import app.packed.component.Authority;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
@@ -21,7 +22,7 @@ import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanClassActivator.BindingClassActivator;
+import app.packed.extension.BeanTrigger.InheritableBindingClassBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
@@ -38,7 +39,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * <p>
  * An instance of BeanMirror can be injected at runtime simply by declaring a dependency on it.
  */
-@BindingClassActivator(extension = BaseExtension.class)
+@InheritableBindingClassBeanTrigger(extension = BaseExtension.class)
 public non-sealed class BeanMirror implements BeanLocalAccessor , ComponentMirror , ContextualizedElementMirror , ContextScopeMirror , ServiceProviderMirror {
 
     /** The bean we are mirroring. */
@@ -105,8 +106,13 @@ public non-sealed class BeanMirror implements BeanLocalAccessor , ComponentMirro
 
     /** {@inheritDoc} */
     @Override
+    // Is injectable into the bean factory. not all methods
     public final Map<Class<? extends Context<?>>, ContextMirror> contexts() {
         return ContextSetup.allMirrorsFor(bean);
+    }
+
+    BuildActionMirror installationAction() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@return the owner of the bean.} */
@@ -222,7 +228,7 @@ public non-sealed class BeanMirror implements BeanLocalAccessor , ComponentMirro
         throw new UnsupportedOperationException();
     }
 
-    /** {@return any proxy class that is created for the bean instance.} */
+    /** {@return any proxy the bean may have.} */
     public Optional<BeanProxyMirror> proxy() {
         return Optional.empty();
     }

@@ -2,18 +2,13 @@ package sandbox.extension.container;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
-import app.packed.assembly.Assembly;
 import app.packed.component.ComponentHandle;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLocal;
-import app.packed.container.ContainerMirror;
-import app.packed.container.Wirelet;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.Extension;
-import app.packed.util.Key;
-import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.NonRootContainerBuilder;
+import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.context.ContextSpanKind;
 import sandbox.extension.operation.OperationHandle;
@@ -26,7 +21,11 @@ import sandbox.extension.operation.OperationHandle;
  * <p>
  * A lot of methods on this class is also available on {@link ContainerBuilder}.
  */
-public sealed interface ContainerHandle extends ComponentHandle, ContainerLocal.ContainerLocalAccessor permits ContainerSetup {
+public sealed interface ContainerHandle<C extends ContainerConfiguration> extends ComponentHandle , ContainerLocal.ContainerLocalAccessor
+        permits PackedContainerHandle {
+
+    /** {@return the configuration of the container} */
+    C configuration();
 
     /**
      * {@return an unmodifiable view of the extensions that are currently used by this container.}
@@ -61,166 +60,9 @@ public sealed interface ContainerHandle extends ComponentHandle, ContainerLocal.
      */
     List<OperationHandle> lifetimeOperations();
 
-    /**
-     * Returns the full path of the component.
-     * <p>
-     * Once this method has been invoked, the name of the component can no longer be changed via {@link #named(String)}.
-     * <p>
-     * If building an image, the path of the instantiated component might be prefixed with another path.
-     *
-     * <p>
-     * Returns the path of this configuration. Invoking this method will initialize the name of the component. The component
-     * path returned does not maintain any reference to this configuration object.
-     *
-     * @return the path of this configuration.
-     */
-
-    /**
-     * A builder for a container (handle).
-     *
-     * @see BaseExtensionPoint#addCodeGenerated(BeanConfiguration, Class, Supplier)
-     * @see BaseExtensionPoint#beanInstallerForExtension(app.packed.extension.bean.BeanTemplate,
-     *      app.packed.extension.ExtensionPoint.UseSite)
-     */
-    public sealed interface Builder permits NonRootContainerBuilder {
-
-        /**
-         * Creates a new container using the specified assembly.
-         * <p>
-         * The container handle returned by this method is no longer {@link ContainerHandle#isConfigurable() configurable}.
-         * Configuration of the new container must be done prior to calling this method.
-         *
-         * @param assembly
-         *            the assembly to link
-         * @param wirelets
-         *            optional wirelets
-         * @return a container handle representing the new container
-         *
-         * @see #build(Wirelet...)
-         */
-        ContainerHandle build(Assembly assembly, Wirelet... wirelets);
-
-        /**
-         * Creates a new configurable container.
-         *
-         * @param wirelets
-         *            optional wirelets
-         * @return a container handle representing the new container
-         *
-         * @see #install(Assembly, Wirelet...)
-         */
-        ContainerHandle build(Wirelet... wirelets);
-
-        /**
-         * Creates the new container and adds this extension to the new container.
-         * <p>
-         * The extension in new the container can be obtained by calling {@link Extension#fromHandle(ContainerHandle)}
-         *
-         * @return a container handle representing the new container
-         *
-         * @see app.packed.extension.Extension#fromHandle(ContainerHandle)
-         */
-        ContainerHandle buildAndUseThisExtension(Wirelet... wirelets);
-
-        // Only Managed-Operation does not require a wrapper
-        // For now this method is here. Might move it to the actual CHC at some point
-
-        // Hmm, don't know if need a carrier instance, if we have implicit construction
-//        /**
-//         * @return
-//         * @throws UnsupportedOperationException
-//         *             if a carrier type was not defined in the container template
-//         */
-//        default ContainerCarrierConfiguration<?> carrierInstance() {
-//            throw new UnsupportedOperationException();
-//        }
-
-        /**
-         * Provides constants per Carrier Instance for this particular container builder
-         *
-         * @param <T>
-         * @param key
-         * @param arg
-         * @return
-         *
-         * @see ExtensionLink#ofConstant(Class, Object)
-         */
-        default <T> Builder carrierProvideConstant(Class<T> key, T constant) {
-            return carrierProvideConstant(Key.of(key), constant);
-        }
-
-        /**
-         * @see FromLifetimeChannel
-         */
-        <T> Builder carrierProvideConstant(Key<T> key, T constant);
-
-        /**
-         *
-         * @param holderConfiguration
-         * @return
-         * @see app.packed.extension.BaseExtensionPoint#installContainerHolder(Class)
-         * @throws IllegalArgumentException
-         *             if the holder class of the bean does not match the holder type set when creating the container template.
-         */
-        // LifetimeCarrier?
-        default Builder carrierUse(ContainerCarrierBeanConfiguration<?> holderConfiguration) {
-            // Gaar udfra vi maa definere wrapper beanen alene...Eller som minimum
-            // supportere det
-            // Hvis vi vil dele den...
-
-            // Det betyder ogsaa vi skal lave en wrapper bean alene
-            return this;
-        }
-
-        /**
-         * <p>
-         * TODO: How do we handle conflicts? I don't think we should fail
-         * <p>
-         * TODO This is probably overridable by Wirelet.named()
-         * <p>
-         * Beans not-capitalized? Containers capitalized
-         *
-         * @param name
-         *            the name of the container
-         * @return this builder
-         */
-        Builder named(String name);
-
-        /**
-         * Sets the value of the specified container local for the container being built.
-         *
-         * @param <T>
-         *            the type of value the container local holds
-         * @param local
-         *            the container local to set
-         * @param value
-         *            the value of the local
-         * @return this builder
-         */
-        // Do we allow non-container scope??? I don't think so
-        // initializeLocalWith??
-        <T> Builder localSet(ContainerLocal<T> containerLocal, T value);
-
-        /**
-         * Sets a supplier that creates a special container mirror instead of the generic {@code ContainerMirror} when
-         * requested.
-         *
-         * @param supplier
-         *            the supplier used to create the container mirror
-         * @apiNote the specified supplier may be called multiple times for the same bean. In which case an equivalent mirror
-         *          must be returned
-         */
-        Builder specializeMirror(Supplier<? extends ContainerMirror> supplier);
-
-        // The application will fail to build if the installing extension
-        // is not used by. Is only applicable for new(Assembly)
-        // Maaske er det fint bare en wirelet der kan tage en custom besked?
-        default Builder zBuildAndRequiresThisExtension(Assembly assembly, Wirelet... wirelets) {
-            throw new UnsupportedOperationException();
-        }
-
+    interface Zandbox {
         // ditch beanBlass, and just make sure there is a bean that can do it
-        default Builder zContextFromBean(Class<?> beanClass, ContextTemplate template, @SuppressWarnings("exports") ContextSpanKind span) {
+        default Zandbox zContextFromBean(Class<?> beanClass, ContextTemplate template, @SuppressWarnings("exports") ContextSpanKind span) {
             throw new UnsupportedOperationException();
         }
 
@@ -234,35 +76,18 @@ public sealed interface ContainerHandle extends ComponentHandle, ContainerLocal.
          *            optional wirelets
          * @return a container handle representing the linked container
          */
-        default Builder zErrorHandle(ErrorHandler h) {
+        default Zandbox zErrorHandle(ErrorHandler h) {
             return this;
         }
-
-        default Builder zRequireUseOfExtension(String errorMessage) {
-            throw new UnsupportedOperationException();
-        }
     }
+
 }
 
-//ComponentPath componentPath();
-//
-///**
-//* Checks that the container is still configurable, or throws an exception.
-//*
-//* @throws IllegalStateException
-//*             if the container is no longer configurable
-//*/
-//default void checkIsConfigurable() {
-//  if (!isConfigurable()) {
-//      throw new IllegalStateException("This container is no longer configurable");
-//  }
+// The application will fail to build if the installing extension
+// is not used by. Is only applicable for new(Assembly)
+// Maaske er det fint bare en wirelet der kan tage en custom besked?
+// Smider den paa templaten
+//default Zandbox zBuildAndRequiresThisExtension(Assembly assembly, Wirelet... wirelets) {
+//    throw new UnsupportedOperationException();
 //}
-//
-///**
-//* Returns whether or not the container is still configurable.
-//* <p>
-//* If an assembly was used to create the container. The handle is never configurable.
-//*
-//* @return {@code true} if the bean is still configurable
-//*/
-//boolean isConfigurable();
+

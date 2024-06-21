@@ -55,11 +55,11 @@ public sealed interface ContextTemplate permits PackedContextTemplate {
     /** {@return the context this template is a part of.} */
     Class<? extends Context<?>> contextClass();
 
+    /** {@return the type of value the context provides.} */
+    Class<? extends Context<?>> contextImplementationClass();
+
     /** {@return the extension the context is a part of.} */
     Class<? extends Extension<?>> extensionClass();
-
-    /** {@return the type of value the context provides.} */
-    Class<?> implementationClass();
 
     boolean isHidden();
 

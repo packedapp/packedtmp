@@ -43,6 +43,8 @@ import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
+import internal.app.packed.component.ComponentSetup;
+import internal.app.packed.component.PackedComponentTwin;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
@@ -58,7 +60,8 @@ import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 
 /** Represents an operation on a bean. */
-public sealed abstract class OperationSetup implements ContextualizedElementSetup {
+// I want to get rid of the subclasses
+public sealed abstract class OperationSetup extends ComponentSetup implements PackedComponentTwin , ContextualizedElementSetup {
 
     /** A magic initializer for {@link OperationMirror}. */
     public static final MagicInitializer<OperationSetup> MIRROR_INITIALIZER = MagicInitializer.of(OperationMirror.class);
@@ -107,7 +110,6 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
         }
         this.configuration = requireNonNull(configuration);
     }
-
 
     /**
      * The name prefix of the operation.
@@ -196,6 +198,7 @@ public sealed abstract class OperationSetup implements ContextualizedElementSetu
     }
 
     /** {@inheritDoc} */
+    @Override
     public ComponentPath componentPath() {
         return ComponentKind.OPERATION.pathNew(bean.componentPath(), name());
     }

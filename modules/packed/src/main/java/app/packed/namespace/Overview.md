@@ -3,10 +3,6 @@
   NamespaceNode
 
 
-
-
-
-
 ------
 Namespace
   String name

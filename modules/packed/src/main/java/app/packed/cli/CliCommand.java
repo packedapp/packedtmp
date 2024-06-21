@@ -22,8 +22,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.function.Consumer;
 
-import app.packed.extension.BeanClassActivator.AnnotatedBeanMethodActivator;
+import app.packed.extension.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.namespace.sandbox.NamespaceOperation;
+import app.packed.operation.OperationBuilder;
 
 /**
  *
@@ -32,7 +33,7 @@ import app.packed.namespace.sandbox.NamespaceOperation;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @NamespaceOperation
-@AnnotatedBeanMethodActivator(extension = CliExtension.class)
+@AnnotatedMethodBeanTrigger(extension = CliExtension.class)
 public @interface CliCommand {
 
     /**
@@ -50,9 +51,9 @@ public @interface CliCommand {
      */
     // Hvad er det praecis den skal kunne???
     // cli.addCommand().name("foobar").execute(new Op1<MyService>(s->s.print);
-    public interface Builder {
+    public interface Builder extends OperationBuilder {
 
-         Builder name(String... name);
+        Builder name(String... name);
 
         void run(Consumer<CliCommandContext> action);
     }

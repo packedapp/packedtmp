@@ -25,7 +25,7 @@ import app.packed.component.Authority;
 import app.packed.extension.BeanElement.BeanClass;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.lifetime.LifetimeKind;
+import app.packed.lifetime.LifecycleKind;
 import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanScannerExtensionRef;
@@ -122,7 +122,7 @@ public non-sealed abstract class BeanIntrospector implements BeanLocalAccessor {
 
     // can we attach information to the method???
     // fx @Lock(sdfsdfsdf) uden @Query???
-    public void activatedByAnnotatedMethod(Annotation hook, BeanMethod method) {
+    public void triggeredByAnnotatedMethod(Annotation hook, BeanMethod method) {
         // Test if getClass()==BeanScanner forgot to implement
         // Not we want to return generic bean scanner from newBeanScanner
         throw new InternalExtensionException(extension().fullName() + " failed to handle method annotation(s) " + hook);
@@ -133,13 +133,21 @@ public non-sealed abstract class BeanIntrospector implements BeanLocalAccessor {
      *
      * @see AnnotatedMethodHook
      */
-    public void activatedByAnnotatedMethod(AnnotationList hooks, BeanMethod method) {
+    // Called exactly once per extension???
+    public void triggeredByAnnotatedMethod(AnnotationList hooks, BeanMethod method) {
         for (Annotation a : hooks) {
-            activatedByAnnotatedMethod(a, method);
+            triggeredByAnnotatedMethod(a, method);
         }
     }
 
     /**
+     * <p>
+     * This method is never called directly by the framework. Instead the framework will always call
+     * {@link #triggeredByAnnotatedMethod(AnnotationList, BeanMethod)} which in turn per default will call this method with
+     * each of the relevant annotations. If you need to process multiple annotations at the same time override
+     * {@link #triggeredByAnnotatedMethod(AnnotationList, BeanMethod)}. If you are fine with processing annotations
+     * separately override this method.
+     *
      * <p>
      * A variable can never be annotated with more than 1 operational
      *
@@ -157,7 +165,8 @@ public non-sealed abstract class BeanIntrospector implements BeanLocalAccessor {
      *
      * @see BindingTypeHook
      */
-    public void activatedByVariableType(Class<?> hook, UnwrappedBindableVariable binder) {
+    // Two methods, or taking two classes
+    public void activatedByVariableType(Class<?> hook, Class<?> actualHook, UnwrappedBindableVariable binder) {
         throw new BeanInstallationException(extension().fullName() + " cannot handle type hook " + StringFormatter.format(hook));
     }
 
@@ -206,7 +215,7 @@ public non-sealed abstract class BeanIntrospector implements BeanLocalAccessor {
     }
 
     /** {@return the extension the bean was installed via.} */
-    public final LifetimeKind beanLifetimeKind() {
+    public final LifecycleKind beanLifetimeKind() {
         return bean().lifetime.lifetimeKind();
     }
 

@@ -16,6 +16,7 @@
 package app.packed.bean;
 
 import app.packed.operation.OperationConfiguration;
+import app.packed.util.Key;
 import sandbox.extension.operation.OperationHandle;
 
 /**
@@ -28,5 +29,9 @@ public class BeanFactoryConfiguration extends OperationConfiguration {
      */
     public BeanFactoryConfiguration(OperationHandle handle) {
         super(handle);
+    }
+
+    public void bindInstance(Key<?> key, Object instance) {
+
     }
 }

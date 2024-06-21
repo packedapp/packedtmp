@@ -2,43 +2,47 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import app.packed.build.BuildLocal;
+import app.packed.build.action.BuildActionable;
 import app.packed.component.Authority;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentPath;
+import app.packed.component.ComponentHandle;
 import app.packed.context.Context;
 import app.packed.operation.OperationConfiguration;
 import app.packed.util.Key;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandle;
+import internal.app.packed.bean.PackedBeanInstaller;
 import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.bean.BeanTemplate;
 
 /**
- * The configuration of a bean, typically returned from the bean's installation site or via
+ * The configuration of a bean.
+ * <p>
+ * A bean configuration is typically returned from the bean's installation site. For example,
+ * {@link app.packed.extension.BaseExtension#install(Class)}. It can also, for example, be obtained via
  * {@link app.packed.container.ContainerConfiguration#beans()}.
  */
-public non-sealed class BeanConfiguration implements ComponentConfiguration , BeanLocalAccessor {
+public non-sealed class BeanConfiguration extends ComponentConfiguration implements BeanLocalAccessor {
 
-    /** The bean handle. We don't store BeanSetup directly because it is not generified */
-    private final PackedBeanHandle handle;
-
-    public BeanConfiguration() {
-        // Will fail if the bean configuration is not initialized from within the framework
-        this.handle = new PackedBeanHandle(BeanSetup.initFromBeanConfiguration(this));
-    }
+    /** The bean handle. We don't store BeanSetup directly because BeanHandle contains a lot of useful logic. */
+    private final PackedBeanHandle<?> handle;
 
     /**
-     * Create a new bean configuration using the specified handle.
+     * Create a new bean configuration using the specified builder.
      *
-     * @param handle
-     *            the bean handle
+     * @param builder
+     *            the bean handle builder
      */
-    public BeanConfiguration(BeanHandle handle) {
-        this.handle = (PackedBeanHandle) requireNonNull(handle, "handle is null");
-        this.handle.bean().initConfiguration(this);
+    public BeanConfiguration(BeanTemplate.Installer installer) {
+        requireNonNull(installer, "builder is null");
+        this.handle = ((PackedBeanInstaller) installer).newHandleFromConfiguration();
     }
 
     /**
@@ -50,14 +54,31 @@ public non-sealed class BeanConfiguration implements ComponentConfiguration , Be
      * @throws UnsupportedOperationException
      *             if called on a bean with void bean class
      */
+    @BuildActionable("bean.allowMultiClass")
     public BeanConfiguration allowMultiClass() {
         handle.allowMultiClass();
         return this;
     }
 
-    public <K> void addCodeGenerator(Class<K> key, Supplier<? extends K> supplier) {
-        addCodeGenerator(Key.of(key), supplier);
+    /** {@return the owner of the bean.} */
+    // Declared by???
+    public final Authority author() {
+        return handle.owner();
     }
+
+    /** {@return the bean class.} */
+    public final Class<?> beanClass() {
+        return handle.beanClass();
+    }
+
+    // Alternativt tager vi ikke en bean. Men en container som er implicit
+    // Det betyder nu ogsaa at CodeGenerated er for hele containeren og ikke bare en bean.
+    // Maaske supportere begge ting?
+    // Det eneste jeg kunne forstille mig at man ikke ville container wide var hvis man havde en bean
+    // per X. Men taenker men saa har et arrays
+
+    // Hmm, vi faar ogsaa foerst fejl senere saa. Men siden det er en extension. Er det nok ikke det store problem i praksis
+    // Evt. Bliver den bare aldrig kaldt.... Det er fint
 
     /**
      * Registers a code generating supplier whose supplied value can be consumed by a variable annotated with
@@ -87,19 +108,13 @@ public non-sealed class BeanConfiguration implements ComponentConfiguration , Be
      * @see CodeGenerated
      * @see BindableVariable#bindGeneratedConstant(Supplier)
      */
-    public <K> void addCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
-        throw new UnsupportedOperationException();
-    }
+    // It is so simple maybe add it to bean configuration
+    // Or maybe a subset space...
+    // BeanConfiguration overrideService(Class<? extends Annotation>> subset, Key, Supplier);
 
-    /** {@return the owner of the bean.} */
-    // Declared by???
-    public final Authority author() {
-        return handle.owner();
-    }
-
-    /** {@return the bean class.} */
-    public final Class<?> beanClass() {
-        return handle.beanClass();
+    /** {@return the bean handle that was used to create this configuration.} */
+    protected final BeanHandle<?> beanHandle() {
+        return handle;
     }
 
     /** {@return the kind of bean that is being configured.} */
@@ -107,14 +122,110 @@ public non-sealed class BeanConfiguration implements ComponentConfiguration , Be
         return handle.beanKind();
     }
 
-    /** {@return the path of the component} */
-    @Override
-    public final ComponentPath componentPath() {
-        return handle.componentPath();
+    // Outside of the framework I think we can only test on ComponentPath, that may be fine
+    public boolean isInSameContainer(BeanConfiguration other) {
+        return handle.bean().container == other.handle.bean().container;
+    }
+
+    @BuildActionable("bean.addCodeGenerator")
+    // bindCodeGenerator
+    public <K> void bindCodeGenerator(Class<K> key, Supplier<? extends K> supplier) {
+        bindCodeGenerator(Key.of(key), supplier);
+    }
+
+    // Called if bean is renamed
+    // Returning String is currentName
+    public String onBeanRename(BiConsumer<String, String> oldNewName) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Registers a code generating supplier whose supplied value can be consumed by a variable annotated with
+     * {@link CodeGenerated} at runtime for any bean in the underlying container.
+     * <p>
+     * Internally this mechanisms uses
+     *
+     * <p>
+     * The value if the code generator is not available outside of the underlying container.
+     *
+     * @param <K>
+     *            the type of value the supplier produces
+     * @param bean
+     *            the bean to bind the supplier to
+     * @param key
+     *            the type of key used together with {@link CodeGenerated}
+     * @param supplier
+     *            the supplier generating the value
+     *
+     * @throws IllegalArgumentException
+     *             If the specified bean does not have an injection site matching the specified key.
+     * @throws IllegalStateException
+     *             if a supplier has already been registered for the specified key in the same container, or if the bean is
+     *             no longer configurable.
+     * @see ComputedConstant
+     * @see BindableVariable#bindGeneratedConstant(Supplier)
+     */
+    @BuildActionable("bean.addCodeGenerator")
+    // ComputedService instead??? buildConstant??? IDK
+    // Hmm, bliver vi noedt til at sige noget om hvornaar den bliver kaldt???
+    // Den bliver jo tidligst kaldt som en del af build processen
+
+    // bindCodeGenerator <--- Will install it as a normal service....
+    // was bindComputedConstant
+    public <K> void bindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
+        handle.addComputedConstant(key, supplier);
+    }
+
+    // Kommer an på typen af local hvordan vi slaar den op.
+    // Fx taenker jeg vi supportere OperationLocal
+    <K> void bindComputedConstant(Class<K> key, BuildLocal<?, ? extends K> supplier) {
+        throw new UnsupportedOperationException();
+    }
+
+    public <K> BeanConfiguration bindInstance(Class<K> key, K constant) {
+        // Future Functionality:
+
+        // overrideService(key, Provider) -> Needs some use cases
+        // And when is it generated? When the bean is instantiated?
+        // And is is per bean or use site?
+
+        // overrideService(key, Op) ->
+        // The issue is here that Op needs to be resolved.
+        // Maybe Op includes a service that have already been overridden.
+        // Not saying its impossible. But currently we do not support
+        // Adding operations dynamically after the bean has been scanned.
+        return bindInstance(Key.of(key), constant);
+    }
+
+    /**
+     * Overrides a previously resolved service with the specified key.
+     *
+     * @param <K>
+     *            type of the constant
+     * @param key
+     *            the key of the service
+     * @param constant
+     *            the constant to bind the service to
+     * @return this configuration
+     * @throws IllegalArgumentException
+     *             if the bean does not have binding that are resolved as a service with the specified key
+     */
+    @BuildActionable("bean.overrideService")
+    // On Op it is just bind
+    public <K> BeanConfiguration bindInstance(Key<K> key, K constant) {
+        handle.overrideService(key, constant);
+        return this;
     }
 
     /** {@inheritDoc} */
     @Override
+    protected final ComponentHandle componentHandle() {
+        return handle;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @BuildActionable("component.addTags") // Hmm or bean.addTags
     public BeanConfiguration componentTag(String... tags) {
         handle.componentTags(tags);
         return this;
@@ -133,12 +244,6 @@ public non-sealed class BeanConfiguration implements ComponentConfiguration , Be
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final boolean equals(Object obj) {
-        return obj instanceof BeanConfiguration bc && handle == bc.handle;
-    }
-
     /**
      * {@return a stream of any bean instance factories this bean has.}
      * <p>
@@ -148,21 +253,8 @@ public non-sealed class BeanConfiguration implements ComponentConfiguration , Be
         return operations(BeanFactoryConfiguration.class);
     }
 
-    /** {@return the bean handle that was used to create this configuration.} */
-    protected final BeanHandle handle() {
-        return handle;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final int hashCode() {
-        return handle.hashCode();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final boolean isConfigurable() {
-        return handle.isConfigurable();
+    public final Optional<BeanFactoryConfiguration> factory() {
+        return operations(BeanFactoryConfiguration.class).findAny();
     }
 
     /**
@@ -171,6 +263,9 @@ public non-sealed class BeanConfiguration implements ComponentConfiguration , Be
      * <p>
      * If no name is explicitly set on for a bean. A name will be assigned to the bean (at build time) in such a way that it
      * will have a unique name among other sibling components.
+     * <p>
+     * Beans belonging to extensions will always have the simple name of the extension followed by "#" prefixed to the name
+     * of the bean.
      *
      * @param name
      *            the name of the bean
@@ -182,9 +277,23 @@ public non-sealed class BeanConfiguration implements ComponentConfiguration , Be
      *             if there is another bean with the same name in the container. Or if the container has a child container
      *             with the same name.
      */
+    @BuildActionable("bean.named")
     public BeanConfiguration named(String name) {
         handle.named(name);
         return this;
+    }
+
+    /** {@return configurations for all operations defined by this bean.} */
+    // Return optional?
+    // Ideen er lidt at faa en enkelt bean kun
+    public final <T extends OperationConfiguration> T operation(Class<T> operationType) {
+        List<T> list = operations(operationType).toList();
+        if (list.size() > 1) {
+//            list.stream().map(t->t.)
+            // We need some name
+            throw new IllegalStateException("There are multiple ");
+        }
+        return list.get(0);
     }
 
     /** {@return configurations for all operations defined by this bean.} */
@@ -194,41 +303,8 @@ public non-sealed class BeanConfiguration implements ComponentConfiguration , Be
 
     /** {@return configurations for all operations defined by this bean.} */
     @SuppressWarnings("unchecked")
-    public final <T extends OperationConfiguration> Stream<T> operations(Class<? super T> operationType) {
+    public final <T extends OperationConfiguration> Stream<T> operations(Class<T> operationType) {
         return (Stream<T>) operations().filter(e -> operationType.isInstance(e));
-    }
-
-    public <K> BeanConfiguration overrideService(Class<K> key, K constant) {
-        // Future Functionality:
-
-        // overrideService(key, Provider) -> Needs some use cases
-        // And when is it generated? When the bean is instantiated?
-        // And is is per bean or use site?
-
-        // overrideService(key, Op) ->
-        // The issue is here that Op needs to be resolved.
-        // Maybe Op includes a service that have already been overridden.
-        // Not saying its impossible. But currently we do not support
-        // Adding operations dynamically after the bean has been scanned.
-        return overrideService(Key.of(key), constant);
-    }
-
-    /**
-     * Overrides a previously resolved service with the specified key.
-     *
-     * @param <K>
-     *            type of the constant
-     * @param key
-     *            the key of the service
-     * @param constant
-     *            the constant to bind the service to
-     * @return this configuration
-     * @throws IllegalArgumentException
-     *             if the bean does not have binding that are resolved as a service with the specified key
-     */
-    public <K> BeanConfiguration overrideService(Key<K> key, K constant) {
-        handle.overrideService(key, constant);
-        return this;
     }
 
     /** {@inheritDoc} */

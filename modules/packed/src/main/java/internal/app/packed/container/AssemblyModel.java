@@ -1,21 +1,24 @@
 package internal.app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyConfiguration;
-import app.packed.assembly.AssemblyTransformer;
+import app.packed.assembly.AssemblyBuildHook;
 import app.packed.assembly.DelegatingAssembly;
-import app.packed.assembly.TransformAssembly;
 import app.packed.build.BuildException;
+import app.packed.build.hook.ApplyBuildHook;
+import app.packed.build.hook.BuildHook;
 import internal.app.packed.bean.BeanHookModel;
+import internal.app.packed.build.hook.BuildHookMap;
+import internal.app.packed.build.hook.StaticBuildHookMap;
 import internal.app.packed.util.ThrowableUtil;
 
 /** A model of an {@link Assembly} class. */
@@ -26,73 +29,65 @@ public final /* primitive */ class AssemblyModel {
 
         @Override
         protected AssemblyModel computeValue(Class<?> type) {
-            ArrayList<AssemblyTransformer> hooks = new ArrayList<>();
+            HashMap<Class<? extends BuildHook>, List<BuildHook>> hookMap = new HashMap<>();
             for (Annotation a : type.getAnnotations()) {
-                if (a instanceof TransformAssembly h) {
-                    for (Class<? extends AssemblyTransformer> b : h.value()) {
-                        if (AssemblyTransformer.class.isAssignableFrom(b)) {
-                            MethodHandle constructor;
+                if (a instanceof ApplyBuildHook h) {
+                    for (Class<? extends BuildHook> b : h.hooks()) {
+                        Class<? extends BuildHook> hookType = BuildHookMap.classOf(b);
+                        MethodHandle constructor;
 
-                            if (!AssemblyModel.class.getModule().canRead(type.getModule())) {
-                                AssemblyModel.class.getModule().addReads(type.getModule());
-                            }
-
-                            Lookup privateLookup;
-                            try {
-                                privateLookup = MethodHandles.privateLookupIn(type, MethodHandles.lookup() /* lookup */);
-                            } catch (IllegalAccessException e1) {
-                                throw new RuntimeException(e1);
-                            }
-                            // TODO fix visibility
-                            // Maybe common findConstructorMethod
-                            try {
-                                constructor = privateLookup.findConstructor(b, MethodType.methodType(void.class));
-                            } catch (NoSuchMethodException e) {
-                                throw new BuildException("A container hook must provide an empty constructor, hook = " + h, e);
-                            } catch (IllegalAccessException e) {
-                                throw new BuildException("Can't see it sorry, hook = " + h, e);
-                            }
-                            constructor = constructor.asType(MethodType.methodType(AssemblyTransformer.class));
-
-                            AssemblyTransformer instance;
-                            try {
-                                instance = (AssemblyTransformer) constructor.invokeExact();
-                            } catch (Throwable t) {
-                                throw ThrowableUtil.orUndeclared(t);
-                            }
-                            hooks.add(instance);
+                        if (!AssemblyModel.class.getModule().canRead(type.getModule())) {
+                            AssemblyModel.class.getModule().addReads(type.getModule());
                         }
+
+                        Lookup privateLookup;
+                        try {
+                            privateLookup = MethodHandles.privateLookupIn(type, MethodHandles.lookup() /* lookup */);
+                        } catch (IllegalAccessException e1) {
+                            throw new RuntimeException(e1);
+                        }
+                        // TODO fix visibility
+                        // Maybe common findConstructorMethod
+                        try {
+                            constructor = privateLookup.findConstructor(b, MethodType.methodType(void.class));
+                        } catch (NoSuchMethodException e) {
+                            throw new BuildException("A container hook must provide an empty constructor, hook = " + h, e);
+                        } catch (IllegalAccessException e) {
+                            throw new BuildException("Can't see it sorry, hook = " + h, e);
+                        }
+
+                        // For consistency reasons we always tries to use invokeExact() even if not strictly needed
+                        constructor = constructor.asType(MethodType.methodType(BuildHook.class));
+
+                        BuildHook instance;
+                        try {
+                            instance = (BuildHook) constructor.invokeExact();
+                        } catch (Throwable t) {
+                            throw ThrowableUtil.orUndeclared(t);
+                        }
+
+                        hookMap.computeIfAbsent(hookType, c -> new ArrayList<>()).add(instance);
                     }
                 }
             }
-            if (!hooks.isEmpty() && DelegatingAssembly.class.isAssignableFrom(type)) {
-                throw new BuildException("Delegating assemblies cannot use @" + TransformAssembly.class.getSimpleName() + " annotations, assembly type =" + type);
+            if (!hookMap.isEmpty() && DelegatingAssembly.class.isAssignableFrom(type)) {
+                throw new BuildException("Delegating assemblies cannot use @" + ApplyBuildHook.class.getSimpleName() + " annotations, assembly type =" + type);
             }
-            return new AssemblyModel(type, hooks.toArray(s -> new AssemblyTransformer[s]));
+            return new AssemblyModel(type,  new StaticBuildHookMap(hookMap));
         }
     };
 
-    /** Any hooks that have been specified on the assembly. */
-    private final AssemblyTransformer[] assemblyTransformers;
-
     public final BeanHookModel hookModel;
 
-    private AssemblyModel(Class<?> assemblyClass, AssemblyTransformer[] hooks) {
-        this.assemblyTransformers = requireNonNull(hooks);
+    public final StaticBuildHookMap hooks;
+
+    private AssemblyModel(Class<?> assemblyClass, StaticBuildHookMap hm) {
         this.hookModel = BeanHookModel.of(assemblyClass);
+        this.hooks = hm;
     }
 
     public void postBuild(AssemblyConfiguration configuration) {
-        // TODO I think we should run these in reverse order
-        for (AssemblyTransformer h : assemblyTransformers) {
-            h.afterBuild(configuration);
-        }
-    }
-
-    public void preBuild(AssemblyConfiguration configuration) {
-        for (AssemblyTransformer h : assemblyTransformers) {
-            h.beforeBuild(configuration);
-        }
+        hooks.forEach(AssemblyBuildHook.class, h -> h.afterBuild(configuration));
     }
 
     /**

@@ -20,13 +20,13 @@ import java.util.function.Supplier;
 
 import app.packed.namespace.NamespaceConfiguration;
 import app.packed.namespace.NamespaceMirror;
-import app.packed.namespace.NamespaceOperator;
+import app.packed.namespace.NamespaceTwin;
 import app.packed.namespace.NamespaceTemplate;
 
 /**
  *
  */
-public final class PackedNamespaceTemplate<T extends NamespaceOperator<?>> implements NamespaceTemplate<T> {
+public final class PackedNamespaceTemplate<T extends NamespaceTwin<?, ?>> implements NamespaceTemplate<T> {
     public final Supplier<T> supplier;
 
     private PackedNamespaceTemplate(Supplier<T> supplier) {
@@ -39,7 +39,7 @@ public final class PackedNamespaceTemplate<T extends NamespaceOperator<?>> imple
         throw new UnsupportedOperationException();
     }
 
-    public static <T extends NamespaceOperator<?>> PackedNamespaceTemplate<T> of(Supplier<T> supplier) {
+    public static <T extends NamespaceTwin<?, ?>> PackedNamespaceTemplate<T> of(Supplier<T> supplier) {
         return new PackedNamespaceTemplate<>(supplier);
     }
 

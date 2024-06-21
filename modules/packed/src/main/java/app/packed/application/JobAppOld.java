@@ -21,7 +21,7 @@ import app.packed.application.BootstrapApp.Image;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.util.Result;
-import sandbox.extension.container.ContainerCarrierService;
+import sandbox.extension.container.guest.GuestIntoAdaptor;
 
 /**
  * Must have a main in a bean with application lifetime.
@@ -40,14 +40,12 @@ import sandbox.extension.container.ContainerCarrierService;
 // * Result<R>
 // * Job<R>
 
-
 //// 3 active result wise
 // ContainerLifetime <- a base result type (can never be overridden, usually Object.class)
 // Assembly,
 //// Completable
 //// Entrypoint
 // result check
-
 
 // async / result / checked exception
 
@@ -74,9 +72,13 @@ public final class JobAppOld {
         return resultType.cast(t);
     }
 
+    public static void main(String[] args) {
+        BOOTSTRAP.getClass();
+    }
+
     static <T> Future<T> runAsync(Class<?> resultType, Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    record Holder(@ContainerCarrierService Future<?> result) {}
+    record Holder(@GuestIntoAdaptor Future<?> result) {}
 }

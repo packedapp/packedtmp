@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.service.Provide;
 import app.packed.util.Key;
-import app.packed.util.KeyAlreadyUsedException;
+import app.packed.util.KeyAlreadyInUseException;
 import tck.AppAppTest;
 import testutil.stubs.Qualifiers.IntQualifier;
 import testutil.stubs.Qualifiers.StringQualifier;
@@ -36,30 +36,30 @@ public class DublicateServiceProvisionTest extends AppAppTest {
     @Test
     public void dublicateKeyDifferentBeans() {
         installInstance(1L).provideAs(Number.class);
-        Assertions.assertThrows(KeyAlreadyUsedException.class, () -> installInstance(1).provideAs(Number.class));
+        Assertions.assertThrows(KeyAlreadyInUseException.class, () -> installInstance(1).provideAs(Number.class));
         // TODO check message
 
         reset();
         installInstance(1L).provideAs(new Key<Number>() {});
-        Assertions.assertThrows(KeyAlreadyUsedException.class, () -> installInstance(1).provideAs(Number.class));
+        Assertions.assertThrows(KeyAlreadyInUseException.class, () -> installInstance(1).provideAs(Number.class));
 
         reset();
         installInstance(1L).provideAs(new Key<@IntQualifier Number>() {});
-        Assertions.assertThrows(KeyAlreadyUsedException.class, () -> installInstance(1).provideAs(new Key<@IntQualifier Number>() {}));
+        Assertions.assertThrows(KeyAlreadyInUseException.class, () -> installInstance(1).provideAs(new Key<@IntQualifier Number>() {}));
 
     }
 
     @Test
     public void cannotDefineSameProvidedKeys() {
-        KeyAlreadyUsedException e = assertThrows(KeyAlreadyUsedException.class, () -> install(MultipleIdenticalQualifiedFieldKeys.class));
+        KeyAlreadyInUseException e = assertThrows(KeyAlreadyInUseException.class, () -> install(MultipleIdenticalQualifiedFieldKeys.class));
         assertThat(e).hasNoCause();
         reset();
 
-        e = assertThrows(KeyAlreadyUsedException.class, () -> install(MultipleIdenticalQualifiedMethodKeys.class));
+        e = assertThrows(KeyAlreadyInUseException.class, () -> install(MultipleIdenticalQualifiedMethodKeys.class));
         assertThat(e).hasNoCause();
         reset();
 
-        e = assertThrows(KeyAlreadyUsedException.class, () -> install(MultipleIdenticalQualifiedMemberKeys.class));
+        e = assertThrows(KeyAlreadyInUseException.class, () -> install(MultipleIdenticalQualifiedMemberKeys.class));
         assertThat(e).hasNoCause();
         reset();
     }

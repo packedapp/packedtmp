@@ -18,14 +18,14 @@ package tck;
 import app.packed.application.BootstrapApp;
 import app.packed.operation.Op1;
 import app.packed.service.ServiceLocator;
-import sandbox.extension.container.ContainerCarrierService;
+import sandbox.extension.container.guest.GuestIntoAdaptor;
 
 /**
  *
  */
 public class ServiceLocatorAppTest extends AbstractBootstrapedAppTest<ServiceLocator> {
 
-    private static final BootstrapApp<ServiceLocator> APP = BootstrapApp.of(new Op1<@ContainerCarrierService ServiceLocator, ServiceLocator>(e -> e) {},
+    private static final BootstrapApp<ServiceLocator> APP = BootstrapApp.of(new Op1<@GuestIntoAdaptor ServiceLocator, ServiceLocator>(e -> e) {},
             c -> {});
 
     public ServiceLocatorAppTest() {

@@ -16,9 +16,9 @@
 package internal.app.packed.container;
 
 import app.packed.assembly.AssemblyPropagator;
-import app.packed.build.BuildTransformer;
+import app.packed.build.hook.BuildHook;
 
 /**
  *
  */
-public record AssemblyBuildTransformer(BuildTransformer transformer, AssemblyPropagator propagator) {}
+public record AssemblyBuildTransformer(BuildHook transformer, AssemblyPropagator propagator) {}

@@ -19,14 +19,14 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import app.packed.component.Mirror;
+import app.packed.build.BuildMirror;
 import app.packed.util.Nullable;
 import app.packed.util.TreeView;
 
 /**
  *
  */
-public class AbstractTreeMirror<T extends Mirror, N extends Mirrorable<T>> implements TreeView<T> {
+public class AbstractTreeMirror<T extends BuildMirror, N extends Mirrorable<T>> implements TreeView<T> {
 
     /** The root node */
     final N root;
@@ -56,7 +56,7 @@ public class AbstractTreeMirror<T extends Mirror, N extends Mirrorable<T>> imple
         return TreeView.super.nodeRoot();
     }
 
-    public static class MirrorNode<T extends Mirror, N extends Mirrorable<T>> implements TreeView.Node<T> {
+    public static class MirrorNode<T extends BuildMirror, N extends Mirrorable<T>> implements TreeView.Node<T> {
 
         final N node;
         final AbstractTreeMirror<T, N> tree;

@@ -22,7 +22,7 @@ import app.packed.build.BuildLocal;
 import app.packed.container.ContainerLocal;
 import app.packed.container.Wirelet;
 
-/** A component local that has application scope. */
+/** A build local that has application scope. */
 public non-sealed interface ApplicationLocal<T> extends BuildLocal<ApplicationLocal.ApplicationLocalAccessor, T> {
 
     /**

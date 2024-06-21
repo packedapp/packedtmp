@@ -64,7 +64,7 @@ public final class CliApp {
      */
     private static BootstrapApp<Void> bootstrap() {
         class ServiceLocatorBootstrap {
-            private static final BootstrapApp<Void> APP = BootstrapApp.of(Void.class, c -> {});
+            private static final BootstrapApp<Void> APP = BootstrapApp.of(c -> {});
         }
         return ServiceLocatorBootstrap.APP;
     }

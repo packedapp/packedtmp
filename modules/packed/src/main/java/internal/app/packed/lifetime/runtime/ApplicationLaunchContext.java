@@ -17,10 +17,11 @@ package internal.app.packed.lifetime.runtime;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.application.ApplicationMirror;
 import app.packed.container.Wirelet;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanClassActivator.BindingClassActivator;
+import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ApplicationSetup;
@@ -31,7 +32,7 @@ import sandbox.lifetime.external.LifecycleController;
 /**
  * A temporary context object that is created whenever we launch an application.
  */
-@BindingClassActivator(extension = BaseExtension.class)
+@BindingClassBeanTrigger(extension = BaseExtension.class)
 public final class ApplicationLaunchContext implements Context<BaseExtension> {
 
     /** The configuration of the application we are launching. */
@@ -51,6 +52,10 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
         this.wirelets = wirelets;
         this.name = requireNonNull(application.container.node.name);
         this.runner = new ContainerRunner(application);
+    }
+
+    public ApplicationMirror mirror() {
+        return application.mirror();
     }
 
     /** {@return the name of the application} */

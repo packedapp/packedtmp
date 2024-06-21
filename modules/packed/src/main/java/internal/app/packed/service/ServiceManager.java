@@ -28,7 +28,7 @@ import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
 import app.packed.service.mirror.oldMaybe.ExportedServiceMirror;
 import app.packed.util.Key;
-import app.packed.util.KeyAlreadyUsedException;
+import app.packed.util.KeyAlreadyInUseException;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution;
@@ -82,7 +82,7 @@ public final class ServiceManager {
         ExportedService existing = exports.putIfAbsent(es.key, es);
         if (existing != null) {
             // A service with the key has already been exported
-            throw new KeyAlreadyUsedException("Jmm " + es.key);
+            throw new KeyAlreadyInUseException("Jmm " + es.key);
         }
         es.operation.mirrorSupplier = () -> new ExportedServiceMirror(es);
         return es;

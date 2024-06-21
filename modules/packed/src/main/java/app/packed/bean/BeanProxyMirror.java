@@ -20,23 +20,25 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import app.packed.build.CodegenGenerated;
-import app.packed.component.Mirror;
+import app.packed.build.BuildMirror;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
 import app.packed.util.AnnotationList;
 
 /**
- *
+ * A mirror representing a bean proxy.
  */
 // Add something about why the proxy is created
 // Add something about which extensions uses the proxy
 
 // Extends Class, or interface based...
 
-// Do we have ServiceProxy as well???
-public interface BeanProxyMirror extends Mirror {
+// Skal vi have noget med triggering "Annotations"
 
-    /** {@return the bean that is proxied} */
+// Do we have ServiceProxy as well???
+public interface BeanProxyMirror extends BuildMirror {
+
+    /** {@return the bean that is being proxied} */
     BeanMirror bean();
 
     //I think we might also have operations that are overridden
@@ -45,12 +47,12 @@ public interface BeanProxyMirror extends Mirror {
     /** {@return the generated proxy class} */
     // Problemet med BuildGenerated er OperationTarget
     // Som vel ogsaa er en slags future. Hvis
-    CodegenGenerated<Class<? super BeanProxy>> proxyClass();
+    CodegenGenerated<Class<? super GeneratedBeanProxy>> proxyClass();
 
     /** {@return fields that are introduced by the proxy class} */
     List<ProxyField> introducedFields();
 
-    /** A field that is introduced on the proxy class. */
+    /** A list of fields that are introduced on the proxy class. */
     interface ProxyField {
 
         /** {@return annotations on the field} */
@@ -63,9 +65,15 @@ public interface BeanProxyMirror extends Mirror {
         String name();
 
         /** {@return the type of the field} */
-        Class<?> type(); // Maybe this could be generated as well??? hmmm
+        MaybeGenerated<Class<?>> type(); // Maybe this could be generated as well??? hmmm
 
         CodegenGenerated<Field> field();
+    }
+
+    public enum ProxyMethod {
+        DYNAMIC_PROXY,
+
+        CLASS_EXTENDS;
     }
 }
 

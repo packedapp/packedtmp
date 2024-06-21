@@ -2,7 +2,7 @@ package internal.app.packed.lifetime;
 
 import java.util.List;
 
-import app.packed.lifetime.LifetimeKind;
+import app.packed.lifetime.LifecycleKind;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.operation.OperationSetup;
@@ -31,7 +31,7 @@ public sealed interface LifetimeSetup permits ContainerLifetimeSetup, BeanLifeti
 
     Class<?> resultType();
 
-    LifetimeKind lifetimeKind();
+    LifecycleKind lifetimeKind();
 
     List<FuseableOperation> lifetimes();
 

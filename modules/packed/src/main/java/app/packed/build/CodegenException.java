@@ -17,6 +17,8 @@ package app.packed.build;
 
 /**
  * An exception that is typically thrown during the code generating phase of an application.
+ * <p>
+ * If the application is lazily built, the application may also be thrown during the "runtime" of the application.
  */
 // This is abnormal. Kind of like if C2 failed
 public class CodegenException extends BuildException {

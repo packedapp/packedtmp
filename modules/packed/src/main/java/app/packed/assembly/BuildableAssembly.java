@@ -17,10 +17,9 @@ package app.packed.assembly;
 
 import java.lang.invoke.MethodHandles.Lookup;
 
-import app.packed.container.ContainerConfiguration;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.PackedContainerBuilder;
+import internal.app.packed.container.PackedContainerInstaller;
 
 /**
  * Assemblies are the main way that applications are configured in Packed.
@@ -42,6 +41,7 @@ import internal.app.packed.container.PackedContainerBuilder;
  * @see BaseAssembly
  */
 // LinkedAssembly, LinkableAssembly, ConfinedAssembly
+// Navnet ligger lidt for taet op af BaseAssembly. Maaske
 public non-sealed abstract class BuildableAssembly extends Assembly {
 
     /**
@@ -91,28 +91,27 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
 
     /** {@inheritDoc} */
     @Override
-    AssemblySetup build(PackedContainerBuilder builder) {
+    AssemblySetup build(PackedContainerInstaller builder) {
         AssemblyConfiguration existing = configuration;
-        if (existing == null) {
+        if (existing == null) { // assembly has not been used before
             AssemblySetup assembly = new AssemblySetup(builder, this);
-            new ContainerConfiguration(assembly.container);
 
-            existing = configuration = new AssemblyConfiguration(assembly);
+            AssemblyConfiguration ac = configuration = new AssemblyConfiguration(assembly);
 
             try {
+                // Run AssemblyHook.beforeBuild for any hooks present
+                assembly.model.hooks.forEach(AssemblyBuildHook.class, h -> h.beforeBuild(ac));
 
-                // Run AssemblyHook.onPreBuild if hooks are present
-                assembly.model.preBuild(existing);
-
-                // Call the actual build() method
+                // Call the actual build() method on the assembly
                 build();
 
-                // Run AssemblyHook.onPostBuild if hooks are present
-                assembly.model.postBuild(existing);
+                // Run AssemblyHook.afterBuild for any hooks present
+                assembly.model.hooks.forEachReversed(AssemblyBuildHook.class, h -> h.afterBuild(ac));
             } finally {
                 // Sets #configuration to a marker object that indicates the assembly has been used
                 existing = Assembly.USED;
             }
+
             assembly.postBuild();
             return assembly;
         } else if (existing == Assembly.USED) {

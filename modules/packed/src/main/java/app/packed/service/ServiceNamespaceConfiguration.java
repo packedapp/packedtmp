@@ -40,6 +40,7 @@ public abstract class ServiceNamespaceConfiguration extends NamespaceConfigurati
     /**
      * @param handle
      */
+    @SuppressWarnings("rawtypes")
     protected ServiceNamespaceConfiguration(NamespaceHandle handle) {
         super(handle);
     }
@@ -84,6 +85,7 @@ public abstract class ServiceNamespaceConfiguration extends NamespaceConfigurati
      * @throws KeyAlreadyInUseException
      *             if the service locator provides any keys that are already in use
      */
+    // Map<Key<?>, ProvideServiceOperationConfiguraion>
     public Set<Key<?>> provideAll(ServiceLocator locator) {
         requireNonNull(locator, "locator is null");
         checkIsConfigurable();

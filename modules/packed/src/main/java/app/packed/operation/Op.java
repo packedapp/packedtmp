@@ -23,6 +23,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -120,6 +121,18 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
      */
     static <T> Op<T> ofConstructor(Lookup lookup, Constructor<T> constructor) {
         requireNonNull(constructor, "constructor is null");
+        throw new UnsupportedOperationException();
+    }
+
+    static Op<Void> ofRunnable(Runnable runnable) {
+        throw new UnsupportedOperationException();
+    }
+
+    static <T> Op<T> ofCallable(Class<T> returnType, Callable<? extends T> callable) {
+        throw new UnsupportedOperationException();
+    }
+
+    static <T> Op<Void> ofConsumer(Class<T> consumingType, Consumer<? super T> callable) {
         throw new UnsupportedOperationException();
     }
 

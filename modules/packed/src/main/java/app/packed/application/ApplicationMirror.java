@@ -11,7 +11,7 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanClassActivator.BindingClassActivator;
+import app.packed.extension.BeanTrigger.InheritableBindingClassBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
@@ -32,16 +32,17 @@ import internal.app.packed.operation.OperationSetup;
  * An application mirror instance is typically obtained by calling application mirror factory methods such as
  * {@link App#mirrorOf(Assembly, Wirelet...)}.
  * <p>
- * Instances of this class should never be created {@link #ApplicationMirror()} directly as the framework needs to
- * perform initialization before it can be used.
+ * Instances of this class should never be created directly as the framework needs to perform initialization before it
+ * can be used.
  * <p>
- * Instances of ApplicationMirror can be injected into any bean simply by declaring a dependency on this class.
+ * Instances of ApplicationMirror (or a subclass hereof) can be injected into any bean simply by declaring a dependency
+ * on this class.
  * <p>
  * Like many other mirrors classes the type of application mirror being returned can be specialized. See
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)} for details.
  */
-@BindingClassActivator(extension = BaseExtension.class)
-public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationLocal.ApplicationLocalAccessor {
+@InheritableBindingClassBeanTrigger(extension = BaseExtension.class)
+public non-sealed class ApplicationMirror implements ComponentMirror , ApplicationLocal.ApplicationLocalAccessor {
 
     /** The application we are mirroring. */
     private final ApplicationSetup application;
@@ -92,6 +93,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     public Stream<ComponentMirror> components() {
         throw new UnsupportedOperationException();
     }
+
     /** {@return a collection of all entry points the application may have.} */
     public Collection<OperationMirror> entryPoints() {
         return container().lifetime().entryPoints();
@@ -142,7 +144,6 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         return application.container.node.name;
     }
 
-
     // ApplicationMirror
     // All namespaces with root container
     // All namespaces in the whole application
@@ -151,7 +152,6 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     // Alternatively all keysspaces not owned by the application must be prefixed with $
     // $FooExtension$main I think I like this better
     // NamespaceKey <Type, Owner?, ContainerPath, Name>
-
 
     // Application owned namespace...
     public <N extends NamespaceMirror<?>> N namespace(Class<N> type) {

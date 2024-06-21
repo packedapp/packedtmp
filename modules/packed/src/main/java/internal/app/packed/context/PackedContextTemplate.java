@@ -24,7 +24,7 @@ import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
 /** Implementation of {@link ContextTemplate}. */
-public record PackedContextTemplate(Class<? extends Extension<?>> extensionClass, Class<? extends Context<?>> contextClass, Class<?> implementationClass,
+public record PackedContextTemplate(Class<? extends Extension<?>> extensionClass, Class<? extends Context<?>> contextClass, Class<? extends Context<?>> contextImplementationClass,
         boolean isHidden) implements ContextTemplate {
 
     /** A ContextTemplate class to Extension class mapping. */
@@ -44,7 +44,7 @@ public record PackedContextTemplate(Class<? extends Extension<?>> extensionClass
         throw new UnsupportedOperationException();
     }
 
-    public static ContextTemplate of(MethodHandles.Lookup caller, boolean isHidden, Class<? extends Context<?>> contextClass, Class<?> implementation) {
+    public static ContextTemplate of(MethodHandles.Lookup caller, boolean isHidden, Class<? extends Context<?>> contextClass, Class<? extends Context<?>> implementation) {
         Class<? extends Extension<?>> c = PackedContextTemplate.TYPE_VARIABLE_EXTRACTOR.get(contextClass); // checks same module
         // check implementation is same class or implement contextclass
         return new PackedContextTemplate(c, contextClass, implementation, isHidden);

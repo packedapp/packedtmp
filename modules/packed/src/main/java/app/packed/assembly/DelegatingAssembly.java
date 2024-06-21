@@ -16,13 +16,14 @@
 package app.packed.assembly;
 
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.function.Consumer;
 
 import app.packed.build.BuildException;
-import app.packed.build.BuildTransformer;
+import app.packed.build.hook.BuildHook.Applicator;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblyModel;
 import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.PackedContainerBuilder;
+import internal.app.packed.container.PackedContainerInstaller;
 
 /**
  * A special assembly type that delegates all calls to another assembly.
@@ -45,8 +46,10 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
 
     /** {@inheritDoc} */
     @Override
-    AssemblySetup build(PackedContainerBuilder containerBuilder) {
+    AssemblySetup build(PackedContainerInstaller containerBuilder) {
+        // Treat it as parent assembly?? Nah we have an Assembly instance. Anyone can get a hold of one.
         AssemblyModel.of(getClass()); // Check that this assembly does not use AssemblyHooks
+        // Maybe allow if opens or same module
 
         // Problem with relying on StackOverflowException is that you cannot really see what assembly
         // is causing the problems
@@ -77,7 +80,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
     // If you want to apply a transformation to an assembly. You must have open access
     protected abstract Assembly delegateTo();
 
-    Assembly extractAssembly(PackedContainerBuilder containerBuilder) {
+    Assembly extractAssembly(PackedContainerInstaller containerBuilder) {
         AssemblyModel.of(getClass()); // Check that this assembly does not use AssemblyHooks
 
         // Problem with relying on StackOverflowException is that you cannot really what assembly
@@ -105,21 +108,34 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
     // Do we need to be dynamic here???
     // IDeen er lidt at at fx for AssemblyHook er det interesant.
     /// Fx InModule er det delegating assembly eller target assembly
+    // WTF is this
     protected boolean isSynthetic() {
         return false;
     }
-
 
     protected @Nullable Lookup lookup() {
         return null;
     }
 
-    protected final Assembly transform(Assembly assembly, BuildTransformer... transformers) {
-        return transformRecursively(assembly, AssemblyPropagator.LOCAL, transformers);
-    }
+//    protected final Assembly transform(Assembly assembly, BuildHook... transformers) {
+//        return transformRecursively(assembly, AssemblyPropagator.LOCAL, transformers);
+//    }
+//
+//    protected final Assembly transformRecursively(Assembly assembly, AssemblyPropagator propagator, BuildHook... transformers) {
+//        // uses lookup if available, otherwise .getClass()
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    protected final Assembly transformRecursively(Assembly assembly, BuildHook... transformers) {
+//        // uses lookup if available, otherwise .getClass()
+//        throw new UnsupportedOperationException();
+//    }
 
-    protected final Assembly transformRecursively(Assembly assembly, AssemblyPropagator propagator, BuildTransformer... transformers) {
-        // uses lookup if available, otherwise .getClass()
+
+    // Lidt nederen at de nok vil staa som public methods paa subclasses. Maaske flyt tilbage til build hook
+
+    // Alternativ er der en applyLast() metode paa Applicator
+    public static DelegatingAssembly applyBuildHook(Assembly assembly, Consumer<? super Applicator> transformer) {
         throw new UnsupportedOperationException();
     }
 

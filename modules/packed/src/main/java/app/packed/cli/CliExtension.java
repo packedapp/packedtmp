@@ -27,7 +27,6 @@ import app.packed.extension.BeanIntrospector;
 import app.packed.extension.FrameworkExtension;
 import app.packed.namespace.NamespaceTemplate;
 import sandbox.extension.container.ContainerHandle;
-import sandbox.extension.container.ContainerHandle.Builder;
 import sandbox.extension.container.ContainerTemplate;
 
 /**
@@ -45,7 +44,10 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
     CliExtension() {}
 
     public CliCommand.Builder addCommand(String... names) {
-        return domain(DOMAIN).addCommand(names);
+
+        // should be namespace().addCommand();
+
+        return namespace(DOMAIN).addCommand(names);
     }
 
     public <T> InstanceBeanConfiguration<T> newBean(Class<T> beanClass) {
@@ -63,21 +65,25 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
             /** {@inheritDoc} */
             @Override
-            public void activatedByAnnotatedMethod(Annotation hook, BeanMethod method) {
+            public void triggeredByAnnotatedMethod(Annotation hook, BeanMethod method) {
                 if (hook instanceof CliCommand c) {
-                    domain(DOMAIN).process(CliExtension.this, c, method);
+                    namespace(DOMAIN).process(CliExtension.this, c, method);
                 } else {
-                    super.activatedByAnnotatedMethod(hook, method);
+                    super.triggeredByAnnotatedMethod(hook, method);
                 }
             }
         };
     }
 
-    private Builder newContainer() {
+    public CliNamespaceConfiguration namespace() {
+        throw new UnsupportedOperationException();
+    }
+
+    private ContainerTemplate.Installer newContainer() {
         if (isInApplicationLifetime()) {
             throw new UnsupportedOperationException("This method must be called from an extension in the application lifetime");
         }
-        Builder cb = base().newContainer(ContainerTemplate.GATEWAY);
+        ContainerTemplate.Installer cb = base().newContainer(ContainerTemplate.GATEWAY);
         // CT.addEntryPointErrorMessage("Lifetime must container at least one entry point with CliCommand")
 
         return cb;
@@ -85,17 +91,17 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
     // Lifetime must have at least 1 CliCommand
     public void newContainer(Assembly assembly, Wirelet... wirelets) {
-        newContainer().build(assembly, wirelets);
+        newContainer().build(assembly, ContainerConfiguration::new, wirelets);
     }
 
     public ContainerConfiguration newContainer(Wirelet... wirelets) {
-        ContainerHandle handle = newContainer().build(wirelets);
-        return new ContainerConfiguration(handle);
+        ContainerHandle<?> handle = newContainer().install(ContainerConfiguration::new, wirelets);
+        return handle.configuration();
     }
 
     @Override
     protected void onApplicationClose() {
-        System.out.println("Have commands for " + domain(DOMAIN).commands.keySet());
+        System.out.println("Have commands for " + namespace(DOMAIN).commands.keySet());
 
         super.onApplicationClose();
     }

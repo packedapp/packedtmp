@@ -41,7 +41,7 @@ public abstract non-sealed class InternalBuildWirelet extends FrameworkWirelet {
         return application;
     }
 
-    protected final void checkIsApplication(PackedContainerBuilder builder, Wirelet wirelet) {
+    protected final void checkIsApplication(PackedContainerInstaller builder, Wirelet wirelet) {
         // throw new IllegalArgumentException("This wirelet can only be specified for the root container of an application,
         // wirelet = " + this);
     }
@@ -57,7 +57,7 @@ public abstract non-sealed class InternalBuildWirelet extends FrameworkWirelet {
      * @param installer
      *            an installer for the container
      */
-    protected abstract void onBuild(PackedContainerBuilder builder);
+    protected abstract void onBuild(PackedContainerInstaller builder);
 
     /** {@inheritDoc} */
     @Override

@@ -19,6 +19,7 @@ package app.packed.application;
  * Always has a cause.
  */
 // Just use ExecutionException???
+// RuntimeApplicationException
 public class ApplicationException extends Exception {
 
     private static final long serialVersionUID = 1L;

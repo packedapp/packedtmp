@@ -22,8 +22,6 @@ public class BeanProps {
 
     // Actor.serialize
     // Wrapper alle operationer
-
-
     // Controlled.. Vi behoever ikke have en shutdown lock.
 
     // Controlled, er vel uafhandig af single multi_threading?

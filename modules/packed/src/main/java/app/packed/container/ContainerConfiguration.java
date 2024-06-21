@@ -7,16 +7,19 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanConfiguration;
+import app.packed.build.action.BuildActionable;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentPath;
+import app.packed.component.ComponentHandle;
 import app.packed.container.ContainerLocal.ContainerLocalAccessor;
 import app.packed.extension.Extension;
-import app.packed.lifetime.LifetimeKind;
+import app.packed.lifetime.LifecycleKind;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.container.PackedContainerInstaller;
+import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.util.types.ClassUtil;
-import sandbox.extension.container.ContainerHandle;
+import sandbox.extension.container.ContainerTemplate;
 
 /**
  * The configuration of a container.
@@ -25,7 +28,7 @@ import sandbox.extension.container.ContainerHandle;
  */
 // Could let it be extendable. But it would only be usable through methods on extensions. Although
 // An assembly could return an instance of it
-public non-sealed class ContainerConfiguration implements ComponentConfiguration , ContainerLocalAccessor {
+public non-sealed class ContainerConfiguration extends ComponentConfiguration implements ContainerLocalAccessor {
 
     /**
      * A marker configuration object indicating that an assembly (or composer) has already been used for building a
@@ -42,26 +45,21 @@ public non-sealed class ContainerConfiguration implements ComponentConfiguration
         this.container = null;
     }
 
-    /**
-     * Create a new container configuration.
-     *
-     * @param handle
-     *            the container handle
-     */
-    public ContainerConfiguration(ContainerHandle handle) {
-        this.container = (ContainerSetup) requireNonNull(handle, "handle is null");
-        container.initConfiguration(this);
+    public ContainerConfiguration(ContainerTemplate.Installer installer) {
+        requireNonNull(installer, "builder is null");
+        this.container = ((PackedContainerInstaller) installer).newHandleFromConfiguration();
     }
 
     /**
      * {@return a stream of all the beans installed in this container}
      * <p>
-     * This does not include beans owned by extensions.
+     * The returned stream does not include beans owned by extensions.
      *
      * @see ContainerMirror#beans()
      */
+    // We install using base(), but have beans here...
     public final Stream<? extends BeanConfiguration> beans() {
-        return container.beans.stream().filter(b -> b.owner().isApplication()).map(b -> b.configuration).filter(c -> c != null);
+        return container.beans.stream().filter(b -> b.owner().isApplication()).map(b -> b.configuration()).filter(c -> c != null);
     }
 
     @SuppressWarnings("unchecked")
@@ -69,32 +67,18 @@ public non-sealed class ContainerConfiguration implements ComponentConfiguration
         return (Stream<T>) beans().filter(beanClass::isInstance);
     }
 
-    /**
-     * Checks that the container's assembly is still configurable.
-     *
-     * @throws IllegalStateException
-     *             if the container's assembly is no longer configurable
-     */
-    protected void checkIsConfigurable() {
-        container.checkIsConfigurable();
+
+    /** {@inheritDoc} */
+    @Override
+    protected final ComponentHandle componentHandle() {
+        return new PackedContainerHandle<>(container);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentPath componentPath() {
-        return container.componentPath();
-    }
-
-    /** {@inheritDoc} */
-    @Override
+    @BuildActionable("container.addTags")
     public ComponentConfiguration componentTag(String... tags) {
         return container.componentTag(tags);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(Object obj) {
-        return obj == this || obj instanceof ContainerConfiguration bc && container.equals(bc.container);
     }
 
     /**
@@ -108,24 +92,12 @@ public non-sealed class ContainerConfiguration implements ComponentConfiguration
         return container.extensionTypes();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return container.hashCode();
-    }
-
     public boolean isApplicationRoot() {
         return container.isApplicationRoot();
     }
 
     public boolean isAssemblyRoot() {
         return container.isAssemblyRoot();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isConfigurable() {
-        return container.isConfigurable();
     }
 
     /**
@@ -142,7 +114,7 @@ public non-sealed class ContainerConfiguration implements ComponentConfiguration
         return container.isExtensionUsed(extensionType);
     }
 
-    public LifetimeKind lifetimeKind() {
+    public LifecycleKind lifetimeKind() {
         return container.lifetime.lifetimeKind();
     }
 
@@ -161,6 +133,7 @@ public non-sealed class ContainerConfiguration implements ComponentConfiguration
      *             characters and '_', '-' or '.'
      * @see Wirelet#named(String)
      */
+    @BuildActionable("container.named")
     public ContainerConfiguration named(String name) {
         container.named(name);
         return this;
@@ -194,8 +167,8 @@ public non-sealed class ContainerConfiguration implements ComponentConfiguration
      *            the type of wirelet to select
      * @return A wirelet selection
      */
-    public <W extends ApplicationWirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
-        ClassUtil.checkProperSubclass(ApplicationWirelet.class, wireletClass, "wireletClass");
+    public <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
+        ClassUtil.checkProperSubclass(Wirelet.class, wireletClass, "wireletClass");
         return container.selectWireletsUnsafe(wireletClass);
     }
 
@@ -223,6 +196,7 @@ public non-sealed class ContainerConfiguration implements ComponentConfiguration
      * @see #extensionsTypes()
      * @see BaseAssembly#use(Class)
      */
+    @BuildActionable("container.installExtension")
     public <E extends Extension<?>> E use(Class<E> extensionClass) {
         ExtensionSetup extension = container.useExtension(extensionClass, null);
         return extensionClass.cast(extension.instance());

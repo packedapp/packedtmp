@@ -10,6 +10,8 @@ import sandbox.extension.bean.BeanTemplate;
 
 // Maybe ditching scope is bad
 // https://marcelkliemannel.com/articles/2021/overview-of-bean-scopes-in-quarkus/
+
+//Maybe we mixing different things... A bean can be container managed or container-unmanaged
 public enum BeanKind {
 
     /**
@@ -35,7 +37,7 @@ public enum BeanKind {
      * <p>
      * A foerign bean is always presented on every operation. The instance is never stored any where.
      * <p>
-     * A foerign bean is always unmanaged.
+     * A foerign bean is always unmanaged (Or static/stateless meaning we don't support shit)
      */
     /**
      * The lifetime of the bean is not managed by any extension. At least not in a standard way
@@ -81,7 +83,7 @@ public enum BeanKind {
      * Constructors are never scanned when creating static beans, and therefore never validated for correctness.
      * <p>
      * Static beans are always bound to the lifetime of their container. Meaning that they are only usable as long as their
-     * container are active
+     * container are active. If a container has been stopped the bean should no longer be used.
      *
      * @see BaseExtension#installStatic(Class)
      **/
@@ -89,7 +91,7 @@ public enum BeanKind {
 
     /**
      * A unmanaged bean is a bean that is create within the context of a container. But once created the container no longer
-     * keeps track of the bean. As a consequence unmanaged beans does not destructive lifecycle operations.
+     * keeps track of the bean. As a consequence unmanaged beans does not support destructive lifecycle operations.
      * <p>
      * A typical example is prototype services
      */

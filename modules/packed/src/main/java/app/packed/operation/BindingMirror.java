@@ -55,6 +55,11 @@ public class BindingMirror implements ComponentMirror {
         return binding.kind();
     }
 
+    /** {@return who created the binding.} */
+    public final Authority boundBy() {
+        return binding.boundBy;
+    }
+
     /** {@inheritDoc} */
     @Override
     public final ComponentPath componentPath() {
@@ -100,11 +105,6 @@ public class BindingMirror implements ComponentMirror {
     public final Variable variable() {
         BindingSetup b = binding;
         return b.operation.type.parameter(b.operationBindingIndex);
-    }
-
-    /** {@return the x who created binding.} */
-    public final Authority zBoundBy() {
-        return binding.boundBy;
     }
 
     /** {@return the dependencies this binding introduces.} */

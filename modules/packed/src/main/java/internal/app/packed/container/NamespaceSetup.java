@@ -18,10 +18,13 @@ package internal.app.packed.container;
 import java.util.HashMap;
 import java.util.Map;
 
+import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
+import app.packed.namespace.NamespaceConfiguration;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.util.Nullable;
+import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.MagicInitializer;
 
@@ -29,7 +32,8 @@ import internal.app.packed.util.MagicInitializer;
  *
  */
 // Is an application a namespace for Components??? My brain just fried
-public final class NamespaceSetup implements NamespaceHandle {
+@SuppressWarnings("rawtypes")
+public final class NamespaceSetup extends ComponentSetup implements NamespaceHandle {
 
     /** The default name of a namespace. */
     public static final String DEFAULT_NAME = "main";
@@ -93,5 +97,17 @@ public final class NamespaceSetup implements NamespaceHandle {
     @Override
     public ComponentPath componentPath() {
         return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public NamespaceConfiguration configuration() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentKind componentKind() {
+        throw new UnsupportedOperationException();
     }
 }

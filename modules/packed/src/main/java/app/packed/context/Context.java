@@ -27,6 +27,8 @@ import app.packed.extension.Extension;
 //Ved ikke om det er problematisk at tage E med paa runtime...
 //Den er jo ikke super needed. Og bliver jo encoded i klassen
 // Det samme for wirelets, men der skal vi jo saa bruge det for nogle checks
+
+// Bean Contexts are available when construcing a bean
 public interface Context<E extends Extension<E>> {}
 
 

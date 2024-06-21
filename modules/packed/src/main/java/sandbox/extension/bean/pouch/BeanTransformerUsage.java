@@ -21,7 +21,7 @@ import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanClassMutator;
 import app.packed.bean.Inject;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerTransformer;
+import app.packed.container.ContainerBuildHook;
 import app.packed.extension.BaseExtension;
 import app.packed.util.Variable;
 
@@ -56,7 +56,7 @@ public class BeanTransformerUsage {
         }
     }
 
-    public class MyProc implements ContainerTransformer {
+    public class MyProc extends ContainerBuildHook {
 
         @Override
         public void onNew(ContainerConfiguration configuration) {

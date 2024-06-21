@@ -29,12 +29,14 @@ import app.packed.application.BootstrapApp.Image;
 import app.packed.assembly.AbstractComposer;
 import app.packed.assembly.AbstractComposer.ComposerAction;
 import app.packed.assembly.Assembly;
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
 import app.packed.build.BuildGoal;
 import app.packed.container.ContainerLocal;
 import app.packed.container.Wirelet;
+import app.packed.extension.Extension;
 import app.packed.extension.FrameworkExtension;
-import app.packed.lifetime.LifetimeKind;
+import app.packed.lifetime.LifecycleKind;
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
 import app.packed.util.Result;
@@ -42,29 +44,35 @@ import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.CompositeWirelet;
 import internal.app.packed.container.FutureApplicationSetup;
 import internal.app.packed.container.NonBootstrapContainerBuilder;
-import internal.app.packed.container.PackedContainerBuilder;
+import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
+import internal.app.packed.container.PackedContainerTemplate.PackedContainerTemplateConfigurator;
 import internal.app.packed.container.WireletSelectionArray;
 import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.util.ThrowableUtil;
 import sandbox.extension.bean.BeanHandle;
-import sandbox.extension.bean.BeanHandle.Builder;
 import sandbox.extension.bean.BeanTemplate;
-import sandbox.extension.container.ContainerTemplatePack;
+import sandbox.extension.container.ContainerTemplateLink;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
  * A bootstrap app is a special type of application that can be used to create other (non-bootstrap) application.
  * <p>
+ * Bootstrap apps cannot directly modify the applications that it bootstraps. It cannot, for example, install an
+ * extension in the application. However, it can say it can only bootstrap applications that have the extension
+ * installed, failing with a build exception if the developer does not install the extension. As such, the bootstrap app
+ * can only setup requirements for the application that it bootstraps. It cannot directly make the needed changes to the
+ * bootstrapped application.
+ * <p>
  * Bootstrap applications are rarely used directly by users. Instead users typically use thin wrappers such as
  * {@link App} or {@link app.packed.service.ServiceLocator} to create new applications. However, if greater control of
  * the application is needed users may create their own bootstrap application.
  * <p>
- * Normally, you never create more than a single instance of a bootstrap app. Bootstrap applications are unless
- * otherwise specified safe to use concurrently.
+ * Normally, you never create more than a single instance of a bootstrap app. Bootstrap applications are, unless
+ * otherwise specified, safe to use concurrently.
  *
  * @param <A>
  *            the type of application this bootstrap app creates.
@@ -74,6 +82,7 @@ import sandbox.extension.operation.OperationTemplate;
  * @see app.packed.cli.CliApp
  * @see app.packed.service.ServiceLocator
  */
+// Could be in .build
 public final /* value */ class BootstrapApp<A> {
 
     /** The internal bootstrap app. */
@@ -282,7 +291,8 @@ public final /* value */ class BootstrapApp<A> {
      * @return the new bootstrap app
      */
     public BootstrapApp<A> with(Wirelet... wirelets) {
-        return new BootstrapApp<>(new BootstrapAppSetup(setup.mirrorSupplier, setup.template.withWirelets(wirelets), setup.mh));
+        throw new UnsupportedOperationException();
+       // return new BootstrapApp<>(new BootstrapAppSetup(setup.mirrorSupplier, setup.template.withWirelets(wirelets), setup.applicationLauncher));
     }
 
     /**
@@ -293,17 +303,16 @@ public final /* value */ class BootstrapApp<A> {
      * @param action
      * @return
      */
-    public static <A> BootstrapApp<A> of(Class<A> applicationClass, ComposerAction<? super Composer> action) {
-        return of0(applicationClass, applicationClass, action);
+    public static <A> BootstrapApp<A> of(Class<A> hostClass, ComposerAction<? super Composer> action) {
+        return of0(hostClass, hostClass, action);
     }
 
-    // Maaske d
     public static BootstrapApp<Void> of(ComposerAction<? super Composer> action) {
         return of(Void.class, action);
     }
 
-    public static <A> BootstrapApp<A> of(Op<A> op, ComposerAction<? super Composer> action) {
-        return of0(op, op.type().returnRawType(), action);
+    public static <A> BootstrapApp<A> of(Op<A> hostOp, ComposerAction<? super Composer> action) {
+        return of0(hostOp, hostOp.type().returnRawType(), action);
     }
 
     private static <A> BootstrapApp<A> of0(Object opOrClass, Class<?> type, ComposerAction<? super Composer> action) {
@@ -325,12 +334,16 @@ public final /* value */ class BootstrapApp<A> {
             mh = mh.asType(mh.type().changeReturnType(Object.class));
         }
 
-        BootstrapAppSetup a = new BootstrapAppSetup(composer.mirrorSupplier, composer.template, mh);
+//        new Exception().printStackTrace();
+//        System.out.println("WHAT " + root.beans.beans.values());
+    //    root.application.mirror().print();
+
+        BootstrapAppSetup a = new BootstrapAppSetup(composer.mirrorSupplier, composer.template.pbt, mh);
         return new BootstrapApp<>(a);
     }
 
     /** A builder for creating {@link app.packed.application.BootstrapApp bootstrap applications}. */
-    private static final class BootstrapAppContainerBuilder extends PackedContainerBuilder {
+    private static final class BootstrapAppContainerBuilder extends PackedContainerInstaller {
 
         /** The container template used for {@link BootstrapApp}. */
         private static final PackedContainerTemplate TEMPLATE = new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION, BootstrapApp.class);
@@ -348,8 +361,8 @@ public final /* value */ class BootstrapApp<A> {
 
         /** {@inheritDoc} */
         @Override
-        public LifetimeKind lifetimeKind() {
-            return LifetimeKind.UNMANAGED;
+        public LifecycleKind lifetimeKind() {
+            return LifecycleKind.UNMANAGED;
         }
     }
 
@@ -366,20 +379,15 @@ public final /* value */ class BootstrapApp<A> {
 
         MethodHandle mh;
 
-        private <T> void newApplication(BeanHandle handle) {
-            runOnCodegen(() -> mh = handle.lifetimeOperations().get(0).generateMethodHandle());
+        <T> void newApplication(Class<T> hostBean) {
+            // We need the attachment, because ContainerGuest is on
+            BeanHandle<BeanConfiguration> h = base().newApplicationBean(ZBT).install(hostBean, BeanConfiguration::new);
+            h.lifetimeOperations().get(0).generateMethodHandleOnCodegen(m -> mh = m);
         }
 
-        <T> void newApplication(Class<T> guestBean) {
-            // We need the attachment, because ContainerGuest is on
-            Builder bi = base().newBean(ZBT);
-            newApplication(bi.install(guestBean));
-        }
-
-        <T> void newApplication(Op<T> guestBean) {
-            // We need the attachment, because ContainerGuest is on
-            Builder bi = base().newBean(ZBT);
-            newApplication(bi.install(guestBean));
+        <T> void newApplication(Op<T> hostBean) {
+            BeanHandle<BeanConfiguration> h = base().newApplicationBean(ZBT).install(hostBean, BeanConfiguration::new);
+            h.lifetimeOperations().get(0).generateMethodHandleOnCodegen(m -> mh = m);
         }
     }
 
@@ -402,11 +410,11 @@ public final /* value */ class BootstrapApp<A> {
         private final Object opOrClass;
 
         /** The template for the root container of the bootstrapped application. */
-        private PackedContainerTemplate template;
+        private PackedContainerTemplateConfigurator template;
 
         private Composer(Object opOrClass, Class<?> type) {
             this.opOrClass = opOrClass;
-            this.template = new PackedContainerTemplate(PackedContainerKind.ROOT_UNMANAGED, type);
+            this.template = new PackedContainerTemplateConfigurator(new PackedContainerTemplate(PackedContainerKind.ROOT_UNMANAGED, type));
         }
 
         /**
@@ -416,8 +424,8 @@ public final /* value */ class BootstrapApp<A> {
          *            the channel(s) to add
          * @return this composer
          */
-        public Composer addChannel(ContainerTemplatePack... channels) {
-            this.template = (PackedContainerTemplate) template.withPack(channels);
+        public Composer addChannel(ContainerTemplateLink... channels) {
+            this.template = (PackedContainerTemplateConfigurator) template.withPack(channels);
             return this;
         }
 
@@ -453,6 +461,11 @@ public final /* value */ class BootstrapApp<A> {
             } else if (opOrClass instanceof Op<?> op) {
                 bootstrapExtension.newApplication(op);
             }
+        }
+
+        Composer requireExtension(Class<? extends Extension<?>> extension) {
+            // Maybe ContainerTemplatePack is enough. I'm assuming you will want to communicate with the extension in some way
+            throw new UnsupportedOperationException();
         }
 
         /**
@@ -499,15 +512,15 @@ public final /* value */ class BootstrapApp<A> {
         // Meningen er at prøve at styre fejl håndteringen bedre
         // <T> T BiFunction<@Nullable A, ErrorHandle e>
 
+        default Result<A> compute(Object unhandledErrorHandler, Wirelet... wirelets) {
+            throw new UnsupportedOperationException();
+        }
+
         // Failure before A is created,
         // Failure after A is created
         // Action -> Return something, or throw something
         // Tror ikke det giver mening foerend vi har en god error handling story
         default Result<A> compute(Wirelet... wirelets) {
-            throw new UnsupportedOperationException();
-        }
-
-        default Result<A> compute(Object unhandledErrorHandler, Wirelet... wirelets) {
             throw new UnsupportedOperationException();
         }
 
@@ -637,8 +650,8 @@ public final /* value */ class BootstrapApp<A> {
 
         /** {@inheritDoc} */
         @Override
-        public LifetimeKind lifetimeKind() {
-            return LifetimeKind.UNMANAGED;
+        public LifecycleKind lifetimeKind() {
+            return LifecycleKind.UNMANAGED;
         }
     }
 
@@ -684,7 +697,7 @@ public final /* value */ class BootstrapApp<A> {
     }
 
     /** The internal configuration of a bootstrap app. */
-    private record BootstrapAppSetup(Supplier<? extends ApplicationMirror> mirrorSupplier, PackedContainerTemplate template, MethodHandle mh) {
+    private record BootstrapAppSetup(Supplier<? extends ApplicationMirror> mirrorSupplier, PackedContainerTemplate template, MethodHandle applicationLauncher) {
 
         /**
          * Create a new application interface using the specified launch context.
@@ -695,7 +708,7 @@ public final /* value */ class BootstrapApp<A> {
          */
         public Object newHolder(ApplicationLaunchContext context) {
             try {
-                return mh.invokeExact(context);
+                return applicationLauncher.invokeExact(context);
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }

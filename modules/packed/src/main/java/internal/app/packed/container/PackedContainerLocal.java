@@ -46,7 +46,7 @@ public final class PackedContainerLocal<T> extends PackedBuildLocal<ContainerLoc
         final class ContainerSetLocalWirelet extends InternalBuildWirelet {
 
             @Override
-            protected void onBuild(PackedContainerBuilder installer) {
+            protected void onBuild(PackedContainerInstaller installer) {
                 installer.locals.put(PackedContainerLocal.this, value);
             }
         }

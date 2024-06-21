@@ -16,7 +16,11 @@
 package sandbox.extension.bean;
 
 import app.packed.application.App;
+import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
+import app.packed.bean.BeanKind;
+import app.packed.extension.Extension;
+import app.packed.lifetime.OnInitialize;
 
 /**
  *
@@ -26,19 +30,61 @@ public class Asss extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        installInstance("fooo");
-        install(Foo.class);
+        provideInstance("fooo");
+
+        provide(Foo.class);
         install(Boo.class);
+
+        use(MyExt.class);
+        container().beans().forEach(e -> System.out.println(e.operations().toList()));
 
         container().beans().forEach(e -> System.out.println(e.toString()));
     }
 
     public static void main(String[] args) {
-        App.mirrorOf(new Asss());
+        ApplicationMirror am = App.mirrorOf(new Asss());
+        System.out.println();
+        am.container().allBeans().forEach(e -> System.out.println(e.name()));
+        System.out.println();
+        am.container().beans().forEach(e -> System.out.println(e.name()));
+
+        App.run(new Asss());
     }
 
-    public record Foo(String s) {}
+    public record Foo(String s) {
+
+        @OnInitialize
+        public void onStart() {
+            System.out.println("Initized!!");
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public void foo() {
+        BeanTemplate a = BeanTemplate.of(BeanKind.CONTAINER, b -> b.createAs(String.class));
+        BeanTemplate.of(BeanKind.CONTAINER, b -> {});
+        // BeanTemplateWithBuilder b = BeanTemplateWithBuilder.builder().createAs(String.class).build();
+        BeanTemplate t = BeanTemplate.FUNCTIONAL.reconfigure(c -> c.createAs(String.class));
+
+    }
 
     public record Boo(Foo f) {}
 
+    public static class MyExt extends Extension<MyExt> {
+        MyExt() {}
+
+        @Override
+        protected void onNew() {
+            base().installInstance("sdfsdf").named("MainBean");
+            base().installInstance(new Foox()).named("MainBean1");
+        }
+    }
+
+    public static class Foox {
+
+        @OnInitialize
+        public void onStart() {
+            System.out.println("Initized");
+        }
+    }
 }

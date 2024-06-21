@@ -31,15 +31,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 
+import app.packed.bean.ComputedConstant;
+import app.packed.extension.BeanTrigger.AnnotatedFieldBeanTrigger;
+import app.packed.extension.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.extension.BeanClassActivator.AnnotatedBeanFieldActivator;
-import app.packed.extension.BeanClassActivator.AnnotatedBeanMethodActivator;
-import app.packed.bean.CodeGenerated;
 import app.packed.extension.BeanIntrospector;
-import app.packed.extension.UnwrappedBindableVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
+import app.packed.extension.UnwrappedBindableVariable;
 import app.packed.util.AnnotationList;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -71,7 +71,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
         ink.putIfAbsent(name, oh);
 
         base().installIfAbsent(HookBean.class, b -> {
-            base().addCodeGenerator(b, new Key<Map<String, MethodHandle>>() {}, () -> {
+            b.bindCodeGenerator(new Key<Map<String, MethodHandle>>() {}, () -> {
                 return CollectionUtil.copyOf(ink, v -> v.generateMethodHandle());
             });
         });
@@ -91,20 +91,20 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
             }
 
             @Override
-            public void activatedByAnnotatedMethod(AnnotationList hooks, BeanMethod method) {
+            public void triggeredByAnnotatedMethod(AnnotationList hooks, BeanMethod method) {
                 if (onAnnotatedMethod != null) {
                     onAnnotatedMethod.accept(hooks, method);
                 } else {
-                    super.activatedByAnnotatedMethod(hooks, method);
+                    super.triggeredByAnnotatedMethod(hooks, method);
                 }
             }
 
             @Override
-            public void activatedByVariableType(Class<?> hook, UnwrappedBindableVariable variable) {
+            public void activatedByVariableType(Class<?> hook, Class<?> actualHook,UnwrappedBindableVariable variable) {
                 if (onVariableType != null) {
                     onVariableType.accept(hook, variable);
                 } else {
-                    super.activatedByVariableType(hook, variable);
+                    super.activatedByVariableType(hook, actualHook, variable);
                 }
             }
         };
@@ -128,7 +128,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @AnnotatedBeanFieldActivator(extension = HookTestingExtension.class)
+    @AnnotatedFieldBeanTrigger(extension = HookTestingExtension.class)
     public @interface FieldHook {
 
         String name() default "main";
@@ -163,7 +163,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
         final ExtensionContext ec;
         final Map<String, MethodHandle> mh;
 
-        HookBean(ExtensionContext ec, @CodeGenerated Map<String, MethodHandle> mh) {
+        HookBean(ExtensionContext ec, @ComputedConstant Map<String, MethodHandle> mh) {
             this.mh = mh;
             TestStore ts = AbstractAppTest.ts();
             for (Entry<String, MethodHandle> e : mh.entrySet()) {
@@ -181,7 +181,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @AnnotatedBeanMethodActivator(extension = HookTestingExtension.class)
+    @AnnotatedMethodBeanTrigger(extension = HookTestingExtension.class)
     public @interface MethodHook {
 
         public static class InstanceMethodNoParamsVoid {

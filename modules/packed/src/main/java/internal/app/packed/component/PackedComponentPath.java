@@ -15,22 +15,17 @@
  */
 package internal.app.packed.component;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Optional;
 
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
-import app.packed.extension.Extension;
-import app.packed.util.Nullable;
 
 /**
  * The path of a component.
  */
 public final /* primitive */ class PackedComponentPath implements ComponentPath {
     final Object[] fragments; // We need to have a canonical representation of (of what?)
-    final PackedComponentPathSchema schema;
+    final PackedComponentKind schema;
 
     PackedComponentPath(PackedApplicationPathBuilder builder) {
         this.schema = builder.schema;
@@ -47,65 +42,13 @@ public final /* primitive */ class PackedComponentPath implements ComponentPath 
         ComponentKind.APPLICATION.pathNew("sfoo");
     }
 
-    /** Component path schema builder. */
-    public static final class ComponentPathSchemaBuilder implements ComponentKind.Builder {
-
-        /** The extension responsible for the schema. */
-        @Nullable
-        final Class<? extends Extension<?>> extension;
-
-        final ArrayList<SchemaFragment> fragments = new ArrayList<>();
-
-        /** The base name of the schema. */
-        final String name;
-
-        ComponentPathSchemaBuilder(String name, Class<? extends Extension<?>> extension) {
-            this.name = name;
-            this.extension = extension;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentKind build() {
-            return new PackedComponentPathSchema(this);
-        }
-
-        private ComponentPathSchemaBuilder require(String name, FragmentKind kind) {
-            fragments.add(new SchemaFragment(name, kind));
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentPathSchemaBuilder requireClass(String name) {
-            return require(name, FragmentKind.CLASS);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentPathSchemaBuilder requireKey(String name) {
-            return require(name, FragmentKind.KEY);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentPathSchemaBuilder requireString(String name) {
-            return require(name, FragmentKind.STRING);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentPathSchemaBuilder requirePath(String name) {
-            return require(name, FragmentKind.PATH);
-        }
-    }
 
     static class PackedApplicationPathBuilder implements PackedComponentPath.Builder {
         private int cursor;
         private final Object[] fragments;
-        private final PackedComponentPathSchema schema;
+        private final PackedComponentKind schema;
 
-        PackedApplicationPathBuilder(PackedComponentPathSchema schema) {
+        PackedApplicationPathBuilder(PackedComponentKind schema) {
             this.schema = schema;
             this.fragments = new Object[schema.fragmentCount];
         }
@@ -171,62 +114,6 @@ public final /* primitive */ class PackedComponentPath implements ComponentPath 
          */
         ComponentPath build();
     }
-    /**
-     *
-     */
-    static class PackedComponentPathSchema implements ComponentKind {
-
-        final int fragmentCount = 4;
-
-        @Nullable
-        final String fullExtensionName;
-
-        final String name;
-
-        final String prefix;
-
-        PackedComponentPathSchema(ComponentPathSchemaBuilder builder) {
-            this.name = builder.name;
-            if (builder.extension == null) {
-                this.fullExtensionName = null;
-                this.prefix = "name";
-            } else {
-                this.fullExtensionName = builder.extension.getCanonicalName();
-                this.prefix = builder.extension.getSimpleName() + "." + name;
-            }
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentPath pathNew(Object... fragments) {
-            return null;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public String pathPrefix() {
-            return prefix;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Optional<String> extension() {
-            return Optional.ofNullable(fullExtensionName);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public List<Entry<String, FragmentKind>> pathFragments() {
-            return null;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentPath pathNew(ComponentPath parent, Object... fragments) {
-            return null;
-        }
-    }
-
     record SchemaFragment(String name, ComponentPath.FragmentKind fragmentKind) {}
 
 }

@@ -16,7 +16,7 @@
 package app.packed.extension;
 
 import app.packed.context.Context;
-import app.packed.extension.BeanClassActivator.BindingClassActivator;
+import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 
 /**
@@ -28,7 +28,7 @@ import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 // A context or not. Hvis det er en context. Skal den med i alle metoder der ligesom siger hvad er hvad.
 
 // Maaske er det kun med container lifetime, og maaske er det kun constructeren
-@BindingClassActivator(extension = BaseExtension.class)
+@BindingClassBeanTrigger(extension = BaseExtension.class)
 public sealed interface ExtensionContext extends Context<BaseExtension> permits PackedExtensionContext {}
 
 //Vil mene det ikke er en Context. Syntes span fungere daarligt

@@ -20,7 +20,7 @@ package app.packed.operation;
  */
 public enum BindingSourceKind {
 
-    /** A binding to a constant specified at build-time. */
+    /** A binding to a build-time constant. */
     CONSTANT,
 
     ARGUMENT,

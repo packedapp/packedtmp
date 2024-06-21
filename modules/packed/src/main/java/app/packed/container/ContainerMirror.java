@@ -9,16 +9,13 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.DeploymentMirror;
-import app.packed.assembly.Assemblies;
-import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.build.BuildTransformerMirror;
+import app.packed.build.hook.BuildHookMirror;
 import app.packed.component.Authority;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
@@ -27,7 +24,7 @@ import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanClassActivator.BindingClassActivator;
+import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
@@ -51,7 +48,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * <p>
  * At runtime you can have a ContainerMirror injected
  */
-@BindingClassActivator(extension = BaseExtension.class)
+@BindingClassBeanTrigger(extension = BaseExtension.class)
 public non-sealed class ContainerMirror implements ComponentMirror , ContextualizedElementMirror , ContainerLocal.ContainerLocalAccessor {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
@@ -245,7 +242,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
     }
 
     /** {@return the transformers that has been applied to this container.} */
-    public Stream<BuildTransformerMirror> transformers() {
+    public Stream<BuildHookMirror> transformers() {
         throw new UnsupportedOperationException();
     }
 
@@ -310,9 +307,9 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
         return mirrorClass.cast(mirror);
     }
 
-    public static Assembly verifiable(Assembly assembly, Consumer<? super ContainerMirror> verifier) {
-        return Assemblies.verifiable(assembly, ContainerMirror.class, verifier);
-    }
+//    public static Assembly verifiable(Assembly assembly, Consumer<? super ContainerMirror> verifier) {
+//        return Assemblies.verify(assembly, ContainerMirror.class, verifier);
+//    }
 
     // Hvis vi siger at et domain er hele appen. Hvad goere vi i C3. Er den tilgaengelig under et "fake" navn???
     //

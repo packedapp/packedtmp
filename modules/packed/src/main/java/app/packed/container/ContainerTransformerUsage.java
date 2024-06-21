@@ -15,10 +15,7 @@
  */
 package app.packed.container;
 
-import java.lang.invoke.MethodHandles;
-
 import app.packed.application.App;
-import app.packed.assembly.Assemblies;
 import app.packed.assembly.Assembly;
 import app.packed.assembly.BaseAssembly;
 import app.packed.assembly.DelegatingAssembly;
@@ -28,7 +25,7 @@ import app.packed.service.ServiceableBeanConfiguration;
 /**
  *
  */
-class ContainerTransformerUsage extends BaseAssembly {
+public class ContainerTransformerUsage extends BaseAssembly {
 
     static final BeanLocal<String> L = BeanLocal.of();
 
@@ -41,8 +38,9 @@ class ContainerTransformerUsage extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        Assembly u = new ContainerTransformerUsage();
-        ContainerTransformer ct = new ContainerTransformer() {
+        Assembly a = new ContainerTransformerUsage();
+
+        ContainerBuildHook hook = new ContainerBuildHook() {
 
             @Override
             public void onNew(ContainerConfiguration configuration) {
@@ -50,10 +48,11 @@ class ContainerTransformerUsage extends BaseAssembly {
             }
         };
 
-        u = Assemblies.transform(MethodHandles.lookup(), u, ct);
-        u = ct.transformRecursively(MethodHandles.lookup(), u);
+        a = DelegatingAssembly.applyBuildHook(a, b -> b.observe(hook));
+        //a = Assemblies.transform(MethodHandles.lookup(), a, hook);
+        // a = hook.transformRecursively(MethodHandles.lookup(), a);
 
-        App.run(u);
+        App.run(a);
     }
 
     static class MyAss extends DelegatingAssembly {
@@ -61,16 +60,19 @@ class ContainerTransformerUsage extends BaseAssembly {
         /** {@inheritDoc} */
         @Override
         protected Assembly delegateTo() {
-            ContainerTransformer ct = new ContainerTransformer() {
+            ContainerBuildHook ct = new ContainerBuildHook() {
 
                 @Override
                 public void onNew(ContainerConfiguration configuration) {
                     configuration.named(configuration.componentPath().nameFragment(3).toString() + "1");
                 }
             };
+            // Fungere jo ikke rigtige... Nu har vi to delegating assembly
+            return applyBuildHook(new ContainerTransformerUsage(), c -> c.transform(ct));
+            // WAS
+            // return Assemblies.transform(MethodHandles.lookup(), new ContainerTransformerUsage(), ct);
 
             // Could be a procted method without the lookup object... just using the getClass() instead as the caller
-            return Assemblies.transform(MethodHandles.lookup(), new ContainerTransformerUsage(), ct);
         }
     }
 }

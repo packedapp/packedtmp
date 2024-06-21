@@ -17,7 +17,7 @@ package app.packed.context;
 
 import java.util.Collection;
 
-import app.packed.component.Mirror;
+import app.packed.build.BuildMirror;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
 
@@ -47,7 +47,7 @@ import app.packed.operation.OperationMirror;
 // SExt.schedule(Op<?>)
 // @Schedule foo() on SExt.registerScheduler(Bean) ->OperationSpan
 // @Schedule
-public interface ContextMirror extends Mirror {
+public interface ContextMirror extends BuildMirror {
 
 //    default Author author() {
 //        ContextScopeMirror m = scope();

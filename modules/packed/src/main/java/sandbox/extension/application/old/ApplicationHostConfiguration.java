@@ -20,19 +20,18 @@ import java.util.function.Supplier;
 import app.packed.assembly.Assembly;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Wirelet;
-import sandbox.extension.bean.BeanHandle;
+import sandbox.extension.bean.BeanTemplate;
 
 /**
  *
  */
 class ApplicationHostConfiguration<T> extends InstanceBeanConfiguration<T> {
 
-    /**
-     * @param handle
-     */
-    public ApplicationHostConfiguration(BeanHandle handle) {
+
+    public ApplicationHostConfiguration(BeanTemplate.Installer handle) {
         super(handle);
     }
+
 
     // vi har vel lazy
     // 1-deploye

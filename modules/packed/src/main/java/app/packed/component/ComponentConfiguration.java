@@ -15,16 +15,39 @@
  */
 package app.packed.component;
 
+import app.packed.build.action.BuildActionable;
+
 /**
  * The abstract configuration of a component.
  */
-// We do not have a common ComponentHandle. Because extensions might define their own component configuration.
 
-// Children??? Is it hierarchical???
-public interface ComponentConfiguration {
+// Children??? Is it hierarchical??? May be, but you shouldn't get access to components outside your assembly
+public abstract class ComponentConfiguration {
+
+    /**
+     * Checks that the container's assembly is still configurable.
+     *
+     * @throws IllegalStateException
+     *             if the container's assembly is no longer configurable
+     */
+    protected final void checkIsConfigurable() {
+        if (!isConfigurable()) {
+            throw new IllegalStateException("The " + componentHandle().componentKind().name() + " is no longer configurable");
+        }
+    }
+
+    /**
+     * <p>
+     * Typically a component configuration will define a such {@link app.packed.bean.BeanConfiguration#beanHandle}
+     *
+     * @return the component handle
+     */
+    protected abstract ComponentHandle componentHandle();
 
     /** {@return the path of the component} */
-    ComponentPath componentPath();
+    public final ComponentPath componentPath() {
+        return componentHandle().componentPath();
+    }
 
     /**
      * Adds the specified tags to the set of component tags.
@@ -35,20 +58,27 @@ public interface ComponentConfiguration {
      *
      * @see ComponentMirror#componentTags()
      */
-    ComponentConfiguration componentTag(String... tags);
+    @BuildActionable("component.addTags")
+    public abstract ComponentConfiguration componentTag(String... tags);
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean equals(Object obj) {
+        return obj instanceof ComponentConfiguration cc && componentHandle().equals(cc.componentHandle());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final int hashCode() {
+        return componentHandle().hashCode();
+    }
 
     /**
      * {@return whether or not the component is still configurable}
      * <p>
      * Typically this is determined by whether or not the defining assembly of the component is still configurable.
      */
-    boolean isConfigurable();
-
-
-    // A unique component id for the component in the application, once installed it will not change
-    // Path can be updated because of naming
-    // Long???
-    default long componentId() {
-        return 0;
+    public final boolean isConfigurable() {
+        return componentHandle().isConfigurable();
     }
 }

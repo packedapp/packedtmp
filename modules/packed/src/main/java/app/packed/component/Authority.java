@@ -25,19 +25,22 @@ import internal.app.packed.util.types.ClassUtil;
 // Registrant -> Something that has registered the component.
 // User -> Not as long as we have framework users (end-users)
 
-// ComponentX? Maybe it is time to introduct a component package again
 /**
  * An operative represents either the user of the framework or a specific extension.
  *
  */
 // Was ComponentOperatpr, ComponentAutority, ComponentOwner
+
+// Maybe it is going to be a class that we just extend for Assembly or Extension
+// I think it should have the Kind of (Declaring) assembly inside
 public /* value */ final class Authority {
 
     /** An application author. */
-    private static final Authority APPLICATION = new Authority(Extension.class);
+    // Was Application, Developer
+    private static final Authority ASSEMBLY = new Authority(Extension.class);
 
     /** Interned realm. */
-    // Until we get values in which case it is always interned
+    // Until we get values in which case we is always interned
     static final ClassValue<Authority> INTERNED = new ClassValue<Authority>() {
 
         @Override
@@ -111,6 +114,6 @@ public /* value */ final class Authority {
 
     /** {@return the application author.} */
     public static Authority application() {
-        return APPLICATION;
+        return ASSEMBLY;
     }
 }

@@ -22,5 +22,4 @@ class LaunchMode {
 
     // Starting, Initializing
     // Can throw
-
 }
