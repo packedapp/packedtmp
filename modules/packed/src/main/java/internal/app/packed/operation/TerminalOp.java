@@ -21,11 +21,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
 import app.packed.operation.OperationType;
-import app.packed.util.Nullable;
-import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
-import sandbox.extension.operation.OperationTemplate;
+import internal.app.packed.operation.PackedOperationType.FunctionOperationSetup;
+import internal.app.packed.operation.PackedOperationType.MethodHandleOperationSetup;
 
 /** A terminal op. */
 public abstract sealed class TerminalOp<R> extends PackedOp<R> {
@@ -55,12 +52,13 @@ public abstract sealed class TerminalOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template,
-                @Nullable EmbeddedIntoOperation nestedParent) {
-            template = template.returnType(type.returnRawType());
-            OperationSetup os = new OperationSetup.FunctionOperationSetup(operator, bean, type, template, nestedParent, mhOperation, samType,
-                    implementationMethod);
-            return os;
+        public OperationSetup newOperationSetup(NewOS newOs) {
+            PackedOperationTemplate template = newOs.template().reconfigure(c -> c.returnType(type.returnRawType()));
+
+            PackedOperationInstaller poi = template.newInstaller(type, newOs.bean(), newOs.operator());
+            poi.embeddedInto = newOs.embeddedIn();
+            FunctionOperationSetup fos = new FunctionOperationSetup(mhOperation, samType, implementationMethod);
+            return poi.newOperation(fos);
         }
     }
 
@@ -73,9 +71,11 @@ public abstract sealed class TerminalOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template,
-                @Nullable EmbeddedIntoOperation nestedParent) {
-            return new OperationSetup.MethodHandleOperationSetup(operator, bean, type, template, nestedParent, mhOperation);
+        public OperationSetup newOperationSetup(NewOS newOs) {
+            PackedOperationInstaller poi = newOs.template().newInstaller(type, newOs.bean(), newOs.operator());
+            poi.embeddedInto = newOs.embeddedIn();
+            MethodHandleOperationSetup mos = new MethodHandleOperationSetup(mhOperation);
+            return poi.newOperation(mos);
         }
     }
 }

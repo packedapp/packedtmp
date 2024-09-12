@@ -17,17 +17,16 @@ package sandbox.extension.container;
 
 import java.util.Map;
 
+import app.packed.application.ApplicationTemplate;
 import app.packed.assembly.Assembly;
 import app.packed.bean.BeanConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.extension.FrameworkExtension;
 import app.packed.operation.Op;
-import sandbox.extension.application.ApplicationTemplate;
 
 /**
  * Skal ikke vaere sin egen extension. Vil jeg mene... Fx
  */
-@SuppressWarnings("exports")
 public class HostExtension extends FrameworkExtension<HostExtension> {
     HostExtension() {}
     // For nu kan man registrere en Adaptor i templaten.

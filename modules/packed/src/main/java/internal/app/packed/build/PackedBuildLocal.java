@@ -15,14 +15,19 @@
  */
 package internal.app.packed.build;
 
+import static java.util.Objects.requireNonNull;
+
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import app.packed.build.BuildLocal;
 import app.packed.util.Nullable;
-import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
+import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 
 /** The base class for component locals. */
-public abstract non-sealed class PackedBuildLocal<A, T> implements BuildLocal<A, T> /*permits PackedApplicationLocal, PackedContainerLocal, PackedBeanLocal */ {
+public abstract non-sealed class PackedBuildLocal<A, T>
+        implements BuildLocal<A, T> /* permits PackedApplicationLocal, PackedContainerLocal, PackedBeanLocal */ {
 
     /** An optional supplier that can provide initial values for a bean local. */
     final @Nullable Supplier<? extends T> initialValueSupplier;
@@ -31,32 +36,32 @@ public abstract non-sealed class PackedBuildLocal<A, T> implements BuildLocal<A,
         this.initialValueSupplier = initialValueSupplier;
     }
 
-    protected abstract KeyAndLocalMapSource extract(A accessor);
+    protected abstract BuildLocalSource extract(A accessor);
 
     /** {@inheritDoc} */
     @Override
     public final T get(A accessor) {
-        KeyAndLocalMapSource kas = extract(accessor);
+        BuildLocalSource kas = extract(accessor);
         return kas.locals().get(this, kas);
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean isBound(A accessor) {
-        KeyAndLocalMapSource bean = extract(accessor);
+        BuildLocalSource bean = extract(accessor);
         return bean.locals().isBound(this, bean);
     }
 
     /** {@inheritDoc} */
     @Override
     public final T orElse(A accessor, T other) {
-        KeyAndLocalMapSource bean = extract(accessor);
+        BuildLocalSource bean = extract(accessor);
         return bean.locals().orElse(this, bean, other);
     }
 
     @Override
     public final <X extends Throwable> T orElseThrow(A accessor, Supplier<? extends X> exceptionSupplier) throws X {
-        KeyAndLocalMapSource bean = extract(accessor);
+        BuildLocalSource bean = extract(accessor);
         return bean.locals().orElseThrow(this, bean, exceptionSupplier);
     }
 
@@ -70,7 +75,19 @@ public abstract non-sealed class PackedBuildLocal<A, T> implements BuildLocal<A,
     /** {@inheritDoc} */
     @Override
     public final void set(A accessor, T value) {
-        KeyAndLocalMapSource bean = extract(accessor);
+        BuildLocalSource bean = extract(accessor);
         bean.locals().set(this, bean, value);
+    }
+
+    public static <L extends BuildLocal<?, ?>> Map<L, Object> initMap(Map<L, Object> existing, L local, Object value) {
+        requireNonNull(local, "local is null");
+        requireNonNull(value, "value is null");
+        if (existing == null || existing.isEmpty()) {
+            return Map.of(local, value);
+        } else {
+            IdentityHashMap<L, Object> ihm = new IdentityHashMap<>(existing);
+            ihm.put(local, value);
+            return Map.copyOf(ihm);
+        }
     }
 }

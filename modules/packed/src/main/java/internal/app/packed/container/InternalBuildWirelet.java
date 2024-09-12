@@ -16,6 +16,7 @@
 package internal.app.packed.container;
 
 import app.packed.container.Wirelet;
+import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /** Internal wirelets have their logic directly embedded into the wirelet. */
@@ -41,9 +42,10 @@ public abstract non-sealed class InternalBuildWirelet extends FrameworkWirelet {
         return application;
     }
 
-    protected final void checkIsApplication(PackedContainerInstaller builder, Wirelet wirelet) {
-        // throw new IllegalArgumentException("This wirelet can only be specified for the root container of an application,
-        // wirelet = " + this);
+    protected final void checkIsApplication(PackedContainerInstaller installer, Wirelet wirelet) {
+        if (installer.parent != null) {
+            throw new IllegalArgumentException("This wirelet can only be specified for the root container of an application,  wirelet = " + this);
+        }
     }
 
     public void onImageLaunch(ContainerSetup component, ApplicationLaunchContext context) {
@@ -57,7 +59,7 @@ public abstract non-sealed class InternalBuildWirelet extends FrameworkWirelet {
      * @param installer
      *            an installer for the container
      */
-    protected abstract void onBuild(PackedContainerInstaller builder);
+    protected abstract void onBuild(PackedContainerInstaller installer);
 
     /** {@inheritDoc} */
     @Override

@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import sandbox.extension.application.ApplicationTemplate;
+import app.packed.application.ApplicationTemplate;
 
 /**
  *

@@ -49,7 +49,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * At runtime you can have a ContainerMirror injected
  */
 @BindingClassBeanTrigger(extension = BaseExtension.class)
-public non-sealed class ContainerMirror implements ComponentMirror , ContextualizedElementMirror , ContainerLocal.ContainerLocalAccessor {
+public non-sealed class ContainerMirror implements ComponentMirror , ContextualizedElementMirror , ContainerLocal.Accessor {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {

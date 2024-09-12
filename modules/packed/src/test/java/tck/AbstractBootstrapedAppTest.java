@@ -20,10 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.junit.jupiter.api.function.Executable;
 
@@ -39,11 +37,10 @@ import app.packed.extension.BaseExtension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationMirror;
 import app.packed.service.ServiceableBeanConfiguration;
-import internal.app.packed.container.ApplicationSetup;
-import internal.app.packed.container.PackedContainerTemplate;
+import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.container.WireletSelectionArray;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
-import internal.app.packed.util.ThrowableUtil;
 import tck.AbstractAppTest.InternalTestState.State3Build;
 
 /**
@@ -107,7 +104,7 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         // Right now we do not support runtime wirelets
         ApplicationLaunchContext alc = ApplicationLaunchContext.launch(as, WireletSelectionArray.of(wirelets));
 
-        A app = (A) internals.newHolder(alc);
+        A app = (A) internals.template.newHolder(alc);
         b.app = app;
         return app;
     }
@@ -172,7 +169,7 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
     }
 
     /** Used for extracting the internal configuration of BootstrapApp. */
-    record BootstrapAppInternals(Supplier<? extends ApplicationMirror> mirrorSupplier, PackedContainerTemplate template, MethodHandle mh) {
+    record BootstrapAppInternals(PackedApplicationTemplate template) {
 
         /**
          * Create a new application interface using the specified launch context.
@@ -181,13 +178,13 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
          *            the launch context to use for creating the application instance
          * @return the new application instance
          */
-        public Object newHolder(ApplicationLaunchContext context) {
-            try {
-                return mh.invokeExact(context);
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
-        }
+//        public Object newHolder(ApplicationLaunchContext context) {
+//            try {
+//                return mh.invokeExact(context);
+//            } catch (Throwable e) {
+//                throw ThrowableUtil.orUndeclared(e);
+//            }
+//        }
 
         @SuppressWarnings("unchecked")
         private static <T> T read(Object o, String fieldName) throws ReflectiveOperationException {
@@ -198,8 +195,8 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
 
         public static BootstrapAppInternals extractInternals(BootstrapApp<?> app) {
             try {
-                Object holder = read(app, "setup");
-                return new BootstrapAppInternals(read(holder, "mirrorSupplier"), read(holder, "template"), read(holder, "applicationLauncher"));
+//                Object holder = read(app, "setup");
+                return new BootstrapAppInternals(read(app, "template"));
             } catch (ReflectiveOperationException e) {
                 throw new AssertionError(e);
             }

@@ -28,7 +28,7 @@ import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
+import internal.app.packed.operation.PackedOperationType.MemberOperationSetup;
 
 /**
  *
@@ -42,7 +42,7 @@ final class OperationCodeGenerator {
         //debug("%s: %s -> %s", operation.bean.path(), initial.type(), operation.template.invocationType());
 
         // instance fields and methods, needs a bean instance
-        boolean requiresBeanInstance = operation instanceof MemberOperationSetup s && s.needsBeanInstance();
+        boolean requiresBeanInstance = operation.pot instanceof MemberOperationSetup s && s.needsBeanInstance();
         if (requiresBeanInstance) {
             mh = provide(operation, mh, operation.bean.beanInstanceBindingProvider());
         }

@@ -20,13 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanLocal;
-import app.packed.bean.BeanLocalAccessor;
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.util.Nullable;
+import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.build.PackedBuildLocal;
-import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
 
 /** Implementation of BeanLocal. */
-public final class PackedBeanLocal<T> extends PackedBuildLocal<BeanLocalAccessor, T> implements BeanLocal<T> {
+public final class PackedBeanLocal<T> extends PackedBuildLocal<Accessor, T> implements BeanLocal<T> {
 
     /**
      * @param initialValueSupplier
@@ -43,7 +43,7 @@ public final class PackedBeanLocal<T> extends PackedBuildLocal<BeanLocalAccessor
      * @return the extracted bean
      */
     @Override
-    protected KeyAndLocalMapSource extract(BeanLocalAccessor accessor) {
+    protected BuildLocalSource extract(Accessor accessor) {
         requireNonNull(accessor, "accessor is null");
         return BeanSetup.crack(accessor);
     }

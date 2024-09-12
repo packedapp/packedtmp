@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.bean;
+package sandbox.application;
 
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanTemplate;
+import app.packed.build.BuildProcess;
 import app.packed.extension.Extension;
 import app.packed.lifetime.OnInitialize;
 
@@ -39,6 +41,8 @@ public class Asss extends BaseAssembly {
         container().beans().forEach(e -> System.out.println(e.operations().toList()));
 
         container().beans().forEach(e -> System.out.println(e.toString()));
+
+        System.out.println("Build ID " + BuildProcess.current().processId());
     }
 
     public static void main(String[] args) {

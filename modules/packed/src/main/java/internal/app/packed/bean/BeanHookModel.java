@@ -23,11 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import app.packed.extension.BeanMetaBeanTrigger;
 import app.packed.extension.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.extension.BeanTrigger.AnnotatedVariableBeanTrigger;
 import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.extension.BeanTrigger.InheritableBindingClassBeanTrigger;
-import app.packed.extension.BeanMetaBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;

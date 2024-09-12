@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package internal.app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,11 +22,11 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationLocal;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
+import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.build.PackedBuildLocal;
-import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
 
 /** Implementation of {@link ApplicationLocal}. */
-public final class PackedApplicationLocal<T> extends PackedBuildLocal<ApplicationLocal.ApplicationLocalAccessor, T> implements ApplicationLocal<T> {
+public final class PackedApplicationLocal<T> extends PackedBuildLocal<ApplicationLocal.Accessor, T> implements ApplicationLocal<T> {
 
     /**
      * @param initialValueSupplier
@@ -43,7 +43,7 @@ public final class PackedApplicationLocal<T> extends PackedBuildLocal<Applicatio
 
     /** {@inheritDoc} */
     @Override
-    protected KeyAndLocalMapSource extract(ApplicationLocal.ApplicationLocalAccessor accessor) {
+    protected BuildLocalSource extract(ApplicationLocal.Accessor accessor) {
         requireNonNull(accessor, "accessor is null");
         return ApplicationSetup.crack(accessor);
     }

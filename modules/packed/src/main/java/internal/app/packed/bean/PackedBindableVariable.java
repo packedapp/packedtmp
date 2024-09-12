@@ -46,9 +46,10 @@ import internal.app.packed.context.ContextSetup;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.operation.PackedOp;
-import sandbox.extension.operation.OperationTemplate;
+import internal.app.packed.operation.PackedOp.NewOS;
+import internal.app.packed.operation.PackedOperationTemplate;
+import internal.app.packed.operation.PackedOperationType.MemberOperationSetup;
 import sandbox.extension.operation.OperationTemplate.Descriptor;
 
 /** Implementation of {@link BindableVariable}. */
@@ -179,10 +180,10 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
         PackedOp<?> pop = PackedOp.crack(op);
 
         // Nested operation get the same arguments as this operation, but with op return type
-        OperationTemplate template = operation.template.returnType(pop.type().returnRawType());
+        PackedOperationTemplate template = operation.template.reconfigure(c -> c.returnType(pop.type().returnRawType()));
 
         // Create the nested operation
-        OperationSetup os = pop.newOperationSetup(operation.bean, bindingExtension, template, new EmbeddedIntoOperation(operation, index));
+        OperationSetup os = pop.newOperationSetup(new NewOS(operation.bean, bindingExtension, template, new EmbeddedIntoOperation(operation, index)));
         bind(new FromOperationResult(os));
 
         // Resolve the new operation immediately
@@ -192,7 +193,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
 
     private void checkBeforeBind() {
         checkNotBound();
-        if (operation instanceof MemberOperationSetup mos && mos.target instanceof OperationFieldTarget fos && Modifier.isStatic(fos.modifiers())
+        if (operation.pot instanceof MemberOperationSetup mos && mos.target instanceof OperationFieldTarget fos && Modifier.isStatic(fos.modifiers())
                 && !allowStaticFieldBinding) {
             throw new BeanInstallationException("Static field binding is not supported for");
         }

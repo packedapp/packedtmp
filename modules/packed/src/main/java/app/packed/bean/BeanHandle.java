@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.bean;
+package app.packed.bean;
 
 import java.lang.invoke.MethodHandle;
 import java.util.List;
@@ -22,11 +22,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanKind;
-import app.packed.bean.BeanLocalAccessor;
-import app.packed.bean.BeanSourceKind;
-import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.component.Authority;
 import app.packed.component.ComponentHandle;
 import app.packed.errorhandling.ErrorHandler;
@@ -37,6 +33,7 @@ import app.packed.util.Key;
 import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.context.publish.ContextualizedElement;
 import sandbox.extension.operation.OperationHandle;
+import sandbox.extension.operation.OperationTemplate;
 
 /**
  * A bean handle is a build-time reference to an installed bean. Typically they are returned by the framework when an
@@ -45,7 +42,7 @@ import sandbox.extension.operation.OperationHandle;
  * Instances of {@code BeanHandle} should not be exposed outside of the extension that created the bean. Instead the
  * extension should expose instances of {@link #configuration() bean configuration} to the other extension or user.
  */
-public sealed interface BeanHandle<C extends BeanConfiguration> extends ComponentHandle , ContextualizedElement , BeanLocalAccessor permits PackedBeanHandle {
+public sealed interface BeanHandle<C extends BeanConfiguration> extends ComponentHandle , ContextualizedElement , Accessor permits PackedBeanHandle {
 
     // Or a Bean Service???
 
@@ -142,7 +139,7 @@ public sealed interface BeanHandle<C extends BeanConfiguration> extends Componen
      *             if the specified function does not implement a functional interface
      */
     // Skal vel ogsaa have en template her...
-    default OperationHandle.Builder newFunctionalOperation(Object function) {
+    default OperationTemplate.Installer newFunctionalOperation(Object function) {
         // De giver faktisk ret god mening at tage funktionen nu
         // Det er jo ligesom at BeanMethod giver metoden videre til builderen
         throw new UnsupportedOperationException();

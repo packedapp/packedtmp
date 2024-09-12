@@ -27,7 +27,7 @@ import app.packed.build.BuildException;
 import app.packed.container.ContainerLocal;
 import app.packed.extension.Extension;
 import app.packed.util.Key;
-import internal.app.packed.container.LeafContainerBuilder;
+import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplatePack;
 import internal.app.packed.container.PackedContainerTemplatePack.KeyFragment;
 
@@ -102,13 +102,13 @@ public sealed interface ContainerTemplateLink permits PackedContainerTemplatePac
      *            the type of extension
      * @return the builder
      */
-    static ContainerTemplateLink.Builder of(MethodHandles.Lookup caller, Class<? extends Extension<?>> extensionType, String name) {
+    static ContainerTemplateLink.Configurator of(MethodHandles.Lookup caller, Class<? extends Extension<?>> extensionType, String name) {
         if (!caller.hasFullPrivilegeAccess()) {
             throw new IllegalArgumentException("caller must have full privilege access");
         } else if (caller.lookupClass().getModule() != extensionType.getModule()) {
             throw new IllegalArgumentException("extension type must be in the same module as the caller");
         }
-        return new ContainerTemplateLink.Builder(new PackedContainerTemplatePack(extensionType, null, Map.of()));
+        return new ContainerTemplateLink.Configurator(new PackedContainerTemplatePack(extensionType, null, Map.of()));
     }
 
     // Man kan ikke lave det uden en extension class
@@ -139,12 +139,12 @@ public sealed interface ContainerTemplateLink permits PackedContainerTemplatePac
     // and have newExtensionLink(String name) paa den
     // We need this builder. Because it has methods that should be exposed to
     // users of the built product.
-    public static final class Builder {
+    public static final class Configurator {
 
         /** The internal pack. */
         private PackedContainerTemplatePack pack;
 
-        private Builder(PackedContainerTemplatePack pack) {
+        private Configurator(PackedContainerTemplatePack pack) {
             this.pack = requireNonNull(pack);
         }
 
@@ -165,7 +165,7 @@ public sealed interface ContainerTemplateLink permits PackedContainerTemplatePac
 
         // is used in the (unlikely) scenario with multiple links
         // that each provide something with the same key
-        public ContainerTemplateLink.Builder rekey(Key<?> from, Key<?> to) {
+        public ContainerTemplateLink.Configurator rekey(Key<?> from, Key<?> to) {
             // from key must exist
             // Advanced operation
             // no case checks are performed
@@ -173,7 +173,7 @@ public sealed interface ContainerTemplateLink permits PackedContainerTemplatePac
             throw new UnsupportedOperationException();
         }
 
-        public <T> ContainerTemplateLink.Builder carrierProvideConstant(Class<T> key, T constant) {
+        public <T> Configurator carrierProvideConstant(Class<T> key, T constant) {
             return carrierProvideConstant(Key.of(key), constant);
         }
 
@@ -187,12 +187,12 @@ public sealed interface ContainerTemplateLink permits PackedContainerTemplatePac
          * @see ContainerCarrierBeanConfiguration#carrierProvideConstant(Key, Object)
          * @see ContainerBuilder#carrierProvideConstant(Key, Object)
          */
-        public <T> ContainerTemplateLink.Builder carrierProvideConstant(Key<T> key, T constant) {
+        public <T> Configurator carrierProvideConstant(Key<T> key, T constant) {
             throw new UnsupportedOperationException();
         }
 
         // Typically used with locals with lazy initialization
-        public <T> ContainerTemplateLink.Builder localConsume(ContainerLocal<T> local, Consumer<T> action) {
+        public <T> Configurator localConsume(ContainerLocal<T> local, Consumer<T> action) {
             pack = pack.withUse(c -> c.localConsume(local, action));
             return this;
         }
@@ -206,13 +206,13 @@ public sealed interface ContainerTemplateLink permits PackedContainerTemplatePac
          * @see ContainerTemplate#localSet(ContainerLocal, Object)
          * @see ContainerBuilder#localSet(ContainerLocal, Object)
          */
-        public <T> ContainerTemplateLink.Builder localSet(ContainerLocal<T> local, T value) {
+        public <T> Configurator localSet(ContainerLocal<T> local, T value) {
             pack = pack.withUse(c -> c.localSet(local, value));
             return this;
         }
 
         // Must be exported from an extension from container being linked
-        public ContainerTemplateLink.Builder provideExpose(Class<?>... keys) {
+        public Configurator provideExpose(Class<?>... keys) {
             return provideExpose(Key.ofAll(keys));
         }
 
@@ -231,7 +231,7 @@ public sealed interface ContainerTemplateLink permits PackedContainerTemplatePac
 
         // Tror bare det skal vaere almindelige provisions
         // Ser ikke nogen grund til at blande. exports into it
-        public ContainerTemplateLink.Builder provideExpose(Key<?>... keys) {
+        public Configurator provideExpose(Key<?>... keys) {
             for (Key<?> key : keys) {
                 pack = pack.withFragments(key, new KeyFragment.OfExports());
             }
@@ -239,19 +239,19 @@ public sealed interface ContainerTemplateLink permits PackedContainerTemplatePac
         }
 
         // Hvis extensionen ikke er installeret (or exported)
-        public <T> ContainerTemplateLink.Builder provideExposeOrElse(Key<T> key, T alternative) {
+        public <T> Configurator provideExposeOrElse(Key<T> key, T alternative) {
             return this;
         }
 
-        public Builder requireExtension() {
+        public Configurator requireExtension() {
             return this;
         }
 
-        public Builder requireExtension(String errorMessage) {
+        public Configurator requireExtension(String errorMessage) {
             return this;
         }
 
-        public Builder requireExtension(Supplier<? extends BuildException> throwaer) {
+        public Configurator requireExtension(Supplier<? extends BuildException> throwaer) {
             return this;
         }
 
@@ -267,7 +267,7 @@ public sealed interface ContainerTemplateLink permits PackedContainerTemplatePac
          * @return this builder
          */
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        ContainerTemplateLink.Builder useBuilder(Consumer<? super LeafContainerBuilder> action) {
+        ContainerTemplateLink.Configurator useBuilder(Consumer<? super PackedContainerInstaller> action) {
             pack = new PackedContainerTemplatePack(pack.extension(), pack.onUse() == null ? action : pack.onUse().andThen((Consumer) action), pack.services());
             return this;
         }

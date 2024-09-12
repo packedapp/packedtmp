@@ -28,17 +28,6 @@ import internal.app.packed.util.TreeNode.ActualNode;
  * A node in a tree.
  */
 
-class Foo implements ActualNode<Foo> {
-
-    final TreeNode<Foo> node = new TreeNode<>(null, this);
-
-    /** {@inheritDoc} */
-    @Override
-    public TreeNode<Foo> node() {
-        return node;
-    }
-}
-
 // Det den her kan som LinkedHashMap ikke kan er at gaa fra en sieblig til en anden.
 public class TreeNode<T extends ActualNode<T>> {
 

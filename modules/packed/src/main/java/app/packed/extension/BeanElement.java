@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanInstallationException;
-import app.packed.bean.BeanLocalAccessor;
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
 import app.packed.util.Key;
@@ -32,7 +32,6 @@ import internal.app.packed.bean.PackedBeanElement;
 import internal.app.packed.bean.PackedBeanField;
 import internal.app.packed.bean.PackedBeanMethod;
 import sandbox.extension.operation.OperationHandle;
-import sandbox.extension.operation.OperationHandle.Builder;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
@@ -45,7 +44,7 @@ import sandbox.extension.operation.OperationTemplate;
 // Checks container lifetime
 // Checks own extension or container lifetime
 // service.provide -> isContainerLifetime or prot
-public sealed interface BeanElement extends BeanLocalAccessor permits PackedBeanElement, BeanElement.BeanClass, BeanElement.BeanField, BeanElement.BeanConstructor, BeanElement.BeanMethod, BindableVariable {
+public sealed interface BeanElement extends Accessor permits PackedBeanElement, BeanElement.BeanClass, BeanElement.BeanField, BeanElement.BeanConstructor, BeanElement.BeanMethod, BindableVariable {
 
     /** {@return a list of annotations on the element.} */
     AnnotationList annotations();
@@ -154,7 +153,7 @@ public sealed interface BeanElement extends BeanLocalAccessor permits PackedBean
         Field field();
 
         // I think we will skip the builder approach again
-        default Builder newGetOperation() {
+        default OperationTemplate.Installer newGetOperation() {
             throw new UnsupportedOperationException();
         }
 
@@ -248,7 +247,7 @@ public sealed interface BeanElement extends BeanLocalAccessor permits PackedBean
          */
         // Replace with OperationTemplate.delagating(useSite)
         // and the OperationHandle.delagtingTo
-        OperationHandle.Builder newOperation();
+        OperationTemplate.Installer newOperation();
 
         /**
          * Creates a new operation that can invoke the underlying method.

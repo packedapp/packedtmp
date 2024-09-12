@@ -23,7 +23,7 @@ import app.packed.container.ContainerLocal;
 import app.packed.container.Wirelet;
 
 /** A build local that has application scope. */
-public non-sealed interface ApplicationLocal<T> extends BuildLocal<ApplicationLocal.ApplicationLocalAccessor, T> {
+public non-sealed interface ApplicationLocal<T> extends BuildLocal<ApplicationLocal.Accessor, T> {
 
     /**
      * Returns a wirelet that can be used to set the value of this application local.
@@ -67,5 +67,5 @@ public non-sealed interface ApplicationLocal<T> extends BuildLocal<ApplicationLo
     }
 
     /** An entity where {@link ApplicationLocal application local} values can be manipulated. */
-    public sealed interface ApplicationLocalAccessor permits ContainerLocal.ContainerLocalAccessor, ApplicationConfiguration, ApplicationMirror, Assembly {}
+    public sealed interface Accessor permits ContainerLocal.Accessor, ApplicationConfiguration, ApplicationMirror, Assembly {}
 }

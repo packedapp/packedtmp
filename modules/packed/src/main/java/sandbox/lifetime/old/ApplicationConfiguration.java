@@ -16,7 +16,7 @@
 package sandbox.lifetime.old;
 
 import app.packed.build.BuildGoal;
-import internal.app.packed.container.ApplicationSetup;
+import internal.app.packed.application.ApplicationSetup;
 
 /**
  *

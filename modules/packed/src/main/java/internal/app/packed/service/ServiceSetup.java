@@ -34,7 +34,7 @@ import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
+import internal.app.packed.operation.PackedOperationType.MemberOperationSetup;
 import internal.app.packed.util.StringFormatter;
 
 /**
@@ -156,7 +156,7 @@ public final class ServiceSetup {
             // return "Another bean of type " + format(existingTarget.bean.beanClass) + " is already providing a service for Key<" +
             // key.toStringSimple() + ">";
         } else if (existingProvider.resolution instanceof FromOperationResult os) {
-            if (os.operation() instanceof MemberOperationSetup m && m.target instanceof OperationMethodTarget t) {
+            if (os.operation().pot instanceof MemberOperationSetup m && m.target instanceof OperationMethodTarget t) {
                 String ss = StringFormatter.formatShortWithParameters(t.method());
                 return "A method " + ss + " is already providing a service for " + key;
             }

@@ -23,14 +23,9 @@ import java.util.function.Consumer;
 
 import app.packed.component.Authority;
 import app.packed.operation.OperationType;
-import app.packed.util.Nullable;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
-import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
 import internal.app.packed.util.LookupUtil;
-import sandbox.extension.operation.OperationTemplate;
 
 /** An intermediate (non-terminal) op. */
 abstract sealed class IntermediateOp<R> extends PackedOp<R> {
@@ -51,8 +46,8 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
 
     /** {@inheritDoc} */
     @Override
-    public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template, @Nullable EmbeddedIntoOperation embeddedIn) {
-        return nextOp.newOperationSetup(bean, operator, template, embeddedIn);
+    public OperationSetup newOperationSetup(NewOS newOs) {
+        return nextOp.newOperationSetup(newOs);
     }
 
     /** A op that binds 1 or more constants. */
@@ -74,8 +69,8 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template, @Nullable EmbeddedIntoOperation nestedParent) {
-            OperationSetup os = super.newOperationSetup(bean, operator, template, nestedParent);
+        public OperationSetup newOperationSetup(NewOS newOs) {
+            OperationSetup os = super.newOperationSetup(newOs);
             for (int i = 0; i < indexes.length; i++) {
                 int index = indexes[i];
                 Object argument = arguments[i];

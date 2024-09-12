@@ -20,8 +20,8 @@ import java.lang.invoke.MethodHandles;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanClassMutator;
 import app.packed.bean.Inject;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerBuildHook;
+import app.packed.container.ContainerConfiguration;
 import app.packed.extension.BaseExtension;
 import app.packed.util.Variable;
 

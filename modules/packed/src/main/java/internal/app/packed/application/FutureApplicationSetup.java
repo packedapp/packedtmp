@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package internal.app.packed.application;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -22,6 +22,8 @@ import java.util.concurrent.FutureTask;
 
 import app.packed.assembly.Assembly;
 import app.packed.build.BuildException;
+import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.PackedContainerInstaller;
 
 /**
  * Represents an application that can be build lazily or in another thread.
@@ -39,17 +41,17 @@ public final class FutureApplicationSetup {
     /** The result of a successful application build. */
     private volatile ApplicationSetup application;
 
-    final NonBootstrapContainerBuilder parent;
+    final PackedContainerInstaller parent;
 
     /** A task for building the application. */
     private final FutureTask<ApplicationSetup> buildTask;
 
     // IDK vi skal nok have en specielt builder
-    public FutureApplicationSetup(NonBootstrapContainerBuilder parent, Assembly assembly) {
+    public FutureApplicationSetup(PackedContainerInstaller parent, Assembly assembly) {
         this.parent = parent;
 
         Callable<ApplicationSetup> c = () -> {
-            ContainerSetup s = parent.buildNow(assembly);
+            ContainerSetup s = parent.invokeAssemblyBuild(assembly);
             return application = s.application;
         };
         this.buildTask = new FutureTask<ApplicationSetup>(c);

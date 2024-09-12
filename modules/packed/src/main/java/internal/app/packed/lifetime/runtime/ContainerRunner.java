@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.extension.ExtensionContext;
 import app.packed.util.Nullable;
-import internal.app.packed.container.ApplicationSetup;
+import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.util.ThrowableUtil;
 

@@ -20,7 +20,6 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationLocal;
 import app.packed.build.BuildLocal;
 import internal.app.packed.container.PackedContainerLocal;
-import sandbox.extension.container.ContainerHandle;
 
 /**
  * This class provides container-local variables at build-time.
@@ -33,7 +32,7 @@ import sandbox.extension.container.ContainerHandle;
  * @see app.packed.extension.container.ContainerBuilder#setLocal(ContainerLocal, Object)
  * @see app.packed.container.ContainerMirror
  */
-public sealed interface ContainerLocal<T> extends BuildLocal<ContainerLocal.ContainerLocalAccessor, T> permits PackedContainerLocal {
+public sealed interface ContainerLocal<T> extends BuildLocal<ContainerLocal.Accessor, T> permits PackedContainerLocal {
 
     /**
      * Returns a wirelet that will set the value of this container local, overriding any previous set value.
@@ -67,8 +66,7 @@ public sealed interface ContainerLocal<T> extends BuildLocal<ContainerLocal.Cont
     }
 
     /** An accessor where {@link ContainerLocal container local} values can be stored and retrieved. */
-    public sealed interface ContainerLocalAccessor extends ApplicationLocal.ApplicationLocalAccessor
-            permits ContainerConfiguration, ContainerHandle, ContainerMirror {}
+    public sealed interface Accessor extends ApplicationLocal.Accessor permits ContainerConfiguration, ContainerHandle, ContainerMirror {}
 
     // Extension?
     // En god maade at traekke sig selv ud...

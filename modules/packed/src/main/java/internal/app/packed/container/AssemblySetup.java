@@ -26,8 +26,8 @@ import app.packed.assembly.AssemblyMirror;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.component.Authority;
 import app.packed.util.Nullable;
-import internal.app.packed.build.PackedLocalMap;
-import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
+import internal.app.packed.build.BuildLocalMap;
+import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.AbstractTreeMirror;
 import internal.app.packed.component.Mirrorable;
 import internal.app.packed.service.CircularServiceDependencyChecker;
@@ -37,7 +37,7 @@ import internal.app.packed.util.TreeNode.ActualNode;
 import internal.app.packed.util.types.ClassUtil;
 
 /** The internal configuration of an assembly. */
-public final class AssemblySetup implements KeyAndLocalMapSource , ActualNode<AssemblySetup> , AuthoritySetup , Mirrorable<AssemblyMirror> {
+public final class AssemblySetup implements BuildLocalSource , ActualNode<AssemblySetup> , AuthoritySetup , Mirrorable<AssemblyMirror> {
 
     /** A magic initializer for {@link BeanMirror}. */
     public static final MagicInitializer<AssemblySetup> MIRROR_INITIALIZER = MagicInitializer.of(AssemblyMirror.class);
@@ -89,13 +89,13 @@ public final class AssemblySetup implements KeyAndLocalMapSource , ActualNode<As
      * @param assembly
      *            the assembly instance
      */
-    public AssemblySetup(PackedContainerInstaller builder, Assembly assembly) {
+    public AssemblySetup(PackedContainerInstaller installer, Assembly assembly) {
         assert (!(assembly instanceof DelegatingAssembly));
-        this.node = new TreeNode<>(builder.parent == null ? null : builder.parent.assembly, this);
+        this.node = new TreeNode<>(installer.parent == null ? null : installer.parent.assembly, this);
         this.assembly = assembly;
         this.model = AssemblyModel.of(assembly.getClass());
-        this.delegatingAssemblies = builder.delegatingAssemblies == null ? List.of() : List.copyOf(builder.delegatingAssemblies);
-        this.container = builder.newContainer(this);
+        this.delegatingAssemblies = installer.delegatingAssemblies == null ? List.of() : List.copyOf(installer.delegatingAssemblies);
+        this.container = installer.newContainer(this);
     }
 
     /** {@inheritDoc} */
@@ -118,7 +118,7 @@ public final class AssemblySetup implements KeyAndLocalMapSource , ActualNode<As
 
     /** {@inheritDoc} */
     @Override
-    public PackedLocalMap locals() {
+    public BuildLocalMap locals() {
         return container.locals();
     }
 

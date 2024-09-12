@@ -26,7 +26,7 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.lifetime.ContainerLifetimeMirror;
-import internal.app.packed.container.DeploymentSetup;
+import internal.app.packed.application.DeploymentSetup;
 
 /**
  *

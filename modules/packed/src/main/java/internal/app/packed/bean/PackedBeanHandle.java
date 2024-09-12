@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.component.Authority;
@@ -30,7 +31,6 @@ import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.service.InternalServiceUtil;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceSetup;
-import sandbox.extension.bean.BeanHandle;
 import sandbox.extension.operation.OperationHandle;
 
 /** Implementation of {@link BeanHandle}. */

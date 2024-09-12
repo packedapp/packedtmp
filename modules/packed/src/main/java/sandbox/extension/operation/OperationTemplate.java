@@ -18,11 +18,16 @@ package sandbox.extension.operation;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import app.packed.bean.BeanKind;
+import app.packed.extension.ExtensionPoint;
 import app.packed.extension.ExtensionPoint.UseSite;
+import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
 import internal.app.packed.context.publish.ContextTemplate;
+import internal.app.packed.operation.PackedOperationInstaller;
 import internal.app.packed.operation.PackedOperationTemplate;
 
 /**
@@ -67,49 +72,16 @@ import internal.app.packed.operation.PackedOperationTemplate;
 // EC? BeanInstance? [Context*] Speciel (fields)
 public sealed interface OperationTemplate permits PackedOperationTemplate {
 
-    default OperationTemplate appendBeanInstance() {
-        return appendBeanInstance(Object.class);
-    }
-
-    OperationTemplate appendBeanInstance(Class<?> beanClass);
-
     OperationTemplate.Descriptor descriptor();
 
-    /** {@return an operation template that ignores any return value.} */
-    // If you want to fail. Check return type
-    // Isn't it just void???
-    OperationTemplate returnIgnore();
-
-    OperationTemplate returnType(Class<?> type);
-
-    default OperationTemplate returnTypeObject() {
-        return returnType(Object.class);
-    }
-
-    default OperationTemplate withInvocationArgument(Class<?> argumentClass) {
-        // Kan man bruge alle argumenterne? eller kun dem her?
-        // Vil mene alle... Hmm, idk.
-        // Det er lettere at indexere hvis man det kun er dem man har tilfoejet her
-        return this;
-    }
-
-//    default OperationTemplate withoutContext(Class<? extends Context<?>> contextClass) {
-//        // Den eneste usecase er at fjerne ContainerContext
-//        return this;
-//    }
-
-    // Takes EBC returns void
-
-    // Hvad sker der naar den er i andre lifetimes?
-    OperationTemplate withContext(ContextTemplate context);
+    OperationTemplate reconfigure(Consumer<? super Configurator> configure);
 
     // Tror ikke laengere man kan lave dem direkte paa den her maade...
     static OperationTemplate defaults() {
         return PackedOperationTemplate.DEFAULTS;
     }
 
-
-    static OperationTemplate delegating(UseSite useSite) {
+    static OperationTemplate delegateTo(UseSite useSite) {
         return PackedOperationTemplate.DEFAULTS;
     }
 
@@ -117,10 +89,6 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
 //  default OperationTemplate withClassifier(Class<?> type) {
 //      throw new UnsupportedOperationException();
 //  }
-
-    static OperationTemplate raw() {
-        return new PackedOperationTemplate(Map.of(), -1, -1, MethodType.methodType(void.class), false);
-    }
 
     static OperationTemplate ofFunction(Class<?> functionalInterface, OperationType operationType) {
         return ofFunction(MethodHandles.publicLookup(), functionalInterface, operationType);
@@ -131,6 +99,9 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         throw new UnsupportedOperationException();
     }
 
+    static OperationTemplate raw() {
+        return new PackedOperationTemplate(Map.of(), -1, -1, MethodType.methodType(void.class), false);
+    }
 
     // Was argument type.
     enum BeanInstanceHowToGet {
@@ -146,6 +117,43 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     enum BeanInstanceHowToGet2 {
         // Operation never takes a bean
         STATIC
+    }
+
+    interface Configurator {
+
+        default Configurator appendBeanInstance() {
+            return appendBeanInstance(Object.class);
+        }
+
+        Configurator appendBeanInstance(Class<?> beanClass);
+
+        /** {@return an operation template that ignores any return value.} */
+        // If you want to fail. Check return type
+        // Isn't it just void???
+        Configurator returnIgnore();
+
+        Configurator returnType(Class<?> type);
+
+        default Configurator returnTypeObject() {
+            return returnType(Object.class);
+        }
+
+        // Hvad sker der naar den er i andre lifetimes?
+        Configurator withContext(ContextTemplate context);
+
+//        default OperationTemplate withoutContext(Class<? extends Context<?>> contextClass) {
+//            // Den eneste usecase er at fjerne ContainerContext
+//            return this;
+//        }
+
+        // Takes EBC returns void
+
+        default Configurator withInvocationArgument(Class<?> argumentClass) {
+            // Kan man bruge alle argumenterne? eller kun dem her?
+            // Vil mene alle... Hmm, idk.
+            // Det er lettere at indexere hvis man det kun er dem man har tilfoejet her
+            return this;
+        }
     }
 
     /**
@@ -174,6 +182,44 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         }
 
         // Contexts
+    }
+
+    /**
+    *
+    */
+
+    // Source
+    //// Method/Constructor
+    //// Field -> Get/Set/Invoke
+    //// Function / Op / MethodHandle
+
+    // "Targets"
+
+    // FullOp
+    // ChildOp
+    // DelegateTo
+    // (Bounded) EmbeddedOp (Er aldrig visible...
+
+    sealed interface Installer permits PackedOperationInstaller {
+
+        // redelegate(ExtensionPoint.UseSite extension, OperationTemplate);
+        Installer delegateTo(ExtensionPoint.UseSite extension);
+
+        OperationHandle install(OperationTemplate template);
+
+        /**
+         * Specializes the mirror that is returned for the operation.
+         * <p>
+         * The specified supplier may be called multiple times for the same operation.
+         * <p>
+         * The specified supplier should never return {@code null}.
+         *
+         * @param supplier
+         *            a mirror supplier that is called if a mirror is required
+         * @throws IllegalStateException
+         *             if the operation is no longer configurable
+         */
+        Installer specializeMirror(Supplier<? extends OperationMirror> supplier);
     }
 }
 //

@@ -1,7 +1,6 @@
 package app.packed.bean;
 
-import internal.app.packed.lifetime.PackedBeanTemplate;
-import sandbox.extension.bean.BeanTemplate;
+import internal.app.packed.bean.PackedBeanTemplate;
 
 /**
  * This enum details the various kinds of beans that are supported in Packed.

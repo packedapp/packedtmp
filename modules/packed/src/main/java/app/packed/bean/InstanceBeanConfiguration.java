@@ -22,7 +22,6 @@ import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
 import app.packed.util.Key;
 import internal.app.packed.bean.BeanSetup;
-import sandbox.extension.bean.BeanTemplate;
 
 /**
  * The configuration of bean that have instances at runtime. This is all beans except for {@link BeanKind#STATIC beans}.

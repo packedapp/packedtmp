@@ -15,9 +15,9 @@
  */
 package app.packed.service;
 
+import app.packed.bean.BeanTemplate;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.util.Key;
-import sandbox.extension.bean.BeanTemplate;
 
 /**
  * A configuration of a container bean.

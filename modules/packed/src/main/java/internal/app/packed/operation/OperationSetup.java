@@ -18,8 +18,6 @@ package internal.app.packed.operation;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodType;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,7 +26,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanFactoryMirror;
 import app.packed.bean.BeanKind;
 import app.packed.bean.CannotDeclareInstanceMemberException;
 import app.packed.component.ComponentKind;
@@ -51,17 +48,15 @@ import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.entrypoint.EntryPointSetup;
-import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
+import internal.app.packed.operation.PackedOperationType.MemberOperationSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceProviderSetup;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.types.ClassUtil;
 import sandbox.extension.operation.OperationHandle;
-import sandbox.extension.operation.OperationTemplate;
 
 /** Represents an operation on a bean. */
-// I want to get rid of the subclasses
-public sealed abstract class OperationSetup extends ComponentSetup implements PackedComponentTwin , ContextualizedElementSetup {
+public final class OperationSetup extends ComponentSetup implements PackedComponentTwin , ContextualizedElementSetup {
 
     /** A magic initializer for {@link OperationMirror}. */
     public static final MagicInitializer<OperationSetup> MIRROR_INITIALIZER = MagicInitializer.of(OperationMirror.class);
@@ -74,6 +69,10 @@ public sealed abstract class OperationSetup extends ComponentSetup implements Pa
 
     /** Bindings for this operation. */
     public final BindingSetup[] bindings;
+
+    /** The configuration representing this operation, is set from {@link #initConfiguration(BeanConfiguration)}. */
+    @Nullable
+    public OperationConfiguration configuration;
 
     /** The contexts on the bean. Is HashMap now we because it uses less memory when empty. */
     private HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
@@ -91,25 +90,6 @@ public sealed abstract class OperationSetup extends ComponentSetup implements Pa
 
     /** Supplies a mirror for the operation */
     public Supplier<? extends OperationMirror> mirrorSupplier;
-
-    /** The configuration representing this operation, is set from {@link #initConfiguration(BeanConfiguration)}. */
-    @Nullable
-    public OperationConfiguration configuration;
-
-    /**
-     * Initializes the bean configuration.
-     *
-     * @param configuration
-     *
-     * @throws IllegalStateException
-     *             if attempting to create multiple bean configurations for a single bean
-     */
-    public void initConfiguration(OperationConfiguration configuration) {
-        if (this.configuration != null) {
-            throw new IllegalStateException("A operation handle can only be used once to create a a operation configuration");
-        }
-        this.configuration = requireNonNull(configuration);
-    }
 
     /**
      * The name prefix of the operation.
@@ -134,28 +114,34 @@ public sealed abstract class OperationSetup extends ComponentSetup implements Pa
     /** The type of this operation. */
     public final OperationType type;
 
-    private OperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type, OperationTemplate template,
-            @Nullable EmbeddedIntoOperation embeddedInto) {
-        this.operator = requireNonNull(operator);
-        this.bean = requireNonNull(bean);
-        this.type = requireNonNull(type);
-        this.embeddedInto = embeddedInto;
+    public final PackedOperationType pot;
+
+    OperationSetup(PackedOperationInstaller installer, PackedOperationType pot) {
+        this.operator = requireNonNull(installer.operator);
+        this.pot = pot;
+        this.bean = requireNonNull(installer.bean);
+        this.type = installer.operationType;
+        this.embeddedInto = installer.embeddedInto;
         this.bindings = type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[type.parameterCount()];
-        this.template = requireNonNull((PackedOperationTemplate) template);
+        this.template = installer.template;
 
         if (template.descriptor().newLifetime()) {
             this.entryPoint = new EntryPointSetup(this, bean.lifetime);
         } else {
             this.entryPoint = null;
         }
-        if (!this.template.contexts.isEmpty()) {
-            for (PackedContextTemplate t : this.template.contexts.values()) {
-                contexts.put(t.contextClass(), new ContextSetup(t, this));
-            }
+        for (PackedContextTemplate t : template.contexts.values()) {
+            contexts.put(t.contextClass(), new ContextSetup(t, this));
         }
     }
 
-    public final Set<BeanSetup> dependsOn() {
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath componentPath() {
+        return ComponentKind.OPERATION.pathNew(bean.componentPath(), name());
+    }
+
+    public Set<BeanSetup> dependsOn() {
         HashSet<BeanSetup> result = new HashSet<>();
         // TODO hmm, skal inkludere extensions??? nope
         forEachBinding(b -> {
@@ -181,7 +167,7 @@ public sealed abstract class OperationSetup extends ComponentSetup implements Pa
     }
 
     // readOnly. Will not work if for example, resolving a binding
-    public final void forEachBinding(Consumer<? super BindingSetup> binding) {
+    public void forEachBinding(Consumer<? super BindingSetup> binding) {
         for (BindingSetup bs : bindings) {
             requireNonNull(bs);
             if (bs.resolver() != null && bs.resolver() instanceof FromOperationResult nested) {
@@ -197,13 +183,7 @@ public sealed abstract class OperationSetup extends ComponentSetup implements Pa
         bean.forEachContext(action);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentPath componentPath() {
-        return ComponentKind.OPERATION.pathNew(bean.componentPath(), name());
-    }
-
-    public final MethodHandle generateMethodHandle() {
+    public MethodHandle generateMethodHandle() {
         // Maybe have a check here instead, and specifically mention generateMethodHandle when calling
         bean.container.application.checkInCodegenPhase();
         MethodHandle mh = generatedMethodHandle;
@@ -214,12 +194,29 @@ public sealed abstract class OperationSetup extends ComponentSetup implements Pa
         return mh;
     }
 
+    /**
+     * Initializes the bean configuration.
+     *
+     * @param configuration
+     *
+     * @throws IllegalStateException
+     *             if attempting to create multiple bean configurations for a single bean
+     */
+    public void initConfiguration(OperationConfiguration configuration) {
+        if (this.configuration != null) {
+            throw new IllegalStateException("A operation handle can only be used once to create a a operation configuration");
+        }
+        this.configuration = requireNonNull(configuration);
+    }
+
     /** {@return the initial method handle.} */
-    abstract MethodHandle methodHandle();
+    public MethodHandle methodHandle() {
+        return pot.methodHandle();
+    }
 
     /** {@return a new mirror.} */
     @Override
-    public final OperationMirror mirror() {
+    public OperationMirror mirror() {
         return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(OperationMirror.class, OperationMirror::new, mirrorSupplier), this);
     }
 
@@ -234,20 +231,20 @@ public sealed abstract class OperationSetup extends ComponentSetup implements Pa
 
     /** {@return the target of the operation.} */
     public OperationTarget target() {
-        return (OperationTarget) this;
+        return pot.target();
     }
 
-    public final PackedOperationHandle toHandle() {
+    public PackedOperationHandle toHandle() {
         return new PackedOperationHandle(this, null);
     }
 
     /** {@return an operation handle for this operation.} */
-    public final PackedOperationHandle toHandle(BeanScanner scanner) {
+    public PackedOperationHandle toHandle(BeanScanner scanner) {
         return new PackedOperationHandle(this, scanner);
     }
 
     /** {@return the type of operation.} */
-    public final OperationType type() {
+    public OperationType type() {
         return type;
     }
 
@@ -262,142 +259,18 @@ public sealed abstract class OperationSetup extends ComponentSetup implements Pa
         return ((PackedOperationHandle) handle).operation();
     }
 
-    /** An operation that returns the bean instance the operation is defined on. */
-    public static final class BeanAccessOperationSetup extends OperationSetup {
-
-        /**
-         * @param operator
-         * @param site
-         */
-        public BeanAccessOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template) {
-            super(operator, bean, operationType, template, null);
-            namePrefix = "InstantAccess";
+    public static OperationSetup newMemberOperationSetup(PackedOperationInstaller installer, OperationMemberTarget<?> member, MethodHandle methodHandle) {
+        if (installer.bean.beanKind == BeanKind.STATIC && !Modifier.isStatic(member.modifiers())) {
+            throw new CannotDeclareInstanceMemberException("Cannot create operation for non-static member " + member);
         }
+//        super.namePrefix = member.name();
+//        if (member instanceof OperationConstructorTarget) {
+//            super.mirrorSupplier = BeanFactoryMirror::new;
+//        }
 
-        /** {@inheritDoc} */
-        @Override
-        MethodHandle methodHandle() {
-            throw new UnsupportedOperationException();
-        }
-    }
+        MemberOperationSetup mos = new MemberOperationSetup(member, methodHandle);
 
-    /** An operation that invokes the abstract method on a {@link FunctionalInterface}. */
-    public static final class FunctionOperationSetup extends OperationSetup implements OperationTarget.OfFunction {
-
-        /** The method that implements the single abstract method. */
-        private final Method implementationMethod;
-
-        private final MethodHandle methodHandle;
-
-        /** A description of SAM type. */
-        private final SamType samType;
-
-        /**
-         * @param operator
-         * @param site
-         */
-        public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
-                @Nullable EmbeddedIntoOperation nestedParent, MethodHandle methodHandle, SamType samType, Method implementationMethod) {
-            super(operator, bean, operationType, template, nestedParent);
-            this.methodHandle = requireNonNull(methodHandle);
-            this.samType = requireNonNull(samType);
-            this.implementationMethod = requireNonNull(implementationMethod);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Class<?> functionalInterface() {
-            return samType.functionInterface();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Method implementingMethod() {
-            return implementationMethod;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Method interfaceMethod() {
-            return samType.saMethod();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        MethodHandle methodHandle() {
-            return methodHandle;
-        }
-    }
-
-    /** An operation that invokes or accesses a {@link Member}. */
-    public static final class MemberOperationSetup extends OperationSetup {
-
-        private final MethodHandle methodHandle;
-
-        /** The {@link Member target member}. */
-        public final OperationMemberTarget<?> target;
-
-        // MH -> mirror - no gen
-        // MH -> Gen - With caching (writethrough to whereever the bean cache it)
-        // MH -> LazyGen - With caching
-        public MemberOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
-                OperationMemberTarget<?> member, MethodHandle methodHandle) {
-            super(operator, bean, operationType, template, null);
-            if (bean.beanKind == BeanKind.STATIC && !Modifier.isStatic(member.modifiers())) {
-                throw new CannotDeclareInstanceMemberException("Cannot create operation for non-static member " + member);
-            }
-            this.target = requireNonNull(member);
-            this.methodHandle = requireNonNull(methodHandle);
-            namePrefix = member.name();
-            if (member instanceof OperationConstructorTarget) {
-
-                mirrorSupplier = BeanFactoryMirror::new;
-            }
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        MethodHandle methodHandle() {
-            return methodHandle;
-        }
-
-        public boolean needsBeanInstance() {
-            return !(target instanceof OperationConstructorTarget) && !Modifier.isStatic(target.modifiers());
-        }
-
-        @Override
-        public OperationTarget target() {
-            return (OperationTarget) target;
-        }
-    }
-
-    /** An operation that invokes a method handle. */
-    public static final class MethodHandleOperationSetup extends OperationSetup implements OperationTarget.OfMethodHandle {
-
-        final MethodHandle methodHandle;
-
-        /**
-         * @param operator
-         * @param site
-         */
-        public MethodHandleOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
-                @Nullable EmbeddedIntoOperation embeddedInto, MethodHandle methodHandle) {
-            super(operator, bean, operationType, template, embeddedInto);
-            this.methodHandle = requireNonNull(methodHandle);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        MethodHandle methodHandle() {
-            return methodHandle;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodType methodType() {
-            return type.toMethodType();
-        }
-
+        return installer.newOperation(mos);
     }
 
     /** The parent of a nested operation. */

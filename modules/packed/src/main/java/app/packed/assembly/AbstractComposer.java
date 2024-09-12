@@ -25,7 +25,6 @@ import app.packed.extension.Extension;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.LeafContainerBuilder;
 import internal.app.packed.container.PackedContainerInstaller;
 
 /**
@@ -130,15 +129,15 @@ public abstract class AbstractComposer {
          *            the configuration to use for the assembling process
          */
         @Override
-        AssemblySetup build(PackedContainerInstaller builder) {
-            if (builder instanceof @SuppressWarnings("unused") LeafContainerBuilder installer) {
-                throw new IllegalArgumentException("Cannot link an instance of " + ComposableAssembly.class + ", assembly must extend "
-                        + BuildableAssembly.class.getSimpleName() + " instead");
-            }
+        AssemblySetup build(PackedContainerInstaller installer) {
+//            if (builder instanceof @SuppressWarnings("unused") PackedContainerInstaller installer) {
+//                throw new IllegalArgumentException("Cannot link an instance of " + ComposableAssembly.class + ", assembly must extend "
+//                        + BuildableAssembly.class.getSimpleName() + " instead");
+//            }
 
             AssemblyConfiguration existing = composer.configuration;
             if (existing == null) {
-                AssemblySetup a = new AssemblySetup(builder, this);
+                AssemblySetup a = new AssemblySetup(installer, this);
                 AssemblyConfiguration as = composer.configuration = existing = new AssemblyConfiguration(a);
                 try {
                     composer.preCompose();

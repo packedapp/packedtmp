@@ -19,8 +19,8 @@ import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.service.ServiceContract;
 import app.packed.util.TreeView;
+import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.AssemblySetup.PackedAssemblyTreeMirror;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ContainerSetup.PackedContainerTreeMirror;
@@ -42,7 +42,7 @@ import internal.app.packed.operation.OperationSetup;
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)} for details.
  */
 @InheritableBindingClassBeanTrigger(extension = BaseExtension.class)
-public non-sealed class ApplicationMirror implements ComponentMirror , ApplicationLocal.ApplicationLocalAccessor {
+public non-sealed class ApplicationMirror implements ComponentMirror , ApplicationLocal.Accessor {
 
     /** The application we are mirroring. */
     private final ApplicationSetup application;

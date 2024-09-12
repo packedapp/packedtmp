@@ -16,6 +16,7 @@
 package sandbox.extension.container;
 
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerHandle;
 import app.packed.extension.BaseExtensionPoint;
 import app.packed.extension.Extension;
 import app.packed.service.ServiceLocator;

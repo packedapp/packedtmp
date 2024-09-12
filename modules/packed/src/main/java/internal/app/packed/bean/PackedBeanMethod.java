@@ -26,8 +26,8 @@ import app.packed.util.Key;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
-import internal.app.packed.operation.PackedOperationBuilder;
+import internal.app.packed.operation.PackedOperationInstaller;
+import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.util.PackedAnnotationList;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
@@ -47,7 +47,7 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
 
     /** {@inheritDoc} */
     @Override
-    public PackedOperationBuilder newOperation() {
+    public PackedOperationInstaller newOperation() {
         return null;
     }
 
@@ -60,8 +60,9 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
         // We should be able to create this lazily
         MethodHandle methodHandle = extension.scanner.unreflectMethod(member);
 
-        OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, operationType(), template,
-                new OperationMethodTarget(member), methodHandle);
+        PackedOperationInstaller poi = ((PackedOperationTemplate) template).newInstaller(operationType(), extension.scanner.bean, extension.extension);
+
+        OperationSetup operation = OperationSetup.newMemberOperationSetup(poi, new OperationMethodTarget(member), methodHandle);
         extension.scanner.bean.operations.all.add(operation);
         extension.scanner.unBoundOperations.add(operation);
         return operation.toHandle(extension.scanner);

@@ -6,7 +6,9 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanTemplate;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
@@ -14,16 +16,15 @@ import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationDependencyOrder;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceableBeanConfiguration;
-import internal.app.packed.bean.PackedBeanInstaller;
+import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.LeafContainerBuilder;
+import internal.app.packed.container.PackedContainerInstaller;
+import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.container.PackedExtensionPointContext;
-import sandbox.extension.bean.BeanHandle;
-import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.container.ComponentGuestAdaptorBeanConfiguration;
 import sandbox.extension.container.ContainerTemplate;
 import sandbox.extension.container.ContainerTemplateLink;
-import sandbox.extension.operation.OperationHandle.Builder;
+import sandbox.extension.operation.OperationTemplate;
 import sandbox.lifetime.external.LifecycleController;
 
 /** An {@link ExtensionPoint extension point} for {@link BaseExtension}. */
@@ -151,7 +152,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return the installer
      */
     public BeanTemplate.Installer newApplicationBean(BeanTemplate template) {
-        return new PackedBeanInstaller(extension().extension, extension().extension.container.assembly, template);
+        return ((PackedBeanTemplate) template).newInstaller(extension().extension, extension().extension.container.assembly);
     }
 
     /**
@@ -164,7 +165,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     public ContainerTemplate.Installer newContainer(ContainerTemplate template) {
         // Kan only use channels that are direct dependencies of the usage extension
         ExtensionSetup es = contextUse().usedBy();
-        return LeafContainerBuilder.of(template, es.extensionType, es.container.application, es.container);
+        return PackedContainerInstaller.of((PackedContainerTemplate) template, es.extensionType, es.container.application, es.container);
     }
 
     /**
@@ -179,18 +180,18 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     // Where we cannot put the methods on usesite
     public BeanTemplate.Installer newDependantExtensionBean(BeanTemplate template, UseSite forExtension) {
         requireNonNull(forExtension, "forExtension is null");
-        return new PackedBeanInstaller(extension().extension, ((PackedExtensionPointContext) forExtension).usedBy(), template);
+        return ((PackedBeanTemplate) template).newInstaller(extension().extension, ((PackedExtensionPointContext) forExtension).usedBy());
     }
 
     public int registerEntryPoint(Class<?> hook) {
         return super.extensionSetup().container.lifetime.entryPoints.takeOver(extension(), usedBy());// .registerEntryPoint(usedBy(), isMain);
     }
 
-    public OperationConfiguration runLifecycleOperation(Builder operation, RunState state, OperationDependencyOrder ordering) {
+    public OperationConfiguration runLifecycleOperation(OperationTemplate.Installer operation, RunState state, OperationDependencyOrder ordering) {
         throw new UnsupportedOperationException();
     }
 
-    public OperationConfiguration runOnBeanInitialization(Builder operation, OperationDependencyOrder ordering) {
+    public OperationConfiguration runOnBeanInitialization(OperationTemplate.Installer operation, OperationDependencyOrder ordering) {
         requireNonNull(ordering, "ordering is null");
         throw new UnsupportedOperationException();
 //        OperationHandle handle = h.newOperation(OperationTemplate.defaults(), context());
@@ -206,7 +207,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the inject operation
      * @see Inject
      */
-    public OperationConfiguration runOnBeanInject(Builder operation) {
+    public OperationConfiguration runOnBeanInject(OperationTemplate.Installer operation) {
 //        PackedOperationHandle handle = (PackedOperationHandle) h.newOperation(OperationTemplate.defaults(), context());
 //        handle.operation().bean.addLifecycleOperation(BeanLifecycleOrder.INJECT, handle);
 //        return new OperationConfiguration(handle);
@@ -225,7 +226,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 //        throw new UnsupportedOperationException();
 //    }
 
-    private static ContainerTemplateLink.Builder baseBuilder(String name) {
+    private static ContainerTemplateLink.Configurator baseBuilder(String name) {
         return ContainerTemplateLink.of(MethodHandles.lookup(), BaseExtension.class, name);
     }
 }

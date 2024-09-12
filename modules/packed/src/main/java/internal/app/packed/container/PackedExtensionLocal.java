@@ -19,13 +19,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Supplier;
 
-import app.packed.container.ContainerLocal.ContainerLocalAccessor;
+import app.packed.container.ContainerLocal.Accessor;
 import app.packed.util.Nullable;
+import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.build.PackedBuildLocal;
-import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
 
 /** Implementation of {@link ContainerLocal}. */
-public final class PackedExtensionLocal<T> extends PackedBuildLocal<ContainerLocalAccessor, T> {
+public final class PackedExtensionLocal<T> extends PackedBuildLocal<Accessor, T> {
 
     public PackedExtensionLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
         super(initialValueSupplier);
@@ -33,7 +33,7 @@ public final class PackedExtensionLocal<T> extends PackedBuildLocal<ContainerLoc
 
     /** {@inheritDoc} */
     @Override
-    protected KeyAndLocalMapSource extract(ContainerLocalAccessor accessor) {
+    protected BuildLocalSource extract(Accessor accessor) {
         requireNonNull(accessor, "accessor is null");
         return ContainerSetup.crack(accessor);
     }

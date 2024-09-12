@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 /**
  *
  */
-@Target(ElementType.TYPE )
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
@@ -59,6 +59,7 @@ public @interface AssemblySecurityModel {
     }
 
     public class AllOpen {}
+
     public class Default extends Model {
         public static Default INSTANCE = new Default();
 

@@ -18,9 +18,9 @@ package sandbox.extension.application.old;
 import java.util.function.Supplier;
 
 import app.packed.assembly.Assembly;
+import app.packed.bean.BeanTemplate;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Wirelet;
-import sandbox.extension.bean.BeanTemplate;
 
 /**
  *

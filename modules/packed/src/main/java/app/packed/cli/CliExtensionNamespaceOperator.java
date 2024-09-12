@@ -47,7 +47,7 @@ class CliExtensionNamespaceOperator extends NamespaceTwin<CliExtension, CliNames
     void process(CliExtension extension, CliCommand c, BeanMethod method) {
         OperationHandle h = null;
         if (isInApplicationLifetime(extension)) {
-            h = method.newOperation().specializeMirror(() -> new CliCommandMirror(this, c)).build(OperationTemplate.defaults());
+            h = method.newOperation().specializeMirror(() -> new CliCommandMirror(this, c)).install(OperationTemplate.defaults());
             // check Launched
         } else {
             // EntryPoint.LaunchLifetime

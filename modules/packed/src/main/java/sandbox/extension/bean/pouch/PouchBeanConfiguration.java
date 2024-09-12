@@ -18,9 +18,9 @@ package sandbox.extension.bean.pouch;
 import java.util.Collection;
 import java.util.List;
 
+import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanTemplate;
 import app.packed.service.ServiceableBeanConfiguration;
-import sandbox.extension.bean.BeanHandle;
-import sandbox.extension.bean.BeanTemplate;
 
 /**
  *

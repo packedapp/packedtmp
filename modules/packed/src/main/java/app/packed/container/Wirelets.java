@@ -92,9 +92,9 @@ public final class Wirelets {
 
             /** {@inheritDoc} */
             @Override
-            protected void onBuild(PackedContainerInstaller builder) {
-                checkIsApplication(builder, this); // maybe explicit error msg
-                builder.optionBuildApplicationLazy = true;
+            protected void onBuild(PackedContainerInstaller installer) {
+                checkIsApplication(installer, this); // maybe explicit error msg
+                installer.applicationInstaller.optionBuildApplicationLazy = true;
             }
         }
         return ApplicationBuildLazilyWirelet.INSTANCE;
@@ -131,9 +131,9 @@ public final class Wirelets {
 
             /** {@inheritDoc} */
             @Override
-            protected void onBuild(PackedContainerInstaller builder) {
-                checkIsApplication(builder, this); // maybe explicit error msg
-                builder.optionBuildReusableImage = true;
+            protected void onBuild(PackedContainerInstaller installer) {
+                checkIsApplication(installer, this); // maybe explicit error msg
+                installer.applicationInstaller.optionBuildReusableImage = true;
             }
         }
         return ApplicationReusableImageWirelet.INSTANCE;

@@ -70,6 +70,11 @@ public non-sealed class AssemblyMirror implements BuildCodeSourceMirror {
         throw new UnsupportedOperationException();
     }
 
+    /** {@return the security model for the assembly} */
+    public AssemblySecurityModelMirror securityModel() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return the assembly class.} */
     public Class<? extends Assembly> assemblyClass() {
         return assembly.assembly.getClass();

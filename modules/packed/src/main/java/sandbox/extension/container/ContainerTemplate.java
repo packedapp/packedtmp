@@ -24,6 +24,7 @@ import java.util.function.Supplier;
 
 import app.packed.assembly.Assembly;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
@@ -92,11 +93,10 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
     ContainerTemplate UNMANAGED = new PackedContainerTemplate(PackedContainerKind.UNMANAGED);
 
 
-    ContainerTemplate reconfigure(Consumer<? super Configurator> configure);
-
-
     ContainerTemplate.Descriptor descriptor();
 
+
+    ContainerTemplate reconfigure(Consumer<? super Configurator> configure);
 
     public interface Configurator {
 
@@ -108,10 +108,6 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          * @see FromLifetimeChannel
          */
         default <T> Configurator carrierProvideConstant(Key<T> key, T arg) {
-            throw new UnsupportedOperationException();
-        }
-
-        default <T> Configurator localSet(ContainerLocal<T> containerLocal, T value) {
             throw new UnsupportedOperationException();
         }
 
@@ -128,9 +124,15 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          * @throws UnsupportedOperationException
          *             on container templates that do not have any lifetime operations
          */
+        // HOW are we going to access this class????? Without a lookup object.
+        // Can't just initialize it
         Configurator carrierType(Class<?> beanClass);
+
         // Har kun visibility for the installing extension
         Configurator lifetimeOperationAddContext(int index, ContextTemplate template);
+        default <T> Configurator localSet(ContainerLocal<T> containerLocal, T value) {
+            throw new UnsupportedOperationException();
+        }
 
         Configurator withPack(ContainerTemplateLink pack);
 
@@ -172,36 +174,6 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
     sealed interface Installer permits PackedContainerInstaller {
 
         /**
-         * Creates a new container using the specified assembly.
-         * <p>
-         * The container handle returned by this method is no longer {@link ContainerHandle#isConfigurable() configurable}.
-         * Configuration of the new container must be done prior to calling this method.
-         *
-         * @param assembly
-         *            the assembly to link
-         * @param wirelets
-         *            optional wirelets
-         * @return a container handle representing the new container
-         *
-         * @see #build(Wirelet...)
-         */
-        <T extends ContainerConfiguration> ContainerHandle<?> build(Assembly assembly, Function<? super ContainerTemplate.Installer, T> configurationCreator,
-                Wirelet... wirelets);
-
-        /**
-         * Creates the new container and adds this extension to the new container.
-         * <p>
-         * The extension in new the container can be obtained by calling {@link Extension#fromHandle(ContainerHandle)}
-         *
-         * @return a container handle representing the new container
-         *
-         * @see app.packed.extension.Extension#fromHandle(ContainerHandle)
-         */
-
-        <T extends ContainerConfiguration> ContainerHandle<?> buildAndUseThisExtension(Function<? super ContainerTemplate.Installer, T> configurationCreator,
-                Wirelet... wirelets);
-
-        /**
          * Provides constants per Carrier Instance for this particular container builder
          *
          * @param <T>
@@ -214,19 +186,6 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
         default <T> Installer carrierProvideConstant(Class<T> key, T constant) {
             return carrierProvideConstant(Key.of(key), constant);
         }
-
-        // Only Managed-Operation does not require a wrapper
-        // For now this method is here. Might move it to the actual CHC at some point
-
-        // Hmm, don't know if need a carrier instance, if we have implicit construction
-        // /**
-        // * @return
-        // * @throws UnsupportedOperationException
-        // * if a carrier type was not defined in the container template
-        // */
-        // default ContainerCarrierConfiguration<?> carrierInstance() {
-        // throw new UnsupportedOperationException();
-        // }
 
         /**
          * @see FromLifetimeChannel
@@ -251,6 +210,36 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
             return this;
         }
 
+        // Only Managed-Operation does not require a wrapper
+        // For now this method is here. Might move it to the actual CHC at some point
+
+        // Hmm, don't know if need a carrier instance, if we have implicit construction
+        // /**
+        // * @return
+        // * @throws UnsupportedOperationException
+        // * if a carrier type was not defined in the container template
+        // */
+        // default ContainerCarrierConfiguration<?> carrierInstance() {
+        // throw new UnsupportedOperationException();
+        // }
+
+        /**
+         * Creates a new container using the specified assembly.
+         * <p>
+         * The container handle returned by this method is no longer {@link ContainerHandle#isConfigurable() configurable}.
+         * Configuration of the new container must be done prior to calling this method.
+         *
+         * @param assembly
+         *            the assembly to link
+         * @param wirelets
+         *            optional wirelets
+         * @return a container handle representing the new container
+         *
+         * @see #build(Wirelet...)
+         */
+        <T extends ContainerConfiguration> ContainerHandle<?> install(Assembly assembly, Function<? super ContainerTemplate.Installer, T> configurationCreator,
+                Wirelet... wirelets);
+
         /**
          * Creates a new configurable container.
          *
@@ -260,7 +249,19 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          *
          * @see #install(Assembly, Wirelet...)
          */
-        <T extends ContainerConfiguration> ContainerHandle<?> install(Function<? super ContainerTemplate.Installer, T> configurationCreator,
+        <T extends ContainerConfiguration> ContainerHandle<T> install(Function<? super ContainerTemplate.Installer, T> configurationCreator,
+                Wirelet... wirelets);
+
+        /**
+         * Creates the new container and adds this extension to the new container.
+         * <p>
+         * The extension in new the container can be obtained by calling {@link Extension#fromHandle(ContainerHandle)}
+         *
+         * @return a container handle representing the new container
+         *
+         * @see app.packed.extension.Extension#fromHandle(ContainerHandle)
+         */
+        <T extends ContainerConfiguration> ContainerHandle<T> installAndUseThisExtension(Function<? super ContainerTemplate.Installer, T> configurationCreator,
                 Wirelet... wirelets);
 
         /**

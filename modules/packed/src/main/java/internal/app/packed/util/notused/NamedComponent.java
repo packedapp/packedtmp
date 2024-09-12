@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.util;
+package internal.app.packed.util.notused;
 
 /**
  *
  */
-// Like optional, but with an error context...
-// Very similar to Converter
-// Eneste problem er at vi skal have et felt til...
-// Kan ikke have en speciel type vi tester mod pga parameterizere parametere
-
-// Maaske starte med at bruge den internt... For FindInjectableConstructor
-// Lad os lige gennemtaenke det..
-public class Finding<T> {
-
+public class NamedComponent {
+    int state;
+    String name;
 }
+
+// Container, Bean, Operation
+// Assembly

@@ -17,100 +17,60 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.ScopedValue.Carrier;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.application.ApplicationMirror;
 import app.packed.assembly.Assembly;
 import app.packed.assembly.DelegatingAssembly;
-import app.packed.build.BuildGoal;
 import app.packed.build.hook.BuildHook;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
-import app.packed.lifetime.LifecycleKind;
+import app.packed.extension.Extension;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
-import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.container.ContainerTemplate;
 
-/**
- * A container builder is used for every container that is being built.
- * <p>
- * This class and subclasses are a bit messy. Still don't know if we want to expose some kind of container builder.
- *
- *
- * @implNote This class is not sealed because some of the implementations are in a public package
- */
-// Hvis vi ender med separate Container og Applications links metoder.
-// Saa tror vi skal have en AbstractContainerContainerBuilder, AbstractContainerApplicationBuilder.
-public abstract non-sealed class PackedContainerInstaller implements ContainerTemplate.Installer {
-
-    @Override
-    public <T extends ContainerConfiguration> ContainerHandle<?> build(Assembly assembly, Function<? super ContainerTemplate.Installer, T> configurationCreator,
-            Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public <T extends ContainerConfiguration> ContainerHandle<?> buildAndUseThisExtension(Function<? super ContainerTemplate.Installer, T> configurationCreator,
-            Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public <T> ContainerTemplate.Installer carrierProvideConstant(Key<T> key, T constant) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public <T extends ContainerConfiguration> ContainerHandle<?> install(Function<? super ContainerTemplate.Installer, T> configurationCreator, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public <T> ContainerTemplate.Installer localSet(ContainerLocal<T> containerLocal, T value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public ContainerTemplate.Installer named(String name) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public ContainerTemplate.Installer specializeMirror(Supplier<? extends ContainerMirror> supplier) {
-        throw new UnsupportedOperationException();
-    }
+/** Implementation of {@link ContainerTemplate.Installer} */
+public final class PackedContainerInstaller implements ContainerTemplate.Installer {
 
     /** A handle that can invoke {@link BuildableAssembly#doBuild(AssemblyModel, ContainerSetup)}. */
     private static final MethodHandle MH_ASSEMBLY_BUILD = LookupUtil.findVirtual(MethodHandles.lookup(), Assembly.class, "build", AssemblySetup.class,
             PackedContainerInstaller.class);
 
-    /** A supplier for creating application mirrors. */
-    protected Supplier<? extends ApplicationMirror> applicationMirrorSupplier;
+    /** Non-null if this container is being installed as the root container of an application. */
+    @Nullable
+    public final PackedApplicationInstaller applicationInstaller;
 
-    /** A supplier for creating container mirrors. */
-    protected Supplier<? extends ContainerMirror> containerMirrorSupplier;
-
-    // I would like to time stuff. But I have no idea on how to do it reliable with all the laziness
-    long creationNanos;
+    /** The container we are creating */
+    ContainerSetup container;
 
     /** Delegating assemblies. Empty unless any {@link DelegatingAssembly} has been used. */
     public final ArrayList<Class<? extends DelegatingAssembly>> delegatingAssemblies = new ArrayList<>();
 
+    public final ArrayList<BuildHook> hooksFromWirelets = new ArrayList<>();
+
+    /** The extension that is installing the container. */
+    final Class<? extends Extension<?>> installedBy;
+
     /** Container locals that the container is initialized with. */
     final IdentityHashMap<PackedContainerLocal<?>, Object> locals = new IdentityHashMap<>();
+
+    /** A supplier for creating container mirrors. */
+    protected Supplier<? extends ContainerMirror> mirrorSupplier;
 
     /** The name of the container. */
     String name;
@@ -118,16 +78,9 @@ public abstract non-sealed class PackedContainerInstaller implements ContainerTe
     @Nullable
     public String nameFromWirelet;
 
-    public boolean optionBuildApplicationLazy;
-
-    public boolean optionBuildReusableImage;
-
     /** The parent of the new container. Or <code>null</code> if a root container. */
     @Nullable
     ContainerSetup parent;
-
-    /** The container we are creating */
-    ContainerSetup container;
 
     /** The template for the new container. */
     public final PackedContainerTemplate template;
@@ -135,14 +88,60 @@ public abstract non-sealed class PackedContainerInstaller implements ContainerTe
     /** A list of wirelets that have not been consumed yet. */
     public final ArrayList<Wirelet> unconsumedWirelets = new ArrayList<>();
 
-    public final ArrayList<BuildHook> hooksFromWirelets = new ArrayList<>();
-
-    protected PackedContainerInstaller(PackedContainerTemplate template) {
+    // Cannot take ExtensionSetup, as BaseExtension is not instantiated for a root container
+    public PackedContainerInstaller(PackedContainerTemplate template, @Nullable PackedApplicationInstaller application, @Nullable ContainerSetup parent,
+            Class<? extends Extension<?>> installedBy) {
+        this.applicationInstaller = application;
         this.template = requireNonNull(template, "template is null");
+        this.parent = parent;
+        this.installedBy = installedBy;
     }
 
-    public FutureApplicationSetup buildLazy(Assembly assembly) {
+    @Override
+    public <T> ContainerTemplate.Installer carrierProvideConstant(Key<T> key, T constant) {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     *
+     * @throws IllegalStateException
+     *             if the container is no longer configurable
+     */
+    public void checkNotInstalledYet() {
+        if (!parent.assembly.isConfigurable()) {
+            throw new IllegalStateException("This assembly is no longer configurable");
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends ContainerConfiguration> ContainerHandle<?> install(Assembly assembly,
+            Function<? super ContainerTemplate.Installer, T> configurationCreator, Wirelet... wirelets) {
+        checkNotInstalledYet();
+        // TODO can install container (assembly.isConfigurable());
+        processBuildWirelets(wirelets);
+        ContainerSetup container = invokeAssemblyBuild(assembly);
+        return new PackedContainerHandle<>(container);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends ContainerConfiguration> ContainerHandle<T> install(Function<? super ContainerTemplate.Installer, T> configurationCreator,
+            Wirelet... wirelets) {
+        checkNotInstalledYet();
+        // TODO can install container
+        processBuildWirelets(wirelets);
+        ContainerSetup container = newContainer(parent.application, parent.assembly, configurationCreator);
+        return new PackedContainerHandle<>(container);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends ContainerConfiguration> ContainerHandle<T> installAndUseThisExtension(
+            Function<? super ContainerTemplate.Installer, T> configurationCreator, Wirelet... wirelets) {
+        ContainerHandle<T> handle = install(configurationCreator, wirelets);
+        ContainerSetup.crack(handle).useExtension(installedBy, null);
+        return handle;
     }
 
     /**
@@ -150,43 +149,47 @@ public abstract non-sealed class PackedContainerInstaller implements ContainerTe
      *
      * @param assembly
      *            assembly representing the new container
-     * @param wirelets
-     *            optional wirelets
      * @return the new container
      */
-    public ContainerSetup buildNow(Assembly assembly) {
+    public ContainerSetup invokeAssemblyBuild(Assembly assembly) {
         requireNonNull(assembly, "assembly is null");
-
         AssemblySetup s;
-
-        // Prepare the carrier for setting the build process for the thread
-        Carrier c = ScopedValue.where(PackedBuildProcess.VAR, new PackedBuildProcess());
-
         try {
-            s = c.call(() -> {
-                try {
-                    // Calls package private build(PackedContainerBuilder builder)
-                    return (AssemblySetup) MH_ASSEMBLY_BUILD.invokeExact(assembly, this);
-                } catch (Throwable e) {
-                    throw ThrowableUtil.exceptionOrUndeclared(e);
-                }
-            });
+            // Calls package private build(PackedContainerBuilder builder)
+            s = (AssemblySetup) MH_ASSEMBLY_BUILD.invokeExact(assembly, this);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
-
         return s.container;
+
     }
 
-    public abstract BuildGoal goal();
+    public <T> ContainerTemplate.Installer localConsume(ContainerLocal<T> local, Consumer<T> action) {
+//        PackedAbstractContainerLocal<?> cl = (PackedAbstractContainerLocal<?>) local;
 
-    public abstract LifecycleKind lifetimeKind();
+//        cl.g
+//        action.accept((T) cl.get(this));
+//        return this;
+        throw new UnsupportedOperationException();
+    }
 
-    ContainerSetup newContainer(PackedContainerInstaller pcb, ApplicationSetup application, AssemblySetup assembly,
+    /** {@inheritDoc} */
+    @Override
+    public <T> ContainerTemplate.Installer localSet(ContainerLocal<T> local, T value) {
+        locals.put((PackedContainerLocal<?>) local, value);
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ContainerTemplate.Installer named(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public ContainerSetup newContainer(ApplicationSetup application, AssemblySetup assembly,
             Function<? super ContainerTemplate.Installer, ? extends ContainerConfiguration> newConfiguration) {
-        // All wirelets have been processed when we get here
-
-        // Create the new container using this builder
+        // Create the new container using this installer
         ContainerSetup container = new ContainerSetup(this, application, assembly);
 
         // Initializes the name of the container
@@ -233,12 +236,12 @@ public abstract non-sealed class PackedContainerInstaller implements ContainerTe
                 }
             }
         }
-//        this.name =
         container.node.name = n;
 
-        pcb.container = container;
-            ContainerConfiguration apply = newConfiguration.apply(pcb);
-            container.initConfiguration(apply);
+        this.container = container;
+
+        ContainerConfiguration cc = newConfiguration.apply(this);
+        container.initConfiguration(cc);
 
         // BaseExtension is automatically used by every container
         ExtensionSetup.install(BaseExtension.class, container, null);
@@ -248,12 +251,19 @@ public abstract non-sealed class PackedContainerInstaller implements ContainerTe
 
     // Er her fordi den skal fixes paa lang sigt
     ContainerSetup newContainer(AssemblySetup assembly) {
-        ContainerSetup cs = switch (this) {
-        case LeafContainerBuilder installer -> installer.newContainer(this, installer.parent.application, assembly, ContainerConfiguration::new);
-        default -> new ApplicationSetup(this, assembly).container;
-        };
-        this.container = cs;
-        return cs;
+        if (applicationInstaller == null) {
+            // ContainerConfiguration?? Hvor skal vi styre det
+            return this.container = newContainer(parent.application, assembly, ContainerConfiguration::new);
+        } else {
+            return this.container = applicationInstaller.newApplication(assembly).container;
+        }
+    }
+
+    /**
+     * @return
+     */
+    public ContainerSetup newHandleFromConfiguration() {
+        return requireNonNull(container);
     }
 
     /**
@@ -278,11 +288,25 @@ public abstract non-sealed class PackedContainerInstaller implements ContainerTe
         }
     }
 
-    /**
-     * @return
-     */
-    public ContainerSetup newHandleFromConfiguration() {
-        return requireNonNull(container);
+    /** {@inheritDoc} */
+    @Override
+    public ContainerTemplate.Installer specializeMirror(Supplier<? extends ContainerMirror> supplier) {
+        checkNotInstalledYet();
+        this.mirrorSupplier = supplier;
+        return this;
+    }
+
+    public static PackedContainerInstaller of(PackedContainerTemplate template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
+            @Nullable ContainerSetup parent) {
+        PackedContainerInstaller pcb = new PackedContainerInstaller(template, null, parent, installedBy);
+
+        for (PackedContainerTemplatePack b : pcb.template.links().packs) {
+            if (b.onUse() != null) {
+                b.onUse().accept(pcb);
+            }
+//            b.build(pcb);
+        }
+        return pcb;
     }
 
 }

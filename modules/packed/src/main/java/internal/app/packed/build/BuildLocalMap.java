@@ -22,8 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 import app.packed.util.Nullable;
+import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.container.ApplicationSetup;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -32,12 +32,12 @@ import internal.app.packed.container.ExtensionSetup;
  * A map of component locals. We typically have one shared for the whole applications
  */
 // The implementation is not super clean
-public final class PackedLocalMap {
+public final class BuildLocalMap {
 
     /** This map containing every local. */
     private final ConcurrentHashMap<LocalKey, Object> locals = new ConcurrentHashMap<>();
 
-    public <T> T get(PackedBuildLocal<?, T> local, KeyAndLocalMapSource key) {
+    public <T> T get(PackedBuildLocal<?, T> local, BuildLocalSource key) {
         requireNonNull(local, "local is null");
         T t = getNullable(local, key);
         if (t == null) {
@@ -83,7 +83,7 @@ public final class PackedLocalMap {
 
     private record LocalKey(PackedBuildLocal<?, ?> local, Object key) {}
 
-    public sealed interface KeyAndLocalMapSource permits ContainerSetup, BeanSetup, AssemblySetup, ApplicationSetup, ExtensionSetup {
-        PackedLocalMap locals();
+    public sealed interface BuildLocalSource permits ContainerSetup, BeanSetup, AssemblySetup, ApplicationSetup, ExtensionSetup {
+        BuildLocalMap locals();
     }
 }

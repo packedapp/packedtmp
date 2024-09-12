@@ -13,19 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.operation;
+package internal.app.packed.util.notused;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 /**
  *
  */
-// Need to go deep into operations again, contexts, ect. Before work can continue on this
-public interface OperationTemplateNew {
+public final class SimpleMultiMap<K, V> {
 
-    static OperationTemplateNew.Builder builder() {
-        throw new UnsupportedOperationException();
+    private final HashMap<K, List<V>> map = new HashMap<>();
+
+    public boolean containsKey(Object key) {
+        return map.containsKey(key);
     }
 
-    interface Builder {
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
 
+    public Set<K> keySet() {
+        return map.keySet();
+    }
+
+    public int size() {
+        return map.size();
     }
 }

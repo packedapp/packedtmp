@@ -20,13 +20,13 @@ import java.lang.annotation.Annotation;
 import app.packed.assembly.Assembly;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerLocal;
 import app.packed.container.Wirelet;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.FrameworkExtension;
 import app.packed.namespace.NamespaceTemplate;
-import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.container.ContainerTemplate;
 
 /**
@@ -91,7 +91,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
     // Lifetime must have at least 1 CliCommand
     public void newContainer(Assembly assembly, Wirelet... wirelets) {
-        newContainer().build(assembly, ContainerConfiguration::new, wirelets);
+        newContainer().install(assembly, ContainerConfiguration::new, wirelets);
     }
 
     public ContainerConfiguration newContainer(Wirelet... wirelets) {

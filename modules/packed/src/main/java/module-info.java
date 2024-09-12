@@ -22,11 +22,9 @@ module app.packed {
     exports app.packed.util;
 
     // temporary sandbox thingies
-    exports sandbox.extension.bean;
     exports sandbox.extension.container;
     exports internal.app.packed.context.publish;
     exports sandbox.extension.operation;
-    exports sandbox.extension.sandbox;
 
     /* Special support for packed-devtools */
     uses internal.app.packed.integration.devtools.PackedDevToolsIntegration;

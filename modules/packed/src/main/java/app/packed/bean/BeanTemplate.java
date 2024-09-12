@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.bean;
+package app.packed.bean;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -23,21 +23,16 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanKind;
-import app.packed.bean.BeanLocal;
-import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanSourceKind;
 import app.packed.operation.Op;
 import internal.app.packed.bean.PackedBeanInstaller;
+import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.context.publish.ContextTemplate;
-import internal.app.packed.lifetime.PackedBeanTemplate;
 import sandbox.extension.application.LifetimeTemplate;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
- * A bean template is a reusable configuration that defines how a specific type of bean works. A template must always be
- * specified when an extension installs a bean on behalf of the user or another extension.
+ * A bean template is a immutable reusable configuration object that defines how a specific bean should behave. A
+ * template must always be specified when an extension installs a bean on behalf of the user or another extension.
  * <p>
  * using when installating new beans using {@link app.packed.extension.BaseExtensionPoint#beanBuilder(BeanTemplate)} or
  * {@link app.packed.extension.BaseExtensionPoint#beanInstallerForExtension(BeanTemplate, app.packed.extension.ExtensionPoint.UseSite)}.
@@ -83,6 +78,13 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     /** {@return a descriptor for this template} */
     BeanTemplate.Descriptor descriptor();
 
+    /**
+     * Reconfigures this template.
+     *
+     * @param configure
+     *            the action
+     * @return the reconfigured template
+     */
     BeanTemplate reconfigure(Consumer<? super Configurator> configure);
 
     static BeanTemplate of(BeanKind kind, Consumer<? super Configurator> configure) {
@@ -171,17 +173,21 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
         Configurator lifetime(LifetimeTemplate lifetime);
 
         /**
-         * Sets the default value of the specified bean local. This value will be applied everytime the template is used for
-         * installing a bean.
+         * Sets the default value of the specified bean local. This value will be applied every time the template is used to
+         * install a bean.
          *
-         * The bean local can be overridden when installing by {@link Installer#setLocal(BeanLocal, Object)}.
+         * The value set by this method can be overridden when installing a specific bean by using
+         * {@link Installer#setLocal(BeanLocal, Object)}.
          *
          * @param <T>
-         * @param beanLocal
+         *            the type of value
+         * @param local
+         *            the bean local to set
          * @param value
-         * @return
+         *            the value to set
+         * @return this configurator
          */
-        <T> Configurator localSet(BeanLocal<T> beanLocal, T value);
+        <T> Configurator localSet(BeanLocal<T> local, T value);
     }
 
     /** A descriptor for a BeanTemplate. This class is mainly used for informational purposes. */
@@ -258,10 +264,13 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
         <T extends BeanConfiguration> BeanHandle<T> installInstance(Object instance, Function<? super BeanTemplate.Installer, T> configurationCreator);
 
         /**
-         * Installs the bean with no source.
+         * Creates a new bean without a source.
          *
-         * @return a handle for the new bean
-         * @see #installSourceless(Function)
+         * @return a bean handle representing the new bean
+         *
+         * @throws IllegalStateException
+         *             if this builder was created with a base template other than {@link BeanTemplate#STATIC}
+         * @see app.packed.bean.BeanSourceKind#SOURCELESS
          */
         <T extends BeanConfiguration> BeanHandle<T> installSourceless(Function<? super BeanTemplate.Installer, T> configurationCreator);
 

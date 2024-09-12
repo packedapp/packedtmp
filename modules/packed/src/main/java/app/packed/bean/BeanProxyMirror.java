@@ -19,8 +19,8 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Stream;
 
-import app.packed.build.CodegenGenerated;
 import app.packed.build.BuildMirror;
+import app.packed.build.CodegenGenerated;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
 import app.packed.util.AnnotationList;

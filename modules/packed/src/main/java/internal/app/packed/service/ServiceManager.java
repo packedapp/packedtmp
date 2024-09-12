@@ -35,7 +35,8 @@ import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
+import internal.app.packed.operation.PackedOperationType.BeanAccessOperationSetup;
+import internal.app.packed.operation.PackedOperationType.MemberOperationSetup;
 import internal.app.packed.util.CollectionUtil;
 
 /** Manages services in a single container. */
@@ -94,14 +95,14 @@ public final class ServiceManager {
             OperationSetup o = n.operation;
 
             int accessor = -1;
-            if (o instanceof OperationSetup.BeanAccessOperationSetup) {
+            if (o.pot instanceof BeanAccessOperationSetup) {
                 accessor = o.bean.lifetimeStoreIndex;
                 // test if prototype bean
                 if (accessor == -1 && o.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
                     o = o.bean.operations.all.get(0);
                 }
             }
-            if (!(o instanceof MemberOperationSetup) && o.bean.beanSourceKind == BeanSourceKind.INSTANCE) {
+            if (!(o.pot instanceof MemberOperationSetup) && o.bean.beanSourceKind == BeanSourceKind.INSTANCE) {
                 // It is a a constant
                 mh = MethodHandles.constant(Object.class, o.bean.beanSource);
                 mh = MethodHandles.dropArguments(mh, 0, ExtensionContext.class);

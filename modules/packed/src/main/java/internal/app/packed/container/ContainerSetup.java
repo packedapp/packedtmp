@@ -31,6 +31,7 @@ import java.util.function.Supplier;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
@@ -39,9 +40,9 @@ import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
-import internal.app.packed.build.PackedBuildLocal;
-import internal.app.packed.build.PackedLocalMap;
-import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
+import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.build.BuildLocalMap;
+import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.AbstractTreeMirror;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.Mirrorable;
@@ -57,12 +58,11 @@ import internal.app.packed.util.NamedTreeNode;
 import internal.app.packed.util.TreeNode;
 import internal.app.packed.util.TreeNode.ActualNode;
 import internal.app.packed.util.types.ClassUtil;
-import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.operation.OperationHandle;
 
 /** The internal configuration of a container. */
 public final class ContainerSetup extends ComponentSetup
-        implements PackedComponentTwin, ActualNode<ContainerSetup> , ContextualizedElementSetup , Mirrorable<ContainerMirror> , KeyAndLocalMapSource {
+        implements PackedComponentTwin , ActualNode<ContainerSetup> , ContextualizedElementSetup , Mirrorable<ContainerMirror> , BuildLocalSource {
 
     /** A magic initializer for {@link ContainerMirror}. */
     public static final MagicInitializer<ContainerSetup> MIRROR_INITIALIZER = MagicInitializer.of(ContainerMirror.class);
@@ -115,29 +115,28 @@ public final class ContainerSetup extends ComponentSetup
     /**
      * Create a new container.
      *
-     * @param builder
-     *            the container builder
+     * @param installer
+     *            the container installer
      * @param assembly
      *            the assembly the defines the container
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ContainerSetup(PackedContainerInstaller builder, ApplicationSetup application, AssemblySetup assembly) {
-        this.node = new NamedTreeNode<>(builder.parent, this);
+    ContainerSetup(PackedContainerInstaller installer, ApplicationSetup application, AssemblySetup assembly) {
+        this.node = new NamedTreeNode<>(installer.parent, this);
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
-        this.mirrorSupplier = builder.containerMirrorSupplier;
+        this.mirrorSupplier = installer.mirrorSupplier;
 
-        // I think we need to check application/assembly scope
-        builder.locals.forEach((p, o) -> locals().set((PackedBuildLocal) p, this, o));
+        installer.locals.forEach((p, o) -> locals().set((PackedContainerLocal) p, this, o));
 
-        if (builder.template.kind() == PackedContainerKind.PARENT_LIFETIME) {
+        if (installer.template.kind() == PackedContainerKind.PARENT_LIFETIME) {
             this.lifetime = node.parent.lifetime;
         } else {
-            this.lifetime = new ContainerLifetimeSetup(builder, this, null);
+            this.lifetime = new ContainerLifetimeSetup(installer, this, null);
         }
         this.sm = new ServiceManager(null, this);
         // If a name has been set using a wirelet, we ignore calls to #named(String)
-        this.ignoreRename = builder.nameFromWirelet != null;
+        this.ignoreRename = installer.nameFromWirelet != null;
     }
 
     /**
@@ -238,7 +237,7 @@ public final class ContainerSetup extends ComponentSetup
 
     /** {@inheritDoc} */
     @Override
-    public PackedLocalMap locals() {
+    public BuildLocalMap locals() {
         return application.locals();
     }
 
@@ -388,7 +387,7 @@ public final class ContainerSetup extends ComponentSetup
         return ((PackedContainerHandle<?>) handle).container();
     }
 
-    public static ContainerSetup crack(ContainerLocal.ContainerLocalAccessor accessor) {
+    public static ContainerSetup crack(ContainerLocal.Accessor accessor) {
         return switch (accessor) {
         case ContainerConfiguration bc -> crack(bc);
         case ContainerHandle<?> bc -> crack(bc);

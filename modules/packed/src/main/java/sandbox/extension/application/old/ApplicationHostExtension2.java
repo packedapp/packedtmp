@@ -18,14 +18,14 @@ package sandbox.extension.application.old;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanTemplate;
 import app.packed.extension.FrameworkExtension;
 import app.packed.operation.Op;
+import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.context.publish.ContextTemplate;
-import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
-import sandbox.extension.bean.BeanHandle;
-import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
@@ -43,7 +43,7 @@ class ApplicationHostExtension2 extends FrameworkExtension<ApplicationHostExtens
 
     static final ContextTemplate CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationLaunchContext.class, ApplicationLaunchContext.class);
 
-    static final OperationTemplate ot = OperationTemplate.raw().withContext(CIT).returnTypeObject();
+    static final OperationTemplate ot = OperationTemplate.raw().reconfigure(c -> c.withContext(CIT).returnTypeObject());
 
     static final BeanTemplate BLT = new PackedBeanTemplate(BeanKind.UNMANAGED).withOperationTemplate(ot);
 

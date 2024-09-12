@@ -19,7 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Supplier;
 
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.build.BuildLocal;
+import app.packed.extension.BeanElement;
+import app.packed.extension.BeanIntrospector;
 import internal.app.packed.bean.PackedBeanLocal;
 
 /**
@@ -41,7 +44,7 @@ import internal.app.packed.bean.PackedBeanLocal;
  * @see app.packed.extension.bean.BeanBuilder#setLocal(BeanLocal, Object)
  * @see ContainerLocal
  */
-public sealed interface BeanLocal<T> extends BuildLocal<BeanLocalAccessor, T> permits PackedBeanLocal {
+public sealed interface BeanLocal<T> extends BuildLocal<Accessor, T> permits PackedBeanLocal {
 
     /**
      * Creates a new bean local without any initial value supplier.
@@ -68,4 +71,7 @@ public sealed interface BeanLocal<T> extends BuildLocal<BeanLocalAccessor, T> pe
         requireNonNull(initialValueSupplier);
         return new PackedBeanLocal<>(initialValueSupplier);
     }
+
+    /** An element where bean local values can be stored and loaded. */
+    sealed interface Accessor permits BeanConfiguration, BeanElement, BeanHandle, BeanIntrospector, BeanMirror {}
 }

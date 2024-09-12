@@ -16,9 +16,9 @@
 package app.packed.component;
 
 import app.packed.application.ApplicationHandle;
+import app.packed.bean.BeanHandle;
+import app.packed.container.ContainerHandle;
 import app.packed.namespace.NamespaceHandle;
-import sandbox.extension.bean.BeanHandle;
-import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.operation.OperationHandle;
 
 /**

@@ -15,9 +15,9 @@
  */
 package sandbox.service;
 
+import app.packed.bean.BeanHandle;
 import app.packed.extension.BindableVariable;
 import app.packed.util.Key;
-import sandbox.extension.bean.BeanHandle;
 import sandbox.extension.operation.OperationHandle;
 
 // ServiceDomain? Something where keys are unique

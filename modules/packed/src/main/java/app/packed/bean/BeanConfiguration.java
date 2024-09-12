@@ -9,6 +9,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.build.BuildLocal;
 import app.packed.build.action.BuildActionable;
 import app.packed.component.Authority;
@@ -19,8 +20,6 @@ import app.packed.operation.OperationConfiguration;
 import app.packed.util.Key;
 import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanInstaller;
-import sandbox.extension.bean.BeanHandle;
-import sandbox.extension.bean.BeanTemplate;
 
 /**
  * The configuration of a bean.
@@ -29,20 +28,20 @@ import sandbox.extension.bean.BeanTemplate;
  * {@link app.packed.extension.BaseExtension#install(Class)}. It can also, for example, be obtained via
  * {@link app.packed.container.ContainerConfiguration#beans()}.
  */
-public non-sealed class BeanConfiguration extends ComponentConfiguration implements BeanLocalAccessor {
+public non-sealed class BeanConfiguration extends ComponentConfiguration implements Accessor {
 
     /** The bean handle. We don't store BeanSetup directly because BeanHandle contains a lot of useful logic. */
     private final PackedBeanHandle<?> handle;
 
     /**
-     * Create a new bean configuration using the specified builder.
+     * Create a new bean configuration using the specified installer.
      *
-     * @param builder
-     *            the bean handle builder
+     * @param installer
+     *            the bean installer
      */
     public BeanConfiguration(BeanTemplate.Installer installer) {
-        requireNonNull(installer, "builder is null");
-        this.handle = ((PackedBeanInstaller) installer).newHandleFromConfiguration();
+        requireNonNull(installer, "installer is null");
+        this.handle = ((PackedBeanInstaller) installer).initializeBeanConfiguration();
     }
 
     /**

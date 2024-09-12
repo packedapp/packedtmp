@@ -20,18 +20,38 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.container.Wirelet;
+import app.packed.extension.Extension;
+import app.packed.lifetime.LifecycleKind;
 import app.packed.util.Key;
+import app.packed.util.Nullable;
+import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.container.ContainerTemplate;
 import sandbox.extension.container.ContainerTemplateLink;
 import sandbox.extension.operation.OperationTemplate;
 
 /** Implementation of {@link ContainerTemplate}. */
-public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, PackedContainerTemplatePackList links, Class<?> resultType)
-        implements ContainerTemplate {
+public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, PackedContainerTemplatePackList links, Class<?> resultType,
+        LifecycleKind lifecycleKind) implements ContainerTemplate {
 
     public PackedContainerTemplate(PackedContainerKind kind) {
         this(kind, void.class);
+    }
+
+    PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, PackedContainerTemplatePackList links, Class<?> resultType) {
+        this(kind, holderClass, links, resultType, LifecycleKind.UNMANAGED);
+    }
+
+    public PackedContainerInstaller newInstaller(Class<? extends Extension<?>> installedBy, ApplicationSetup application, @Nullable ContainerSetup parent) {
+        PackedContainerInstaller pcb = new PackedContainerInstaller(this, null, parent, installedBy);
+
+        for (PackedContainerTemplatePack b : pcb.template.links().packs) {
+            if (b.onUse() != null) {
+                b.onUse().accept(pcb);
+            }
+//            b.build(pcb);
+        }
+        return pcb;
     }
 
     /** {@inheritDoc} */
@@ -58,6 +78,16 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
             this.pbt = pbt;
         }
 
+        /** {@inheritDoc} */
+        @Override
+        public PackedContainerTemplateConfigurator carrierType(Class<?> guest) {
+            // I don't think we are going to do any checks here?
+            // Well not interface, annotation, abstract class, ...
+            // All lifetime operation will change...
+            this.pbt = new PackedContainerTemplate(pbt.kind, guest, pbt.links, pbt.resultType);
+            return this;
+        }
+
         // expects results. Maa ogsaa tage en Extension...
         public PackedContainerTemplateConfigurator expectResult(Class<?> resultType) {
             this.pbt = new PackedContainerTemplate(pbt.kind, pbt.holderClass, pbt.links, resultType);
@@ -66,11 +96,16 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
 
         /** {@inheritDoc} */
         @Override
-        public PackedContainerTemplateConfigurator carrierType(Class<?> guest) {
-            // I don't think we are going to do any checks here?
-            // Well not interface, annotation, abstract class, ...
-            // All lifetime operation will change...
-            this.pbt = new PackedContainerTemplate(pbt.kind, guest, pbt.links, pbt.resultType);
+        public PackedContainerTemplateConfigurator lifetimeOperationAddContext(int index, ContextTemplate template) {
+            throw new UnsupportedOperationException();
+        }
+
+        public Wirelet wirelet() {
+            return null;
+        }
+
+        public PackedContainerTemplateConfigurator withKind(PackedContainerKind kind) {
+            this.pbt = new PackedContainerTemplate(kind, pbt.holderClass, pbt.links, pbt.resultType);
             return this;
         }
 
@@ -82,23 +117,8 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
             return this;
         }
 
-        public PackedContainerTemplateConfigurator withKind(PackedContainerKind kind) {
-            this.pbt = new PackedContainerTemplate(kind, pbt.holderClass, pbt.links, pbt.resultType);
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public PackedContainerTemplateConfigurator lifetimeOperationAddContext(int index, ContextTemplate template) {
-            throw new UnsupportedOperationException();
-        }
-
         public PackedContainerTemplateConfigurator withWirelets(Wirelet... wirelets) {
             throw new UnsupportedOperationException();
-        }
-
-        public Wirelet wirelet() {
-            return null;
         }
     }
 

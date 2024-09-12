@@ -17,7 +17,7 @@ package sandbox.extension.operation;
 
 import java.lang.invoke.VarHandle.AccessMode;
 
-import sandbox.extension.bean.BeanTemplate;
+import app.packed.bean.BeanTemplate;
 
 /**
  *

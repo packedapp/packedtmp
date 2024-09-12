@@ -22,11 +22,11 @@ import java.util.function.Supplier;
 import app.packed.container.ContainerLocal;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
+import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.build.PackedBuildLocal;
-import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
 
 /** Implementation of {@link ContainerLocal}. */
-public final class PackedContainerLocal<T> extends PackedBuildLocal<ContainerLocal.ContainerLocalAccessor, T> implements ContainerLocal<T> {
+public final class PackedContainerLocal<T> extends PackedBuildLocal<ContainerLocal.Accessor, T> implements ContainerLocal<T> {
 
     public PackedContainerLocal(@Nullable Supplier<? extends T> initialValueSupplier) {
         super(initialValueSupplier);
@@ -34,7 +34,7 @@ public final class PackedContainerLocal<T> extends PackedBuildLocal<ContainerLoc
 
     /** {@inheritDoc} */
     @Override
-    protected KeyAndLocalMapSource extract(ContainerLocal.ContainerLocalAccessor accessor) {
+    protected BuildLocalSource extract(ContainerLocal.Accessor accessor) {
         requireNonNull(accessor, "accessor is null");
         return ContainerSetup.crack(accessor);
     }

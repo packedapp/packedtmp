@@ -10,14 +10,14 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.build.action.BuildActionable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentHandle;
-import app.packed.container.ContainerLocal.ContainerLocalAccessor;
+import app.packed.container.ContainerLocal.Accessor;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifecycleKind;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerHandle;
+import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.util.types.ClassUtil;
 import sandbox.extension.container.ContainerTemplate;
 
@@ -28,7 +28,7 @@ import sandbox.extension.container.ContainerTemplate;
  */
 // Could let it be extendable. But it would only be usable through methods on extensions. Although
 // An assembly could return an instance of it
-public non-sealed class ContainerConfiguration extends ComponentConfiguration implements ContainerLocalAccessor {
+public non-sealed class ContainerConfiguration extends ComponentConfiguration implements Accessor {
 
     /**
      * A marker configuration object indicating that an assembly (or composer) has already been used for building a

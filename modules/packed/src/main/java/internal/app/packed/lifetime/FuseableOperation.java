@@ -22,6 +22,7 @@ import java.util.ArrayDeque;
 import java.util.List;
 
 import app.packed.util.Nullable;
+import internal.app.packed.operation.PackedOperationTemplate;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 
@@ -30,14 +31,14 @@ import sandbox.extension.operation.OperationTemplate;
  */
 public final class FuseableOperation {
 
-    public final OperationTemplate template;
+    public final PackedOperationTemplate template;
 
     public final ArrayDeque<OperationHandle> operations = new ArrayDeque<>();
 
     public final ArrayDeque<MethodHandle> methodHandles = new ArrayDeque<>();
 
     public FuseableOperation(OperationTemplate template) {
-        this.template = requireNonNull(template);
+        this.template = (PackedOperationTemplate ) requireNonNull(template);
     }
 
     static List<FuseableOperation> of(@Nullable List<OperationTemplate> templates) {

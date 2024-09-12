@@ -17,11 +17,7 @@ package app.packed.component;
 
 import app.packed.build.action.BuildActionable;
 
-/**
- * The abstract configuration of a component.
- */
-
-// Children??? Is it hierarchical??? May be, but you shouldn't get access to components outside your assembly
+/** The abstract configuration of a component. */
 public abstract class ComponentConfiguration {
 
     /**

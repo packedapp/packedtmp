@@ -53,7 +53,7 @@ import internal.app.packed.container.PackedContainerInstaller;
  * This class cannot be extended directly, you would typically extend {@link BaseAssembly} instead.
  */
 @AssemblySecurityModel(AssemblySecurityModel.Default.class)
-public sealed abstract class Assembly implements BuildCodeSource , ApplicationLocal.ApplicationLocalAccessor
+public sealed abstract class Assembly implements BuildCodeSource , ApplicationLocal.Accessor
         permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
 
     /**

@@ -28,6 +28,9 @@
     <version.test.junit>5.9.2</version.test.junit>
     <version.test.jmh>1.36</version.test.jmh>
     
+    <maven.compiler.source>22</maven.compiler.source>
+    <maven.compiler.target>22</maven.compiler.target>
+    
     <!-- Pluging Versions -->
     <version.plugin.jacoco>0.8.8</version.plugin.jacoco>
   </properties>
@@ -77,13 +80,10 @@
   <build>
     <!-- <directory>${project.basedir}/target.tmp</directory> -->
     <plugins>
-      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>21</source>
-          <target>21</target>
           <compilerArgument>-Xlint:deprecation</compilerArgument>
           <compilerArgument>-Xlint:unchecked</compilerArgument>
           <compilerArgument>--enable-preview</compilerArgument>

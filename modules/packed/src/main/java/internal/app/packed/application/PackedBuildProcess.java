@@ -13,22 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package internal.app.packed.application;
+
+import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.atomic.AtomicLong;
+
+import app.packed.build.BuildProcess;
 
 /**
  *
  */
-public final class PackedBuildProcess {
-    static final ScopedValue<PackedBuildProcess> VAR = ScopedValue.newInstance();
-
+public final class PackedBuildProcess implements BuildProcess {
     final static AtomicLong PROCESS_ID_BUILDER = new AtomicLong();
 
-    public final long processId;
+    static final ScopedValue<PackedBuildProcess> VAR = ScopedValue.newInstance();
 
-    PackedBuildProcess() {
+    public final PackedApplicationInstaller application;
+
+    private final long processId;
+
+    Thread thread;
+
+    PackedBuildProcess(PackedApplicationInstaller application) {
         this.processId = PROCESS_ID_BUILDER.incrementAndGet();
+        this.application = requireNonNull(application);
+        this.thread = Thread.currentThread();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long processId() {
+        return processId;
     }
 
     public static PackedBuildProcess get() {

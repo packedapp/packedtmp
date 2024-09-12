@@ -5,9 +5,13 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodType;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import app.packed.context.Context;
 import app.packed.extension.ExtensionContext;
+import app.packed.operation.OperationType;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.operation.OperationTemplate;
@@ -23,7 +27,8 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
     final int extensionContext;
 
-    boolean ignoreReturn;
+    final boolean ignoreReturn;
+
     final MethodType methodType;
 
     public PackedOperationTemplate(Map<Class<? extends Context<?>>, PackedContextTemplate> contexts, int extensionContext, int beanInstanceIndex,
@@ -38,16 +43,38 @@ public final class PackedOperationTemplate implements OperationTemplate {
         this.ignoreReturn = ignoreReturn;
     }
 
+    PackedOperationTemplate appendBeanInstance(Class<?> beanClass) {
+        requireNonNull(beanClass, "beanClass is null");
+        if (beanInstanceIndex != -1) {
+            throw new UnsupportedOperationException("Already has a bean instance at index " + beanInstanceIndex);
+        }
+        int index = extensionContext == -1 ? 0 : 1;
+        return new PackedOperationTemplate(contexts, extensionContext, index, methodType, ignoreReturn);
+    }
+
     /** {@inheritDoc} */
     @Override
-    public OperationTemplate returnIgnore() {
+    public Descriptor descriptor() {
+        return new PackedOperationTemplateDescriptor(this);
+    }
+
+    public PackedOperationInstaller newInstaller(OperationType operationType, BeanSetup bean, ExtensionSetup operator) {
+        return new PackedOperationInstaller(this, operationType, bean, operator);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedOperationTemplate reconfigure(Consumer<? super Configurator> configure) {
+        return PackedOperationTemplate.configure(this, configure);
+    }
+
+    PackedOperationTemplate returnIgnore() {
         MethodType mt = methodType.changeReturnType(void.class);
         return new PackedOperationTemplate(contexts, extensionContext, beanInstanceIndex, mt, true);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public OperationTemplate returnType(Class<?> returnType) {
+    public PackedOperationTemplate returnType(Class<?> returnType) {
         requireNonNull(returnType, "returnType is null");
         MethodType mt = methodType.changeReturnType(returnType);
         return new PackedOperationTemplate(contexts, extensionContext, beanInstanceIndex, mt, ignoreReturn);
@@ -60,19 +87,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public PackedOperationTemplate appendBeanInstance(Class<?> beanClass) {
-        requireNonNull(beanClass, "beanClass is null");
-        if (beanInstanceIndex != -1) {
-            throw new UnsupportedOperationException("Already has a bean instance at index " + beanInstanceIndex);
-        }
-        int index = extensionContext == -1 ? 0 : 1;
-        return new PackedOperationTemplate(contexts, extensionContext, index, methodType, ignoreReturn);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public OperationTemplate withContext(ContextTemplate context) {
+    public PackedOperationTemplate withContext(ContextTemplate context) {
         Map<Class<? extends Context<?>>, PackedContextTemplate> m = new HashMap<>(contexts);
         if (m.putIfAbsent(context.contextClass(), (PackedContextTemplate) context) != null) {
             throw new IllegalArgumentException("This template already contains the context " + context.contextClass());
@@ -80,6 +95,50 @@ public final class PackedOperationTemplate implements OperationTemplate {
         m = Map.copyOf(m);
         MethodType mt = methodType.appendParameterTypes(context.contextImplementationClass());
         return new PackedOperationTemplate(m, extensionContext, beanInstanceIndex, mt, ignoreReturn);
+    }
+
+    public static PackedOperationTemplate configure(PackedOperationTemplate template, Consumer<? super Configurator> configure) {
+        PackedOperationConfigurator c = new PackedOperationConfigurator(template);
+        configure.accept(c);
+        return c.template;
+    }
+
+    public static final class PackedOperationConfigurator implements OperationTemplate.Configurator {
+
+        /** The template we are configuring. */
+        private PackedOperationTemplate template;
+
+        private PackedOperationConfigurator(PackedOperationTemplate template) {
+            this.template = template;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Configurator appendBeanInstance(Class<?> beanClass) {
+            this.template = template.appendBeanInstance(beanClass);
+            return this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Configurator returnIgnore() {
+            this.template = template.returnIgnore();
+            return this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Configurator returnType(Class<?> type) {
+            this.template = template.returnType(type);
+            return this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Configurator withContext(ContextTemplate context) {
+            this.template = template.withContext(context);
+            return this;
+        }
     }
 
     public record PackedOperationTemplateDescriptor(PackedOperationTemplate pot) implements OperationTemplate.Descriptor {
@@ -103,12 +162,5 @@ public final class PackedOperationTemplate implements OperationTemplate {
         public MethodType invocationType() {
             return pot.methodType;
         }
-
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Descriptor descriptor() {
-        return new PackedOperationTemplateDescriptor(this);
     }
 }

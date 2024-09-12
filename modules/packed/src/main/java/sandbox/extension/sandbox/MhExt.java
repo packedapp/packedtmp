@@ -20,14 +20,14 @@ import java.lang.invoke.MethodHandle;
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanTemplate;
 import app.packed.bean.ComputedConstant;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.lifetime.OnInitialize;
-import sandbox.extension.bean.BeanHandle;
-import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.operation.OperationHandle;
 
 /**

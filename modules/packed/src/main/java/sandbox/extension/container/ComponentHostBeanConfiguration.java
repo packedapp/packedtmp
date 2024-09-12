@@ -21,7 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 
 import app.packed.bean.BeanConfiguration;
-import sandbox.extension.bean.BeanTemplate.Installer;
+import app.packed.bean.BeanTemplate.Installer;
 
 /**
  *

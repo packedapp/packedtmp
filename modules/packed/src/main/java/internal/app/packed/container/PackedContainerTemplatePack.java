@@ -28,7 +28,7 @@ import sandbox.extension.container.ContainerTemplateLink;
  * Represent a communication channel between a parent container lifetime and a child container lifetime. This class is
  * exposed as {@link ContainerLifetimeChannel}.
  */
-public record PackedContainerTemplatePack(Class<? extends Extension<?>> extension, Consumer<? super LeafContainerBuilder> onUse,
+public record PackedContainerTemplatePack(Class<? extends Extension<?>> extension, Consumer<? super PackedContainerInstaller> onUse,
         Map<Key<?>, PackedContainerTemplatePack.KeyFragment> services) implements ContainerTemplateLink {
 
     /** {@inheritDoc} */
@@ -50,7 +50,7 @@ public record PackedContainerTemplatePack(Class<? extends Extension<?>> extensio
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public PackedContainerTemplatePack withUse(Consumer<? super LeafContainerBuilder> action) {
+    public PackedContainerTemplatePack withUse(Consumer<? super PackedContainerInstaller> action) {
         return new PackedContainerTemplatePack(extension(), onUse == null ? action : onUse.andThen((Consumer) action), services);
     }
 

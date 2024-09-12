@@ -13,15 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package internal.app.packed.util.notused;
 
-import app.packed.extension.BeanElement;
-import app.packed.extension.BeanIntrospector;
-import sandbox.extension.bean.BeanHandle;
+/**
+ *
+ */
+// Like optional, but with an error context...
+// Very similar to Converter
+// Eneste problem er at vi skal have et felt til...
+// Kan ikke have en speciel type vi tester mod pga parameterizere parametere
 
-/** An entity where bean local values can be stored and retrieved. */
-// Used to be an inner interface on BeanLocal, but eclipse compiled complained on it
+// Maaske starte med at bruge den internt... For FindInjectableConstructor
+// Lad os lige gennemtaenke det..
+public class Finding<T> {
 
-// Remove BeanMirror and allow beanMirror.handle
-
-public sealed interface BeanLocalAccessor permits BeanConfiguration, BeanElement, BeanHandle, BeanIntrospector, BeanMirror {}
+}

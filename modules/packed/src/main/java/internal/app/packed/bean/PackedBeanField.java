@@ -29,8 +29,9 @@ import app.packed.util.Variable;
 import internal.app.packed.bean.BeanHookCache.HookOnFieldAnnotation;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
 import internal.app.packed.operation.PackedOperationHandle;
+import internal.app.packed.operation.PackedOperationInstaller;
+import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.util.PackedAnnotationList;
 import internal.app.packed.util.PackedVariable;
 import sandbox.extension.operation.OperationHandle;
@@ -118,7 +119,7 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
         checkConfigurable();
         MethodHandle mh = extension.scanner.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
-        template = template.returnType(field.getType());
+        template = template.reconfigure(c -> c.returnType(field.getType()));
         return newOperation(template, mh, accessMode);
     }
 
@@ -133,8 +134,10 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
 
     private PackedOperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
         OperationType ft = OperationType.fromField(field, accessMode);
-        OperationSetup operation = new MemberOperationSetup(extension.extension, extension.scanner.bean, ft, template,
-                new OperationFieldTarget(field, accessMode), mh);
+        PackedOperationInstaller poi = ((PackedOperationTemplate) template).newInstaller(ft, extension.scanner.bean, extension.extension);
+
+
+        OperationSetup operation = OperationSetup.newMemberOperationSetup(poi, new OperationFieldTarget(field, accessMode), mh);
         extension.scanner.unBoundOperations.add(operation);
         extension.scanner.bean.operations.all.add(operation);
         return operation.toHandle(extension.scanner);

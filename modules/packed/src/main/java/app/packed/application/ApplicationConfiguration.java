@@ -20,8 +20,8 @@ import java.util.function.Consumer;
 import app.packed.assembly.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentHandle;
-import internal.app.packed.container.ApplicationSetup;
-import internal.app.packed.container.PackedApplicationHandle;
+import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.application.PackedApplicationHandle;
 
 /**
  *
@@ -29,7 +29,7 @@ import internal.app.packed.container.PackedApplicationHandle;
 // By default it is configuration everywhere..
 // Maybe have a freeze()/protect() operation/
 
-public final class ApplicationConfiguration extends ComponentConfiguration implements ApplicationLocal.ApplicationLocalAccessor {
+public final class ApplicationConfiguration extends ComponentConfiguration implements ApplicationLocal.Accessor {
 
     final ApplicationSetup application;
 

@@ -20,8 +20,8 @@ import java.util.function.Supplier;
 
 import app.packed.namespace.NamespaceConfiguration;
 import app.packed.namespace.NamespaceMirror;
-import app.packed.namespace.NamespaceTwin;
 import app.packed.namespace.NamespaceTemplate;
+import app.packed.namespace.NamespaceTwin;
 
 /**
  *

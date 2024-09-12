@@ -27,13 +27,13 @@ import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerHandle;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.lifetime.OnInitialize;
 import app.packed.operation.OperationDependencyOrder;
-import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.container.ContainerTemplate;
 
 /**
@@ -62,20 +62,20 @@ public class Ddd extends BaseAssembly {
         }
     }
 
-    public static class MyEntityException extends Extension<MyEntityException> {
-        MyEntityException child;
+    public static class MyEntityExtension extends Extension<MyEntityExtension> {
+        MyEntityExtension child;
 
-        MyEntityException() {}
+        MyEntityExtension() {}
 
         public void addEntityBean(Class<?> entityBean) {
             child().base().newApplicationBean(BeanKind.MANANGED.template()).install(entityBean, BeanConfiguration::new);
         }
 
-        MyEntityException child() {
-            MyEntityException c = child;
+        MyEntityExtension child() {
+            MyEntityExtension c = child;
             if (c == null) {
                 ContainerHandle<?> h = base().newContainer(ContainerTemplate.DEFAULT).named("EntityBeans")
-                        .buildAndUseThisExtension(ContainerConfiguration::new);
+                        .installAndUseThisExtension(ContainerConfiguration::new);
                 c = child = fromHandle(h).get();
             }
             return c;
@@ -98,7 +98,7 @@ public class Ddd extends BaseAssembly {
 
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedMethodBeanTrigger(allowInvoke = true, extension = MyEntityException.class)
+    @AnnotatedMethodBeanTrigger(allowInvoke = true, extension = MyEntityExtension.class)
     public @interface MyOnInitialize {
 
         /**

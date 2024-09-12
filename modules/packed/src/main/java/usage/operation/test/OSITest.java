@@ -22,8 +22,8 @@ import java.time.LocalDateTime;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.extension.BeanTrigger.AnnotatedVariableBeanTrigger;
 import app.packed.extension.BeanIntrospector;
+import app.packed.extension.BeanTrigger.AnnotatedVariableBeanTrigger;
 import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
 import app.packed.lifetime.OnInitialize;

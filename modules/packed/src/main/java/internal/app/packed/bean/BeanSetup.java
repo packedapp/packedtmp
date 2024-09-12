@@ -15,8 +15,9 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanBuildHook;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanLocalAccessor;
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.ComputedConstant;
@@ -35,8 +36,8 @@ import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
-import internal.app.packed.build.PackedLocalMap;
-import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
+import internal.app.packed.build.BuildLocalMap;
+import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.PackedComponentTwin;
 import internal.app.packed.container.AuthoritySetup;
@@ -49,12 +50,13 @@ import internal.app.packed.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSetup.BeanAccessOperationSetup;
+import internal.app.packed.operation.PackedOperationInstaller;
+import internal.app.packed.operation.PackedOperationTemplate;
+import internal.app.packed.operation.PackedOperationType.BeanAccessOperationSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
-import sandbox.extension.bean.BeanHandle;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
@@ -63,7 +65,7 @@ import sandbox.extension.operation.OperationTemplate;
  * @implNote The reason this class does not directly implement BeanHandle is because the BeanHandle interface is
  *           parameterised.
  */
-public final class BeanSetup extends ComponentSetup implements PackedComponentTwin , ContextualizedElementSetup , KeyAndLocalMapSource {
+public final class BeanSetup extends ComponentSetup implements PackedComponentTwin , ContextualizedElementSetup , BuildLocalSource {
 
     /** A bean local for variables that use {@link app.packed.extension.BaseExtensionPoint.CodeGenerated}. */
     public static final PackedBeanLocal<Map<Key<?>, BindableVariable>> CODEGEN = new PackedBeanLocal<>(() -> new HashMap<>());
@@ -249,13 +251,16 @@ public final class BeanSetup extends ComponentSetup implements PackedComponentTw
 
     // Relative to x
     public OperationSetup instanceAccessOperation() {
-        OperationTemplate template = OperationTemplate.defaults().returnType(beanClass);
-        return new BeanAccessOperationSetup(installedBy, this, OperationType.of(beanClass), template);
+        PackedOperationTemplate template = (PackedOperationTemplate) OperationTemplate.defaults().reconfigure(c -> c.returnType(beanClass));
+        PackedOperationInstaller poi = template.newInstaller(OperationType.of(beanClass), this, installedBy);
+        // TODO fix
+        //        super.namePrefix = "InstantAccess";
+        return poi.newOperation(new BeanAccessOperationSetup());
     }
 
     /** {@return a map of locals for the bean} */
     @Override
-    public PackedLocalMap locals() {
+    public BuildLocalMap locals() {
         return container.locals();
     }
 
@@ -333,7 +338,7 @@ public final class BeanSetup extends ComponentSetup implements PackedComponentTw
      *            the accessor to extract from
      * @return the extracted bean
      */
-    public static BeanSetup crack(BeanLocalAccessor accessor) {
+    public static BeanSetup crack(Accessor accessor) {
         return switch (accessor) {
         case BeanConfiguration b -> crack(b);
         case BeanElement b -> crack(b);

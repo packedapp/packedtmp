@@ -24,12 +24,10 @@ import java.util.function.Supplier;
 import app.packed.component.ComponentHandle;
 import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionPoint;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationType;
 import internal.app.packed.context.publish.ContextualizedElement;
-import internal.app.packed.operation.PackedOperationBuilder;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /**
@@ -143,43 +141,6 @@ public sealed interface OperationHandle extends ComponentHandle, ContextualizedE
 
     /** {@return the type of this operation.} */
     OperationType type();
-
-    /**
-    *
-    */
-
-    // Source
-    //// Method/Constructor
-    //// Field -> Get/Set/Invoke
-    //// Function / Op / MethodHandle
-
-    // "Targets"
-
-    // FullOp
-    // ChildOp
-    // DelegateTo
-    // (Bounded) EmbeddedOp (Er aldrig visible...
-
-    public sealed interface Builder permits PackedOperationBuilder {
-
-        OperationHandle build(OperationTemplate template);
-
-        Builder delegateTo(ExtensionPoint.UseSite extension);
-
-        /**
-         * Specializes the mirror that is returned for the operation.
-         * <p>
-         * The specified supplier may be called multiple times for the same operation.
-         * <p>
-         * The specified supplier should never return {@code null}.
-         *
-         * @param supplier
-         *            a mirror supplier that is called if a mirror is required
-         * @throws IllegalStateException
-         *             if the operation is no longer configurable
-         */
-        Builder specializeMirror(Supplier<? extends OperationMirror> supplier);
-    }
 }
 
 interface Zandbox {

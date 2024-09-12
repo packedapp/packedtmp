@@ -15,9 +15,9 @@
  */
 package sandbox.extension.container;
 
+import app.packed.bean.BeanTemplate;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.util.Key;
-import sandbox.extension.bean.BeanTemplate;
 
 /**
  * A container host bean is simply a bean that hosts another container (possible the root container in an application)

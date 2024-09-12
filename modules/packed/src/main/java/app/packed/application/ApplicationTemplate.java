@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.extension.application;
+package app.packed.application;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.application.ApplicationLocal;
-import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanConfiguration;
-import sandbox.extension.application.PackedApplicationTemplate.PackedApplicationTemplateConfigurator;
+import internal.app.packed.application.PackedApplicationInstaller;
+import internal.app.packed.application.PackedApplicationTemplate;
+import internal.app.packed.application.PackedApplicationTemplate.PackedApplicationTemplateConfigurator;
 import sandbox.extension.container.ContainerTemplate;
 
 /**
@@ -41,12 +41,25 @@ public sealed interface ApplicationTemplate permits PackedApplicationTemplate {
     // lazy start single application. and make the following services available
 
     static ApplicationTemplate of(Consumer<? super Configurator> configure) {
-        PackedApplicationTemplateConfigurator c = new PackedApplicationTemplateConfigurator(new PackedApplicationTemplate());
+        PackedApplicationTemplateConfigurator c = new PackedApplicationTemplateConfigurator(new PackedApplicationTemplate(null));
         configure.accept(c);
         return c.template();
     }
 
-    interface Installer {
+    sealed interface Configurator permits PackedApplicationTemplateConfigurator {
+
+        // Configuration of the root container
+        Configurator container(ContainerTemplate template);
+
+        Configurator container(Consumer<? super ContainerTemplate.Configurator> configure);
+
+        // Mark the application as removable()
+        Configurator removeable();
+
+        <T> Configurator setLocal(ApplicationLocal<T> local, T value);
+    }
+
+    sealed interface Installer permits PackedApplicationInstaller {
         Configurator hostedBy(BeanConfiguration bean);
 
         <T> Configurator setLocal(ApplicationLocal<T> local, T value);
@@ -62,16 +75,6 @@ public sealed interface ApplicationTemplate permits PackedApplicationTemplate {
          */
         // What about the container mirror?????
         Installer specializeMirror(Supplier<? extends ApplicationMirror> supplier);
-    }
-
-    interface Configurator {
-        // Configuration of the root container
-        Configurator container(ContainerTemplate template);
-
-        // Mark the application as removable()
-        Configurator removeable();
-
-        <T> Configurator setLocal(ApplicationLocal<T> local, T value);
     }
 
 }

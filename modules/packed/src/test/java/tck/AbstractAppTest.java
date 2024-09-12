@@ -32,10 +32,10 @@ import app.packed.assembly.BuildableAssembly;
 import app.packed.build.BuildGoal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.LifecycleKind;
-import internal.app.packed.container.ApplicationSetup;
+import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.application.PackedApplicationInstaller;
+import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
 import sandbox.extension.operation.OperationHandle;
@@ -95,9 +95,9 @@ abstract class AbstractAppTest<A> {
         if (st instanceof State1Setup p) {
             State2Building sb = new State2Building(p);
             this.state = sb;
-            return sb.b.cc;
+            return sb.cc;
         } else if (st instanceof State2Building sb) {
-            return sb.b.cc;
+            return sb.cc;
         } else {
             reset();
             return configuration();
@@ -195,12 +195,26 @@ abstract class AbstractAppTest<A> {
         }
 
         final class State2Building implements InternalTestState {
+            static final PackedApplicationTemplate PAT = new PackedApplicationTemplate(new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION));
+            final PackedApplicationInstaller b;
+            final AssemblySetup assembly;
 
-            final AbstractAppTest.TestableContainerBuilder b;
+            public final ContainerConfiguration cc;
 
             State2Building(State1Setup setup) {
-                b = new TestableContainerBuilder(setup);
-                b.processBuildWirelets(setup.wirelets.toArray(i -> new Wirelet[i]));
+                b = PAT.newInstaller(setup.goal);
+
+                BuildableAssembly ba = setup.assembly;
+                if (ba == null) {
+                    ba = new BuildableAssembly() {
+                        @Override
+                        protected void build() {}
+                    };
+                }
+                assembly = new AssemblySetup(b.container, ba);
+                // Do
+                cc = assembly.container.configuration;
+                b.container.processBuildWirelets(setup.wirelets.toArray(i -> new Wirelet[i]));
             }
         }
 
@@ -211,52 +225,9 @@ abstract class AbstractAppTest<A> {
             final ApplicationSetup application;
 
             State3Build(State2Building sb) {
-                sb.b.assembly.postBuild();
-                this.application = sb.b.assembly.container.application;
+                sb.assembly.postBuild();
+                this.application = sb.assembly.container.application;
             }
-        }
-    }
-
-    /**
-     * A special container builder used for testing purposes.
-     */
-    private static class TestableContainerBuilder extends PackedContainerInstaller {
-
-        final AssemblySetup assembly;
-
-        public final ContainerConfiguration cc;
-
-        private final BuildGoal goal;
-
-        /**
-         * @param template
-         */
-        protected TestableContainerBuilder(State1Setup setup) {
-            super(new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION));
-            this.goal = setup.goal;
-            BuildableAssembly ba = setup.assembly;
-            if (ba == null) {
-                ba = new BuildableAssembly() {
-                    @Override
-                    protected void build() {}
-                };
-            }
-            assembly = new AssemblySetup(this, ba);
-            // Do
-            cc = assembly.container.configuration;
-
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public BuildGoal goal() {
-            return goal;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public LifecycleKind lifetimeKind() {
-            return LifecycleKind.UNMANAGED;
         }
     }
 

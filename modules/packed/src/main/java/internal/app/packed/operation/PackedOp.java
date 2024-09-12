@@ -33,7 +33,6 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.IntermediateOp.BoundOp;
 import internal.app.packed.operation.IntermediateOp.PeekingOp;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
-import sandbox.extension.operation.OperationTemplate;
 
 /** The internal implementation of Op. */
 public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp, TerminalOp {
@@ -120,8 +119,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
         return bind(0, argument);
     }
 
-    public abstract OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationTemplate template,
-            @Nullable EmbeddedIntoOperation embeddedIn);
+    public abstract OperationSetup newOperationSetup(NewOS newos);
 
     /** {@inheritDoc} */
     @Override
@@ -163,4 +161,6 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
             return (PackedOp<R>) ((CapturingOp<R>) op).canonicalize();
         }
     }
+
+    public record NewOS(BeanSetup bean, ExtensionSetup operator, PackedOperationTemplate template, @Nullable EmbeddedIntoOperation embeddedIn) {}
 }

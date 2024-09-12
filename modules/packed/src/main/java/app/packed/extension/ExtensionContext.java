@@ -26,7 +26,6 @@ import internal.app.packed.lifetime.runtime.PackedExtensionContext;
  */
 
 // A context or not. Hvis det er en context. Skal den med i alle metoder der ligesom siger hvad er hvad.
-
 // Maaske er det kun med container lifetime, og maaske er det kun constructeren
 @BindingClassBeanTrigger(extension = BaseExtension.class)
 public sealed interface ExtensionContext extends Context<BaseExtension> permits PackedExtensionContext {}

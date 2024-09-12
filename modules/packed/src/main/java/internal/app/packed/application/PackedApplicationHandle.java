@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package internal.app.packed.application;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.component.ComponentKind;
@@ -41,5 +41,4 @@ public record PackedApplicationHandle(ApplicationSetup application) implements A
     public ComponentKind componentKind() {
         return ComponentKind.APPLICATION;
     }
-
 }

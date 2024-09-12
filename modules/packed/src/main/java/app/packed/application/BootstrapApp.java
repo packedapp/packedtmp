@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -30,31 +31,29 @@ import app.packed.assembly.AbstractComposer;
 import app.packed.assembly.AbstractComposer.ComposerAction;
 import app.packed.assembly.Assembly;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanTemplate;
 import app.packed.build.BuildGoal;
 import app.packed.container.ContainerLocal;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.FrameworkExtension;
-import app.packed.lifetime.LifecycleKind;
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
 import app.packed.util.Result;
-import internal.app.packed.container.ApplicationSetup;
+import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.application.FutureApplicationSetup;
+import internal.app.packed.application.PackedApplicationInstaller;
+import internal.app.packed.application.PackedApplicationTemplate;
+import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.container.CompositeWirelet;
-import internal.app.packed.container.FutureApplicationSetup;
-import internal.app.packed.container.NonBootstrapContainerBuilder;
-import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.container.PackedContainerTemplate.PackedContainerTemplateConfigurator;
 import internal.app.packed.container.WireletSelectionArray;
 import internal.app.packed.context.publish.ContextTemplate;
-import internal.app.packed.lifetime.PackedBeanTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
-import internal.app.packed.util.ThrowableUtil;
-import sandbox.extension.bean.BeanHandle;
-import sandbox.extension.bean.BeanTemplate;
 import sandbox.extension.container.ContainerTemplateLink;
 import sandbox.extension.operation.OperationTemplate;
 
@@ -82,20 +81,19 @@ import sandbox.extension.operation.OperationTemplate;
  * @see app.packed.cli.CliApp
  * @see app.packed.service.ServiceLocator
  */
-// Could be in .build
 public final /* value */ class BootstrapApp<A> {
 
-    /** The internal bootstrap app. */
-    private final BootstrapAppSetup setup;
+    /** The application template for new applications. */
+    private final PackedApplicationTemplate template;
 
     /**
      * Create a new bootstrap app
      *
-     * @param setup
-     *            the internal configuration of the app.
+     * @param template
+     *            the template for the apps that are being bootstrapped.
      */
-    private BootstrapApp(BootstrapAppSetup setup) {
-        this.setup = requireNonNull(setup);
+    private BootstrapApp(PackedApplicationTemplate template) {
+        this.template = requireNonNull(template);
     }
 
     public BootstrapApp<A> expectsResult(Class<?> resultType) {
@@ -146,23 +144,20 @@ public final /* value */ class BootstrapApp<A> {
      *             if the image could not be build
      */
     public Image<A> imageOf(Assembly assembly, Wirelet... wirelets) {
-        RootContainerBuilder builder = new RootContainerBuilder(setup, BuildGoal.IMAGE);
-
-        // Assign to Assembly
-        builder.processBuildWirelets(wirelets);
+        PackedApplicationInstaller installer = template.newInstaller(BuildGoal.IMAGE, wirelets);
 
         Image<A> image;
 
-        if (builder.optionBuildApplicationLazy) {
-            FutureApplicationSetup fas = new FutureApplicationSetup(builder, assembly);
-            image = new LazyApplicationImage<>(setup, fas);
+        if (installer.optionBuildApplicationLazy) {
+            FutureApplicationSetup fas = new FutureApplicationSetup(installer.container, assembly);
+            image = new ImageLazy<>(template, fas);
         } else {
-            ApplicationSetup application = builder.buildNow(assembly).application;
-            image = new EagerApplicationImage<>(setup, application);
+            ApplicationSetup application = installer.buildApplication(assembly);
+            image = new ImageEager<>(template, application);
         }
 
-        if (!builder.optionBuildReusableImage) {
-            image = new NonReusableApplicationImage<>(image);
+        if (!installer.optionBuildReusableImage) {
+            image = new ImageNonReusable<>(image);
         }
         return image;
     }
@@ -184,28 +179,23 @@ public final /* value */ class BootstrapApp<A> {
      */
     @SuppressWarnings("unchecked")
     public A launch(Assembly assembly, Wirelet... wirelets) {
-        RootContainerBuilder builder = new RootContainerBuilder(setup, BuildGoal.LAUNCH);
-
-        builder.processBuildWirelets(wirelets);
+        PackedApplicationInstaller installer = template.newInstaller(BuildGoal.LAUNCH, wirelets);
 
         // Build the application
-        ApplicationSetup application = builder.buildNow(assembly).application;
+        ApplicationSetup application = installer.buildApplication(assembly);
 
         // Launch the application
         ApplicationLaunchContext aic = ApplicationLaunchContext.launch(application, null);
 
         // Create and return an instance of the application interface
-        return (A) setup.newHolder(aic);
+        return (A) template.newHolder(aic);
     }
-
-// Eller maasske er den simpelthen en nested class (Image) paa BootstrapApp???
-
-// If general used
 
     // Hvorfor ikke bruge BootstrapApp'en som en launcher???
     // Det betyder selv at vi altid skal chaine..
     // Men det er vel ok
     // map()->
+
     public Launcher<A> launcher() {
         throw new UnsupportedOperationException();
     }
@@ -238,12 +228,10 @@ public final /* value */ class BootstrapApp<A> {
      *             if the application could not be build
      */
     public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        RootContainerBuilder builder = new RootContainerBuilder(setup, BuildGoal.MIRROR);
-
-        builder.processBuildWirelets(wirelets);
+        PackedApplicationInstaller installer = template.newInstaller(BuildGoal.MIRROR, wirelets);
 
         // Build the application
-        ApplicationSetup application = builder.buildNow(assembly).application;
+        ApplicationSetup application = installer.buildApplication(assembly);
 
         // Returns a mirror for the application
         return application.mirror();
@@ -260,13 +248,10 @@ public final /* value */ class BootstrapApp<A> {
      *             if the application could not be build or verified
      */
     public void verify(Assembly assembly, Wirelet... wirelets) {
-        RootContainerBuilder builder = new RootContainerBuilder(setup, BuildGoal.VERIFY);
-
-        // Process any wirelets that were specified
-        builder.processBuildWirelets(wirelets);
+        PackedApplicationInstaller installer = template.newInstaller(BuildGoal.VERIFY, wirelets);
 
         // Builds (and verifies) the application
-        builder.buildNow(assembly);
+        installer.buildApplication(assembly);
     }
 
     /**
@@ -292,7 +277,8 @@ public final /* value */ class BootstrapApp<A> {
      */
     public BootstrapApp<A> with(Wirelet... wirelets) {
         throw new UnsupportedOperationException();
-       // return new BootstrapApp<>(new BootstrapAppSetup(setup.mirrorSupplier, setup.template.withWirelets(wirelets), setup.applicationLauncher));
+        // return new BootstrapApp<>(new BootstrapAppSetup(setup.mirrorSupplier, setup.template.withWirelets(wirelets),
+        // setup.applicationLauncher));
     }
 
     /**
@@ -318,11 +304,11 @@ public final /* value */ class BootstrapApp<A> {
     private static <A> BootstrapApp<A> of0(Object opOrClass, Class<?> type, ComposerAction<? super Composer> action) {
         Composer composer = new Composer(opOrClass, type);
 
-        // Create a new bootstrap app builder
-        BootstrapAppContainerBuilder builder = new BootstrapAppContainerBuilder();
+        // Create new installer for the bootstrap app
+        PackedApplicationInstaller installer = PackedApplicationTemplate.newBootstrapAppInstaller();
 
         // Builds the bootstrap application
-        builder.buildNow(new Composer.BootstrapAppAssembly(composer, action));
+        installer.buildApplication(new Composer.BootstrapAppAssembly(composer, action));
 
         // Adapts the method handle
         MethodHandle mh;
@@ -334,48 +320,24 @@ public final /* value */ class BootstrapApp<A> {
             mh = mh.asType(mh.type().changeReturnType(Object.class));
         }
 
-//        new Exception().printStackTrace();
-//        System.out.println("WHAT " + root.beans.beans.values());
-    //    root.application.mirror().print();
-
-        BootstrapAppSetup a = new BootstrapAppSetup(composer.mirrorSupplier, composer.template.pbt, mh);
-        return new BootstrapApp<>(a);
+        PackedApplicationTemplate t = new PackedApplicationTemplate(composer.template.pbt, composer.mirrorSupplier, mh);
+        return new BootstrapApp<>(t);
     }
 
-    /** A builder for creating {@link app.packed.application.BootstrapApp bootstrap applications}. */
-    private static final class BootstrapAppContainerBuilder extends PackedContainerInstaller {
-
-        /** The container template used for {@link BootstrapApp}. */
-        private static final PackedContainerTemplate TEMPLATE = new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION, BootstrapApp.class);
-
-        /** Create a new bootstrap builder with a fixed template. */
-        public BootstrapAppContainerBuilder() {
-            super(TEMPLATE);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public BuildGoal goal() {
-            return BuildGoal.LAUNCH;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public LifecycleKind lifetimeKind() {
-            return LifecycleKind.UNMANAGED;
-        }
+    // Enten kan vi extender ApplicationConfigurator paa Composeren..
+    // Altsaa vi skal bruge en Assembly... til at lave bootstrap app'en i modsaetning til en normal ApplicationTemplate
+    public static <A> BootstrapApp<A> of2(Class<A> hostClass, Consumer<? super ApplicationTemplate.Configurator> action) {
+        throw new UnsupportedOperationException();
     }
 
-    /** A special kind of extension that is only used for bootstrap applications. */
+    /** A special kind of extension that is used to build a bootstrap application. */
     private static class BootstrapAppExtension extends FrameworkExtension<BootstrapAppExtension> {
 
         static final ContextTemplate CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationLaunchContext.class, ApplicationLaunchContext.class);
 
-        static final OperationTemplate Ot = OperationTemplate.raw().withContext(CIT).returnTypeObject();
+        static final OperationTemplate Ot = OperationTemplate.raw().reconfigure(c -> c.withContext(CIT).returnTypeObject());
 
         static final BeanTemplate ZBT = new PackedBeanTemplate(BeanKind.UNMANAGED).withOperationTemplate(Ot);
-
-        // static final BeanTemplate BT2 = BeanKind.UNMANAGED.template().inLifetimeOperationContext(0, CIT);
 
         MethodHandle mh;
 
@@ -502,7 +464,7 @@ public final /* value */ class BootstrapApp<A> {
      * Instances of this class are typically not exposed to end-users of the bootstrap application. Instead it is typically
      * returned wrapped in another class such as {@link App.Image}.
      */
-    public sealed interface Image<A> permits NonReusableApplicationImage, EagerApplicationImage, LazyApplicationImage, MappedApplicationImage {
+    public sealed interface Image<A> permits ImageEager, ImageLazy, ImageNonReusable, ImageMapped {
 
         // Do we want a more specific ApplicationResult? Something where the state is??
         // Maybe we can take a BiConsumer(ErrorContext, A)
@@ -550,12 +512,42 @@ public final /* value */ class BootstrapApp<A> {
          */
         default <E> Image<E> map(Function<? super A, ? extends E> mapper) {
             requireNonNull(mapper, "mapper is null");
-            return new MappedApplicationImage<>(this, mapper);
+            return new ImageMapped<>(this, mapper);
         }
 
         // IDK. Would be nice, for example, with. Or lets say we build a lazy image...
 
 //        interface Descriptor {}
+    }
+
+    /**
+     * Implementation of {@link ApplicationLauncher} used by {@link BootstrapApp#newImage(Assembly, Wirelet...)}.
+     */
+    static final class ImageNonReusable<A> implements Image<A> {
+
+        /** An atomic reference to an application image. Is used once */
+        private final AtomicReference<Image<A>> ref;
+
+        ImageNonReusable(Image<A> image) {
+            this.ref = new AtomicReference<>(image);
+        }
+
+        ImageNonReusable(PackedApplicationTemplate template, ApplicationSetup application) {
+            this.ref = new AtomicReference<>(new ImageEager<>(template, application));
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public A launch(Wirelet... wirelets) {
+            Image<A> img = ref.getAndSet(null);
+            if (img == null) {
+                throw new IllegalStateException(
+                        "This image has already been used. You can use ApplicationWirelets.resuableImage() to allow repeatable usage of an application image");
+            }
+            // Not sure we can GC anything here
+            // Think we need to extract a launcher and call it
+            return img.launch(wirelets);
+        }
     }
 
     /**
@@ -599,66 +591,9 @@ public final /* value */ class BootstrapApp<A> {
     }
 
     /**
-     * Implementation of {@link ApplicationLauncher} used by {@link BootstrapApp#newImage(Assembly, Wirelet...)}.
-     */
-    static final class NonReusableApplicationImage<A> implements Image<A> {
-
-        /** An atomic reference to an application image. Is used once */
-        private final AtomicReference<Image<A>> ref;
-
-        NonReusableApplicationImage(BootstrapAppSetup driver, ApplicationSetup application) {
-            this.ref = new AtomicReference<>(new EagerApplicationImage<>(driver, application));
-        }
-
-        NonReusableApplicationImage(Image<A> image) {
-            this.ref = new AtomicReference<>(image);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public A launch(Wirelet... wirelets) {
-            Image<A> img = ref.getAndSet(null);
-            if (img == null) {
-                throw new IllegalStateException(
-                        "This image has already been used. You can use ApplicationWirelets.resuableImage() to allow repeatable usage of an application image");
-            }
-            // Not sure we can GC anything here
-            // Think we need to extract a launcher and call it
-            return img.launch(wirelets);
-        }
-    }
-
-    /** Used by {@link BootstrapApp} to build a single root application. */
-    private static final class RootContainerBuilder extends NonBootstrapContainerBuilder {
-
-        /** The build goal. */
-        private final BuildGoal goal;
-
-        // shutdown hooks
-
-        RootContainerBuilder(BootstrapAppSetup setup, BuildGoal goal) {
-            super(setup.template());
-            this.goal = goal;
-            this.applicationMirrorSupplier = setup.mirrorSupplier();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public BuildGoal goal() {
-            return goal;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public LifecycleKind lifetimeKind() {
-            return LifecycleKind.UNMANAGED;
-        }
-    }
-
-    /**
      * Implementation of {@link ApplicationLauncher} used by {@link OldBootstrapApp#newImage(Assembly, Wirelet...)}.
      */
-    /* value */ record EagerApplicationImage<A>(BootstrapAppSetup driver, ApplicationSetup application) implements Image<A> {
+    /* value */ record ImageEager<A>(PackedApplicationTemplate template, ApplicationSetup application) implements Image<A> {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
@@ -673,11 +608,11 @@ public final /* value */ class BootstrapApp<A> {
             }
             ApplicationLaunchContext aic = ApplicationLaunchContext.launch(application, wrapper);
 
-            return (A) driver.newHolder(aic);
+            return (A) template.newHolder(aic);
         }
     }
 
-    /* value */ record LazyApplicationImage<A>(BootstrapAppSetup holder, FutureApplicationSetup application) implements Image<A> {
+    /* value */ record ImageLazy<A>(PackedApplicationTemplate template, FutureApplicationSetup application) implements Image<A> {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
@@ -692,31 +627,12 @@ public final /* value */ class BootstrapApp<A> {
             }
             ApplicationLaunchContext aic = ApplicationLaunchContext.launch(application.lazyBuild(), wrapper);
 
-            return (A) holder.newHolder(aic);
-        }
-    }
-
-    /** The internal configuration of a bootstrap app. */
-    private record BootstrapAppSetup(Supplier<? extends ApplicationMirror> mirrorSupplier, PackedContainerTemplate template, MethodHandle applicationLauncher) {
-
-        /**
-         * Create a new application interface using the specified launch context.
-         *
-         * @param context
-         *            the launch context to use for creating the application instance
-         * @return the new application instance
-         */
-        public Object newHolder(ApplicationLaunchContext context) {
-            try {
-                return applicationLauncher.invokeExact(context);
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
+            return (A) template.newHolder(aic);
         }
     }
 
     /** A application launcher that maps the result of launching. */
-    /* value */ record MappedApplicationImage<A, F>(Image<F> image, Function<? super F, ? extends A> mapper) implements Image<A> {
+    /* value */ record ImageMapped<A, F>(Image<F> image, Function<? super F, ? extends A> mapper) implements Image<A> {
 
         /** {@inheritDoc} */
         @Override
@@ -730,7 +646,7 @@ public final /* value */ class BootstrapApp<A> {
         public <E> Image<E> map(Function<? super A, ? extends E> mapper) {
             requireNonNull(mapper, "mapper is null");
             Function<? super F, ? extends E> andThen = this.mapper.andThen(mapper);
-            return new MappedApplicationImage<>(image, andThen);
+            return new ImageMapped<>(image, andThen);
         }
     }
 }

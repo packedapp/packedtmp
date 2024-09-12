@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import app.packed.assembly.Assembly;
-import app.packed.assembly.AssemblyConfiguration;
 import app.packed.assembly.AssemblyBuildHook;
+import app.packed.assembly.AssemblyConfiguration;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.build.BuildException;
 import app.packed.build.hook.ApplyBuildHook;

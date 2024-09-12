@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package internal.app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
@@ -36,11 +36,14 @@ import app.packed.container.ContainerLocal;
 import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceTwin;
 import app.packed.util.Nullable;
-import internal.app.packed.build.PackedLocalMap;
-import internal.app.packed.build.PackedLocalMap.KeyAndLocalMapSource;
+import internal.app.packed.build.BuildLocalMap;
+import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.Mirrorable;
 import internal.app.packed.component.PackedComponentTwin;
+import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.PackedNamespaceTemplate;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.types.ClassUtil;
@@ -51,7 +54,7 @@ import internal.app.packed.util.types.ClassUtil;
  * This class is placed in {@code internal.app.packed.container} because it is so tightly integrated with containers
  * that it made sense to put it here as well.
  */
-public final class ApplicationSetup extends ComponentSetup implements PackedComponentTwin , KeyAndLocalMapSource , Mirrorable<ApplicationMirror> {
+public final class ApplicationSetup extends ComponentSetup implements PackedComponentTwin , BuildLocalSource , Mirrorable<ApplicationMirror> {
 
     /** A magic initializer for {@link BeanMirror}. */
     public static final MagicInitializer<ApplicationSetup> MIRROR_INITIALIZER = MagicInitializer.of(ApplicationMirror.class);
@@ -82,7 +85,7 @@ public final class ApplicationSetup extends ComponentSetup implements PackedComp
      * them.
      */
     // We actually have a unique name now, so maybe we can skip this counter
-    int extensionIdCounter;
+    public int extensionIdCounter;
 
     /**
      * All extensions in the application, uniquely named.
@@ -90,10 +93,10 @@ public final class ApplicationSetup extends ComponentSetup implements PackedComp
      * The only time where we might see collisions is if we load 2 extensions with same name, but with different class
      * loaders.
      */
-    final Map<String, Class<? extends Extension<?>>> extensions = new HashMap<>();
+    public final Map<String, Class<? extends Extension<?>>> extensions = new HashMap<>();
 
     /** This map maintains all locals for the entire application. */
-    private final PackedLocalMap locals = new PackedLocalMap();
+    private final BuildLocalMap locals = new BuildLocalMap();
 
     /** Supplies mirrors for the application. */
     private final Supplier<? extends ApplicationMirror> mirrorSupplier;
@@ -110,16 +113,16 @@ public final class ApplicationSetup extends ComponentSetup implements PackedComp
     /**
      * Create a new application.
      *
-     * @param containerBuilder
-     *            the container builder
+     * @param installer
+     *            the application installer
      * @param assembly
      *            the assembly that defines the application
      */
-    public ApplicationSetup(PackedContainerInstaller containerBuilder, AssemblySetup assembly) {
-        this.deployment = new DeploymentSetup(this, containerBuilder);
+    ApplicationSetup(PackedApplicationInstaller installer, AssemblySetup assembly) {
+        this.deployment = new DeploymentSetup(this, installer);
         this.codegenActions = deployment.goal.isCodeGenerating() ? new ArrayList<>() : null;
-        this.mirrorSupplier = containerBuilder.applicationMirrorSupplier;
-        this.container = containerBuilder.newContainer(containerBuilder, this, assembly, ContainerConfiguration::new);
+        this.mirrorSupplier = installer.mirrorSupplier;
+        this.container = installer.container.newContainer(this, assembly, ContainerConfiguration::new);
     }
 
     /**
@@ -195,17 +198,17 @@ public final class ApplicationSetup extends ComponentSetup implements PackedComp
 
     /** {@inheritDoc} */
     @Override
-    public PackedLocalMap locals() {
+    public BuildLocalMap locals() {
         return locals;
     }
 
-    public static ApplicationSetup crack(ApplicationLocal.ApplicationLocalAccessor accessor) {
+    public static ApplicationSetup crack(ApplicationLocal.Accessor accessor) {
         requireNonNull(accessor, "accessor is null");
         return switch (accessor) {
         case ApplicationConfiguration a -> ApplicationSetup.crack(a);
         case ApplicationMirror a -> ApplicationSetup.crack(a);
         case Assembly b -> throw new UnsupportedOperationException();
-        case ContainerLocal.ContainerLocalAccessor b -> ContainerSetup.crack(b).application;
+        case ContainerLocal.Accessor b -> ContainerSetup.crack(b).application;
         };
     }
 

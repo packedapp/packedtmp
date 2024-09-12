@@ -27,7 +27,7 @@ import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
+import internal.app.packed.operation.PackedOperationType.MemberOperationSetup;
 import sandbox.extension.operation.OperationHandle;
 import sandbox.extension.operation.OperationTemplate;
 
@@ -67,9 +67,12 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
         return delegatedFrom.extensionType;
     }
 
-    public OperationHandle newOperation(ExtensionSetup extension, OperationTemplate template) {
+    public OperationHandle newOperation(ExtensionSetup extension, PackedOperationTemplate template) {
         // checkConfigurable
-        OperationSetup os = new MemberOperationSetup(extension, bean, operationType, template, target, methodHandle);
+        PackedOperationInstaller poi = template.newInstaller(operationType, bean, extension);
+
+        MemberOperationSetup mos = new MemberOperationSetup(target, methodHandle);
+        OperationSetup os = poi.newOperation(mos);
         bean.operations.all.add(os);
         scanner.unBoundOperations.add(os);
         return os.toHandle(scanner);
@@ -79,7 +82,7 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
     @Override
     public OperationHandle newOperation(OperationTemplate template, UseSite context) {
         PackedExtensionPointContext c = (PackedExtensionPointContext) context;
-        return newOperation(c.usedBy(), template);
+        return newOperation(c.usedBy(), (PackedOperationTemplate) template);
     }
 
     /** {@inheritDoc} */

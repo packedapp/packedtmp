@@ -42,7 +42,8 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.integration.devtools.PackedDevToolsIntegration;
 import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSetup.MemberOperationSetup;
+import internal.app.packed.operation.PackedOperationInstaller;
+import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.ThrowableUtil;
@@ -60,8 +61,8 @@ public final class BeanScanner {
     private static final Module JAVA_BASE_MODULE = Object.class.getModule();
 
     /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
-    private static final MethodHandle MH_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class,
-            "initialize", void.class, BeanScannerExtensionRef.class);
+    private static final MethodHandle MH_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class, "initialize",
+            void.class, BeanScannerExtensionRef.class);
 
 //    public static final MagicInitializer<BeanScannerExtension> MI = MagicInitializer.of();
 
@@ -157,10 +158,11 @@ public final class BeanScanner {
         } else {
             ot = bean.lifetime.lifetimes().get(0).template;
         }
-        ot = ot.returnType(beanClass);
+        ot = ot.reconfigure(c -> c.returnType(beanClass));
 
-        OperationSetup os = new MemberOperationSetup(bean.installedBy, bean, constructor.operationType(), ot,
-                new OperationConstructorTarget(constructor.constructor()), mh);
+        PackedOperationInstaller poi = ((PackedOperationTemplate) ot).newInstaller(constructor.operationType(), bean, bean.installedBy);
+
+        OperationSetup os = OperationSetup.newMemberOperationSetup(poi, new OperationConstructorTarget(constructor.constructor()), mh);
         bean.operations.all.add(os);
         resolveNow(os);
     }

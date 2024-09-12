@@ -24,7 +24,7 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Nullable;
-import internal.app.packed.container.ApplicationSetup;
+import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.InternalBuildWirelet;
 import internal.app.packed.container.WireletSelectionArray;
 import sandbox.lifetime.external.LifecycleController;

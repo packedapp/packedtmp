@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
+import app.packed.bean.BeanLocal.Accessor;
 import app.packed.build.action.BuildActionMirror;
 import app.packed.component.Authority;
 import app.packed.component.ComponentMirror;
@@ -40,7 +41,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * An instance of BeanMirror can be injected at runtime simply by declaring a dependency on it.
  */
 @InheritableBindingClassBeanTrigger(extension = BaseExtension.class)
-public non-sealed class BeanMirror implements BeanLocalAccessor , ComponentMirror , ContextualizedElementMirror , ContextScopeMirror , ServiceProviderMirror {
+public non-sealed class BeanMirror implements Accessor , ComponentMirror , ContextualizedElementMirror , ContextScopeMirror , ServiceProviderMirror {
 
     /** The bean we are mirroring. */
     final BeanSetup bean;

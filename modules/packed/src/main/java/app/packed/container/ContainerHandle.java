@@ -1,11 +1,9 @@
-package sandbox.extension.container;
+package app.packed.container;
 
 import java.util.List;
 import java.util.Set;
 
 import app.packed.component.ComponentHandle;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerLocal;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.Extension;
 import internal.app.packed.container.PackedContainerHandle;
@@ -21,7 +19,7 @@ import sandbox.extension.operation.OperationHandle;
  * <p>
  * A lot of methods on this class is also available on {@link ContainerBuilder}.
  */
-public sealed interface ContainerHandle<C extends ContainerConfiguration> extends ComponentHandle , ContainerLocal.ContainerLocalAccessor
+public sealed interface ContainerHandle<C extends ContainerConfiguration> extends ComponentHandle , ContainerLocal.Accessor
         permits PackedContainerHandle {
 
     /** {@return the configuration of the container} */
@@ -59,35 +57,34 @@ public sealed interface ContainerHandle<C extends ContainerConfiguration> extend
      * @return a list of lifetime operations of this container.
      */
     List<OperationHandle> lifetimeOperations();
-
-    interface Zandbox {
-        // ditch beanBlass, and just make sure there is a bean that can do it
-        default Zandbox zContextFromBean(Class<?> beanClass, ContextTemplate template, @SuppressWarnings("exports") ContextSpanKind span) {
-            throw new UnsupportedOperationException();
-        }
-
-        /**
-         * <p>
-         * The container handle returned by this method is no longer {@link ContainerHandle#isConfigurable() configurable}
-         *
-         * @param assembly
-         *            the assembly to link
-         * @param wirelets
-         *            optional wirelets
-         * @return a container handle representing the linked container
-         */
-        default Zandbox zErrorHandle(ErrorHandler h) {
-            return this;
-        }
-    }
-
 }
 
-// The application will fail to build if the installing extension
-// is not used by. Is only applicable for new(Assembly)
-// Maaske er det fint bare en wirelet der kan tage en custom besked?
-// Smider den paa templaten
-//default Zandbox zBuildAndRequiresThisExtension(Assembly assembly, Wirelet... wirelets) {
-//    throw new UnsupportedOperationException();
-//}
+interface ZandboxHandle {
+    // ditch beanBlass, and just make sure there is a bean that can do it
+    default ZandboxHandle zContextFromBean(Class<?> beanClass, ContextTemplate template, ContextSpanKind span) {
+        throw new UnsupportedOperationException();
+    }
 
+    /**
+     * <p>
+     * The container handle returned by this method is no longer {@link ContainerHandle#isConfigurable() configurable}
+     *
+     * @param assembly
+     *            the assembly to link
+     * @param wirelets
+     *            optional wirelets
+     * @return a container handle representing the linked container
+     */
+    default ZandboxHandle zErrorHandle(ErrorHandler h) {
+        return this;
+    }
+
+    // The application will fail to build if the installing extension
+    // is not used by. Is only applicable for new(Assembly)
+    // Maaske er det fint bare en wirelet der kan tage en custom besked?
+    // Smider den paa templaten
+    // default Zandbox zBuildAndRequiresThisExtension(Assembly assembly, Wirelet... wirelets) {
+    //   throw new UnsupportedOperationException();
+    // }
+
+}

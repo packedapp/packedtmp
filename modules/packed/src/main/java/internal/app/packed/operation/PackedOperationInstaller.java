@@ -17,7 +17,6 @@ package internal.app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.util.function.Supplier;
 
 import app.packed.extension.ExtensionPoint.UseSite;
@@ -25,26 +24,38 @@ import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
 import sandbox.extension.operation.OperationHandle;
-import sandbox.extension.operation.OperationHandle.Builder;
 import sandbox.extension.operation.OperationTemplate;
 
 /**
  *
  */
-public final class PackedOperationBuilder implements OperationHandle.Builder {
+public final class PackedOperationInstaller implements OperationTemplate.Installer {
 
     /** Supplies a mirror for the operation */
     public Supplier<? extends OperationMirror> mirrorSupplier;
 
-    public PackedOperationBuilder(ExtensionSetup operator, BeanSetup bean, OperationType operationType, OperationTemplate template,
-            OperationMemberTarget<?> member, MethodHandle methodHandle) {
+    public final PackedOperationTemplate template;
 
+    public final OperationType operationType;
+
+    public final BeanSetup bean;
+
+    public final ExtensionSetup operator;
+
+    public EmbeddedIntoOperation embeddedInto;
+
+    PackedOperationInstaller(PackedOperationTemplate template, OperationType operationType, BeanSetup bean, ExtensionSetup operator) {
+        this.template = template;
+        this.operationType = operationType;
+        this.bean = bean;
+        this.operator = operator;
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle build(OperationTemplate template) {
+    public OperationHandle install(OperationTemplate template) {
         return null;
     }
 
@@ -55,13 +66,17 @@ public final class PackedOperationBuilder implements OperationHandle.Builder {
 
     /** {@inheritDoc} */
     @Override
-    public Builder delegateTo(UseSite extension) {
+    public OperationTemplate.Installer delegateTo(UseSite extension) {
         return null;
+    }
+
+    public OperationSetup newOperation(PackedOperationType pot) {
+        return new OperationSetup(this, pot);
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedOperationBuilder specializeMirror(Supplier<? extends OperationMirror> supplier) {
+    public PackedOperationInstaller specializeMirror(Supplier<? extends OperationMirror> supplier) {
         checkConfigurable();
         this.mirrorSupplier = requireNonNull(supplier, "supplier is null");
         return this;

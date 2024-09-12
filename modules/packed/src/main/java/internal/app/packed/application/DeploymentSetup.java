@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package internal.app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
 import app.packed.application.DeploymentMirror;
 import app.packed.build.BuildGoal;
-import internal.app.packed.build.PackedLocalMap;
+import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.types.ClassUtil;
 
@@ -39,11 +39,11 @@ public final class DeploymentSetup {
     /** The build goal. */
     public final BuildGoal goal;
 
-    public final PackedLocalMap locales = new PackedLocalMap();
+    public final BuildLocalMap locales = new BuildLocalMap();
 
-    DeploymentSetup(ApplicationSetup root, PackedContainerInstaller containerBuilder) {
+    public DeploymentSetup(ApplicationSetup root, PackedApplicationInstaller containerBuilder) {
         this.root = requireNonNull(root);
-        this.goal = containerBuilder.goal();
+        this.goal = containerBuilder.goal;
     }
 
     /**

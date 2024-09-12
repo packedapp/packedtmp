@@ -34,6 +34,7 @@ import app.packed.build.BuildGoal;
 import app.packed.component.Authority;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
+import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.Extension.ExtensionProperty;
@@ -50,7 +51,6 @@ import internal.app.packed.container.NamespaceSetup;
 import internal.app.packed.container.PackedNamespaceTemplate;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
-import sandbox.extension.container.ContainerHandle;
 
 /**
  * Extensions are main mechanism by which the framework can be extended with new features.

@@ -16,9 +16,11 @@ import app.packed.assembly.AssemblyMirror;
 import app.packed.assembly.AssemblyPropagator;
 import app.packed.bean.BeanClassMutator;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.BeanTemplate;
 import app.packed.bean.ComputedConstant;
 import app.packed.bean.Inject;
 import app.packed.bean.ManagedBeanRequiredException;
@@ -27,6 +29,7 @@ import app.packed.build.BuildException;
 import app.packed.build.action.BuildActionable;
 import app.packed.build.hook.BuildHook;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
@@ -51,17 +54,16 @@ import app.packed.util.Variable;
 import internal.app.packed.bean.BeanLifecycleOrder;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
+import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.bean.PackedBindableWrappedVariable;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
-import internal.app.packed.container.LeafContainerBuilder;
+import internal.app.packed.container.PackedContainerInstaller;
+import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.entrypoint.OldEntryPointSetup;
 import internal.app.packed.entrypoint.OldEntryPointSetup.MainThreadOfControl;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.PackedServiceLocator;
-import sandbox.extension.bean.BeanHandle;
-import sandbox.extension.bean.BeanTemplate;
-import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.container.ContainerTemplate;
 import sandbox.extension.container.guest.GuestIntoAdaptor;
 import sandbox.extension.operation.OperationHandle;
@@ -194,7 +196,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     private PackedBeanInstaller install0(BeanTemplate template) {
-        return new PackedBeanInstaller(extension, extension.container.assembly, template);
+        return ((PackedBeanTemplate) template).newInstaller(extension, extension.container.assembly);
     }
 
     /**
@@ -298,7 +300,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      */
     // Why not on ContainerConfiguration. Think because I wanted to keep it clean
     public void link(Assembly assembly, Wirelet... wirelets) {
-        link0().build(assembly, ContainerConfiguration::new, wirelets);
+        link0().install(assembly, ContainerConfiguration::new, wirelets);
     }
 
     public void linkTransformed(Assembly assembly, BuildHook... transformers) {
@@ -332,7 +334,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /** {@return a new container builder used for linking.} */
     private ContainerTemplate.Installer link0() {
-        return LeafContainerBuilder.of(ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application, extension.container);
+        return PackedContainerInstaller.of((PackedContainerTemplate) ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application, extension.container);
     }
 
     void linkPrefix(Wirelet... wirelets) {
@@ -352,7 +354,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return a bean installer
      */
     private BeanTemplate.Installer newBeanBuilderSelf(BeanTemplate template) {
-        return new PackedBeanInstaller(extension, extension, template);
+        return ((PackedBeanTemplate) template).newInstaller(extension, extension);
     }
 
     /**
@@ -368,7 +370,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return new BeanIntrospector() {
 
             /** A template for bean lifecycle operations. */
-            private static final OperationTemplate BEAN_LIFECYCLE_TEMPLATE = OperationTemplate.defaults().returnIgnore();
+            private static final OperationTemplate BEAN_LIFECYCLE_TEMPLATE = OperationTemplate.defaults().reconfigure(c -> c.returnIgnore());
 
             private OperationHandle checkNotStaticBean(Class<? extends Annotation> annotationType, BeanMethod method) {
                 if (beanKind() == BeanKind.STATIC) {
@@ -422,7 +424,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     OperationHandle handle = checkNotStaticBean(OnStop.class, method);
                     bean.operations.addLifecycleOperation(BeanLifecycleOrder.fromStopping(oi.order()), handle);
                 } else if (annotation instanceof Provide) {
-                    OperationTemplate temp2 = OperationTemplate.defaults().returnType(method.operationType().returnRawType());
+                    OperationTemplate temp2 = OperationTemplate.defaults().reconfigure(c -> c.returnType(method.operationType().returnRawType()));
                     if (!Modifier.isStatic(method.modifiers())) {
                         if (beanKind() != BeanKind.CONTAINER) {
                             throw new BeanInstallationException("Not okay)");
@@ -431,7 +433,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     OperationSetup operation = OperationSetup.crack(method.newOperation(temp2));
                     bean.container.sm.provide(method.toKey(), operation, new FromOperationResult(operation));
                 } else if (annotation instanceof Export) {
-                    OperationTemplate temp2 = OperationTemplate.defaults().returnType(method.operationType().returnRawType());
+                    OperationTemplate temp2 = OperationTemplate.defaults().reconfigure(c -> c.returnType(method.operationType().returnRawType()));
 
                     if (!Modifier.isStatic(method.modifiers())) {
                         if (beanKind() != BeanKind.CONTAINER) {
@@ -449,7 +451,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
                     bean.container.lifetime.entryPoints.entryPoint = new OldEntryPointSetup();
 
-                    OperationTemplate temp = OperationTemplate.defaults().returnType(method.operationType().returnRawType());
+                    OperationTemplate temp = OperationTemplate.defaults().reconfigure(c -> c.returnType(method.operationType().returnRawType()));
                     OperationHandle os = method.newOperation(temp);
                     // os.specializeMirror(() -> new EntryPointMirror(index));
 

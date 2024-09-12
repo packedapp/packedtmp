@@ -21,8 +21,8 @@ import java.util.Set;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerHandle;
 import app.packed.extension.Extension;
-import sandbox.extension.container.ContainerHandle;
 import sandbox.extension.operation.OperationHandle;
 
 /** Implementation of {@link ContainerHandle}. */
