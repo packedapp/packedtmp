@@ -20,6 +20,7 @@ import app.packed.build.hook.BuildHook;
 /**
  * A bean transformer
  */
+// What do we do about beans owned by extensions
 public non-sealed abstract class BeanBuildHook extends BuildHook {
 
     /**
@@ -28,8 +29,13 @@ public non-sealed abstract class BeanBuildHook extends BuildHook {
      * @param configuration
      *            the configuration of the new bean
      */
-    // ExtensionBean, nonExtension beans
     public void onNew(BeanConfiguration configuration) {}
+
+    // sourceKind must be identical
+    public Object replaceSource(BeanSourceKind sourceKind, Object source) {
+        // return source == Foo.class ? TestFoo.class : source;
+        return source;
+    }
 
     // Argh besvaerligt at (at hvad?)
     public void onNew(@SuppressWarnings("exports") TransformerChain tc, BeanConfiguration bean) {}

@@ -52,9 +52,8 @@ public non-sealed class BeanMirror implements Accessor , ComponentMirror , Conte
      * @throws IllegalStateException
      *             if attempting to explicitly construct a bean mirror instance
      */
-    public BeanMirror() {
-        // Will fail if the bean mirror is not initialized by the framework
-        this.bean = BeanSetup.MIRROR_INITIALIZER.initialize();
+    public BeanMirror(BeanHandle<?> handle) {
+        this.bean = BeanSetup.crack(handle);
     }
 
     /** {@return the application the bean is a part of.} */
@@ -147,7 +146,7 @@ public non-sealed class BeanMirror implements Accessor , ComponentMirror , Conte
     // However custom bean templates may support it
     public Optional<OperationMirror> factoryOperation() {
         if (bean.beanKind != BeanKind.STATIC && bean.beanSourceKind != BeanSourceKind.INSTANCE) {
-            return Optional.of(bean.operations.all.get(0).mirror());
+            return Optional.of(bean.operations.first().mirror());
         }
         return Optional.empty();
     }
@@ -191,7 +190,7 @@ public non-sealed class BeanMirror implements Accessor , ComponentMirror , Conte
 
     /** {@return a stream of all of the operations declared by the bean.} */
     public Stream<OperationMirror> operations() {
-        return bean.operations.all.stream().map(OperationSetup::mirror);
+        return bean.operations.stream().map(OperationSetup::mirror);
     }
 
     /**
@@ -254,7 +253,7 @@ public non-sealed class BeanMirror implements Accessor , ComponentMirror , Conte
         @Override
         public Collection<BeanMirror> beans() {
             HashSet<BeanSetup> set = new HashSet<>();
-            for (OperationSetup os : bean.operations.all) {
+            for (OperationSetup os : bean.operations) {
                 os.forEachBinding(b -> {
                     throw new UnsupportedOperationException();
                 });
@@ -277,7 +276,7 @@ public non-sealed class BeanMirror implements Accessor , ComponentMirror , Conte
         @Override
         public Set<Class<? extends Extension<?>>> extensions() {
             HashSet<Class<? extends Extension<?>>> set = new HashSet<>();
-            for (OperationSetup os : bean.operations.all) {
+            for (OperationSetup os : bean.operations) {
                 os.forEachBinding(b -> {
                     if (b.boundBy.isExtension()) {
                         if (b.boundBy != bean.owner()) {

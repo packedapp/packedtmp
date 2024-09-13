@@ -36,7 +36,7 @@ public abstract non-sealed class InternalBuildWirelet extends FrameworkWirelet {
      */
     protected final ApplicationSetup checkIsApplication(ContainerSetup container) {
         ApplicationSetup application = container.application;
-        if (application.container != container) {
+        if (application.container() != container) {
             throw new IllegalArgumentException("This wirelet can only be specified for the root container of an application, wirelet = " + this);
         }
         return application;

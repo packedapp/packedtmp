@@ -21,15 +21,15 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint.UseSite;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTarget;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
-import internal.app.packed.operation.PackedOperationType.MemberOperationSetup;
-import sandbox.extension.operation.OperationHandle;
-import sandbox.extension.operation.OperationTemplate;
+import internal.app.packed.operation.PackedOperationTarget.MemberOperationSetup;
 
 /**
  *
@@ -67,20 +67,21 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
         return delegatedFrom.extensionType;
     }
 
-    public OperationHandle newOperation(ExtensionSetup extension, PackedOperationTemplate template) {
+    public OperationHandle<?> newOperation(ExtensionSetup extension, PackedOperationTemplate template) {
         // checkConfigurable
         PackedOperationInstaller poi = template.newInstaller(operationType, bean, extension);
+        poi.pot = new MemberOperationSetup(target, methodHandle);
 
-        MemberOperationSetup mos = new MemberOperationSetup(target, methodHandle);
-        OperationSetup os = poi.newOperation(mos);
-        bean.operations.all.add(os);
+        OperationSetup os = poi.newOperation(OperationHandle::new);
+
+//        bean.operations.all.add(os);
         scanner.unBoundOperations.add(os);
-        return os.toHandle(scanner);
+        return os.handle();
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(OperationTemplate template, UseSite context) {
+    public OperationHandle<?> newOperation(OperationTemplate template, UseSite context) {
         PackedExtensionPointContext c = (PackedExtensionPointContext) context;
         return newOperation(c.usedBy(), (PackedOperationTemplate) template);
     }

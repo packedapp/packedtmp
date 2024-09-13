@@ -18,8 +18,8 @@ package app.packed.bean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
+import app.packed.runtime.RunState;
 import app.packed.util.Key;
 import internal.app.packed.bean.BeanSetup;
 

@@ -17,8 +17,13 @@ package app.packed.component;
 
 import java.util.Set;
 
+import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
+import app.packed.bean.BeanMirror;
 import app.packed.build.BuildMirror;
+import app.packed.container.ContainerMirror;
+import app.packed.namespace.NamespaceMirror;
+import app.packed.operation.OperationMirror;
 import app.packed.util.TreeView;
 
 /**
@@ -27,7 +32,7 @@ import app.packed.util.TreeView;
  * A component mirror is always defined either by the framework or by an extension. IDK would it make sense to have it
  * as a user??? Fx Importer...
  */
-public interface ComponentMirror extends BuildMirror {
+public sealed interface ComponentMirror extends BuildMirror permits ApplicationMirror, BeanMirror, ContainerMirror, NamespaceMirror, OperationMirror {
 
     // BuildAction installedBy();?? Cute
 
@@ -94,7 +99,6 @@ public interface ComponentMirror extends BuildMirror {
 //default long componentId() {
 //    return 0;
 //}
-
 
 //Does a component always have a runtime representation???
 //Assembly and Extension does not have a runtime representation...

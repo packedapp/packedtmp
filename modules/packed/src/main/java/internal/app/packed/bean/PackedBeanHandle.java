@@ -25,13 +25,13 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.component.Authority;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
+import app.packed.operation.OperationHandle;
 import app.packed.util.Key;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.service.InternalServiceUtil;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceSetup;
-import sandbox.extension.operation.OperationHandle;
 
 /** Implementation of {@link BeanHandle}. */
 public /* value */ record PackedBeanHandle<B extends BeanConfiguration>(BeanSetup bean) implements BeanHandle<B> {
@@ -62,9 +62,9 @@ public /* value */ record PackedBeanHandle<B extends BeanConfiguration>(BeanSetu
 
     /** {@inheritDoc} */
     @Override
-    public List<OperationHandle> lifetimeOperations() {
+    public List<OperationHandle<?>> lifetimeOperations() {
         if (beanKind() != BeanKind.STATIC && beanSourceKind() != BeanSourceKind.SOURCELESS) {
-            return List.of(bean.operations.all.get(0).toHandle());
+            return List.of(bean.operations.first().handle());
         }
         return List.of();
     }

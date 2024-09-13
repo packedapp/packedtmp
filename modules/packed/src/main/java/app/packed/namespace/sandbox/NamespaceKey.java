@@ -23,7 +23,7 @@ import app.packed.component.Authority;
 
 // Ideen er vist at baade Users og Extensions kan have et "main" namespace for fx services.
 // Ved ikke om vi skal bruge bruge den i sidste ende
-public record NamespaceKey(Authority authority, String name) {}
+ record NamespaceKey(Authority authority, String name) {}
 
 // Problemet er lidt her at vi ikke kan skrive et fyldestgoerende navn
 // Eftersom vi kan have flere extensions med samme navn...

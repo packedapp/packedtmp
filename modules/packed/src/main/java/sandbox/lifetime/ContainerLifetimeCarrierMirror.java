@@ -17,6 +17,7 @@ package sandbox.lifetime;
 
 import java.util.Collection;
 
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
@@ -27,6 +28,13 @@ import app.packed.extension.Extension;
  */
 // Do we need this mirror?
 public class ContainerLifetimeCarrierMirror extends BeanMirror {
+
+    /**
+     * @param handle
+     */
+    public ContainerLifetimeCarrierMirror(BeanHandle<?> handle) {
+        super(handle);
+    }
 
     public Class<? extends Extension<?>> extensionType() {
         return BaseExtension.class;

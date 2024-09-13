@@ -10,10 +10,11 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationDependencyOrder;
+import app.packed.operation.OperationTemplate;
+import app.packed.runtime.RunState;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceableBeanConfiguration;
 import internal.app.packed.bean.PackedBeanTemplate;
@@ -24,7 +25,6 @@ import internal.app.packed.container.PackedExtensionPointContext;
 import sandbox.extension.container.ComponentGuestAdaptorBeanConfiguration;
 import sandbox.extension.container.ContainerTemplate;
 import sandbox.extension.container.ContainerTemplateLink;
-import sandbox.extension.operation.OperationTemplate;
 import sandbox.lifetime.external.LifecycleController;
 
 /** An {@link ExtensionPoint extension point} for {@link BaseExtension}. */
@@ -32,8 +32,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     // Altsaa fx naar vi naar hen til application.
     // Vi kan jo ikke installere den i extensionen...
-    public static ContainerTemplateLink CONTAINER_MIRROR = ContainerTemplateLink.of(MethodHandles.lookup(), BaseExtension.class, "ContainerMirror")
-            .build();
+    public static ContainerTemplateLink CONTAINER_MIRROR = ContainerTemplateLink.of(MethodHandles.lookup(), BaseExtension.class, "ContainerMirror").build();
 
     /** A bridge that makes the name of the container available. */
     public static final ContainerTemplateLink CONTAINER_NAME = null;
@@ -56,7 +55,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     BaseExtensionPoint() {}
 
     public <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<ServiceableBeanConfiguration<T>> h = newDependantExtensionBean(BeanKind.CONTAINER.template(), context()).install(implementation,
+        BeanHandle<ServiceableBeanConfiguration<T>> h = newBean(BeanKind.CONTAINER.template(), context()).install(implementation,
                 ServiceableBeanConfiguration::new);
         return h.configuration();
     }
@@ -68,9 +67,8 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            an operation responsible for creating an instance of the bean when the container is initialized
      * @return a configuration object representing the installed bean
      */
-    public <T> InstanceBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<InstanceBeanConfiguration<T>> h = newDependantExtensionBean(BeanKind.CONTAINER.template(), context()).install(op,
-                InstanceBeanConfiguration::new);
+    public <T> ServiceableBeanConfiguration<T> install(Op<T> op) {
+        BeanHandle<ServiceableBeanConfiguration<T>> h = newBean(BeanKind.CONTAINER.template(), context()).install(op, ServiceableBeanConfiguration::new);
         return h.configuration();
     }
 
@@ -115,13 +113,13 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     @SuppressWarnings("unchecked")
     public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
-        BeanHandle<?> handle = newDependantExtensionBean(BeanKind.CONTAINER.template(), context()).installIfAbsent(clazz, InstanceBeanConfiguration.class,
+        BeanHandle<?> handle = newBean(BeanKind.CONTAINER.template(), context()).installIfAbsent(clazz, InstanceBeanConfiguration.class,
                 InstanceBeanConfiguration::new, h -> action.accept((InstanceBeanConfiguration<T>) h.configuration()));
         return (InstanceBeanConfiguration<T>) handle.configuration();
     }
 
     public <T> InstanceBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<InstanceBeanConfiguration<T>> h = newDependantExtensionBean(BeanKind.CONTAINER.template(), context()).installInstance(instance,
+        BeanHandle<InstanceBeanConfiguration<T>> h = newBean(BeanKind.CONTAINER.template(), context()).installInstance(instance,
                 InstanceBeanConfiguration::new);
         return h.configuration();
     }
@@ -141,46 +139,47 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public BeanConfiguration installStatic(Class<?> beanClass) {
-        return newDependantExtensionBean(BeanKind.STATIC.template(), context()).install(beanClass, BeanConfiguration::new).configuration();
+        return newBean(BeanKind.STATIC.template(), context()).install(beanClass, BeanConfiguration::new).configuration();
     }
 
     /**
-     * Creates a new application bean installer.
+     * Creates a new bean installer to be able to install a new bean on behalf of the user.
      *
      * @param template
-     *            a template for the bean's lifetime
+     *            a bean template representing the behaviour of the new bean
      * @return the installer
      */
-    public BeanTemplate.Installer newApplicationBean(BeanTemplate template) {
+    public BeanTemplate.Installer newBean(BeanTemplate template) {
         return ((PackedBeanTemplate) template).newInstaller(extension().extension, extension().extension.container.assembly);
     }
 
     /**
-     * Create a new container builder using the specified container template.
+     * Creates a new bean installer to be able to install a new bean on behalf of a another extension.
      *
      * @param template
-     *            the container's template
-     * @return a new container builder
+     *            a bean template representing the behaviour of the new bean
+     * @return the installer
      */
+    public BeanTemplate.Installer newBean(BeanTemplate template, UseSite forExtension) {
+        // Skal den her overhovede vaere public???
+        // Maybe move this to UseSite.. Nah other extension should also allow to install components.
+        // Where we cannot put the methods on usesite
+        requireNonNull(forExtension, "forExtension is null");
+        return ((PackedBeanTemplate) template).newInstaller(extension().extension, ((PackedExtensionPointContext) forExtension).usedBy());
+    }
+
+    /**
+     * Creates a new container installer to be able to install a new container on behalf of the user.
+     *
+     * @param template
+     *            a container template representing the behaviour of the new container
+     * @return the installer
+     */
+
     public ContainerTemplate.Installer newContainer(ContainerTemplate template) {
         // Kan only use channels that are direct dependencies of the usage extension
         ExtensionSetup es = contextUse().usedBy();
         return PackedContainerInstaller.of((PackedContainerTemplate) template, es.extensionType, es.container.application, es.container);
-    }
-
-    /**
-     * Creates a new extension bean installer.
-     *
-     * @param template
-     *            a template for the bean's lifetime
-     * @return the installer
-     */
-    // Skal den her overhovede vaere public???
-    // Maybe move this to UseSite.. Nah other extension should also allow to install components.
-    // Where we cannot put the methods on usesite
-    public BeanTemplate.Installer newDependantExtensionBean(BeanTemplate template, UseSite forExtension) {
-        requireNonNull(forExtension, "forExtension is null");
-        return ((PackedBeanTemplate) template).newInstaller(extension().extension, ((PackedExtensionPointContext) forExtension).usedBy());
     }
 
     public int registerEntryPoint(Class<?> hook) {

@@ -15,11 +15,19 @@
  */
 package sandbox.extension.application.old;
 
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanMirror;
 
 /** A mirror of an application host. */
 // Ved ikke om den er speciel iforhold til almindelig container
 // Fordi man eksplicit skal sige alting
 class ApplicationHostMirror extends BeanMirror {
+
+    /**
+     * @param handle
+     */
+    public ApplicationHostMirror(BeanHandle<?> handle) {
+        super(handle);
+    }
 
 }

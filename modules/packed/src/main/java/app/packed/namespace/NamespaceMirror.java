@@ -15,55 +15,38 @@
  */
 package app.packed.namespace;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.stream.Stream;
 
+import app.packed.bean.BeanMirror;
 import app.packed.component.Authority;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
-import internal.app.packed.container.NamespaceSetup;
+import internal.app.packed.namespace.NamespaceSetup;
 
-/**
- * A mirror of a namespace.
- */
-// Kan maaske have en EventRouter? DeliveredEvent = <Domain, Event>
-// Namespace:Cli:main
-// CliExtension.CliCommand:...
-// ServiceNamespace::/:main
-
-// Is abstract for now. Similar to ExtensionMirror
-
-// I think a namespace can have restrictions Map<Permission, Set<Container>>
-
-// Do we also need a NamespaceNodeMirror????
-public abstract class NamespaceMirror<E extends Extension<E>> implements ComponentMirror {
-
-    /*
-     * A namespace does not lists the types of resource keys. As namespaces might have multiple resource types. For example,
-     * CLI has both arguments and commands that are unique. And Hibernate could technically have both Table Names and
-     * EntityClasses <p> A namespace does not have an owner. For example, if two extensions uses an extension who of them
-     * are the owner <p>
-     **/
+/** A mirror of a namespace. */
+public non-sealed class NamespaceMirror<E extends Extension<E>> implements ComponentMirror {
 
     /** The namespace configuration. */
     private final NamespaceSetup namespace;
 
-    protected NamespaceMirror() {
-        this.namespace = NamespaceSetup.MI.initialize();
-
+    public NamespaceMirror(NamespaceHandle<E, ?> handle) {
+        this.namespace = handle.namespace;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentPath componentPath() {
+    public final ComponentPath componentPath() {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
-        return other instanceof NamespaceMirror<?> m && getClass() == m.getClass() && namespace == m.namespace;
+        return other instanceof NamespaceMirror m && getClass() == m.getClass() && namespace == m.namespace;
     }
 
     /** {@inheritDoc} */
@@ -72,12 +55,14 @@ public abstract class NamespaceMirror<E extends Extension<E>> implements Compone
         return namespace.hashCode();
     }
 
-    // IDK, define is also a bad word
-    // Should be similar named as bean.operator(), operation.operator
-    // Maybe we do allow user namespaces...
-    /** {@return the extension class that owns the namespace.} */
-    Class<? extends Extension<?>> namespaceExtension() {
-        return namespace.root.extensionType;
+    public final Stream<BeanMirror> namespaceActiveBeans() {
+        throw new UnsupportedOperationException();
+    }
+
+    // All containers that are active, are containers that use the namespace in some way
+    // PartialTreeView
+    public final Stream<ContainerMirror> namespaceActiveContainers() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -116,22 +101,28 @@ public abstract class NamespaceMirror<E extends Extension<E>> implements Compone
     // And this is where I think we have 2 things.
     // One where it is available, and one where it is active. And by used I mean???
     // Hmm, A reference to one of its elements?? Hmm. Maybe where it is used it not very well defined
+    // I think Available is the right thing to return
     public final ContainerMirror.OfTree namespaceScope() {
         throw new UnsupportedOperationException();
     }
 
-
-    // All containers that are active, are containers that use the namespace in some way
-    // PartialTreeView
-    public final Stream<ContainerMirror> namespaceActiveContainers() {
-        throw new UnsupportedOperationException();
-    }
-
-    public final Stream<ContainerMirror> namespaceActiveBeans() {
-        throw new UnsupportedOperationException();
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected final <T extends NamespaceOperationMirror> Stream<T> operations(Class<T> operationType) {
+        requireNonNull(operationType, "operationType is null");
+        return (Stream) namespace.operations.stream().map(e -> e.mirror()).filter(f -> operationType.isAssignableFrom(f.getClass()));
     }
 }
 
-class ZamaspaceMirrorArchive<E extends Extension<E>> extends NamespaceMirror<E> {
-
-}
+///** {@return the root extension in the namespace} */
+//@SuppressWarnings("unchecked")
+//protected E extensionRoot() {
+//  return (E) namespace.root.instance();
+//}
+//
+//// IDK, define is also a bad word
+//// Should be similar named as bean.operator(), operation.operator
+//// Maybe we do allow user namespaces...
+///** {@return the extension class that owns the namespace.} */
+//Class<? extends Extension<?>> namespaceExtension() {
+//  return namespace.root.extensionType;
+//}

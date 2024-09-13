@@ -15,7 +15,8 @@
  */
 package app.packed.service.mirror.oldMaybe;
 
-import app.packed.namespace.sandbox.NamespaceOperationMirror;
+import app.packed.namespace.NamespaceOperationMirror;
+import app.packed.operation.OperationHandle;
 import app.packed.service.mirror.ServiceNamespaceMirror;
 import app.packed.util.Key;
 import internal.app.packed.service.ExportedService;
@@ -30,7 +31,8 @@ public class ExportedServiceMirror extends NamespaceOperationMirror {
 
     final ExportedService es;
 
-    public ExportedServiceMirror(ExportedService es) {
+    public ExportedServiceMirror(OperationHandle<?> handle, ExportedService es) {
+        super(handle);
         this.es = es;
     }
 

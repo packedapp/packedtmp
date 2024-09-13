@@ -15,10 +15,16 @@
  */
 package app.packed.component;
 
+import app.packed.application.ApplicationConfiguration;
+import app.packed.bean.BeanConfiguration;
 import app.packed.build.action.BuildActionable;
+import app.packed.container.ContainerConfiguration;
+import app.packed.namespace.NamespaceConfiguration;
+import app.packed.operation.OperationConfiguration;
 
 /** The abstract configuration of a component. */
-public abstract class ComponentConfiguration {
+public abstract sealed class ComponentConfiguration
+        permits ApplicationConfiguration, BeanConfiguration, ContainerConfiguration, NamespaceConfiguration, OperationConfiguration {
 
     /**
      * Checks that the container's assembly is still configurable.
@@ -28,7 +34,7 @@ public abstract class ComponentConfiguration {
      */
     protected final void checkIsConfigurable() {
         if (!isConfigurable()) {
-            throw new IllegalStateException("The " + componentHandle().componentKind().name() + " is no longer configurable");
+            throw new IllegalStateException("The " + handle().componentKind().name() + " is no longer configurable");
         }
     }
 
@@ -38,11 +44,11 @@ public abstract class ComponentConfiguration {
      *
      * @return the component handle
      */
-    protected abstract ComponentHandle componentHandle();
+    protected abstract ComponentHandle handle();
 
     /** {@return the path of the component} */
     public final ComponentPath componentPath() {
-        return componentHandle().componentPath();
+        return handle().componentPath();
     }
 
     /**
@@ -55,18 +61,20 @@ public abstract class ComponentConfiguration {
      * @see ComponentMirror#componentTags()
      */
     @BuildActionable("component.addTags")
-    public abstract ComponentConfiguration componentTag(String... tags);
+    public ComponentConfiguration componentTag(String... tags) {
+        throw new UnsupportedOperationException();
+    }
 
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object obj) {
-        return obj instanceof ComponentConfiguration cc && componentHandle().equals(cc.componentHandle());
+        return obj instanceof ComponentConfiguration cc && handle().equals(cc.handle());
     }
 
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return componentHandle().hashCode();
+        return handle().hashCode();
     }
 
     /**
@@ -75,6 +83,6 @@ public abstract class ComponentConfiguration {
      * Typically this is determined by whether or not the defining assembly of the component is still configurable.
      */
     public final boolean isConfigurable() {
-        return componentHandle().isConfigurable();
+        return handle().isConfigurable();
     }
 }

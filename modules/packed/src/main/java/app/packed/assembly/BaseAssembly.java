@@ -15,7 +15,6 @@
  */
 package app.packed.assembly;
 
-import app.packed.build.hook.AllowBuildHooksFromParentAssembly;
 import app.packed.extension.BeanMetaBeanTrigger.JavaBaseSupport;
 
 /**
@@ -27,6 +26,5 @@ import app.packed.extension.BeanMetaBeanTrigger.JavaBaseSupport;
  * @apiNote We never return BaseAssembly from any method, as this would make the class difficult to extend.
  */
 @JavaBaseSupport
-@AllowBuildHooksFromParentAssembly
 //Open for testing?? Testing classes boer vaere i samme modul???
 public abstract class BaseAssembly extends AbstractBaseAssembly {}

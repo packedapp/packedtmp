@@ -36,7 +36,7 @@ import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.operation.BindingKind;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.OperationMirror;
-import sandbox.extension.operation.OperationTemplate;
+import app.packed.operation.OperationTemplate;
 import tck.ServiceLocatorAppTest;
 
 /**

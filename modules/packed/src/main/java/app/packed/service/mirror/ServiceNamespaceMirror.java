@@ -20,8 +20,10 @@ import java.util.Map;
 import java.util.Set;
 
 import app.packed.extension.BaseExtension;
+import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.service.ServiceContract;
+import app.packed.service.ServiceNamespaceConfiguration;
 import app.packed.util.Key;
 
 /**
@@ -35,6 +37,13 @@ import app.packed.util.Key;
 // 2 typer exports + main
 // Maaske er det ikke et namespace...
 public class ServiceNamespaceMirror extends NamespaceMirror<BaseExtension> {
+
+    /**
+     * @param handle
+     */
+    protected ServiceNamespaceMirror(NamespaceHandle<BaseExtension, ServiceNamespaceConfiguration> handle) {
+        super(handle);
+    }
 
     // Where is my exported services used..
     // Only local???

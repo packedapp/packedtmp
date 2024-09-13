@@ -66,9 +66,9 @@ public sealed interface ContainerLocal<T> extends BuildLocal<ContainerLocal.Acce
     }
 
     /** An accessor where {@link ContainerLocal container local} values can be stored and retrieved. */
+    // Extension?
     public sealed interface Accessor extends ApplicationLocal.Accessor permits ContainerConfiguration, ContainerHandle, ContainerMirror {}
 
-    // Extension?
     // En god maade at traekke sig selv ud...
     // ContainerLocal<FooExtension> myLocal = FooExtension.local();
 

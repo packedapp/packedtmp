@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import app.packed.assembly.Assembly;
 import app.packed.container.ContainerConfiguration;
@@ -30,13 +29,13 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.operation.Op1;
+import app.packed.operation.OperationTemplate;
 import app.packed.util.Key;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.context.ContextSpanKind;
-import sandbox.extension.operation.OperationTemplate;
 
 /**
  * A container template must be specified when creating a new container.
@@ -46,7 +45,7 @@ import sandbox.extension.operation.OperationTemplate;
  * <p>
  *
  *
- * @see BaseExtensionPoint#containerInstaller(ContainerTemplate)
+ * @see app.packed.extension.BaseExtensionPoint#newContainer(ContainerTemplate)
  */
 public sealed interface ContainerTemplate permits PackedContainerTemplate {
 
@@ -92,9 +91,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
     // Carefull with Unmanaged on Managed
     ContainerTemplate UNMANAGED = new PackedContainerTemplate(PackedContainerKind.UNMANAGED);
 
-
     ContainerTemplate.Descriptor descriptor();
-
 
     ContainerTemplate reconfigure(Consumer<? super Configurator> configure);
 
@@ -237,7 +234,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          *
          * @see #build(Wirelet...)
          */
-        <T extends ContainerConfiguration> ContainerHandle<?> install(Assembly assembly, Function<? super ContainerTemplate.Installer, T> configurationCreator,
+        <T extends ContainerConfiguration> ContainerHandle<?> install(Assembly assembly, Function<? super ContainerHandle<?>, T> configurationCreator,
                 Wirelet... wirelets);
 
         /**
@@ -249,7 +246,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          *
          * @see #install(Assembly, Wirelet...)
          */
-        <T extends ContainerConfiguration> ContainerHandle<T> install(Function<? super ContainerTemplate.Installer, T> configurationCreator,
+        <T extends ContainerConfiguration> ContainerHandle<T> install(Function<? super ContainerHandle<?>, T> configurationCreator,
                 Wirelet... wirelets);
 
         /**
@@ -261,7 +258,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          *
          * @see app.packed.extension.Extension#fromHandle(ContainerHandle)
          */
-        <T extends ContainerConfiguration> ContainerHandle<T> installAndUseThisExtension(Function<? super ContainerTemplate.Installer, T> configurationCreator,
+        <T extends ContainerConfiguration> ContainerHandle<T> installAndUseThisExtension(Function<? super ContainerHandle<?>, T> configurationCreator,
                 Wirelet... wirelets);
 
         /**
@@ -302,7 +299,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          * @apiNote the specified supplier may be called multiple times for the same bean. In which case an equivalent mirror
          *          must be returned
          */
-        Installer specializeMirror(Supplier<? extends ContainerMirror> supplier);
+        Installer specializeMirror(Function<? super ContainerHandle<?>, ? extends ContainerMirror> function);
     }
 
 }

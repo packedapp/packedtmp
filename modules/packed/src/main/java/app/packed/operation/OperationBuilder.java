@@ -19,6 +19,7 @@ package app.packed.operation;
  *
  */
 // FunctionBuilder
+// This is not a builder.. More like a "user" installer
 public interface OperationBuilder {
 
 }

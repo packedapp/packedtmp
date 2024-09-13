@@ -20,6 +20,7 @@ import java.lang.invoke.MethodType;
 import java.util.function.Supplier;
 
 import app.packed.extension.Extension;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 
 /**
@@ -40,7 +41,7 @@ public interface CompositeOperationHandle {
 
     void addChild(CompositeOperationHandle handle);
 
-    void addChild(OperationHandle handle);
+    void addChild(OperationHandle<?> handle);
 
     MethodHandle generateMethodHandle();
 

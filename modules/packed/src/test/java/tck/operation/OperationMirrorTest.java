@@ -17,7 +17,6 @@ package tck.operation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -27,10 +26,10 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bean.BeanMirror;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
-import sandbox.extension.operation.OperationHandle;
-import sandbox.extension.operation.OperationTemplate;
+import app.packed.operation.OperationTemplate;
 import tck.AppAppTest;
 import tck.HookTestingExtension;
 import tck.HookTestingExtension.FieldHook.FieldPrivateInstanceString;
@@ -48,14 +47,14 @@ public class OperationMirrorTest extends AppAppTest {
      */
     @Test
     public void notInitialized() {
-        assertThrows(IllegalStateException.class, () -> new OperationMirror().bean());
+//        assertThrows(IllegalStateException.class, () -> new OperationMirror().bean());
     }
 
     /** Tests a simple OperationMirror */
     @Test
     public void simple() {
         hooks().onAnnotatedField((l, b) -> {
-            OperationHandle h = b.newGetOperation(OperationTemplate.defaults());
+            OperationHandle<?> h = b.newGetOperation(OperationTemplate.defaults()).install();
             add(h);
         });
         installInstance(new FieldPrivateInstanceString());
@@ -85,11 +84,18 @@ public class OperationMirrorTest extends AppAppTest {
 
     @Test
     public void customOperationMirror() {
-        class MyOpMirror extends OperationMirror {}
+        class MyOpMirror extends OperationMirror {
+
+            /**
+             * @param handle
+             */
+            public MyOpMirror(OperationHandle<?> handle) {
+                super(handle);
+            }}
 
         hooks().onAnnotatedField((l, b) -> {
-            OperationHandle h = b.newGetOperation(OperationTemplate.defaults());
-            h.specializeMirror(() -> new MyOpMirror());
+            OperationHandle<?> h = b.newGetOperation(OperationTemplate.defaults()).install();
+            h.specializeMirror(MyOpMirror::new);
             add(h);
         });
         installInstance(new FieldPrivateInstanceString());

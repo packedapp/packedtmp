@@ -28,7 +28,7 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.lifetime.OnInitialize;
-import sandbox.extension.operation.OperationHandle;
+import app.packed.operation.OperationHandle;
 
 /**
  *
@@ -76,7 +76,7 @@ public class MhExt extends BaseAssembly {
         BeanHandle<?> h;
 
         public void ownL(Class<?> cl) {
-            BeanTemplate.Installer builder = base().newApplicationBean(BeanKind.UNMANAGED.template());
+            BeanTemplate.Installer builder = base().newBean(BeanKind.UNMANAGED.template());
             h = builder.install(cl, BeanConfiguration::new);
         }
 
@@ -88,7 +88,7 @@ public class MhExt extends BaseAssembly {
 
             b.bindCodeGenerator(MethodHandle.class, () -> {
                 if (h != null) {
-                    OperationHandle oh = h.lifetimeOperations().get(0);
+                    OperationHandle<?> oh = h.lifetimeOperations().get(0);
                     System.out.println(oh);
                     System.out.println("ASDADS");
                     return oh.generateMethodHandle();

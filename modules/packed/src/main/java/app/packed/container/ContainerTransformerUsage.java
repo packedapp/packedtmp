@@ -20,6 +20,7 @@ import app.packed.assembly.Assembly;
 import app.packed.assembly.BaseAssembly;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.bean.BeanLocal;
+import app.packed.build.hook.BuildHook;
 import app.packed.service.ServiceableBeanConfiguration;
 
 /**
@@ -48,7 +49,9 @@ public class ContainerTransformerUsage extends BaseAssembly {
             }
         };
 
-        a = DelegatingAssembly.applyBuildHook(a, b -> b.observe(hook));
+        a = BuildHook.apply(a, b -> b.observe(hook));
+
+//        a = DelegatingAssembly.applyBuildHook(a, b -> b.observe(hook));
         //a = Assemblies.transform(MethodHandles.lookup(), a, hook);
         // a = hook.transformRecursively(MethodHandles.lookup(), a);
 
@@ -68,7 +71,7 @@ public class ContainerTransformerUsage extends BaseAssembly {
                 }
             };
             // Fungere jo ikke rigtige... Nu har vi to delegating assembly
-            return applyBuildHook(new ContainerTransformerUsage(), c -> c.transform(ct));
+            return BuildHook.apply(new ContainerTransformerUsage(), c -> c.transform(ct));
             // WAS
             // return Assemblies.transform(MethodHandles.lookup(), new ContainerTransformerUsage(), ct);
 

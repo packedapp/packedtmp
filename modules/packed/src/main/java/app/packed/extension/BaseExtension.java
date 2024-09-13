@@ -10,10 +10,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.DeploymentMirror;
 import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyMirror;
-import app.packed.assembly.AssemblyPropagator;
 import app.packed.bean.BeanClassMutator;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
@@ -27,7 +25,6 @@ import app.packed.bean.ManagedBeanRequiredException;
 import app.packed.bean.SyntheticBean;
 import app.packed.build.BuildException;
 import app.packed.build.action.BuildActionable;
-import app.packed.build.hook.BuildHook;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerLocal;
@@ -41,7 +38,9 @@ import app.packed.lifetime.OnStart;
 import app.packed.lifetime.OnStop;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
+import app.packed.operation.OperationTemplate;
 import app.packed.service.Export;
 import app.packed.service.Provide;
 import app.packed.service.ServiceContract;
@@ -51,6 +50,7 @@ import app.packed.service.ServiceOutgoingTransformer;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Variable;
+import internal.app.packed.application.DeploymentMirror;
 import internal.app.packed.bean.BeanLifecycleOrder;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
@@ -66,8 +66,6 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.PackedServiceLocator;
 import sandbox.extension.container.ContainerTemplate;
 import sandbox.extension.container.guest.GuestIntoAdaptor;
-import sandbox.extension.operation.OperationHandle;
-import sandbox.extension.operation.OperationTemplate;
 import sandbox.lifetime.external.LifecycleController;
 
 /**
@@ -161,12 +159,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         extension.container.sm.exportAll = true;
     }
 
-    // Har man brug for andet end class transformer? Er der nogle generalle bean properties??? IDK
-    <T> ServiceableBeanConfiguration<T> transformingInstall(Class<T> implementation, Consumer<? super BeanClassMutator> transformation) {
-        throw new UnsupportedOperationException();
-
-    }
-
     /**
      * Installs a bean of the specified type. A single instance of the specified class will be instantiated when the
      * container is initialized.
@@ -195,6 +187,10 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return h.configuration();
     }
 
+    public <T> ServiceableBeanConfiguration<T> install(SyntheticBean<T> synthetic) {
+        throw new UnsupportedOperationException();
+    }
+
     private PackedBeanInstaller install0(BeanTemplate template) {
         return ((PackedBeanTemplate) template).newInstaller(extension, extension.container.assembly);
     }
@@ -215,23 +211,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return h.configuration();
     }
 
-    public <T> ServiceableBeanConfiguration<T> install(SyntheticBean<T> synthetic) {
-        throw new UnsupportedOperationException();
-    }
-
-    public <T> ServiceableBeanConfiguration<T> installLazy(SyntheticBean<T> synthetic) {
-        throw new UnsupportedOperationException();
-    }
-
-    public <T> ServiceableBeanConfiguration<T> installPrototype(SyntheticBean<T> synthetic) {
-        // fail for instance
-        throw new UnsupportedOperationException();
-    }
-
-    public <T> ServiceableBeanConfiguration<T> installStatic(SyntheticBean<T> synthetic) {
-        throw new UnsupportedOperationException();
-    }
-
     public <T> ServiceableBeanConfiguration<T> installLazy(Class<T> implementation) {
         BeanHandle<ServiceableBeanConfiguration<T>> handle = install0(BeanKind.LAZY.template()).install(implementation, ServiceableBeanConfiguration::new);
         return handle.configuration();
@@ -242,6 +221,10 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return h.configuration();
     }
 
+    public <T> ServiceableBeanConfiguration<T> installLazy(SyntheticBean<T> synthetic) {
+        throw new UnsupportedOperationException();
+    }
+
     public <T> ServiceableBeanConfiguration<T> installPrototype(Class<T> implementation) {
         BeanHandle<ServiceableBeanConfiguration<T>> handle = install0(BeanKind.UNMANAGED.template()).install(implementation, ServiceableBeanConfiguration::new);
         return handle.configuration();
@@ -250,6 +233,11 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     public <T> ServiceableBeanConfiguration<T> installPrototype(Op<T> op) {
         BeanHandle<ServiceableBeanConfiguration<T>> h = install0(BeanKind.UNMANAGED.template()).install(op, ServiceableBeanConfiguration::new);
         return h.configuration();
+    }
+
+    public <T> ServiceableBeanConfiguration<T> installPrototype(SyntheticBean<T> synthetic) {
+        // fail for instance
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -265,6 +253,10 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     public BeanConfiguration installStatic(Class<?> implementation) {
         BeanHandle<BeanConfiguration> handle = install0(BeanKind.STATIC.template()).install(implementation, BeanConfiguration::new);
         return handle.configuration();
+    }
+
+    public <T> ServiceableBeanConfiguration<T> installStatic(SyntheticBean<T> synthetic) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -303,22 +295,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         link0().install(assembly, ContainerConfiguration::new, wirelets);
     }
 
-    public void linkTransformed(Assembly assembly, BuildHook... transformers) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void linkTransformed(Assembly assembly, AssemblyPropagator ap, BuildHook... transformers) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void linkTransformed(Assembly assembly, BuildHook[] transformers, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void linkTransformed(Assembly assembly, AssemblyPropagator ap, BuildHook[] transformers, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Creates a new container that strongly linked to the lifetime of this container.
      *
@@ -332,16 +308,34 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         return handle.configuration();
     }
 
+    // You simply wrap the assembly before calling these methods
+//    public void linkTransformed(Assembly assembly, BuildHook... transformers) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public void linkTransformed(Assembly assembly, AssemblyPropagator ap, BuildHook... transformers) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public void linkTransformed(Assembly assembly, BuildHook[] transformers, Wirelet... wirelets) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public void linkTransformed(Assembly assembly, AssemblyPropagator ap, BuildHook[] transformers, Wirelet... wirelets) {
+//        throw new UnsupportedOperationException();
+//    }
+
     /** {@return a new container builder used for linking.} */
     private ContainerTemplate.Installer link0() {
-        return PackedContainerInstaller.of((PackedContainerTemplate) ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application, extension.container);
-    }
-
-    void linkPrefix(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
+        return PackedContainerInstaller.of((PackedContainerTemplate) ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application,
+                extension.container);
     }
 
     void linkPostfix(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    void linkPrefix(Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -372,14 +366,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             /** A template for bean lifecycle operations. */
             private static final OperationTemplate BEAN_LIFECYCLE_TEMPLATE = OperationTemplate.defaults().reconfigure(c -> c.returnIgnore());
 
-            private OperationHandle checkNotStaticBean(Class<? extends Annotation> annotationType, BeanMethod method) {
-                if (beanKind() == BeanKind.STATIC) {
-                    throw new ManagedBeanRequiredException(annotationType + " is not supported for static beans");
-                }
-                // Maybe lifecycle members cannot be static at all
-                return method.newOperation(BEAN_LIFECYCLE_TEMPLATE);
-            }
-
             /** Handles {@link Inject}. */
             @Override
             public void activatedByAnnotatedField(Annotation hook, BeanField field) {
@@ -399,68 +385,10 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                         }
                     }
 
-                    OperationSetup operation = OperationSetup.crack(field.newGetOperation(OperationTemplate.defaults()));
+                    OperationSetup operation = OperationSetup.crack(field.newGetOperation(OperationTemplate.defaults()).install());
                     extension.container.sm.provide(key, operation, new FromOperationResult(operation));
                 } else {
                     super.activatedByAnnotatedField(hook, field);
-                }
-            }
-
-            /** Handles {@link Inject}, {@link OnInitialize}, {@link OnStart} and {@link OnStop}. */
-            @Override
-            public void triggeredByAnnotatedMethod(Annotation annotation, BeanMethod method) {
-                BeanSetup bean = bean();
-
-                if (annotation instanceof Inject) {
-                    OperationHandle handle = checkNotStaticBean(Inject.class, method);
-                    bean.operations.addLifecycleOperation(BeanLifecycleOrder.INJECT, handle);
-                } else if (annotation instanceof OnInitialize oi) {
-                    OperationHandle handle = checkNotStaticBean(OnInitialize.class, method);
-                    bean.operations.addLifecycleOperation(BeanLifecycleOrder.fromInitialize(oi.order()), handle);
-                } else if (annotation instanceof OnStart oi) {
-                    OperationHandle handle = checkNotStaticBean(OnStart.class, method);
-                    bean.operations.addLifecycleOperation(BeanLifecycleOrder.fromStarting(oi.order()), handle);
-                } else if (annotation instanceof OnStop oi) {
-                    OperationHandle handle = checkNotStaticBean(OnStop.class, method);
-                    bean.operations.addLifecycleOperation(BeanLifecycleOrder.fromStopping(oi.order()), handle);
-                } else if (annotation instanceof Provide) {
-                    OperationTemplate temp2 = OperationTemplate.defaults().reconfigure(c -> c.returnType(method.operationType().returnRawType()));
-                    if (!Modifier.isStatic(method.modifiers())) {
-                        if (beanKind() != BeanKind.CONTAINER) {
-                            throw new BeanInstallationException("Not okay)");
-                        }
-                    }
-                    OperationSetup operation = OperationSetup.crack(method.newOperation(temp2));
-                    bean.container.sm.provide(method.toKey(), operation, new FromOperationResult(operation));
-                } else if (annotation instanceof Export) {
-                    OperationTemplate temp2 = OperationTemplate.defaults().reconfigure(c -> c.returnType(method.operationType().returnRawType()));
-
-                    if (!Modifier.isStatic(method.modifiers())) {
-                        if (beanKind() != BeanKind.CONTAINER) {
-                            throw new BeanInstallationException("Not okay)");
-                        }
-                    }
-                    OperationSetup operation = OperationSetup.crack(method.newOperation(temp2));
-                    bean.container.sm.export(method.toKey(), operation);
-                } else if (annotation instanceof Main) {
-                    if (!isInApplicationLifetime()) {
-                        throw new BeanInstallationException("Must be in the application lifetime to use @" + Main.class.getSimpleName());
-                    }
-
-                    bean.container.lifetime.entryPoints.takeOver(BaseExtension.this, BaseExtension.class);
-
-                    bean.container.lifetime.entryPoints.entryPoint = new OldEntryPointSetup();
-
-                    OperationTemplate temp = OperationTemplate.defaults().reconfigure(c -> c.returnType(method.operationType().returnRawType()));
-                    OperationHandle os = method.newOperation(temp);
-                    // os.specializeMirror(() -> new EntryPointMirror(index));
-
-                    MainThreadOfControl mc = bean.container.lifetime.entryPoints.entryPoint.mainThread();
-
-//                    os.generateMethodHandleOnCodegen(mh -> mc.generatedMethodHandle = mh); Same dont know what is prettiest
-                    runOnCodegen(() -> mc.generatedMethodHandle = os.generateMethodHandle());
-                } else {
-                    super.triggeredByAnnotatedMethod(annotation, method);
                 }
             }
 
@@ -533,6 +461,72 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                             AssemblyMirror.class, BeanMirror.class, OperationMirror.class);
                 }
             }
+
+            private OperationHandle<?> checkNotStaticBean(Class<? extends Annotation> annotationType, BeanMethod method) {
+                if (beanKind() == BeanKind.STATIC) {
+                    throw new ManagedBeanRequiredException(annotationType + " is not supported for static beans");
+                }
+                // Maybe lifecycle members cannot be static at all
+                return method.newOperation(BEAN_LIFECYCLE_TEMPLATE).install();
+            }
+
+            /** Handles {@link Inject}, {@link OnInitialize}, {@link OnStart} and {@link OnStop}. */
+            @Override
+            public void triggeredByAnnotatedMethod(Annotation annotation, BeanMethod method) {
+                BeanSetup bean = bean();
+
+                if (annotation instanceof Inject) {
+                    OperationHandle<?> handle = checkNotStaticBean(Inject.class, method);
+                    bean.operations.addLifecycleOperation(BeanLifecycleOrder.INJECT, handle);
+                } else if (annotation instanceof OnInitialize oi) {
+                    OperationHandle<?> handle = checkNotStaticBean(OnInitialize.class, method);
+                    bean.operations.addLifecycleOperation(BeanLifecycleOrder.fromInitialize(oi.order()), handle);
+                } else if (annotation instanceof OnStart oi) {
+                    OperationHandle<?> handle = checkNotStaticBean(OnStart.class, method);
+                    bean.operations.addLifecycleOperation(BeanLifecycleOrder.fromStarting(oi.order()), handle);
+                } else if (annotation instanceof OnStop oi) {
+                    OperationHandle<?> handle = checkNotStaticBean(OnStop.class, method);
+                    bean.operations.addLifecycleOperation(BeanLifecycleOrder.fromStopping(oi.order()), handle);
+                } else if (annotation instanceof Provide) {
+                    OperationTemplate temp2 = OperationTemplate.defaults().reconfigure(c -> c.returnType(method.operationType().returnRawType()));
+                    if (!Modifier.isStatic(method.modifiers())) {
+                        if (beanKind() != BeanKind.CONTAINER) {
+                            throw new BeanInstallationException("Not okay)");
+                        }
+                    }
+                    OperationSetup operation = OperationSetup.crack(method.newOperation(temp2).install());
+                    bean.container.sm.provide(method.toKey(), operation, new FromOperationResult(operation));
+                } else if (annotation instanceof Export) {
+                    OperationTemplate temp2 = OperationTemplate.defaults().reconfigure(c -> c.returnType(method.operationType().returnRawType()));
+
+                    if (!Modifier.isStatic(method.modifiers())) {
+                        if (beanKind() != BeanKind.CONTAINER) {
+                            throw new BeanInstallationException("Not okay)");
+                        }
+                    }
+                    OperationSetup operation = OperationSetup.crack(method.newOperation(temp2).install());
+                    bean.container.sm.export(method.toKey(), operation);
+                } else if (annotation instanceof Main) {
+                    if (!isInApplicationLifetime()) {
+                        throw new BeanInstallationException("Must be in the application lifetime to use @" + Main.class.getSimpleName());
+                    }
+
+                    bean.container.lifetime.entryPoints.takeOver(BaseExtension.this, BaseExtension.class);
+
+                    bean.container.lifetime.entryPoints.entryPoint = new OldEntryPointSetup();
+
+                    OperationTemplate temp = OperationTemplate.defaults().reconfigure(c -> c.returnType(method.operationType().returnRawType()));
+                    OperationHandle<?> os = method.newOperation(temp).install();
+                    // os.specializeMirror(() -> new EntryPointMirror(index));
+
+                    MainThreadOfControl mc = bean.container.lifetime.entryPoints.entryPoint.mainThread();
+
+//                    os.generateMethodHandleOnCodegen(mh -> mc.generatedMethodHandle = mh); Same dont know what is prettiest
+                    os.generateMethodHandleOnCodegen(mh -> mc.generatedMethodHandle = mh);
+                } else {
+                    super.triggeredByAnnotatedMethod(annotation, method);
+                }
+            }
         };
     }
 
@@ -546,6 +540,10 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     @Override
     protected BaseExtensionPoint newExtensionPoint() {
         return new BaseExtensionPoint();
+    }
+
+    public ServiceNamespaceConfiguration newServiceNamespace(Object configuration) {
+        return serviceNamespace("main");
     }
 
     /**
@@ -634,10 +632,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         throw new UnsupportedOperationException();
     }
 
-    public ServiceNamespaceConfiguration newServiceNamespace(Object configuration) {
-        return serviceNamespace("main");
-    }
-
     public ServiceNamespaceConfiguration serviceNamespace() {
         return serviceNamespace("main");
     }
@@ -664,6 +658,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     // Also a version with BeanClass?? , Class<?>... beanClasses (
     public Runnable transformBeans(Consumer<? super BeanClassMutator> transformer) {
         throw new UnsupportedOperationException();
+    }
+
+    // Har man brug for andet end class transformer? Er der nogle generalle bean properties??? IDK
+    <T> ServiceableBeanConfiguration<T> transformingInstall(Class<T> implementation, Consumer<? super BeanClassMutator> transformation) {
+        throw new UnsupportedOperationException();
+
     }
 
     /**

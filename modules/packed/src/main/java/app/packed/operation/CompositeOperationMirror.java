@@ -22,4 +22,11 @@ package app.packed.operation;
 // CompositeOperationMirror??
 public class CompositeOperationMirror extends OperationMirror {
 
+    /**
+     * @param handle
+     */
+    public CompositeOperationMirror(OperationHandle<?> handle) {
+        super(handle);
+    }
+
 }

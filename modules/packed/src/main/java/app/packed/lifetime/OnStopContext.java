@@ -17,6 +17,7 @@ package app.packed.lifetime;
 
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
+import app.packed.runtime.StopInfo;
 
 /**
  *

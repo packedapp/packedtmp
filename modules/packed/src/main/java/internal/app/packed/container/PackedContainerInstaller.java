@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import app.packed.assembly.Assembly;
 import app.packed.assembly.DelegatingAssembly;
@@ -70,7 +69,7 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
     final IdentityHashMap<PackedContainerLocal<?>, Object> locals = new IdentityHashMap<>();
 
     /** A supplier for creating container mirrors. */
-    protected Supplier<? extends ContainerMirror> mirrorSupplier;
+    protected Function<? super ContainerHandle<?>, ? extends ContainerMirror> mirrorSupplier;
 
     /** The name of the container. */
     String name;
@@ -115,8 +114,8 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
 
     /** {@inheritDoc} */
     @Override
-    public <T extends ContainerConfiguration> ContainerHandle<?> install(Assembly assembly,
-            Function<? super ContainerTemplate.Installer, T> configurationCreator, Wirelet... wirelets) {
+    public <T extends ContainerConfiguration> ContainerHandle<?> install(Assembly assembly, Function<? super ContainerHandle<?>, T> configurationCreator,
+            Wirelet... wirelets) {
         checkNotInstalledYet();
         // TODO can install container (assembly.isConfigurable());
         processBuildWirelets(wirelets);
@@ -126,8 +125,7 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
 
     /** {@inheritDoc} */
     @Override
-    public <T extends ContainerConfiguration> ContainerHandle<T> install(Function<? super ContainerTemplate.Installer, T> configurationCreator,
-            Wirelet... wirelets) {
+    public <T extends ContainerConfiguration> ContainerHandle<T> install(Function<? super ContainerHandle<?>, T> configurationCreator, Wirelet... wirelets) {
         checkNotInstalledYet();
         // TODO can install container
         processBuildWirelets(wirelets);
@@ -137,31 +135,30 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
 
     /** {@inheritDoc} */
     @Override
-    public <T extends ContainerConfiguration> ContainerHandle<T> installAndUseThisExtension(
-            Function<? super ContainerTemplate.Installer, T> configurationCreator, Wirelet... wirelets) {
+    public <T extends ContainerConfiguration> ContainerHandle<T> installAndUseThisExtension(Function<? super ContainerHandle<?>, T> configurationCreator,
+            Wirelet... wirelets) {
         ContainerHandle<T> handle = install(configurationCreator, wirelets);
         ContainerSetup.crack(handle).useExtension(installedBy, null);
         return handle;
     }
 
     /**
-     * Builds a new container using the specified assembly
+     * Invokes {@link Assembly#build(PackedContainerInstaller)}.
      *
      * @param assembly
-     *            assembly representing the new container
-     * @return the new container
+     *            the assembly to invoke build on
+     * @return the new container that was created
      */
     public ContainerSetup invokeAssemblyBuild(Assembly assembly) {
         requireNonNull(assembly, "assembly is null");
         AssemblySetup s;
         try {
-            // Calls package private build(PackedContainerBuilder builder)
+            // Call package private method Assembly#build(PackedContainerBuilder builder)
             s = (AssemblySetup) MH_ASSEMBLY_BUILD.invokeExact(assembly, this);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
         return s.container;
-
     }
 
     public <T> ContainerTemplate.Installer localConsume(ContainerLocal<T> local, Consumer<T> action) {
@@ -188,7 +185,7 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
     }
 
     public ContainerSetup newContainer(ApplicationSetup application, AssemblySetup assembly,
-            Function<? super ContainerTemplate.Installer, ? extends ContainerConfiguration> newConfiguration) {
+            Function<? super ContainerHandle<?>, ? extends ContainerConfiguration> newConfiguration) {
         // Create the new container using this installer
         ContainerSetup container = new ContainerSetup(this, application, assembly);
 
@@ -240,23 +237,13 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
 
         this.container = container;
 
-        ContainerConfiguration cc = newConfiguration.apply(this);
-        container.initConfiguration(cc);
+        // Create ContainerConfiguration
+        container.initConfiguration(newConfiguration);
 
         // BaseExtension is automatically used by every container
         ExtensionSetup.install(BaseExtension.class, container, null);
 
         return container;
-    }
-
-    // Er her fordi den skal fixes paa lang sigt
-    ContainerSetup newContainer(AssemblySetup assembly) {
-        if (applicationInstaller == null) {
-            // ContainerConfiguration?? Hvor skal vi styre det
-            return this.container = newContainer(parent.application, assembly, ContainerConfiguration::new);
-        } else {
-            return this.container = applicationInstaller.newApplication(assembly).container;
-        }
     }
 
     /**
@@ -290,7 +277,7 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
 
     /** {@inheritDoc} */
     @Override
-    public ContainerTemplate.Installer specializeMirror(Supplier<? extends ContainerMirror> supplier) {
+    public ContainerTemplate.Installer specializeMirror(Function<? super ContainerHandle<?>, ? extends ContainerMirror> supplier) {
         checkNotInstalledYet();
         this.mirrorSupplier = supplier;
         return this;

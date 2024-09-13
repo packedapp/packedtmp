@@ -20,8 +20,12 @@ import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.function.Function;
 
 import app.packed.extension.BeanElement.BeanField;
+import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
 import app.packed.util.Key;
@@ -29,13 +33,10 @@ import app.packed.util.Variable;
 import internal.app.packed.bean.BeanHookCache.HookOnFieldAnnotation;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.PackedOperationHandle;
 import internal.app.packed.operation.PackedOperationInstaller;
 import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.util.PackedAnnotationList;
 import internal.app.packed.util.PackedVariable;
-import sandbox.extension.operation.OperationHandle;
-import sandbox.extension.operation.OperationTemplate;
 
 /** Implementation of {@link BeanField}. */
 // Previous we had a PackedBeanMember, but there are actually only 2-3 common operations. So don't go there again.
@@ -115,7 +116,7 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newGetOperation(OperationTemplate template) {
+    public OperationTemplate.Installer newGetOperation(OperationTemplate template) {
         checkConfigurable();
         MethodHandle mh = extension.scanner.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
@@ -125,27 +126,33 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(OperationTemplate template, VarHandle.AccessMode accessMode) {
+    public OperationTemplate.Installer newOperation(OperationTemplate template, VarHandle.AccessMode accessMode) {
         checkConfigurable();
         VarHandle varHandle = extension.scanner.unreflectVarHandle(field);
         MethodHandle mh = varHandle.toMethodHandle(accessMode);
         return newOperation(template, mh, accessMode);
     }
 
-    private PackedOperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
+    private OperationTemplate.Installer newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
         OperationType ft = OperationType.fromField(field, accessMode);
-        PackedOperationInstaller poi = ((PackedOperationTemplate) template).newInstaller(ft, extension.scanner.bean, extension.extension);
+        return new PackedOperationInstaller(((PackedOperationTemplate) template), ft, extension.scanner.bean, extension.extension) {
 
+            @SuppressWarnings("unchecked")
+            @Override
+            public final <H extends OperationHandle<T>, T extends OperationConfiguration> H install(
+                    Function<? super OperationTemplate.Installer, H> configurationCreator) {
 
-        OperationSetup operation = OperationSetup.newMemberOperationSetup(poi, new OperationFieldTarget(field, accessMode), mh);
-        extension.scanner.unBoundOperations.add(operation);
-        extension.scanner.bean.operations.all.add(operation);
-        return operation.toHandle(extension.scanner);
+                OperationSetup operation = OperationSetup.newMemberOperationSetup(this, new OperationFieldTarget(field, accessMode), mh, configurationCreator);
+                extension.scanner.unBoundOperations.add(operation);
+                // extension.scanner.bean.operations.all.add(operation);
+                return (H) (this.oh = operation.handle());
+            }
+        };
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newSetOperation(OperationTemplate template) {
+    public OperationTemplate.Installer newSetOperation(OperationTemplate template) {
         checkConfigurable();
         MethodHandle mh = extension.scanner.unreflectSetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;

@@ -40,8 +40,7 @@ public abstract class ServiceNamespaceConfiguration extends NamespaceConfigurati
     /**
      * @param handle
      */
-    @SuppressWarnings("rawtypes")
-    protected ServiceNamespaceConfiguration(NamespaceHandle handle) {
+    protected ServiceNamespaceConfiguration(NamespaceHandle<BaseExtension, ?> handle) {
         super(handle);
     }
 

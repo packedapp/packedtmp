@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.DeploymentMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.build.hook.BuildHookMirror;
@@ -74,17 +73,16 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
     /**
      * Create a new container mirror.
      *
+     * @param handle
+     *            the container's handle
      * @throws IllegalStateException
      *             if attempting to explicitly construct a container mirror instance
      */
-    public ContainerMirror() {
-        // Will fail if the container mirror is not initialized by the framework
-        this.container = ContainerSetup.MIRROR_INITIALIZER.initialize();
+    public ContainerMirror(ContainerHandle<?> handle) {
+        this.container = ContainerSetup.crack(handle);
     }
 
     /** {@return a stream containing all beans defined by the container including beans that are declared by extensions.} */
-    // We tried for a long if we could add state to the mirrors... But that just doesn't work...
-    // But we do it for extensions... Which also doesn't work super nicely
     public Stream<BeanMirror> allBeans() {
         return container.beans.stream().map(b -> b.mirror());
     }
@@ -159,10 +157,10 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
         return ContextSetup.allMirrorsFor(container);
     }
 
-    /** {@return the deployment this container is a part of.} */
-    public DeploymentMirror deployment() {
-        return container.application.deployment.mirror();
-    }
+//    /** {@return the deployment this container is a part of.} */
+//    public DeploymentMirror deployment() {
+//        return container.application.deployment.mirror();
+//    }
 
     /** {@inheritDoc} */
     @Override

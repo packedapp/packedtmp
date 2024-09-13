@@ -33,7 +33,7 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
     /** The next op in the chain. */
     private final PackedOp<?> nextOp;
 
-    final int[] permutationsArrays = new int[0];
+    // final int[] permutationsArrays = new int[0];
 
     /**
      * @param type
@@ -71,6 +71,7 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
         @Override
         public OperationSetup newOperationSetup(NewOS newOs) {
             OperationSetup os = super.newOperationSetup(newOs);
+
             for (int i = 0; i < indexes.length; i++) {
                 int index = indexes[i];
                 Object argument = arguments[i];
@@ -90,8 +91,8 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
             super(delegate, delegate.type, methodHandle);
         }
 
-        @SuppressWarnings({ "unused", "unchecked" })
-        private static Object accept(@SuppressWarnings("rawtypes") Consumer consumer, Object object) {
+        @SuppressWarnings({ "unused", "unchecked", "rawtypes" })
+        private static Object accept(Consumer consumer, Object object) {
             consumer.accept(object);
             return object;
         }

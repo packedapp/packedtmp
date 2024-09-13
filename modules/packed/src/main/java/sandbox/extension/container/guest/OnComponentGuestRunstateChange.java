@@ -15,7 +15,7 @@
  */
 package sandbox.extension.container.guest;
 
-import app.packed.lifetime.RunState;
+import app.packed.runtime.RunState;
 
 /**
  *

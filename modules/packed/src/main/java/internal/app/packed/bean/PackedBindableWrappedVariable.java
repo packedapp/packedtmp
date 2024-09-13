@@ -25,11 +25,11 @@ import app.packed.extension.Extension;
 import app.packed.extension.UnwrappedBindableVariable;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
+import app.packed.operation.OperationTemplate.Descriptor;
 import app.packed.util.AnnotationList;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
-import sandbox.extension.operation.OperationTemplate.Descriptor;
 
 /**
  *

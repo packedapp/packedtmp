@@ -24,11 +24,11 @@ import app.packed.bean.BeanInstallationException;
 import app.packed.context.Context;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
+import app.packed.operation.OperationTemplate;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
 import internal.app.packed.bean.PackedBindableVariable;
-import sandbox.extension.operation.OperationTemplate;
 
 /**
  * Represents a variable that can be bound at build time by an extension.

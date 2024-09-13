@@ -17,8 +17,9 @@ package internal.app.packed.application;
 
 import java.lang.invoke.MethodHandle;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
+import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationLocal;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
@@ -34,10 +35,10 @@ import sandbox.extension.container.ContainerTemplate;
 /**
  *
  */
-public record PackedApplicationTemplate(PackedContainerTemplate containerTemplate, Supplier<? extends ApplicationMirror> supplier,
+public record PackedApplicationTemplate(PackedContainerTemplate containerTemplate, Function<? super ApplicationHandle, ? extends ApplicationMirror> supplier,
         MethodHandle applicationLauncher) implements ApplicationTemplate {
 
-    public PackedApplicationTemplate(PackedContainerTemplate containerTemplate, Supplier<? extends ApplicationMirror> supplier) {
+    public PackedApplicationTemplate(PackedContainerTemplate containerTemplate, Function<? super ApplicationHandle, ? extends ApplicationMirror> supplier) {
         this(containerTemplate, supplier, null);
     }
 
@@ -106,6 +107,5 @@ public record PackedApplicationTemplate(PackedContainerTemplate containerTemplat
         public Configurator container(Consumer<? super sandbox.extension.container.ContainerTemplate.Configurator> configure) {
             return null;
         }
-
     }
 }

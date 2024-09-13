@@ -19,9 +19,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 
 import app.packed.extension.BeanElement.BeanConstructor;
+import app.packed.operation.OperationTemplate;
 import app.packed.util.Key;
-import sandbox.extension.operation.OperationHandle;
-import sandbox.extension.operation.OperationTemplate;
 
 /**
  *
@@ -45,7 +44,7 @@ public final class PackedBeanConstructor extends PackedBeanExecutable<Constructo
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(OperationTemplate template) {
+    public OperationTemplate.Installer newOperation(OperationTemplate template) {
         throw new UnsupportedOperationException();
     }
 

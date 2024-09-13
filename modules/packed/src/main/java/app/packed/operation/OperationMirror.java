@@ -63,9 +63,9 @@ public non-sealed class OperationMirror implements ComponentMirror, Contextualiz
      * @throws IllegalStateException
      *             if attempting to explicitly construct an operation mirror instance
      */
-    public OperationMirror() {
+    public OperationMirror(OperationHandle<?> handle) {
         // Will fail if the operation mirror is not initialized by the framework
-        this.operation = OperationSetup.MIRROR_INITIALIZER.initialize();
+        this.operation = OperationSetup.crack(handle);
     }
 
     /** {@return the bean that this operation is a part of.} */

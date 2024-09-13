@@ -57,7 +57,7 @@ public abstract class AbstractBaseAssembly extends BuildableAssembly {
      *             if called from outside of the {@link #build()} method
      */
     protected final ContainerConfiguration container() {
-        return assembly().assembly.container.configuration;
+        return assembly().assembly.container.configuration();
     }
 
     protected final void exportAll() {

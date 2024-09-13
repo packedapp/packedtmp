@@ -73,7 +73,7 @@ public abstract class AbstractComposer {
         } else if (c == Assembly.USED) {
             throw new IllegalStateException("Cannot call this method outside of ComposerAction::build(Composer)");
         }
-        return c.assembly.container.configuration;
+        return c.assembly.container.configuration();
     }
 
     /**
@@ -137,7 +137,7 @@ public abstract class AbstractComposer {
 
             AssemblyConfiguration existing = composer.configuration;
             if (existing == null) {
-                AssemblySetup a = new AssemblySetup(installer, this);
+                AssemblySetup a = AssemblySetup.newSetup(installer, this);
                 AssemblyConfiguration as = composer.configuration = existing = new AssemblyConfiguration(a);
                 try {
                     composer.preCompose();

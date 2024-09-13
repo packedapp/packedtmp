@@ -32,13 +32,13 @@ import app.packed.assembly.BuildableAssembly;
 import app.packed.build.BuildGoal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
+import app.packed.operation.OperationHandle;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
-import sandbox.extension.operation.OperationHandle;
 import tck.AbstractAppTest.InternalTestState.State1Setup;
 import tck.AbstractAppTest.InternalTestState.State2Building;
 import tck.AbstractAppTest.InternalTestState.State3Build;
@@ -66,11 +66,11 @@ abstract class AbstractAppTest<A> {
 
     AbstractAppTest() {}
 
-    public final void add(OperationHandle h) {
+    public final void add(OperationHandle<?> h) {
         add("main", h);
     }
 
-    protected final void add(String name, OperationHandle h) {
+    protected final void add(String name, OperationHandle<?> h) {
         configuration().use(HookTestingExtension.class).generate(name, h);
     }
 
@@ -211,9 +211,9 @@ abstract class AbstractAppTest<A> {
                         protected void build() {}
                     };
                 }
-                assembly = new AssemblySetup(b.container, ba);
+                assembly = AssemblySetup.newSetup(b.container, ba);
                 // Do
-                cc = assembly.container.configuration;
+                cc = assembly.container.configuration();
                 b.container.processBuildWirelets(setup.wirelets.toArray(i -> new Wirelet[i]));
             }
         }

@@ -270,7 +270,7 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
     /** {@return whether or not the bean is in same lifetime as the application.} */
     public final boolean isInApplicationLifetime() {
         BeanSetup b = bean();
-        return b.lifetime == b.container.application.container.lifetime;
+        return b.lifetime == b.container.application.container().lifetime;
     }
 
     /** {@return whether or not the bean is in same lifetime as its container.} */

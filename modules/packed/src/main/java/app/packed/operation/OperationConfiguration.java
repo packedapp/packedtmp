@@ -20,15 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.util.Collection;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentHandle;
 import app.packed.extension.Extension;
-import sandbox.extension.operation.OperationHandle;
 
 /** The configuration of an operation. */
-public class OperationConfiguration extends ComponentConfiguration {
+public non-sealed class OperationConfiguration extends ComponentConfiguration {
 
     /** The operation handle. */
-    private final OperationHandle handle;
+    private final OperationHandle<?> handle;
 
     /**
      * Create a new operation configuration using the specified handle.
@@ -36,12 +34,9 @@ public class OperationConfiguration extends ComponentConfiguration {
      * @param handle
      *            the operation handle
      */
-    public OperationConfiguration(OperationHandle handle) {
-        this.handle = requireNonNull(handle, "handle is null");
+    public OperationConfiguration(OperationHandle<?> handle) {
+        this.handle = requireNonNull(handle);
     }
-
-    protected final void checkConfigurable() {}
-
 
     /** {@inheritDoc} */
     @Override
@@ -49,8 +44,9 @@ public class OperationConfiguration extends ComponentConfiguration {
         return this;
     }
 
-    /** {@return the underlying operation handle} */
-    protected final OperationHandle handle() {
+    /** {@inheritDoc} */
+    @Override
+    protected final OperationHandle<?> handle() {
         return handle;
     }
 
@@ -81,11 +77,5 @@ public class OperationConfiguration extends ComponentConfiguration {
     /** {@return the type of the operation} */
     public final OperationType type() {
         return handle.type();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected ComponentHandle componentHandle() {
-        return handle;
     }
 }

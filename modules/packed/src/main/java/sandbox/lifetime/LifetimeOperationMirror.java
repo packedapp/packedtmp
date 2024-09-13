@@ -19,6 +19,7 @@ import java.util.List;
 
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.CompositeOperationMirror;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 
 /**
@@ -42,6 +43,13 @@ import app.packed.operation.OperationMirror;
 
 
 public final class LifetimeOperationMirror extends CompositeOperationMirror {
+
+    /**
+     * @param handle
+     */
+    public LifetimeOperationMirror(OperationHandle<?> handle) {
+        super(handle);
+    }
 
     // Wehether or not this lifetime operation concerns the bean that defines it.
     // Or a container

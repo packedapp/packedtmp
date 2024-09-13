@@ -23,7 +23,7 @@ import app.packed.component.ComponentPath;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.extension.Extension;
-import sandbox.extension.operation.OperationHandle;
+import app.packed.operation.OperationHandle;
 
 /** Implementation of {@link ContainerHandle}. */
 public record PackedContainerHandle<C extends ContainerConfiguration>(ContainerSetup container) implements ContainerHandle<C> {
@@ -54,7 +54,7 @@ public record PackedContainerHandle<C extends ContainerConfiguration>(ContainerS
 
     /** {@inheritDoc} */
     @Override
-    public List<OperationHandle> lifetimeOperations() {
+    public List<OperationHandle<?>> lifetimeOperations() {
         return container.lifetimeOperations();
     }
 
@@ -62,7 +62,7 @@ public record PackedContainerHandle<C extends ContainerConfiguration>(ContainerS
     @SuppressWarnings("unchecked")
     @Override
     public C configuration() {
-        return (C) container.configuration;
+        return (C) container.configuration();
     }
 
     /** {@inheritDoc} */

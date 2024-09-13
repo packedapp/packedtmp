@@ -15,8 +15,8 @@
  */
 package internal.app.packed.bean;
 
-import app.packed.lifetime.RunState;
 import app.packed.operation.OperationDependencyOrder;
+import app.packed.runtime.RunState;
 
 public enum BeanLifecycleOrder {
     INJECT(RunState.INITIALIZING), INITIALIZE_PRE_ORDER(RunState.INITIALIZING), INITIALIZE_POST_ORDER(RunState.INITIALIZING),

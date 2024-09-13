@@ -6,10 +6,10 @@ import java.util.Set;
 import app.packed.component.ComponentHandle;
 import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.Extension;
+import app.packed.operation.OperationHandle;
 import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.context.ContextSpanKind;
-import sandbox.extension.operation.OperationHandle;
 
 /**
  * A container handle is created when a container is installed an.
@@ -56,7 +56,7 @@ public sealed interface ContainerHandle<C extends ContainerConfiguration> extend
      *
      * @return a list of lifetime operations of this container.
      */
-    List<OperationHandle> lifetimeOperations();
+    List<OperationHandle<?>> lifetimeOperations();
 }
 
 interface ZandboxHandle {

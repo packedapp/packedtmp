@@ -1,7 +1,5 @@
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -9,26 +7,20 @@ import java.util.stream.Stream;
 import app.packed.bean.BeanConfiguration;
 import app.packed.build.action.BuildActionable;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentHandle;
-import app.packed.container.ContainerLocal.Accessor;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifecycleKind;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedContainerHandle;
-import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.util.types.ClassUtil;
-import sandbox.extension.container.ContainerTemplate;
 
 /**
  * The configuration of a container.
  * <p>
  * Unlike {@link app.packed.bean.BeanConfiguration} this class cannot be extended.
  */
-// Could let it be extendable. But it would only be usable through methods on extensions. Although
-// An assembly could return an instance of it
-public non-sealed class ContainerConfiguration extends ComponentConfiguration implements Accessor {
+public non-sealed class ContainerConfiguration extends ComponentConfiguration implements ContainerLocal.Accessor {
 
     /**
      * A marker configuration object indicating that an assembly (or composer) has already been used for building a
@@ -45,9 +37,8 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
         this.container = null;
     }
 
-    public ContainerConfiguration(ContainerTemplate.Installer installer) {
-        requireNonNull(installer, "builder is null");
-        this.container = ((PackedContainerInstaller) installer).newHandleFromConfiguration();
+    public ContainerConfiguration(ContainerHandle<?> handle) {
+        this.container = ContainerSetup.crack(handle);
     }
 
     /**
@@ -70,12 +61,6 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
 
     /** {@inheritDoc} */
     @Override
-    protected final ComponentHandle componentHandle() {
-        return new PackedContainerHandle<>(container);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     @BuildActionable("container.addTags")
     public ComponentConfiguration componentTag(String... tags) {
         return container.componentTag(tags);
@@ -90,6 +75,12 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return container.extensionTypes();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected final ContainerHandle<?> handle() {
+        return new PackedContainerHandle<>(container);
     }
 
     public boolean isApplicationRoot() {

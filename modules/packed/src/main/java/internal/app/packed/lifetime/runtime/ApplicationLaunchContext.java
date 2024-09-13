@@ -50,7 +50,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
     private ApplicationLaunchContext(ApplicationSetup application, WireletSelectionArray<?> wirelets) {
         this.application = application;
         this.wirelets = wirelets;
-        this.name = requireNonNull(application.container.node.name);
+        this.name = requireNonNull(application.container().node.name);
         this.runner = new ContainerRunner(application);
     }
 
@@ -77,7 +77,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
      * @return a service locator for the application
      */
     public ServiceLocator serviceLocator() {
-        return application.container.sm.newExportedServiceLocator(runner.pool());
+        return application.container().sm.newExportedServiceLocator(runner.pool());
     }
 
     /**
@@ -102,12 +102,12 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
         if (wirelets != null) {
             for (Wirelet w : wirelets) {
                 if (w instanceof InternalBuildWirelet iw) {
-                    iw.onImageLaunch(application.container, context);
+                    iw.onImageLaunch(application.container(), context);
                 }
             }
         }
 
-        context.runner.run(application.container);
+        context.runner.run(application.container());
 
         return context;
 

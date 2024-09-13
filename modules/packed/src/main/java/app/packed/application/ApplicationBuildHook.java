@@ -28,6 +28,7 @@ public non-sealed abstract class ApplicationBuildHook extends BuildHook {
 
     // What happens if people applies an ApplicationBuildHook to a non-root assembly
     // Maybe take ApplicationDescriptor, and fail within the method instead of returning boolean
+    // Then people call also just print a warning.
     public boolean failIfAppliedOnNonRootAssembly() {
         return true;
     }

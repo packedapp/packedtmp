@@ -6,20 +6,25 @@ import java.lang.invoke.MethodType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.context.Context;
 import app.packed.extension.ExtensionContext;
+import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.context.publish.ContextTemplate;
-import sandbox.extension.operation.OperationTemplate;
 
 public final class PackedOperationTemplate implements OperationTemplate {
 
     public static PackedOperationTemplate DEFAULTS = new PackedOperationTemplate(Map.of(), 0, -1, MethodType.methodType(void.class, ExtensionContext.class),
             false);
+
+    public static OperationTemplate RAW = new PackedOperationTemplate(Map.of(), -1, -1, MethodType.methodType(void.class), false);
 
     final int beanInstanceIndex;
 
@@ -31,7 +36,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
     final MethodType methodType;
 
-    public PackedOperationTemplate(Map<Class<? extends Context<?>>, PackedContextTemplate> contexts, int extensionContext, int beanInstanceIndex,
+    PackedOperationTemplate(Map<Class<? extends Context<?>>, PackedContextTemplate> contexts, int extensionContext, int beanInstanceIndex,
             MethodType methodType, boolean ignoreReturn) {
         this.contexts = contexts;
         this.extensionContext = extensionContext;
@@ -59,7 +64,16 @@ public final class PackedOperationTemplate implements OperationTemplate {
     }
 
     public PackedOperationInstaller newInstaller(OperationType operationType, BeanSetup bean, ExtensionSetup operator) {
-        return new PackedOperationInstaller(this, operationType, bean, operator);
+        return new PackedOperationInstaller(this, operationType, bean, operator) {
+
+            @SuppressWarnings({ "unchecked", "rawtypes" })
+            @Override
+            public final <H extends OperationHandle<T>, T extends OperationConfiguration> H install(
+                    Function<? super OperationTemplate.Installer, H> configurationCreator) {
+
+                return (H) super.newOperation((Function) configurationCreator).handle();
+            }
+        };
     }
 
     /** {@inheritDoc} */

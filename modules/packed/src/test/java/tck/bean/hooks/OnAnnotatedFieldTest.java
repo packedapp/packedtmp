@@ -25,9 +25,9 @@ import java.lang.invoke.VarHandle.AccessMode;
 import org.junit.jupiter.api.Test;
 
 import app.packed.extension.ExtensionContext;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTarget;
-import sandbox.extension.operation.OperationHandle;
-import sandbox.extension.operation.OperationTemplate;
+import app.packed.operation.OperationTemplate;
 import tck.AppAppTest;
 import tck.HookTestingExtension;
 import tck.HookTestingExtension.FieldHook.FieldPrivateInstanceString;
@@ -42,7 +42,7 @@ public class OnAnnotatedFieldTest extends AppAppTest {
     public void instanceFieldGet() throws Throwable {
         hooks().onAnnotatedField((l, b) -> {
 
-            OperationHandle h = b.newGetOperation(OperationTemplate.defaults());
+            OperationHandle<?> h = b.newGetOperation(OperationTemplate.defaults()).install();
             assertEquals(MethodType.methodType(String.class, ExtensionContext.class), h.invocationType());
             assertSame(HookTestingExtension.class, h.operator());
 
@@ -65,7 +65,7 @@ public class OnAnnotatedFieldTest extends AppAppTest {
     @Test
     public void instanceFieldGetSet() throws Throwable {
         hooks().onAnnotatedField((l, b) -> {
-            add(b.newGetOperation(OperationTemplate.defaults()));
+            add(b.newGetOperation(OperationTemplate.defaults()).install());
 //                OperationHandle h = b.newSetOperation(OperationTemplate.defaults().withArg(String.class));
             // assertEquals(MethodType.methodType(void.class, ExtensionContext.class, String.class), h.invocationType());
 
@@ -87,7 +87,7 @@ public class OnAnnotatedFieldTest extends AppAppTest {
     @Test
     public void staticFieldGet() throws Throwable {
         hooks().onAnnotatedField((l, b) -> {
-            add(b.newGetOperation(OperationTemplate.defaults()));
+            add(b.newGetOperation(OperationTemplate.defaults()).install());
         });
 
         install(FieldPrivateStaticString.class);

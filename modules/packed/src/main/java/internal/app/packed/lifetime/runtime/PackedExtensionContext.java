@@ -36,7 +36,7 @@ public final /* primitive */ class PackedExtensionContext implements ExtensionCo
     public static final MethodHandle MH_CONSTANT_POOL_READER;
 
     static {
-        MethodHandle m = LookupUtil.findVirtualOwn(MethodHandles.lookup(), "read", Object.class, int.class);
+        MethodHandle m = LookupUtil.findVirtual(MethodHandles.lookup(), "read", Object.class, int.class);
         MethodType mt = m.type().changeParameterType(0, ExtensionContext.class);
         MH_CONSTANT_POOL_READER = m.asType(mt);
     }

@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.bean.BeanMirror;
 import app.packed.context.ContextMirror;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
-import sandbox.extension.operation.OperationHandle;
 import tck.AppAppTest;
 import tck.HookTestingExtension;
 import tck.HookTestingExtension.MethodHook;
@@ -44,7 +44,7 @@ public class OperationContextTest extends AppAppTest {
         });
 
         hooks().onAnnotatedMethod((l, b) -> {
-            OperationHandle h = b.newOperation(ContextsHelpers.NoImplContext.OTINT);
+            OperationHandle<?> h = b.newOperation(ContextsHelpers.NoImplContext.OTINT).install();
 
             add(h);
         });

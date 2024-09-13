@@ -22,13 +22,13 @@ import java.util.function.Consumer;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifecycleKind;
+import app.packed.operation.OperationTemplate;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.container.ContainerTemplate;
 import sandbox.extension.container.ContainerTemplateLink;
-import sandbox.extension.operation.OperationTemplate;
 
 /** Implementation of {@link ContainerTemplate}. */
 public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, PackedContainerTemplatePackList links, Class<?> resultType,

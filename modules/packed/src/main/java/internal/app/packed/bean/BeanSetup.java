@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanBuildHook;
@@ -29,6 +30,7 @@ import app.packed.context.Context;
 import app.packed.extension.BeanElement;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.BindableVariable;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -39,7 +41,6 @@ import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.ComponentSetup;
-import internal.app.packed.component.PackedComponentTwin;
 import internal.app.packed.container.AuthoritySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -49,15 +50,13 @@ import internal.app.packed.context.ContextualizedElementSetup;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
+import internal.app.packed.operation.BeanOperationStore;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
+import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationSetup;
 import internal.app.packed.operation.PackedOperationTemplate;
-import internal.app.packed.operation.PackedOperationType.BeanAccessOperationSetup;
 import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.ThrowableUtil;
-import internal.app.packed.util.types.ClassUtil;
-import sandbox.extension.operation.OperationTemplate;
 
 /**
  * The internal configuration of a bean.
@@ -65,7 +64,7 @@ import sandbox.extension.operation.OperationTemplate;
  * @implNote The reason this class does not directly implement BeanHandle is because the BeanHandle interface is
  *           parameterised.
  */
-public final class BeanSetup extends ComponentSetup implements PackedComponentTwin , ContextualizedElementSetup , BuildLocalSource {
+public final class BeanSetup extends ComponentSetup implements ContextualizedElementSetup , BuildLocalSource {
 
     /** A bean local for variables that use {@link app.packed.extension.BaseExtensionPoint.CodeGenerated}. */
     public static final PackedBeanLocal<Map<Key<?>, BindableVariable>> CODEGEN = new PackedBeanLocal<>(() -> new HashMap<>());
@@ -73,9 +72,6 @@ public final class BeanSetup extends ComponentSetup implements PackedComponentTw
     /** A MethodHandle for invoking {@link BeanIntrospector#bean}. */
     private static final MethodHandle MH_BEAN_INTROSPECTOR_TO_BEAN = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class, "bean",
             BeanSetup.class);
-
-    /** A magic initializer for {@link BeanMirror}. */
-    public static final MagicInitializer<BeanSetup> MIRROR_INITIALIZER = MagicInitializer.of(BeanMirror.class);
 
     /** A handle that can access {@link BeanConfiguration#handle}. */
     private static final VarHandle VH_BEAN_CONFIGURATION_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), BeanConfiguration.class, "handle",
@@ -120,7 +116,7 @@ public final class BeanSetup extends ComponentSetup implements PackedComponentTw
 
     /** Supplies a specialized mirror for the operation. */
     @Nullable
-    private final Supplier<? extends BeanMirror> mirrorSupplier;
+    private final Function<? super BeanHandle<?>, ? extends BeanMirror> mirrorSupplier;
 
     public int multiInstall;
 
@@ -132,6 +128,10 @@ public final class BeanSetup extends ComponentSetup implements PackedComponentTw
 
     /** The owner of the bean. */
     public final AuthoritySetup owner;
+
+    private BeanMirror mirror;
+
+    public BeanScanner scanner;
 
     /** Create a new bean. */
     BeanSetup(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
@@ -184,7 +184,7 @@ public final class BeanSetup extends ComponentSetup implements PackedComponentTw
         } else if (beanKind == BeanKind.CONTAINER) { // we've already checked if instance
             return new FromLifetimeArena(container.lifetime, lifetimeStoreIndex, beanClass);
         } else if (beanKind == BeanKind.UNMANAGED) {
-            return new FromOperationResult(operations.all.get(0));
+            return new FromOperationResult(operations.first());
         }
         throw new Error();
     }
@@ -205,7 +205,7 @@ public final class BeanSetup extends ComponentSetup implements PackedComponentTw
 
     public Set<BeanSetup> dependsOn() {
         HashSet<BeanSetup> result = new HashSet<>();
-        for (OperationSetup os : operations.all) {
+        for (OperationSetup os : operations) {
             result.addAll(os.dependsOn());
         }
         return result;
@@ -252,10 +252,12 @@ public final class BeanSetup extends ComponentSetup implements PackedComponentTw
     // Relative to x
     public OperationSetup instanceAccessOperation() {
         PackedOperationTemplate template = (PackedOperationTemplate) OperationTemplate.defaults().reconfigure(c -> c.returnType(beanClass));
-        PackedOperationInstaller poi = template.newInstaller(OperationType.of(beanClass), this, installedBy);
-        // TODO fix
-        //        super.namePrefix = "InstantAccess";
-        return poi.newOperation(new BeanAccessOperationSetup());
+
+        PackedOperationInstaller installer = template.newInstaller(OperationType.of(beanClass), this, installedBy);
+        installer.pot = new BeanAccessOperationSetup();
+        installer.namePrefix = "InstantAccess";
+
+        return installer.install().operation;
     }
 
     /** {@return a map of locals for the bean} */
@@ -264,10 +266,18 @@ public final class BeanSetup extends ComponentSetup implements PackedComponentTw
         return container.locals();
     }
 
+    private BeanHandle<?> handle() {
+        return new PackedBeanHandle<>(this);
+    }
+
     /** {@return a new mirror.} */
     @Override
     public BeanMirror mirror() {
-        return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(BeanMirror.class, BeanMirror::new, mirrorSupplier), this);
+        BeanMirror m = mirror;
+        if (m == null) {
+            m = mirror = mirrorSupplier == null ? new BeanMirror(handle()) : mirrorSupplier.apply(handle());
+        }
+        return m;
     }
 
     public String name() {
@@ -339,6 +349,7 @@ public final class BeanSetup extends ComponentSetup implements PackedComponentTw
      * @return the extracted bean
      */
     public static BeanSetup crack(Accessor accessor) {
+        requireNonNull(accessor, "accessor is null");
         return switch (accessor) {
         case BeanConfiguration b -> crack(b);
         case BeanElement b -> crack(b);

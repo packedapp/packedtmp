@@ -28,7 +28,8 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.extension.ExtensionContext;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifecycleKind;
-import app.packed.lifetime.RunState;
+import app.packed.operation.OperationTemplate;
+import app.packed.runtime.RunState;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanLifecycleOperation;
 import internal.app.packed.bean.BeanSetup;
@@ -40,7 +41,6 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
-import sandbox.extension.operation.OperationTemplate;
 import sandbox.lifetime.ManagedLifetime;
 
 /**
@@ -177,7 +177,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
                 // We need a factory method
 
-                OperationSetup os = bean.operations.all.get(0);
+                OperationSetup os = bean.operations.first();
 
                 bean.container.application.addCodegenAction(() -> {
                     MethodHandle mha = os.generateMethodHandle();
@@ -195,21 +195,20 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         for (BeanLifecycleOperation lop : bean.operations.lifecycleOperations) {
             if (lop.runOrder().runState == RunState.INITIALIZING) {
                 initialization.operations.add(lop.handle());
-                bean.container.application.addCodegenAction(() -> {
-                    MethodHandle mh = lop.handle().generateMethodHandle();
+                lop.handle().generateMethodHandleOnCodegen(mh -> {
                     // won't work with multiple concurrent threads, or any change to order
                     initialization.methodHandles.add(mh);
                 });
             } else if (lop.runOrder().runState == RunState.STARTING) {
                 startup.operations.add(lop.handle());
-                bean.container.application.addCodegenAction(() -> {
-                    MethodHandle mh = lop.handle().generateMethodHandle();
+                lop.handle().generateMethodHandleOnCodegen(mh -> {
+                    // won't work with multiple concurrent threads, or any change to order
                     startup.methodHandles.add(mh);
                 });
             } else if (lop.runOrder().runState == RunState.STOPPING) {
                 shutdown.operations.addFirst(lop.handle());
-                bean.container.application.addCodegenAction(() -> {
-                    MethodHandle mh = lop.handle().generateMethodHandle();
+                lop.handle().generateMethodHandleOnCodegen(mh -> {
+                    // won't work with multiple concurrent threads, or any change to order
                     shutdown.methodHandles.addFirst(mh);
                 });
             } else {

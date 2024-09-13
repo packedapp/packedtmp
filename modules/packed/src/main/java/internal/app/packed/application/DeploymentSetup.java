@@ -17,11 +17,8 @@ package internal.app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.application.DeploymentMirror;
 import app.packed.build.BuildGoal;
 import internal.app.packed.build.BuildLocalMap;
-import internal.app.packed.util.MagicInitializer;
-import internal.app.packed.util.types.ClassUtil;
 
 /** Represents a deployment. */
 public final class DeploymentSetup {
@@ -33,8 +30,6 @@ public final class DeploymentSetup {
     // Maaske smider vi som udgangspunkt ikke noget vaek
     public final ApplicationSetup root;
 
-    /** A magic initializer for {@link BeanMirror}. */
-    public static final MagicInitializer<DeploymentSetup> MIRROR_INITIALIZER = MagicInitializer.of(DeploymentMirror.class);
 
     /** The build goal. */
     public final BuildGoal goal;
@@ -50,6 +45,6 @@ public final class DeploymentSetup {
      * @return
      */
     public DeploymentMirror mirror() {
-        return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(DeploymentMirror.class, DeploymentMirror::new, null), this);
+       return new DeploymentMirror(this);
     }
 }

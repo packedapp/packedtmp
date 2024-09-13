@@ -17,8 +17,8 @@ package sandbox.service;
 
 import app.packed.bean.BeanHandle;
 import app.packed.extension.BindableVariable;
+import app.packed.operation.OperationHandle;
 import app.packed.util.Key;
-import sandbox.extension.operation.OperationHandle;
 
 // ServiceDomain? Something where keys are unique
 
@@ -53,13 +53,13 @@ public interface LocalServiceMap {
 
     // Producing multiple services with the same key is not supported
 
-    void produceOptionalService(Key<?> key, OperationHandle handle);
+    void produceOptionalService(Key<?> key, OperationHandle<?> handle);
 
     <T> void provideBeanInstance(Key<T> key, BeanHandle<?> handle);
 
     <T> void provideConstant(Key<T> key, T constant);
 
-    void provideOperation(Key<?> key, OperationHandle handle);
+    void provideOperation(Key<?> key, OperationHandle<?> handle);
 
     void resolve();
 }

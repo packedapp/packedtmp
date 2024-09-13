@@ -22,31 +22,27 @@ import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import app.packed.application.ApplicationBuildHook;
 import app.packed.application.ApplicationConfiguration;
+import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationLocal;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.Assembly;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLocal;
 import app.packed.extension.Extension;
-import app.packed.namespace.NamespaceTwin;
+import app.packed.namespace.NamespaceHandle;
 import app.packed.util.Nullable;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.Mirrorable;
-import internal.app.packed.component.PackedComponentTwin;
-import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.PackedNamespaceTemplate;
+import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
 import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.MagicInitializer;
-import internal.app.packed.util.types.ClassUtil;
 
 /**
  * Internal configuration of an application.
@@ -54,10 +50,15 @@ import internal.app.packed.util.types.ClassUtil;
  * This class is placed in {@code internal.app.packed.container} because it is so tightly integrated with containers
  * that it made sense to put it here as well.
  */
-public final class ApplicationSetup extends ComponentSetup implements PackedComponentTwin , BuildLocalSource , Mirrorable<ApplicationMirror> {
+public final class ApplicationSetup extends ComponentSetup implements BuildLocalSource , Mirrorable<ApplicationMirror> {
 
-    /** A magic initializer for {@link BeanMirror}. */
-    public static final MagicInitializer<ApplicationSetup> MIRROR_INITIALIZER = MagicInitializer.of(ApplicationMirror.class);
+    /** A handle that can access ApplicationConfiguration#application. */
+    private static final VarHandle VH_APPLICATION_CONFIGURATION_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ApplicationConfiguration.class,
+            "application", ApplicationSetup.class);
+
+    /** A handle that can access ApplicationMirror#application. */
+    private static final VarHandle VH_APPLICATION_MIRROR_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ApplicationMirror.class, "application",
+            ApplicationSetup.class);
 
     /** Any (statically defined) children this application has. */
     final ArrayList<FutureApplicationSetup> children = new ArrayList<>();
@@ -69,14 +70,14 @@ public final class ApplicationSetup extends ComponentSetup implements PackedComp
     @Nullable
     private ArrayList<Runnable> codegenActions;
 
-    /** The root container of the application. */
-    public final ContainerSetup container;
+    /** The configuration of the application. */
+    public ApplicationConfiguration configuration;
+
+    /** The root container of the application, is initialized from {@link PackedApplicationInstaller}. */
+    ContainerSetup container;
 
     /** The deployment the application is part of. */
     public final DeploymentSetup deployment;
-
-    /** The configuration of the application. */
-    public ApplicationConfiguration configuration;
 
     /**
      * All extensions used in an application has a unique instance id attached. This is used in case we have multiple
@@ -95,34 +96,33 @@ public final class ApplicationSetup extends ComponentSetup implements PackedComp
      */
     public final Map<String, Class<? extends Extension<?>>> extensions = new HashMap<>();
 
+    /** All hooks applied on the application. */
+    public final ArrayList<ApplicationBuildHook> hooks = new ArrayList<>();
+
     /** This map maintains all locals for the entire application. */
     private final BuildLocalMap locals = new BuildLocalMap();
 
+    ApplicationMirror mirror;
+
     /** Supplies mirrors for the application. */
-    private final Supplier<? extends ApplicationMirror> mirrorSupplier;
+    private final Function<? super ApplicationHandle, ? extends ApplicationMirror> mirrorSupplier;
 
     // Maybe move to container?? Or maybe a DomainManager class? IDK
-    public final HashMap<PackedNamespaceTemplate<?>, NamespaceTwin<?, ?>> namespaces = new HashMap<>();
+    public final HashMap<NamespaceKey, NamespaceHandle<?, ?>> namespaces2 = new HashMap<>();
 
     /** The current phase of the application's build process. */
     private ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
-
-    /** All hooks applied on the application. */
-    public final ArrayList<ApplicationBuildHook> hooks = new ArrayList<>();
 
     /**
      * Create a new application.
      *
      * @param installer
      *            the application installer
-     * @param assembly
-     *            the assembly that defines the application
      */
-    ApplicationSetup(PackedApplicationInstaller installer, AssemblySetup assembly) {
+    ApplicationSetup(PackedApplicationInstaller installer) {
         this.deployment = new DeploymentSetup(this, installer);
         this.codegenActions = deployment.goal.isCodeGenerating() ? new ArrayList<>() : null;
         this.mirrorSupplier = installer.mirrorSupplier;
-        this.container = installer.container.newContainer(this, assembly, ContainerConfiguration::new);
     }
 
     /**
@@ -157,10 +157,10 @@ public final class ApplicationSetup extends ComponentSetup implements PackedComp
         }
     }
 
+
     public ApplicationSetup checkWriteToLocals() {
         return this;
     }
-
     /** The application has been successfully assembled. Now generate any required code. */
     public void close() {
         // Only generate code if needed
@@ -180,26 +180,44 @@ public final class ApplicationSetup extends ComponentSetup implements PackedComp
         phase = ApplicationBuildPhase.COMPLETED;
     }
 
-    /** {@return a mirror that can be exposed to end-users.} */
-    @Override
-    public ApplicationMirror mirror() {
-        return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(ApplicationMirror.class, ApplicationMirror::new, mirrorSupplier), this);
-    }
-
-    /** The build phase of the application. */
-    private enum ApplicationBuildPhase {
-        ASSEMBLE, CODEGEN, COMPLETED;
-    }
-
     @Override
     public ComponentPath componentPath() {
         return ComponentKind.APPLICATION.pathNew(container.node.name);
+    }
+
+    public ContainerSetup container() {
+        ContainerSetup c = container;
+        if (c != null) {
+            return c;
+        }
+        throw new IllegalStateException();
+    }
+
+    ApplicationHandle handle() {
+        return new PackedApplicationHandle(this);
     }
 
     /** {@inheritDoc} */
     @Override
     public BuildLocalMap locals() {
         return locals;
+    }
+
+    /** {@return a new application mirror.} */
+    @Override
+    public ApplicationMirror mirror() {
+        ApplicationMirror m = mirror;
+        if (m == null) {
+            m = mirror = mirrorSupplier == null ? new ApplicationMirror(handle()) : mirrorSupplier.apply(handle());
+        }
+        return m;
+    }
+    public static ApplicationSetup crack(ApplicationConfiguration configuration) {
+        return (ApplicationSetup) VH_APPLICATION_CONFIGURATION_TO_SETUP.get(configuration);
+    }
+
+    public static ApplicationSetup crack(ApplicationHandle handle) {
+        return ((PackedApplicationHandle) handle).application();
     }
 
     public static ApplicationSetup crack(ApplicationLocal.Accessor accessor) {
@@ -212,19 +230,12 @@ public final class ApplicationSetup extends ComponentSetup implements PackedComp
         };
     }
 
-    /** A handle that can access ApplicationConfiguration#application. */
-    private static final VarHandle VH_APPLICATION_CONFIGURATION_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ApplicationConfiguration.class,
-            "application", ApplicationSetup.class);
-
-    /** A handle that can access ApplicationMirror#application. */
-    private static final VarHandle VH_APPLICATION_MIRROR_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ApplicationMirror.class, "application",
-            ApplicationSetup.class);
-
     public static ApplicationSetup crack(ApplicationMirror mirror) {
         return (ApplicationSetup) VH_APPLICATION_MIRROR_TO_SETUP.get(mirror);
     }
 
-    public static ApplicationSetup crack(ApplicationConfiguration configuration) {
-        return (ApplicationSetup) VH_APPLICATION_CONFIGURATION_TO_SETUP.get(configuration);
+    /** The build phase of the application. */
+    private enum ApplicationBuildPhase {
+        ASSEMBLE, CODEGEN, COMPLETED;
     }
 }

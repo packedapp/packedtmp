@@ -1,6 +1,7 @@
 package app.packed.application;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -53,19 +54,18 @@ public non-sealed class ApplicationMirror implements ComponentMirror , Applicati
      * @throws IllegalStateException
      *             if attempting to explicitly construct an application mirror instance
      */
-    public ApplicationMirror() {
-        // Will fail if the application mirror is not initialized by the framework
-        this.application = ApplicationSetup.MIRROR_INITIALIZER.initialize();
+    public ApplicationMirror(ApplicationHandle handle) {
+        this.application = ApplicationSetup.crack(handle);
     }
 
     /** {@return a tree representing all the assemblies used for creating this application} */
     public AssemblyMirror.OfTree assemblies() {
-        return new PackedAssemblyTreeMirror(application.container.assembly, null);
+        return new PackedAssemblyTreeMirror(application.container().assembly, null);
     }
 
     /** {@return a mirror of the (root) assembly that defines the application} */
     public AssemblyMirror assembly() {
-        return application.container.assembly.mirror();
+        return application.container().assembly.mirror();
     }
 
     /** {@return the build goal that was used when building the application} */
@@ -81,12 +81,12 @@ public non-sealed class ApplicationMirror implements ComponentMirror , Applicati
 
     /** {@return a mirror of the root container in the application.} */
     public ContainerMirror container() {
-        return application.container.mirror();
+        return application.container().mirror();
     }
 
     /** {@return a container tree mirror representing all the containers defined within the application.} */
     public ContainerMirror.OfTree containers() {
-        return new PackedContainerTreeMirror(application.container, null);
+        return new PackedContainerTreeMirror(application.container(), null);
     }
 
     // All mirrors "owned" by the user
@@ -141,7 +141,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror , Applicati
      * @see Wirelet#named(String)
      */
     public String name() {
-        return application.container.node.name;
+        return application.container().node.name;
     }
 
     // ApplicationMirror
@@ -154,11 +154,12 @@ public non-sealed class ApplicationMirror implements ComponentMirror , Applicati
     // NamespaceKey <Type, Owner?, ContainerPath, Name>
 
     // Application owned namespace...
-    public <N extends NamespaceMirror<?>> N namespace(Class<N> type) {
+    // Optional???
+    public <N extends NamespaceMirror<?>> Optional<N> namespace(Class<N> type) {
         return namespace(type, "main");
     }
 
-    public <N extends NamespaceMirror<?>> N namespace(Class<N> type, String name) {
+    public <N extends NamespaceMirror<?>> Optional<N> namespace(Class<N> type, String name) {
         throw new UnsupportedOperationException();
     }
 
@@ -167,7 +168,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror , Applicati
         // to(PrintStream ps);
         // asJSON();
         // verbose();
-        print0(application.container);
+        print0(application.container());
     }
 
     private void print0(ContainerSetup cs) {
@@ -179,7 +180,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror , Applicati
             sb.append(b.componentPath()).append("");
             sb.append(" [").append(b.beanClass.getName()).append("], owner = " + b.owner());
             sb.append("\n");
-            for (OperationSetup os : b.operations.all) {
+            for (OperationSetup os : b.operations) {
                 // sb.append(" ".repeat(b.path().depth()));
                 sb.append("    o ");
                 sb.append(os.mirror());
@@ -191,7 +192,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror , Applicati
 
     /** {@return the service contract of this application.} */
     public ServiceContract serviceContract() {
-        return application.container.sm.newContract();
+        return application.container().sm.newContract();
     }
 
     /** {@inheritDoc} */
@@ -211,6 +212,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror , Applicati
      *
      * @see ContainerMirror#use(Class)
      */
+    // Not super useful anymore
     public <E extends ExtensionMirror<?>> E use(Class<E> type) {
         return container().use(type);
     }

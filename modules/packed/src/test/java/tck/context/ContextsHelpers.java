@@ -19,9 +19,9 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.context.Context;
 import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
+import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationTemplate;
 import internal.app.packed.context.publish.ContextTemplate;
-import sandbox.extension.operation.OperationHandle;
-import sandbox.extension.operation.OperationTemplate;
 import tck.AbstractBootstrapedAppTest;
 import tck.HookTestingExtension;
 
@@ -47,7 +47,7 @@ public class ContextsHelpers {
         });
 
         t.hooks().onAnnotatedMethod((l, b) -> {
-            OperationHandle h = b.newOperation(ContextsHelpers.NoImplContext.OTINT);
+            OperationHandle<?> h = b.newOperation(ContextsHelpers.NoImplContext.OTINT).install();
             t.add(h);
         });
 

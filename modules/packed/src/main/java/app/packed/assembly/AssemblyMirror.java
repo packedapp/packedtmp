@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.DeploymentMirror;
 import app.packed.build.BuildCodeSourceMirror;
 import app.packed.build.hook.BuildHookMirror;
 import app.packed.component.ComponentMirror;
@@ -170,10 +169,10 @@ public non-sealed class AssemblyMirror implements BuildCodeSourceMirror {
         return assembly.delegatingAssemblies;
     }
 
-    /** {@return the deployment this assembly is a part of.} */
-    public DeploymentMirror deployment() {
-        return assembly.container.application.deployment.mirror();
-    }
+//    /** {@return the deployment this assembly is a part of.} */
+//    public DeploymentMirror deployment() {
+//        return assembly.container.application.deployment.mirror();
+//    }
 
     /** {@return the application this assembly contributes to.} */
     public Node<AssemblyMirror> deploymentNode() {

@@ -44,6 +44,8 @@ import internal.app.packed.container.ExtensionSetup;
  */
 // Extensions does not have a runtime representation and is hence not a component.
 // Unfortunately, you can argue the same with Assembly...
+
+///// DO WE NEED EXTENSION MIRROR???? Or is this information better handled, for example, from namespace
 public abstract non-sealed class ExtensionMirror<E extends Extension<E>> implements BuildCodeSourceMirror {
 
     /*

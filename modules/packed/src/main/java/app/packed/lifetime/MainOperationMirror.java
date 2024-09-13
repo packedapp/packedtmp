@@ -1,5 +1,6 @@
 package app.packed.lifetime;
 
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 
 /**
@@ -8,6 +9,13 @@ import app.packed.operation.OperationMirror;
  * Extensions can subclass this class. // Why?
  */
 public class MainOperationMirror extends OperationMirror {
+
+    /**
+     * @param handle
+     */
+    public MainOperationMirror(OperationHandle<?> handle) {
+        super(handle);
+    }
 
     /** {@inheritDoc} */
     @Override

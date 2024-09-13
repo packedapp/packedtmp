@@ -14,7 +14,6 @@ import app.packed.build.BuildLocal;
 import app.packed.build.action.BuildActionable;
 import app.packed.component.Authority;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentHandle;
 import app.packed.context.Context;
 import app.packed.operation.OperationConfiguration;
 import app.packed.util.Key;
@@ -111,18 +110,13 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     // Or maybe a subset space...
     // BeanConfiguration overrideService(Class<? extends Annotation>> subset, Key, Supplier);
 
-    /** {@return the bean handle that was used to create this configuration.} */
-    protected final BeanHandle<?> beanHandle() {
-        return handle;
-    }
-
     /** {@return the kind of bean that is being configured.} */
     public final BeanKind beanKind() {
         return handle.beanKind();
     }
 
     // Outside of the framework I think we can only test on ComponentPath, that may be fine
-    public boolean isInSameContainer(BeanConfiguration other) {
+    public final boolean isInSameContainer(BeanConfiguration other) {
         return handle.bean().container == other.handle.bean().container;
     }
 
@@ -218,7 +212,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
 
     /** {@inheritDoc} */
     @Override
-    protected final ComponentHandle componentHandle() {
+    protected final BeanHandle<?> handle() {
         return handle;
     }
 
@@ -282,22 +276,28 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         return this;
     }
 
-    /** {@return configurations for all operations defined by this bean.} */
-    // Return optional?
-    // Ideen er lidt at faa en enkelt bean kun
+    /**
+     * Returns the configuration for the specified operation type.
+     *
+     * @param <T>
+     *            the type of the operation configuration
+     * @param operationType
+     *            the class type of the operation configuration
+     * @return the configuration for the specified operation type
+     * @throws IllegalStateException
+     *             if the number of configurations found is not exactly 1
+     */
     public final <T extends OperationConfiguration> T operation(Class<T> operationType) {
         List<T> list = operations(operationType).toList();
-        if (list.size() > 1) {
-//            list.stream().map(t->t.)
-            // We need some name
-            throw new IllegalStateException("There are multiple ");
+        if (list.size() != 1) {
+            throw new IllegalStateException("Expected exactly 1 configuration for operation type: " + operationType.getName() + ", but found: " + list.size());
         }
         return list.get(0);
     }
 
     /** {@return configurations for all operations defined by this bean.} */
     public final Stream<? extends OperationConfiguration> operations() {
-        return handle.bean().operations.all.stream().map(m -> m.configuration).filter(e -> e != null);
+        return handle.bean().operations.stream().map(m -> m.configuration).filter(e -> e != null);
     }
 
     /** {@return configurations for all operations defined by this bean.} */

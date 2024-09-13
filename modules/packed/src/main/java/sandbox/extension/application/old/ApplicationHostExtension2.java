@@ -23,10 +23,10 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
 import app.packed.extension.FrameworkExtension;
 import app.packed.operation.Op;
+import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
-import sandbox.extension.operation.OperationTemplate;
 
 /**
  *
@@ -53,7 +53,8 @@ class ApplicationHostExtension2 extends FrameworkExtension<ApplicationHostExtens
 
     @SuppressWarnings("unused")
     private <T> ApplicationHostConfiguration<T> newApplication(BeanHandle<?> handle) {
-        runOnCodegen(() -> mh = handle.lifetimeOperations().get(0).generateMethodHandle());
+
+        handle.lifetimeOperations().get(0).generateMethodHandleOnCodegen(mh -> this.mh = mh);
 
         // return handle.configure(ApplicationHostConfiguration::new);
         return null;
@@ -70,7 +71,7 @@ class ApplicationHostExtension2 extends FrameworkExtension<ApplicationHostExtens
 //    }
 
     public <T> ApplicationHostConfiguration<T> newApplicationX(Class<T> guestBean) {
-        BeanHandle<ApplicationHostConfiguration<T>> handle = base().newApplicationBean(BLT).install(guestBean, ApplicationHostConfiguration::new);
+        BeanHandle<ApplicationHostConfiguration<T>> handle = base().newBean(BLT).install(guestBean, ApplicationHostConfiguration::new);
         handle.lifetimeOperations().get(0).generateMethodHandleOnCodegen(m -> mh = m);
         return handle.configuration();
     }

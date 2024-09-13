@@ -15,27 +15,107 @@
  */
 package app.packed.namespace;
 
+import static java.util.Objects.requireNonNull;
+
+import java.util.function.BiFunction;
+import java.util.stream.Stream;
+
 import app.packed.component.ComponentHandle;
+import app.packed.component.ComponentKind;
+import app.packed.component.ComponentPath;
+import app.packed.extension.Extension;
+import app.packed.operation.OperationHandle;
+import app.packed.util.TreeView;
+import internal.app.packed.namespace.NamespaceSetup;
+import internal.app.packed.namespace.PackedNamespaceInstaller;
 
 /**
- * Used by the extension
+ *
+ * Instances of this class should never be exposed to non-trusted code.
  */
-// Skal vi baade have Handle og Operator???
-// Operatoren er jo god. Fordi man i 9/10 tilfaelde vil gemme noget information omkring namespaced...
-// Og fordi jeg ogsaa tror vi faar nogle callbacks...
+public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C extends NamespaceConfiguration<E>> implements ComponentHandle {
 
-// Og hvis ikke skal vi ikke saa kun have Operator ogsaa for beans, osv
-public non-sealed interface NamespaceHandle<C extends NamespaceConfiguration<?>> extends ComponentHandle {
+    /** The domain configuration. */
+    final NamespaceSetup namespace;
 
-    C configuration();
+    protected NamespaceHandle(NamespaceTemplate.Installer installer) {
+        this.namespace = ((PackedNamespaceInstaller) installer).namespace;
+    }
 
-    String name();
+    /** {@inheritDoc} */
+    @Override
+    public final ComponentKind componentKind() {
+        return ComponentKind.NAMESPACE;
+    }
 
-//    /**
-//     * @param name
-//     */
-//    void named(String name);
+    /** {@inheritDoc} */
+    @Override
+    public final ComponentPath componentPath() {
+        return namespace.componentPath();
+    }
 
+    /** {@return a tree view of all the extensions in the namespace} */
+    public final TreeView<E> extensions() {
+        // A treeview of all
+        throw new UnsupportedOperationException();
+    }
 
-    interface ContainerNode {}
+    /** {@inheritDoc} */
+    @Override
+    public final boolean isConfigurable() {
+        return namespace.root.container.isConfigurable();
+    }
+
+    public final boolean isInApplicationLifetime(Extension<?> extension) {
+        return true;
+    }
+
+    public final String name() {
+        return namespace.name();
+    }
+
+    public NamespaceMirror<E> namespaceMirror() {
+        // We could make this abstract. But nice when you develop new namespaces and don't have a mirror yet
+        return new NamespaceMirror<E>(this);
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public final C newNamespaceConfiguration(E e) {
+        BiFunction bi = namespace.newConfiguration;
+        return (C) bi.apply(this, e);
+    }
+
+    protected void onAssemblyClose(E rootExtension, boolean isNamespaceRoot) {}
+
+    /** {@return a stream of all of the operations declared in the namespace.} */
+    public final Stream<OperationHandle<?>> operations() {
+        return namespace.operations.stream().map(e -> e.handle());
+    }
+
+    /**
+     * Returns a stream of all of the operations declared by the bean with the specified mirror type.
+     *
+     * @param <T>
+     * @param operationType
+     *            the type of operations to include
+     * @return a collection of all of the operations declared by the bean of the specified type.
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public final <T extends NamespaceOperationConfiguration> Stream<OperationHandle<T>> operations(Class<T> operationType) {
+        requireNonNull(operationType, "operationType is null");
+        return (Stream) operations().filter(f -> operationType.isAssignableFrom(f.configuration().getClass()));
+    }
+    /**
+     * Returns a navigator for all extensions in the namespace.
+     *
+     * @return a navigator for all extensions in the namespace
+     */
+    // Ogsaa containere hvor den ikke noedvendig er brugt890[]?
+
+    /** {@return the root extension of this domain.} */
+    @SuppressWarnings("unchecked")
+    public final E rootExtension() {
+        return (E) namespace.root.instance();
+    }
 }

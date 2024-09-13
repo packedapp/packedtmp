@@ -20,7 +20,7 @@ import java.util.function.Function;
 import app.packed.application.ApplicationMirror;
 import app.packed.context.Context;
 import app.packed.lifetime.LifecycleKind;
-import app.packed.lifetime.StopOption;
+import app.packed.runtime.StopOption;
 import internal.app.packed.container.InternalBuildWirelet;
 import internal.app.packed.container.PackedContainerInstaller;
 

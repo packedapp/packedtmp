@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 // Single class, may
+// I think MapDelegate is better
 public final class TransformingMap<K, F, T> implements Map<K, T> {
     private final Map<K, F> originalMap;
     private final Function<T, F> reverseTransform;

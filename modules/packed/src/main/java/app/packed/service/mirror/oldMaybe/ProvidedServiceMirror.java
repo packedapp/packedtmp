@@ -19,7 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.stream.Stream;
 
-import app.packed.namespace.sandbox.NamespaceOperationMirror;
+import app.packed.namespace.NamespaceOperationMirror;
+import app.packed.operation.OperationHandle;
 import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.mirror.ServiceNamespaceMirror;
 import app.packed.util.Key;
@@ -40,7 +41,8 @@ public class ProvidedServiceMirror extends NamespaceOperationMirror {
     /** The service that is provided. */
     final ServiceProviderSetup service;
 
-    public ProvidedServiceMirror(ServiceProviderSetup ps) {
+    public ProvidedServiceMirror(OperationHandle<?> handle, ServiceProviderSetup ps) {
+        super(handle);
         this.service = requireNonNull(ps);
     }
 

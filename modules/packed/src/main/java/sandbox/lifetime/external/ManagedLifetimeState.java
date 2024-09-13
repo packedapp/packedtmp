@@ -17,7 +17,7 @@ package sandbox.lifetime.external;
 
 import java.util.Optional;
 
-import app.packed.lifetime.RunState;
+import app.packed.runtime.RunState;
 
 /**
  * The state immutable snapshot of the state of a container.

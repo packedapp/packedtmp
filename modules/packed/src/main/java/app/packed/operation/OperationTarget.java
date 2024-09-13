@@ -24,8 +24,8 @@ import java.lang.reflect.Method;
 import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
-import internal.app.packed.operation.PackedOperationType;
-import internal.app.packed.operation.PackedOperationType.FunctionOperationSetup;
+import internal.app.packed.operation.PackedOperationTarget;
+import internal.app.packed.operation.PackedOperationTarget.FunctionOperationSetup;
 
 /**
  * The target of an operation.
@@ -72,7 +72,7 @@ public sealed interface OperationTarget {
     }
 
     /** Represents an operation that invokes a {@link MethodHandle method handle}. */
-    sealed interface OfMethodHandle extends OperationTarget permits PackedOperationType.MethodHandleOperationSetup{
+    sealed interface OfMethodHandle extends OperationTarget permits PackedOperationTarget.MethodHandleOperationSetup{
 
         /** {@return the method type of the method handle.} */
         MethodType methodType();

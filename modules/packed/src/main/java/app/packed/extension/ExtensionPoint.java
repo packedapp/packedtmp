@@ -65,6 +65,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
      * <p>
      * This field should only be read via {@link #contextUse()}.
      */
+    //TODO USE MAGIC initializer
     @Nullable
     private PackedExtensionPointContext context;
 

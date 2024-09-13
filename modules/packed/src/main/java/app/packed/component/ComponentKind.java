@@ -44,6 +44,10 @@ public interface ComponentKind {
     ComponentKind OPERATION = builder("Operation").requireFragmentString("application").requireFragmentPath("containerPath").requireFragmentString("bean").requireFragmentString("operation")
             .build();
 
+    /** A component kind representing a binding. */
+    ComponentKind NAMESPACE = builder("Namespace").requireFragmentString("application").requireFragmentPath("containerPath").requireFragmentString("bean").requireFragmentString("operation")
+            .requireFragmentString("binding").build();
+
     // We could always have one... Just make let BaseExtension own them..
     // And maybe skip base when printing the name
     Optional<String> extension();

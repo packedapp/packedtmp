@@ -24,7 +24,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import app.packed.application.BootstrapApp.Image;
 import app.packed.assembly.AbstractComposer;
@@ -39,8 +38,9 @@ import app.packed.container.ContainerLocal;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.FrameworkExtension;
-import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
+import app.packed.operation.OperationTemplate;
+import app.packed.runtime.RunState;
 import app.packed.util.Result;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.FutureApplicationSetup;
@@ -55,7 +55,6 @@ import internal.app.packed.container.WireletSelectionArray;
 import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import sandbox.extension.container.ContainerTemplateLink;
-import sandbox.extension.operation.OperationTemplate;
 
 /**
  * A bootstrap app is a special type of application that can be used to create other (non-bootstrap) application.
@@ -343,12 +342,12 @@ public final /* value */ class BootstrapApp<A> {
 
         <T> void newApplication(Class<T> hostBean) {
             // We need the attachment, because ContainerGuest is on
-            BeanHandle<BeanConfiguration> h = base().newApplicationBean(ZBT).install(hostBean, BeanConfiguration::new);
+            BeanHandle<BeanConfiguration> h = base().newBean(ZBT).install(hostBean, BeanConfiguration::new);
             h.lifetimeOperations().get(0).generateMethodHandleOnCodegen(m -> mh = m);
         }
 
         <T> void newApplication(Op<T> hostBean) {
-            BeanHandle<BeanConfiguration> h = base().newApplicationBean(ZBT).install(hostBean, BeanConfiguration::new);
+            BeanHandle<BeanConfiguration> h = base().newBean(ZBT).install(hostBean, BeanConfiguration::new);
             h.lifetimeOperations().get(0).generateMethodHandleOnCodegen(m -> mh = m);
         }
     }
@@ -366,7 +365,7 @@ public final /* value */ class BootstrapApp<A> {
         private BootstrapAppExtension bootstrapExtension;
 
         /** Supplies a mirror for the application. */
-        private Supplier<? extends ApplicationMirror> mirrorSupplier = ApplicationMirror::new;
+        private Function<? super ApplicationHandle, ? extends ApplicationMirror> mirrorSupplier = ApplicationMirror::new;
 
         /** The {@link Op} or {@link Class} used for creating the application interface. */
         private final Object opOrClass;
@@ -439,7 +438,7 @@ public final /* value */ class BootstrapApp<A> {
          *
          * @see BootstrapApp#mirrorOf(Assembly, Wirelet...)
          */
-        public Composer specializeMirror(Supplier<? extends ApplicationMirror> mirrorSupplier) {
+        public Composer specializeMirror(Function<? super ApplicationHandle, ? extends ApplicationMirror> mirrorSupplier) {
             this.mirrorSupplier = requireNonNull(mirrorSupplier, "mirrorSupplier is null");
             return this;
         }

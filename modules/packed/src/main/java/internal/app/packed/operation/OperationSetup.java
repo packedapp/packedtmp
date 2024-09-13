@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import app.packed.bean.BeanKind;
 import app.packed.bean.CannotDeclareInstanceMemberException;
@@ -32,37 +32,28 @@ import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
 import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.component.ComponentSetup;
-import internal.app.packed.component.PackedComponentTwin;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.entrypoint.EntryPointSetup;
-import internal.app.packed.operation.PackedOperationType.MemberOperationSetup;
+import internal.app.packed.operation.PackedOperationTarget.MemberOperationSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceProviderSetup;
-import internal.app.packed.util.MagicInitializer;
-import internal.app.packed.util.types.ClassUtil;
-import sandbox.extension.operation.OperationHandle;
 
 /** Represents an operation on a bean. */
-public final class OperationSetup extends ComponentSetup implements PackedComponentTwin , ContextualizedElementSetup {
-
-    /** A magic initializer for {@link OperationMirror}. */
-    public static final MagicInitializer<OperationSetup> MIRROR_INITIALIZER = MagicInitializer.of(OperationMirror.class);
-
-    /** An empty array of {@code BindingSetup}. */
-    private static final BindingSetup[] NO_BINDINGS = {};
+public final class OperationSetup extends ComponentSetup implements ContextualizedElementSetup {
 
     /** The bean this operation belongs to. */
     public final BeanSetup bean;
@@ -89,7 +80,9 @@ public final class OperationSetup extends ComponentSetup implements PackedCompon
     private MethodHandle generatedMethodHandle;
 
     /** Supplies a mirror for the operation */
-    public Supplier<? extends OperationMirror> mirrorSupplier;
+    public Function<? super OperationHandle<?>, ? extends OperationMirror> mirrorSupplier;
+
+    OperationHandle<?> handle;
 
     /**
      * The name prefix of the operation.
@@ -103,7 +96,7 @@ public final class OperationSetup extends ComponentSetup implements PackedCompon
     // Det hele er vi ikke gider calculate et navn, med mindre det skal bruges
     // Ved method overloading kan vi risikere at 2 operationer med samme navn
     // Hvilket ikke fungere hvis vi vil have component path operationer
-    String namePrefix; // name = operator.simpleName + "Operation"
+    public String namePrefix; // name = operator.simpleName + "Operation"
 
     /** The operator of the operation. */
     public final ExtensionSetup operator;
@@ -114,17 +107,17 @@ public final class OperationSetup extends ComponentSetup implements PackedCompon
     /** The type of this operation. */
     public final OperationType type;
 
-    public final PackedOperationType pot;
+    public final PackedOperationTarget pot;
 
-    OperationSetup(PackedOperationInstaller installer, PackedOperationType pot) {
+    OperationSetup(PackedOperationInstaller installer, PackedOperationTarget pot) {
         this.operator = requireNonNull(installer.operator);
-        this.pot = pot;
+        this.pot = requireNonNull(pot);
         this.bean = requireNonNull(installer.bean);
         this.type = installer.operationType;
         this.embeddedInto = installer.embeddedInto;
-        this.bindings = type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[type.parameterCount()];
+        this.bindings = new BindingSetup[type.parameterCount()];
         this.template = installer.template;
-
+        this.namePrefix = installer.namePrefix; // temporarty
         if (template.descriptor().newLifetime()) {
             this.entryPoint = new EntryPointSetup(this, bean.lifetime);
         } else {
@@ -133,6 +126,10 @@ public final class OperationSetup extends ComponentSetup implements PackedCompon
         for (PackedContextTemplate t : template.contexts.values()) {
             contexts.put(t.contextClass(), new ContextSetup(t, this));
         }
+    }
+
+    public OperationHandle<?> handle() {
+        return requireNonNull(handle);
     }
 
     /** {@inheritDoc} */
@@ -155,6 +152,7 @@ public final class OperationSetup extends ComponentSetup implements PackedCompon
         return result;
     }
 
+    /** {@inheritDoc} */
     @Override
     @Nullable
     public ContextSetup findContext(Class<? extends Context<?>> contextClass) {
@@ -177,6 +175,7 @@ public final class OperationSetup extends ComponentSetup implements PackedCompon
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void forEachContext(BiConsumer<? super Class<? extends Context<?>>, ? super ContextSetup> action) {
         contexts.forEach(action);
@@ -214,10 +213,17 @@ public final class OperationSetup extends ComponentSetup implements PackedCompon
         return pot.methodHandle();
     }
 
+    OperationMirror mirror;
+
     /** {@return a new mirror.} */
     @Override
     public OperationMirror mirror() {
-        return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(OperationMirror.class, OperationMirror::new, mirrorSupplier), this);
+        OperationMirror m = mirror;
+        if (m == null) {
+            m = mirror = mirrorSupplier == null ? new OperationMirror(handle()) : mirrorSupplier.apply(handle());
+        }
+        return m;
+
     }
 
     /** {@return the name of the operation} */
@@ -234,15 +240,6 @@ public final class OperationSetup extends ComponentSetup implements PackedCompon
         return pot.target();
     }
 
-    public PackedOperationHandle toHandle() {
-        return new PackedOperationHandle(this, null);
-    }
-
-    /** {@return an operation handle for this operation.} */
-    public PackedOperationHandle toHandle(BeanScanner scanner) {
-        return new PackedOperationHandle(this, scanner);
-    }
-
     /** {@return the type of operation.} */
     public OperationType type() {
         return type;
@@ -255,24 +252,29 @@ public final class OperationSetup extends ComponentSetup implements PackedCompon
      *            the handle to extract from
      * @return the operation setup
      */
-    public static OperationSetup crack(OperationHandle handle) {
-        return ((PackedOperationHandle) handle).operation();
+    public static OperationSetup crack(OperationHandle<?> handle) {
+        return ((OperationHandle<?>) handle).operation;
     }
 
-    public static OperationSetup newMemberOperationSetup(PackedOperationInstaller installer, OperationMemberTarget<?> member, MethodHandle methodHandle) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <H extends OperationHandle<T>, T extends OperationConfiguration> OperationSetup newMemberOperationSetup(PackedOperationInstaller installer,
+            OperationMemberTarget<?> member, MethodHandle methodHandle, Function<? super OperationTemplate.Installer, H> configurationCreator) {
         if (installer.bean.beanKind == BeanKind.STATIC && !Modifier.isStatic(member.modifiers())) {
             throw new CannotDeclareInstanceMemberException("Cannot create operation for non-static member " + member);
         }
-//        super.namePrefix = member.name();
+        installer.namePrefix = member.name();
+
+        // super.namePrefix = member.name();
 //        if (member instanceof OperationConstructorTarget) {
 //            super.mirrorSupplier = BeanFactoryMirror::new;
 //        }
 
-        MemberOperationSetup mos = new MemberOperationSetup(member, methodHandle);
+        installer.pot = new MemberOperationSetup(member, methodHandle);
 
-        return installer.newOperation(mos);
+        OperationSetup os = installer.newOperation((Function) configurationCreator);
+        return os;
     }
 
     /** The parent of a nested operation. */
-    public /* primitive */ record EmbeddedIntoOperation(OperationSetup operation, int bindingIndex) {}
+    public /* value */ record EmbeddedIntoOperation(OperationSetup operation, int bindingIndex) {}
 }

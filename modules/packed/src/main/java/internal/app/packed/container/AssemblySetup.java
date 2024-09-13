@@ -25,6 +25,7 @@ import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.component.Authority;
+import app.packed.container.ContainerConfiguration;
 import app.packed.util.Nullable;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
@@ -54,7 +55,7 @@ public final class AssemblySetup implements BuildLocalSource , ActualNode<Assemb
     public final List<AssemblyBuildTransformer> buildTransformers = new ArrayList<>();
 
     /** The (root) container the assembly defines. */
-    public final ContainerSetup container;
+    public ContainerSetup container;
 
     /** A custom lookup object set via {@link #lookup(Lookup)} */
     @Nullable
@@ -89,13 +90,23 @@ public final class AssemblySetup implements BuildLocalSource , ActualNode<Assemb
      * @param assembly
      *            the assembly instance
      */
-    public AssemblySetup(PackedContainerInstaller installer, Assembly assembly) {
+    private AssemblySetup(PackedContainerInstaller installer, Assembly assembly) {
         assert (!(assembly instanceof DelegatingAssembly));
         this.node = new TreeNode<>(installer.parent == null ? null : installer.parent.assembly, this);
         this.assembly = assembly;
         this.model = AssemblyModel.of(assembly.getClass());
         this.delegatingAssemblies = installer.delegatingAssemblies == null ? List.of() : List.copyOf(installer.delegatingAssemblies);
-        this.container = installer.newContainer(this);
+    }
+
+    public static AssemblySetup newSetup(PackedContainerInstaller installer, Assembly assembly) {
+        AssemblySetup as = new AssemblySetup(installer, assembly);
+        if (installer.parent == null) {
+            // This method creates both the application setup and container setup
+            as.container = installer.applicationInstaller.newApplication(as).container();
+        } else {
+            as.container = installer.newContainer(installer.parent.application, as, ContainerConfiguration::new);
+        }
+        return as;
     }
 
     /** {@inheritDoc} */

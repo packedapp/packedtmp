@@ -16,8 +16,8 @@
 package app.packed.bean;
 
 import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationHandle;
 import app.packed.util.Key;
-import sandbox.extension.operation.OperationHandle;
 
 /**
  * A configuration for an operation that creates a new bean instance.
@@ -27,7 +27,7 @@ public class BeanFactoryConfiguration extends OperationConfiguration {
     /**
      * @param handle
      */
-    public BeanFactoryConfiguration(OperationHandle handle) {
+    public BeanFactoryConfiguration(OperationHandle<?> handle) {
         super(handle);
     }
 

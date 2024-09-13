@@ -93,8 +93,8 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
     @Override
     AssemblySetup build(PackedContainerInstaller builder) {
         AssemblyConfiguration existing = configuration;
-        if (existing == null) { // assembly has not been used before
-            AssemblySetup assembly = new AssemblySetup(builder, this);
+        if (existing == null) { // assembly has not been used in a build process before
+            AssemblySetup assembly = AssemblySetup.newSetup(builder, this);
 
             AssemblyConfiguration ac = configuration = new AssemblyConfiguration(assembly);
 

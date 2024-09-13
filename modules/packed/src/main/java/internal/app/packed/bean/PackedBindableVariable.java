@@ -31,6 +31,7 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
+import app.packed.operation.OperationTemplate.Descriptor;
 import app.packed.util.AnnotationList;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -48,9 +49,8 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.operation.PackedOp.NewOS;
+import internal.app.packed.operation.PackedOperationTarget.MemberOperationSetup;
 import internal.app.packed.operation.PackedOperationTemplate;
-import internal.app.packed.operation.PackedOperationType.MemberOperationSetup;
-import sandbox.extension.operation.OperationTemplate.Descriptor;
 
 /** Implementation of {@link BindableVariable}. */
 public final class PackedBindableVariable extends PackedBeanElement implements BindableVariable {
@@ -246,7 +246,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
     /** {@inheritDoc} */
     @Override
     public BeanSetup bean() {
-        return scanner.bean;
+        return operation.bean;
     }
 
     /** {@inheritDoc} */

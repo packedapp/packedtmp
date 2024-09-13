@@ -25,8 +25,7 @@ import internal.app.packed.util.PackedAnnotationList;
 /**
  *
  */
-sealed abstract class PackedBeanExecutable<E extends Executable>
-        extends PackedBeanMember<E> permits PackedBeanConstructor, PackedBeanMethod {
+sealed abstract class PackedBeanExecutable<E extends Executable> extends PackedBeanMember<E> permits PackedBeanConstructor, PackedBeanMethod {
 
     /** The operation type (lazily created). */
     // Do we really want to create it lazily?

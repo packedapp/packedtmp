@@ -25,8 +25,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
@@ -39,33 +39,28 @@ import app.packed.container.WireletSelection;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
+import app.packed.operation.OperationHandle;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.bean.ContainerBeanStore;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.AbstractTreeMirror;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.Mirrorable;
-import internal.app.packed.component.PackedComponentTwin;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.service.ServiceManager;
+import internal.app.packed.service.ServiceNamespaceSetup;
 import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.NamedTreeNode;
 import internal.app.packed.util.TreeNode;
 import internal.app.packed.util.TreeNode.ActualNode;
-import internal.app.packed.util.types.ClassUtil;
-import sandbox.extension.operation.OperationHandle;
 
 /** The internal configuration of a container. */
 public final class ContainerSetup extends ComponentSetup
-        implements PackedComponentTwin , ActualNode<ContainerSetup> , ContextualizedElementSetup , Mirrorable<ContainerMirror> , BuildLocalSource {
-
-    /** A magic initializer for {@link ContainerMirror}. */
-    public static final MagicInitializer<ContainerSetup> MIRROR_INITIALIZER = MagicInitializer.of(ContainerMirror.class);
+        implements ActualNode<ContainerSetup> , ContextualizedElementSetup , Mirrorable<ContainerMirror> , BuildLocalSource {
 
     /** A handle that can access ContainerConfiguration#container. */
     private static final VarHandle VH_CONTAINER_CONFIGURATION_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerConfiguration.class,
@@ -86,7 +81,7 @@ public final class ContainerSetup extends ComponentSetup
 
     /** The configuration representing this container */
     @Nullable
-    public ContainerConfiguration configuration;
+    private ContainerConfiguration configuration;
 
     private HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
 
@@ -104,13 +99,13 @@ public final class ContainerSetup extends ComponentSetup
     public final ContainerLifetimeSetup lifetime;
 
     /** Supplies a mirror for the container. */
-    private final Supplier<? extends ContainerMirror> mirrorSupplier;
+    private final Function<? super ContainerHandle<?>, ? extends ContainerMirror> mirrorSupplier;
 
     /** A named tree node representing this container in the application. */
     public final NamedTreeNode<ContainerSetup> node;
 
     /** The container's service manager. */
-    public final ServiceManager sm;
+    public final ServiceNamespaceSetup sm;
 
     /**
      * Create a new container.
@@ -134,7 +129,7 @@ public final class ContainerSetup extends ComponentSetup
         } else {
             this.lifetime = new ContainerLifetimeSetup(installer, this, null);
         }
-        this.sm = new ServiceManager(null, this);
+        this.sm = new ServiceNamespaceSetup(null, this);
         // If a name has been set using a wirelet, we ignore calls to #named(String)
         this.ignoreRename = installer.nameFromWirelet != null;
     }
@@ -154,6 +149,14 @@ public final class ContainerSetup extends ComponentSetup
     /** {@return the base extension for this container.} */
     public BaseExtension base() {
         return (BaseExtension) useExtension(BaseExtension.class, null).instance();
+    }
+
+    public ContainerConfiguration configuration() {
+        ContainerConfiguration cc = configuration;
+        if (cc == null) {
+            throw new IllegalStateException();
+        }
+        return cc;
     }
 
     /** {@inheritDoc} */
@@ -189,11 +192,13 @@ public final class ContainerSetup extends ComponentSetup
         contexts.forEach(action);
     }
 
-    public void initConfiguration(ContainerConfiguration configuration) {
+    void initConfiguration(Function<? super ContainerHandle<?>, ? extends ContainerConfiguration> newConfiguration) {
         if (this.configuration != null) {
             throw new IllegalStateException("A container handle can only be used once to create a container configuration");
         }
-        this.configuration = requireNonNull(configuration);
+        ContainerConfiguration cc = newConfiguration.apply(new PackedContainerHandle<>(this));
+        requireNonNull(cc); // Throw InternalException
+        this.configuration = cc;
     }
 
     /** {@return whether or not the container is the root container in the application.} */
@@ -231,7 +236,7 @@ public final class ContainerSetup extends ComponentSetup
      *
      * @return a list of lifetime operations if the container has its own lifetime
      */
-    public List<OperationHandle> lifetimeOperations() {
+    public List<OperationHandle<?>> lifetimeOperations() {
         return List.of();
     }
 
@@ -260,10 +265,20 @@ public final class ContainerSetup extends ComponentSetup
 //        };
 //    }
 
+    ContainerHandle<?> handle() {
+        return new PackedContainerHandle<>(this);
+    }
+
+    ContainerMirror mirror;
+
     /** {@return a new container mirror.} */
     @Override
     public ContainerMirror mirror() {
-        return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(ContainerMirror.class, ContainerMirror::new, mirrorSupplier), this);
+        ContainerMirror m = mirror;
+        if (m == null) {
+            m = mirror = mirrorSupplier == null ? new ContainerMirror(handle()) : mirrorSupplier.apply(handle());
+        }
+        return m;
     }
 
     /**

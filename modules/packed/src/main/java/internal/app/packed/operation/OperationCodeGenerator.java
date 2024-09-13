@@ -28,7 +28,7 @@ import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
-import internal.app.packed.operation.PackedOperationType.MemberOperationSetup;
+import internal.app.packed.operation.PackedOperationTarget.MemberOperationSetup;
 
 /**
  *

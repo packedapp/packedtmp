@@ -15,15 +15,6 @@
  */
 package app.packed.assembly;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.List;
-
-import app.packed.build.hook.BuildHook;
-import app.packed.container.Wirelet;
-import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.PackedContainerInstaller;
-
 /**
  * Various utility methods for {@link Assembly assemblies}.
  */
@@ -90,67 +81,22 @@ public final class Assemblies {
 //        return verify(assembly, AssemblyPropagator.ALL, mirrorType, verifier);
 //    }
 
+    // I don't think we support wirelets...
+    // Any extension can just sneak them in and inspect the application
+
     // Maybe they are simply a methods on Wirelets once we agree on the syntax
-    public static Wirelet wireletObserve(AssemblyPropagator ap, BuildHook... hooks) {
-        throw new UnsupportedOperationException();
-    }
+//    public static Wirelet wireletObserve(AssemblyPropagator ap, BuildHook... hooks) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public static Wirelet wireletObserve(BuildHook... hooks) {
+//        return wireletObserve(AssemblyPropagator.LOCAL, hooks);
+//    }
+//
+//    public static Wirelet wireletObserveRecursively(BuildHook... hooks) {
+//        return wireletObserve(AssemblyPropagator.ALL, hooks);
+//    }
 
-    public static Wirelet wireletObserve(BuildHook... hooks) {
-        return wireletObserve(AssemblyPropagator.LOCAL, hooks);
-    }
-
-    public static Wirelet wireletObserveRecursively(BuildHook... hooks) {
-        return wireletObserve(AssemblyPropagator.ALL, hooks);
-    }
-
-    /**
-     * Constructs a delegating assembly that will prefix all usage of the specified assembly with the specified wirelets
-     *
-     * @param assembly
-     *            the assembly to add wirelets to
-     * @param wirelets
-     *            the wirelets to add when using the delegated assembly
-     * @return the delegating assembly
-     */
-    // Move to DelegatingAssembly
-    public static DelegatingAssembly wireWith(Assembly assembly, Wirelet... wirelets) {
-        return new WireletPrefixDelegatingAssembly(assembly, wirelets);
-    }
-
-    /** A delegating assembly that allows to prefix wirelets. */
-    private static class WireletPrefixDelegatingAssembly extends DelegatingAssembly {
-
-        /** The assembly to delegate to. */
-        private final Assembly assembly;
-
-        /** Wirelets that should be processed. */
-        private final Wirelet[] wirelets;
-
-        private WireletPrefixDelegatingAssembly(Assembly assembly, Wirelet[] wirelets) {
-            this.assembly = requireNonNull(assembly);
-            this.wirelets = List.of(wirelets).toArray(i -> new Wirelet[i]); // checks for null
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        AssemblySetup build(PackedContainerInstaller containerBuilder) {
-            containerBuilder.processBuildWirelets(wirelets);
-            return assembly.build(containerBuilder);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        protected Assembly delegateTo() {
-            return assembly;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        Assembly extractAssembly(PackedContainerInstaller containerBuilder) {
-            containerBuilder.processBuildWirelets(wirelets);
-            return super.extractAssembly(containerBuilder);
-        }
-    }
 }
 // This could just be a wirelet...If it is readable...
 // Wirelet.verify(Class<? extends T> mirrorType, Consumer<T> verifier) <--- Applies to the whole Assembly

@@ -19,8 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.ScopedValue.Carrier;
 import java.util.IdentityHashMap;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
+import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationLocal;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
@@ -29,6 +30,7 @@ import app.packed.application.ApplicationTemplate.Installer;
 import app.packed.assembly.Assembly;
 import app.packed.bean.BeanConfiguration;
 import app.packed.build.BuildGoal;
+import app.packed.container.ContainerConfiguration;
 import app.packed.lifetime.LifecycleKind;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerInstaller;
@@ -52,7 +54,7 @@ public final class PackedApplicationInstaller implements ApplicationTemplate.Ins
     public final IdentityHashMap<PackedApplicationLocal<?>, Object> locals = new IdentityHashMap<>();
 
     /** A supplier for creating application mirrors. */
-    public Supplier<? extends ApplicationMirror> mirrorSupplier;
+    public Function<? super ApplicationHandle, ? extends ApplicationMirror> mirrorSupplier;
 
     public boolean optionBuildApplicationLazy;
     public boolean optionBuildReusableImage;
@@ -99,15 +101,12 @@ public final class PackedApplicationInstaller implements ApplicationTemplate.Ins
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public ApplicationSetup newApplication(AssemblySetup assembly) {
-        ApplicationSetup as = this.application = new ApplicationSetup(this, assembly);
-
-        // Transfer any locals that have been set in the template or installer
-        // Problemet er lidt at alt i containerSetup er konfigureret foerend vi naar her
-        // Vi kan ikke skrive dem i application setup constructeren, fordi vi skal bruge noeglen (application setup)
-        // I CHM local mappet.
-        // Tror vi maa lave ApplicationSetup.container non-final
+        ApplicationSetup as = new ApplicationSetup(this);
         locals.forEach((l, v) -> as.locals().set((PackedApplicationLocal) l, as, v));
+        this.application = as;
 
+        // Initialize the root container
+        as.container = container.newContainer(as, assembly, ContainerConfiguration::new);
         return as;
     }
 
@@ -132,7 +131,7 @@ public final class PackedApplicationInstaller implements ApplicationTemplate.Ins
 
     /** {@inheritDoc} */
     @Override
-    public Installer specializeMirror(Supplier<? extends ApplicationMirror> supplier) {
+    public Installer specializeMirror(Function<? super ApplicationHandle, ? extends ApplicationMirror> supplier) {
         checkNotInstalledYet();
         this.mirrorSupplier = supplier;
         return this;

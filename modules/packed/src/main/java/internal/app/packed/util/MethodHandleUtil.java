@@ -15,13 +15,19 @@
  */
 package internal.app.packed.util;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.lang.invoke.MutableCallSite;
+import java.lang.invoke.WrongMethodTypeException;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 import app.packed.operation.Provider;
 
@@ -57,7 +63,45 @@ public class MethodHandleUtil {
     public static void main(String[] args) {
         System.out.println(OPTIONAL_DOUBLE_OF.type());
         System.out.println(optionalOfTo(String.class).type());
+    }
 
+    private static final MethodHandle INIT_METHOD_HANDLE;
+
+    static {
+        try {
+            INIT_METHOD_HANDLE = MethodHandles.lookup().findVirtual(Lazy.class, "initialize", MethodType.methodType(Object.class, Object[].class));
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    record Lazy(MutableCallSite callSite, Supplier<MethodHandle> supplier, AtomicReference<MethodHandle> actualHandleRef) {
+        public Object initialize(Object[] args) throws Throwable {
+            MethodHandle actualHandle = actualHandleRef.get();
+            if (actualHandle == null) {
+                synchronized (actualHandleRef) {
+                    actualHandle = actualHandleRef.get();
+                    if (actualHandle == null) {
+                        actualHandle = supplier.get();
+                        if (actualHandle.type() != callSite.type()) {
+                            throw new WrongMethodTypeException(
+                                    "Supplier returned a MethodHandle with wrong type, expected" + callSite + ", was " + actualHandle);
+                        }
+                        actualHandleRef.set(actualHandle);
+                        callSite.setTarget(actualHandle);
+                    }
+                }
+            }
+            return actualHandle.invokeWithArguments(args);
+        }
+    }
+
+    public static MethodHandle lazy(MethodType mt, Supplier<MethodHandle> supplier) {
+        MutableCallSite callSite = new MutableCallSite(mt);
+        MethodHandle mh = INIT_METHOD_HANDLE.bindTo(new Lazy(callSite, requireNonNull(supplier), new AtomicReference<>()));
+        mh = mh.asCollector(Object[].class, mt.parameterCount()).asType(mt);
+        callSite.setTarget(mh);
+        return callSite.dynamicInvoker();
     }
 }
 

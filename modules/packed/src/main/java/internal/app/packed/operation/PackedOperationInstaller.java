@@ -17,46 +17,45 @@ package internal.app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import app.packed.extension.ExtensionPoint.UseSite;
-import app.packed.operation.OperationMirror;
+import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationTemplate;
+import app.packed.operation.OperationTemplate.Installer;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
-import sandbox.extension.operation.OperationHandle;
-import sandbox.extension.operation.OperationTemplate;
 
 /**
  *
  */
-public final class PackedOperationInstaller implements OperationTemplate.Installer {
-
-    /** Supplies a mirror for the operation */
-    public Supplier<? extends OperationMirror> mirrorSupplier;
-
-    public final PackedOperationTemplate template;
-
-    public final OperationType operationType;
+public abstract non-sealed class PackedOperationInstaller implements OperationTemplate.Installer {
 
     public final BeanSetup bean;
 
-    public final ExtensionSetup operator;
-
     public EmbeddedIntoOperation embeddedInto;
 
-    PackedOperationInstaller(PackedOperationTemplate template, OperationType operationType, BeanSetup bean, ExtensionSetup operator) {
+    public String namePrefix = "tbd";
+
+    public OperationHandle<?> oh;
+
+    public final OperationType operationType;
+
+    public final ExtensionSetup operator;
+
+    public PackedOperationTarget pot;
+
+    public final PackedOperationTemplate template;
+
+    public OperationSetup os;
+
+    public PackedOperationInstaller(PackedOperationTemplate template, OperationType operationType, BeanSetup bean, ExtensionSetup operator) {
         this.template = template;
         this.operationType = operationType;
         this.bean = bean;
         this.operator = operator;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public OperationHandle install(OperationTemplate template) {
-        return null;
     }
 
     /**
@@ -70,15 +69,26 @@ public final class PackedOperationInstaller implements OperationTemplate.Install
         return null;
     }
 
-    public OperationSetup newOperation(PackedOperationType pot) {
-        return new OperationSetup(this, pot);
+    /**
+     * @return
+     */
+    public OperationHandle<?> initializeOperationConfiguration() {
+        return requireNonNull(oh);
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedOperationInstaller specializeMirror(Supplier<? extends OperationMirror> supplier) {
+    public OperationHandle<?> install(OperationTemplate template) {
+        throw new UnsupportedOperationException();
+    }
+
+    public OperationSetup newOperation(Function<? super Installer, OperationHandle<?>> newHandle) {
         checkConfigurable();
-        this.mirrorSupplier = requireNonNull(supplier, "supplier is null");
-        return this;
+        OperationSetup os = new OperationSetup(this, pot);
+        this.os = os;
+        OperationHandle<?> h = newHandle.apply(this);
+        os.handle = h;
+        os.bean.operations.add(os);
+        return os;
     }
 }

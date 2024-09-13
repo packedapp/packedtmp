@@ -15,11 +15,13 @@
  */
 package app.packed.namespace;
 
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
+import app.packed.extension.Extension;
 import app.packed.namespace.sandbox.BuildPermission;
-import internal.app.packed.container.PackedNamespaceTemplate;
+import internal.app.packed.namespace.PackedNamespaceTemplate;
 
 /**
  * <p>
@@ -27,28 +29,39 @@ import internal.app.packed.container.PackedNamespaceTemplate;
  */
 
 // A default domain is applicationWide...
+public sealed interface NamespaceTemplate permits PackedNamespaceTemplate {
 
-public interface NamespaceTemplate<T extends NamespaceTwin<?, ?>> {
+    // Er ikke sikker paa vi har behov for handler klassen...
+    Class<? extends NamespaceHandle<?, ?>> handleClass();
 
-    // Taenker maaske man skal kunne foersporge paa det.
-    // Give me all domains of typeX
-
-    // Magic Initializer for Extension + Authority
-
-    // Igen man skal kunne iterere over dem
-    // Or directly on the operator...
-    // NamespaceConfiguration<?> Extension.newNamespace(Operator a, Class<? extends NamespaceConfiguration<?>> c, Authority
-    // a)
-    void addConfigure(Function<Object, NamespaceConfiguration<?>> a);
-
-    <N extends NamespaceMirror<?>> NamespaceTemplate<T> mirrorType(Class<N> mirrorType, Function<? super T, ? extends N> mirrorSuppliers);
-
-    @SuppressWarnings("exports")
-    default void addPermission(BuildPermission permissions) {
-        // Default values??? for example, root only
+    static NamespaceTemplate of(Class<? extends NamespaceHandle<?, ?>> handleClass, Consumer<? super Configurator> configure) {
+        return new PackedNamespaceTemplate(handleClass);
     }
 
-    static <T extends NamespaceTwin<?, ?>> NamespaceTemplate<T> of(Supplier<T> supplier) {
-        return PackedNamespaceTemplate.of(supplier);
+    interface Configurator {
+
+        // Taenker maaske man skal kunne foersporge paa det.
+        // Give me all domains of typeX
+
+        // Magic Initializer for Extension + Authority
+
+        // Igen man skal kunne iterere over dem
+        // Or directly on the operator...
+        // NamespaceConfiguration<?> Extension.newNamespace(Operator a, Class<? extends NamespaceConfiguration<?>> c, Authority
+        // a)
+        // void addConfigure(Function<Object, NamespaceConfiguration<?>> a);
+
+        @SuppressWarnings("exports")
+        default void addPermission(BuildPermission permissions) {
+            // Default values??? for example, root only
+        }
+
+    }
+
+    interface Installer {
+
+        // return value.getClass() from newHandle must match handleClass
+        <E extends Extension<E>, H extends NamespaceHandle<E, ?>, C extends NamespaceConfiguration<E>> H install(
+                Function<? super NamespaceTemplate.Installer, H> newHandle, BiFunction<H, E, C> newConfiguration);
     }
 }

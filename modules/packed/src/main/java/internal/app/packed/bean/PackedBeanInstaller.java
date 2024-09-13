@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
@@ -33,19 +32,17 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.bean.BeanTemplate;
 import app.packed.extension.InternalExtensionException;
 import app.packed.operation.Op;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.Provider;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import internal.app.packed.bean.ContainerBeanStore.BeanClassKey;
 import internal.app.packed.container.AuthoritySetup;
-import internal.app.packed.container.ContainerBeanStore;
-import internal.app.packed.container.ContainerBeanStore.BeanClassKey;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.operation.PackedOp.NewOS;
 import internal.app.packed.operation.PackedOperationTemplate;
-import sandbox.extension.operation.OperationTemplate;
 
 /** This class is responsible for installing new beans. */
 public final class PackedBeanInstaller implements BeanTemplate.Installer {
@@ -69,7 +66,7 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
 
     /** A bean mirror supplier */
     @Nullable
-    Supplier<? extends BeanMirror> mirrorSupplier;
+    Function<? super BeanHandle<?>, ? extends BeanMirror> mirrorSupplier;
 
     String namePrefix;
 
@@ -82,11 +79,13 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
 
     /**
      * Create a new bean installer.
+     * <p>
+     * This method should only be called through {@link PackedBeanTemplate#newInstaller(ExtensionSetup, AuthoritySetup)}.
      *
      * @param template
-     *            a template for the new bean
+     *            the template for the new bean
      * @param installingExtension
-     *            the extension who created the installer
+     *            the extension who is installing the bean
      * @param owner
      *            the owner of the new bean
      */
@@ -209,16 +208,13 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
         checkNotInstalledYet();
         // TODO check extension/assembly can still install beans
 
-        // Create the Bean, this also marks this installer as no longer buildable
+        // Create the Bean, this also marks this installer as unconfigurable
         BeanSetup bean = this.bean = new BeanSetup(this, beanClass, sourceKind, source);
 
         // Transfer any locals that have been set in the template or installer
         locals.forEach((l, v) -> bean.locals().set((PackedBeanLocal) l, bean, v));
 
-        // Initialize the name of the bean
-        container.beans.installAndSetBeanName(bean, namePrefix);
-
-        // Creating an bean factory operation representing the Op if created from one.
+        // Creating an bean factory operation representing the Op if an Op was specified when creating the bean.
         if (sourceKind == BeanSourceKind.OP) {
             PackedOp<?> op = (PackedOp<?>) bean.beanSource;
             PackedOperationTemplate ot;
@@ -228,18 +224,25 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
                 ot = bean.lifetime.lifetimes().get(0).template;
             }
 
-            OperationSetup os = op.newOperationSetup(new NewOS(bean, bean.installedBy, ot, null));
-            bean.operations.all.add(os);
+            op.newOperationSetup(new NewOS(bean, bean.installedBy, ot, null));
+
+            // Op'en bliver resolved med BeanClassen i scanneren...
+            // Ved ikke om det giver mening, vil umiddelbart sige nej
+            // Vil sige den er helt uafhaendig? Men for nu er det fint
+        }
+
+        // Scan the bean class for annotations if it has a source
+        if (sourceKind != BeanSourceKind.SOURCELESS) {
+            new BeanScanner(bean).introspect();
+            bean.scanner = null;
         }
 
         if (bean.owner instanceof ExtensionSetup es && bean.beanKind == BeanKind.CONTAINER) {
             es.sm.addBean(bean);
         }
 
-        // Scan the bean class for annotations if it has a source
-        if (sourceKind != BeanSourceKind.SOURCELESS) {
-            new BeanScanner(bean).introspect();
-        }
+        // Add the bean to the container and initialize the name of the bean
+        container.beans.installAndSetBeanName(bean, namePrefix);
 
         BeanConfiguration apply = newConfiguration.apply(this);
         bean.initConfiguration(apply);
@@ -257,7 +260,7 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
 
     /** {@inheritDoc} */
     @Override
-    public PackedBeanInstaller specializeMirror(Supplier<? extends BeanMirror> supplier) {
+    public PackedBeanInstaller specializeMirror(Function<? super BeanHandle<?>, ? extends BeanMirror> supplier) {
         checkNotInstalledYet();
         this.mirrorSupplier = requireNonNull(supplier, "supplier is null");
         return this;

@@ -21,28 +21,23 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import app.packed.operation.Op;
+import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.application.LifetimeTemplate;
-import sandbox.extension.operation.OperationTemplate;
 
 /**
- * A bean template is a immutable reusable configuration object that defines how a specific bean should behave. A
- * template must always be specified when an extension installs a bean on behalf of the user or another extension.
+ * A bean template is an immutable, reusable configuration object that defines the behavior of a bean. A template is
+ * always specified when an extension installs a bean (on behalf of the user or another extension).
  * <p>
- * using when installating new beans using {@link app.packed.extension.BaseExtensionPoint#beanBuilder(BeanTemplate)} or
- * {@link app.packed.extension.BaseExtensionPoint#beanInstallerForExtension(BeanTemplate, app.packed.extension.ExtensionPoint.UseSite)}.
- *
+ * To install a new bean using a template, an extension can use either
+ * {@link app.packed.extension.BaseExtensionPoint#newBean(BeanTemplate)} if installing a new bean on behalf of the user.
+ * Or {@link app.packed.extension.BaseExtensionPoint#newBean(BeanTemplate, app.packed.extension.ExtensionPoint.UseSite)}
+ * if installing a bean on behalf of another extension.
  * <p>
- * In most cases Ideen er man started med en af de foruddefinered templates, og saa laver man modification
- *
- *
- * <p>
- * BeanKind.Container
  *
  * A bean created using this template never has has any exposed {@link BeanHandle#lifetimeOperations() lifetime
  * operations}. As the lifetime of the bean is completely controlled by the container in which is installed into.
@@ -62,6 +57,9 @@ import sandbox.extension.operation.OperationTemplate;
  * <p>
  * A static bean never has any lifetime operations. And will fail with XX
  * <p>
+ *
+ * @see app.packed.extension.BaseExtensionPoint#newBean(BeanTemplate)
+ * @see app.packed.extension.BaseExtensionPoint#newBean(BeanTemplate, app.packed.extension.ExtensionPoint.UseSite)
  */
 public sealed interface BeanTemplate permits PackedBeanTemplate {
 
@@ -79,18 +77,31 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     BeanTemplate.Descriptor descriptor();
 
     /**
-     * Reconfigures this template.
+     * Reconfigures this bean template.
      *
-     * @param configure
-     *            the action
-     * @return the reconfigured template
+     * @param action
+     *            the reconfiguration action
+     * @return the reconfigured bean template
      */
-    BeanTemplate reconfigure(Consumer<? super Configurator> configure);
+    BeanTemplate reconfigure(Consumer<? super Configurator> action);
 
-    static BeanTemplate of(BeanKind kind, Consumer<? super Configurator> configure) {
-        return PackedBeanTemplate.configure(new PackedBeanTemplate(kind), configure);
+    /**
+     * Creates a new bean template.
+     *
+     * @param action
+     *            the configuration action
+     * @return the configured bean template
+     */
+    static BeanTemplate of(BeanKind kind, Consumer<? super Configurator> action) {
+        return PackedBeanTemplate.reconfigureExisting(new PackedBeanTemplate(kind), action);
     }
 
+    /**
+     * A configuration object for configuring or reconfiguring a bean template.
+     *
+     * @see BeanTemplate#of(BeanKind, Consumer)
+     * @see BeanTemplate#reconfigure(Consumer)
+     */
     sealed interface Configurator permits PackedBeanTemplate.PackedBeanTemplateConfigurator {
 
         /**
@@ -298,7 +309,7 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
          * @apiNote the specified supplier may be called multiple times for the same bean. In which case an equivalent mirror
          *          must be returned
          */
-        Installer specializeMirror(Supplier<? extends BeanMirror> supplier);
+        Installer specializeMirror(Function<? super BeanHandle<?>, ? extends BeanMirror> supplier);
     }
 
 }

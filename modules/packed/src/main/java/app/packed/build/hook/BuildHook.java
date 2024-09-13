@@ -19,19 +19,23 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationBuildHook;
+import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyBuildHook;
 import app.packed.assembly.AssemblyPropagator;
 import app.packed.bean.BeanBuildHook;
 import app.packed.build.BuildCodeSource;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerBuildHook;
-import app.packed.container.Wirelet;
 import app.packed.operation.OperationBuildHook;
 
 /**
  * Build hooks are used for ...
  *
- * Use them sparingly
+ * <p>
+ * Build hooks can be applied in two different ways. Either by using {@link ApplyBuildHook} on an assembly or bean
+ * class. Or by using {@link #apply(Assembly, Consumer)} on an Assembly instance.
+ * <p>
+ * {@link #apply(Assembly, Consumer)} supports recursively applying build hooks. Use them sparingly
  * <p>
  * Build hooks comes in two shapes:
  *
@@ -48,12 +52,14 @@ import app.packed.operation.OperationBuildHook;
  * store state across multiple invocations of the same hook.
  */
 // Abstract class because we do not want a build hook to do multiple things
+
 public sealed abstract class BuildHook implements BuildCodeSource
         permits ApplicationBuildHook, AssemblyBuildHook, ContainerBuildHook, BeanBuildHook, OperationBuildHook {
 
     // If the same (.getClass()) build hook is placed on annotation ignore it
-    public boolean ignoreDuplicates() {
-        return true; //Maybe false or maybe True/False/Fail/Warn
+    // other.getClass() == this.getClass()
+    public boolean ignoreDuplicate(BuildHook other) {
+        return true; // Maybe false or maybe True/False/Fail/Warn
     }
 
     public Set<String> tags() {
@@ -63,12 +69,26 @@ public sealed abstract class BuildHook implements BuildCodeSource
     // Naah vi kalder ind paa noget andet
     public static void checkTransforming() {}
 
-
-    // Wirelet transformers are run before any other wirelets
-    @SuppressWarnings("exports")
-    public static TransformingWirelet applyWirelet(Consumer<? super Applicator> transformer) {
+    /**
+     *
+     * <p>
+     * If no build hooks are applied, the specified assembly will be returned
+     *
+     * @param assembly
+     *            the assembly to apply build hooks to
+     * @param transformer
+     *            a transformer that is responsible for applyi
+     * @return
+     */
+    public static Assembly apply(Assembly assembly, Consumer<? super Applicator> transformer) {
         throw new UnsupportedOperationException();
     }
+
+    // Wirelet transformers are run before any other wirelets
+//    @SuppressWarnings("exports")
+//    public static TransformingWirelet applyWirelet(Consumer<? super Applicator> transformer) {
+//        throw new UnsupportedOperationException();
+//    }
 
     // Okay vi har et BuildHook fra X Extension.
     // I build hooket gemmer vi AssemblyConfiguration i en ThreadLocal
@@ -102,12 +122,15 @@ public sealed abstract class BuildHook implements BuildCodeSource
 
     }
 
-    static class TransformingWirelet extends Wirelet {
-        public Module module() {
-            throw new UnsupportedOperationException();
-        }
-        // Information about owner
-    }
+    // Wirelet for build hooks are a bad idea.
+    // Any extension can return them together with their own wirelets. Thereby introspecting the whole appplication
+    // Do not support it. It is to easy to misue, somewhere some extensino har going to return one
+//    static class TransformingWirelet extends Wirelet {
+//        public Module module() {
+//            throw new UnsupportedOperationException();
+//        }
+//        // Information about owner
+//    }
 }
 
 //Skal nok tilfoeje Namespace, hvad med Service????

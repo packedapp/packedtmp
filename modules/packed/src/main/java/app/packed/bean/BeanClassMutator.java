@@ -167,7 +167,8 @@ public interface BeanClassMutator {
 
     // Will include the bean class and everyone of its super classes.
     // Object.class is never scanned.
-    void skipScanForClass(Predicate<? super Class<?>> skipScanFor);
+    // Skal nok have et navn der indikere at det er for super klasses
+    void skipScanInClassHierarchy(Predicate<? super Class<?>> skipScanFor);
 
     // I don't think we allow for unregistering it
 

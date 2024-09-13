@@ -19,63 +19,32 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.component.Authority;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentHandle;
+import app.packed.component.ComponentPath;
 import app.packed.container.ContainerPropagator;
 import app.packed.extension.Extension;
 import app.packed.util.TreeView;
+import internal.app.packed.namespace.NamespaceSetup;
 
 /**
  * The configuration of a namespace.
  * <p>
- * Namespace configurations are unique per container|name configuration.
- *
- * <p>
- * Since a namespace can be shared between multiple may be shared across assemblies. Each container gets their own configuration instance.
- *
+ * Each container will always get their own namespace configuration instance, as methods on the namespace configuration
  */
+public non-sealed abstract class NamespaceConfiguration<E extends Extension<E>> extends ComponentConfiguration {
 
-// Hvad hvis en extension vil configure et namespace....... ARGHHHHH
-// Skal vi have en Author med???
+    /** A handle for the namespace. */
+    private final NamespaceHandle<E, ?> handle;
 
-// This must be towards the user? Yes the template (maybe coupled with a NamespaceHandle.Builder) is for extensions
-
-// But still what exactly are we configuring here???
-// We cannot add beans... These must always be added on the extension.
-// Well the c
-
-// Vi laver en configuration per authority og per container...
-// Maaske cacher vi den... Men vi vil gerne lave den lazy
-//// Hmm skal den vaere med i configurations()... Tjah saa skal vi jo lave en cache trick.
-// Med mindre vi bare instantiere den hver gang
-
-
-// We have an NamespaceConfiguration per extension and per authority
-// We do not distinguish about whether or not the user is the user or an Extension
-
-// Namespace by itself it not particular usefull, but all other component configuration are not abstract
-// They may also serve as an activity record. Whenever a Conf is created we are active...
-// Also if we have onXX we need to maintain them once created
-
-// This is not called NamespaceNodeConfiguration because we dont want ServiceNamespaceNodeConfiguration
-public class NamespaceConfiguration<E extends Extension<E>> extends ComponentConfiguration {
-
-
-    // CRAP! Maaden man installere beans fra brugere, og extensions er jo helt forskelligt....
-    // Og man kan jo ikke saadan bare faa fat i en ExtensionPoint.UseSite
-    // Maaske have metoder direkte her...
-    Authority authority;
-
-    E extension;
-
-    // The handle is for whole namespace. Visible only to the extension itself
-    private final NamespaceHandle<?> handle;
-
-    protected NamespaceConfiguration(NamespaceHandle<?> handle) {
-        this.handle = requireNonNull(handle);
+    protected NamespaceConfiguration(NamespaceHandle<E, ?> namespace) {
+        this.handle = requireNonNull(namespace);
     }
 
-    protected final Authority authority() {
-        throw new UnsupportedOperationException();
+    private NamespaceSetup ns() {
+        return handle.namespace;
+    }
+
+    public final Authority authority() {
+        return ns().owner.authority();
     }
 
     // But how the fuck do you update these???
@@ -97,18 +66,19 @@ public class NamespaceConfiguration<E extends Extension<E>> extends ComponentCon
 //        return null;
 //    }
 
-    @Override
-    public ComponentConfiguration componentTag(String... tags) {
-        throw new UnsupportedOperationException();
+    // The container
+    public final ComponentPath containerPath() {
+        return ns().root.container.componentPath();
     }
 
     /** {@return the extension instance for which this configuration has been created.} */
+    @SuppressWarnings("unchecked")
     protected final E extension() {
-        throw new UnsupportedOperationException();
+        return (E) ns().root.instance();
     }
 
-    public String name() {
-        return handle.name();
+    public final String name() {
+        return ns().name();
     }
 
     protected final TreeView.Node<Extension<?>> node() {
@@ -119,7 +89,7 @@ public class NamespaceConfiguration<E extends Extension<E>> extends ComponentCon
     // Kan vi rename efter den er blevet bundet???
     // Kan risikere kollisioner i en assembly laengere nede
 
-    public NamespaceConfiguration<E> noPropagation(){
+    public NamespaceConfiguration<E> noPropagation() {
         return propagate(ContainerPropagator.LOCAL);
     }
 
@@ -132,16 +102,48 @@ public class NamespaceConfiguration<E extends Extension<E>> extends ComponentCon
 //        return this;
 //    }
 
-    public NamespaceConfiguration<E> propagate(ContainerPropagator propagator){
-        throw new UnsupportedOperationException();
+    public NamespaceConfiguration<E> propagate(ContainerPropagator propagator) {
+   //     throw new UnsupportedOperationException();
+
+        return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    protected ComponentHandle componentHandle() {
+    protected final NamespaceHandle<E, ?> handle() {
         return handle;
+    }
+
+    protected final <EE extends Extension<?>> E extension(NamespaceHandle<E, ?> ha) {
+        throw new UnsupportedOperationException();
     }
 }
 
+// CRAP! Maaden man installere beans fra brugere, og extensions er jo helt forskelligt....
+// Og man kan jo ikke saadan bare faa fat i en ExtensionPoint.UseSite
+// Maaske have metoder direkte her...
+
+//Hvad hvis en extension vil configure et namespace....... ARGHHHHH
+//Skal vi have en Author med???
+
+//This must be towards the user? Yes the template (maybe coupled with a NamespaceHandle.Builder) is for extensions
+
+//But still what exactly are we configuring here???
+//We cannot add beans... These must always be added on the extension.
+//Well the c
+
+//Vi laver en configuration per authority og per container...
+//Maaske cacher vi den... Men vi vil gerne lave den lazy
+////Hmm skal den vaere med i configurations()... Tjah saa skal vi jo lave en cache trick.
+//Med mindre vi bare instantiere den hver gang
+
+//We have an NamespaceConfiguration per extension and per authority
+//We do not distinguish about whether or not the user is the user or an Extension
+
+//Namespace by itself it not particular usefull, but all other component configuration are not abstract
+//They may also serve as an activity record. Whenever a Conf is created we are active...
+//Also if we have onXX we need to maintain them once created
+
+//This is not called NamespaceNodeConfiguration because we dont want ServiceNamespaceNodeConfiguration
 // We need some info about whether or not it is still configurable.
 // maybe Extension.isConfigurable... I'm thinking about extensions in deep down assemblies

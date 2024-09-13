@@ -17,9 +17,8 @@ package app.packed.operation;
 
 import java.util.Optional;
 
+import app.packed.build.BuildMirror;
 import app.packed.component.Authority;
-import app.packed.component.ComponentMirror;
-import app.packed.component.ComponentPath;
 import app.packed.util.Variable;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
@@ -34,7 +33,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * @see OperationMirror#bindings()
  */
 @SuppressWarnings("exports") // Uses sandbox classes
-public class BindingMirror implements ComponentMirror {
+public class BindingMirror implements BuildMirror {
 
     /** The binding we are mirrored. */
     final BindingSetup binding;
@@ -58,12 +57,6 @@ public class BindingMirror implements ComponentMirror {
     /** {@return who created the binding.} */
     public final Authority boundBy() {
         return binding.boundBy;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final ComponentPath componentPath() {
-        return binding.componentPath();
     }
 
     /** {@inheritDoc} */

@@ -17,10 +17,10 @@ package internal.app.packed.operation;
 
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTarget;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
-import sandbox.extension.operation.OperationHandle;
-import sandbox.extension.operation.OperationTemplate;
 
 /**
  * A special type of operation handle that allows an extension to delegate the execution of an operation to another
@@ -38,7 +38,7 @@ public sealed interface DelegatingOperationHandle permits PackedDelegatingOperat
 //     */
 //    boolean isDelegated();
 
-    OperationHandle newOperation(OperationTemplate template, ExtensionPoint.UseSite useSite);
+    OperationHandle<?> newOperation(OperationTemplate template, ExtensionPoint.UseSite useSite);
 
     /** {@return the target of this operation.} */
     OperationTarget target();

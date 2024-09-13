@@ -14,7 +14,7 @@ NamespaceResource
   ComponentPath
 
 We need namespace because stuff with ids is shared across containers.
-
+Or for example multiple databases.
 
 Service.Namespace: ServiceNamespace
 Service: ServiceNamespace/Key

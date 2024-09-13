@@ -68,7 +68,7 @@ public class Ddd extends BaseAssembly {
         MyEntityExtension() {}
 
         public void addEntityBean(Class<?> entityBean) {
-            child().base().newApplicationBean(BeanKind.MANANGED.template()).install(entityBean, BeanConfiguration::new);
+            child().base().newBean(BeanKind.MANANGED.template()).install(entityBean, BeanConfiguration::new);
         }
 
         MyEntityExtension child() {

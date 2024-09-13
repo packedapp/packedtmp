@@ -15,8 +15,6 @@
  */
 package internal.app.packed.bean;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanLocal;
@@ -44,7 +42,6 @@ public final class PackedBeanLocal<T> extends PackedBuildLocal<Accessor, T> impl
      */
     @Override
     protected BuildLocalSource extract(Accessor accessor) {
-        requireNonNull(accessor, "accessor is null");
         return BeanSetup.crack(accessor);
     }
 }

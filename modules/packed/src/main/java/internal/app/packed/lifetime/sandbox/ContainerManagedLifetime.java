@@ -29,7 +29,7 @@ public class ContainerManagedLifetime {
 
     private final ReentrantLock lifetimeLock = new ReentrantLock();
 
-    private static final VarHandle STATE = LookupUtil.findVarHandleOwn(MethodHandles.lookup(), "state", int.class);
+    private static final VarHandle STATE = LookupUtil.findVarHandle(MethodHandles.lookup(), "state", int.class);
 
     // states: RUNNING -> SHUTDOWN -> TERMINATED
     private static final int UNINITIALIZED = 0;

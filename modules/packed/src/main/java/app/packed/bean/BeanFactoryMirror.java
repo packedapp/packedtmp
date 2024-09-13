@@ -16,9 +16,17 @@
 package app.packed.bean;
 
 import app.packed.lifetime.LifecycleOperationMirror;
+import app.packed.operation.OperationHandle;
 
 /** A mirror for an operation that create {@link #bean() bean} instances. */
 public class BeanFactoryMirror extends LifecycleOperationMirror {
+
+    /**
+     * @param handle
+     */
+    public BeanFactoryMirror(OperationHandle<?> handle) {
+        super(handle);
+    }
 
     /** {@inheritDoc} */
     @Override

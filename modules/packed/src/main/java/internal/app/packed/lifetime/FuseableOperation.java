@@ -21,10 +21,10 @@ import java.lang.invoke.MethodHandle;
 import java.util.ArrayDeque;
 import java.util.List;
 
+import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import internal.app.packed.operation.PackedOperationTemplate;
-import sandbox.extension.operation.OperationHandle;
-import sandbox.extension.operation.OperationTemplate;
 
 /**
  * An op
@@ -33,7 +33,7 @@ public final class FuseableOperation {
 
     public final PackedOperationTemplate template;
 
-    public final ArrayDeque<OperationHandle> operations = new ArrayDeque<>();
+    public final ArrayDeque<OperationHandle<?>> operations = new ArrayDeque<>();
 
     public final ArrayDeque<MethodHandle> methodHandles = new ArrayDeque<>();
 

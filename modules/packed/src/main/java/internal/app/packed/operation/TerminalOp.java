@@ -20,9 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
-import internal.app.packed.operation.PackedOperationType.FunctionOperationSetup;
-import internal.app.packed.operation.PackedOperationType.MethodHandleOperationSetup;
+import internal.app.packed.operation.PackedOperationTarget.FunctionOperationSetup;
+import internal.app.packed.operation.PackedOperationTarget.MethodHandleOperationSetup;
 
 /** A terminal op. */
 public abstract sealed class TerminalOp<R> extends PackedOp<R> {
@@ -57,8 +58,9 @@ public abstract sealed class TerminalOp<R> extends PackedOp<R> {
 
             PackedOperationInstaller poi = template.newInstaller(type, newOs.bean(), newOs.operator());
             poi.embeddedInto = newOs.embeddedIn();
-            FunctionOperationSetup fos = new FunctionOperationSetup(mhOperation, samType, implementationMethod);
-            return poi.newOperation(fos);
+            poi.pot = new FunctionOperationSetup(mhOperation, samType, implementationMethod);
+
+            return poi.newOperation(OperationHandle::new);
         }
     }
 
@@ -72,10 +74,10 @@ public abstract sealed class TerminalOp<R> extends PackedOp<R> {
         /** {@inheritDoc} */
         @Override
         public OperationSetup newOperationSetup(NewOS newOs) {
-            PackedOperationInstaller poi = newOs.template().newInstaller(type, newOs.bean(), newOs.operator());
-            poi.embeddedInto = newOs.embeddedIn();
-            MethodHandleOperationSetup mos = new MethodHandleOperationSetup(mhOperation);
-            return poi.newOperation(mos);
+            PackedOperationInstaller installer = newOs.template().newInstaller(type, newOs.bean(), newOs.operator());
+            installer.embeddedInto = newOs.embeddedIn();
+            installer.pot = new MethodHandleOperationSetup(mhOperation);
+            return installer.newOperation(OperationHandle::new);
         }
     }
 }

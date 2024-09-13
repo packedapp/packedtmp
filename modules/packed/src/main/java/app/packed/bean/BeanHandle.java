@@ -29,11 +29,11 @@ import app.packed.errorhandling.ErrorHandler;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
+import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationTemplate;
 import app.packed.util.Key;
 import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.context.publish.ContextualizedElement;
-import sandbox.extension.operation.OperationHandle;
-import sandbox.extension.operation.OperationTemplate;
 
 /**
  * A bean handle is a build-time reference to an installed bean. Typically they are returned by the framework when an
@@ -85,7 +85,7 @@ public sealed interface BeanHandle<C extends BeanConfiguration> extends Componen
      */
     default Key<?> defaultKey() {
         if (beanClass() == void.class) {
-            throw new UnsupportedOperationException("This method is not supported for beans with a void bean class");
+            throw new UnsupportedOperationException("This method is not supported for void bean classes");
         }
         return Key.fromClass(beanClass());
     }
@@ -117,7 +117,8 @@ public sealed interface BeanHandle<C extends BeanConfiguration> extends Componen
      * @see BeanTemplate#lifetimeOperations()
      * @see BeanInstaller#lifetimes(app.packed.operation.OperationTemplate...)
      */
-    List<OperationHandle> lifetimeOperations();
+    //LifetimeOperationConfiguration???
+    List<OperationHandle<?>> lifetimeOperations();
 
     /**
      * Sets the name of the bean, overriding any existing name.
@@ -177,7 +178,7 @@ public sealed interface BeanHandle<C extends BeanConfiguration> extends Componen
 // Replace instance after creation
 
 interface Zandbox<T> {
-    OperationHandle addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation);
+    OperationHandle<?> addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation);
 
     // onClientInitialize
     default <B> void afterInitialize(InstanceBeanConfiguration<B> extensionBean, BiConsumer<? super B, ? super T> consumer) {
@@ -200,7 +201,7 @@ interface Zandbox<T> {
         return BaseExtension.class;
     }
 
-    <K> OperationHandle overrideService(Key<K> key, K instance);
+    <K> OperationHandle<?> overrideService(Key<K> key, K instance);
 
     /**
      * @param consumer

@@ -20,8 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
+import java.util.function.Function;
 
 import app.packed.extension.BeanElement.BeanMethod;
+import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationTemplate;
 import app.packed.util.Key;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
@@ -29,8 +33,6 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
 import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.util.PackedAnnotationList;
-import sandbox.extension.operation.OperationHandle;
-import sandbox.extension.operation.OperationTemplate;
 
 /** Internal implementation of BeanMethod. Discard after use. */
 public final class PackedBeanMethod extends PackedBeanExecutable<Method> implements BeanMethod {
@@ -47,25 +49,36 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
 
     /** {@inheritDoc} */
     @Override
-    public PackedOperationInstaller newOperation() {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public OperationHandle newOperation(OperationTemplate template) {
+    public OperationTemplate.Installer newOperation(OperationTemplate template) {
         requireNonNull(template);
         checkConfigurable();
 
         // We should be able to create this lazily
         MethodHandle methodHandle = extension.scanner.unreflectMethod(member);
 
-        PackedOperationInstaller poi = ((PackedOperationTemplate) template).newInstaller(operationType(), extension.scanner.bean, extension.extension);
+        return new PackedOperationInstaller(((PackedOperationTemplate) template), operationType(), extension.scanner.bean, extension.extension) {
 
-        OperationSetup operation = OperationSetup.newMemberOperationSetup(poi, new OperationMethodTarget(member), methodHandle);
-        extension.scanner.bean.operations.all.add(operation);
-        extension.scanner.unBoundOperations.add(operation);
-        return operation.toHandle(extension.scanner);
+            @SuppressWarnings("unchecked")
+            @Override
+            public final <H extends OperationHandle<T>, T extends OperationConfiguration> H install(
+                    Function<? super OperationTemplate.Installer, H> configurationCreator) {
+
+                OperationSetup operation = OperationSetup.newMemberOperationSetup(this, new OperationMethodTarget(member), methodHandle, configurationCreator);
+//              extension.scanner.bean.operations.all.add(operation);
+                extension.scanner.unBoundOperations.add(operation);
+                return (H) (this.oh = operation.handle());
+            }
+        };
+//
+//        PackedOperationInstaller poi = ((PackedOperationTemplate) template).newInstaller(operationType(), extension.scanner.bean, extension.extension);
+//
+//        return new PackedOperationInstaller(po) {
+//
+//            @Override
+//            public OperationHandle<?> install() {
+//
+//            }};
+
     }
 
     /** {@inheritDoc} */

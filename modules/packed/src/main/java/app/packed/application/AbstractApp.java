@@ -18,8 +18,8 @@ package app.packed.application;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.container.Wirelet;
-import app.packed.lifetime.RunState;
-import app.packed.lifetime.StopOption;
+import app.packed.runtime.RunState;
+import app.packed.runtime.StopOption;
 
 /**
  * Ideen var lidt at man bare extended nogle faa metoder. Og saa havde man en working implementation.

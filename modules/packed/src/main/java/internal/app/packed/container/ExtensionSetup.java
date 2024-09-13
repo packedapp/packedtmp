@@ -14,7 +14,7 @@ import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
-import internal.app.packed.service.ServiceManager;
+import internal.app.packed.service.ServiceNamespaceSetup;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MagicInitializer;
@@ -66,7 +66,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     public final ExtensionModel model;
 
     /** The extension's injection manager. */
-    public final ServiceManager sm;
+    public final ServiceNamespaceSetup sm;
 
     /** The extension realm this extension is a part of. */
     public final ExtensionTree tree;
@@ -87,10 +87,10 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         this.extensionType = requireNonNull(extensionType);
         if (parent == null) {
             this.tree = new ExtensionTree(container.application, extensionType);
-            this.sm = new ServiceManager(null, null);
+            this.sm = new ServiceNamespaceSetup(null, null);
         } else {
             this.tree = parent.tree;
-            this.sm = new ServiceManager(parent.sm, null);
+            this.sm = new ServiceNamespaceSetup(parent.sm, null);
         }
         this.model = requireNonNull(tree.model);
     }

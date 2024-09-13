@@ -15,11 +15,13 @@
  */
 package app.packed.assembly;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.function.Consumer;
+import java.util.List;
 
 import app.packed.build.BuildException;
-import app.packed.build.hook.BuildHook.Applicator;
+import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
 import internal.app.packed.container.AssemblyModel;
 import internal.app.packed.container.AssemblySetup;
@@ -135,10 +137,58 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
     // Lidt nederen at de nok vil staa som public methods paa subclasses. Maaske flyt tilbage til build hook
 
     // Alternativ er der en applyLast() metode paa Applicator
-    public static DelegatingAssembly applyBuildHook(Assembly assembly, Consumer<? super Applicator> transformer) {
-        throw new UnsupportedOperationException();
+//    public static DelegatingAssembly applyBuildHook(Assembly assembly, Consumer<? super Applicator> transformer) {
+//        throw new UnsupportedOperationException();
+//    }
+
+    /**
+     * Constructs a delegating assembly that will prefix all usage of the specified assembly with the specified wirelets
+     *
+     * @param assembly
+     *            the assembly to add wirelets to
+     * @param wirelets
+     *            the wirelets to add when using the delegated assembly
+     * @return the delegating assembly
+     */
+    // Move to DelegatingAssembly
+    public static DelegatingAssembly wireWith(Assembly assembly, Wirelet... wirelets) {
+        return new WireletPrefixDelegatingAssembly(assembly, wirelets);
     }
 
+    /** A delegating assembly that allows to prefix wirelets. */
+    private static class WireletPrefixDelegatingAssembly extends DelegatingAssembly {
+
+        /** The assembly to delegate to. */
+        private final Assembly assembly;
+
+        /** Wirelets that should be processed. */
+        private final Wirelet[] wirelets;
+
+        private WireletPrefixDelegatingAssembly(Assembly assembly, Wirelet[] wirelets) {
+            this.assembly = requireNonNull(assembly);
+            this.wirelets = List.of(wirelets).toArray(i -> new Wirelet[i]); // checks for null
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        AssemblySetup build(PackedContainerInstaller containerBuilder) {
+            containerBuilder.processBuildWirelets(wirelets);
+            return assembly.build(containerBuilder);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        protected Assembly delegateTo() {
+            return assembly;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        Assembly extractAssembly(PackedContainerInstaller containerBuilder) {
+            containerBuilder.processBuildWirelets(wirelets);
+            return super.extractAssembly(containerBuilder);
+        }
+    }
 }
 //// Can call build in the specified assembly, to complicated with hooks probably
 //protected final Runnable callBuildRunnable(Assembly assembly) {

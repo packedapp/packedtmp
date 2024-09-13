@@ -136,6 +136,18 @@ public class ClassUtil {
         return type;
     }
 
+
+    public static <T extends BuildMirror> T newMirror2(Class<T> t, Supplier<T> supplier, @Nullable Supplier<? extends T> specializedSupplier) {
+        // Create a new BeanMirror
+        if (specializedSupplier == null) {
+            return supplier.get();
+        }
+        T mirror = specializedSupplier.get();
+        if (mirror == null) {
+            throw new NullPointerException(specializedSupplier + " returned a null instead of an " + t.getSimpleName() + " instance");
+        }
+        return t.cast(mirror);
+    }
     public static <T extends BuildMirror> T newMirror(Class<T> t, Supplier<T> supplier, @Nullable Supplier<? extends T> specializedSupplier) {
         // Create a new BeanMirror
         if (specializedSupplier == null) {

@@ -22,8 +22,8 @@ import java.util.function.Consumer;
 import app.packed.application.AbstractApp.DefaultApp;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.RunState;
-import app.packed.lifetime.StopOption;
+import app.packed.runtime.RunState;
+import app.packed.runtime.StopOption;
 
 /**
  * An entry point for... This class contains a number of methods that can be to execute or analyze programs that are
@@ -187,6 +187,8 @@ public interface App extends AutoCloseable {
 
     // Maaske Brug Verify...
     // Og koer den med Tester.xyz IDK. Super godt sporgsmaal
+
+    // Kunne jo vaere man gerne ville returnere et eller andet???
     static void test(Assembly assembly, Consumer<? /* TestObject */> cno, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }

@@ -20,12 +20,12 @@ package app.packed.bean;
  */
 public interface GeneratedBeanProxy {
 
-
     static boolean isProxy(Object bean) {
         return bean instanceof GeneratedBeanProxy;
     }
 }
 
+//// I think it is up-in if you can unwrap
 // Object static unwrap(GeneratedBeanProxy)
 // Optional<T> tryUnwrap(Object o)
 // boolean isProxy(Object o)

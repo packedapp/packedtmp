@@ -66,7 +66,7 @@ public final class LookupUtil {
         }
     }
 
-    public static VarHandle findVarHandleOwn(MethodHandles.Lookup lookup, String name, Class<?> type) {
+    public static VarHandle findVarHandle(MethodHandles.Lookup lookup, String name, Class<?> type) {
         try {
             return lookup.findVarHandle(lookup.lookupClass(), name, type);
         } catch (ReflectiveOperationException e) {
@@ -85,7 +85,7 @@ public final class LookupUtil {
         }
     }
 
-    public static MethodHandle findVirtualOwn(MethodHandles.Lookup caller, String name, Class<?> returnType, Class<?>... parameterTypes) {
+    public static MethodHandle findVirtual(MethodHandles.Lookup caller, String name, Class<?> returnType, Class<?>... parameterTypes) {
         MethodType mt = MethodType.methodType(returnType, parameterTypes);
         try {
             return caller.findVirtual(caller.lookupClass(), name, mt);

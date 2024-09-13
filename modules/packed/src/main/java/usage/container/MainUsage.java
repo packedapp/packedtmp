@@ -17,8 +17,6 @@ package usage.container;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.build.hook.BuildHook;
-import app.packed.container.Wirelet;
 import app.packed.container.Wirelets;
 import app.packed.lifetime.Main;
 
@@ -27,30 +25,24 @@ import app.packed.lifetime.Main;
  */
 public class MainUsage extends BaseAssembly {
 
-    static final Wirelet W = BuildHook.applyWirelet(c -> c.observe());
-
-    static final App.Image AI = App.imageOf(new MainUsage(), W, Wirelets.buildApplicationLazily());
+    //static final App.Image AI = App.imageOf(new MainUsage(), Wirelets.buildApplicationLazily());
 
     /** {@inheritDoc} */
     @Override
     protected void build() {
         install(MyBean.class);
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
         // throw new Error();
     }
 
-    @SuppressWarnings("unused")
     public static void main(String[] args) {
         long l = System.nanoTime();
         App.Image i = App.imageOf(new MainUsage(), Wirelets.buildApplicationLazily());
-
-        App.Image i2 = App.imageOf(new MainUsage(), W, Wirelets.buildApplicationLazily());
-
         System.out.println(System.nanoTime() - l);
         i.run();
 
@@ -60,7 +52,7 @@ public class MainUsage extends BaseAssembly {
 
         @Main
         public void hello() {
-            System.out.println("HelloWorld ");
+            System.out.println("HelloWorld");
         }
     }
 }

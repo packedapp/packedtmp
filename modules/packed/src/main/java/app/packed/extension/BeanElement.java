@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanLocal.Accessor;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
 import app.packed.util.Key;
@@ -31,8 +32,6 @@ import internal.app.packed.bean.PackedBeanConstructor;
 import internal.app.packed.bean.PackedBeanElement;
 import internal.app.packed.bean.PackedBeanField;
 import internal.app.packed.bean.PackedBeanMethod;
-import sandbox.extension.operation.OperationHandle;
-import sandbox.extension.operation.OperationTemplate;
 
 /**
  *
@@ -58,6 +57,10 @@ public sealed interface BeanElement extends Accessor permits PackedBeanElement, 
      */
     default void failWith(String message) {
         throw new BeanInstallationException(message);
+    }
+
+    default boolean isSynthetic() {
+        return false;
     }
 
     /**
@@ -132,7 +135,7 @@ public sealed interface BeanElement extends Accessor permits PackedBeanElement, 
         Constructor<?> constructor();
 
         // LifetimeTemplate??? Also available for on Method????
-        OperationHandle newOperation(OperationTemplate template);
+        OperationTemplate.Installer newOperation(OperationTemplate template);
 
         /** {@return a factory type for this method.} */
         OperationType operationType();
@@ -152,13 +155,6 @@ public sealed interface BeanElement extends Accessor permits PackedBeanElement, 
         /** {@return the underlying field.} */
         Field field();
 
-        // I think we will skip the builder approach again
-        default OperationTemplate.Installer newGetOperation() {
-            throw new UnsupportedOperationException();
-        }
-
-        // Tror lidt problemet med delegating operations. Er vi ikke ved om vi skal have field/get/set
-        // Maaske giver vi bare en bean field?
         /**
          * Creates a new operation that can read the underlying field.
          * <p>
@@ -170,7 +166,7 @@ public sealed interface BeanElement extends Accessor permits PackedBeanElement, 
          * @return an operation handle
          * @see Lookup#unreflectGetter(Field)
          */
-        OperationHandle newGetOperation(OperationTemplate template);
+        OperationTemplate.Installer newGetOperation(OperationTemplate template);
 
         /**
          * Creates a new operation that can read or/and write a field as specified by the provided access mode.
@@ -191,7 +187,7 @@ public sealed interface BeanElement extends Accessor permits PackedBeanElement, 
          *          and one for writing a field). You must create an operation per access mode instead. Also, there is currently
          *          no way to obtain a VarHandle for the underlying field
          */
-        OperationHandle newOperation(OperationTemplate template, VarHandle.AccessMode accessMode);
+        OperationTemplate.Installer newOperation(OperationTemplate template, VarHandle.AccessMode accessMode);
 
         /**
          * Creates a new operation that can write to a field.
@@ -205,7 +201,7 @@ public sealed interface BeanElement extends Accessor permits PackedBeanElement, 
          *
          * @see Lookup#unreflectSetter(Field)
          */
-        OperationHandle newSetOperation(OperationTemplate template);
+        OperationTemplate.Installer newSetOperation(OperationTemplate template);
 
         /**
          * {@return the underlying field represented as a {@code Variable}.}
@@ -231,25 +227,6 @@ public sealed interface BeanElement extends Accessor permits PackedBeanElement, 
         Method method();  // Optional??? If fake, well we
 
         /**
-         * Creates a new builder for an operation that can invoke the underlying method.
-         *
-         * @return an operation handle builder
-         *
-         * @throws InaccessibleBeanMemberException
-         *             if the framework does not have access to invoke the method
-         * @throws InternalExtensionException
-         *             if the extension does not have access to invoke the method
-         *
-         * @see OperationTarget.OfMethodHandle
-         * @see Lookup#unreflect(Method)
-         * @see BeanMethodHook#allowInvoke()
-         * @see BeanClassHook#allowFullPrivilegeAccess()
-         */
-        // Replace with OperationTemplate.delagating(useSite)
-        // and the OperationHandle.delagtingTo
-        OperationTemplate.Installer newOperation();
-
-        /**
          * Creates a new operation that can invoke the underlying method.
          *
          * @param template
@@ -266,16 +243,11 @@ public sealed interface BeanElement extends Accessor permits PackedBeanElement, 
          * @see BeanMethodHook#allowInvoke()
          * @see BeanClassHook#allowFullPrivilegeAccess()
          */
-        OperationHandle newOperation(OperationTemplate template);
+        OperationTemplate.Installer newOperation(OperationTemplate template);
 
         /** {@return the default type of operation that will be created.} */
         OperationType operationType();
 
-        /** {@inheritDoc} */
-        @Override
-        default Key<?> toKey() {
-            return Key.fromMethodReturnType(this);
-        }
     }
 }
 

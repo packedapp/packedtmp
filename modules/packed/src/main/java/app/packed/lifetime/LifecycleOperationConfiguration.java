@@ -16,7 +16,7 @@
 package app.packed.lifetime;
 
 import app.packed.operation.OperationConfiguration;
-import sandbox.extension.operation.OperationHandle;
+import app.packed.operation.OperationHandle;
 
 /**
  *
@@ -26,7 +26,7 @@ public class LifecycleOperationConfiguration extends OperationConfiguration {
     /**
      * @param handle
      */
-    public LifecycleOperationConfiguration(OperationHandle handle) {
+    public LifecycleOperationConfiguration(OperationHandle<?> handle) {
         super(handle);
     }
 

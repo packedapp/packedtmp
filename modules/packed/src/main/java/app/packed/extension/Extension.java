@@ -24,9 +24,9 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import app.packed.build.BuildCodeSource;
@@ -38,17 +38,16 @@ import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.Extension.ExtensionProperty;
-import app.packed.namespace.NamespaceConfiguration;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceTemplate;
-import app.packed.namespace.NamespaceTwin;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.util.BaseModuleConstants;
 import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.NamespaceSetup;
-import internal.app.packed.container.PackedNamespaceTemplate;
+import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
+import internal.app.packed.namespace.PackedNamespaceInstaller;
+import internal.app.packed.namespace.PackedNamespaceTemplate;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
 
@@ -87,6 +86,7 @@ import internal.app.packed.util.types.ClassUtil;
 
 //Nooooo, if fx Logging is a custom BindingHook on Assembly.
 // We also need to have this fucker on Extension. Or maybe allow no customization on extension beans
+// ContainerLocalSource?
 public non-sealed abstract class Extension<E extends Extension<E>> implements BuildCodeSource {
 
     /** The internal configuration of the extension. */
@@ -154,16 +154,6 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
     /** {@return the path of the container that this extension belongs to.} */
     protected final ComponentPath containerPath() {
         return extension.container.componentPath();
-    }
-
-    @SuppressWarnings("unchecked")
-    protected final <D extends NamespaceTwin<E, ?>> D namespace(NamespaceTemplate<D> template) {
-        PackedNamespaceTemplate<D> t = (PackedNamespaceTemplate<D>) template;
-        HashMap<PackedNamespaceTemplate<?>, NamespaceTwin<?, ?>> m = extension.container.application.namespaces;
-        return (D) m.computeIfAbsent(t, e -> {
-            NamespaceSetup ds = new NamespaceSetup(t, extension, extension);
-            return NamespaceSetup.MI.run(t.supplier, ds);
-        });
     }
 
     /**
@@ -241,6 +231,48 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
         return (E) s.instance();
     }
 
+    @SuppressWarnings("unchecked")
+    protected final <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name,
+            Function<NamespaceTemplate.Installer, T> factory) {
+        NamespaceKey nk = new NamespaceKey(template.handleClass(), name);
+
+        Map<NamespaceKey, NamespaceHandle<?, ?>> m = extension.container.application.namespaces2;
+
+        // cannot use computeIfAbsent, as we want to store the handle before the install method returns
+        NamespaceHandle<?, ?> namespaceHandle = m.get(nk);
+        if (namespaceHandle == null) {
+            PackedNamespaceInstaller pni = new PackedNamespaceInstaller((PackedNamespaceTemplate) template, extension, extension, name);
+            namespaceHandle = factory.apply(pni);
+            if (namespaceHandle != pni.handle) {
+                throw new InternalExtensionException("must return newly installed namespace handle");
+            }
+        }
+
+        return (T) namespaceHandle;
+    }
+
+//    // Eneste problem er vi ikke cache dem... Brugerne kunne selv cache dem...
+//    // Altsaa vi vil jo gerne lave namespacet lazily...
+//    // Hmm, hvis vi nu installere foreste service i et barn... Bor root vel stadig vaere application root
+//    // Ja med mindre, man siger noway hosay
+//    // Saa maaske bare en template???
+//    protected final <T extends NamespaceConfiguration<?>> T namespace(NamespaceHandle<?, ?> handle, Supplier<T> supplier) {
+//        // I think it is the same as newExtensionMirror an internal excetion
+//        throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
+//    }
+
+//    @SuppressWarnings("unchecked")
+//    protected final <F extends NamespaceHandle<E, ?>> F namespace(NamespaceTemplate<F> template) {
+//        PackedNamespaceTemplate<F> t = (PackedNamespaceTemplate<F>) template;
+//        HashMap<PackedNamespaceTemplate<?>, NamespaceHandle<?, ?>> m = extension.container.application.namespaces;
+//        return (F) m.computeIfAbsent(t, e -> {
+//            NamespaceSetup ds = new NamespaceSetup(t, extension, extension);
+//            F d = NamespaceSetup.MI.run(t.supplier, ds);
+//            ds.operator = d;
+//            return d;
+//        });
+//    }
+
     /**
      * Returns a bean introspector.
      *
@@ -280,16 +312,6 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      *             if the extension defines an extension point but does not override this method.
      */
     protected ExtensionPoint<E> newExtensionPoint() {
-        // I think it is the same as newExtensionMirror an internal excetion
-        throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
-    }
-
-    // Eneste problem er vi ikke cache dem... Brugerne kunne selv cache dem...
-    // Altsaa vi vil jo gerne lave namespacet lazily...
-    // Hmm, hvis vi nu installere foreste service i et barn... Bor root vel stadig vaere application root
-    // Ja med mindre, man siger noway hosay
-    // Saa maaske bare en template???
-    protected final <T extends NamespaceConfiguration<?>> T namespace(NamespaceHandle<?> handle, Supplier<T> supplier) {
         // I think it is the same as newExtensionMirror an internal excetion
         throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
     }

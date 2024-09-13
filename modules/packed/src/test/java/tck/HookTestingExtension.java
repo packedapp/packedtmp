@@ -32,11 +32,12 @@ import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 
 import app.packed.bean.ComputedConstant;
-import app.packed.extension.BeanTrigger.AnnotatedFieldBeanTrigger;
-import app.packed.extension.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanIntrospector;
+import app.packed.extension.BeanTrigger.AnnotatedFieldBeanTrigger;
+import app.packed.extension.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.operation.OperationHandle;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.UnwrappedBindableVariable;
@@ -44,7 +45,6 @@ import app.packed.util.AnnotationList;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import internal.app.packed.util.CollectionUtil;
-import sandbox.extension.operation.OperationHandle;
 import tck.AbstractAppTest.TestStore;
 import testutil.MemberFinder;
 
@@ -53,7 +53,7 @@ import testutil.MemberFinder;
  */
 public class HookTestingExtension extends Extension<HookTestingExtension> {
 
-    private Map<String, OperationHandle> ink = new HashMap<>();
+    private Map<String, OperationHandle<?>> ink = new HashMap<>();
 
     @Nullable
     private BiConsumer<? super AnnotationList, ? super BeanField> onAnnotatedField;
@@ -66,7 +66,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
 
     HookTestingExtension() {}
 
-    void generate(String name, OperationHandle oh) {
+    void generate(String name, OperationHandle<?> oh) {
         requireNonNull(name);
         ink.putIfAbsent(name, oh);
 

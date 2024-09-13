@@ -23,11 +23,6 @@ import internal.app.packed.util.PackedAnnotationList;
 /** The super class of operational members. The inheritance hierarchy follows that of {@link Member}. */
 abstract sealed class PackedBeanMember<M extends Member> extends PackedBeanElement permits PackedBeanExecutable {
 
-    @Override
-    public BeanSetup bean() {
-        return extension.scanner.bean;
-    }
-
     /** Annotations on the member. */
     private final PackedAnnotationList annotations;
 
@@ -47,6 +42,11 @@ abstract sealed class PackedBeanMember<M extends Member> extends PackedBeanEleme
     @Override
     public final AnnotationList annotations() {
         return annotations;
+    }
+
+    @Override
+    public BeanSetup bean() {
+        return extension.scanner.bean;
     }
 
     /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */

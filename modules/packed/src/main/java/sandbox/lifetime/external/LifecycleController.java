@@ -18,8 +18,8 @@ package sandbox.lifetime.external;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import app.packed.lifetime.RunState;
-import app.packed.lifetime.StopOption;
+import app.packed.runtime.RunState;
+import app.packed.runtime.StopOption;
 import app.packed.util.Nullable;
 
 // This is basically something thats wraps a state that is 100 Linear

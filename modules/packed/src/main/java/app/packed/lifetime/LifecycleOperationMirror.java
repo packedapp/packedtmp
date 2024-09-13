@@ -18,7 +18,9 @@ package app.packed.lifetime;
 import java.util.List;
 
 import app.packed.operation.OperationDependencyOrder;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
+import app.packed.runtime.RunState;
 
 /**
  * An operation that is invoked doing lifecycle events on the bean. Typically from the usage of {@link OnInitialize},
@@ -28,6 +30,13 @@ import app.packed.operation.OperationMirror;
 // Is a factory a lifecycle operation? I don't think so. No. Ordering makes no sense
 // Inject isn't a lifecycle operation either
 public class LifecycleOperationMirror extends OperationMirror {
+
+    /**
+     * @param handle
+     */
+    public LifecycleOperationMirror(OperationHandle<?> handle) {
+        super(handle);
+    }
 
     /**
      * The lifetime the operation is run in.

@@ -37,6 +37,8 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
+import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationTemplate;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.integration.devtools.PackedDevToolsIntegration;
@@ -47,7 +49,6 @@ import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.ThrowableUtil;
-import sandbox.extension.operation.OperationTemplate;
 
 /**
  * This class represents a single bean being introspected.
@@ -63,8 +64,6 @@ public final class BeanScanner {
     /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
     private static final MethodHandle MH_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class, "initialize",
             void.class, BeanScannerExtensionRef.class);
-
-//    public static final MagicInitializer<BeanScannerExtension> MI = MagicInitializer.of();
 
     private final OpenClass accessor;
 
@@ -113,7 +112,7 @@ public final class BeanScanner {
         this.customLookup = bean.container.assembly.customLookup;
         this.hookModel = bean.container.assembly.model.hookModel;
         this.accessor = new OpenClass(MethodHandles.lookup());
-        // We need to make a copy of attachments, as the the map may be updated in the BeanInstaller
+        bean.scanner = this;
     }
 
     /**
@@ -152,18 +151,18 @@ public final class BeanScanner {
 
         MethodHandle mh = unreflectConstructor(con);
 
-        OperationTemplate ot;
+        PackedOperationTemplate ot;
         if (bean.lifetime.lifetimes().isEmpty()) {
-            ot = OperationTemplate.defaults();
+            ot = (PackedOperationTemplate) OperationTemplate.defaults();
         } else {
             ot = bean.lifetime.lifetimes().get(0).template;
         }
         ot = ot.reconfigure(c -> c.returnType(beanClass));
 
-        PackedOperationInstaller poi = ((PackedOperationTemplate) ot).newInstaller(constructor.operationType(), bean, bean.installedBy);
+        PackedOperationInstaller poi = ot.newInstaller(constructor.operationType(), bean, bean.installedBy);
 
-        OperationSetup os = OperationSetup.newMemberOperationSetup(poi, new OperationConstructorTarget(constructor.constructor()), mh);
-        bean.operations.all.add(os);
+        OperationSetup os = OperationSetup.newMemberOperationSetup(poi, new OperationConstructorTarget(constructor.constructor()), mh, OperationHandle::new);
+        // bean.operations.all.add(os);
         resolveNow(os);
     }
 
@@ -179,7 +178,7 @@ public final class BeanScanner {
         // We always have instances if we have an op.
         // Make sure the op is resolved
         if (bean.beanSourceKind == BeanSourceKind.OP) {
-            resolveNow(bean.operations.all.get(0));
+            resolveNow(bean.operations.first());
         }
 
         if (!beanClass.isInterface()) {
@@ -366,7 +365,7 @@ public final class BeanScanner {
 
             // Iterate over all declared fields
             for (Field field : clazz.getDeclaredFields()) {
-                FieldScan.introspectField(introspector, field);
+                FieldScan.fieldIntrospect(introspector, field);
             }
 
             // Maybe store things directly in BeanScannerExtension

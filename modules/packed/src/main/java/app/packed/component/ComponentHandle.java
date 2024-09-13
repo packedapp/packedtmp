@@ -19,7 +19,7 @@ import app.packed.application.ApplicationHandle;
 import app.packed.bean.BeanHandle;
 import app.packed.container.ContainerHandle;
 import app.packed.namespace.NamespaceHandle;
-import sandbox.extension.operation.OperationHandle;
+import app.packed.operation.OperationHandle;
 
 /**
  *
@@ -45,9 +45,9 @@ public sealed interface ComponentHandle permits ApplicationHandle, ContainerHand
     ComponentPath componentPath();
 
     /**
-     * Returns whether or not the bean is still configurable.
+     * Returns whether or not the component is still configurable.
      *
-     * @return {@code true} if the bean is still configurable
+     * @return {@code true} if the component is still configurable
      */
     boolean isConfigurable();
 

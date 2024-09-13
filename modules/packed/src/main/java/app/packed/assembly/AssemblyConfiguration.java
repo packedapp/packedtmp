@@ -74,7 +74,7 @@ public final class AssemblyConfiguration {
 
     // Maybe just containers().root();
     public ContainerConfiguration containerRoot() {
-        return assembly.container.configuration;
+        return assembly.container.configuration();
     }
 
     /** {@return a tree view of all the containers defined by the assembly} */

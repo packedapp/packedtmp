@@ -34,7 +34,7 @@ import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.PackedOperationType.MemberOperationSetup;
+import internal.app.packed.operation.PackedOperationTarget.MemberOperationSetup;
 import internal.app.packed.util.StringFormatter;
 
 /**
@@ -108,7 +108,7 @@ public final class ServiceSetup {
         // Create a new provider
         ServiceProviderSetup p = provider = new ServiceProviderSetup(operation, this, resolution);
 
-        operation.mirrorSupplier = () -> new ProvidedServiceMirror(p);
+        operation.mirrorSupplier = h -> new ProvidedServiceMirror(h, p);
 
         // add the service provider to the bean, this is used for cyclic dependency check later on
         operation.bean.operations.serviceProviders.add(p);

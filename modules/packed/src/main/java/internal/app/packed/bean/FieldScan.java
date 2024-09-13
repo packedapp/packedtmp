@@ -44,7 +44,7 @@ class FieldScan {
         }
     }
 
-    static void introspectField(BeanScanner scanner, Field field) {
+    static void fieldIntrospect(BeanScanner scanner, Field field) {
         Annotation[] annotations = field.getAnnotations();
         PackedAnnotationList pal = new PackedAnnotationList(annotations);
 

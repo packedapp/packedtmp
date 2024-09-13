@@ -23,13 +23,13 @@ import java.util.function.Consumer;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanTemplate;
+import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import internal.app.packed.build.PackedBuildLocal;
 import internal.app.packed.container.AuthoritySetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.application.LifetimeTemplate;
-import sandbox.extension.operation.OperationTemplate;
 
 /** Implementation of {@link BeanTemplate}. */
 public record PackedBeanTemplate(BeanKind kind, LifetimeTemplate lifetime, OperationTemplate bot, @Nullable Class<?> createAs,
@@ -54,15 +54,32 @@ public record PackedBeanTemplate(BeanKind kind, LifetimeTemplate lifetime, Opera
     /** {@inheritDoc} */
     @Override
     public BeanTemplate reconfigure(Consumer<? super Configurator> configure) {
-        return PackedBeanTemplate.configure(this, configure);
+        return PackedBeanTemplate.reconfigureExisting(this, configure);
     }
 
-    public static PackedBeanTemplate configure(PackedBeanTemplate template, Consumer<? super Configurator> configure) {
-        PackedBeanTemplateConfigurator c = new PackedBeanTemplateConfigurator(template);
-        configure.accept(c);
+    /**
+     * Reconfigures an existing bean template.
+     *
+     * @param existing
+     *            the bean template to reconfigure
+     * @param action
+     *            the reconfiguration action
+     * @return the new bean template
+     */
+    public static PackedBeanTemplate reconfigureExisting(PackedBeanTemplate existing, Consumer<? super Configurator> action) {
+        PackedBeanTemplateConfigurator c = new PackedBeanTemplateConfigurator(existing);
+        action.accept(c);
         return c.template;
     }
 
+    /**
+     * Create a new bean installer from this template.
+     *
+     * @param installingExtension
+     *            the extension that is installing the bean
+     * @param owner
+     * @return the bean installer
+     */
     public PackedBeanInstaller newInstaller(ExtensionSetup installingExtension, AuthoritySetup owner) {
         return new PackedBeanInstaller(this, installingExtension, owner);
     }

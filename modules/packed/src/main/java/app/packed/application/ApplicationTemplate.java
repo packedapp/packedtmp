@@ -16,7 +16,7 @@
 package app.packed.application;
 
 import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import app.packed.bean.BeanConfiguration;
 import internal.app.packed.application.PackedApplicationInstaller;
@@ -74,7 +74,7 @@ public sealed interface ApplicationTemplate permits PackedApplicationTemplate {
          *          must be returned
          */
         // What about the container mirror?????
-        Installer specializeMirror(Supplier<? extends ApplicationMirror> supplier);
+        Installer specializeMirror(Function<? super ApplicationHandle, ? extends ApplicationMirror> supplier);
     }
 
 }

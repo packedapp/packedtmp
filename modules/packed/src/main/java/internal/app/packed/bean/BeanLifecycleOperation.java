@@ -15,9 +15,9 @@
  */
 package internal.app.packed.bean;
 
-import sandbox.extension.operation.OperationHandle;
+import app.packed.operation.OperationHandle;
 
-public record BeanLifecycleOperation(BeanLifecycleOrder runOrder, OperationHandle handle) implements Comparable<BeanLifecycleOperation> {
+public record BeanLifecycleOperation(BeanLifecycleOrder runOrder, OperationHandle<?> handle) implements Comparable<BeanLifecycleOperation> {
 
     /** {@inheritDoc} */
     @Override

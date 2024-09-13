@@ -15,9 +15,14 @@
  */
 package internal.app.packed.component;
 
+import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentPath;
+
 /**
  *
  */
-public class ComponentSetup {
+public abstract class ComponentSetup {
 
+    public abstract ComponentMirror mirror();
+    public abstract ComponentPath componentPath();
 }

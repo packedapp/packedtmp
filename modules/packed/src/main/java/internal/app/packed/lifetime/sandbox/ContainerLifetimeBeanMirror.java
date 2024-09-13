@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.BindingMirror;
@@ -69,6 +70,13 @@ import sandbox.lifetime.LifetimeOperationMirror;
 
 @Deprecated
 class ContainerLifetimeBeanMirror extends BeanMirror {
+
+    /**
+     * @param handle
+     */
+    public ContainerLifetimeBeanMirror(BeanHandle<?> handle) {
+        super(handle);
+    }
 
     /** {@return a collection of the lifetimes managed by this bean.} */
     // Hmm, skal den her paa BeanMirror???
@@ -162,6 +170,13 @@ interface Zandbox1 {
 
     // Tror ikke vi har en generisk Host bean
     public class LifetimeHostBeanMirror extends BeanMirror {
+
+        /**
+         * @param handle
+         */
+        public LifetimeHostBeanMirror(BeanHandle<?> handle) {
+            super(handle);
+        }
 
         // Som regel er den her en LifetimeHolder. Men ikke altid
         // Eller maaske skal det bare vaere altid
