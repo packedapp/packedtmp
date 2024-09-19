@@ -46,7 +46,7 @@ class AbstractApp implements App {
      *            the bootstrap app image to wrap
      * @return an app image
      */
-    protected final App.Image newImage(BootstrapApp.Image<?> image) {
+    protected final App.Image newImage(BaseImage<?> image) {
         return new AppImage(image);
     }
 
@@ -63,7 +63,7 @@ class AbstractApp implements App {
     }
 
     /** Implementation of {@link app.packed.application.App.Image}. */
-    record AppImage(BootstrapApp.Image<?> image) implements App.Image {
+    record AppImage(BaseImage<?> image) implements App.Image {
 
         /** {@inheritDoc} */
         @Override
@@ -94,6 +94,6 @@ class AbstractApp implements App {
     static final class DefaultApp extends AbstractApp {
 
         /** The bootstrap app. */
-        static final BootstrapApp<Void> BOOTSTRAP = BootstrapApp.of(c -> c.managedLifetime());
+        static final BootstrapApp<Void> BOOTSTRAP = BootstrapApp.of(ApplicationTemplate.DEFAULT, c -> {});
     }
 }

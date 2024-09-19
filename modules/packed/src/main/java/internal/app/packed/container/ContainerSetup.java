@@ -25,7 +25,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 import app.packed.component.ComponentConfiguration;
@@ -42,6 +41,7 @@ import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.ContainerBeanStore;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
@@ -59,16 +59,20 @@ import internal.app.packed.util.TreeNode;
 import internal.app.packed.util.TreeNode.ActualNode;
 
 /** The internal configuration of a container. */
-public final class ContainerSetup extends ComponentSetup
-        implements ActualNode<ContainerSetup> , ContextualizedElementSetup , Mirrorable<ContainerMirror> , BuildLocalSource {
+public final class ContainerSetup
+        implements ComponentSetup, ActualNode<ContainerSetup>, ContextualizedElementSetup, Mirrorable<ContainerMirror>, BuildLocalSource {
 
     /** A handle that can access ContainerConfiguration#container. */
     private static final VarHandle VH_CONTAINER_CONFIGURATION_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerConfiguration.class,
-            "container", ContainerSetup.class);
+            "handle", ContainerHandle.class);
+
+    /** A handle that can access {@link ContainerHandleHandle#container}. */
+    private static final VarHandle VH_CONTAINER_HANDLE_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerHandle.class, "container",
+            ContainerSetup.class);
 
     /** A handle that can access ContainerMirror#container. */
-    private static final VarHandle VH_CONTAINER_MIRROR_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerMirror.class, "container",
-            ContainerSetup.class);
+    private static final VarHandle VH_CONTAINER_MIRROR_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerMirror.class, "handle",
+            ContainerHandle.class);
 
     /** The application this container is a part of. */
     public final ApplicationSetup application;
@@ -79,15 +83,13 @@ public final class ContainerSetup extends ComponentSetup
     /** All the beans installed in the container. */
     public final ContainerBeanStore beans = new ContainerBeanStore();
 
-    /** The configuration representing this container */
-    @Nullable
-    private ContainerConfiguration configuration;
-
     private HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
 
     /** Extensions used by this container. We keep them in a LinkedHashMap so that we can return a deterministic view. */
     // Or maybe extension types are always sorted??
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
+
+    ContainerHandle<?> handle;
 
     /**
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
@@ -98,14 +100,13 @@ public final class ContainerSetup extends ComponentSetup
     /** The lifetime the container is a part of. */
     public final ContainerLifetimeSetup lifetime;
 
-    /** Supplies a mirror for the container. */
-    private final Function<? super ContainerHandle<?>, ? extends ContainerMirror> mirrorSupplier;
-
     /** A named tree node representing this container in the application. */
     public final NamedTreeNode<ContainerSetup> node;
 
     /** The container's service manager. */
     public final ServiceNamespaceSetup sm;
+
+//    NamespaceTemplate namespaceTemplate = NamespaceTemplate.of(ServiceNamespaceSetup.class, c -> {});
 
     /**
      * Create a new container.
@@ -120,7 +121,6 @@ public final class ContainerSetup extends ComponentSetup
         this.node = new NamedTreeNode<>(installer.parent, this);
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
-        this.mirrorSupplier = installer.mirrorSupplier;
 
         installer.locals.forEach((p, o) -> locals().set((PackedContainerLocal) p, this, o));
 
@@ -151,14 +151,6 @@ public final class ContainerSetup extends ComponentSetup
         return (BaseExtension) useExtension(BaseExtension.class, null).instance();
     }
 
-    public ContainerConfiguration configuration() {
-        ContainerConfiguration cc = configuration;
-        if (cc == null) {
-            throw new IllegalStateException();
-        }
-        return cc;
-    }
-
     /** {@inheritDoc} */
     @Override
     public ComponentPath componentPath() {
@@ -171,6 +163,10 @@ public final class ContainerSetup extends ComponentSetup
      */
     public ComponentConfiguration componentTag(String[] tags) {
         throw new UnsupportedOperationException();
+    }
+
+    public ContainerConfiguration configuration() {
+        return handle().configuration();
     }
 
     /** {@return a unmodifiable view of all extension types that are in used in no particular order.} */
@@ -192,13 +188,22 @@ public final class ContainerSetup extends ComponentSetup
         contexts.forEach(action);
     }
 
-    void initConfiguration(Function<? super ContainerHandle<?>, ? extends ContainerConfiguration> newConfiguration) {
-        if (this.configuration != null) {
-            throw new IllegalStateException("A container handle can only be used once to create a container configuration");
+    ContainerHandle<?> handle() {
+        return requireNonNull(handle);
+    }
+
+    /** Call {@link Extension#onAssemblyClose()}. */
+    public void invokeOnAssemblyClose(AuthoritySetup as) {
+        for (BeanSetup b : beans) {
+            if (b.owner == as) {
+                b.invokeBeanOnAssemblyClose();
+            }
         }
-        ContainerConfiguration cc = newConfiguration.apply(new PackedContainerHandle<>(this));
-        requireNonNull(cc); // Throw InternalException
-        this.configuration = cc;
+        for (ContainerSetup c : node.children.values()) {
+            if (assembly == c.assembly) {
+                c.invokeOnAssemblyClose(as);
+            }
+        }
     }
 
     /** {@return whether or not the container is the root container in the application.} */
@@ -225,6 +230,25 @@ public final class ContainerSetup extends ComponentSetup
         return extensions.containsKey(extensionClass);
     }
 
+//    /** {@return the path of this container} */
+//    @Override
+//    public OldApplicationPath path() {
+//        int depth = node.depth();
+//        return switch (depth) {
+//        case 0 -> OldApplicationPath.ROOT;
+//        case 1 -> new PackedNamespacePath(node.name);
+//        default -> {
+//            String[] paths = new String[depth];
+//            ContainerSetup acc = this;
+//            for (int i = depth - 1; i >= 0; i--) {
+//                paths[i] = acc.node.name;
+//                acc = acc.node.parent;
+//            }
+//            yield new PackedNamespacePath(paths);
+//        }
+//        };
+//    }
+
     /** {@return whether or not this container is the root of its lifetime.} */
     public boolean isLifetimeRoot() {
         return this == lifetime.container;
@@ -246,39 +270,10 @@ public final class ContainerSetup extends ComponentSetup
         return application.locals();
     }
 
-//    /** {@return the path of this container} */
-//    @Override
-//    public OldApplicationPath path() {
-//        int depth = node.depth();
-//        return switch (depth) {
-//        case 0 -> OldApplicationPath.ROOT;
-//        case 1 -> new PackedNamespacePath(node.name);
-//        default -> {
-//            String[] paths = new String[depth];
-//            ContainerSetup acc = this;
-//            for (int i = depth - 1; i >= 0; i--) {
-//                paths[i] = acc.node.name;
-//                acc = acc.node.parent;
-//            }
-//            yield new PackedNamespacePath(paths);
-//        }
-//        };
-//    }
-
-    ContainerHandle<?> handle() {
-        return new PackedContainerHandle<>(this);
-    }
-
-    ContainerMirror mirror;
-
     /** {@return a new container mirror.} */
     @Override
     public ContainerMirror mirror() {
-        ContainerMirror m = mirror;
-        if (m == null) {
-            m = mirror = mirrorSupplier == null ? new ContainerMirror(handle()) : mirrorSupplier.apply(handle());
-        }
-        return m;
+        return handle().mirror();
     }
 
     /**
@@ -395,11 +390,12 @@ public final class ContainerSetup extends ComponentSetup
      * @return the bean setup
      */
     public static ContainerSetup crack(ContainerConfiguration configuration) {
-        return (ContainerSetup) VH_CONTAINER_CONFIGURATION_TO_SETUP.get(configuration);
+        ContainerHandle<?> handle = (ContainerHandle<?>) VH_CONTAINER_CONFIGURATION_TO_SETUP.get(configuration);
+        return crack(handle);
     }
 
     public static ContainerSetup crack(ContainerHandle<?> handle) {
-        return ((PackedContainerHandle<?>) handle).container();
+        return (ContainerSetup) VH_CONTAINER_HANDLE_TO_SETUP.get(handle);
     }
 
     public static ContainerSetup crack(ContainerLocal.Accessor accessor) {
@@ -411,7 +407,8 @@ public final class ContainerSetup extends ComponentSetup
     }
 
     public static ContainerSetup crack(ContainerMirror mirror) {
-        return (ContainerSetup) VH_CONTAINER_MIRROR_TO_SETUP.get(mirror);
+        ContainerHandle<?> handle = (ContainerHandle<?>) VH_CONTAINER_MIRROR_TO_HANDLE.get(mirror);
+        return crack(handle);
     }
 
     /** Implementation of {@link ContainerMirror.OfTree} */

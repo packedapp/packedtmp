@@ -25,34 +25,45 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
-import internal.app.packed.namespace.NamespaceSetup;
 
 /** A mirror of a namespace. */
 public non-sealed class NamespaceMirror<E extends Extension<E>> implements ComponentMirror {
 
     /** The namespace configuration. */
-    private final NamespaceSetup namespace;
+    private final NamespaceHandle<E, ?> handle;
 
+    /**
+     * Create a new namespace mirror.
+     *
+     * @param handle
+     *            the namespace's handle
+     */
     public NamespaceMirror(NamespaceHandle<E, ?> handle) {
-        this.namespace = handle.namespace;
+        this.handle = requireNonNull(handle);
     }
 
     /** {@inheritDoc} */
     @Override
     public final ComponentPath componentPath() {
-        throw new UnsupportedOperationException();
+        return handle.componentPath();
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
-        return other instanceof NamespaceMirror m && getClass() == m.getClass() && namespace == m.namespace;
+        return other instanceof NamespaceMirror m && getClass() == m.getClass() && handle.namespace == m.handle.namespace;
+    }
+
+    /** {@return the root extension in the namespace} */
+    @SuppressWarnings("unchecked")
+    protected final E extensionRoot() {
+        return (E) handle.namespace.root.instance();
     }
 
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return namespace.hashCode();
+        return handle.namespace.hashCode();
     }
 
     public final Stream<BeanMirror> namespaceActiveBeans() {
@@ -81,7 +92,7 @@ public non-sealed class NamespaceMirror<E extends Extension<E>> implements Compo
 
     /** {@return the name of this name.} */
     public final String namespaceName() {
-        return namespace.name;
+        return handle.namespace.name;
     }
 
     /** {@return the owner of this namespace instance.} */
@@ -94,7 +105,7 @@ public non-sealed class NamespaceMirror<E extends Extension<E>> implements Compo
 
     /** {@return the root container of the namespace.} */
     public final ContainerMirror namespaceRoot() {
-        return namespace.root.container.mirror();
+        return handle.namespace.root.container.mirror();
     }
 
     /** {@return a tree containing every container where this namespace instance is present.} */
@@ -109,20 +120,6 @@ public non-sealed class NamespaceMirror<E extends Extension<E>> implements Compo
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final <T extends NamespaceOperationMirror> Stream<T> operations(Class<T> operationType) {
         requireNonNull(operationType, "operationType is null");
-        return (Stream) namespace.operations.stream().map(e -> e.mirror()).filter(f -> operationType.isAssignableFrom(f.getClass()));
+        return (Stream) handle.namespace.operations.stream().map(e -> e.mirror()).filter(f -> operationType.isAssignableFrom(f.getClass()));
     }
 }
-
-///** {@return the root extension in the namespace} */
-//@SuppressWarnings("unchecked")
-//protected E extensionRoot() {
-//  return (E) namespace.root.instance();
-//}
-//
-//// IDK, define is also a bad word
-//// Should be similar named as bean.operator(), operation.operator
-//// Maybe we do allow user namespaces...
-///** {@return the extension class that owns the namespace.} */
-//Class<? extends Extension<?>> namespaceExtension() {
-//  return namespace.root.extensionType;
-//}

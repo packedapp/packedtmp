@@ -15,7 +15,7 @@
  */
 package sandbox.extension.container;
 
-import app.packed.bean.BeanTemplate;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.util.Key;
 
@@ -33,10 +33,11 @@ import app.packed.util.Key;
 // There can be multiple guest per guest adaptors
 public final class ComponentGuestAdaptorBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
+
     /**
      * @param handle
      */
-    public ComponentGuestAdaptorBeanConfiguration(BeanTemplate.Installer handle) {
+    public ComponentGuestAdaptorBeanConfiguration(BeanHandle<?> handle) {
         super(handle);
     }
 

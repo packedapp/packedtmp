@@ -21,6 +21,7 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.BeanTemplate.Installer;
 import app.packed.extension.Extension;
 
 /**
@@ -54,11 +55,26 @@ public class MyW extends BaseAssembly {
         }
 
     }
+    static class MyBeanHandle extends BeanHandle<BeanConfiguration> {
+
+        /**
+         * @param installer
+         */
+        public MyBeanHandle(Installer installer) {
+            super(installer);
+        }
+
+        @Override
+        protected MyBeanMirror newBeanMirror() {
+            return new MyBeanMirror(this);
+        }
+
+    }
 
     static class MyExt extends Extension<MyExt> {
 
         void install() {
-            base().newBean(BeanKind.CONTAINER.template()).specializeMirror(MyBeanMirror::new).install(FFF.class, BeanConfiguration::new);
+            base().newBean(BeanKind.CONTAINER.template()).install(FFF.class, MyBeanHandle::new);
         }
     }
 }

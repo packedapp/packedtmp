@@ -24,9 +24,8 @@ import java.lang.annotation.Target;
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanIntrospector;
@@ -68,14 +67,14 @@ public class Ddd extends BaseAssembly {
         MyEntityExtension() {}
 
         public void addEntityBean(Class<?> entityBean) {
-            child().base().newBean(BeanKind.MANANGED.template()).install(entityBean, BeanConfiguration::new);
+            child().base().newBean(BeanKind.MANANGED.template()).install(entityBean, BeanHandle::new);
         }
 
         MyEntityExtension child() {
             MyEntityExtension c = child;
             if (c == null) {
                 ContainerHandle<?> h = base().newContainer(ContainerTemplate.DEFAULT).named("EntityBeans")
-                        .installAndUseThisExtension(ContainerConfiguration::new);
+                        .installAndUseThisExtension(ContainerHandle::new);
                 c = child = fromHandle(h).get();
             }
             return c;

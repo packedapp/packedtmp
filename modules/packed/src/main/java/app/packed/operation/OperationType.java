@@ -39,7 +39,6 @@ import internal.app.packed.util.PackedVariable;
  *          element type. This means that both detailed {@link Type} information and annotations are available.
  */
 // Maybe it is InvocationType anyway.
-// I would say OperationType could be a ScheduledOperation
 public final /* primitive */ class OperationType {
 
     /** May be used for operation types without parameter variables. */

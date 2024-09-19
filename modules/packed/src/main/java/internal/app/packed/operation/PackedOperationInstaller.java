@@ -17,21 +17,33 @@ package internal.app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.extension.ExtensionPoint.UseSite;
+import app.packed.namespace.NamespaceHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.Installer;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.component.AbstractComponentInstaller;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
 
 /**
  *
  */
-public abstract non-sealed class PackedOperationInstaller implements OperationTemplate.Installer {
+public abstract non-sealed class PackedOperationInstaller extends AbstractComponentInstaller implements OperationTemplate.Installer {
+
+    @Override
+    public <H extends OperationHandle<?>, N extends NamespaceHandle<?, ?>> H install(N namespace, BiFunction<? super Installer, N, H> factory) {
+        checkConfigurable();
+        this.addToNamespace = requireNonNull(namespace);
+        return install(f -> factory.apply(f, namespace));
+    }
+
+    NamespaceHandle<?, ?> addToNamespace;
 
     public final BeanSetup bean;
 
@@ -41,6 +53,8 @@ public abstract non-sealed class PackedOperationInstaller implements OperationTe
 
     public OperationHandle<?> oh;
 
+    OperationSetup operation;
+
     public final OperationType operationType;
 
     public final ExtensionSetup operator;
@@ -48,8 +62,6 @@ public abstract non-sealed class PackedOperationInstaller implements OperationTe
     public PackedOperationTarget pot;
 
     public final PackedOperationTemplate template;
-
-    public OperationSetup os;
 
     public PackedOperationInstaller(PackedOperationTemplate template, OperationType operationType, BeanSetup bean, ExtensionSetup operator) {
         this.template = template;
@@ -61,7 +73,7 @@ public abstract non-sealed class PackedOperationInstaller implements OperationTe
     /**
      *
      */
-    private void checkConfigurable() {}
+    void checkConfigurable() {}
 
     /** {@inheritDoc} */
     @Override
@@ -76,19 +88,11 @@ public abstract non-sealed class PackedOperationInstaller implements OperationTe
         return requireNonNull(oh);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public OperationHandle<?> install(OperationTemplate template) {
-        throw new UnsupportedOperationException();
+    OperationSetup newOperation(Function<? super Installer, OperationHandle<?>> newHandle) {
+        return OperationSetup.newOperation(this, newHandle);
     }
 
-    public OperationSetup newOperation(Function<? super Installer, OperationHandle<?>> newHandle) {
-        checkConfigurable();
-        OperationSetup os = new OperationSetup(this, pot);
-        this.os = os;
-        OperationHandle<?> h = newHandle.apply(this);
-        os.handle = h;
-        os.bean.operations.add(os);
-        return os;
+    public static OperationSetup crack(OperationTemplate.Installer installer) {
+        return ((PackedOperationInstaller) installer).operation;
     }
 }

@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import app.packed.lifetime.LifecycleOperationMirror;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.bean.BeanLifecycleOperation;
 import internal.app.packed.bean.BeanLifecycleOrder;
@@ -63,7 +62,7 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
 
     public void addLifecycleOperation(BeanLifecycleOrder runOrder, OperationHandle<?> operation) {
         lifecycleOperations.add(new BeanLifecycleOperation(runOrder, operation));
-        operation.specializeMirror(LifecycleOperationMirror::new);
+      //  operation.specializeMirror(LifecycleOperationMirror::new);
     }
 
     public OperationSetup first() {

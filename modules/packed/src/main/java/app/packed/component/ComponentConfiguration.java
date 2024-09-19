@@ -34,7 +34,7 @@ public abstract sealed class ComponentConfiguration
      */
     protected final void checkIsConfigurable() {
         if (!isConfigurable()) {
-            throw new IllegalStateException("The " + handle().componentKind().name() + " is no longer configurable");
+            throw new IllegalStateException("The " + componentPath().componentKind().name() + " is no longer configurable");
         }
     }
 

@@ -35,13 +35,13 @@ import internal.app.packed.util.MethodHandleUtil;
 /**
  *
  */
-public abstract class ServiceNamespaceConfiguration extends NamespaceConfiguration<BaseExtension> {
+public final class ServiceNamespaceConfiguration extends NamespaceConfiguration<BaseExtension> {
 
     /**
-     * @param handle
+     * @param namespace
      */
-    protected ServiceNamespaceConfiguration(NamespaceHandle<BaseExtension, ?> handle) {
-        super(handle);
+    protected ServiceNamespaceConfiguration(NamespaceHandle<BaseExtension, ?> namespace) {
+        super(namespace);
     }
 
     // sbc.provide-> Knows the fucking service namespace...
@@ -100,4 +100,63 @@ public abstract class ServiceNamespaceConfiguration extends NamespaceConfigurati
         // extension().container.sm.provideAll(result);
         return result.keySet(); // can probably return something more clever?
     }
+
+    // requires bliver automatisk anchoret...
+    // anchorAllChildExports-> requireAllChildExports();
+    public void requires(Class<?>... keys) {
+        requires(Key.ofAll(keys));
+    }
+
+    /**
+     * Explicitly adds the specified key to the list of required services. There are typically two situations in where
+     * explicitly adding required services can be useful:
+     * <p>
+     * First, services that are cannot be specified at build time. But is needed later... Is mainly useful when we the
+     * services to. For example, importAll() that injector might not a service itself. But other that make use of the
+     * injector might.
+     *
+     *
+     * <p>
+     * Second, for manual service requirement, although it is often preferable to use contracts here
+     * <p>
+     * In any but the simplest of cases, contracts are useful
+     *
+     * @param keys
+     *            the key(s) to add
+     */
+    public void requires(Key<?>... keys) {
+        requireNonNull(keys, "keys is null");
+        checkIsConfigurable();
+        throw new UnsupportedOperationException();
+    }
+
+    // Think we need installPrototype (Which will fail if not provided or exported)
+    // providePrototype would then be installPrototype().provide() // not ideal
+    // Men taenker vi internt typisk arbejde op i mod implementering. Dog ikke altid
+    // providePerRequest <-- every time the service is requested
+    // Also these beans, can typically just be composites??? Nah
+
+    public void requiresOptionally(Class<?>... keys) {
+        requiresOptionally(Key.ofAll(keys));
+    }
+
+    /**
+     * Adds the specified key to the list of optional services.
+     * <p>
+     * If a key is added optionally and the same key is later added as a normal (mandatory) requirement either explicitly
+     * via # {@link #serviceRequire(Key...)} or implicitly via, for example, a constructor dependency. The key will be
+     * removed from the list of optional services and only be listed as a required key.
+     *
+     * @param keys
+     *            the key(s) to add
+     */
+    // How does this work with child services...
+    // They will be consumed
+    public void requiresOptionally(Key<?>... keys) {
+        requireNonNull(keys, "keys is null");
+        checkIsConfigurable();
+        throw new UnsupportedOperationException();
+    }
+
+
 }

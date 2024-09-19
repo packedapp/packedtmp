@@ -15,7 +15,6 @@
  */
 package app.packed.namespace;
 
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -62,6 +61,6 @@ public sealed interface NamespaceTemplate permits PackedNamespaceTemplate {
 
         // return value.getClass() from newHandle must match handleClass
         <E extends Extension<E>, H extends NamespaceHandle<E, ?>, C extends NamespaceConfiguration<E>> H install(
-                Function<? super NamespaceTemplate.Installer, H> newHandle, BiFunction<H, E, C> newConfiguration);
+                Function<? super NamespaceTemplate.Installer, H> newHandle);
     }
 }

@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 
 import app.packed.service.UnsatisfiableDependencyException;
 import app.packed.service.mirror.ServiceBindingMirror;
-import app.packed.service.mirror.oldMaybe.ProvidedServiceMirror;
 import app.packed.util.Key;
 import app.packed.util.KeyAlreadyInUseException;
 import app.packed.util.Nullable;
@@ -62,6 +61,13 @@ public final class ServiceSetup {
         this.key = requireNonNull(key);
     }
 
+    public void remove(ServiceNamespaceSetup sm, ServiceBindingSetup sbs) {
+        bindings.remove(sbs);
+        if (bindings.isEmpty()) {
+            sm.entries.remove(key);
+        }
+    }
+
     public List<ServiceBindingSetup> removeBindingsForBean(BeanSetup bean) {
         boolean isRequired = false;
         ArrayList<ServiceBindingSetup> l = new ArrayList<>();
@@ -75,7 +81,7 @@ public final class ServiceSetup {
             }
         }
         if (provider == null && bindings.isEmpty()) {
-            bean.container.sm.entries.remove(key);
+            bean.serviceNamespace().entries.remove(key);
         } else {
             this.isRequired = isRequired;
         }
@@ -108,7 +114,7 @@ public final class ServiceSetup {
         // Create a new provider
         ServiceProviderSetup p = provider = new ServiceProviderSetup(operation, this, resolution);
 
-        operation.mirrorSupplier = h -> new ProvidedServiceMirror(h, p);
+        // operation.mirrorSupplier = h -> new ProvidedServiceMirror(h, p);
 
         // add the service provider to the bean, this is used for cyclic dependency check later on
         operation.bean.operations.serviceProviders.add(p);

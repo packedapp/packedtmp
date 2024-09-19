@@ -19,7 +19,6 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
@@ -77,7 +76,7 @@ public class MhExt extends BaseAssembly {
 
         public void ownL(Class<?> cl) {
             BeanTemplate.Installer builder = base().newBean(BeanKind.UNMANAGED.template());
-            h = builder.install(cl, BeanConfiguration::new);
+            h = builder.install(cl, BeanHandle::new);
         }
 
         @Override

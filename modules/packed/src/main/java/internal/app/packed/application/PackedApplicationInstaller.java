@@ -23,14 +23,13 @@ import java.util.function.Function;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationLocal;
-import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.ApplicationTemplate.Configurator;
 import app.packed.application.ApplicationTemplate.Installer;
 import app.packed.assembly.Assembly;
-import app.packed.bean.BeanConfiguration;
 import app.packed.build.BuildGoal;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerHandle;
+import app.packed.container.Wirelet;
 import app.packed.lifetime.LifecycleKind;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.PackedContainerInstaller;
@@ -40,6 +39,8 @@ import internal.app.packed.util.ThrowableUtil;
  *
  */
 public final class PackedApplicationInstaller implements ApplicationTemplate.Installer {
+
+    public ApplicationSetup application;
 
     public final PackedContainerInstaller container;
 
@@ -52,26 +53,46 @@ public final class PackedApplicationInstaller implements ApplicationTemplate.Ins
 
     /** Application locals that the application is initialized with. */
     public final IdentityHashMap<PackedApplicationLocal<?>, Object> locals = new IdentityHashMap<>();
-
-    /** A supplier for creating application mirrors. */
-    public Function<? super ApplicationHandle, ? extends ApplicationMirror> mirrorSupplier;
-
     public boolean optionBuildApplicationLazy;
+
     public boolean optionBuildReusableImage;
 
     final PackedBuildProcess pbp;
 
-    final ApplicationTemplate template;
+    final PackedApplicationTemplate template;
 
-    ApplicationSetup application;
+    public Function<? super ApplicationTemplate.Installer, ?> newHandle = ApplicationHandle::new;
+
+    // Vi har jo ikke en runtime installer endnu...
+    public RuntimeApplicationRepository<?> repository;
 
     PackedApplicationInstaller(PackedApplicationTemplate template, BuildGoal goal) {
         this.template = template;
         this.goal = goal;
         this.lk = template.containerTemplate().lifecycleKind();
-        this.mirrorSupplier = template.supplier();
         this.container = new PackedContainerInstaller(template.containerTemplate(), this, null, null);
         this.pbp = new PackedBuildProcess(this);
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <H extends ApplicationHandle<?,?>> H install(Assembly assembly, Function<? super Installer, H> factory, Wirelet... wirelets) {
+        requireNonNull(assembly, "assembly is null");
+        this.newHandle = requireNonNull(factory, "factory is null");
+
+        // Prepare the ScopedValue.Carrier that sets the for setting the build process for the build thread
+        Carrier c = ScopedValue.where(PackedBuildProcess.VAR, pbp);
+
+        try {
+            // will set this.application
+            c.call(() -> container.invokeAssemblyBuild(assembly));
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        } finally {
+            pbp.thread = null;
+        }
+        return (H) application.handle;
     }
 
     public ApplicationSetup buildApplication(Assembly assembly) {
@@ -93,23 +114,6 @@ public final class PackedApplicationInstaller implements ApplicationTemplate.Ins
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Configurator hostedBy(BeanConfiguration bean) {
-        throw new UnsupportedOperationException();
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public ApplicationSetup newApplication(AssemblySetup assembly) {
-        ApplicationSetup as = new ApplicationSetup(this);
-        locals.forEach((l, v) -> as.locals().set((PackedApplicationLocal) l, as, v));
-        this.application = as;
-
-        // Initialize the root container
-        as.container = container.newContainer(as, assembly, ContainerConfiguration::new);
-        return as;
-    }
-
     /**
      * Checks that the installer has not already been used to create a new bean.
      * <p>
@@ -122,6 +126,19 @@ public final class PackedApplicationInstaller implements ApplicationTemplate.Ins
         }
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public ApplicationSetup newApplication(AssemblySetup assembly) {
+        ApplicationSetup as = new ApplicationSetup(this);
+        this.application = as;
+
+        as.handle = (ApplicationHandle<?,?>) newHandle.apply(this);
+        locals.forEach((l, v) -> as.locals().set((PackedApplicationLocal) l, as, v));
+
+        // Initialize the root container
+        as.container = container.newContainer(as, assembly, ContainerHandle::new);
+        return as;
+    }
+
     /** {@inheritDoc} */
     @Override
     public <T> Configurator setLocal(ApplicationLocal<T> local, T value) {
@@ -129,11 +146,4 @@ public final class PackedApplicationInstaller implements ApplicationTemplate.Ins
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Installer specializeMirror(Function<? super ApplicationHandle, ? extends ApplicationMirror> supplier) {
-        checkNotInstalledYet();
-        this.mirrorSupplier = supplier;
-        return this;
-    }
 }

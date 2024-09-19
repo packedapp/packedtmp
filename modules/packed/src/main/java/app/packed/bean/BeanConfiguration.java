@@ -17,8 +17,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.context.Context;
 import app.packed.operation.OperationConfiguration;
 import app.packed.util.Key;
-import internal.app.packed.bean.PackedBeanHandle;
-import internal.app.packed.bean.PackedBeanInstaller;
 
 /**
  * The configuration of a bean.
@@ -30,7 +28,7 @@ import internal.app.packed.bean.PackedBeanInstaller;
 public non-sealed class BeanConfiguration extends ComponentConfiguration implements Accessor {
 
     /** The bean handle. We don't store BeanSetup directly because BeanHandle contains a lot of useful logic. */
-    private final PackedBeanHandle<?> handle;
+    private final BeanHandle<?> handle;
 
     /**
      * Create a new bean configuration using the specified installer.
@@ -38,9 +36,8 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      * @param installer
      *            the bean installer
      */
-    public BeanConfiguration(BeanTemplate.Installer installer) {
-        requireNonNull(installer, "installer is null");
-        this.handle = ((PackedBeanInstaller) installer).initializeBeanConfiguration();
+    public BeanConfiguration(BeanHandle<?> handle) {
+        this.handle =  requireNonNull(handle, "handle is null");
     }
 
     /**
@@ -117,7 +114,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
 
     // Outside of the framework I think we can only test on ComponentPath, that may be fine
     public final boolean isInSameContainer(BeanConfiguration other) {
-        return handle.bean().container == other.handle.bean().container;
+        return handle.bean.container == other.handle.bean.container;
     }
 
     @BuildActionable("bean.addCodeGenerator")
@@ -297,7 +294,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
 
     /** {@return configurations for all operations defined by this bean.} */
     public final Stream<? extends OperationConfiguration> operations() {
-        return handle.bean().operations.stream().map(m -> m.configuration).filter(e -> e != null);
+        return handle.bean.operations.stream().map(m -> m.handle().configuration()).filter(e -> e != null);
     }
 
     /** {@return configurations for all operations defined by this bean.} */

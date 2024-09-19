@@ -15,12 +15,12 @@
  */
 package app.packed.application;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.function.Consumer;
 
 import app.packed.assembly.Assembly;
 import app.packed.component.ComponentConfiguration;
-import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.application.PackedApplicationHandle;
 
 /**
  *
@@ -30,12 +30,12 @@ import internal.app.packed.application.PackedApplicationHandle;
 
 public non-sealed class ApplicationConfiguration extends ComponentConfiguration implements ApplicationLocal.Accessor {
 
-    final ApplicationSetup application;
+    /** The application's handle. */
+    private final ApplicationHandle<?, ?> handle;
 
-    public ApplicationConfiguration(ApplicationHandle handle) {
-        this.application = ApplicationSetup.crack(handle);
+    public ApplicationConfiguration(ApplicationHandle<?, ?> handle) {
+        this.handle = requireNonNull(handle);
     }
-
 
     public void allowAll() {}
 
@@ -51,8 +51,8 @@ public non-sealed class ApplicationConfiguration extends ComponentConfiguration 
 
     /** {@inheritDoc} */
     @Override
-    protected final ApplicationHandle handle() {
-        return new PackedApplicationHandle(application);
+    protected final ApplicationHandle<?, ?> handle() {
+        return handle;
     }
 
     // matcher

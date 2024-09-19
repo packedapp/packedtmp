@@ -24,7 +24,7 @@ import app.packed.operation.OperationHandle;
 /**
  *
  */
-public sealed interface ComponentHandle permits ApplicationHandle, ContainerHandle, BeanHandle, OperationHandle, NamespaceHandle {
+public sealed abstract class ComponentHandle permits ApplicationHandle, ContainerHandle, BeanHandle, OperationHandle, NamespaceHandle {
 
     /**
      * Checks that the bean is still configurable or throws an {@link IllegalStateException} if not
@@ -35,22 +35,23 @@ public sealed interface ComponentHandle permits ApplicationHandle, ContainerHand
      * @throws IllegalStateException
      *             if the bean is no longer configurable
      */
-    default void checkIsConfigurable() {
+    public final void checkIsConfigurable() {
         if (!isConfigurable()) {
-            throw new IllegalStateException("The " + componentKind().name() + " is no longer configurable");
+            // could also go compo
+            throw new IllegalStateException("The " + componentPath().componentKind().name() + " is no longer configurable");
         }
     }
 
     /** {@return the path of the component} */
-    ComponentPath componentPath();
+    public abstract ComponentPath componentPath();
 
     /**
      * Returns whether or not the component is still configurable.
      *
      * @return {@code true} if the component is still configurable
      */
-    boolean isConfigurable();
+    public abstract boolean isConfigurable();
 
-    /** {@return the type of component} */
-    ComponentKind componentKind();
+    /** { @return a mirror for the component} */
+    public abstract ComponentMirror mirror();
 }

@@ -18,7 +18,9 @@ package app.packed.application;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.bean.BeanConfiguration;
+import app.packed.assembly.Assembly;
+import app.packed.build.BuildGoal;
+import app.packed.container.Wirelet;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedApplicationTemplate.PackedApplicationTemplateConfigurator;
@@ -27,31 +29,44 @@ import sandbox.extension.container.ContainerTemplate;
 /**
  *
  */
-// Her taenker jeg fx ElasticSearch
-// Som kunne vaere en kaempe kompliceret application.
-// Som vi gerne vil starte foer hoved applicationen
 
-// prestartIt. And then block operations?
+// Altsaa som jeg ser det kan det vaere vi bliver noedt til at faa den injected
+// Paa en eller anden maade bliver vi noedt til at faa noget runtime
 
-// Bootstrap App har ogsaa en template
 public sealed interface ApplicationTemplate permits PackedApplicationTemplate {
 
-    // Application Started before or after
 
-    // lazy start single application. and make the following services available
+    ApplicationTemplate DEFAULT = ApplicationTemplate.of(c -> {});
+
+    ApplicationTemplate UNMANGED = ApplicationTemplate.of(c -> {});
+
+    ApplicationTemplate.Installer newInstaller(BuildGoal goal, Wirelet... wirelets);
 
     static ApplicationTemplate of(Consumer<? super Configurator> configure) {
         PackedApplicationTemplateConfigurator c = new PackedApplicationTemplateConfigurator(new PackedApplicationTemplate(null));
         configure.accept(c);
-        return c.template();
+        return c.pbt;
     }
+
+    // Application Started before or after
+
+    // lazy start single application. and make the following services available
+    // Her taenker jeg fx ElasticSearch
+    // Som kunne vaere en kaempe kompliceret application.
+    // Som vi gerne vil starte foer hoved applicationen
+
+    // prestartIt. And then block operations?
+
+    // Bootstrap App har ogsaa en template
 
     sealed interface Configurator permits PackedApplicationTemplateConfigurator {
 
-        // Configuration of the root container
-        Configurator container(ContainerTemplate template);
+        Configurator guest(Class<?> clazz);
 
         Configurator container(Consumer<? super ContainerTemplate.Configurator> configure);
+
+        // Configuration of the root container
+        Configurator container(ContainerTemplate template);
 
         // Mark the application as removable()
         Configurator removeable();
@@ -60,21 +75,12 @@ public sealed interface ApplicationTemplate permits PackedApplicationTemplate {
     }
 
     sealed interface Installer permits PackedApplicationInstaller {
-        Configurator hostedBy(BeanConfiguration bean);
+
+        // return value.getClass() from newHandle must match handleClass
+        <H extends ApplicationHandle<?,?>> H install(Assembly assembly, Function<? super ApplicationTemplate.Installer, H> newHandle, Wirelet... wirelets);
 
         <T> Configurator setLocal(ApplicationLocal<T> local, T value);
 
-        /**
-         * Sets a supplier that creates a special container mirror instead of the generic {@code ContainerMirror} when
-         * requested.
-         *
-         * @param supplier
-         *            the supplier used to create the application mirror
-         * @apiNote the specified supplier may be called multiple times for the same bean. In which case an equivalent mirror
-         *          must be returned
-         */
-        // What about the container mirror?????
-        Installer specializeMirror(Function<? super ApplicationHandle, ? extends ApplicationMirror> supplier);
     }
 
 }

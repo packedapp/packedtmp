@@ -108,6 +108,11 @@ public final class BeanHookModel {
 
             InheritableBindingClassBeanTrigger ih = type.getAnnotation(InheritableBindingClassBeanTrigger.class);
 
+            if (ih != null && type.isInterface()) {
+                throw new InternalExtensionException("@" + InheritableBindingClassBeanTrigger.class.getSimpleName()
+                        + " cannot be used on interfaces as interface annotations are never inherited, class = " + type);
+            }
+
             // Customer class name bindings
             Class<? extends Annotation> cl = bindings.get(type.getName());
             if (cl != null) {

@@ -17,6 +17,7 @@ package internal.app.packed.lifetime.runtime;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
 import app.packed.container.Wirelet;
 import app.packed.context.Context;
@@ -93,8 +94,12 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
      *            optional wirelets is always null if not launched from an image
      * @return the application instance
      */
-    public static ApplicationLaunchContext launch(ApplicationSetup application, @Nullable WireletSelectionArray<?> wirelets) {
+    public static ApplicationLaunchContext launch(ApplicationHandle<?,?> handle, @Nullable WireletSelectionArray<?> wirelets) {
+        ApplicationSetup application = ApplicationSetup.crack(handle);
+        return launch(application, wirelets);
+    }
 
+    public static ApplicationLaunchContext launch(ApplicationSetup application, @Nullable WireletSelectionArray<?> wirelets) {
         // Create a launch context
         ApplicationLaunchContext context = new ApplicationLaunchContext(application, wirelets);
 

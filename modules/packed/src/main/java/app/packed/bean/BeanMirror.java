@@ -43,8 +43,8 @@ import sandbox.operation.mirror.DependenciesMirror;
 @InheritableBindingClassBeanTrigger(extension = BaseExtension.class)
 public non-sealed class BeanMirror implements Accessor , ComponentMirror , ContextualizedElementMirror , ContextScopeMirror , ServiceProviderMirror {
 
-    /** The bean we are mirroring. */
-    final BeanSetup bean;
+    /** The handle of the bean we are mirroring. */
+    private final BeanHandle<?> handle;
 
     /**
      * Create a new bean mirror.
@@ -53,12 +53,12 @@ public non-sealed class BeanMirror implements Accessor , ComponentMirror , Conte
      *             if attempting to explicitly construct a bean mirror instance
      */
     public BeanMirror(BeanHandle<?> handle) {
-        this.bean = BeanSetup.crack(handle);
+        this.handle = requireNonNull(handle);
     }
 
     /** {@return the application the bean is a part of.} */
     public ApplicationMirror application() {
-        return bean.container.application.mirror();
+        return handle.bean.container.application.mirror();
     }
 
     /**
@@ -68,7 +68,7 @@ public non-sealed class BeanMirror implements Accessor , ComponentMirror , Conte
      * returned.
      */
     public AssemblyMirror assembly() {
-        return bean.container.assembly.mirror();
+        return handle.bean.container.assembly.mirror();
     }
 
     /**
@@ -80,57 +80,53 @@ public non-sealed class BeanMirror implements Accessor , ComponentMirror , Conte
      * @return the type (class) of the bean.
      */
     public final Class<?> beanClass() {
-        return bean.beanClass;
+        return handle.bean.beanClass;
     }
 
     /** {@return the bean kind} */
     public final BeanKind beanKind() {
-        return bean.beanKind;
+        return handle.bean.beanKind;
     }
 
     /** {@return the bean source kind} */
     public final BeanSourceKind beanSourceKind() {
-        return bean.beanSourceKind;
+        return handle.bean.beanSourceKind;
     }
 
     /** {@inheritDoc} */
     @Override
     public final ComponentPath componentPath() {
-        return bean.componentPath();
+        return handle.bean.componentPath();
     }
 
     /** {@return the container the bean belongs to.} */
     public ContainerMirror container() {
-        return bean.container.mirror();
+        return handle.bean.container.mirror();
     }
 
     /** {@inheritDoc} */
     @Override
     // Is injectable into the bean factory. not all methods
     public final Map<Class<? extends Context<?>>, ContextMirror> contexts() {
-        return ContextSetup.allMirrorsFor(bean);
-    }
-
-    BuildActionMirror installationAction() {
-        throw new UnsupportedOperationException();
+        return ContextSetup.allMirrorsFor(handle.bean);
     }
 
     /** {@return the owner of the bean.} */
     // was owner. Maybe owner again
     public final Authority declaredBy() {
-        return bean.owner();
+        return handle.bean.owner();
     }
 
     /** {@return the dependencies this bean introduces.} */
     @SuppressWarnings("exports") // uses sandbox classes
     public DependenciesMirror dependencies() {
-        return new BeanDependenciesMirror(bean);
+        return new BeanDependenciesMirror(handle.bean);
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
-        return this == other || other instanceof BeanMirror m && bean == m.bean;
+        return this == other || other instanceof BeanMirror m && handle.bean == m.handle.bean;
     }
 
     /**
@@ -145,8 +141,8 @@ public non-sealed class BeanMirror implements Accessor , ComponentMirror , Conte
     // We don't support multi factory for default installs.
     // However custom bean templates may support it
     public Optional<OperationMirror> factoryOperation() {
-        if (bean.beanKind != BeanKind.STATIC && bean.beanSourceKind != BeanSourceKind.INSTANCE) {
-            return Optional.of(bean.operations.first().mirror());
+        if (handle.bean.beanKind != BeanKind.STATIC && handle.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
+            return Optional.of(handle.bean.operations.first().mirror());
         }
         return Optional.empty();
     }
@@ -154,7 +150,11 @@ public non-sealed class BeanMirror implements Accessor , ComponentMirror , Conte
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return bean.hashCode();
+        return handle.bean.hashCode();
+    }
+
+    BuildActionMirror installationAction() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -168,7 +168,7 @@ public non-sealed class BeanMirror implements Accessor , ComponentMirror , Conte
      * @return the bean's lifetime
      */
     public LifetimeMirror lifetime() {
-        return bean.lifetime.mirror();
+        return handle.bean.lifetime.mirror();
     }
 
     public Collection<LifetimeMirror> managesLifetimes() {
@@ -185,12 +185,12 @@ public non-sealed class BeanMirror implements Accessor , ComponentMirror , Conte
      * @return the name of this bean
      */
     public final String name() {
-        return bean.name();
+        return handle.bean.name();
     }
 
     /** {@return a stream of all of the operations declared by the bean.} */
     public Stream<OperationMirror> operations() {
-        return bean.operations.stream().map(OperationSetup::mirror);
+        return handle.bean.operations.stream().map(OperationSetup::mirror);
     }
 
     /**
@@ -220,7 +220,7 @@ public non-sealed class BeanMirror implements Accessor , ComponentMirror , Conte
 
     // intermediary
     Class<? extends Extension<?>> operator() { // registrant
-        return bean.installedBy.extensionType;
+        return handle.bean.installedBy.extensionType;
     }
 
     @SuppressWarnings("exports")
@@ -240,11 +240,11 @@ public non-sealed class BeanMirror implements Accessor , ComponentMirror , Conte
      */
     public final Relationship relationshipTo(BeanMirror to) {
         requireNonNull(to, "to is null");
-        BeanSetup other = to.bean;
-        if (bean.container.application.deployment != other.container.application.deployment) {
+        BeanSetup other = to.handle.bean;
+        if (handle.bean.container.application.deployment != other.container.application.deployment) {
             throw new IllegalArgumentException("The specified bean is not part of the same deployment as this bean");
         }
-        return new Relationship(bean, other);
+        return new Relationship(handle.bean, other);
     }
 
     private record BeanDependenciesMirror(BeanSetup bean) implements DependenciesMirror {
@@ -408,31 +408,3 @@ interface SSandbox {
     // No instances, Instantiable, ConstantInstance
     // Scope-> BuildConstant, RuntimeConstant, Prototype...
 }
-
-///**
-//* Invoked by the runtime with the internal configuration of the bean to mirror.
-//*
-//* @param bean
-//*            the internal configuration of the bean to mirror
-//*/
-//final void initialize(BeanSetup bean) {
-//  if (this.bean != null) {
-//      throw new IllegalStateException("This mirror has already been initialized.");
-//  }
-////  this.bean = bean;
-//}
-//
-///**
-//* {@return the internal configuration of the bean we are mirroring.}
-//*
-//* @throws IllegalStateException
-//*             if {@link #initialize(BeanSetup)} has not been called previously.
-//*/
-//private BeanSetup bean {
-//  BeanSetup b = bean;
-//  if (b == null) {
-//      throw new IllegalStateException(
-//              "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
-//  }
-//  return b;
-//}

@@ -23,7 +23,6 @@ import java.lang.reflect.Method;
 import java.util.function.Function;
 
 import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.util.Key;
@@ -60,8 +59,7 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
 
             @SuppressWarnings("unchecked")
             @Override
-            public final <H extends OperationHandle<T>, T extends OperationConfiguration> H install(
-                    Function<? super OperationTemplate.Installer, H> configurationCreator) {
+            public final <H extends OperationHandle<?>> H install(Function<? super OperationTemplate.Installer, H> configurationCreator) {
 
                 OperationSetup operation = OperationSetup.newMemberOperationSetup(this, new OperationMethodTarget(member), methodHandle, configurationCreator);
 //              extension.scanner.bean.operations.all.add(operation);

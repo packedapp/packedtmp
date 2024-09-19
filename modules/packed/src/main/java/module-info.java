@@ -11,7 +11,6 @@ module app.packed {
     exports app.packed.component;
     exports app.packed.container;
     exports app.packed.context;
-    exports app.packed.errorhandling;
     exports app.packed.extension;
     exports app.packed.lifetime;
     exports app.packed.namespace;

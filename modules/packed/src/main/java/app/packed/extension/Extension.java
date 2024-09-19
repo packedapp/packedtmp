@@ -236,7 +236,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
             Function<NamespaceTemplate.Installer, T> factory) {
         NamespaceKey nk = new NamespaceKey(template.handleClass(), name);
 
-        Map<NamespaceKey, NamespaceHandle<?, ?>> m = extension.container.application.namespaces2;
+        Map<NamespaceKey, NamespaceHandle<?, ?>> m = extension.container.application.namespaces;
 
         // cannot use computeIfAbsent, as we want to store the handle before the install method returns
         NamespaceHandle<?, ?> namespaceHandle = m.get(nk);

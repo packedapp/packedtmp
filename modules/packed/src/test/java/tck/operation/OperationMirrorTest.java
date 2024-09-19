@@ -26,10 +26,12 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bean.BeanMirror;
+import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationTemplate;
+import app.packed.operation.OperationTemplate.Installer;
 import tck.AppAppTest;
 import tck.HookTestingExtension;
 import tck.HookTestingExtension.FieldHook.FieldPrivateInstanceString;
@@ -54,7 +56,7 @@ public class OperationMirrorTest extends AppAppTest {
     @Test
     public void simple() {
         hooks().onAnnotatedField((l, b) -> {
-            OperationHandle<?> h = b.newGetOperation(OperationTemplate.defaults()).install();
+            OperationHandle<?> h = b.newGetOperation(OperationTemplate.defaults()).install(OperationHandle::new);
             add(h);
         });
         installInstance(new FieldPrivateInstanceString());
@@ -91,11 +93,25 @@ public class OperationMirrorTest extends AppAppTest {
              */
             public MyOpMirror(OperationHandle<?> handle) {
                 super(handle);
-            }}
+            }
+        }
+        class MyHandle extends OperationHandle<OperationConfiguration>{
+
+            /**
+             * @param installer
+             */
+            public MyHandle(Installer installer) {
+                super(installer);
+            }
+
+            @Override
+            protected OperationMirror newOperationMirror() {
+                return new MyOpMirror(this);
+            }
+        }
 
         hooks().onAnnotatedField((l, b) -> {
-            OperationHandle<?> h = b.newGetOperation(OperationTemplate.defaults()).install();
-            h.specializeMirror(MyOpMirror::new);
+            OperationHandle<?> h = b.newGetOperation(OperationTemplate.defaults()).install(MyHandle::new);
             add(h);
         });
         installInstance(new FieldPrivateInstanceString());

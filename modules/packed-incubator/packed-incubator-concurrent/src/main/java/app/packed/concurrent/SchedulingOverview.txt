@@ -1,0 +1,16 @@
+=== DomainObjects
+Schedule
+
+==== Annotations
+
+==== Runtime
+SchedulingContext
+
+==== Operation
+ScheduledOperationConfiguration
+ScheduledOperationMirror
+
+==== Extension
+SchedulingExtension
+SchedulingExtensionPoint
+SchedulingExtensionMirror

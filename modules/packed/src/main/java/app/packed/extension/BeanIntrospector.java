@@ -15,6 +15,8 @@
  */
 package app.packed.extension;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
 
 import app.packed.bean.BeanInstallationException;
@@ -180,7 +182,7 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
     public void afterHooks() {}
 
     BeanSetup bean() {
-        return setup().scanner.bean;
+        return requireNonNull(setup().scanner.bean);
     }
 
 //    public boolean hasAttachment(Class<?> attachmentType) {
@@ -266,7 +268,6 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
         }
         this.setup = ce;
     }
-
     /** {@return whether or not the bean is in same lifetime as the application.} */
     public final boolean isInApplicationLifetime() {
         BeanSetup b = bean();

@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.AbstractComposer;
 import app.packed.assembly.AbstractComposer.ComposableAssembly;
@@ -534,11 +535,11 @@ public interface ServiceLocator {
         }
 
         public <T> ServiceableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-            return use(BaseExtension.class).installPrototype(implementation).provide();
+            return use(BaseExtension.class).installPrototype(implementation);
         }
 
         public <T> ServiceableBeanConfiguration<T> providePrototype(Op<T> factory) {
-            return use(BaseExtension.class).installPrototype(factory).provide();
+            return use(BaseExtension.class).installPrototype(factory);
         }
     }
 
@@ -546,9 +547,9 @@ public interface ServiceLocator {
     public static final class Image {
 
         /** The bootstrap image we are delegating to */
-        private final BootstrapApp.Image<ServiceLocator> image;
+        private final BaseImage<ServiceLocator> image;
 
-        private Image(BootstrapApp.Image<ServiceLocator> image) {
+        private Image(BaseImage<ServiceLocator> image) {
             this.image = image;
         }
 

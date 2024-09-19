@@ -23,6 +23,8 @@ package app.packed.build.sandbox;
 // Ideen er lidt at alle filer er tilgaengelig her.
 // Men ikke andre, Hmmm
 // What about network????
+
+// app.packed.file -> Namespace?
 public interface BuildFileSystem {
 
 }

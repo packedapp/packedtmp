@@ -80,9 +80,9 @@ public interface AppANew extends AutoCloseable {
     public static final class Image {
 
         /** The bootstrap image we are delegating to */
-        private final BootstrapApp.Image<AppANew> image;
+        private final BaseImage<AppANew> image;
 
-        private Image(BootstrapApp.Image<AppANew> image) {
+        private Image(BaseImage<AppANew> image) {
             this.image = image;
         }
 

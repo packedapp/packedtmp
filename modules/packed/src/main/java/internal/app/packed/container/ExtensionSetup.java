@@ -117,7 +117,8 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     }
 
     /** Call {@link Extension#onAssemblyClose()}. */
-    public void closeAssembly() {
+    public void invokeExtensionOnAssemblyClose() {
+        container.invokeOnAssemblyClose(this);
         try {
             MH_EXTENSION_ON_ASSEMBLY_CLOSE.invokeExact(instance);
         } catch (Throwable t) {

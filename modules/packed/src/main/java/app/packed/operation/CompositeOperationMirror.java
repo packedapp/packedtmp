@@ -20,6 +20,7 @@ package app.packed.operation;
  */
 // Hmm, syntes hvad med den her og Bean.operations???
 // CompositeOperationMirror??
+// Taenker den er paa OperationMirror?
 public class CompositeOperationMirror extends OperationMirror {
 
     /**

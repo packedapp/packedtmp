@@ -261,18 +261,18 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
          *
          * @see app.packed.bean.BeanSourceKind#CLASS
          */
-        <T extends BeanConfiguration> BeanHandle<T> install(Class<?> beanClass, Function<? super BeanTemplate.Installer, T> configurationCreator);
+        <H extends BeanHandle<?>> H install(Class<?> beanClass, Function<? super BeanTemplate.Installer, H> factory);
 
-        <T extends BeanConfiguration> BeanHandle<T> install(Op<?> beanClass, Function<? super BeanTemplate.Installer, T> configurationCreator);
+        <H extends BeanHandle<?>> H install(Op<?> beanClass, Function<? super BeanTemplate.Installer, H> factory);
 
         // These things can never be multi
         // AbsentInstalledComponent(boolean wasInstalled)
-        <T extends BeanConfiguration> BeanHandle<T> installIfAbsent(Class<?> beanClass, Class<T> beanConfigurationClass,
-                Function<? super BeanTemplate.Installer, T> configurationCreator, Consumer<? super BeanHandle<?>> onNew);
+        <H extends BeanHandle<T>, T extends BeanConfiguration> H installIfAbsent(Class<?> beanClass, Class<T> beanConfigurationClass,
+                Function<? super BeanTemplate.Installer, H> configurationCreator, Consumer<? super BeanHandle<?>> onNew);
 
         // instance = introspected bean
         // constant = non-introspected bean
-        <T extends BeanConfiguration> BeanHandle<T> installInstance(Object instance, Function<? super BeanTemplate.Installer, T> configurationCreator);
+        <H extends BeanHandle<?>> H installInstance(Object instance, Function<? super BeanTemplate.Installer, H> factory);
 
         /**
          * Creates a new bean without a source.
@@ -283,7 +283,7 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
          *             if this builder was created with a base template other than {@link BeanTemplate#STATIC}
          * @see app.packed.bean.BeanSourceKind#SOURCELESS
          */
-        <T extends BeanConfiguration> BeanHandle<T> installSourceless(Function<? super BeanTemplate.Installer, T> configurationCreator);
+        <H extends BeanHandle<?>> H installSourceless(Function<? super BeanTemplate.Installer, H> factory);
 
         Installer namePrefix(String prefix);
 
@@ -299,17 +299,6 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
          * @return this builder
          */
         <T> Installer setLocal(BeanLocal<T> local, T value);
-
-        /**
-         * Sets a supplier that creates a special bean mirror instead of a generic {@code BeanMirror} if a mirror for the bean
-         * is requested.
-         *
-         * @param supplier
-         *            the supplier used to create the bean mirror
-         * @apiNote the specified supplier may be called multiple times for the same bean. In which case an equivalent mirror
-         *          must be returned
-         */
-        Installer specializeMirror(Function<? super BeanHandle<?>, ? extends BeanMirror> supplier);
     }
 
 }

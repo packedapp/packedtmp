@@ -21,7 +21,7 @@ import java.util.Optional;
 
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import internal.app.packed.component.PackedComponentKind;
+import internal.app.packed.component.PackedComponentKind.PackedComponentKindBuilder;
 
 /** The type of a component. */
 //https://backstage.io/docs/features/software-catalog/descriptor-format/
@@ -34,19 +34,19 @@ public interface ComponentKind {
     ComponentKind BEAN = builder("Bean").requireFragmentString("application").requireFragmentPath("containerPath").requireFragmentString("bean").build();
 
     /** A component kind representing a binding. */
-    ComponentKind BINDING = builder("Binding").requireFragmentString("application").requireFragmentPath("containerPath").requireFragmentString("bean").requireFragmentString("operation")
-            .requireFragmentString("binding").build();
+    ComponentKind BINDING = builder("Binding").requireFragmentString("application").requireFragmentPath("containerPath").requireFragmentString("bean")
+            .requireFragmentString("operation").requireFragmentString("binding").build();
 
     /** A component kind representing a container. */
     ComponentKind CONTAINER = builder("Container").requireFragmentString("application").requireFragmentPath("containerPath").build();
 
     /** A component kind representing an operation. */
-    ComponentKind OPERATION = builder("Operation").requireFragmentString("application").requireFragmentPath("containerPath").requireFragmentString("bean").requireFragmentString("operation")
-            .build();
+    ComponentKind OPERATION = builder("Operation").requireFragmentString("application").requireFragmentPath("containerPath").requireFragmentString("bean")
+            .requireFragmentString("operation").build();
 
     /** A component kind representing a binding. */
-    ComponentKind NAMESPACE = builder("Namespace").requireFragmentString("application").requireFragmentPath("containerPath").requireFragmentString("bean").requireFragmentString("operation")
-            .requireFragmentString("binding").build();
+    ComponentKind NAMESPACE = builder("Namespace").requireFragmentString("application").requireFragmentPath("containerPath").requireFragmentString("bean")
+            .requireFragmentString("operation").requireFragmentString("binding").build();
 
     // We could always have one... Just make let BaseExtension own them..
     // And maybe skip base when printing the name
@@ -72,11 +72,11 @@ public interface ComponentKind {
 
     /** {@return a new component kind builder} */
     static ComponentKind.Builder builder(String name) {
-        throw new UnsupportedOperationException();
+        return new PackedComponentKindBuilder(name, BaseExtension.class);
     }
 
     static ComponentKind.Builder builder(String name, Class<? extends Extension<?>> extensionType, String componentType) {
-        throw new UnsupportedOperationException();
+        return new PackedComponentKindBuilder(name, extensionType);
     }
 
     // I think everyone except base components must have a parent component
@@ -86,7 +86,7 @@ public interface ComponentKind {
     }
 
     /** A builder for a component kind. */
-    sealed interface Builder permits PackedComponentKind.PackedComponentKindBuilder {
+    interface Builder  {
 
         /** {@return the new component kind} */
         ComponentKind build();

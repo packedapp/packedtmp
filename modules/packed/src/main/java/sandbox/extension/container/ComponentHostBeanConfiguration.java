@@ -21,7 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanTemplate.Installer;
+import app.packed.bean.BeanHandle;
 
 /**
  *
@@ -34,14 +34,14 @@ public class ComponentHostBeanConfiguration extends BeanConfiguration {
 
     // MultiHostManager<T> <--- Where <T>
 
-    final HashMap<String, ComponentGuestAdaptorBeanConfiguration<?>> holders = new LinkedHashMap<>();
-
     /**
-     * @param builder
+     * @param handle
      */
-    public ComponentHostBeanConfiguration(Installer builder) {
-        super(builder);
+    public ComponentHostBeanConfiguration(BeanHandle<?> handle) {
+        super(handle);
     }
+
+    final HashMap<String, ComponentGuestAdaptorBeanConfiguration<?>> holders = new LinkedHashMap<>();
 
     public Class<?> holderClass() {
         throw new UnsupportedOperationException();

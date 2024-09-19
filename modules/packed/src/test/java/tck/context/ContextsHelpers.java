@@ -34,10 +34,10 @@ public class ContextsHelpers {
         public static final ContextTemplate CT = ContextTemplate.of(MethodHandles.lookup(), NoImplContext.class, NoImplContext.class);
 
         /** A simple operation with the context, that ignores return values. */
-        public static final OperationTemplate OT = OperationTemplate.defaults().reconfigure(c -> c.withContext(NoImplContext.CT).returnIgnore());
+        public static final OperationTemplate OT = OperationTemplate.defaults().reconfigure(c -> c.inContext(NoImplContext.CT).returnIgnore());
 
         /** A simple operation with the context, that ignores return values. */
-        public static final OperationTemplate OTINT = OperationTemplate.defaults().reconfigure(c -> c.withContext(NoImplContext.CT).returnType(int.class));
+        public static final OperationTemplate OTINT = OperationTemplate.defaults().reconfigure(c -> c.inContext(NoImplContext.CT).returnType(int.class));
     }
 
     public static void bindSimple(AbstractBootstrapedAppTest<?> t) {
@@ -47,7 +47,7 @@ public class ContextsHelpers {
         });
 
         t.hooks().onAnnotatedMethod((l, b) -> {
-            OperationHandle<?> h = b.newOperation(ContextsHelpers.NoImplContext.OTINT).install();
+            OperationHandle<?> h = b.newOperation(ContextsHelpers.NoImplContext.OTINT).install(OperationHandle::new);
             t.add(h);
         });
 

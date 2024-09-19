@@ -34,6 +34,7 @@ public class PackedComponentKind implements ComponentKind {
 
     final int fragmentCount = 4;
 
+    final SchemaFragment[] fragments;
     @Nullable
     final String fullExtensionName;
 
@@ -43,6 +44,7 @@ public class PackedComponentKind implements ComponentKind {
 
     PackedComponentKind(PackedComponentKindBuilder builder) {
         this.name = builder.name;
+        this.fragments = builder.fragments.toArray(new SchemaFragment[builder.fragments.size()]);
         if (builder.extension == null) {
             this.fullExtensionName = null;
             this.prefix = "name";
@@ -67,7 +69,7 @@ public class PackedComponentKind implements ComponentKind {
     /** {@inheritDoc} */
     @Override
     public List<Entry<String, FragmentKind>> pathFragments() {
-        return null;
+       throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -82,13 +84,11 @@ public class PackedComponentKind implements ComponentKind {
         return null;
     }
 
-
     /** {@inheritDoc} */
     @Override
     public String pathPrefix() {
         return prefix;
     }
-
 
     /** Component path schema builder. */
     public static final class PackedComponentKindBuilder implements ComponentKind.Builder {
@@ -102,7 +102,7 @@ public class PackedComponentKind implements ComponentKind {
         /** The base name of the schema. */
         final String name;
 
-        PackedComponentKindBuilder(String name, Class<? extends Extension<?>> extension) {
+        public PackedComponentKindBuilder(String name, Class<? extends Extension<?>> extension) {
             this.name = name;
             this.extension = extension;
         }

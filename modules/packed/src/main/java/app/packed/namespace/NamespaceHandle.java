@@ -17,11 +17,10 @@ package app.packed.namespace;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.function.BiFunction;
+import java.util.HashMap;
 import java.util.stream.Stream;
 
 import app.packed.component.ComponentHandle;
-import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
@@ -33,25 +32,29 @@ import internal.app.packed.namespace.PackedNamespaceInstaller;
  *
  * Instances of this class should never be exposed to non-trusted code.
  */
-public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C extends NamespaceConfiguration<E>> implements ComponentHandle {
+public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C extends NamespaceConfiguration<E>> extends ComponentHandle {
 
-    /** The domain configuration. */
+    /** A cache of all namespace configurations, currently do not support namespaces uses by extensions. */
+    private HashMap<E, C> configurations = new HashMap<>();
+
+    /** The lazy generated namespace mirror. */
+    private NamespaceMirror<E> mirror;
+
+    /** The namespace configuration. */
     final NamespaceSetup namespace;
 
     protected NamespaceHandle(NamespaceTemplate.Installer installer) {
-        this.namespace = ((PackedNamespaceInstaller) installer).namespace;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final ComponentKind componentKind() {
-        return ComponentKind.NAMESPACE;
+        this.namespace = requireNonNull(((PackedNamespaceInstaller) installer).namespace);
     }
 
     /** {@inheritDoc} */
     @Override
     public final ComponentPath componentPath() {
         return namespace.componentPath();
+    }
+
+    public final C configuration(E e) {
+        return configurations.computeIfAbsent(e, k -> newNamespaceConfiguration(k));
     }
 
     /** {@return a tree view of all the extensions in the namespace} */
@@ -70,21 +73,34 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
         return true;
     }
 
+    @Override
+    public final NamespaceMirror<E> mirror() {
+        NamespaceMirror<E> m = mirror;
+        if (m == null) {
+            m = mirror = newNamespaceMirror();
+        }
+        return m;
+    }
+
     public final String name() {
         return namespace.name();
     }
 
-    public NamespaceMirror<E> namespaceMirror() {
-        // We could make this abstract. But nice when you develop new namespaces and don't have a mirror yet
+    /** {@inheritDoc} */
+    protected abstract C newNamespaceConfiguration(E e);
+
+    /**
+     * <p>
+     * Most namespace implementations will want to define a special namespace mirror. But it is fine to leave it alone when
+     * implementing the namespace.
+     *
+     * @return the new mirror
+     */
+    protected NamespaceMirror<E> newNamespaceMirror() {
         return new NamespaceMirror<E>(this);
     }
 
-    /** {@inheritDoc} */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public final C newNamespaceConfiguration(E e) {
-        BiFunction bi = namespace.newConfiguration;
-        return (C) bi.apply(this, e);
-    }
+    protected void onNamespaceClose() {}
 
     protected void onAssemblyClose(E rootExtension, boolean isNamespaceRoot) {}
 
@@ -97,14 +113,14 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
      * Returns a stream of all of the operations declared by the bean with the specified mirror type.
      *
      * @param <T>
-     * @param operationType
-     *            the type of operations to include
-     * @return a collection of all of the operations declared by the bean of the specified type.
+     * @param handleType
+     *            the type of operation handles to include
+     * @return a stream of all of the operations declared in namespace with the specified handle type.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public final <T extends NamespaceOperationConfiguration> Stream<OperationHandle<T>> operations(Class<T> operationType) {
-        requireNonNull(operationType, "operationType is null");
-        return (Stream) operations().filter(f -> operationType.isAssignableFrom(f.configuration().getClass()));
+    @SuppressWarnings("unchecked")
+    public final <H extends OperationHandle<?>> Stream<H> operations(Class<H> handleType) {
+        requireNonNull(handleType, "handleType is null");
+        return (Stream<H>) operations().filter(f -> handleType.isAssignableFrom(f.getClass()));
     }
     /**
      * Returns a navigator for all extensions in the namespace.
@@ -117,5 +133,11 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
     @SuppressWarnings("unchecked")
     public final E rootExtension() {
         return (E) namespace.root.instance();
+    }
+
+    /** {@return the root extension of this domain.} */
+    @SuppressWarnings("unchecked")
+    public final E applicationRootExtension() {
+        return (E) namespace.root.root().instance();
     }
 }

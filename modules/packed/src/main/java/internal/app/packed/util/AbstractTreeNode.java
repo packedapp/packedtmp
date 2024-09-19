@@ -19,16 +19,21 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.Function;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+import app.packed.util.BaseTreeView;
 import app.packed.util.Nullable;
 
 /**
  * A node in a tree.
+ * <p>
+ * Only {@link java.util.LinkedHashMap} you can go from one sibling to another and back again.
  */
-
-// Det den her kan som LinkedHashMap ikke kan er at gaa fra en sieblig til en anden.
-public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
+public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> implements BaseTreeView<T> {
 
     /** The (nullable) first child of the node. */
     @Nullable
@@ -60,6 +65,13 @@ public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
         }
     }
 
+    /** {@return the number of nodes in the tree.} */
+    @Override
+    public final int count() {
+        return Math.toIntExact(stream().count());
+    }
+
+    /** {@return the depth of the node, with the root node having depth 0} */
     public final int depth() {
         int depth = 0;
         for (AbstractTreeNode<T> node = this; node.treeParent != null; node = node.treeParent) {
@@ -77,9 +89,8 @@ public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
      *            the node mapper
      * @return a pre-order iterator
      */
-    @SuppressWarnings("unchecked")
     public final <R> Iterator<R> iterator(Function<? super T, ? extends R> mapper) {
-        return new MappedPreOrderIterator<T, R>((T) this, mapper);
+        return new MappedPreOrderIterator<T, R>(self(), mapper);
     }
 
     public final T root() {
@@ -89,6 +100,23 @@ public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
             t = t.treeParent;
         }
         return t;
+    }
+    @SuppressWarnings("unchecked")
+    private T self() {
+        return (T) this;
+    }
+
+    /**
+     * Returns a lazy stream that includes this node and all its children in pre-order.
+     *
+     * @return a pre-order stream of the nodes
+     */
+    @Override
+    public final Stream<T> stream() {
+        Iterator<T> iterator = new PreOrderIterator<>(self());
+
+        // Convert the iterator to a Spliterator with appropriate characteristics (ORDERED, NONNULL)
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED | Spliterator.NONNULL), false);
     }
 
     /** A pre-order iterator for a rooted tree. */
@@ -143,6 +171,66 @@ public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
             } else {
                 return next(parent);
             }
+        }
+    }
+
+    /** A pre-order iterator for a rooted tree. */
+    private static final class PreOrderIterator<T extends AbstractTreeNode<T>> implements Iterator<T> {
+
+        /** The next node to process, or null if no more nodes are left. */
+        @Nullable
+        private T next;
+
+        /** The root node of the tree being iterated over. */
+        private final T root;
+
+        private PreOrderIterator(T root) {
+            this.root = this.next = root;
+        }
+
+        /**
+         * Recursively finds the next sibling or the parent's next sibling if this node has no siblings.
+         *
+         * @param current
+         *            the current node
+         * @return the next sibling, or null if there is none
+         */
+        private T findNextSibling(T current) {
+            requireNonNull(current);
+            if (current.treeNextSibling != null) {
+                return current.treeNextSibling;
+            }
+            T parent = current.treeParent;
+            if (parent == root || parent == null) {
+                return null;
+            } else {
+                return findNextSibling(parent);
+            }
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean hasNext() {
+            return next != null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public T next() {
+            T n = next;
+            if (n == null) {
+                throw new NoSuchElementException();
+            }
+
+            // If there's a first child, go to it
+            if (n.treeFirstChild != null) {
+                next = n.treeFirstChild;
+            } else {
+                // Otherwise, find the next sibling or ascend the tree to find the next node
+                next = findNextSibling(n);
+            }
+
+            return n;
         }
     }
 }

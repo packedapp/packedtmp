@@ -21,11 +21,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.application.BootstrapApp.Image;
+import app.packed.application.ApplicationTemplate.Installer;
 import app.packed.assembly.AbstractComposer;
 import app.packed.assembly.AbstractComposer.ComposerAction;
 import app.packed.assembly.Assembly;
@@ -34,24 +33,17 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
 import app.packed.build.BuildGoal;
-import app.packed.container.ContainerLocal;
 import app.packed.container.Wirelet;
-import app.packed.extension.Extension;
 import app.packed.extension.FrameworkExtension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import app.packed.runtime.RunState;
-import app.packed.util.Result;
-import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.application.FutureApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.bean.PackedBeanTemplate;
-import internal.app.packed.container.CompositeWirelet;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.container.PackedContainerTemplate.PackedContainerTemplateConfigurator;
-import internal.app.packed.container.WireletSelectionArray;
 import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import sandbox.extension.container.ContainerTemplateLink;
@@ -96,8 +88,8 @@ public final /* value */ class BootstrapApp<A> {
     }
 
     public BootstrapApp<A> expectsResult(Class<?> resultType) {
-        return this;
         // Ideen er bootstrapApp.expectsResult(FooBar.class).launch(...);
+        return this;
     }
 
     /**
@@ -132,33 +124,25 @@ public final /* value */ class BootstrapApp<A> {
      * @see App#imageOf(Assembly, Wirelet...)
      */
     /**
-     * Create a new application image by using the specified assembly and optional wirelets.
+     * Create a new base image by using the specified assembly and optional wirelets.
      *
      * @param assembly
      *            the assembly that should be used to build the image
      * @param wirelets
      *            optional wirelets
-     * @return the new image
+     * @return the new base image
      * @throws RuntimeException
      *             if the image could not be build
      */
-    public Image<A> imageOf(Assembly assembly, Wirelet... wirelets) {
-        PackedApplicationInstaller installer = template.newInstaller(BuildGoal.IMAGE, wirelets);
+    @SuppressWarnings("unchecked")
+    public BaseImage<A> imageOf(Assembly assembly, Wirelet... wirelets) {
+        ApplicationTemplate.Installer installer = template.newInstaller(BuildGoal.IMAGE, wirelets);
 
-        Image<A> image;
+        // Build the application
+        ApplicationHandle<?, ?> handle = installer.install(assembly, BootstrapApplicationHandle::new);
 
-        if (installer.optionBuildApplicationLazy) {
-            FutureApplicationSetup fas = new FutureApplicationSetup(installer.container, assembly);
-            image = new ImageLazy<>(template, fas);
-        } else {
-            ApplicationSetup application = installer.buildApplication(assembly);
-            image = new ImageEager<>(template, application);
-        }
-
-        if (!installer.optionBuildReusableImage) {
-            image = new ImageNonReusable<>(image);
-        }
-        return image;
+        // Returns an image for the application
+        return (BaseImage<A>) handle.image();
     }
 
     /**
@@ -178,38 +162,16 @@ public final /* value */ class BootstrapApp<A> {
      */
     @SuppressWarnings("unchecked")
     public A launch(Assembly assembly, Wirelet... wirelets) {
-        PackedApplicationInstaller installer = template.newInstaller(BuildGoal.LAUNCH, wirelets);
+        ApplicationTemplate.Installer installer = template.newInstaller(BuildGoal.LAUNCH, wirelets);
 
         // Build the application
-        ApplicationSetup application = installer.buildApplication(assembly);
+        ApplicationHandle<?, ?> handle = installer.install(assembly, BootstrapApplicationHandle::new);
 
         // Launch the application
-        ApplicationLaunchContext aic = ApplicationLaunchContext.launch(application, null);
+        ApplicationLaunchContext aic = ApplicationLaunchContext.launch(handle, null);
 
         // Create and return an instance of the application interface
         return (A) template.newHolder(aic);
-    }
-
-    // Hvorfor ikke bruge BootstrapApp'en som en launcher???
-    // Det betyder selv at vi altid skal chaine..
-    // Men det er vel ok
-    // map()->
-
-    public Launcher<A> launcher() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Creates a new bootstrap app that maps the application using the specified mapper.
-     *
-     * @param <E>
-     *            the type to map the application to
-     * @param mapper
-     *            the application mapper
-     * @return the new bootstrap app
-     */
-    public <E> BootstrapApp<E> map(Function<? super A, ? extends E> mapper) {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -227,13 +189,13 @@ public final /* value */ class BootstrapApp<A> {
      *             if the application could not be build
      */
     public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        PackedApplicationInstaller installer = template.newInstaller(BuildGoal.MIRROR, wirelets);
+        ApplicationTemplate.Installer installer = template.newInstaller(BuildGoal.MIRROR, wirelets);
 
         // Build the application
-        ApplicationSetup application = installer.buildApplication(assembly);
+        ApplicationHandle<?, ?> handle = installer.install(assembly, BootstrapApplicationHandle::new);
 
         // Returns a mirror for the application
-        return application.mirror();
+        return handle.mirror();
     }
 
     /**
@@ -247,37 +209,10 @@ public final /* value */ class BootstrapApp<A> {
      *             if the application could not be build or verified
      */
     public void verify(Assembly assembly, Wirelet... wirelets) {
-        PackedApplicationInstaller installer = template.newInstaller(BuildGoal.VERIFY, wirelets);
+        ApplicationTemplate.Installer installer = template.newInstaller(BuildGoal.VERIFY, wirelets);
 
         // Builds (and verifies) the application
-        installer.buildApplication(assembly);
-    }
-
-    /**
-     * Augment the driver with the specified wirelets, that will be processed when building or instantiating new
-     * applications.
-     * <p>
-     * For example, to : <pre> {@code
-     * BootstrapApp<App> app = ...;
-     * app = app.with(ApplicationWirelets.timeToRun(2, TimeUnit.MINUTES));
-     * }</pre>
-     *
-     * ApplicationW
-     * <p>
-     * This method will make no attempt of validating the specified wirelets.
-     *
-     * <p>
-     * Wirelets that were specified when creating the driver, or through previous invocation of this method. Will be
-     * processed before the specified wirelets.
-     *
-     * @param wirelets
-     *            the wirelets to add
-     * @return the new bootstrap app
-     */
-    public BootstrapApp<A> with(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-        // return new BootstrapApp<>(new BootstrapAppSetup(setup.mirrorSupplier, setup.template.withWirelets(wirelets),
-        // setup.applicationLauncher));
+        installer.install(assembly, BootstrapApplicationHandle::new);
     }
 
     /**
@@ -292,7 +227,7 @@ public final /* value */ class BootstrapApp<A> {
         return of0(hostClass, hostClass, action);
     }
 
-    public static BootstrapApp<Void> of(ComposerAction<? super Composer> action) {
+    public static BootstrapApp<Void> of(ApplicationTemplate template, ComposerAction<? super Composer> action) {
         return of(Void.class, action);
     }
 
@@ -319,7 +254,7 @@ public final /* value */ class BootstrapApp<A> {
             mh = mh.asType(mh.type().changeReturnType(Object.class));
         }
 
-        PackedApplicationTemplate t = new PackedApplicationTemplate(composer.template.pbt, composer.mirrorSupplier, mh);
+        PackedApplicationTemplate t = new PackedApplicationTemplate(composer.template.pbt, mh);
         return new BootstrapApp<>(t);
     }
 
@@ -334,7 +269,7 @@ public final /* value */ class BootstrapApp<A> {
 
         static final ContextTemplate CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationLaunchContext.class, ApplicationLaunchContext.class);
 
-        static final OperationTemplate Ot = OperationTemplate.raw().reconfigure(c -> c.withContext(CIT).returnTypeObject());
+        static final OperationTemplate Ot = OperationTemplate.raw().reconfigure(c -> c.inContext(CIT).returnTypeObject());
 
         static final BeanTemplate ZBT = new PackedBeanTemplate(BeanKind.UNMANAGED).withOperationTemplate(Ot);
 
@@ -342,13 +277,22 @@ public final /* value */ class BootstrapApp<A> {
 
         <T> void newApplication(Class<T> hostBean) {
             // We need the attachment, because ContainerGuest is on
-            BeanHandle<BeanConfiguration> h = base().newBean(ZBT).install(hostBean, BeanConfiguration::new);
+            BeanHandle<BeanConfiguration> h = base().newBean(ZBT).install(hostBean, BeanHandle::new);
             h.lifetimeOperations().get(0).generateMethodHandleOnCodegen(m -> mh = m);
         }
 
         <T> void newApplication(Op<T> hostBean) {
-            BeanHandle<BeanConfiguration> h = base().newBean(ZBT).install(hostBean, BeanConfiguration::new);
+            BeanHandle<BeanConfiguration> h = base().newBean(ZBT).install(hostBean, BeanHandle::new);
             h.lifetimeOperations().get(0).generateMethodHandleOnCodegen(m -> mh = m);
+        }
+    }
+
+    // Maybe we want to return a special mirror?
+    // We keep it for now
+    private static class BootstrapApplicationHandle<A> extends ApplicationHandle<ApplicationConfiguration, A> {
+
+        public BootstrapApplicationHandle(Installer installer) {
+            super(installer);
         }
     }
 
@@ -363,9 +307,6 @@ public final /* value */ class BootstrapApp<A> {
 
         /** The bootstrap app extension. */
         private BootstrapAppExtension bootstrapExtension;
-
-        /** Supplies a mirror for the application. */
-        private Function<? super ApplicationHandle, ? extends ApplicationMirror> mirrorSupplier = ApplicationMirror::new;
 
         /** The {@link Op} or {@link Class} used for creating the application interface. */
         private final Object opOrClass;
@@ -423,30 +364,11 @@ public final /* value */ class BootstrapApp<A> {
                 bootstrapExtension.newApplication(op);
             }
         }
-
-        Composer requireExtension(Class<? extends Extension<?>> extension) {
-            // Maybe ContainerTemplatePack is enough. I'm assuming you will want to communicate with the extension in some way
-            throw new UnsupportedOperationException();
-        }
-
-        /**
-         * Sets a special supplier that create application mirror instances
-         *
-         * @param mirrorSupplier
-         *            an application mirror supplier
-         * @return this composer
-         *
-         * @see BootstrapApp#mirrorOf(Assembly, Wirelet...)
-         */
-        public Composer specializeMirror(Function<? super ApplicationHandle, ? extends ApplicationMirror> mirrorSupplier) {
-            this.mirrorSupplier = requireNonNull(mirrorSupplier, "mirrorSupplier is null");
-            return this;
-        }
-
-        public Composer wirelets(Wirelet... wirelets) {
-            this.template = template.withWirelets(wirelets);
-            return this;
-        }
+//
+//        public Composer wirelets(Wirelet... wirelets) {
+//            this.template = template.withWirelets(wirelets);
+//            return this;
+//        }
 
         /** An composer wrapping Assembly. */
         private static class BootstrapAppAssembly extends ComposableAssembly<Composer> {
@@ -457,106 +379,63 @@ public final /* value */ class BootstrapApp<A> {
         }
     }
 
+}
+
+interface BootstrapAppSandbox<A> {
+
+    // Hvorfor ikke bruge BootstrapApp'en som en launcher???
+    // Det betyder selv at vi altid skal chaine..
+    // Men det er vel ok
+    // map()->
+
+    default Launcher<A> launcher() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
-     * Represents a ,..
+     * Augment the driver with the specified wirelets, that will be processed when building or instantiating new
+     * applications.
      * <p>
-     * Instances of this class are typically not exposed to end-users of the bootstrap application. Instead it is typically
-     * returned wrapped in another class such as {@link App.Image}.
+     * For example, to : <pre> {@code
+     * BootstrapApp<App> app = ...;
+     * app = app.with(ApplicationWirelets.timeToRun(2, TimeUnit.MINUTES));
+     * }</pre>
+     *
+     * ApplicationW
+     * <p>
+     * This method will make no attempt of validating the specified wirelets.
+     *
+     * <p>
+     * Wirelets that were specified when creating the driver, or through previous invocation of this method. Will be
+     * processed before the specified wirelets.
+     *
+     * @param wirelets
+     *            the wirelets to add
+     * @return the new bootstrap app
      */
-    public sealed interface Image<A> permits ImageEager, ImageLazy, ImageNonReusable, ImageMapped {
-
-        // Do we want a more specific ApplicationResult? Something where the state is??
-        // Maybe we can take a BiConsumer(ErrorContext, A)
-
-        // Problem is here when is
-
-        // Meningen er at prøve at styre fejl håndteringen bedre
-        // <T> T BiFunction<@Nullable A, ErrorHandle e>
-
-        default Result<A> compute(Object unhandledErrorHandler, Wirelet... wirelets) {
-            throw new UnsupportedOperationException();
-        }
-
-        // Failure before A is created,
-        // Failure after A is created
-        // Action -> Return something, or throw something
-        // Tror ikke det giver mening foerend vi har en god error handling story
-        default Result<A> compute(Wirelet... wirelets) {
-            throw new UnsupportedOperationException();
-        }
-
-        /**
-         * Launches an instance of the application that this image represents.
-         * <p>
-         *
-         * What happens here is dependent on application driver that created the image. The behaviour of this method is
-         * identical to {@link BootstrapApp#launch(Assembly, Wirelet...)}.
-         *
-         * @param wirelets
-         *            optional wirelets
-         * @return an application instance
-         *
-         * @see BootstrapApp#launch(Assembly, Wirelet...)
-         */
-        A launch(Wirelet... wirelets);
-
-        /**
-         * Returns a new image that maps the result of the launch.
-         *
-         * @param <E>
-         *            the type to map the launch result to
-         * @param mapper
-         *            the mapper
-         * @return a new application image that maps the result of the launch
-         */
-        default <E> Image<E> map(Function<? super A, ? extends E> mapper) {
-            requireNonNull(mapper, "mapper is null");
-            return new ImageMapped<>(this, mapper);
-        }
-
-        // IDK. Would be nice, for example, with. Or lets say we build a lazy image...
-
-//        interface Descriptor {}
+    default BootstrapApp<A> with(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+        // return new BootstrapApp<>(new BootstrapAppSetup(setup.mirrorSupplier, setup.template.withWirelets(wirelets),
+        // setup.applicationLauncher));
     }
 
     /**
-     * Implementation of {@link ApplicationLauncher} used by {@link BootstrapApp#newImage(Assembly, Wirelet...)}.
+     * Creates a new bootstrap app that maps the application using the specified mapper.
+     *
+     * @param <E>
+     *            the type to map the application to
+     * @param mapper
+     *            the application mapper
+     * @return the new bootstrap app
      */
-    static final class ImageNonReusable<A> implements Image<A> {
-
-        /** An atomic reference to an application image. Is used once */
-        private final AtomicReference<Image<A>> ref;
-
-        ImageNonReusable(Image<A> image) {
-            this.ref = new AtomicReference<>(image);
-        }
-
-        ImageNonReusable(PackedApplicationTemplate template, ApplicationSetup application) {
-            this.ref = new AtomicReference<>(new ImageEager<>(template, application));
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public A launch(Wirelet... wirelets) {
-            Image<A> img = ref.getAndSet(null);
-            if (img == null) {
-                throw new IllegalStateException(
-                        "This image has already been used. You can use ApplicationWirelets.resuableImage() to allow repeatable usage of an application image");
-            }
-            // Not sure we can GC anything here
-            // Think we need to extract a launcher and call it
-            return img.launch(wirelets);
-        }
+    default <E> BootstrapApp<E> map(Function<? super A, ? extends E> mapper) {
+        throw new UnsupportedOperationException();
     }
 
     /**
-     * A launcher is used before an application is launched or an image is created.
+     * A launcher is used before an application is launched.
      */
-    // Creates new Launcher?
-    // It launcher thread safe copy-as?
     public interface Launcher<A> {
-
-        Image<A> imageOf(Assembly assembly, Wirelet... wirelets);
 
         A launch(Assembly assembly, Wirelet... wirelets);
 
@@ -570,83 +449,6 @@ public final /* value */ class BootstrapApp<A> {
          * @return a new application image that maps the result of the launch
          */
         <E> Launcher<E> map(Function<? super A, ? extends E> mapper);
-
-        ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets);
-
-        /**
-         * Sets the value of the specified container local.
-         *
-         * @param <T>
-         *            the type of local value
-         * @param local
-         *            the container to set
-         * @param value
-         *            the value of the container local
-         * @return creates new launcher?
-         */
-        <T> Launcher<A> setLocal(ContainerLocal<T> local, T value);
-
-        void verify(Assembly assembly, Wirelet... wirelets);
-    }
-
-    /**
-     * Implementation of {@link ApplicationLauncher} used by {@link OldBootstrapApp#newImage(Assembly, Wirelet...)}.
-     */
-    /* value */ record ImageEager<A>(PackedApplicationTemplate template, ApplicationSetup application) implements Image<A> {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings("unchecked")
-        @Override
-        public A launch(Wirelet... wirelets) {
-            requireNonNull(wirelets, "wirelets is null");
-
-            // If launching an image, the user might have specified additional runtime wirelets
-            WireletSelectionArray<?> wrapper = null;
-            if (wirelets.length > 0) {
-                wrapper = WireletSelectionArray.of(CompositeWirelet.flattenAll(wirelets));
-            }
-            ApplicationLaunchContext aic = ApplicationLaunchContext.launch(application, wrapper);
-
-            return (A) template.newHolder(aic);
-        }
-    }
-
-    /* value */ record ImageLazy<A>(PackedApplicationTemplate template, FutureApplicationSetup application) implements Image<A> {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings("unchecked")
-        @Override
-        public A launch(Wirelet... wirelets) {
-            requireNonNull(wirelets, "wirelets is null");
-
-            // If launching an image, the user might have specified additional runtime wirelets
-            WireletSelectionArray<?> wrapper = null;
-            if (wirelets.length > 0) {
-                wrapper = WireletSelectionArray.of(CompositeWirelet.flattenAll(wirelets));
-            }
-            ApplicationLaunchContext aic = ApplicationLaunchContext.launch(application.lazyBuild(), wrapper);
-
-            return (A) template.newHolder(aic);
-        }
-    }
-
-    /** A application launcher that maps the result of launching. */
-    /* value */ record ImageMapped<A, F>(Image<F> image, Function<? super F, ? extends A> mapper) implements Image<A> {
-
-        /** {@inheritDoc} */
-        @Override
-        public A launch(Wirelet... wirelets) {
-            F result = image.launch(wirelets);
-            return mapper.apply(result);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public <E> Image<E> map(Function<? super A, ? extends E> mapper) {
-            requireNonNull(mapper, "mapper is null");
-            Function<? super F, ? extends E> andThen = this.mapper.andThen(mapper);
-            return new ImageMapped<>(image, andThen);
-        }
     }
 }
 
@@ -690,7 +492,7 @@ interface Zimgbox<A> {
     // Could do sneaky throws instead
     A throwingUse(Wirelet... wirelets) throws Throwable;
 
-    default Image<A> with(Wirelet... wirelets) {
+    default BaseImage<A> with(Wirelet... wirelets) {
         // Egentlig er den kun her pga Launcher
         throw new UnsupportedOperationException();
     }
@@ -705,7 +507,7 @@ interface Zimgbox<A> {
      *             if the specified image was not build with BuildWirelets.retainApplicationMirror()
      */
     // Eller bare Optional<Mirror>
-    static ApplicationMirror extractMirror(Image<?> image) {
+    static ApplicationMirror extractMirror(BaseImage<?> image) {
         throw new UnsupportedOperationException();
     }
 

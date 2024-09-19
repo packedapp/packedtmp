@@ -23,7 +23,6 @@ import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
 import app.packed.extension.BeanElement.BeanField;
-import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
@@ -40,7 +39,7 @@ import internal.app.packed.util.PackedVariable;
 
 /** Implementation of {@link BeanField}. */
 // Previous we had a PackedBeanMember, but there are actually only 2-3 common operations. So don't go there again.
-public final class PackedBeanField implements BeanField , Comparable<PackedBeanField> {
+public final class PackedBeanField implements BeanField, Comparable<PackedBeanField> {
 
     /** Whether or not operations that read from the field can be created. */
     final boolean allowGet;
@@ -48,14 +47,14 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
     /** Whether or not operations that write to the field can be created. */
     final boolean allowSet;
 
+    /** Annotations on the field. */
+    private final PackedAnnotationList annotations;
+
     /** The extension that can create new operations from the member. */
     private final BeanScannerExtensionRef extension;
 
     /** The field. */
     public final Field field;
-
-    /** Annotations on the field. */
-    private final PackedAnnotationList annotations;
 
     /** Hooks on the field */
     private final PackedAnnotationList hooks;
@@ -110,26 +109,11 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
 
     /** {@inheritDoc} */
     @Override
-    public Key<?> toKey() {
-        return Key.fromField(this);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public OperationTemplate.Installer newGetOperation(OperationTemplate template) {
         checkConfigurable();
         MethodHandle mh = extension.scanner.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
         template = template.reconfigure(c -> c.returnType(field.getType()));
-        return newOperation(template, mh, accessMode);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public OperationTemplate.Installer newOperation(OperationTemplate template, VarHandle.AccessMode accessMode) {
-        checkConfigurable();
-        VarHandle varHandle = extension.scanner.unreflectVarHandle(field);
-        MethodHandle mh = varHandle.toMethodHandle(accessMode);
         return newOperation(template, mh, accessMode);
     }
 
@@ -139,8 +123,7 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
 
             @SuppressWarnings("unchecked")
             @Override
-            public final <H extends OperationHandle<T>, T extends OperationConfiguration> H install(
-                    Function<? super OperationTemplate.Installer, H> configurationCreator) {
+            public final <H extends OperationHandle<?>> H install(Function<? super OperationTemplate.Installer, H> configurationCreator) {
 
                 OperationSetup operation = OperationSetup.newMemberOperationSetup(this, new OperationFieldTarget(field, accessMode), mh, configurationCreator);
                 extension.scanner.unBoundOperations.add(operation);
@@ -148,6 +131,15 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
                 return (H) (this.oh = operation.handle());
             }
         };
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public OperationTemplate.Installer newOperation(OperationTemplate template, VarHandle.AccessMode accessMode) {
+        checkConfigurable();
+        VarHandle varHandle = extension.scanner.unreflectVarHandle(field);
+        MethodHandle mh = varHandle.toMethodHandle(accessMode);
+        return newOperation(template, mh, accessMode);
     }
 
     /** {@inheritDoc} */
@@ -161,6 +153,12 @@ public final class PackedBeanField implements BeanField , Comparable<PackedBeanF
 
     void onHook() {
         extension.introspector.activatedByAnnotatedField(hooks, this);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Key<?> toKey() {
+        return Key.fromField(this);
     }
 
     /** {@inheritDoc} */

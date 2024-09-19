@@ -25,15 +25,22 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanLocal.Accessor;
 import app.packed.component.Authority;
 import app.packed.component.ComponentHandle;
-import app.packed.errorhandling.ErrorHandler;
+import app.packed.component.ComponentPath;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
+import app.packed.operation.OperationTemplate.Installer;
 import app.packed.util.Key;
-import internal.app.packed.bean.PackedBeanHandle;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.PackedBeanInstaller;
+import internal.app.packed.binding.BindingResolution.FromConstant;
+import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.context.publish.ContextualizedElement;
+import internal.app.packed.service.InternalServiceUtil;
+import internal.app.packed.service.ServiceBindingSetup;
+import internal.app.packed.service.ServiceSetup;
 
 /**
  * A bean handle is a build-time reference to an installed bean. Typically they are returned by the framework when an
@@ -42,9 +49,19 @@ import internal.app.packed.context.publish.ContextualizedElement;
  * Instances of {@code BeanHandle} should not be exposed outside of the extension that created the bean. Instead the
  * extension should expose instances of {@link #configuration() bean configuration} to the other extension or user.
  */
-public sealed interface BeanHandle<C extends BeanConfiguration> extends ComponentHandle , ContextualizedElement , Accessor permits PackedBeanHandle {
+public non-sealed class BeanHandle<C extends BeanConfiguration> extends ComponentHandle implements ContextualizedElement, Accessor {
 
-    // Or a Bean Service???
+    final BeanSetup bean;
+
+    /** The lazy generated bean configuration. */
+    private C configuration;
+
+    /** The lazy generated bean mirror. */
+    private BeanMirror mirror;
+
+    public BeanHandle(BeanTemplate.Installer installer) {
+        this.bean = ((PackedBeanInstaller) installer).bean;
+    }
 
     /**
      * Adds a "service"
@@ -55,22 +72,53 @@ public sealed interface BeanHandle<C extends BeanConfiguration> extends Componen
      */
     // Is lazy, or eager?
     // Eager_never_fail, Eager_fail_if_not_used, Lazy_whenFirstUsed, LazyFailIfNotUsed, Some default for the container?
-    <K> void addComputedConstant(Key<K> key, Supplier<? extends K> supplier);
+    public final <K> void addComputedConstant(Key<K> key, Supplier<? extends K> supplier) {
+        checkIsConfigurable();
+        bean.addCodeGenerated(key, supplier);
+    }
 
-    /** {@return the bean class.} */
-    Class<?> beanClass();
+    /**
+     *
+     */
+    public final void allowMultiClass() {
+        checkIsConfigurable();
+        bean.multiInstall = bean.multiInstall | 1 << 31;
+    }
+
+    /** {@inheritDoc} */
+    public final Class<?> beanClass() {
+        return bean.beanClass;
+    }
 
     /** {@return the bean kind.} */
-    BeanKind beanKind();
+    public final BeanKind beanKind() {
+        return bean.beanKind;
+    }
 
     /** {@return the bean source kind.} */
-    BeanSourceKind beanSourceKind();
+    public final BeanSourceKind beanSourceKind() {
+        return bean.beanSourceKind;
+    }
 
-    // Primarily specified by the user and for used for building or mirrors
-    void componentTags(String... tags);
+    /** {@inheritDoc} */
+    @Override
+    public final ComponentPath componentPath() {
+        return bean.componentPath();
+    }
 
-    /** {@return the bean's configuration} */
-    C configuration();
+    /** {@inheritDoc} */
+    public final void componentTags(String... tags) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** { @return the user exposed configuration of the bean} */
+    public final C configuration() {
+        C c = configuration;
+        if (c == null) {
+            c = configuration = newBeanConfiguration();
+        }
+        return c;
+    }
 
     /**
      * Returns the key that the bean will be made available under as default if provided as service.
@@ -83,14 +131,14 @@ public sealed interface BeanHandle<C extends BeanConfiguration> extends Componen
      * @see #exportAs(Key)
      * @see #provideAs(Key)
      */
-    default Key<?> defaultKey() {
+    public final Key<?> defaultKey() {
         if (beanClass() == void.class) {
             throw new UnsupportedOperationException("This method is not supported for void bean classes");
         }
         return Key.fromClass(beanClass());
     }
 
-    default void exportAs(Class<?> key) {
+    public final void exportAs(Class<?> key) {
         exportAs(Key.of(key));
     }
 
@@ -106,7 +154,16 @@ public sealed interface BeanHandle<C extends BeanConfiguration> extends Componen
      * @see #defaultKey()
      * @see #serviceProvideAs(Key)
      */
-    void exportAs(Key<?> key);
+    public final void exportAs(Key<?> key) {
+        checkIsConfigurable();
+        bean.serviceNamespace().export(key, bean.instanceAccessOperation());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean isConfigurable() {
+        return bean.owner.isConfigurable();
+    }
 
     /**
      * Returns a list of operation handles that corresponds to the {@link BeanTemplate#lifetimeOperations() lifetime
@@ -117,8 +174,22 @@ public sealed interface BeanHandle<C extends BeanConfiguration> extends Componen
      * @see BeanTemplate#lifetimeOperations()
      * @see BeanInstaller#lifetimes(app.packed.operation.OperationTemplate...)
      */
-    //LifetimeOperationConfiguration???
-    List<OperationHandle<?>> lifetimeOperations();
+    // LifetimeOperationConfiguration???
+    public final List<OperationHandle<?>> lifetimeOperations() {
+        if (beanKind() != BeanKind.STATIC && beanSourceKind() != BeanSourceKind.SOURCELESS) {
+            return List.of(bean.operations.first().handle());
+        }
+        return List.of();
+    }
+
+    @Override
+    public final BeanMirror mirror() {
+        BeanMirror m = mirror;
+        if (m == null) {
+            m = mirror = newBeanMirror();
+        }
+        return m;
+    }
 
     /**
      * Sets the name of the bean, overriding any existing name.
@@ -128,26 +199,67 @@ public sealed interface BeanHandle<C extends BeanConfiguration> extends Componen
      * @throws IllegalArgumentException
      *             if another bean with the specified name already exists
      */
-    void named(String name);
-
-    /**
-     * Prepares t
-     *
-     * @param function
-     *            the user defined function that should be invoked
-     * @return a new operation handle handle
-     * @throws IllegalArgumentException
-     *             if the specified function does not implement a functional interface
-     */
-    // Skal vel ogsaa have en template her...
-    default OperationTemplate.Installer newFunctionalOperation(Object function) {
-        // De giver faktisk ret god mening at tage funktionen nu
-        // Det er jo ligesom at BeanMethod giver metoden videre til builderen
-        throw new UnsupportedOperationException();
+    public final void named(String name) {
+        checkIsConfigurable();
+        bean.named(name);
     }
 
-    /** {@return the owner of the bean} */
-    Authority owner();
+    @SuppressWarnings("unchecked")
+    protected C newBeanConfiguration() {
+        return (C) new BeanConfiguration(this);
+    }
+
+    protected BeanMirror newBeanMirror() {
+        return new BeanMirror(this);
+    }
+
+    /** {@inheritDoc} */
+    public final Installer newFunctionalOperation(OperationTemplate template, Object function) {
+        return null;
+    }
+
+    protected void onAssemblyClose() {}
+
+    // add overrideServiceIfPresent? Or have a Set<Key<?>> BeanConfiguration.services()
+
+    public <K> void bindInstance(Class<K> key, K constant) {
+        overrideService(Key.of(key), constant);
+    }
+
+    public final <K> void overrideService(Key<K> key, K instance) {
+        // Find any existing bindings for the specified key
+        ServiceSetup ss = bean.serviceNamespace().entries.get(key);
+
+        if (ss != null) {
+            List<ServiceBindingSetup> l = ss.removeBindingsForBean(bean);
+            if (!l.isEmpty()) {
+                for (ServiceBindingSetup s : l) {
+                    int index = s.operationBindingIndex;
+                    Class<?> cl;
+                    if (instance == null) {
+                        cl = s.operation.type().toMethodType().parameterType(index);
+                    } else {
+                        cl = instance.getClass();
+                    }
+                    s.operation.bindings[s.operationBindingIndex] = new ManualBindingSetup(s.operation, s.operationBindingIndex, s.operation.bean.owner(),
+                            new FromConstant(cl, instance));
+                }
+                return;
+            }
+        }
+
+        // TODO we should go through all bindings and see if have some where the type matches.
+        // But is not resolved as a service
+
+        // Also if we override twice, would be nice with something like. Already overridden
+        throw new IllegalArgumentException("Bean '" + bean.name() + "' does not have a dependency for a service with " + key
+                + ". Services that can be overridden: " + bean.serviceNamespace().entries.keySet());
+    }
+
+    /** {@inheritDoc} */
+    public final Authority owner() {
+        return bean.owner();
+    }
 
     /**
      * Provides of the bean as a service.
@@ -168,14 +280,30 @@ public sealed interface BeanHandle<C extends BeanConfiguration> extends Componen
      * @see ProvideableBeanConfiguration#provideAs(Class)
      * @see ProvideableBeanConfiguration#provideAs(Key)
      */
-    void provideAs(Key<?> key);
+    public final void provideAs(Key<?> key) {
+        Key<?> k = InternalServiceUtil.checkKey(bean.beanClass, key);
+        checkIsConfigurable();
+
+        if (beanKind() != BeanKind.CONTAINER || beanKind() != BeanKind.LAZY) {
+            // throw new UnsupportedOperationException("This method can only be called on beans of kind " + BeanKind.CONTAINER + "
+            // or " + BeanKind.LAZY);
+        }
+
+        bean.serviceNamespace().provide(k, bean.instanceAccessOperation(), bean.beanInstanceBindingProvider());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return bean.toString();
+    }
 }
 
-// Operations
-// Call an operation at some point in the lifecycle
-//// Take other (extension) bean instance
-//// Take
-// Replace instance after creation
+//Operations
+//Call an operation at some point in the lifecycle
+////Take other (extension) bean instance
+////Take
+//Replace instance after creation
 
 interface Zandbox<T> {
     OperationHandle<?> addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation);
@@ -220,5 +348,5 @@ interface Zandbox<T> {
         // First parameter must be assignable to the created instance, IDK
     }
 
-    void setErrorHandler(ErrorHandler errorHandler);
+    // void setErrorHandler(ErrorHandler errorHandler);
 }

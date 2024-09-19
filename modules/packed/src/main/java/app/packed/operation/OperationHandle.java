@@ -25,7 +25,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.component.ComponentHandle;
-import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
@@ -94,19 +93,30 @@ import internal.app.packed.operation.PackedOperationInstaller;
 //Embedded
 // interceptor().add(...);
 // interceptor().peek(e->System.out.println(e));
-public non-sealed class OperationHandle<C extends OperationConfiguration> implements ComponentHandle {
+public non-sealed class OperationHandle<C extends OperationConfiguration> extends ComponentHandle {
 
-    @SuppressWarnings("exports")
-    public final OperationSetup operation;
+    /** The lazy generated operation configuration. */
+    private C configuration;
 
-    public OperationHandle(OperationTemplate.Installer installer) {
-        PackedOperationInstaller poi = ((PackedOperationInstaller) installer);
-        this.operation = poi.os;
-    }
+    /** The lazy generated operation mirror. */
+    private OperationMirror mirror;
 
     // Hmm there is a difference between operating within contexts./
     // And invocation argument contexts
     // Set<Class<? extends Context<?>>> contexts();
+
+    /** The internal operation configuration. */
+    final OperationSetup operation;
+
+    /**
+     * Creates a new operation handle.
+     *
+     * @param installer
+     *            the installer for the operation
+     */
+    public OperationHandle(OperationTemplate.Installer installer) {
+        this.operation = PackedOperationInstaller.crack(installer);
+    }
 
     /**
      * This will create a {@link BindingKind#MANUAL manual} binding for the parameter with the specified index.
@@ -161,14 +171,6 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> implem
     }
 
     /** {@inheritDoc} */
-
-    @Override
-    public final ComponentKind componentKind() {
-        return ComponentKind.OPERATION;
-    }
-
-    /** {@inheritDoc} */
-
     @Override
     public final ComponentPath componentPath() {
         return operation.componentPath();
@@ -176,16 +178,11 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> implem
 
     /** { @return the user exposed configuration of the operation} */
     public final C configuration() {
-        return newConfiguration();
-    }
-
-    @SuppressWarnings("unchecked")
-    protected C newConfiguration() {
-        return (C) new OperationConfiguration(this);
-    }
-
-    public OperationMirror newMirror() {
-        return new OperationMirror(this);
+        C c = configuration;
+        if (c == null) {
+            c = configuration = newOperationConfiguration();
+        }
+        return c;
     }
 
     /**
@@ -200,13 +197,11 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> implem
      * @throws IllegalStateException
      *             if called before the code generating phase of the application.
      */
-
     public final MethodHandle generateMethodHandle() {
         return operation.generateMethodHandle();
     }
 
     /** {@inheritDoc} */
-
     public final void generateMethodHandleOnCodegen(Consumer<? super MethodHandle> assigner) {
         checkIsConfigurable();
         operation.bean.container.application.addCodegenAction(() -> assigner.accept(generateMethodHandle()));
@@ -220,16 +215,23 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> implem
      *
      * @see OperationTemplate.Descriptor#invocationType()
      */
-
     public final MethodType invocationType() {
         return operation.template.descriptor().invocationType();
     }
 
     /** {@inheritDoc} */
-
     @Override
     public final boolean isConfigurable() {
         return operation.operator.isConfigurable();
+    }
+
+    @Override
+    public final OperationMirror mirror() {
+        OperationMirror m = mirror;
+        if (m == null) {
+            m = mirror = newOperationMirror();
+        }
+        return m;
     }
 
     // Ogsaa en template ting taenker jeg? IDK
@@ -241,38 +243,26 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> implem
         operation.namePrefix = name;
     }
 
-    /** {@return the operator of the operation.} */
+    @SuppressWarnings("unchecked")
+    protected C newOperationConfiguration() {
+        return (C) new OperationConfiguration(this);
+    }
 
+    protected OperationMirror newOperationMirror() {
+        return new OperationMirror(this);
+    }
+
+    /** {@return the operator of the operation.} */
     public final Class<? extends Extension<?>> operator() {
         return operation.operator.extensionType;
     }
 
-    /**
-     * Specializes the mirror that is returned for the operation.
-     * <p>
-     * The specified supplier may be called multiple times for the same operation.
-     * <p>
-     * The specified supplier should never return {@code null}.
-     *
-     * @param supplier
-     *            a mirror supplier that is called if a mirror is required
-     * @throws IllegalStateException
-     *             if the operation is no longer configurable
-     */
-
-    public final void specializeMirror(Function<? super OperationHandle<?>, ? extends OperationMirror> supplier) {
-        checkIsConfigurable();
-        operation.mirrorSupplier = requireNonNull(supplier, "supplier is null");
-    }
-
     /** {@return the target of this operation.} */
-
     public final OperationTarget target() {
         return operation.target();
     }
 
     /** {@inheritDoc} */
-
     @Override
     public final String toString() {
         return "OperationHandle: " + operation.toString();
@@ -283,6 +273,28 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> implem
         return operation.type;
     }
 }
+
+interface Zandbox {
+
+//  // Maaske har vi en and then...
+//  // First@InitializeHandle.andThen(Builder )
+//  // Kan kun lave en MH for den foerste
+//  OperationHandle buildChild(OperationHandle parent);
+
+    // raekkefoelgen kender man jo ikke
+    // Foer vi har sorteret
+    void addChild(OperationHandle<?> h);
+
+    // Det ville jo vaere rart at sige. Hey
+    // Lav denne Operation. Det er en naestet operation, saa
+    // tages contexts fra parent operation
+
+    default VarHandle generateVarHandle() {
+        throw new UnsupportedOperationException();
+    }
+}
+// Hvad goer vi med annoteringer paa Field/Update???
+// Putter paa baade Variable og ReturnType???? Det vil jeg mene
 
 interface ZandboxOH {
 
@@ -489,28 +501,6 @@ interface ZandboxOH {
 //      };
 //  }
 }
-
-interface Zandbox {
-
-//  // Maaske har vi en and then...
-//  // First@InitializeHandle.andThen(Builder )
-//  // Kan kun lave en MH for den foerste
-//  OperationHandle buildChild(OperationHandle parent);
-
-    // raekkefoelgen kender man jo ikke
-    // Foer vi har sorteret
-    void addChild(OperationHandle<?> h);
-
-    // Det ville jo vaere rart at sige. Hey
-    // Lav denne Operation. Det er en naestet operation, saa
-    // tages contexts fra parent operation
-
-    default VarHandle generateVarHandle() {
-        throw new UnsupportedOperationException();
-    }
-}
-// Hvad goer vi med annoteringer paa Field/Update???
-// Putter paa baade Variable og ReturnType???? Det vil jeg mene
 
 // Ideen er lidt at hvis vi har forskel
 

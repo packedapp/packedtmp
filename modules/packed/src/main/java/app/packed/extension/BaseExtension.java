@@ -1,7 +1,5 @@
 package app.packed.extension;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
@@ -30,6 +28,7 @@ import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
+import app.packed.extension.BaseExtensionPoint.ServiceanbleBeanHandle;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.lifetime.Main;
@@ -170,7 +169,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      */
     @BuildActionable("bean.install")
     public <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<ServiceableBeanConfiguration<T>> h = install0(BeanKind.CONTAINER.template()).install(implementation, ServiceableBeanConfiguration::new);
+        BeanHandle<ServiceableBeanConfiguration<T>> h = install0(BeanKind.CONTAINER.template()).install(implementation, ServiceanbleBeanHandle::new);
         return h.configuration();
     }
 
@@ -183,7 +182,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @see CommonContainerAssembly#install(Op)
      */
     public <T> ServiceableBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<ServiceableBeanConfiguration<T>> h = install0(BeanKind.CONTAINER.template()).install(op, ServiceableBeanConfiguration::new);
+        BeanHandle<ServiceableBeanConfiguration<T>> h = install0(BeanKind.CONTAINER.template()).install(op, ServiceanbleBeanHandle::new);
         return h.configuration();
     }
 
@@ -207,17 +206,17 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return this configuration
      */
     public <T> ServiceableBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<ServiceableBeanConfiguration<T>> h = install0(BeanKind.CONTAINER.template()).installInstance(instance, ServiceableBeanConfiguration::new);
+        BeanHandle<ServiceableBeanConfiguration<T>> h = install0(BeanKind.CONTAINER.template()).installInstance(instance, ServiceanbleBeanHandle::new);
         return h.configuration();
     }
 
     public <T> ServiceableBeanConfiguration<T> installLazy(Class<T> implementation) {
-        BeanHandle<ServiceableBeanConfiguration<T>> handle = install0(BeanKind.LAZY.template()).install(implementation, ServiceableBeanConfiguration::new);
+        BeanHandle<ServiceableBeanConfiguration<T>> handle = install0(BeanKind.LAZY.template()).install(implementation, ServiceanbleBeanHandle::new);
         return handle.configuration();
     }
 
     public <T> ServiceableBeanConfiguration<T> installLazy(Op<T> op) {
-        BeanHandle<ServiceableBeanConfiguration<T>> h = install0(BeanKind.LAZY.template()).install(op, ServiceableBeanConfiguration::new);
+        BeanHandle<ServiceableBeanConfiguration<T>> h = install0(BeanKind.LAZY.template()).install(op, ServiceanbleBeanHandle::new);
         return h.configuration();
     }
 
@@ -225,13 +224,14 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         throw new UnsupportedOperationException();
     }
 
+    // Kan ikke se den her giver mening andet end som provide();
     public <T> ServiceableBeanConfiguration<T> installPrototype(Class<T> implementation) {
-        BeanHandle<ServiceableBeanConfiguration<T>> handle = install0(BeanKind.UNMANAGED.template()).install(implementation, ServiceableBeanConfiguration::new);
+        BeanHandle<ServiceableBeanConfiguration<T>> handle = install0(BeanKind.UNMANAGED.template()).install(implementation, ServiceanbleBeanHandle::new);
         return handle.configuration();
     }
 
     public <T> ServiceableBeanConfiguration<T> installPrototype(Op<T> op) {
-        BeanHandle<ServiceableBeanConfiguration<T>> h = install0(BeanKind.UNMANAGED.template()).install(op, ServiceableBeanConfiguration::new);
+        BeanHandle<ServiceableBeanConfiguration<T>> h = install0(BeanKind.UNMANAGED.template()).install(op, ServiceanbleBeanHandle::new);
         return h.configuration();
     }
 
@@ -251,7 +251,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @see BeanSourceKind#CLASS
      */
     public BeanConfiguration installStatic(Class<?> implementation) {
-        BeanHandle<BeanConfiguration> handle = install0(BeanKind.STATIC.template()).install(implementation, BeanConfiguration::new);
+        BeanHandle<BeanConfiguration> handle = install0(BeanKind.STATIC.template()).install(implementation, BeanHandle::new);
         return handle.configuration();
     }
 
@@ -269,14 +269,14 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         // will fail if installed multiple times
 
         BeanHandle<ServiceableBeanConfiguration<PackedServiceLocator>> ha = newBeanBuilderSelf(BeanKind.CONTAINER.template())
-                .install(PackedServiceLocator.class, ServiceableBeanConfiguration::new);
+                .install(PackedServiceLocator.class, ServiceanbleBeanHandle::new);
         ha.configuration().exportAs(ServiceLocator.class);
 
         // PackedServiceLocator needs a Map<Key, MethodHandle> which is created in the code generation phase
         BeanSetup.crack(ha).addCodeGenerated(new Key<Map<Key<?>, MethodHandle>>() {}, () -> extension.container.sm.exportedServices());
 
         // Alternative, If we do not use it for anything else
-        newBeanBuilderSelf(BeanKind.CONTAINER.template()).installIfAbsent(PackedServiceLocator.class, BeanConfiguration.class, BeanConfiguration::new, bh -> {
+        newBeanBuilderSelf(BeanKind.CONTAINER.template()).installIfAbsent(PackedServiceLocator.class, BeanConfiguration.class, BeanHandle::new, bh -> {
             bh.exportAs(ServiceLocator.class);
             BeanSetup.crack(bh).addCodeGenerated(new Key<Map<Key<?>, MethodHandle>>() {}, () -> extension.container.sm.exportedServices());
         });
@@ -292,7 +292,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      */
     // Why not on ContainerConfiguration. Think because I wanted to keep it clean
     public void link(Assembly assembly, Wirelet... wirelets) {
-        link0().install(assembly, ContainerConfiguration::new, wirelets);
+        link0().install(assembly, ContainerHandle::new, wirelets);
     }
 
     /**
@@ -304,7 +304,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      */
     // addContainer???
     public ContainerConfiguration link(Wirelet... wirelets) {
-        ContainerHandle<?> handle = link0().install(ContainerConfiguration::new, wirelets);
+        ContainerHandle<?> handle = link0().install(ContainerHandle::new, wirelets);
         return handle.configuration();
     }
 
@@ -385,8 +385,10 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                         }
                     }
 
-                    OperationSetup operation = OperationSetup.crack(field.newGetOperation(OperationTemplate.defaults()).install());
-                    extension.container.sm.provide(key, operation, new FromOperationResult(operation));
+                    OperationSetup operation = OperationSetup.crack(field.newGetOperation(OperationTemplate.defaults()).install(OperationHandle::new));
+
+                    // Hmm, vi har jo slet ikke lavet namespacet endnu
+                    bean().serviceNamespace().provide(key, operation, new FromOperationResult(operation));
                 } else {
                     super.activatedByAnnotatedField(hook, field);
                 }
@@ -467,7 +469,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     throw new ManagedBeanRequiredException(annotationType + " is not supported for static beans");
                 }
                 // Maybe lifecycle members cannot be static at all
-                return method.newOperation(BEAN_LIFECYCLE_TEMPLATE).install();
+                return method.newOperation(BEAN_LIFECYCLE_TEMPLATE).install(OperationHandle::new);
             }
 
             /** Handles {@link Inject}, {@link OnInitialize}, {@link OnStart} and {@link OnStop}. */
@@ -494,7 +496,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                             throw new BeanInstallationException("Not okay)");
                         }
                     }
-                    OperationSetup operation = OperationSetup.crack(method.newOperation(temp2).install());
+                    OperationSetup operation = OperationSetup.crack(method.newOperation(temp2).install(OperationHandle::new));
                     bean.container.sm.provide(method.toKey(), operation, new FromOperationResult(operation));
                 } else if (annotation instanceof Export) {
                     OperationTemplate temp2 = OperationTemplate.defaults().reconfigure(c -> c.returnType(method.operationType().returnRawType()));
@@ -504,7 +506,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                             throw new BeanInstallationException("Not okay)");
                         }
                     }
-                    OperationSetup operation = OperationSetup.crack(method.newOperation(temp2).install());
+                    OperationSetup operation = OperationSetup.crack(method.newOperation(temp2).install(OperationHandle::new));
                     bean.container.sm.export(method.toKey(), operation);
                 } else if (annotation instanceof Main) {
                     if (!isInApplicationLifetime()) {
@@ -516,7 +518,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     bean.container.lifetime.entryPoints.entryPoint = new OldEntryPointSetup();
 
                     OperationTemplate temp = OperationTemplate.defaults().reconfigure(c -> c.returnType(method.operationType().returnRawType()));
-                    OperationHandle<?> os = method.newOperation(temp).install();
+                    OperationHandle<?> os = method.newOperation(temp).install(OperationHandle::new);
                     // os.specializeMirror(() -> new EntryPointMirror(index));
 
                     MainThreadOfControl mc = bean.container.lifetime.entryPoints.entryPoint.mainThread();
@@ -540,10 +542,6 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
     @Override
     protected BaseExtensionPoint newExtensionPoint() {
         return new BaseExtensionPoint();
-    }
-
-    public ServiceNamespaceConfiguration newServiceNamespace(Object configuration) {
-        return serviceNamespace("main");
     }
 
     /**
@@ -575,70 +573,18 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         }
     }
 
-    // requires bliver automatisk anchoret...
-    // anchorAllChildExports-> requireAllChildExports();
-    public void requires(Class<?>... keys) {
-        requires(Key.ofAll(keys));
+    /** {@return the container's main service namespace} */
+    public ServiceNamespaceConfiguration services() {
+        return services("main");
     }
 
-    /**
-     * Explicitly adds the specified key to the list of required services. There are typically two situations in where
-     * explicitly adding required services can be useful:
-     * <p>
-     * First, services that are cannot be specified at build time. But is needed later... Is mainly useful when we the
-     * services to. For example, importAll() that injector might not a service itself. But other that make use of the
-     * injector might.
-     *
-     *
-     * <p>
-     * Second, for manual service requirement, although it is often preferable to use contracts here
-     * <p>
-     * In any but the simplest of cases, contracts are useful
-     *
-     * @param keys
-     *            the key(s) to add
-     */
-    public void requires(Key<?>... keys) {
-        requireNonNull(keys, "keys is null");
-        checkIsConfigurable();
-        throw new UnsupportedOperationException();
-    }
-
-    // Think we need installPrototype (Which will fail if not provided or exported)
-    // providePrototype would then be installPrototype().provide() // not ideal
-    // Men taenker vi internt typisk arbejde op i mod implementering. Dog ikke altid
-    // providePerRequest <-- every time the service is requested
-    // Also these beans, can typically just be composites??? Nah
-
-    public void requiresOptionally(Class<?>... keys) {
-        requiresOptionally(Key.ofAll(keys));
-    }
-
-    /**
-     * Adds the specified key to the list of optional services.
-     * <p>
-     * If a key is added optionally and the same key is later added as a normal (mandatory) requirement either explicitly
-     * via # {@link #serviceRequire(Key...)} or implicitly via, for example, a constructor dependency. The key will be
-     * removed from the list of optional services and only be listed as a required key.
-     *
-     * @param keys
-     *            the key(s) to add
-     */
-    // How does this work with child services...
-    // They will be consumed
-    public void requiresOptionally(Key<?>... keys) {
-        requireNonNull(keys, "keys is null");
-        checkIsConfigurable();
-        throw new UnsupportedOperationException();
-    }
-
-    public ServiceNamespaceConfiguration serviceNamespace() {
-        return serviceNamespace("main");
-    }
-
-    public ServiceNamespaceConfiguration serviceNamespace(String name) {
+    public ServiceNamespaceConfiguration services(String name) {
         // Will automatically create one with default settings
         throw new UnsupportedOperationException();
+    }
+
+    protected final ServiceNamespaceConfiguration services(String name, Consumer<?> newConfiguration) {
+        return services("main");
     }
 
     // transformAllBeans() <-- includes extension beans... (Must be open)

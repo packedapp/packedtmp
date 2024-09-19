@@ -76,6 +76,7 @@ final class BeanScannerBindingResolver {
             e = operation.operator.extensionType;
         }
 
+//        bean.sns().bind(ia.key(), !ia.isOptional(), operation, index);
         if (e == null) {
             operation.bindings[index] = bean.container.sm.bind(ia.key(), !ia.isOptional(), operation, index);
         } else {

@@ -17,11 +17,8 @@ package internal.app.packed.application;
 
 import java.lang.invoke.MethodHandle;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
-import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationLocal;
-import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
 import app.packed.build.BuildGoal;
@@ -35,15 +32,10 @@ import sandbox.extension.container.ContainerTemplate;
 /**
  *
  */
-public record PackedApplicationTemplate(PackedContainerTemplate containerTemplate, Function<? super ApplicationHandle, ? extends ApplicationMirror> supplier,
-        MethodHandle applicationLauncher) implements ApplicationTemplate {
-
-    public PackedApplicationTemplate(PackedContainerTemplate containerTemplate, Function<? super ApplicationHandle, ? extends ApplicationMirror> supplier) {
-        this(containerTemplate, supplier, null);
-    }
+public record PackedApplicationTemplate(PackedContainerTemplate containerTemplate, MethodHandle applicationLauncher) implements ApplicationTemplate {
 
     public PackedApplicationTemplate(PackedContainerTemplate containerTemplate) {
-        this(containerTemplate, ApplicationMirror::new);
+        this(containerTemplate, null);
     }
 
     /**
@@ -72,21 +64,29 @@ public record PackedApplicationTemplate(PackedContainerTemplate containerTemplat
             new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION, BootstrapApp.class));
 
     public static PackedApplicationInstaller newBootstrapAppInstaller() {
-        // Kan godt vaere den metode ikke giver mening
         return new PackedApplicationInstaller(PackedApplicationTemplate.BOOTSTRAP_APP, BuildGoal.LAUNCH);
     }
 
+    // Skal ikke baade have det paa install metoden og den her syntes jeg
+    @Override
     public PackedApplicationInstaller newInstaller(BuildGoal goal, Wirelet... wirelets) {
         PackedApplicationInstaller installer = new PackedApplicationInstaller(this, goal);
         installer.container.processBuildWirelets(wirelets);
         return installer;
     }
 
-    public record PackedApplicationTemplateConfigurator(PackedApplicationTemplate template) implements ApplicationTemplate.Configurator {
+    public final static class PackedApplicationTemplateConfigurator implements ApplicationTemplate.Configurator {
+
+        public PackedApplicationTemplate pbt;
+
+        public PackedApplicationTemplateConfigurator(PackedApplicationTemplate pbt) {
+            this.pbt = pbt;
+        }
 
         /** {@inheritDoc} */
         @Override
         public Configurator container(ContainerTemplate template) {
+            this.pbt = new PackedApplicationTemplate((PackedContainerTemplate) template, pbt.applicationLauncher);
             return null;
         }
 
@@ -105,6 +105,12 @@ public record PackedApplicationTemplate(PackedContainerTemplate containerTemplat
         /** {@inheritDoc} */
         @Override
         public Configurator container(Consumer<? super sandbox.extension.container.ContainerTemplate.Configurator> configure) {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Configurator guest(Class<?> clazz) {
             return null;
         }
     }

@@ -32,12 +32,9 @@ import internal.app.packed.bean.BeanSetup;
 public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 
     /**
-     * Creates a new InstanceBeanConfiguration.
-     *
      * @param handle
-     *            the bean handle
      */
-    public InstanceBeanConfiguration(BeanTemplate.Installer handle) {
+    public InstanceBeanConfiguration(BeanHandle<?> handle) {
         super(handle);
     }
 

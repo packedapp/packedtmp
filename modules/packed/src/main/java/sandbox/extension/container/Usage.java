@@ -31,13 +31,13 @@ public class Usage extends Extension<Usage> {
             .reconfigure(c -> c.carrierType(Guest.class).withPack(BaseExtensionPoint.EXPORTED_SERVICE_LOCATOR));
 
     public ContainerConfiguration installContainerWithImplicitCarrier() {
-        ContainerHandle<?> h = base().newContainer(CT).install(ContainerConfiguration::new);
+        ContainerHandle<?> h = base().newContainer(CT).install(ContainerHandle::new);
         return h.configuration();
     }
 
     public ContainerConfiguration installContainerWithExplicitCarrier() {
         ComponentGuestAdaptorBeanConfiguration<Guest> chg = base().installContainerHost(Guest.class).bindInstance(String.class, "Ssdo");
-        ContainerHandle<?> h = base().newContainer(CT).carrierUse(chg).install(ContainerConfiguration::new);
+        ContainerHandle<?> h = base().newContainer(CT).carrierUse(chg).install(ContainerHandle::new);
         return h.configuration();
     }
 

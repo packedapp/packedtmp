@@ -15,6 +15,8 @@
  */
 package app.packed.operation;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodType;
 import java.util.Collection;
@@ -31,13 +33,12 @@ import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
+import app.packed.extension.BeanTrigger.InheritableBindingClassBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.service.mirror.ServiceProviderMirror;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.context.ContextSetup;
-import internal.app.packed.operation.OperationSetup;
 import sandbox.operation.mirror.DependenciesMirror;
 
 /**
@@ -51,31 +52,30 @@ import sandbox.operation.mirror.DependenciesMirror;
  * <li>Must be located in the same module as the extension it is a member of.</li>
  * </ul>
  */
-@BindingClassBeanTrigger(extension = BaseExtension.class)
-public non-sealed class OperationMirror implements ComponentMirror, ContextualizedElementMirror , ContextScopeMirror, ServiceProviderMirror {
+@InheritableBindingClassBeanTrigger(extension = BaseExtension.class)
+public non-sealed class OperationMirror implements ComponentMirror , ContextualizedElementMirror , ContextScopeMirror , ServiceProviderMirror {
 
-    /** The operation we are mirroring. */
-    private final OperationSetup operation;
+    /** The handle of the operation we are mirroring. */
+    private final OperationHandle<?> handle;
 
     /**
      * Create a new operation mirror.
      *
-     * @throws IllegalStateException
-     *             if attempting to explicitly construct an operation mirror instance
+     * @param handle
+     *            the operation's handle
      */
     public OperationMirror(OperationHandle<?> handle) {
-        // Will fail if the operation mirror is not initialized by the framework
-        this.operation = OperationSetup.crack(handle);
+        this.handle = requireNonNull(handle);
     }
 
     /** {@return the bean that this operation is a part of.} */
-    public BeanMirror bean() {
-        return operation.bean.mirror();
+    public final BeanMirror bean() {
+        return handle.operation.bean.mirror();
     }
 
     /** {@return the bindings of this operation.} */
-    public List<BindingMirror> bindings() {
-        BindingSetup[] bindings = operation.bindings;
+    public final List<BindingMirror> bindings() {
+        BindingSetup[] bindings = handle.operation.bindings;
         if (bindings.length == 0) {
             return List.of();
         }
@@ -91,35 +91,41 @@ public non-sealed class OperationMirror implements ComponentMirror, Contextualiz
         return List.of(hooks);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public final ComponentPath componentPath() {
+        return handle.componentPath();
+    }
+
     /** {@return an unchangeable set view of all the contexts that the operation operates within.} */
     @Override
-    public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
-        return ContextSetup.allMirrorsFor(operation);
+    public final Map<Class<? extends Context<?>>, ContextMirror> contexts() {
+        return ContextSetup.allMirrorsFor(handle.operation);
     }
 
     /**
      * {@return any lifetime this operation is an entry point in. Or empty if this operation is not an entry point
      * operation.}
      */
-    public Optional<LifetimeMirror> entryPointIn() {
-        return Optional.ofNullable(operation.entryPoint).map(s -> s.lifetime.mirror());
+    public final Optional<LifetimeMirror> entryPointIn() {
+        return Optional.ofNullable(handle.operation.entryPoint).map(s -> s.lifetime.mirror());
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
-        return this == other || other instanceof OperationMirror m && operation == m.operation;
+        return this == other || other instanceof OperationMirror m && handle == m.handle;
     }
 
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return operation.hashCode();
+        return handle.hashCode();
     }
 
     /** {@return the extension that can invoke the operation.} */
-    public Class<? extends Extension<?>> invokedBy() {
-        return operation.operator.extensionType;
+    public final Class<? extends Extension<?>> invokedBy() {
+        return handle.operation.operator.extensionType;
     }
 
     /**
@@ -127,8 +133,8 @@ public non-sealed class OperationMirror implements ComponentMirror, Contextualiz
      * <p>
      * The name of an operation is always unique among other operations on the same bean.
      */
-    public String name() {
-        return operation.name();
+    public final String name() {
+        return handle.operation.name();
     }
 
     /**
@@ -137,24 +143,18 @@ public non-sealed class OperationMirror implements ComponentMirror, Contextualiz
      *
      * @return the binding this operation is used by if a nested operation, otherwise {@code empty}
      */
-    public Optional<BindingMirror> nestedIn() {
-        return Optional.ofNullable(operation.embeddedInto).map(b -> b.operation().bindings[b.bindingIndex()].mirror());
+    public final Optional<BindingMirror> nestedIn() {
+        return Optional.ofNullable(handle.operation.embeddedInto).map(b -> b.operation().bindings[b.bindingIndex()].mirror());
     }
 
     /** {@return the operation site.} */
-    public OperationTarget target() {
-        return operation.target();
+    public final OperationTarget target() {
+        return handle.target();
     }
 
     /** {@return the type of the operation.} */
-    public OperationType type() {
-        return operation.type;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentPath componentPath() {
-        return operation.componentPath();
+    public final OperationType type() {
+        return handle.operation.type;
     }
 }
 

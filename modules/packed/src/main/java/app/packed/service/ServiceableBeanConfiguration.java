@@ -15,7 +15,7 @@
  */
 package app.packed.service;
 
-import app.packed.bean.BeanTemplate;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.util.Key;
 
@@ -25,13 +25,11 @@ import app.packed.util.Key;
 // ServiceableBeanConfiguration?
 public class ServiceableBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
+
     /**
-     * Create a new bean configuration.
-     *
      * @param handle
-     *            the bean handle this configuration wraps
      */
-    public ServiceableBeanConfiguration(BeanTemplate.Installer handle) {
+    public ServiceableBeanConfiguration(BeanHandle<?> handle) {
         super(handle);
     }
 

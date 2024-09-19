@@ -18,8 +18,8 @@ package sandbox.program;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
-import app.packed.application.BootstrapApp.Image;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint;
@@ -125,7 +125,7 @@ interface ProgramY extends AutoCloseable {
      * @see ApplicationImageWirelets
      * @see BootstrapApp#newImage(Assembly, Wirelet...)
      */
-    static Image<ProgramY> imageOf(Assembly assembly, Wirelet... wirelets) {
+    static BaseImage<ProgramY> imageOf(Assembly assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets).map(e -> e);
     }
 

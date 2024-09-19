@@ -29,6 +29,7 @@ import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationSetup;
+import internal.app.packed.util.types.ClassUtil;
 
 /**
  *
@@ -39,15 +40,17 @@ final class OperationCodeGenerator {
 
     MethodHandle generate(OperationSetup operation, MethodHandle initial) {
         MethodHandle mh = initial;
-        //debug("%s: %s -> %s", operation.bean.path(), initial.type(), operation.template.invocationType());
+        // debug("%s: %s -> %s", operation.bean.path(), initial.type(), operation.template.invocationType());
 
         // instance fields and methods, needs a bean instance
         boolean requiresBeanInstance = operation.pot instanceof MemberOperationSetup s && s.needsBeanInstance();
         if (requiresBeanInstance) {
             mh = provide(operation, mh, operation.bean.beanInstanceBindingProvider());
         }
-       // debug(mh.type());
+        // debug(mh.type());
         for (BindingSetup binding : operation.bindings) {
+//            System.out.println(binding.resolver().getClass());
+  //          System.out.println(mh.type());
             mh = provide(operation, mh, binding.resolver());
         }
 
@@ -100,10 +103,30 @@ final class OperationCodeGenerator {
             permuters.add(0); // ExtensionContext is always 0
             MethodHandle tmp = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, fla.index());
 
-            // (LifetimePool)Object -> (LifetimePool)type
+//            System.out.println("FLA ->" + fla.type());
+//            System.out.println(mh.type());
+//
+//            // (LifetimePool)Object -> (LifetimePool)type
+//            System.out.println("TMP Before " +tmp.type());
             tmp = tmp.asType(tmp.type().changeReturnType(fla.type()));
+//            if (tmp.type().parameterCount() == 1) {
+//                if (tmp.type().returnType() == Hmm2.RAR.class) {
+//                 //  tmp = tmp.asType(tmp.type().changeReturnType(Hmm2.AR.class));
+//                }
+//            }
+//            System.out.println("TMP After" +tmp.type());
+
+
+//            System.out.println(tmp.type());
+//            System.out.println(tmp.type().returnType());
+//            System.out.println();
+//            System.out.println(operation.type);
+//            System.out.println();
             return MethodHandles.collectArguments(mh, 0, tmp);
         } else {
+            if (ClassUtil.isInnerOrLocal(operation.bean.beanClass)) {
+                System.err.println("Inner Bean");
+            }
             throw new UnsupportedOperationException("" + p + " " + operation.target());
         }
     }

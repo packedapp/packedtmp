@@ -19,7 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import app.packed.util.Nullable;
 import internal.app.packed.util.TreeNode.ActualNode;
@@ -29,7 +33,7 @@ import internal.app.packed.util.TreeNode.ActualNode;
  */
 
 // Det den her kan som LinkedHashMap ikke kan er at gaa fra en sieblig til en anden.
-public class TreeNode<T extends ActualNode<T>> {
+public class TreeNode<T extends ActualNode<T>> implements Spliterator<T> {
 
     /** The (nullable) first child of the node. */
     @Nullable
@@ -59,6 +63,48 @@ public class TreeNode<T extends ActualNode<T>> {
 
     public T parentOrNull() {
         return parent;
+    }
+
+    // Implementing the tryAdvance method for lazy traversal
+    @Override
+    public boolean tryAdvance(Consumer<? super T> action) {
+        action.accept(this.value); // Process current node
+
+        // Process first child if exists
+        if (firstChild != null && firstChild.node().tryAdvance(action)) {
+            return true;
+        }
+
+        // Process next sibling if exists
+        if (nextSibling != null && nextSibling.node().tryAdvance(action)) {
+            return true;
+        }
+
+        return false; // No more nodes to process
+    }
+
+    // Implementing trySplit for parallelism
+    @Override
+    public Spliterator<T> trySplit() {
+        // Optional: you can implement splitting logic for parallelism
+        return null; // Returning null means no splitting; will be processed sequentially
+    }
+
+    // Implementing estimatedSize (can return Long.MAX_VALUE if we don't know)
+    @Override
+    public long estimateSize() {
+        return Long.MAX_VALUE; // We don't know the size ahead of time
+    }
+
+    // Implementing characteristics (can be ORDERED and NONNULL)
+    @Override
+    public int characteristics() {
+        return Spliterator.ORDERED | Spliterator.NONNULL;
+    }
+
+    // Creating a Stream using the Spliterator
+    public Stream<T> stream() {
+        return StreamSupport.stream(this, false); // False for sequential stream
     }
 
     public TreeNode(@Nullable T treeParent, T treeThis) {

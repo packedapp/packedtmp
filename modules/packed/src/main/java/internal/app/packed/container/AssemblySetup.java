@@ -25,12 +25,15 @@ import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.component.Authority;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerHandle;
+import app.packed.namespace.NamespaceHandle;
 import app.packed.util.Nullable;
+import internal.app.packed.application.Fut;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.AbstractTreeMirror;
 import internal.app.packed.component.Mirrorable;
+import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.service.CircularServiceDependencyChecker;
 import internal.app.packed.util.MagicInitializer;
 import internal.app.packed.util.TreeNode;
@@ -104,7 +107,7 @@ public final class AssemblySetup implements BuildLocalSource , ActualNode<Assemb
             // This method creates both the application setup and container setup
             as.container = installer.applicationInstaller.newApplication(as).container();
         } else {
-            as.container = installer.newContainer(installer.parent.application, as, ContainerConfiguration::new);
+            as.container = installer.newContainer(installer.parent.application, as, ContainerHandle::new);
         }
         return as;
     }
@@ -166,9 +169,16 @@ public final class AssemblySetup implements BuildLocalSource , ActualNode<Assemb
             // polling
             ArrayList<ExtensionSetup> list = new ArrayList<>(extensions.size());
 
+            container.invokeOnAssemblyClose(container.assembly); //onCloseAss on bean
             for (ExtensionSetup e = extensions.pollLast(); e != null; e = extensions.pollLast()) {
                 list.add(e);
-                e.closeAssembly();
+                for (NamespaceHandle<?, ?> s : container.application.namespaces.values()) {
+                    NamespaceSetup ns = NamespaceSetup.crack(s);
+                    if (ns.root == e) {
+                        ns.invokeNamespaceOnNamespaceClose();
+                    }
+                }
+                e.invokeExtensionOnAssemblyClose();
             }
 
             isConfigurable = false;
@@ -185,10 +195,17 @@ public final class AssemblySetup implements BuildLocalSource , ActualNode<Assemb
             // The application has been built successfully, generate code if needed
             container.application.close();
 
+            for(Fut f : container.application.children) {
+                f.bar.build(container.application, f);
+            }
+
         } else {
             // Similar to above, except we do not call Extension#onApplicationClose
+            container.invokeOnAssemblyClose(container.assembly); //onCloseAss on bean
+
             for (ExtensionSetup e = extensions.pollLast(); e != null; e = extensions.pollLast()) {
-                e.closeAssembly();
+
+                e.invokeExtensionOnAssemblyClose();
             }
             isConfigurable = false;
             assemblyBuildFinishedTime = System.nanoTime();

@@ -18,7 +18,7 @@ package sandbox.extension.application.old;
 import java.util.function.Supplier;
 
 import app.packed.assembly.Assembly;
-import app.packed.bean.BeanTemplate;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Wirelet;
 
@@ -28,15 +28,17 @@ import app.packed.container.Wirelet;
 class ApplicationHostConfiguration<T> extends InstanceBeanConfiguration<T> {
 
 
-    public ApplicationHostConfiguration(BeanTemplate.Installer handle) {
-        super(handle);
-    }
-
-
     // vi har vel lazy
     // 1-deploye
     // 1-deploye-and remove
     // m-deploye-and remove
+
+    /**
+     * @param handle
+     */
+    public ApplicationHostConfiguration(BeanHandle<?> handle) {
+        super(handle);
+    }
 
     public void deployLazy(Supplier<? extends Assembly> assemblySupplier, Wirelet... wirelets) {}
 }

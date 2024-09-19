@@ -44,7 +44,7 @@ public class OperationContextTest extends AppAppTest {
         });
 
         hooks().onAnnotatedMethod((l, b) -> {
-            OperationHandle<?> h = b.newOperation(ContextsHelpers.NoImplContext.OTINT).install();
+            OperationHandle<?> h = b.newOperation(ContextsHelpers.NoImplContext.OTINT).install(OperationHandle::new);
 
             add(h);
         });

@@ -17,7 +17,6 @@ package app.packed.application;
 
 import java.util.concurrent.Future;
 
-import app.packed.application.BootstrapApp.Image;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.util.Result;
@@ -62,7 +61,7 @@ public final class JobAppOld {
         return (Result<T>) Result.ofFuture(BOOTSTRAP.launch(assembly, wirelets).result);
     }
 
-    public static <T> Image<T> imageOf(Class<T> resultType, Assembly assembly, Wirelet... wirelets) {
+    public static <T> BaseImage<T> imageOf(Class<T> resultType, Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 

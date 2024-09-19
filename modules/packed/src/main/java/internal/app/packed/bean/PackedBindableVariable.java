@@ -105,9 +105,24 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
         return operation.template.descriptor().invocationType().parameterList();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public BeanSetup bean() {
+        return operation.bean;
+    }
+
     private void bind(BindingResolution provider) {
         assert (operation.bindings[index] == null);
         operation.bindings[index] = new HookBindingSetup(operation, index, bindingExtension.authority(), provider);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedBindableVariable bindComputedConstant(Supplier<?> supplier) {
+        checkBeforeBind();
+        // We can't really do any form of type checks until we call the supplier
+        bind(new FromCodeGenerated(supplier));
+        return this;
     }
 
     /** {@inheritDoc} */
@@ -148,15 +163,6 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
         int indexOf = mt.parameterList().indexOf(context);
         // TODO fix. We need to look up the
         bindInvocationArgument(indexOf);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public PackedBindableVariable bindComputedConstant(Supplier<?> supplier) {
-        checkBeforeBind();
-        // We can't really do any form of type checks until we call the supplier
-        bind(new FromCodeGenerated(supplier));
         return this;
     }
 
@@ -225,6 +231,12 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
 
     /** {@inheritDoc} */
     @Override
+    public Descriptor operation() {
+        return operation.template.descriptor();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public BindableVariable specializeMirror(Supplier<? extends BindingMirror> supplier) {
         checkNotBound();
         this.mirrorSupplier = requireNonNull(supplier);
@@ -241,17 +253,5 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
     @Override
     public Variable variable() {
         return variable;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanSetup bean() {
-        return operation.bean;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Descriptor operation() {
-        return operation.template.descriptor();
     }
 }

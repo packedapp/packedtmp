@@ -28,16 +28,13 @@ import java.util.stream.Stream;
 // Saa skal den maaske hedde noget andet
 
 // extends Iterable<N>???? IDK Not particular useful without more details I think
-public interface TreeView<N> {
+public interface TreeView<N> extends BaseTreeView<N> {
 
     default boolean contains(N node) {
         throw new UnsupportedOperationException();
     }
 
-    /** {@return the number of nodes in the tree.} */
-    default int count() {
-        return Math.toIntExact(stream().count());
-    }
+
 
     default void forEach(Consumer<N> action) {
         throw new UnsupportedOperationException();
@@ -76,9 +73,6 @@ public interface TreeView<N> {
         throw new UnsupportedOperationException();
     }
 
-    default Stream<N> stream() {
-        throw new UnsupportedOperationException();
-    }
 
     default TreeView<Map.Entry<N, Boolean>> activityTree(Iterable<? super N> active) {
         // Ideen er lidt at have et tree. Og saa dem der er aktiv in a tree...

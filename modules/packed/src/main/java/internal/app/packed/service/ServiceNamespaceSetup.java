@@ -23,15 +23,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import app.packed.bean.BeanSourceKind;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionContext;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
-import app.packed.service.mirror.oldMaybe.ExportedServiceMirror;
+import app.packed.service.ServiceNamespaceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.KeyAlreadyInUseException;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution;
+import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
@@ -40,7 +42,7 @@ import internal.app.packed.operation.PackedOperationTarget.MemberOperationSetup;
 import internal.app.packed.util.CollectionUtil;
 
 /** Manages services in a single container. */
-public final class ServiceNamespaceSetup {
+public final class ServiceNamespaceSetup /* extends NamespaceHandle<BaseExtension, ServiceNamespaceConfiguration> */ {
 
     /** All entries in the service manager. This covers both bindings and service provisions. */
     public final LinkedHashMap<Key<?>, ServiceSetup> entries = new LinkedHashMap<>();
@@ -85,7 +87,7 @@ public final class ServiceNamespaceSetup {
             // A service with the key has already been exported
             throw new KeyAlreadyInUseException("Jmm " + es.key);
         }
-        es.operation.mirrorSupplier = h -> new ExportedServiceMirror(h, es);
+//        es.operation.mirrorSupplier = h -> new ExportedServiceMirror(h, es);
         return es;
     }
 
@@ -162,6 +164,12 @@ public final class ServiceNamespaceSetup {
     public ServiceProviderSetup provide(Key<?> key, OperationSetup operation, BindingResolution resolution) {
         ServiceSetup entry = entries.computeIfAbsent(key, ServiceSetup::new);
 
+        if (resolution instanceof FromLifetimeArena fla) {
+            if (key.rawType() != fla.type()) {
+                resolution = new FromLifetimeArena(fla.containerLifetime(), fla.index(), key.rawType());
+            }
+        }
+    //    System.out.println(fla.);
         // TODO Check same lifetime as the container, or own prototype service
 
         ServiceProviderSetup provider = entry.setProvider(operation, resolution);
@@ -182,5 +190,10 @@ public final class ServiceNamespaceSetup {
         for (ServiceSetup e : entries.values()) {
             e.verify();
         }
+    }
+
+    /** {@inheritDoc} */
+    protected ServiceNamespaceConfiguration newNamespaceConfiguration(BaseExtension e) {
+        throw new UnsupportedOperationException();
     }
 }

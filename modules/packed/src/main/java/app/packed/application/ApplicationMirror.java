@@ -1,5 +1,7 @@
 package app.packed.application;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -16,11 +18,11 @@ import app.packed.extension.BeanTrigger.InheritableBindingClassBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
+import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.service.ServiceContract;
 import app.packed.util.TreeView;
-import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.AssemblySetup.PackedAssemblyTreeMirror;
 import internal.app.packed.container.ContainerSetup;
@@ -43,50 +45,69 @@ import internal.app.packed.operation.OperationSetup;
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)} for details.
  */
 @InheritableBindingClassBeanTrigger(extension = BaseExtension.class)
-public non-sealed class ApplicationMirror implements ComponentMirror , ApplicationLocal.Accessor {
+public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationLocal.Accessor {
 
-    /** The application we are mirroring. */
-    private final ApplicationSetup application;
+    /** The application's handle. */
+    private final ApplicationHandle<?, ?> handle;
 
     /**
      * Create a new application mirror.
      *
-     * @throws IllegalStateException
-     *             if attempting to explicitly construct an application mirror instance
+     * @param handle
+     *            the application's handle
      */
-    public ApplicationMirror(ApplicationHandle handle) {
-        this.application = ApplicationSetup.crack(handle);
+    public ApplicationMirror(ApplicationHandle<?,?> handle) {
+        this.handle = requireNonNull(handle);
     }
 
     /** {@return a tree representing all the assemblies used for creating this application} */
     public AssemblyMirror.OfTree assemblies() {
-        return new PackedAssemblyTreeMirror(application.container().assembly, null);
+        return new PackedAssemblyTreeMirror(handle.application.container().assembly, null);
     }
 
     /** {@return a mirror of the (root) assembly that defines the application} */
     public AssemblyMirror assembly() {
-        return application.container().assembly.mirror();
+        return handle.application.container().assembly.mirror();
     }
 
     /** {@return the build goal that was used when building the application} */
     public BuildGoal buildGoal() {
-        return application.deployment.goal;
+        return handle.application.deployment.goal;
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentPath componentPath() {
-        return application.componentPath();
+        return handle.application.componentPath();
     }
 
     /** {@return a mirror of the root container in the application.} */
     public ContainerMirror container() {
-        return application.container().mirror();
+        return handle.application.container().mirror();
     }
 
     /** {@return a container tree mirror representing all the containers defined within the application.} */
     public ContainerMirror.OfTree containers() {
-        return new PackedContainerTreeMirror(application.container(), null);
+        return new PackedContainerTreeMirror(handle.application.container(), null);
+    }
+
+    /** {@return a stream of all of the operations declared by the bean.} */
+    public Stream<OperationMirror> operations() {
+        return handle.application.container.node.stream().map(s -> s.mirror()).flatMap(ContainerMirror::operations);
+    }
+
+    /**
+     * Returns a stream of all of the operations declared by the bean with the specified mirror type.
+     *
+     * @param <T>
+     * @param operationType
+     *            the type of operations to include
+     * @return a collection of all of the operations declared by the bean of the specified type.
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
+        requireNonNull(operationType, "operationType is null");
+        return (Stream<T>) operations().filter(f -> operationType.isAssignableFrom(f.getClass()));
     }
 
     // All mirrors "owned" by the user
@@ -102,7 +123,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror , Applicati
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
-        return this == other || other instanceof ApplicationMirror m && application == m.application;
+        return this == other || other instanceof ApplicationMirror m && handle.application == m.handle.application;
     }
 
     /** {@return an unmodifiable {@link Set} view of every extension type that has been used in the application.} */
@@ -113,7 +134,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror , Applicati
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return application.hashCode();
+        return handle.application.hashCode();
     }
 
     /**
@@ -141,7 +162,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror , Applicati
      * @see Wirelet#named(String)
      */
     public String name() {
-        return application.container().node.name;
+        return handle.application.container().node.name;
     }
 
     // ApplicationMirror
@@ -160,7 +181,15 @@ public non-sealed class ApplicationMirror implements ComponentMirror , Applicati
     }
 
     public <N extends NamespaceMirror<?>> Optional<N> namespace(Class<N> type, String name) {
-        throw new UnsupportedOperationException();
+        for (NamespaceHandle<?, ?> n : handle.application.namespaces.values()) {
+            if (n.name().equals(name)) {
+                NamespaceMirror<?> m = n.mirror();
+                if (m.getClass() == type) {
+                    return Optional.of(type.cast(m));
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     public void print() {
@@ -168,7 +197,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror , Applicati
         // to(PrintStream ps);
         // asJSON();
         // verbose();
-        print0(application.container());
+        print0(handle.application.container());
     }
 
     private void print0(ContainerSetup cs) {
@@ -192,7 +221,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror , Applicati
 
     /** {@return the service contract of this application.} */
     public ServiceContract serviceContract() {
-        return application.container().sm.newContract();
+        return handle.application.container().sm.newContract();
     }
 
     /** {@inheritDoc} */

@@ -22,10 +22,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerLocal;
-import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.operation.Op1;
@@ -127,12 +125,12 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
 
         // Har kun visibility for the installing extension
         Configurator lifetimeOperationAddContext(int index, ContextTemplate template);
+
         default <T> Configurator localSet(ContainerLocal<T> containerLocal, T value) {
             throw new UnsupportedOperationException();
         }
 
         Configurator withPack(ContainerTemplateLink pack);
-
 
         default Configurator withPack(ContainerTemplateLink... packs) {
             for (ContainerTemplateLink p : packs) {
@@ -234,8 +232,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          *
          * @see #build(Wirelet...)
          */
-        <T extends ContainerConfiguration> ContainerHandle<?> install(Assembly assembly, Function<? super ContainerHandle<?>, T> configurationCreator,
-                Wirelet... wirelets);
+        <H extends ContainerHandle<?>> H install(Assembly assembly, Function<? super ContainerTemplate.Installer, H> factory, Wirelet... wirelets);
 
         /**
          * Creates a new configurable container.
@@ -246,8 +243,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          *
          * @see #install(Assembly, Wirelet...)
          */
-        <T extends ContainerConfiguration> ContainerHandle<T> install(Function<? super ContainerHandle<?>, T> configurationCreator,
-                Wirelet... wirelets);
+        <H extends ContainerHandle<?>> H install(Function<? super ContainerTemplate.Installer, H> factory, Wirelet... wirelets);
 
         /**
          * Creates the new container and adds this extension to the new container.
@@ -258,8 +254,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          *
          * @see app.packed.extension.Extension#fromHandle(ContainerHandle)
          */
-        <T extends ContainerConfiguration> ContainerHandle<T> installAndUseThisExtension(Function<? super ContainerHandle<?>, T> configurationCreator,
-                Wirelet... wirelets);
+        <H extends ContainerHandle<?>> H installAndUseThisExtension(Function<? super ContainerTemplate.Installer, H> factory, Wirelet... wirelets);
 
         /**
          * Sets the value of the specified container local for the container being built.
@@ -290,16 +285,6 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          */
         Installer named(String name);
 
-        /**
-         * Sets a supplier that creates a special container mirror instead of the generic {@code ContainerMirror} when
-         * requested.
-         *
-         * @param supplier
-         *            the supplier used to create the container mirror
-         * @apiNote the specified supplier may be called multiple times for the same bean. In which case an equivalent mirror
-         *          must be returned
-         */
-        Installer specializeMirror(Function<? super ContainerHandle<?>, ? extends ContainerMirror> function);
     }
 
 }

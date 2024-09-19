@@ -47,10 +47,10 @@ final /* primitive */ class ExtensionTreeViewNode<E extends Extension<E>> implem
 
     /** {@return the number of extensions in the tree.} */
     @Override
+    @SuppressWarnings("unused")
     public int count() {
         int size = 0;
-        for (@SuppressWarnings("unused")
-        E t : this) {
+        for (E t : this) {
             size++;
         }
         return size;

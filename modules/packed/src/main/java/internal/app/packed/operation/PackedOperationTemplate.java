@@ -10,7 +10,6 @@ import java.util.function.Function;
 
 import app.packed.context.Context;
 import app.packed.extension.ExtensionContext;
-import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
@@ -68,9 +67,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
             @SuppressWarnings({ "unchecked", "rawtypes" })
             @Override
-            public final <H extends OperationHandle<T>, T extends OperationConfiguration> H install(
-                    Function<? super OperationTemplate.Installer, H> configurationCreator) {
-
+            public final <H extends OperationHandle<?>> H install(Function<? super OperationTemplate.Installer, H> configurationCreator) {
                 return (H) super.newOperation((Function) configurationCreator).handle();
             }
         };
@@ -149,7 +146,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
         /** {@inheritDoc} */
         @Override
-        public Configurator withContext(ContextTemplate context) {
+        public Configurator inContext(ContextTemplate context) {
             this.template = template.withContext(context);
             return this;
         }

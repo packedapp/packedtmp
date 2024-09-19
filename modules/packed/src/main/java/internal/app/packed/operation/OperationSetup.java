@@ -18,6 +18,8 @@ package internal.app.packed.operation;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,11 +33,12 @@ import app.packed.bean.CannotDeclareInstanceMemberException;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
-import app.packed.operation.OperationConfiguration;
+import app.packed.extension.InternalExtensionException;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationTemplate;
+import app.packed.operation.OperationTemplate.Installer;
 import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
@@ -48,12 +51,18 @@ import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.entrypoint.EntryPointSetup;
+import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceProviderSetup;
+import internal.app.packed.util.LookupUtil;
 
 /** Represents an operation on a bean. */
-public final class OperationSetup extends ComponentSetup implements ContextualizedElementSetup {
+public final class OperationSetup implements ComponentSetup , ContextualizedElementSetup {
+
+    /** A handle that can access {@link OperationHandle#handle}. */
+    private static final VarHandle VH_OPERATION_HANDLE_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), OperationHandle.class, "operation",
+            OperationSetup.class);
 
     /** The bean this operation belongs to. */
     public final BeanSetup bean;
@@ -61,12 +70,8 @@ public final class OperationSetup extends ComponentSetup implements Contextualiz
     /** Bindings for this operation. */
     public final BindingSetup[] bindings;
 
-    /** The configuration representing this operation, is set from {@link #initConfiguration(BeanConfiguration)}. */
-    @Nullable
-    public OperationConfiguration configuration;
-
     /** The contexts on the bean. Is HashMap now we because it uses less memory when empty. */
-    private HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
+    private final HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
 
     /** Any operation this operation is embedded into. */
     @Nullable
@@ -79,10 +84,8 @@ public final class OperationSetup extends ComponentSetup implements Contextualiz
     @Nullable
     private MethodHandle generatedMethodHandle;
 
-    /** Supplies a mirror for the operation */
-    public Function<? super OperationHandle<?>, ? extends OperationMirror> mirrorSupplier;
-
-    OperationHandle<?> handle;
+    /** The operation's handle. */
+    private OperationHandle<?> handle;
 
     /**
      * The name prefix of the operation.
@@ -101,13 +104,13 @@ public final class OperationSetup extends ComponentSetup implements Contextualiz
     /** The operator of the operation. */
     public final ExtensionSetup operator;
 
+    public final PackedOperationTarget pot;
+
     /** The operation's template. */
     public final PackedOperationTemplate template;
 
     /** The type of this operation. */
     public final OperationType type;
-
-    public final PackedOperationTarget pot;
 
     OperationSetup(PackedOperationInstaller installer, PackedOperationTarget pot) {
         this.operator = requireNonNull(installer.operator);
@@ -126,10 +129,6 @@ public final class OperationSetup extends ComponentSetup implements Contextualiz
         for (PackedContextTemplate t : template.contexts.values()) {
             contexts.put(t.contextClass(), new ContextSetup(t, this));
         }
-    }
-
-    public OperationHandle<?> handle() {
-        return requireNonNull(handle);
     }
 
     /** {@inheritDoc} */
@@ -193,19 +192,8 @@ public final class OperationSetup extends ComponentSetup implements Contextualiz
         return mh;
     }
 
-    /**
-     * Initializes the bean configuration.
-     *
-     * @param configuration
-     *
-     * @throws IllegalStateException
-     *             if attempting to create multiple bean configurations for a single bean
-     */
-    public void initConfiguration(OperationConfiguration configuration) {
-        if (this.configuration != null) {
-            throw new IllegalStateException("A operation handle can only be used once to create a a operation configuration");
-        }
-        this.configuration = requireNonNull(configuration);
+    public OperationHandle<?> handle() {
+        return requireNonNull(handle);
     }
 
     /** {@return the initial method handle.} */
@@ -213,17 +201,10 @@ public final class OperationSetup extends ComponentSetup implements Contextualiz
         return pot.methodHandle();
     }
 
-    OperationMirror mirror;
-
     /** {@return a new mirror.} */
     @Override
     public OperationMirror mirror() {
-        OperationMirror m = mirror;
-        if (m == null) {
-            m = mirror = mirrorSupplier == null ? new OperationMirror(handle()) : mirrorSupplier.apply(handle());
-        }
-        return m;
-
+        return handle().mirror();
     }
 
     /** {@return the name of the operation} */
@@ -253,12 +234,12 @@ public final class OperationSetup extends ComponentSetup implements Contextualiz
      * @return the operation setup
      */
     public static OperationSetup crack(OperationHandle<?> handle) {
-        return ((OperationHandle<?>) handle).operation;
+        return (OperationSetup) VH_OPERATION_HANDLE_TO_SETUP.get(handle);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <H extends OperationHandle<T>, T extends OperationConfiguration> OperationSetup newMemberOperationSetup(PackedOperationInstaller installer,
-            OperationMemberTarget<?> member, MethodHandle methodHandle, Function<? super OperationTemplate.Installer, H> configurationCreator) {
+    public static <H extends OperationHandle<?>> OperationSetup newMemberOperationSetup(PackedOperationInstaller installer, OperationMemberTarget<?> member,
+            MethodHandle methodHandle, Function<? super OperationTemplate.Installer, H> configurationCreator) {
         if (installer.bean.beanKind == BeanKind.STATIC && !Modifier.isStatic(member.modifiers())) {
             throw new CannotDeclareInstanceMemberException("Cannot create operation for non-static member " + member);
         }
@@ -272,6 +253,26 @@ public final class OperationSetup extends ComponentSetup implements Contextualiz
         installer.pot = new MemberOperationSetup(member, methodHandle);
 
         OperationSetup os = installer.newOperation((Function) configurationCreator);
+        return os;
+    }
+
+    static OperationSetup newOperation(PackedOperationInstaller installer, Function<? super Installer, OperationHandle<?>> newHandle) {
+        installer.checkConfigurable();
+
+        OperationSetup os = new OperationSetup(installer, installer.pot);
+        installer.operation = os;
+
+        // Create the OperationHandle
+        OperationHandle<?> handle = newHandle.apply(installer);
+        if (handle == null) {
+            throw new InternalExtensionException(newHandle + " returned null, when creating a new OperationHandle");
+        }
+        if (installer.addToNamespace != null) {
+            NamespaceSetup s = NamespaceSetup.crack(installer.addToNamespace);
+            s.operations.add(os);
+        }
+        os.handle = handle;
+        os.bean.operations.add(os);
         return os;
     }
 

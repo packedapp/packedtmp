@@ -39,7 +39,7 @@ public sealed abstract class PackedOperationTarget {
     }
 
     /** An operation that returns the bean instance the operation is defined on. */
-    public static final class BeanAccessOperationSetup extends PackedOperationTarget {
+    public static final class BeanAccessOperationSetup extends PackedOperationTarget implements OperationTarget.OfMethodHandle {
 
         /**
          * @param operator
@@ -50,6 +50,12 @@ public sealed abstract class PackedOperationTarget {
         /** {@inheritDoc} */
         @Override
         MethodHandle methodHandle() {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodType methodType() {
             throw new UnsupportedOperationException();
         }
     }

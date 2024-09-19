@@ -42,7 +42,7 @@ public class OnAnnotatedFieldTest extends AppAppTest {
     public void instanceFieldGet() throws Throwable {
         hooks().onAnnotatedField((l, b) -> {
 
-            OperationHandle<?> h = b.newGetOperation(OperationTemplate.defaults()).install();
+            OperationHandle<?> h = b.newGetOperation(OperationTemplate.defaults()).install(OperationHandle::new);
             assertEquals(MethodType.methodType(String.class, ExtensionContext.class), h.invocationType());
             assertSame(HookTestingExtension.class, h.operator());
 
@@ -65,7 +65,7 @@ public class OnAnnotatedFieldTest extends AppAppTest {
     @Test
     public void instanceFieldGetSet() throws Throwable {
         hooks().onAnnotatedField((l, b) -> {
-            add(b.newGetOperation(OperationTemplate.defaults()).install());
+            add(b.newGetOperation(OperationTemplate.defaults()).install(OperationHandle::new));
 //                OperationHandle h = b.newSetOperation(OperationTemplate.defaults().withArg(String.class));
             // assertEquals(MethodType.methodType(void.class, ExtensionContext.class, String.class), h.invocationType());
 
@@ -87,7 +87,7 @@ public class OnAnnotatedFieldTest extends AppAppTest {
     @Test
     public void staticFieldGet() throws Throwable {
         hooks().onAnnotatedField((l, b) -> {
-            add(b.newGetOperation(OperationTemplate.defaults()).install());
+            add(b.newGetOperation(OperationTemplate.defaults()).install(OperationHandle::new));
         });
 
         install(FieldPrivateStaticString.class);

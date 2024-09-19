@@ -1,5 +1,7 @@
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -10,9 +12,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifecycleKind;
 import app.packed.util.Nullable;
-import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.util.types.ClassUtil;
 
 /**
@@ -30,15 +30,15 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
 
     /** The container we are configuring. Is only null for {@link #USED}. */
     @Nullable
-    final ContainerSetup container;
+    final ContainerHandle<?> handle;
 
     /** Used by {@link #USED}. */
     private ContainerConfiguration() {
-        this.container = null;
+        this.handle = null;
     }
 
     public ContainerConfiguration(ContainerHandle<?> handle) {
-        this.container = ContainerSetup.crack(handle);
+        this.handle = requireNonNull(handle);
     }
 
     /**
@@ -50,7 +50,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      */
     // We install using base(), but have beans here...
     public final Stream<? extends BeanConfiguration> beans() {
-        return container.beans.stream().filter(b -> b.owner().isApplication()).map(b -> b.configuration()).filter(c -> c != null);
+        return handle.container.beans.stream().filter(b -> b.owner().isApplication()).map(b -> b.handle().configuration()).filter(c -> c != null);
     }
 
     @SuppressWarnings("unchecked")
@@ -63,7 +63,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
     @Override
     @BuildActionable("container.addTags")
     public ComponentConfiguration componentTag(String... tags) {
-        return container.componentTag(tags);
+        return handle.container.componentTag(tags);
     }
 
     /**
@@ -74,21 +74,21 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      * @see ContainerMirror#extensionsTypes()
      */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
-        return container.extensionTypes();
+        return handle.container.extensionTypes();
     }
 
     /** {@inheritDoc} */
     @Override
     protected final ContainerHandle<?> handle() {
-        return new PackedContainerHandle<>(container);
+        return handle;
     }
 
     public boolean isApplicationRoot() {
-        return container.isApplicationRoot();
+        return handle.container.isApplicationRoot();
     }
 
     public boolean isAssemblyRoot() {
-        return container.isAssemblyRoot();
+        return handle.container.isAssemblyRoot();
     }
 
     /**
@@ -102,11 +102,11 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      *           cannot give a more detailed answer about who is using a particular extension
      */
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-        return container.isExtensionUsed(extensionType);
+        return handle.container.isExtensionUsed(extensionType);
     }
 
     public LifecycleKind lifetimeKind() {
-        return container.lifetime.lifetimeKind();
+        return handle.container.lifetime.lifetimeKind();
     }
 
     /**
@@ -126,7 +126,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      */
     @BuildActionable("container.named")
     public ContainerConfiguration named(String name) {
-        container.named(name);
+        handle.container.named(name);
         return this;
     }
 
@@ -160,13 +160,13 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      */
     public <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
         ClassUtil.checkProperSubclass(Wirelet.class, wireletClass, "wireletClass");
-        return container.selectWireletsUnsafe(wireletClass);
+        return handle.container.selectWireletsUnsafe(wireletClass);
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return container.toString();
+        return handle.container.toString();
     }
 
     /**
@@ -189,7 +189,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      */
     @BuildActionable("container.installExtension")
     public <E extends Extension<?>> E use(Class<E> extensionClass) {
-        ExtensionSetup extension = container.useExtension(extensionClass, null);
+        ExtensionSetup extension = handle.container.useExtension(extensionClass, null);
         return extensionClass.cast(extension.instance());
     }
 }

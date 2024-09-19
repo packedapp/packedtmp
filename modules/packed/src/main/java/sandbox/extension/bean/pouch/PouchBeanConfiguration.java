@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.List;
 
 import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanTemplate;
 import app.packed.service.ServiceableBeanConfiguration;
 
 /**
@@ -44,7 +43,7 @@ public class PouchBeanConfiguration<T> extends ServiceableBeanConfiguration<T> {
     /**
      * @param handle
      */
-    public PouchBeanConfiguration(BeanTemplate.Installer handle) {
+    public PouchBeanConfiguration(BeanHandle<?> handle) {
         super(handle);
     }
 

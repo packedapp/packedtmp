@@ -23,11 +23,11 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import app.packed.bean.BeanBuildHook;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocal;
-import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.BeanTemplate;
 import app.packed.extension.InternalExtensionException;
@@ -53,7 +53,7 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
 
     /** Initially null, set to the installed bean once it is installed. */
     @Nullable
-    private BeanSetup bean;
+    public BeanSetup bean;
 
     /** The container the bean will be installed into. */
     final ContainerSetup container;
@@ -63,10 +63,6 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
 
     /** Initial bean locals for the new bean. */
     final IdentityHashMap<PackedBeanLocal<?>, Object> locals;
-
-    /** A bean mirror supplier */
-    @Nullable
-    Function<? super BeanHandle<?>, ? extends BeanMirror> mirrorSupplier;
 
     String namePrefix;
 
@@ -112,38 +108,39 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
     /**
      * Called from {@link BeanConfiguration#BeanConfiguration(sandbox.extension.bean.BeanHandle.Installer)}
      */
-    public PackedBeanHandle<?> initializeBeanConfiguration() {
+    public BeanHandle<?> initializeBeanConfiguration() {
         // Should we check that this method is only called once???
         // We can create multiple bean configurations from this installer
         // Maybe that is okay
-        return new PackedBeanHandle<>(bean);
+        return new BeanHandle<>(this);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <C extends BeanConfiguration> BeanHandle<C> install(Class<?> beanClass, Function<? super BeanTemplate.Installer, C> newConfiguration) {
+    public <H extends BeanHandle<?>> H install(Class<?> beanClass, Function<? super BeanTemplate.Installer, H> factory) {
         requireNonNull(beanClass, "beanClass is null");
-        return newBean(beanClass, BeanSourceKind.CLASS, beanClass, newConfiguration);
+        return newBean(beanClass, BeanSourceKind.CLASS, beanClass, factory);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <C extends BeanConfiguration> BeanHandle<C> install(Op<?> op, Function<? super BeanTemplate.Installer, C> newConfiguration) {
+    public <H extends BeanHandle<?>> H install(Op<?> op, Function<? super BeanTemplate.Installer, H> factory) {
         PackedOp<?> pop = PackedOp.crack(op);
         Class<?> beanClass = pop.type.returnRawType();
-        return newBean(beanClass, BeanSourceKind.OP, pop, newConfiguration);
+        return newBean(beanClass, BeanSourceKind.OP, pop, factory);
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
-    public <T extends BeanConfiguration> BeanHandle<T> installIfAbsent(Class<?> beanClass, Class<T> beanConfigurationClass,
-            Function<? super BeanTemplate.Installer, T> configurationCreator, Consumer<? super BeanHandle<?>> onNew) {
+    public <H extends BeanHandle<T>, T extends BeanConfiguration> H installIfAbsent(Class<?> beanClass, Class<T> beanConfigurationClass,
+            Function<? super BeanTemplate.Installer, H> factory, Consumer<? super BeanHandle<?>> onNew) {
         requireNonNull(beanClass, "beanClass is null");
 
         BeanClassKey e = new BeanClassKey(owner.authority(), beanClass);
         BeanSetup existingBean = container.beans.beanClasses.get(e);
         if (existingBean != null) {
-            BeanConfiguration existingConfiguration = existingBean.configuration();
+            BeanConfiguration existingConfiguration = existingBean.handle().configuration();
 
             if (ContainerBeanStore.isMultiInstall(existingBean)) {
                 throw new IllegalArgumentException("MultiInstall Bean");
@@ -151,29 +148,31 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
                 throw new IllegalStateException("A previous bean has been installed that used another configuration type then " + beanConfigurationClass
                         + " was " + existingConfiguration.getClass());
             } else {
-                return new PackedBeanHandle<T>(existingBean);
+                // Probably need to check that we are the same extension that installed it
+                return (H) existingBean.handle;
             }
         }
 
-        BeanHandle<T> handle = newBean(beanClass, BeanSourceKind.CLASS, beanClass, configurationCreator);
+        BeanHandle<T> handle = newBean(beanClass, BeanSourceKind.CLASS, beanClass, factory);
         onNew.accept(handle);
-        return handle;
+
+        return (H) handle;
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T extends BeanConfiguration> BeanHandle<T> installInstance(Object instance, Function<? super BeanTemplate.Installer, T> configurationCreator) {
+    public <H extends BeanHandle<?>> H installInstance(Object instance, Function<? super BeanTemplate.Installer, H> factory) {
         requireNonNull(instance, "instance is null");
-        return newBean(instance.getClass(), BeanSourceKind.INSTANCE, instance, configurationCreator);
+        return newBean(instance.getClass(), BeanSourceKind.INSTANCE, instance, factory);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T extends BeanConfiguration> BeanHandle<T> installSourceless(Function<? super BeanTemplate.Installer, T> configurationCreator) {
+    public <H extends BeanHandle<?>> H installSourceless(Function<? super BeanTemplate.Installer, H> factory) {
         if (template.kind() != BeanKind.STATIC) {
             throw new InternalExtensionException("Only static beans can be source less");
         }
-        return newBean(void.class, BeanSourceKind.SOURCELESS, null, configurationCreator);
+        return newBean(void.class, BeanSourceKind.SOURCELESS, null, factory);
     }
 
     /** {@inheritDoc} */
@@ -200,8 +199,9 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
      * @return a handle for the bean
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private <C extends BeanConfiguration> BeanHandle<C> newBean(Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
-            Function<? super BeanTemplate.Installer, C> newConfiguration) {
+    private <H extends BeanHandle<?>> H newBean(Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
+            Function<? super BeanTemplate.Installer, H> factory) {
+        requireNonNull(factory, "factory is null");
         if (sourceKind != BeanSourceKind.SOURCELESS && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
         }
@@ -232,6 +232,11 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
         }
 
         // Scan the bean class for annotations if it has a source
+
+        // We need this here to access mirrors when binding them as constants
+        // Maybe we should bind them delayed.
+        BeanHandle<?> apply = factory.apply(this);
+        bean.handle = apply;
         if (sourceKind != BeanSourceKind.SOURCELESS) {
             new BeanScanner(bean).introspect();
             bean.scanner = null;
@@ -244,10 +249,9 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
         // Add the bean to the container and initialize the name of the bean
         container.beans.installAndSetBeanName(bean, namePrefix);
 
-        BeanConfiguration apply = newConfiguration.apply(this);
-        bean.initConfiguration(apply);
+        this.container.assembly.model.hooks.forEach(BeanBuildHook.class, h -> h.onNew(apply.configuration()));
 
-        return new PackedBeanHandle<>(bean);
+        return (H) apply;
     }
 
     /** {@inheritDoc} */
@@ -258,11 +262,4 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public PackedBeanInstaller specializeMirror(Function<? super BeanHandle<?>, ? extends BeanMirror> supplier) {
-        checkNotInstalledYet();
-        this.mirrorSupplier = requireNonNull(supplier, "supplier is null");
-        return this;
-    }
 }

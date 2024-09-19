@@ -1,5 +1,7 @@
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -28,6 +30,7 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.namespace.NamespaceMirror;
+import app.packed.operation.OperationMirror;
 import app.packed.util.Nullable;
 import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
@@ -68,7 +71,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
             void.class, ExtensionSetup.class);
 
     /** The container we are mirroring. */
-    final ContainerSetup container;
+    final ContainerHandle<?> handle;
 
     /**
      * Create a new container mirror.
@@ -79,22 +82,22 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
      *             if attempting to explicitly construct a container mirror instance
      */
     public ContainerMirror(ContainerHandle<?> handle) {
-        this.container = ContainerSetup.crack(handle);
+        this.handle = requireNonNull(handle);
     }
 
     /** {@return a stream containing all beans defined by the container including beans that are declared by extensions.} */
     public Stream<BeanMirror> allBeans() {
-        return container.beans.stream().map(b -> b.mirror());
+        return handle.container.beans.stream().map(b -> b.mirror());
     }
 
     /** {@return the application this container is a part of.} */
     public ApplicationMirror application() {
-        return container.application.mirror();
+        return handle.container.application.mirror();
     }
 
     /** {@return the assembly wherein this container was defined.} */
     public AssemblyMirror assembly() {
-        return container.assembly.mirror();
+        return handle.container.assembly.mirror();
     }
 
     /**
@@ -111,14 +114,14 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
      * A view of all all of this containers beans that are in the same lifetime as the container itself.
      */
     public Stream<BeanMirror> beansInContainerLifetime() {
-        return container.beans.stream().filter(b -> b.lifetime == container.lifetime).map(b -> b.mirror());
+        return handle.container.beans.stream().filter(b -> b.lifetime == handle.container.lifetime).map(b -> b.mirror());
     }
 
     /** {@return a set of all boundaries to this container's parent. Or empty if family root.} */
     public EnumSet<ContainerBoundaryKind> bondariesToParent() {
-        ContainerSetup parent = container.node.parent;
+        ContainerSetup parent = handle.container.node.parent;
         if (parent != null) {
-            ContainerSetup c = container;
+            ContainerSetup c = handle.container;
 
             // Deployment has all
             if (parent.application.deployment != c.application.deployment) {
@@ -148,13 +151,32 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
     /** {@inheritDoc} */
     @Override
     public ComponentPath componentPath() {
-        return container.componentPath();
+        return handle.container.componentPath();
+    }
+
+    /** {@return a stream of all of the operations declared by the bean.} */
+    public Stream<OperationMirror> operations() {
+        return beans().flatMap(BeanMirror::operations);
+    }
+
+    /**
+     * Returns a stream of all of the operations declared by the bean with the specified mirror type.
+     *
+     * @param <T>
+     * @param operationType
+     *            the type of operations to include
+     * @return a collection of all of the operations declared by the bean of the specified type.
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
+        requireNonNull(operationType, "operationType is null");
+        return (Stream<T>) operations().filter(f -> operationType.isAssignableFrom(f.getClass()));
     }
 
     /** {@inheritDoc} */
     @Override
     public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
-        return ContextSetup.allMirrorsFor(container);
+        return ContextSetup.allMirrorsFor(handle.container);
     }
 
 //    /** {@return the deployment this container is a part of.} */
@@ -165,12 +187,12 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
-        return this == other || other instanceof ContainerMirror m && container == m.container;
+        return this == other || other instanceof ContainerMirror m && handle.container == m.handle.container;
     }
 
     /** {@return a {@link Set} view of all extensions that are used in the container.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
-        return container.extensionTypes();
+        return handle.container.extensionTypes();
     }
 
     /**
@@ -185,13 +207,13 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
      */
     public <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> mirrorType) {
         ClassUtil.checkProperSubclass(ExtensionMirror.class, mirrorType, "mirrorType");
-        return Optional.ofNullable(newMirrorOrNull(container, mirrorType));
+        return Optional.ofNullable(newMirrorOrNull(handle.container, mirrorType));
     }
 
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return container.hashCode();
+        return handle.container.hashCode();
     }
 
     /**
@@ -203,12 +225,12 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
      * @see ContainerConfiguration#isExtensionUsed(Class)
      */
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-        return container.isExtensionUsed(extensionType);
+        return handle.container.isExtensionUsed(extensionType);
     }
 
     /** {@return the containers's lifetime.} */
     public ContainerLifetimeMirror lifetime() {
-        return container.lifetime.mirror();
+        return handle.container.lifetime.mirror();
     }
 
     /**
@@ -220,7 +242,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
      * @return the name of this container
      */
     public String name() {
-        return container.node.name;
+        return handle.container.node.name;
     }
 
     /** {@return all the namespaces this container operates within.} */

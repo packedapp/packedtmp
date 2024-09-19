@@ -15,7 +15,6 @@
  */
 package internal.app.packed.namespace;
 
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.extension.Extension;
@@ -40,8 +39,6 @@ public class PackedNamespaceInstaller implements NamespaceTemplate.Installer {
     public NamespaceHandle<?, ?> handle;
     private final String name;
 
-    public BiFunction<?, ?, ?> newConfiguration;
-
     public PackedNamespaceInstaller(PackedNamespaceTemplate template, ExtensionSetup root, AuthoritySetup owner, String name) {
         this.template = template;
         this.root = root;
@@ -51,13 +48,11 @@ public class PackedNamespaceInstaller implements NamespaceTemplate.Installer {
 
     /** {@inheritDoc} */
     @Override
-    public <E extends Extension<E>, H extends NamespaceHandle<E, ?>, C extends NamespaceConfiguration<E>> H install(Function<? super Installer, H> newHandle,
-            BiFunction<H, E, C> newConfiguration) {
-        this.namespace = new NamespaceSetup(template, root, owner, newConfiguration);
-        this.newConfiguration = newConfiguration;
+    public <E extends Extension<E>, H extends NamespaceHandle<E, ?>, C extends NamespaceConfiguration<E>> H install(Function<? super Installer, H> newHandle) {
+        this.namespace = new NamespaceSetup(template, root, owner);
         H apply = newHandle.apply(this);
         namespace.handle = apply;
-        root.container.application.namespaces2.put(new NamespaceKey(template.handleClass(), name), apply);
+        root.container.application.namespaces.put(new NamespaceKey(template.handleClass(), name), apply);
         handle = apply;
         return apply;
     }

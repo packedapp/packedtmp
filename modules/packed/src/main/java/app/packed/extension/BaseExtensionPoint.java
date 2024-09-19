@@ -4,12 +4,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
-import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.bean.BeanTemplate.Installer;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationDependencyOrder;
@@ -55,8 +56,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     BaseExtensionPoint() {}
 
     public <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<ServiceableBeanConfiguration<T>> h = newBean(BeanKind.CONTAINER.template(), context()).install(implementation,
-                ServiceableBeanConfiguration::new);
+        BeanHandle<ServiceableBeanConfiguration<T>> h = newBean(BeanKind.CONTAINER.template(), context()).install(implementation, ServiceanbleBeanHandle::new);
         return h.configuration();
     }
 
@@ -68,7 +68,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public <T> ServiceableBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<ServiceableBeanConfiguration<T>> h = newBean(BeanKind.CONTAINER.template(), context()).install(op, ServiceableBeanConfiguration::new);
+        BeanHandle<ServiceableBeanConfiguration<T>> h = newBean(BeanKind.CONTAINER.template(), context()).install(op, ServiceanbleBeanHandle::new);
         return h.configuration();
     }
 
@@ -94,7 +94,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 //        return new PackedContainerBuilder(ContainerTemplate.IN_PARENT, s.extensionType, s.container.application, s.container);
 //    }
 
-    public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
+    public <T> ServiceableBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
         return installIfAbsent(clazz, c -> {});
     }
 
@@ -110,26 +110,19 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @implNote the implementation may use to return different bean configuration instances for subsequent invocations.
      *           Even for action and the returned bean
      */
-    @SuppressWarnings("unchecked")
-    public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public <T> ServiceableBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ServiceableBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
-        BeanHandle<?> handle = newBean(BeanKind.CONTAINER.template(), context()).installIfAbsent(clazz, InstanceBeanConfiguration.class,
-                InstanceBeanConfiguration::new, h -> action.accept((InstanceBeanConfiguration<T>) h.configuration()));
-        return (InstanceBeanConfiguration<T>) handle.configuration();
+        Function<BeanTemplate.Installer, ServiceanbleBeanHandle<?>> f = ServiceanbleBeanHandle::new;
+        BeanHandle<?> handle = newBean(BeanKind.CONTAINER.template(), context()).installIfAbsent(clazz, ServiceableBeanConfiguration.class, (Function) f,
+                h -> action.accept((ServiceableBeanConfiguration<T>) h.configuration()));
+        return (ServiceableBeanConfiguration<T>) handle.configuration();
     }
 
-    public <T> InstanceBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<InstanceBeanConfiguration<T>> h = newBean(BeanKind.CONTAINER.template(), context()).installInstance(instance,
-                InstanceBeanConfiguration::new);
+    public <T> ServiceableBeanConfiguration<T> installInstance(T instance) {
+        BeanHandle<ServiceableBeanConfiguration<T>> h = newBean(BeanKind.CONTAINER.template(), context()).installInstance(instance, ServiceanbleBeanHandle::new);
         return h.configuration();
     }
-
-//    // Vi bliver jo noedt til at have en baade med og uden use site
-//    public FunctionalBeanConfiguration installFunctional() {
-//        PackedBeanHandleBuilder bb = (PackedBeanHandleBuilder) beanBuilderForExtension(BeanKind.STATIC.template(), context());
-//        BeanHandle<?> handle = bb.installSourceless();
-//        return new FunctionalBeanConfiguration(handle);
-//    }
 
     /**
      * Installs a {@link BeanKind#STATIC static} bean.
@@ -139,7 +132,7 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return a configuration object representing the installed bean
      */
     public BeanConfiguration installStatic(Class<?> beanClass) {
-        return newBean(BeanKind.STATIC.template(), context()).install(beanClass, BeanConfiguration::new).configuration();
+        return newBean(BeanKind.STATIC.template(), context()).install(beanClass, BeanHandle::new).configuration();
     }
 
     /**
@@ -152,6 +145,13 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     public BeanTemplate.Installer newBean(BeanTemplate template) {
         return ((PackedBeanTemplate) template).newInstaller(extension().extension, extension().extension.container.assembly);
     }
+
+//    // Vi bliver jo noedt til at have en baade med og uden use site
+//    public FunctionalBeanConfiguration installFunctional() {
+//        PackedBeanHandleBuilder bb = (PackedBeanHandleBuilder) beanBuilderForExtension(BeanKind.STATIC.template(), context());
+//        BeanHandle<?> handle = bb.installSourceless();
+//        return new FunctionalBeanConfiguration(handle);
+//    }
 
     /**
      * Creates a new bean installer to be able to install a new bean on behalf of a another extension.
@@ -213,6 +213,10 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         throw new UnsupportedOperationException();
     }
 
+    private static ContainerTemplateLink.Configurator baseBuilder(String name) {
+        return ContainerTemplateLink.of(MethodHandles.lookup(), BaseExtension.class, name);
+    }
+
 //
 //    public OperationConfiguration runOnBeanStart(DelegatingOperationHandle h, LifecycleOrder ordering) {
 //        // What if I want to fork it??? on OC??
@@ -225,8 +229,19 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 //        throw new UnsupportedOperationException();
 //    }
 
-    private static ContainerTemplateLink.Configurator baseBuilder(String name) {
-        return ContainerTemplateLink.of(MethodHandles.lookup(), BaseExtension.class, name);
+    static class ServiceanbleBeanHandle<T> extends BeanHandle<ServiceableBeanConfiguration<T>> {
+
+        /**
+         * @param installer
+         */
+        public ServiceanbleBeanHandle(Installer installer) {
+            super(installer);
+        }
+
+        @Override
+        protected ServiceableBeanConfiguration<T> newBeanConfiguration() {
+            return new ServiceableBeanConfiguration<>(this);
+        }
     }
 }
 

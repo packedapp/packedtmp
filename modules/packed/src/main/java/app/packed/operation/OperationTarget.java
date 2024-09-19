@@ -72,7 +72,7 @@ public sealed interface OperationTarget {
     }
 
     /** Represents an operation that invokes a {@link MethodHandle method handle}. */
-    sealed interface OfMethodHandle extends OperationTarget permits PackedOperationTarget.MethodHandleOperationSetup{
+    sealed interface OfMethodHandle extends OperationTarget permits PackedOperationTarget.MethodHandleOperationSetup, PackedOperationTarget.BeanAccessOperationSetup {
 
         /** {@return the method type of the method handle.} */
         MethodType methodType();

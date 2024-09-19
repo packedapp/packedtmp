@@ -43,7 +43,7 @@ class ApplicationHostExtension2 extends FrameworkExtension<ApplicationHostExtens
 
     static final ContextTemplate CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationLaunchContext.class, ApplicationLaunchContext.class);
 
-    static final OperationTemplate ot = OperationTemplate.raw().reconfigure(c -> c.withContext(CIT).returnTypeObject());
+    static final OperationTemplate ot = OperationTemplate.raw().reconfigure(c -> c.inContext(CIT).returnTypeObject());
 
     static final BeanTemplate BLT = new PackedBeanTemplate(BeanKind.UNMANAGED).withOperationTemplate(ot);
 
@@ -71,7 +71,7 @@ class ApplicationHostExtension2 extends FrameworkExtension<ApplicationHostExtens
 //    }
 
     public <T> ApplicationHostConfiguration<T> newApplicationX(Class<T> guestBean) {
-        BeanHandle<ApplicationHostConfiguration<T>> handle = base().newBean(BLT).install(guestBean, ApplicationHostConfiguration::new);
+        BeanHandle<ApplicationHostConfiguration<T>> handle = base().newBean(BLT).install(guestBean, ApplicationHostBeanHandle::new);
         handle.lifetimeOperations().get(0).generateMethodHandleOnCodegen(m -> mh = m);
         return handle.configuration();
     }

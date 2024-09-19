@@ -26,7 +26,12 @@ import app.packed.util.TreeView;
 /**
  *
  */
-public class AbstractTreeMirror<T extends BuildMirror, N extends Mirrorable<T>> implements TreeView<T> {
+public abstract class AbstractTreeMirror<T extends BuildMirror, N extends Mirrorable<T>> implements TreeView<T> {
+
+    @Override
+    public Stream<T> stream() {
+        return null;
+    }
 
     /** The root node */
     final N root;
@@ -59,6 +64,7 @@ public class AbstractTreeMirror<T extends BuildMirror, N extends Mirrorable<T>> 
     public static class MirrorNode<T extends BuildMirror, N extends Mirrorable<T>> implements TreeView.Node<T> {
 
         final N node;
+
         final AbstractTreeMirror<T, N> tree;
 
         MirrorNode(AbstractTreeMirror<T, N> tree, N node) {

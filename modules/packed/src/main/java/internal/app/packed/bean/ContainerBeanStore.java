@@ -91,6 +91,20 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
         return beans.values().iterator();
     }
 
+    /**
+     * Prefix extension beans with the name of the extension.
+     *
+     * @param bean
+     * @param newName
+     * @return
+     */
+    private String prefixExtension(BeanSetup bean, String newName) {
+        if (bean.owner instanceof ExtensionSetup es) {
+            newName = es.tree.name + "#" + newName;
+        }
+        return newName;
+    }
+
     public Stream<BeanSetup> stream() {
         return beans.values().stream();
     }
@@ -118,20 +132,6 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
         }
         beans.remove(existingName);
         bean.name = newName;
-    }
-
-    /**
-     * Prefix extension beans with the name of the extension.
-     *
-     * @param bean
-     * @param newName
-     * @return
-     */
-    private String prefixExtension(BeanSetup bean, String newName) {
-        if (bean.owner instanceof ExtensionSetup es) {
-            newName = es.tree.name + "#" + newName;
-        }
-        return newName;
     }
 
     public static boolean isMultiInstall(BeanSetup bean) {
