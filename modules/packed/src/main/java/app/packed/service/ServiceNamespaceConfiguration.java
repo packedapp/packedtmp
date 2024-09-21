@@ -58,25 +58,6 @@ public final class ServiceNamespaceConfiguration extends NamespaceConfiguration<
     }
 
     /**
-     * @param <T>
-     *            the type of the provided service
-     * @param key
-     *            the key for which to provide the constant for
-     * @param constant
-     *            the constant to provide
-     * @return a configuration representing the operation
-     */
-    <T> OperationConfiguration provideConstant(Class<T> key, T constant) {
-        return provideConstant(Key.of(key), constant);
-    }
-
-    <T> OperationConfiguration provideConstant(Key<T> key, T constant) {
-        // Nah skaber den forvirring? Nej det syntes det er rart
-        // at have muligheden for ikke at scanne
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * Provides every service from the specified service locator.
      *
      * @param locator
@@ -99,6 +80,25 @@ public final class ServiceNamespaceConfiguration extends NamespaceConfiguration<
         // We can get the BaseExtension, but we are not in the same package
         // extension().container.sm.provideAll(result);
         return result.keySet(); // can probably return something more clever?
+    }
+
+    /**
+     * @param <T>
+     *            the type of the provided service
+     * @param key
+     *            the key for which to provide the constant for
+     * @param constant
+     *            the constant to provide
+     * @return a configuration representing the operation
+     */
+    <T> OperationConfiguration provideConstant(Class<T> key, T constant) {
+        return provideConstant(Key.of(key), constant);
+    }
+
+    <T> OperationConfiguration provideConstant(Key<T> key, T constant) {
+        // Nah skaber den forvirring? Nej det syntes det er rart
+        // at have muligheden for ikke at scanne
+        throw new UnsupportedOperationException();
     }
 
     // requires bliver automatisk anchoret...

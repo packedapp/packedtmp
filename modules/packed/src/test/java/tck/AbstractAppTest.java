@@ -36,7 +36,7 @@ import app.packed.operation.OperationHandle;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedApplicationTemplate;
-import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
 import tck.AbstractAppTest.InternalTestState.State1Setup;

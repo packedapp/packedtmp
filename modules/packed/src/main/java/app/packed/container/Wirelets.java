@@ -21,8 +21,8 @@ import app.packed.application.ApplicationMirror;
 import app.packed.context.Context;
 import app.packed.lifetime.LifecycleKind;
 import app.packed.runtime.StopOption;
-import internal.app.packed.container.InternalBuildWirelet;
 import internal.app.packed.container.PackedContainerInstaller;
+import internal.app.packed.container.wirelets.InternalBuildWirelet;
 
 /**
  * Wirelets that can be used when building an application.
@@ -92,7 +92,7 @@ public final class Wirelets {
 
             /** {@inheritDoc} */
             @Override
-            protected void onBuild(PackedContainerInstaller installer) {
+            public  void onBuild(PackedContainerInstaller installer) {
                 checkIsApplication(installer, this); // maybe explicit error msg
                 installer.applicationInstaller.optionBuildApplicationLazy = true;
             }
@@ -131,7 +131,7 @@ public final class Wirelets {
 
             /** {@inheritDoc} */
             @Override
-            protected void onBuild(PackedContainerInstaller installer) {
+            public  void onBuild(PackedContainerInstaller installer) {
                 checkIsApplication(installer, this); // maybe explicit error msg
                 installer.applicationInstaller.optionBuildReusableImage = true;
             }
@@ -158,7 +158,7 @@ public final class Wirelets {
 
             /** {@inheritDoc} */
             @Override
-            protected void onBuild(PackedContainerInstaller installer) {}
+            public  void onBuild(PackedContainerInstaller installer) {}
         }
         return new ApplicationShutdownHookWirelet();
     }

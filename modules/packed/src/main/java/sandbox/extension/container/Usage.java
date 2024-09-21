@@ -15,17 +15,26 @@
  */
 package sandbox.extension.container;
 
+import app.packed.component.guest.FromGuest;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
+import app.packed.container.ContainerTemplate;
 import app.packed.extension.BaseExtensionPoint;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
 import app.packed.service.ServiceLocator;
-import sandbox.extension.container.guest.GuestIntoAdaptor;
 
 /**
  *
  */
 public class Usage extends Extension<Usage> {
+
+    /**
+     * @param handle
+     */
+    protected Usage(ExtensionHandle handle) {
+        super(handle);
+    }
 
     private static final ContainerTemplate CT = ContainerTemplate.GATEWAY
             .reconfigure(c -> c.carrierType(Guest.class).withPack(BaseExtensionPoint.EXPORTED_SERVICE_LOCATOR));
@@ -35,11 +44,11 @@ public class Usage extends Extension<Usage> {
         return h.configuration();
     }
 
-    public ContainerConfiguration installContainerWithExplicitCarrier() {
-        ComponentGuestAdaptorBeanConfiguration<Guest> chg = base().installContainerHost(Guest.class).bindInstance(String.class, "Ssdo");
-        ContainerHandle<?> h = base().newContainer(CT).carrierUse(chg).install(ContainerHandle::new);
-        return h.configuration();
-    }
+//    public ContainerConfiguration installContainerWithExplicitCarrier() {
+//        ComponentGuestAdaptorBeanConfiguration<Guest> chg = null;// base().installContainerHost(Guest.class).bindInstance(String.class, "Ssdo");
+//        ContainerHandle<?> h = base().newContainer(CT).carrierUse(chg).install(ContainerHandle::new);
+//        return h.configuration();
+//    }
 
-    record Guest(@GuestIntoAdaptor ServiceLocator sl, String foo) {}
+    record Guest(@FromGuest ServiceLocator sl, String foo) {}
 }

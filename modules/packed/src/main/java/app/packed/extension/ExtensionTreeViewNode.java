@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import app.packed.util.TreeView;
-import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.extension.ExtensionSetup;
 
 /**
  * Represents a rooted tree of extensions of the same type with a single node as the origin.

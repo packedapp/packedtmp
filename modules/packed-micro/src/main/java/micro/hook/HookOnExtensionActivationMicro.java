@@ -32,6 +32,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
 
 /**
  *
@@ -49,16 +50,37 @@ public class HookOnExtensionActivationMicro {
     /* --------------------------------------- */
 
     public static class Comp1Field extends Extension<Comp1Field> {
+        /**
+         * @param handle
+         */
+        protected Comp1Field(ExtensionHandle handle) {
+            super(handle);
+        }
+
         @HookActivateAnnotation
         public static final String foo = "";
     }
 
     public static class Comp1Method extends Extension<Comp1Method> {
+        /**
+         * @param handle
+         */
+        protected Comp1Method(ExtensionHandle handle) {
+            super(handle);
+        }
+
         @HookActivateAnnotation
         public static final void foo() {}
     }
 
     public static class Comp1Field1Method extends Extension<Comp1Field1Method> {
+        /**
+         * @param handle
+         */
+        protected Comp1Field1Method(ExtensionHandle handle) {
+            super(handle);
+        }
+
         @HookActivateAnnotation
         public static final String foo = "";
 
@@ -67,6 +89,13 @@ public class HookOnExtensionActivationMicro {
     }
 
     public static class Comp3Fields3Methods extends Extension<Comp3Fields3Methods> {
+        /**
+         * @param handle
+         */
+        protected Comp3Fields3Methods(ExtensionHandle handle) {
+            super(handle);
+        }
+
         @HookActivateAnnotation
         public static final String foo1 = "";
         @HookActivateAnnotation
@@ -85,6 +114,13 @@ public class HookOnExtensionActivationMicro {
     }
 
     public static class Comp5Fields5Methods extends Extension<Comp5Fields5Methods> {
+        /**
+         * @param handle
+         */
+        protected Comp5Fields5Methods(ExtensionHandle handle) {
+            super(handle);
+        }
+
         @HookActivateAnnotation
         public static final String foo1 = "";
         @HookActivateAnnotation

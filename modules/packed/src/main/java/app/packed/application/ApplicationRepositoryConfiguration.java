@@ -15,16 +15,13 @@
  */
 package app.packed.application;
 
+import java.util.Collections;
+import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.bean.BeanKind;
-import app.packed.bean.BeanTemplate;
-import app.packed.bean.BeanTemplate.Installer;
-import app.packed.extension.BaseExtensionPoint;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.util.Key;
 import internal.app.packed.application.PackedApplicationTemplate;
-import internal.app.packed.application.RuntimeApplicationRepository;
 
 /**
  *
@@ -33,9 +30,13 @@ import internal.app.packed.application.RuntimeApplicationRepository;
 // Vi skal fx ikke til at injecte ting.
 // Saa ma have noget reanonly i bean template
 // Fordi vi kan finde configuration senere ved at itererer
-public final class ApplicationRepositoryConfiguration<H extends ApplicationHandle<?, A>, A> extends ServiceableBeanConfiguration<ApplicationRepository<H>> {
 
-    private static final BeanTemplate REPOSITORY_TEMPLATE = BeanTemplate.of(BeanKind.CONTAINER, b -> b.createAs(RuntimeApplicationRepository.class));
+/// OKAY I think we make this to a "BuildtimeRepositoryConfiguration"
+// That has an provideRepositoryAtRuntime();
+// I don't know don't we always??
+
+// Maybe we don't extend it ServiableBean and have a provideAtRuntime();
+public final class ApplicationRepositoryConfiguration<H extends ApplicationHandle<?, A>, A> extends ServiceableBeanConfiguration<ApplicationRepository<H>> {
 
     /** The application repository bean handle. */
     final ApplicationRepositoryHandle<H, A> handle;
@@ -49,8 +50,27 @@ public final class ApplicationRepositoryConfiguration<H extends ApplicationHandl
         this.handle = handle;
     }
 
-    public void buildLater(String name, Consumer<? super ApplicationTemplate.Installer<A>> installer) {
-        handle.bar.add(name, installer);
+    /**
+     * Make the specified application template available at runtime
+     *
+     * @param template
+     *            the template to add
+     */
+    public void addRuntimeTemplate(ApplicationTemplate<A> template) {
+        handle.addTemplate((PackedApplicationTemplate<?>) template);
+    }
+
+    // Okay, vi har elastic search in an Assembly. Byg den
+    // Expose some services. Og vi har nok en masse shared services.
+    // Tror ikke helt vi er klar
+    public void buildDependecy(ApplicationTemplate<A> template, String name, Consumer<? super ApplicationTemplate.Installer<A>> installer) {
+        addRuntimeTemplate(template);
+        handle.repository.add((PackedApplicationTemplate<?>) template, name, installer);
+    }
+
+    public void buildLater(ApplicationTemplate<A> template, String name, Consumer<? super ApplicationTemplate.Installer<A>> installer) {
+        addRuntimeTemplate(template);
+        handle.repository.add((PackedApplicationTemplate<?>) template, name, installer);
     }
 
     @Override
@@ -65,21 +85,9 @@ public final class ApplicationRepositoryConfiguration<H extends ApplicationHandl
         return this;
     }
 
-    /** {@return the template being used for the repository) */
-    public ApplicationTemplate<A> template() {
-        return handle.template;
-    }
-
-    // We do not support configurable templates for a repository.
-    // We need to build the guest bean together with the application
-    // So we cannot take new templates as runtime. Unless we want like a small app like BootstrapApp inbetween
-    public static <A, H extends ApplicationHandle<?, A>> ApplicationRepositoryConfiguration<H, A> install(BaseExtensionPoint point,
-            ApplicationTemplate<A> template) {
-        ApplicationRepositoryHandle<H, A> h = point.newBean(REPOSITORY_TEMPLATE).install(RuntimeApplicationRepository.class,
-                i -> new ApplicationRepositoryHandle<>(i, template));
-        PackedApplicationTemplate<A> pat = (PackedApplicationTemplate<A>) template;
-        Installer i = point.newBean(PackedApplicationTemplate.GB);
-        pat.installGuestBean(i, m -> h.bar.guest = m);
-        return h.configuration();
+    /** {@return the templates that are available in the repository) */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public Set<ApplicationTemplate<A>> templates() {
+        return (Set) Collections.unmodifiableSet(handle.templates.keySet());
     }
 }

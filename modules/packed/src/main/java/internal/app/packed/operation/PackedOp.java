@@ -29,7 +29,7 @@ import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import app.packed.util.Variable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.IntermediateOp.BoundOp;
 import internal.app.packed.operation.IntermediateOp.PeekingOp;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;

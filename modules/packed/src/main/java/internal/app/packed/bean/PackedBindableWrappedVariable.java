@@ -78,8 +78,8 @@ public final class PackedBindableWrappedVariable implements UnwrappedBindableVar
     }
 
     @Override
-    public PackedBindableWrappedVariable bindConstant(@Nullable Object obj) {
-        v.bindConstant(obj);
+    public PackedBindableWrappedVariable bindInstant(@Nullable Object obj) {
+        v.bindInstant(obj);
         return this;
     }
 

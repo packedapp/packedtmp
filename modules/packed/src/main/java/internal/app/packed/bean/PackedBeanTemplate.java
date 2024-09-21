@@ -23,13 +23,16 @@ import java.util.function.Consumer;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanTemplate;
+import app.packed.extension.BaseExtension;
+import app.packed.extension.ExtensionPoint;
 import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
+import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.PackedBuildLocal;
-import internal.app.packed.container.AuthoritySetup;
-import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.context.publish.ContextTemplate;
-import sandbox.extension.application.LifetimeTemplate;
+import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.extension.PackedExtensionUseSite;
+import sandbox.application.LifetimeTemplate;
 
 /** Implementation of {@link BeanTemplate}. */
 public record PackedBeanTemplate(BeanKind kind, LifetimeTemplate lifetime, OperationTemplate bot, @Nullable Class<?> createAs,
@@ -43,6 +46,13 @@ public record PackedBeanTemplate(BeanKind kind, LifetimeTemplate lifetime, Opera
     /** {@inheritDoc} */
     public PackedBeanTemplate withOperationTemplate(OperationTemplate bot) {
         return new PackedBeanTemplate(kind, lifetime, bot, createAs, beanLocals);
+    }
+
+    @Override
+    public BeanTemplate.Installer newInstaller(ExtensionPoint<?> bep) {
+        PackedExtensionUseSite useSite = ExtensionSetup.crack(bep);
+        ExtensionSetup e = useSite.usedBy();
+        return newInstaller(e, e.container.assembly);
     }
 
     /** {@inheritDoc} */
@@ -70,6 +80,16 @@ public record PackedBeanTemplate(BeanKind kind, LifetimeTemplate lifetime, Opera
         PackedBeanTemplateConfigurator c = new PackedBeanTemplateConfigurator(existing);
         action.accept(c);
         return c.template;
+    }
+
+    // This must never be exposed
+    // A hack
+    public PackedBeanInstaller newInstallerForUser(BaseExtension e) {
+        // We need some hack to install a
+        ExtensionSetup es = ExtensionSetup.crack(e);
+
+        // Create a the guest bean installer
+        return newInstaller(es, es.container.assembly);
     }
 
     /**

@@ -20,21 +20,20 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import app.packed.extension.ExtensionPoint.UseSite;
+import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.Installer;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.component.AbstractComponentInstaller;
-import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
 
 /**
  *
  */
-public abstract non-sealed class PackedOperationInstaller extends AbstractComponentInstaller implements OperationTemplate.Installer {
+public abstract non-sealed class PackedOperationInstaller implements OperationTemplate.Installer {
 
     @Override
     public <H extends OperationHandle<?>, N extends NamespaceHandle<?, ?>> H install(N namespace, BiFunction<? super Installer, N, H> factory) {
@@ -77,7 +76,7 @@ public abstract non-sealed class PackedOperationInstaller extends AbstractCompon
 
     /** {@inheritDoc} */
     @Override
-    public OperationTemplate.Installer delegateTo(UseSite extension) {
+    public OperationTemplate.Installer delegateTo(ExtensionUseSite extension) {
         return null;
     }
 

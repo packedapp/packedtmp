@@ -42,8 +42,8 @@ import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromInvocationArgument;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.binding.BindingSetup.HookBindingSetup;
-import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.context.ContextSetup;
+import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
@@ -127,7 +127,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
 
     /** {@inheritDoc} */
     @Override
-    public PackedBindableVariable bindConstant(@Nullable Object obj) {
+    public PackedBindableVariable bindInstant(@Nullable Object obj) {
         checkBeforeBind();
         if (obj == null) {
             if (variable.rawType().isPrimitive()) {

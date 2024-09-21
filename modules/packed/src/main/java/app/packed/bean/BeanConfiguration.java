@@ -10,9 +10,8 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanLocal.Accessor;
-import app.packed.build.BuildLocal;
+import app.packed.build.BuildAuthority;
 import app.packed.build.action.BuildActionable;
-import app.packed.component.Authority;
 import app.packed.component.ComponentConfiguration;
 import app.packed.context.Context;
 import app.packed.operation.OperationConfiguration;
@@ -37,7 +36,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      *            the bean installer
      */
     public BeanConfiguration(BeanHandle<?> handle) {
-        this.handle =  requireNonNull(handle, "handle is null");
+        this.handle = requireNonNull(handle, "handle is null");
     }
 
     /**
@@ -57,7 +56,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
 
     /** {@return the owner of the bean.} */
     // Declared by???
-    public final Authority author() {
+    public final BuildAuthority author() {
         return handle.owner();
     }
 
@@ -112,21 +111,9 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         return handle.beanKind();
     }
 
-    // Outside of the framework I think we can only test on ComponentPath, that may be fine
-    public final boolean isInSameContainer(BeanConfiguration other) {
-        return handle.bean.container == other.handle.bean.container;
-    }
-
     @BuildActionable("bean.addCodeGenerator")
-    // bindCodeGenerator
     public <K> void bindCodeGenerator(Class<K> key, Supplier<? extends K> supplier) {
         bindCodeGenerator(Key.of(key), supplier);
-    }
-
-    // Called if bean is renamed
-    // Returning String is currentName
-    public String onBeanRename(BiConsumer<String, String> oldNewName) {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -163,16 +150,10 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     // bindCodeGenerator <--- Will install it as a normal service....
     // was bindComputedConstant
     public <K> void bindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
-        handle.addComputedConstant(key, supplier);
+        handle.bindCodeGenerator(key, supplier);
     }
 
-    // Kommer an på typen af local hvordan vi slaar den op.
-    // Fx taenker jeg vi supportere OperationLocal
-    <K> void bindComputedConstant(Class<K> key, BuildLocal<?, ? extends K> supplier) {
-        throw new UnsupportedOperationException();
-    }
-
-    public <K> BeanConfiguration bindInstance(Class<K> key, K constant) {
+    public <K> BeanConfiguration bindInstance(Class<K> key, K instance) {
         // Future Functionality:
 
         // overrideService(key, Provider) -> Needs some use cases
@@ -184,7 +165,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         // Maybe Op includes a service that have already been overridden.
         // Not saying its impossible. But currently we do not support
         // Adding operations dynamically after the bean has been scanned.
-        return bindInstance(Key.of(key), constant);
+        return bindInstance(Key.of(key), instance);
     }
 
     /**
@@ -201,16 +182,10 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      *             if the bean does not have binding that are resolved as a service with the specified key
      */
     @BuildActionable("bean.overrideService")
-    // On Op it is just bind
-    public <K> BeanConfiguration bindInstance(Key<K> key, K constant) {
-        handle.overrideService(key, constant);
+    // On OpConf it is just bind
+    public <K> BeanConfiguration bindInstance(Key<K> key, K instance) {
+        handle.overrideService(key, instance);
         return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected final BeanHandle<?> handle() {
-        return handle;
     }
 
     /** {@inheritDoc} */
@@ -247,6 +222,22 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         return operations(BeanFactoryConfiguration.class).findAny();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    protected final BeanHandle<?> handle() {
+        return handle;
+    }
+
+    // Outside of the framework I think we can only test on ComponentPath, that may be fine
+    public final boolean isInSameContainer(BeanConfiguration other) {
+        return handle.bean.container == other.handle.bean.container;
+    }
+
+    // Ideen er at have alle de keys that are resolved as services
+    protected Set<Key<?>> keys() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Sets the name of the bean. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name is
      * case sensitive.
@@ -271,6 +262,12 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     public BeanConfiguration named(String name) {
         handle.named(name);
         return this;
+    }
+
+    // Called if bean is renamed
+    // Returning String is currentName
+    public String onBeanRename(BiConsumer<String, String> oldNewName) {
+        throw new UnsupportedOperationException();
     }
 
     /**

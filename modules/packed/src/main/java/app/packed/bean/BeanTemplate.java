@@ -22,12 +22,13 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import app.packed.extension.ExtensionPoint;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.context.publish.ContextTemplate;
-import sandbox.extension.application.LifetimeTemplate;
+import sandbox.application.LifetimeTemplate;
 
 /**
  * A bean template is an immutable, reusable configuration object that defines the behavior of a bean. A template is
@@ -95,6 +96,8 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     static BeanTemplate of(BeanKind kind, Consumer<? super Configurator> action) {
         return PackedBeanTemplate.reconfigureExisting(new PackedBeanTemplate(kind), action);
     }
+
+    BeanTemplate.Installer newInstaller(ExtensionPoint<?> bep);
 
     /**
      * A configuration object for configuring or reconfiguring a bean template.

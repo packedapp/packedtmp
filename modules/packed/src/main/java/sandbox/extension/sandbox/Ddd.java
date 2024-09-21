@@ -27,13 +27,14 @@ import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.container.ContainerHandle;
+import app.packed.container.ContainerTemplate;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
 import app.packed.lifetime.OnInitialize;
 import app.packed.operation.OperationDependencyOrder;
-import sandbox.extension.container.ContainerTemplate;
 
 /**
  *
@@ -62,9 +63,15 @@ public class Ddd extends BaseAssembly {
     }
 
     public static class MyEntityExtension extends Extension<MyEntityExtension> {
+        /**
+         * @param handle
+         */
+        protected MyEntityExtension(ExtensionHandle handle) {
+            super(handle);
+        }
+
         MyEntityExtension child;
 
-        MyEntityExtension() {}
 
         public void addEntityBean(Class<?> entityBean) {
             child().base().newBean(BeanKind.MANANGED.template()).install(entityBean, BeanHandle::new);
@@ -75,7 +82,7 @@ public class Ddd extends BaseAssembly {
             if (c == null) {
                 ContainerHandle<?> h = base().newContainer(ContainerTemplate.DEFAULT).named("EntityBeans")
                         .installAndUseThisExtension(ContainerHandle::new);
-                c = child = fromHandle(h).get();
+                c = child = fromContainerHandle(h).get();
             }
             return c;
         }

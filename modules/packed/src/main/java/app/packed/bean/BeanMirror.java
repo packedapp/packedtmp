@@ -13,8 +13,8 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanLocal.Accessor;
+import app.packed.build.BuildAuthority;
 import app.packed.build.action.BuildActionMirror;
-import app.packed.component.Authority;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
@@ -113,7 +113,7 @@ public non-sealed class BeanMirror implements Accessor , ComponentMirror , Conte
 
     /** {@return the owner of the bean.} */
     // was owner. Maybe owner again
-    public final Authority declaredBy() {
+    public final BuildAuthority declaredBy() {
         return handle.bean.owner();
     }
 

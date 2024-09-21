@@ -9,6 +9,7 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension.DependsOn;
+import app.packed.extension.ExtensionHandle;
 import app.packed.extension.UnwrappedBindableVariable;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
@@ -53,11 +54,17 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
 
     // Must have either an runnable or a single @Schedule method
 
+    /**
+     * @param handle
+     */
+    protected ScheduledJobExtension(ExtensionHandle handle) {
+        super(handle);
+    }
+
     private static final ContextTemplate CT = ContextTemplate.of(MethodHandles.lookup(), SchedulingContext.class, PackedSchedulingContext.class);
 
     private static final OperationTemplate OT = OperationTemplate.defaults().reconfigure(c -> c.inContext(CT));
 
-    ScheduledJobExtension() {}
     // Creates a new instance on every invocation
 
     @Override

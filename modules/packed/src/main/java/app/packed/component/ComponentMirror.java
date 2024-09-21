@@ -20,6 +20,7 @@ import java.util.Set;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
+import app.packed.build.BuildAuthority;
 import app.packed.build.BuildMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.namespace.NamespaceMirror;
@@ -47,7 +48,7 @@ public sealed interface ComponentMirror extends BuildMirror permits ApplicationM
 
     /** {@return the path of the component} */
     // Giver mening hvis vi faar Applications.components();
-    default Authority componentOwner() {
+    default BuildAuthority componentOwner() {
         throw new UnsupportedOperationException();
     }
 
@@ -83,48 +84,3 @@ public sealed interface ComponentMirror extends BuildMirror permits ApplicationM
 //        throw new UnsupportedOperationException();
 //    }
 }
-
-// AtomicInteger
-//// Er de forloebende?? Altsaa naar vi laver parallel med mange componenter er det vel ikke helt simpelt
-//default int componentId() {
-//    throw new UnsupportedOperationException();
-//}
-//
-
-// A unique component id for the component in the application, once installed it will not change
-// Path can be updated because of naming
-// Long???
-// Hmm den er jo ikke deterministics, hvis vi har parallel kald.
-// Saa maaske hold os til comopnnetPath
-//default long componentId() {
-//    return 0;
-//}
-
-//Does a component always have a runtime representation???
-//Assembly and Extension does not have a runtime representation...
-
-//Fx CliCommandMirror extends OperationMirror...
-//Saa det bliver en FrameworkComponentMirror hvilket ikke er korrekt...
-//Saa enten skal den linke til operationen
-
-// Wirelets are not components
-// Extensions are not components (They are not part of an application)
-
-// Hmm Assemblies are components now even though they are not part of the runtime atm
-
-//// Does not immediately make sense
-// Relations? A,B, RelationsShip  (How defines the relationship??? Is it always bi-directional)
-// Set<ComponentRelationship> relationships
-
-// Maybe an extension is not a component. It is difficult to distinguish betweren an extension and extension tree.
-//Which do I tag or name
-
-// Vi har ikke en klasse vi kan referere til
-//ComponentType = Class<? extends ComponentMirror> ... MemberType = Method which extends Member..
-
-// We used to have
-//FrameworkComponentMirror <- Does not have an outer dot
-//ExtensionComponentMirror <- Has an outer dot   Web.Path = xxxx
-
-// However when we, for example, extended BeanMirror from an extension FooExtensionBeanMirror.
-// The new FooExtensionBeanMirror would implement FrameworkComponentMirror and not ExtensionComponentMirror

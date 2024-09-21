@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
-import app.packed.component.Authority;
+import app.packed.build.BuildAuthority;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
@@ -99,7 +99,7 @@ public non-sealed class NamespaceMirror<E extends Extension<E>> implements Compo
     // I don't think there is an owner.
     // What if a database is used by two extensions only?
     // Maybe the DatabaseExtension itself??
-    public final Authority namespaceOwner() {
+    public final BuildAuthority namespaceOwner() {
         throw new UnsupportedOperationException();
     }
 

@@ -86,8 +86,8 @@ public interface App extends AutoCloseable {
      * @throws Throwable
      */
     @SuppressWarnings("unused")
-    static void checkedRun(Assembly assembly, Wirelet... wirelets) throws ExecutionException {
-        DefaultApp.BOOTSTRAP.launch(assembly, wirelets);
+    static void checkedRun(RunState state, Assembly assembly, Wirelet... wirelets) throws ExecutionException {
+        DefaultApp.BOOTSTRAP.launch(state, assembly, wirelets);
     }
 
     /**
@@ -157,12 +157,27 @@ public interface App extends AutoCloseable {
      *             if the application failed to build or run
      */
     static void run(Assembly assembly, Wirelet... wirelets) {
-        DefaultApp.BOOTSTRAP.launch(assembly, wirelets);
+        DefaultApp.BOOTSTRAP.launch(RunState.TERMINATED, assembly, wirelets);
     }
 
     static App start(Assembly assembly, Wirelet... wirelets) {
+        return DefaultApp.BOOTSTRAP.launch(RunState.RUNNING, assembly, wirelets);
+    }
+
+    // Kunne jo vaere man gerne ville returnere et eller andet???
+    static void test(Assembly assembly, Consumer<? /* TestObject */> cno, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
+
+    // Problemet er lidt her at hvis App bestemmer noget som helst... andet en et raw interface
+    // Saa skal vi ogsaa bruge den naar vi tester. Fordi ellers er det jo en anden application
+
+    // Paa en eller anden maade vil vi teste nogle ting
+    // Er det her???? Eller et andet sted?
+    // Altsaa meningen er vel vi bygger en app med alt muligt gejl
+
+    // Maaske Brug Verify...
+    // Og koer den med Tester.xyz IDK. Super godt sporgsmaal
 
     /**
      * Builds and verifies an application.
@@ -176,21 +191,6 @@ public interface App extends AutoCloseable {
      */
     static void verify(Assembly assembly, Wirelet... wirelets) {
         DefaultApp.BOOTSTRAP.verify(assembly, wirelets);
-    }
-
-    // Problemet er lidt her at hvis App bestemmer noget som helst... andet en et raw interface
-    // Saa skal vi ogsaa bruge den naar vi tester. Fordi ellers er det jo en anden application
-
-    // Paa en eller anden maade vil vi teste nogle ting
-    // Er det her???? Eller et andet sted?
-    // Altsaa meningen er vel vi bygger en app med alt muligt gejl
-
-    // Maaske Brug Verify...
-    // Og koer den med Tester.xyz IDK. Super godt sporgsmaal
-
-    // Kunne jo vaere man gerne ville returnere et eller andet???
-    static void test(Assembly assembly, Consumer<? /* TestObject */> cno, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
     }
 
     /** An image for App. */

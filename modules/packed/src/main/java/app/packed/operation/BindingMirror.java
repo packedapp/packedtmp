@@ -17,8 +17,8 @@ package app.packed.operation;
 
 import java.util.Optional;
 
+import app.packed.build.BuildAuthority;
 import app.packed.build.BuildMirror;
-import app.packed.component.Authority;
 import app.packed.util.Variable;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
@@ -55,7 +55,7 @@ public class BindingMirror implements BuildMirror {
     }
 
     /** {@return who created the binding.} */
-    public final Authority boundBy() {
+    public final BuildAuthority boundBy() {
         return binding.boundBy;
     }
 

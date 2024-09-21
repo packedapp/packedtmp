@@ -20,7 +20,7 @@ import java.nio.file.Path;
 import java.util.ServiceLoader;
 import java.util.stream.Stream;
 
-import internal.app.packed.container.PackedAssemblyFinder;
+import internal.app.packed.assembly.PackedAssemblyFinder;
 
 /**
  * An assembly finder can be used to find one or more assemblies on the class- or module-path.

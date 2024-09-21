@@ -38,7 +38,7 @@ public sealed interface DelegatingOperationHandle permits PackedDelegatingOperat
 //     */
 //    boolean isDelegated();
 
-    OperationHandle<?> newOperation(OperationTemplate template, ExtensionPoint.UseSite useSite);
+    OperationHandle<?> newOperation(OperationTemplate template, ExtensionPoint.ExtensionUseSite useSite);
 
     /** {@return the target of this operation.} */
     OperationTarget target();

@@ -17,17 +17,18 @@ package tck;
 
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
+import app.packed.component.guest.FromGuest;
+import app.packed.container.ContainerTemplate;
 import app.packed.operation.Op1;
 import app.packed.service.ServiceLocator;
-import sandbox.extension.container.guest.GuestIntoAdaptor;
 
 /**
  *
  */
 public class ServiceLocatorAppTest extends AbstractBootstrapedAppTest<ServiceLocator> {
 
-    private static final BootstrapApp<ServiceLocator> APP = ApplicationTemplate.of(new Op1<@GuestIntoAdaptor ServiceLocator, ServiceLocator>(e -> e) {},
-            c -> {}).newBootstrapApp();
+    private static final BootstrapApp<ServiceLocator> APP = ApplicationTemplate.of(new Op1<@FromGuest ServiceLocator, ServiceLocator>(e -> e) {},
+            c -> c.container(ContainerTemplate.UNMANAGED)).newBootstrapApp();
 
     public ServiceLocatorAppTest() {
         super(APP);

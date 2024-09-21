@@ -16,6 +16,7 @@
 package internal.app.packed.component;
 
 /** Something which as a {@link internal.app.packed.container.Mirror}. */
+// I would probably perfer a mapper instead from the AbstractTreeNode
 public interface Mirrorable<T> {
 
     /** {@return a mirror} */

@@ -31,17 +31,19 @@ import app.packed.application.BootstrapApp;
 import app.packed.assembly.AbstractComposer;
 import app.packed.assembly.AbstractComposer.ComposableAssembly;
 import app.packed.assembly.AbstractComposer.ComposerAction;
+import app.packed.component.guest.FromGuest;
 import app.packed.assembly.Assembly;
+import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.operation.Provider;
+import app.packed.runtime.RunState;
 import app.packed.util.Key;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.service.PackedServiceLocator;
-import sandbox.extension.container.guest.GuestIntoAdaptor;
 
 /**
  * An service locator is a holder of services, where each service can be looked up by a {@link Key} at runtime.
@@ -317,8 +319,8 @@ public interface ServiceLocator {
      */
     private static BootstrapApp<ServiceLocator> bootstrap() {
         class ServiceLocatorBootstrap {
-            private static final BootstrapApp<ServiceLocator> APP = ApplicationTemplate.of(new Op1<@GuestIntoAdaptor ServiceLocator, ServiceLocator>(e -> e) {},
-                    c -> {}).newBootstrapApp();
+            private static final BootstrapApp<ServiceLocator> APP = ApplicationTemplate
+                    .of(new Op1<@FromGuest ServiceLocator, ServiceLocator>(e -> e) {}, c -> c.container(ContainerTemplate.UNMANAGED)).newBootstrapApp();
         }
         return ServiceLocatorBootstrap.APP;
     }
@@ -364,7 +366,7 @@ public interface ServiceLocator {
      * @return a new service locator
      */
     static ServiceLocator of(Assembly assembly, Wirelet... wirelets) {
-        return bootstrap().launch(assembly, wirelets);
+        return bootstrap().launch(RunState.INITIALIZED, assembly, wirelets);
     }
 
     static ServiceLocator of(ComposerAction<? super Composer> action, Wirelet... wirelets) {
@@ -375,7 +377,7 @@ public interface ServiceLocator {
             }
         }
 
-        return bootstrap().launch(new ServiceLocatorAssembly(action), wirelets);
+        return bootstrap().launch(RunState.INITIALIZED, new ServiceLocatorAssembly(action), wirelets);
     }
 
     static void verify(Assembly assembly, Wirelet... wirelets) {
@@ -556,7 +558,7 @@ public interface ServiceLocator {
 
         /** Creates a new service locator application from this image. */
         public ServiceLocator create() {
-            return image.launch();
+            return image.launch(RunState.INITIALIZED);
         }
 
         /**
@@ -566,7 +568,7 @@ public interface ServiceLocator {
          *            optional wirelets
          */
         public ServiceLocator create(Wirelet... wirelets) {
-            return image.launch(wirelets);
+            return image.launch(RunState.INITIALIZED, wirelets);
         }
     }
 }

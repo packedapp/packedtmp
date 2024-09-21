@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
-import internal.app.packed.container.WireletSelectionArray;
+import internal.app.packed.container.wirelets.WireletSelectionArray;
 
 /**
  * A selection of wirelets of a specific type (W).

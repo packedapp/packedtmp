@@ -23,11 +23,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import app.packed.lifetime.LifecycleKind;
+import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
-import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.entrypoint.OldEntryPointSetup;
-import sandbox.lifetime.external.LifecycleController;
 
 /**
  *
@@ -37,7 +37,7 @@ import sandbox.lifetime.external.LifecycleController;
 /// Error bit (data =
 // Desired state + Mask
 // Extra data... Startup/Initialization exception
-public final class PackedManagedLifetime implements LifecycleController {
+public final class PackedManagedLifetime implements ManagedLifecycle {
 
     /**
      * A lock used for lifecycle control of the component. If components are arranged in a hierarchy and multiple components
@@ -48,14 +48,16 @@ public final class PackedManagedLifetime implements LifecycleController {
     /** A condition used for waiting on state changes from {@link #await(RunState, long, TimeUnit)}. */
     final Condition lockAwaitState = lock.newCondition();
 
+    final ContainerRunner runner;
+
     // Taenker vi maaske gaar tilbage til det design hvor vi havde en abstract state klasse... med
     // en implementering per state... Er jo mest brugbart i forbindelse med start/stop hvor vi har noget
     // midlertidigt state,paa den anden side kan vi maaske have lidt mindre state?
     volatile RunState state = RunState.UNINITIALIZED;
 
-    volatile Throwable throwable;
+    volatile Thread thread;
 
-    final ContainerRunner runner;
+    volatile Throwable throwable;
 
     public PackedManagedLifetime(ContainerRunner runner) {
         this.runner = requireNonNull(runner);
@@ -98,21 +100,35 @@ public final class PackedManagedLifetime implements LifecycleController {
         }
     }
 
-    void initialize(ContainerSetup container, ContainerRunner cr) {
+    /** {@inheritDoc} */
+    @Override
+    public RunState currentState() {
+        return state;
+    }
+
+    private void initialize() {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
+            assert (state == RunState.UNINITIALIZED);
             this.state = RunState.INITIALIZING;
         } finally {
             lock.unlock();
         }
+
         try {
-            cr.initialize(container);
+            runner.initialize(runner.container);
         } catch (Throwable t) {
-            this.state = RunState.TERMINATED;
             this.throwable = t;
+            lock.lock();
+            try {
+                this.state = RunState.TERMINATED;
+            } finally {
+                lock.unlock();
+            }
             throw t;
         }
+
         lock.lock();
         try {
             this.state = RunState.INITIALIZED;
@@ -121,30 +137,53 @@ public final class PackedManagedLifetime implements LifecycleController {
         }
     }
 
-    void start(ContainerSetup container, ContainerRunner cr) {
-        final ReentrantLock lock = this.lock;
-        lock.lock();
-        try {
-            this.state = RunState.STARTING;
-        } finally {
-            lock.unlock();
-        }
-        try {
-            cr.start(container);
-        } catch (Throwable t) {
-            this.state = RunState.TERMINATED;
-            this.throwable = t;
-            throw t;
-        }
-        lock.lock();
-        try {
-            this.state = RunState.RUNNING;
-        } finally {
-            lock.unlock();
-        }
+    /** {@inheritDoc} */
+    @Override
+    public boolean isFailed() {
+        return throwable != null;
     }
 
-    void shutdown(ContainerSetup container, ContainerRunner cr) {
+    public void launch(RunState desiredState) {
+        if (desiredState == RunState.UNINITIALIZED) {
+            throw new IllegalArgumentException("UNINITIALIZED is not a valid launch state");
+        } else if (desiredState == RunState.INITIALIZING) {
+            throw new IllegalArgumentException("INITIALIZING is not a valid launch state");
+        }
+
+        if (runner.container.template.lifecycleKind() == LifecycleKind.UNMANAGED && desiredState != RunState.INITIALIZED) {
+            throw new IllegalArgumentException("Unmanaged applications and containers can only launch with runstate INITIALIZED, was " + desiredState);
+        }
+
+        initialize();
+
+        if (desiredState == RunState.INITIALIZED) {
+            return;
+        }
+
+        if (desiredState == RunState.STARTING) {
+            startAsync();
+            return;
+        }
+
+        start();
+
+        if (desiredState == RunState.RUNNING) {
+            return;
+        }
+
+        // Await only daemon threads
+        //
+
+//        try {
+//            await(state);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+
+        shutdown();
+    }
+
+    void shutdown() {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
@@ -153,7 +192,7 @@ public final class PackedManagedLifetime implements LifecycleController {
             lock.unlock();
         }
         try {
-            cr.shutdown(container);
+            runner.shutdown();
         } catch (Throwable t) {
             this.state = RunState.TERMINATED;
             this.throwable = t;
@@ -167,34 +206,64 @@ public final class PackedManagedLifetime implements LifecycleController {
         }
     }
 
-    public void launch(ContainerSetup container, ContainerRunner cr) {
-        initialize(container, cr); // may throw
-
-        start(container, cr);
-
-        OldEntryPointSetup ep = container.lifetime.entryPoints.entryPoint;
-
-        if (ep != null) {
-            ep.enter(cr);
-        }
-
-        shutdown(container, cr);
-
-    }
-
     /** {@inheritDoc} */
     @Override
     public void start() {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
-            if (state == RunState.UNINITIALIZED) {
-                throw new IllegalStateException("Cannot call this method now");
+            for (;;) {
+                if (state == RunState.UNINITIALIZED) {
+                    throw new IllegalStateException("Cannot call this method now");
+                } else if (state == RunState.INITIALIZED) {
+                    this.state = RunState.STARTING;
+                    break;
+                } else if (state == RunState.STARTING) {
+                    try {
+                        await(RunState.RUNNING);
+                    } catch (InterruptedException e) {
+                        Thread.interrupted();
+                    }
+                } else {
+                    return;
+                }
+
             }
-            throw new UnsupportedOperationException();
         } finally {
             lock.unlock();
         }
+        start0();
+    }
+
+    void start0() {
+
+        try {
+            runner.start();
+        } catch (Throwable t) {
+            this.throwable = t;
+            lock.lock();
+            try {
+                this.state = RunState.TERMINATED;
+            } finally {
+                lock.unlock();
+            }
+            throw t;
+        }
+
+        lock.lock();
+        try {
+            this.state = RunState.RUNNING;
+        } finally {
+            lock.unlock();
+        }
+
+        // Boer vel spawnes????
+        OldEntryPointSetup ep = runner.container.lifetime.entryPoints.entryPoint;
+
+        if (ep != null) {
+            ep.enter(runner);
+        }
+
     }
 
     /** {@inheritDoc} */
@@ -204,12 +273,6 @@ public final class PackedManagedLifetime implements LifecycleController {
             start();
             return result;
         });
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public RunState currentState() {
-        return state;
     }
 
     /** {@inheritDoc} */

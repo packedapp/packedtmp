@@ -37,14 +37,14 @@ import internal.app.packed.container.ContainerSetup;
 public final class CircularServiceDependencyChecker {
 
     private static void dependencyCyclesFind(ArrayDeque<ServiceSetup> stack, ArrayDeque<ServiceSetup> dependencies, ContainerSetup container) {
-        for (ServiceSetup node : container.sm.entries.values()) {
+        for (ServiceSetup node : container.servicesMain().entries.values()) {
             if (!node.hasBeenCheckForDependencyCycles) { // only process those nodes that have not been visited yet
                 detectCycle(node, stack, dependencies);
             }
         }
 
         // Process nodes in children
-        for (ContainerSetup e = container.node.firstChild; e != null; e = e.node.nextSibling) {
+        for (ContainerSetup e = container.treeFirstChild; e != null; e = e.treeNextSibling) {
             dependencyCyclesFind(stack, dependencies, e);
         }
     }

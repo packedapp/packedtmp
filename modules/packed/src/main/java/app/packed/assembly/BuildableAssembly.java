@@ -18,7 +18,7 @@ package app.packed.assembly;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.util.Nullable;
-import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.PackedContainerInstaller;
 
 /**

@@ -23,8 +23,8 @@ import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.service.ServiceContract;
 import app.packed.util.TreeView;
+import internal.app.packed.assembly.AssemblySetup.PackedAssemblyTreeMirror;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.container.AssemblySetup.PackedAssemblyTreeMirror;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ContainerSetup.PackedContainerTreeMirror;
 import internal.app.packed.operation.OperationSetup;
@@ -93,7 +93,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
 
     /** {@return a stream of all of the operations declared by the bean.} */
     public Stream<OperationMirror> operations() {
-        return handle.application.container.node.stream().map(s -> s.mirror()).flatMap(ContainerMirror::operations);
+        return handle.application.container.stream().map(s -> s.mirror()).flatMap(ContainerMirror::operations);
     }
 
     /**
@@ -162,7 +162,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
      * @see Wirelet#named(String)
      */
     public String name() {
-        return handle.application.container().node.name;
+        return handle.application.container().name;
     }
 
     // ApplicationMirror
@@ -201,7 +201,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     }
 
     private void print0(ContainerSetup cs) {
-        for (var e = cs.node.firstChild; e != null; e = e.node.nextSibling) {
+        for (var e = cs.treeFirstChild; e != null; e = e.treeNextSibling) {
             print0(e);
         }
         for (BeanSetup b : cs.beans) {
@@ -221,7 +221,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
 
     /** {@return the service contract of this application.} */
     public ServiceContract serviceContract() {
-        return handle.application.container().sm.newContract();
+        return handle.application.container().servicesMain().newContract();
     }
 
     /** {@inheritDoc} */

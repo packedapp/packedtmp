@@ -24,23 +24,30 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerLocal;
+import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanIntrospector;
+import app.packed.extension.ExtensionHandle;
 import app.packed.extension.FrameworkExtension;
-import sandbox.extension.container.ContainerTemplate;
 
 /**
  * An extension that
  */
 public class CliExtension extends FrameworkExtension<CliExtension> {
 
+    /**
+     * @param handle
+     */
+    CliExtension(ExtensionHandle handle) {
+        super(handle);
+    }
+
     // Vi har 1 per application.. Vi kan fx stadig injecte globalle parameters i enhver lifetime.
     // Det er bare commands der ikke fungere
     static final ContainerLocal<Boolean> LAUNCHED = ContainerLocal.of();
 
     /** No. */
-    CliExtension() {}
 
     public CliCommandConfiguration addCliCommand(Consumer<CliCommandContext> action) {
         return namespace().addCliCommand(action);

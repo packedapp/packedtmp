@@ -34,8 +34,6 @@ public interface TreeView<N> extends BaseTreeView<N> {
         throw new UnsupportedOperationException();
     }
 
-
-
     default void forEach(Consumer<N> action) {
         throw new UnsupportedOperationException();
     }

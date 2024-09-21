@@ -14,9 +14,9 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.context.publish.ContextTemplate;
+import internal.app.packed.extension.ExtensionSetup;
 
 public final class PackedOperationTemplate implements OperationTemplate {
 

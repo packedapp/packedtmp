@@ -28,6 +28,7 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
 import app.packed.build.BuildGoal;
+import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
@@ -37,13 +38,12 @@ import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.util.ThrowableUtil;
-import sandbox.extension.container.ContainerTemplate;
 
 /**
  *
  */
-public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, PackedContainerTemplate containerTemplate, MethodHandle applicationLauncher,
-        boolean isManaged) implements ApplicationTemplate<A> {
+public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, PackedContainerTemplate containerTemplate, MethodHandle applicationLauncher)
+        implements ApplicationTemplate<A> {
 
     static final ContextTemplate GB_CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationLaunchContext.class, ApplicationLaunchContext.class);
 
@@ -56,7 +56,7 @@ public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Packed
     }
 
     public PackedApplicationTemplate(Class<?> guestClass, Op<?> op, PackedContainerTemplate containerTemplate) {
-        this(guestClass, op, containerTemplate, null, false);
+        this(guestClass, op, containerTemplate, null);
     }
 
     /**
@@ -123,6 +123,15 @@ public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Packed
         return PackedBootstrapApp.fromTemplate(this);
     }
 
+    public ApplicationTemplate<A> configure(Consumer<? super Configurator> configure) {
+        PackedApplicationTemplateConfigurator<A> c = new PackedApplicationTemplateConfigurator<>(this);
+        configure.accept(c);
+        if (c.pbt.containerTemplate == null) {
+            throw new IllegalStateException("Must specify a container template for the root container");
+        }
+        return c.pbt;
+    }
+
     public final static class PackedApplicationTemplateConfigurator<A> implements ApplicationTemplate.Configurator {
 
         public PackedApplicationTemplate<A> pbt;
@@ -134,7 +143,7 @@ public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Packed
         /** {@inheritDoc} */
         @Override
         public PackedApplicationTemplateConfigurator<A> container(ContainerTemplate template) {
-            this.pbt = new PackedApplicationTemplate<>(pbt.guestClass(), pbt.op(), (PackedContainerTemplate) template, pbt.applicationLauncher, pbt.isManaged);
+            this.pbt = new PackedApplicationTemplate<>(pbt.guestClass(), pbt.op(), (PackedContainerTemplate) template, pbt.applicationLauncher);
             return null;
         }
 
@@ -160,12 +169,5 @@ public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Packed
             return container(pct);
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public Configurator managedLifetime() {
-            this.pbt = new PackedApplicationTemplate<>(pbt.guestClass(), pbt.op(), pbt.containerTemplate, pbt.applicationLauncher, true);
-            return null;
-
-        }
     }
 }

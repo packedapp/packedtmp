@@ -30,6 +30,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
 
 /**
  *
@@ -96,7 +97,13 @@ public class ImageMicro {
     }
 
     public static class MyExtension extends Extension<MyExtension> {
-        MyExtension(){}
+
+        /**
+         * @param handle
+         */
+        protected MyExtension(ExtensionHandle handle) {
+            super(handle);
+        }
     }
 
 }

@@ -15,7 +15,7 @@
  */
 package internal.app.packed.integration.devtools;
 
-import internal.app.packed.container.InternalBuildWirelet;
+import internal.app.packed.container.wirelets.InternalBuildWirelet;
 
 /**
  *

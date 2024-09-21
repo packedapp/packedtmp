@@ -23,8 +23,8 @@ import java.util.List;
 import app.packed.build.BuildException;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
-import internal.app.packed.container.AssemblyModel;
-import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.assembly.AssemblyModel;
+import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.PackedContainerInstaller;
 
 /**

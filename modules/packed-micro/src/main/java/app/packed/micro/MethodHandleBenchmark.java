@@ -17,9 +17,9 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import internal.app.packed.util.LazyMethodHandleFactory;
-import internal.app.packed.util.LazyMethodHandleFactory2;
 import internal.app.packed.util.MethodHandleUtil;
+import internal.app.packed.util.notused.LazyMethodHandleFactory;
+import internal.app.packed.util.notused.LazyMethodHandleFactory2;
 
 @Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)

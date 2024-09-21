@@ -27,12 +27,13 @@ import app.packed.container.Wirelet;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
+import app.packed.runtime.ManagedLifecycle;
+import app.packed.runtime.RunState;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.container.InternalBuildWirelet;
-import internal.app.packed.container.WireletSelectionArray;
-import sandbox.lifetime.external.LifecycleController;
+import internal.app.packed.container.wirelets.InternalBuildWirelet;
+import internal.app.packed.container.wirelets.WireletSelectionArray;
 
 /**
  * A temporary context object that is created whenever we launch an application.
@@ -55,7 +56,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
     private ApplicationLaunchContext(ApplicationSetup application, WireletSelectionArray<?> wirelets) {
         this.application = application;
         this.wirelets = wirelets;
-        this.name = requireNonNull(application.container().node.name);
+        this.name = requireNonNull(application.container().name);
         this.runner = new ContainerRunner(application);
     }
 
@@ -68,7 +69,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
         return name;
     }
 
-    LifecycleController runtime() {
+    ManagedLifecycle runtime() {
         if (runner.runtime != null) {
             return runner.runtime;
         }
@@ -82,7 +83,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
      * @return a service locator for the application
      */
     public ServiceLocator serviceLocator() {
-        return application.container().sm.newExportedServiceLocator(runner.pool());
+        return application.container().servicesMain().newExportedServiceLocator(runner.pool());
     }
 
     /**
@@ -98,12 +99,12 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
      *            optional wirelets is always null if not launched from an image
      * @return the application instance
      */
-    public static ApplicationLaunchContext launch(ApplicationHandle<?, ?> handle, @Nullable WireletSelectionArray<?> wirelets) {
+    public static ApplicationLaunchContext launch(RunState state, ApplicationHandle<?, ?> handle, @Nullable WireletSelectionArray<?> wirelets) {
         ApplicationSetup application = ApplicationSetup.crack(handle);
-        return launch(application, wirelets);
+        return launch(state, application, wirelets);
     }
 
-    public static ApplicationLaunchContext launch(ApplicationSetup application, @Nullable WireletSelectionArray<?> wirelets) {
+    public static ApplicationLaunchContext launch(RunState state, ApplicationSetup application, @Nullable WireletSelectionArray<?> wirelets) {
         // Create a launch context
         ApplicationLaunchContext context = new ApplicationLaunchContext(application, wirelets);
 
@@ -116,7 +117,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
             }
         }
 
-        context.runner.run(application.container());
+        context.runner.run(state);
 
         return context;
 

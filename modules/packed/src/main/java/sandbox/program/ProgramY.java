@@ -22,12 +22,14 @@ import app.packed.application.ApplicationTemplate;
 import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
+import app.packed.component.guest.FromGuest;
+import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
+import app.packed.runtime.ManagedLifecycle;
+import app.packed.runtime.RunState;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Key;
 import sandbox.extension.container.ContainerTemplateLink;
-import sandbox.extension.container.guest.GuestIntoAdaptor;
-import sandbox.lifetime.external.LifecycleController;
 
 /**
  * An App (application) is a type of artifact provided by Packed.
@@ -55,7 +57,7 @@ interface ProgramY extends AutoCloseable {
      *
      * @return this application's host.
      */
-    LifecycleController runtime();
+    ManagedLifecycle runtime();
 
     /**
      * Returns this app's service locator.
@@ -152,12 +154,12 @@ interface ProgramY extends AutoCloseable {
      *             if the application could not be build, initialized or started
      */
     static ProgramY start(Assembly assembly, Wirelet... wirelets) {
-        return driver().launch(assembly, wirelets);
+        return driver().launch(RunState.RUNNING, assembly, wirelets);
     }
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementation(@GuestIntoAdaptor String name, @GuestIntoAdaptor ServiceLocator services, @GuestIntoAdaptor LifecycleController runtime)
+record ProgramImplementation(@FromGuest String name, @FromGuest ServiceLocator services, @FromGuest ManagedLifecycle runtime)
         implements ProgramY {
 
     ProgramImplementation {
@@ -167,8 +169,7 @@ record ProgramImplementation(@GuestIntoAdaptor String name, @GuestIntoAdaptor Se
     static ContainerTemplateLink EL = ContainerTemplateLink.of(MethodHandles.lookup(), Ele.MyE.class, "doo").provideExpose(Long.class).build();
 
     /** An driver for creating App instances. */
-    static final BootstrapApp<ProgramImplementation> DRIVER =
-            ApplicationTemplate.of(ProgramImplementation.class, c -> c.managedLifetime()).newBootstrapApp();
+    static final BootstrapApp<ProgramImplementation> DRIVER = ApplicationTemplate.of(ProgramImplementation.class, c -> c.container(ContainerTemplate.MANAGED)).newBootstrapApp();
 //
 //            BootstrapApp.of(ProgramImplementation.class, c -> {
 //        c.managedLifetime();

@@ -20,6 +20,7 @@ import java.util.function.Function;
 
 import app.packed.extension.Extension;
 import app.packed.namespace.sandbox.BuildPermission;
+import internal.app.packed.namespace.PackedNamespaceInstaller;
 import internal.app.packed.namespace.PackedNamespaceTemplate;
 
 /**
@@ -57,7 +58,7 @@ public sealed interface NamespaceTemplate permits PackedNamespaceTemplate {
 
     }
 
-    interface Installer {
+   sealed interface Installer permits PackedNamespaceInstaller {
 
         // return value.getClass() from newHandle must match handleClass
         <E extends Extension<E>, H extends NamespaceHandle<E, ?>, C extends NamespaceConfiguration<E>> H install(

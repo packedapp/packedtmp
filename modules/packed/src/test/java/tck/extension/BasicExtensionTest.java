@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.container.ContainerConfiguration;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
 import tck.AppAppTest;
 
 /** Tests {@link ContainerConfiguration#extensionTypes()} and {@link ContainerConfiguration#use(Class)}. */
@@ -85,10 +86,17 @@ public class BasicExtensionTest extends AppAppTest {
     }
 
     public static final class TestExtension1 extends Extension<TestExtension1> {
-        TestExtension1() {}
+
+        TestExtension1(ExtensionHandle handle) {
+            super(handle);
+        }
+
     }
 
     public static final class TestExtension2 extends Extension<TestExtension2> {
-        TestExtension2() {}
+
+        TestExtension2(ExtensionHandle handle) {
+            super(handle);
+        }
     }
 }

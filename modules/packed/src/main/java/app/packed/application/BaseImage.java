@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 
 import app.packed.container.Wirelet;
+import app.packed.runtime.RunState;
 import app.packed.util.Result;
 import internal.app.packed.application.Images.ImageEager;
 import internal.app.packed.application.Images.ImageLazy;
@@ -59,8 +60,7 @@ public sealed interface BaseImage<A> permits ImageEager, ImageLazy, ImageNonReus
     /**
      * Launches an instance of the application that this image represents.
      * <p>
-     *
-     * What happens here is dependent on application driver that created the image. The behaviour of this method is
+     * What happens here is dependent on the underlying application template. The behaviour of this method is
      * identical to {@link BootstrapApp#launch(Assembly, Wirelet...)}.
      *
      * @param wirelets
@@ -69,7 +69,7 @@ public sealed interface BaseImage<A> permits ImageEager, ImageLazy, ImageNonReus
      *
      * @see BootstrapApp#launch(Assembly, Wirelet...)
      */
-    A launch(Wirelet... wirelets);
+    A launch(RunState state, Wirelet... wirelets);
 
     /**
      * Returns a new base image that maps the result of a launch.

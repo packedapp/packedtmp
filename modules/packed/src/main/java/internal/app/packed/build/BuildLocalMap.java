@@ -23,10 +23,10 @@ import java.util.function.Supplier;
 
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.extension.ExtensionSetup;
 
 /**
  * A map of component locals. We typically have one shared for the whole applications

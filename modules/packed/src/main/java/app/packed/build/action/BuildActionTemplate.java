@@ -16,6 +16,7 @@
 package app.packed.build.action;
 
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
 import app.packed.namespace.sandbox.BuildPermission;
 
 /**
@@ -68,6 +69,13 @@ public class BuildActionTemplate {
 
 class MyExt extends NewBaseExtension<MyExt> {
 
+    /**
+     * @param handle
+     */
+    protected MyExt(ExtensionHandle handle) {
+        super(handle);
+    }
+
     static final BuildActionTemplate UPDATE_NAME = BuildActionTemplate.of("UpdateName");
 
     String name;
@@ -105,6 +113,13 @@ class MyExt extends NewBaseExtension<MyExt> {
 }
 
 class NewBaseExtension<E extends NewBaseExtension<E>> extends Extension<E> {
+
+    /**
+     * @param handle
+     */
+    protected NewBaseExtension(ExtensionHandle handle) {
+        super(handle);
+    }
 
     protected BuildAction start(BuildActionTemplate ba) {
         throw new UnsupportedOperationException();

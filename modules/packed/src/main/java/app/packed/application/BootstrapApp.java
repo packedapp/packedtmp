@@ -15,7 +15,8 @@
  */
 package app.packed.application;
 
-import java.util.Optional;
+import static java.util.Objects.requireNonNull;
+
 import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
@@ -24,10 +25,24 @@ import app.packed.runtime.RunState;
 import internal.app.packed.application.PackedBootstrapApp;
 
 /**
+ * A bootstrap app is a special type of application that can be used to create other (non-bootstrap) application.
+ * <p>
+ * Bootstrap apps cannot directly modify the applications that it bootstraps. It cannot, for example, install an
+ * extension in the application. However, it can say it can only bootstrap applications that have the extension
+ * installed, failing with a build exception if the developer does not install the extension. As such, the bootstrap app
+ * can only setup requirements for the application that it bootstraps. It cannot directly make the needed changes to the
+ * bootstrapped application.
+ * <p>
+ * Bootstrap applications are rarely used directly by users. Instead users typically use thin wrappers such as
+ * {@link App} or {@link app.packed.service.ServiceLocator} to create new applications. However, if greater control of
+ * the application is needed users may create their own bootstrap application.
+ * <p>
+ * Normally, you never create more than a single instance of a bootstrap app. Bootstrap applications are, unless
+ * otherwise specified, safe to use concurrently.
  *
+ * @return
  */
-// Will ResultApp?
-public sealed interface BootstrapApp<A> permits PackedBootstrapApp {
+public sealed interface BootstrapApp<A> permits PackedBootstrapApp, MappedBootstrapApp {
 
     BootstrapApp<A> expectsResult(Class<?> resultType);
 
@@ -90,7 +105,22 @@ public sealed interface BootstrapApp<A> permits PackedBootstrapApp {
      *             if the application could not be built or failed to launch
      * @see App#run(Assembly, Wirelet...)
      */
-    A launch(Assembly assembly, Wirelet... wirelets);
+    A launch(RunState state, Assembly assembly, Wirelet... wirelets);
+
+    /**
+     * Creates a new bootstrap app that maps the application using the specified mapper.
+     *
+     * @param <E>
+     *            the type to map the application to
+     * @param mapper
+     *            the application mapper
+     * @return the new bootstrap app
+     */
+    // I don't see it.. we never expose
+    default <E> BootstrapApp<E> map(Function<? super A, ? extends E> mapper) {
+        requireNonNull(mapper, "mapper is null");
+        return new MappedBootstrapApp<>(this, mapper);
+    }
 
     /**
      * Builds an application and returns a mirror representing it.
@@ -119,31 +149,6 @@ public sealed interface BootstrapApp<A> permits PackedBootstrapApp {
      *             if the application could not be build or verified
      */
     void verify(Assembly assembly, Wirelet... wirelets);
-}
-
-interface BootstrapAppSandbox<A> {
-
-    // Hvorfor ikke bruge BootstrapApp'en som en launcher???
-    // Det betyder selv at vi altid skal chaine..
-    // Men det er vel ok
-    // map()->
-
-    default Launcher<A> launcher() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Creates a new bootstrap app that maps the application using the specified mapper.
-     *
-     * @param <E>
-     *            the type to map the application to
-     * @param mapper
-     *            the application mapper
-     * @return the new bootstrap app
-     */
-    default <E> BootstrapApp<E> map(Function<? super A, ? extends E> mapper) {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Augment the driver with the specified wirelets, that will be processed when building or instantiating new
@@ -166,101 +171,45 @@ interface BootstrapAppSandbox<A> {
      *            the wirelets to add
      * @return the new bootstrap app
      */
-    default BootstrapApp<A> with(Wirelet... wirelets) {
+    // Before orAfter
+    default BootstrapApp<A> withWirelets(boolean before, Wirelet... wirelets) {
+        // Lad os ogsaa lige se med expectsResult, inde vi implementere det
         throw new UnsupportedOperationException();
-        // return new BootstrapApp<>(new BootstrapAppSetup(setup.mirrorSupplier, setup.template.withWirelets(wirelets),
-        // setup.applicationLauncher));
+    }
+}
+
+record MappedBootstrapApp<A, E>(BootstrapApp<A> app, Function<? super A, ? extends E> mapper) implements BootstrapApp<E> {
+
+    /** {@inheritDoc} */
+    @Override
+    public BootstrapApp<E> expectsResult(Class<?> resultType) {
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * A launcher is used before an application is launched.
-     */
-    public interface Launcher<A> {
+    /** {@inheritDoc} */
+    @Override
+    public BaseImage<E> imageOf(Assembly assembly, Wirelet... wirelets) {
+        BaseImage<A> ba = app.imageOf(assembly, wirelets);
+        return ba.map(mapper);
+    }
 
-        default boolean isUseable() {
-            // An image returns true always
+    /** {@inheritDoc} */
+    @Override
+    public E launch(RunState state, Assembly assembly, Wirelet... wirelets) {
+        A result = app.launch(state, assembly, wirelets);
+        E e = mapper.apply(result);
+        return e;
+    }
 
-            // Optional<A> tryLaunch(Wirelet... wirelets)???
-            return true;
-        }
+    /** {@inheritDoc} */
+    @Override
+    public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
+        return app.mirrorOf(assembly, wirelets);
+    }
 
-        A launch(Assembly assembly, Wirelet... wirelets);
-
-        // /**
-        // * Launches an instance of the application that this image represents.
-        // *
-        // * @throws ApplicationLaunchException
-        // * if the application failed to launch
-        // * @throws IllegalStateException
-        // * if the image has already been used to launch an application and the image is not a reusable image
-        // * @return the application interface if available
-        // */
-        // default A checkedLaunch() throws ApplicationLaunchException {
-//         return checkedLaunch(new Wirelet[] {});
-        // }
-        //
-        // default A checkedLaunch(Wirelet... wirelets) throws ApplicationLaunchException {
-//         throw new UnsupportedOperationException();
-        // }
-
-        /**
-         * Returns the launch mode of application(s) created by this image.
-         *
-         * @return the launch mode of the application
-         *
-         */
-        RunState launchMode(); // usageMode??
-
-        /**
-         * Returns a new launcher that maps the result of the launch.
-         *
-         * @param <E>
-         *            the type to map the launch result to
-         * @param mapper
-         *            the mapper
-         * @return a new application image that maps the result of the launch
-         */
-        <E> Launcher<E> map(Function<? super A, ? extends E> mapper);
-
-        Optional<ApplicationMirror> mirror();
-
-        // Hmmmmmmm IDK
-        // Could do sneaky throws instead
-        A throwingUse(Wirelet... wirelets) throws Throwable;
-
-        default BaseImage<A> with(Wirelet... wirelets) {
-            // Egentlig er den kun her pga Launcher
-            throw new UnsupportedOperationException();
-        }
-
-        /**
-         * Returns a mirror for the application if available.
-         *
-         * @param image
-         *            the image to extract the application mirror from
-         * @return a mirror for the application
-         * @throws UnsupportedOperationException
-         *             if the specified image was not build with BuildWirelets.retainApplicationMirror()
-         */
-        // Eller bare Optional<Mirror>
-        static ApplicationMirror extractMirror(BaseImage<?> image) {
-            throw new UnsupportedOperationException();
-        }
-
-        // ALWAYS HAS A CAUSE
-        // Problemet jeg ser er, hvad skal launch smide? UndeclaredThrowableException
-
-        // App.execute
-        // App.checkedExecute <---
-
-        // Maaske er det LifetimeLaunchException
-//        public static class ApplicationLaunchException extends Exception {
-        //
-//            private static final long serialVersionUID = 1L;
-        //
-//            RunState state() {
-//                return RunState.INITIALIZED;
-//            }
-//        }
+    /** {@inheritDoc} */
+    @Override
+    public void verify(Assembly assembly, Wirelet... wirelets) {
+        app.verify(assembly, wirelets);
     }
 }

@@ -23,7 +23,9 @@ import java.util.function.Consumer;
 import app.packed.bean.BeanConfiguration;
 import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.BeanIntrospector;
+import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
+import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.extension.FrameworkExtension;
 import app.packed.extension.UnwrappedBindableVariable;
 import app.packed.operation.OperationTemplate;
@@ -55,6 +57,13 @@ import internal.app.packed.context.publish.ContextTemplate;
 
 public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
 
+    /**
+     * @param handle
+     */
+    ThreadExtension(ExtensionHandle handle) {
+        super(handle);
+    }
+
     /** A context template. */
     static final ContextTemplate SCHEDULING_CONTEXT_TEMPLATE = ContextTemplate.of(MethodHandles.lookup(), SchedulingContext.class, SchedulingContext.class);
 
@@ -69,7 +78,6 @@ public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
     private BeanConfiguration schedulingBean;
 
     /** Creates a new thread extension. */
-    ThreadExtension() {}
 
     BeanConfiguration initSchedulingBean() {
         BeanConfiguration b = schedulingBean;
@@ -150,8 +158,8 @@ public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
 
     /** {@inheritDoc} */
     @Override
-    protected ExtensionPoint<ThreadExtension> newExtensionPoint() {
-        return new ThreadExtensionPoint();
+    protected ExtensionPoint<ThreadExtension> newExtensionPoint(ExtensionUseSite usesite) {
+        return new ThreadExtensionPoint(usesite);
     }
 
 }

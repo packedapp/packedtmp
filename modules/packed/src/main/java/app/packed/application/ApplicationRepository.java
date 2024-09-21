@@ -16,19 +16,20 @@
 package app.packed.application;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
-import internal.app.packed.application.RuntimeApplicationRepository;
+import app.packed.extension.BaseExtension;
+import app.packed.extension.BaseExtensionPoint;
+import internal.app.packed.application.PackedApplicationRepository;
+import internal.app.packed.extension.ExtensionSetup;
 
 /**
- *
+ * An Application repository can be used to install child applications at runtime.
  * <p>
  * For now, we don't track instances here. We need some else for this
  */
-// Maybe it is easy to track instances
-// On uninstall, we mark the handled to no longer usable.
-// And then we go through all containers and shutdown them down
-public sealed interface ApplicationRepository<H extends ApplicationHandle<?,?>> permits RuntimeApplicationRepository {
+public sealed interface ApplicationRepository<H extends ApplicationHandle<?, ?>> permits PackedApplicationRepository {
 
     Optional<H> get(String name);
 
@@ -37,13 +38,33 @@ public sealed interface ApplicationRepository<H extends ApplicationHandle<?,?>> 
         return true;
     }
 
-    void remove(String name);
-
+    /** {@return the number of installed applications.} */
     int size();
 
-    /** {@return a stream of all applications that have been installed into the repository} */
+    /**
+     * {@return a stream of all applications (represented by their application handle} that have been installed into the
+     * repository}
+     */
     Stream<H> stream();
+
+    /**
+     * {@return the templates that are available at runtime}
+     * <p>
+     * Attempting to install a new application with an application template that is not in returned set will fail with a
+     * build exception.
+     *
+     * @see ApplicationRepositoryConfiguration#addRuntimeTemplate(ApplicationTemplate)
+     */
+    Set<ApplicationTemplate<?>> templates();
 
     // An application can be, NA, INSTALLING, AVAILABLE
     // Don't know if we at runtime
+    // Hvad hvis man ikke vil installere noget paa runtime...
+    static <A, H extends ApplicationHandle<?, A>> ApplicationRepositoryConfiguration<H, A> install(BaseExtension extension) {
+        return ApplicationRepositoryHandle.install(ExtensionSetup.crack(extension), ExtensionSetup.crack(extension).container.assembly);
+    }
+
+    static <A, H extends ApplicationHandle<?, A>> ApplicationRepositoryConfiguration<H, A> install(BaseExtensionPoint point) {
+        throw new UnsupportedOperationException();
+    }
 }

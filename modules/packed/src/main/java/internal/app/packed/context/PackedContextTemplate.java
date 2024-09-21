@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.context.Context;
 import app.packed.extension.Extension;
-import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.context.publish.ContextTemplate;
+import internal.app.packed.extension.ExtensionModel;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
 /** Implementation of {@link ContextTemplate}. */

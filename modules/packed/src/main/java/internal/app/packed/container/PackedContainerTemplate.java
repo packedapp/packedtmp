@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifecycleKind;
@@ -27,7 +28,6 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.context.publish.ContextTemplate;
-import sandbox.extension.container.ContainerTemplate;
 import sandbox.extension.container.ContainerTemplateLink;
 
 /** Implementation of {@link ContainerTemplate}. */
@@ -36,6 +36,13 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
 
     public PackedContainerTemplate(PackedContainerKind kind) {
         this(kind, void.class);
+    }
+
+    public LifecycleKind lifecycleKind() {
+        if (kind == PackedContainerKind.ROOT_UNMANAGED || kind == PackedContainerKind.UNMANAGED) {
+            return LifecycleKind.UNMANAGED;
+        }
+        return LifecycleKind.MANAGED;
     }
 
     PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, PackedContainerTemplatePackList links, Class<?> resultType) {

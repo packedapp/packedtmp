@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Supplier;
 
-import app.packed.component.Authority;
+import app.packed.build.BuildAuthority;
 import app.packed.component.ComponentPath;
 import app.packed.operation.BindingKind;
 import app.packed.operation.BindingMirror;
@@ -40,7 +40,7 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
      * <p>
      * May be the application itself if using {@link app.packed.operation.Op#bind(Object)} or similar.
      */
-    public final Authority boundBy;
+    public final BuildAuthority boundBy;
 
     /** Supplies a mirror for the binding */
     public Supplier<? extends BindingMirror> mirrorSupplier;
@@ -51,7 +51,7 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
     /** The index into {@link OperationSetup#bindings}. */
     public final int operationBindingIndex;
 
-    protected BindingSetup(OperationSetup operation, int operationBindingIndex, Authority boundBy) {
+    protected BindingSetup(OperationSetup operation, int operationBindingIndex, BuildAuthority boundBy) {
         this.operation = requireNonNull(operation);
         this.operationBindingIndex = operationBindingIndex;
         this.boundBy = requireNonNull(boundBy);
@@ -78,7 +78,7 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
         /** Provider for the binding. */
         public final BindingResolution provider;
 
-        public HookBindingSetup(OperationSetup operation, int index, Authority user, BindingResolution provider) {
+        public HookBindingSetup(OperationSetup operation, int index, BuildAuthority user, BindingResolution provider) {
             super(operation, index, user);
             this.provider = requireNonNull(provider);
         }
@@ -113,7 +113,7 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
          * @param index
          * @param user
          */
-        public ManualBindingSetup(OperationSetup operation, int index, Authority user, BindingResolution provider) {
+        public ManualBindingSetup(OperationSetup operation, int index, BuildAuthority user, BindingResolution provider) {
             super(operation, index, user);
             this.provider = provider;
         }

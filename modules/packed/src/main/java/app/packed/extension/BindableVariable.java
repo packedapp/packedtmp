@@ -96,21 +96,6 @@ public sealed interface BindableVariable extends BeanElement permits PackedBinda
     BindableVariable bindComputedConstant(Supplier<@Nullable ?> supplier);
 
     /**
-     * Binds the specified constant value to the underlying variable.
-     *
-     * @param value
-     *            the value to bind
-     * @throws IllegalArgumentException
-     *             if {@code null} is specified and null is not a valid value for the variable
-     * @throws ClassCastException
-     *             if the type of the value is not assignable to the underlying parameter
-     * @throws IllegalStateException
-     *             if the variable has already been bound.
-     * @see #bindGeneratedConstant(Supplier)
-     */
-    BindableVariable bindConstant(@Nullable Object value);
-
-    /**
      * Binds the specified context to the underlying variable.
      * <p>
      * If you need to perform any kind of transformations on a particular context you can use {@link #bindOp(Op)} instead.
@@ -124,6 +109,21 @@ public sealed interface BindableVariable extends BeanElement permits PackedBinda
      *             if the context is not available
      */
     BindableVariable bindContext(Class<? extends Context<?>> context);
+
+    /**
+     * Binds the specified constant value to the underlying variable.
+     *
+     * @param value
+     *            the value to bind
+     * @throws IllegalArgumentException
+     *             if {@code null} is specified and null is not a valid value for the variable
+     * @throws ClassCastException
+     *             if the type of the value is not assignable to the underlying parameter
+     * @throws IllegalStateException
+     *             if the variable has already been bound.
+     * @see #bindGeneratedConstant(Supplier)
+     */
+    BindableVariable bindInstant(@Nullable Object value);
 
     /**
      * @param index

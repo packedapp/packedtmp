@@ -23,7 +23,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanLocal.Accessor;
-import app.packed.component.Authority;
+import app.packed.build.BuildAuthority;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.extension.BaseExtension;
@@ -72,9 +72,9 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      */
     // Is lazy, or eager?
     // Eager_never_fail, Eager_fail_if_not_used, Lazy_whenFirstUsed, LazyFailIfNotUsed, Some default for the container?
-    public final <K> void addComputedConstant(Key<K> key, Supplier<? extends K> supplier) {
+    public final <K> void bindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
         checkIsConfigurable();
-        bean.addCodeGenerated(key, supplier);
+        bean.bindCodeGenerator(key, supplier);
     }
 
     /**
@@ -257,7 +257,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     }
 
     /** {@inheritDoc} */
-    public final Authority owner() {
+    public final BuildAuthority owner() {
         return bean.owner();
     }
 
@@ -283,7 +283,6 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     public final void provideAs(Key<?> key) {
         Key<?> k = InternalServiceUtil.checkKey(bean.beanClass, key);
         checkIsConfigurable();
-
         if (beanKind() != BeanKind.CONTAINER || beanKind() != BeanKind.LAZY) {
             // throw new UnsupportedOperationException("This method can only be called on beans of kind " + BeanKind.CONTAINER + "
             // or " + BeanKind.LAZY);

@@ -22,8 +22,8 @@ import java.lang.annotation.Annotation;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocal.Accessor;
+import app.packed.build.BuildAuthority;
 import app.packed.bean.BeanSourceKind;
-import app.packed.component.Authority;
 import app.packed.extension.BeanElement.BeanClass;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
@@ -197,7 +197,7 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
     }
 
     /** {@return the owner of the bean.} */
-    public final Authority beanAuthor() {
+    public final BuildAuthority beanAuthor() {
         return bean().owner();
     }
 

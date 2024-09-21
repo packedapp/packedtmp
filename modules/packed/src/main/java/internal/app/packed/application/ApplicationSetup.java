@@ -129,7 +129,7 @@ public final class ApplicationSetup implements ComponentSetup, BuildLocalSource,
         this.deployment = new DeploymentSetup(this, installer);
         this.codegenActions = deployment.goal.isCodeGenerating() ? new ArrayList<>() : null;
         this.goal = installer.goal;
-        this.launch = installer.bar == null ? null : requireNonNull(installer.bar.guest);
+        this.launch=installer.launcher;
     }
 
     /**
@@ -189,7 +189,7 @@ public final class ApplicationSetup implements ComponentSetup, BuildLocalSource,
 
     @Override
     public ComponentPath componentPath() {
-        return ComponentKind.APPLICATION.pathNew(container.node.name);
+        return ComponentKind.APPLICATION.pathNew(container.name);
     }
 
     public ContainerSetup container() {

@@ -24,7 +24,7 @@ import java.util.function.Function;
 
 import app.packed.bean.BeanKind;
 import app.packed.extension.ExtensionPoint;
-import app.packed.extension.ExtensionPoint.UseSite;
+import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.namespace.NamespaceHandle;
 import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.operation.PackedOperationInstaller;
@@ -81,7 +81,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         return PackedOperationTemplate.DEFAULTS;
     }
 
-    static OperationTemplate delegateTo(UseSite useSite) {
+    static OperationTemplate delegateTo(ExtensionUseSite useSite) {
         return PackedOperationTemplate.DEFAULTS;
     }
 
@@ -209,7 +209,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     sealed interface Installer permits PackedOperationInstaller {
 
         // redelegate(ExtensionPoint.UseSite extension, OperationTemplate);
-        Installer delegateTo(ExtensionPoint.UseSite extension);
+        Installer delegateTo(ExtensionPoint.ExtensionUseSite extension);
 
         /**
          * Creates the operation.

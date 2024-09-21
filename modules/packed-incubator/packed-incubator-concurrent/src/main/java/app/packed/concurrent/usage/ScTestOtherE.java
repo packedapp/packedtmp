@@ -33,6 +33,7 @@ import app.packed.extension.BeanIntrospector;
 import app.packed.extension.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
+import app.packed.extension.ExtensionHandle;
 
 /**
  *
@@ -60,7 +61,12 @@ public class ScTestOtherE extends BaseAssembly {
     @DependsOn(extensions = ThreadExtension.class)
     public static class MyE extends Extension<MyE> {
 
-        MyE() {}
+        /**
+         * @param handle
+         */
+        protected MyE(ExtensionHandle handle) {
+            super(handle);
+        }
 
         @Override
         protected BeanIntrospector newBeanIntrospector() {

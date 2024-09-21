@@ -23,6 +23,7 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanTemplate.Installer;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
 
 /**
  *
@@ -40,9 +41,7 @@ public class MyW extends BaseAssembly {
     }
 
     public static class FFF {
-        FFF(MyBeanMirror m) {
-            System.out.println("NEW " + m);
-        }
+        FFF(MyBeanMirror m) {}
     }
 
     static class MyBeanMirror extends BeanMirror {
@@ -55,6 +54,7 @@ public class MyW extends BaseAssembly {
         }
 
     }
+
     static class MyBeanHandle extends BeanHandle<BeanConfiguration> {
 
         /**
@@ -73,7 +73,15 @@ public class MyW extends BaseAssembly {
 
     static class MyExt extends Extension<MyExt> {
 
+        /**
+         * @param handle
+         */
+        protected MyExt(ExtensionHandle handle) {
+            super(handle);
+        }
+
         void install() {
+            BeanKind.CONTAINER.template().newInstaller(base()).install(FFF.class, MyBeanHandle::new);
             base().newBean(BeanKind.CONTAINER.template()).install(FFF.class, MyBeanHandle::new);
         }
     }

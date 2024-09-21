@@ -94,6 +94,7 @@ final class OperationCodeGenerator {
             return mh;
         } else if (p instanceof FromOperationResult fo) {
             MethodHandle methodHandle = fo.operation().generateMethodHandle();
+
             mh = MethodHandles.collectArguments(mh, permuters.size(), methodHandle);
             for (int j = 0; j < methodHandle.type().parameterCount(); j++) {
                 permuters.add(j);

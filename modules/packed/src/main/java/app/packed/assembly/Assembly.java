@@ -18,7 +18,7 @@ package app.packed.assembly;
 import app.packed.application.ApplicationLocal;
 import app.packed.assembly.AbstractComposer.ComposableAssembly;
 import app.packed.build.BuildCodeSource;
-import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.PackedContainerInstaller;
 
 /**

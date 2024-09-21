@@ -22,9 +22,9 @@ import java.util.stream.Stream;
 
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanSourceKind;
-import app.packed.component.Authority;
-import internal.app.packed.container.ExtensionSetup;
+import app.packed.build.BuildAuthority;
 import internal.app.packed.container.NameCheck;
+import internal.app.packed.extension.ExtensionSetup;
 
 /**
  * Stores all beans for a single container.
@@ -142,7 +142,7 @@ public final class ContainerBeanStore implements Iterable<BeanSetup> {
         return bean.multiInstall & CLASS_COUNT_MASK;
     }
 
-    public /* primitive */ record BeanClassKey(Authority realm, Class<?> beanClass) {}
+    public /* primitive */ record BeanClassKey(BuildAuthority realm, Class<?> beanClass) {}
 
     // Kunne maaske have en int paa BeanSetup
     // Og saa i Bean Classes har vi den seneste indsatte

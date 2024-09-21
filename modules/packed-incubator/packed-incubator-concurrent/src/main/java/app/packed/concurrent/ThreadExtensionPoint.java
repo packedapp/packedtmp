@@ -4,7 +4,9 @@ import app.packed.extension.ExtensionPoint;
 
 public class ThreadExtensionPoint extends ExtensionPoint<ThreadExtension> {
 
-    ThreadExtensionPoint() {}
+    ThreadExtensionPoint(ExtensionUseSite usesite) {
+        super(usesite);
+    }
 
     /**
      * @param object

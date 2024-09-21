@@ -12,7 +12,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifecycleKind;
 import app.packed.util.Nullable;
-import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.util.types.ClassUtil;
 
 /**

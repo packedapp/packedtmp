@@ -67,7 +67,15 @@ public abstract class ExtensionWirelet<E extends Extension<E>> extends Wirelet {
     // Wirelets are transient objects so an extra pointer shouldn't matter
 }
 
-class AcmeExtension extends Extension<AcmeExtension> {}
+class AcmeExtension extends Extension<AcmeExtension> {
+
+    /**
+     * @param handle
+     */
+    AcmeExtension(ExtensionHandle handle) {
+        super(handle);
+    }
+}
 
 record AcmeExtensionBean(WireletSelection<AcmeWirelet> wirelets) {}
 

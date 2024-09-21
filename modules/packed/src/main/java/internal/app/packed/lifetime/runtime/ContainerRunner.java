@@ -18,6 +18,7 @@ package internal.app.packed.lifetime.runtime;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.extension.ExtensionContext;
+import app.packed.runtime.RunState;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
@@ -28,6 +29,8 @@ import internal.app.packed.util.ThrowableUtil;
  */
 public class ContainerRunner {
 
+    final ContainerSetup container;
+
     /** The runtime component node we are building. */
     private ExtensionContext pool;
 
@@ -35,30 +38,11 @@ public class ContainerRunner {
     @Nullable
     public final PackedManagedLifetime runtime;
 
-    ContainerSetup container;
-
-    ContainerRunner(PackedManagedLifetime runtime) {
-        this.runtime = runtime;
-    }
-
     public ContainerRunner(ApplicationSetup application) {
         this.runtime = new PackedManagedLifetime(this);
+        this.container = application.container;
         // application.goal.isLaunchable() && application.driver.lifetimeKind() == OldLifetimeKind.MANAGED ? new
         // PackedManagedLifetime(this) : null;
-    }
-
-    /**
-     * @return
-     */
-    public ExtensionContext pool() {
-        return pool;
-    }
-
-    void run(ContainerSetup container) {
-        this.container = container;
-        this.pool = container.lifetime.newRuntimePool();
-
-        runtime.launch(container, this);
     }
 
     void initialize(ContainerSetup container) {
@@ -72,9 +56,21 @@ public class ContainerRunner {
         }
     }
 
-    void start(ContainerSetup container) {
+    /**
+     * @return
+     */
+    public ExtensionContext pool() {
+        return pool;
+    }
+
+    void run(RunState state) {
+        this.pool = container.lifetime.newRuntimePool();
+        runtime.launch(state);
+    }
+
+    void shutdown() {
         // Run all initializers
-        for (MethodHandle mh : container.lifetime.startup.methodHandles) {
+        for (MethodHandle mh : container.lifetime.shutdown.methodHandles) {
             try {
                 mh.invokeExact(pool);
             } catch (Throwable e) {
@@ -83,9 +79,9 @@ public class ContainerRunner {
         }
     }
 
-    void shutdown(ContainerSetup container) {
+    void start() {
         // Run all initializers
-        for (MethodHandle mh : container.lifetime.shutdown.methodHandles) {
+        for (MethodHandle mh : container.lifetime.startup.methodHandles) {
             try {
                 mh.invokeExact(pool);
             } catch (Throwable e) {

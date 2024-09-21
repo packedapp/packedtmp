@@ -29,26 +29,27 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import app.packed.build.BuildAuthority;
 import app.packed.build.BuildCodeSource;
 import app.packed.build.BuildGoal;
-import app.packed.component.Authority;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.Extension.ExtensionProperty;
+import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.util.BaseModuleConstants;
 import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
 import internal.app.packed.namespace.PackedNamespaceInstaller;
 import internal.app.packed.namespace.PackedNamespaceTemplate;
-import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.ClassUtil;
 
 /**
@@ -92,15 +93,22 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
     /** The internal configuration of the extension. */
     final ExtensionSetup extension;
 
+    final PackedExtensionHandle<?> handle;
+
     /**
-     * Creates a new extension. Subclasses should have a single package-private constructor.
+     * Creates a new extension. Subclasses should have a single package-private constructor taking {@link ExtensionHandle}
+     * as the single parameter.
+     *
+     * @param handle
+     *            the extension's handle
      *
      * @throws IllegalStateException
      *             if attempting to construct the extension manually
      */
-    protected Extension() {
+    protected Extension(ExtensionHandle handle) {
+        this.handle = (PackedExtensionHandle<?>) requireNonNull(handle);
         // Will fail if the extension is not initialized by the framework
-        this.extension = ExtensionSetup.MAGIC_INITIALIZER.initialize();
+        this.extension = ((PackedExtensionHandle<?>) handle).extension();
     }
 
     /**
@@ -146,7 +154,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
     // Ideen er at man kan streame alle componenter configurationer
     // Baade mirrors or configurations er vel interessante
     // Alternativ Returnere vi en stream, som Packed selv filtrerer, paa operators og typer
-    protected final void componentConfigurations(Authority operator, Class<? extends ComponentConfiguration> componentConfigurationClass,
+    protected final void componentConfigurations(BuildAuthority operator, Class<? extends ComponentConfiguration> componentConfigurationClass,
             Stream.Builder<? super ComponentConfiguration> builder) {
 
     }
@@ -177,10 +185,14 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      * @return the extension or empty
      */
     @SuppressWarnings("unchecked")
-    protected final Optional<E> fromHandle(ContainerHandle<?> handle) {
+    protected final Optional<E> fromContainerHandle(ContainerHandle<?> handle) {
         requireNonNull(handle, "handle is null");
         ExtensionSetup s = ContainerSetup.crack(handle).extensions.get(extension.extensionType);
         return s == null ? Optional.empty() : Optional.ofNullable((E) s.instance());
+    }
+
+    protected final ExtensionHandle handle() {
+        return handle;
     }
 
     /** {@return whether or not this extension's container is the root container in the application.} */
@@ -232,9 +244,9 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
     }
 
     @SuppressWarnings("unchecked")
-    protected final <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name,
-            Function<NamespaceTemplate.Installer, T> factory) {
+    public final <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name, Function<NamespaceTemplate.Installer, T> factory) {
         NamespaceKey nk = new NamespaceKey(template.handleClass(), name);
+        requireNonNull(factory);
 
         Map<NamespaceKey, NamespaceHandle<?, ?>> m = extension.container.application.namespaces;
 
@@ -311,7 +323,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      * @throws InternalExtensionException
      *             if the extension defines an extension point but does not override this method.
      */
-    protected ExtensionPoint<E> newExtensionPoint() {
+    protected ExtensionPoint<E> newExtensionPoint(ExtensionUseSite usesite) {
         // I think it is the same as newExtensionMirror an internal excetion
         throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
     }
@@ -478,43 +490,10 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      * @throws InternalExtensionException
      *             If the extension which the extension point is a part of has not explicitly been declared as a dependency
      *             of this extension
+     * @see ExtensionHandle#use(Class)
      */
     protected final <P extends ExtensionPoint<?>> P use(Class<P> extensionPointClass) {
-        requireNonNull(extensionPointClass, "extensionPointClass is null");
-
-        // Extract the extension class (<E>) from ExtensionPoint<E>
-        Class<? extends Extension<?>> otherExtensionClass = ExtensionPoint.TYPE_VARIABLE_EXTRACTOR.get(extensionPointClass);
-
-        // Check that the extension of requested extension point's is a direct dependency of this extension
-        if (!extension.model.dependsOn(otherExtensionClass)) {
-            // An extension cannot use its own extension point
-            if (otherExtensionClass == getClass()) {
-                throw new InternalExtensionException(otherExtensionClass.getSimpleName() + " cannot use its own extension point " + extensionPointClass);
-            }
-            throw new InternalExtensionException(getClass().getSimpleName() + " must declare " + StringFormatter.format(otherExtensionClass)
-                    + " as a dependency in order to use " + extensionPointClass);
-        }
-
-        ExtensionSetup otherExtension = extension.container.useExtension(otherExtensionClass, extension);
-
-        // Create a new extension point
-        ExtensionPoint<?> newExtensionPoint = otherExtension.instance().newExtensionPoint();
-
-        if (newExtensionPoint == null) {
-            throw new NullPointerException(
-                    "Extension " + otherExtension.model.fullName() + " returned null from " + otherExtension.model.name() + ".newExtensionPoint()");
-        }
-
-        // Make sure it is a proper type of the requested extension point
-        if (!extensionPointClass.isInstance(newExtensionPoint)) {
-            throw new InternalExtensionException(otherExtension.extensionType.getSimpleName() + ".newExtensionPoint() was expected to return an instance of "
-                    + extensionPointClass + ", but returned an instance of " + newExtensionPoint.getClass());
-        }
-
-        // Initializes the extension point
-        newExtensionPoint.initialize(otherExtension, extension);
-
-        return extensionPointClass.cast(newExtensionPoint);
+        return handle.use(extensionPointClass);
     }
 
     /**

@@ -22,8 +22,9 @@ import java.util.function.Function;
 
 import app.packed.application.BaseImage;
 import app.packed.container.Wirelet;
-import internal.app.packed.container.CompositeWirelet;
-import internal.app.packed.container.WireletSelectionArray;
+import app.packed.runtime.RunState;
+import internal.app.packed.container.wirelets.CompositeWirelet;
+import internal.app.packed.container.wirelets.WireletSelectionArray;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /**
@@ -35,8 +36,8 @@ public class Images {
 
         /** {@inheritDoc} */
         @Override
-        public A launch(Wirelet... wirelets) {
-            F result = image.launch(wirelets);
+        public A launch(RunState state, Wirelet... wirelets) {
+            F result = image.launch(state, wirelets);
             return mapper.apply(result);
         }
 
@@ -64,7 +65,7 @@ public class Images {
 
         /** {@inheritDoc} */
         @Override
-        public A launch(Wirelet... wirelets) {
+        public A launch(RunState state, Wirelet... wirelets) {
             BaseImage<A> img = ref.getAndSet(null);
             if (img == null) {
                 throw new IllegalStateException(
@@ -72,7 +73,7 @@ public class Images {
             }
             // Not sure we can GC anything here
             // Think we need to extract a launcher and call it
-            return img.launch(wirelets);
+            return img.launch(state, wirelets);
         }
     }
 
@@ -84,7 +85,7 @@ public class Images {
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
-        public A launch(Wirelet... wirelets) {
+        public A launch(RunState state, Wirelet... wirelets) {
             requireNonNull(wirelets, "wirelets is null");
 
             // If launching an image, the user might have specified additional runtime wirelets
@@ -92,7 +93,7 @@ public class Images {
             if (wirelets.length > 0) {
                 wrapper = WireletSelectionArray.of(CompositeWirelet.flattenAll(wirelets));
             }
-            ApplicationLaunchContext aic = ApplicationLaunchContext.launch(application, wrapper);
+            ApplicationLaunchContext aic = ApplicationLaunchContext.launch(state, application, wrapper);
 
             return (A) application.template.newHolder(aic);
         }
@@ -102,7 +103,7 @@ public class Images {
 
         /** {@inheritDoc} */
         @Override
-        public A launch(Wirelet... wirelets) {
+        public A launch(RunState state, Wirelet... wirelets) {
             requireNonNull(wirelets, "wirelets is null");
 
             // If launching an image, the user might have specified additional runtime wirelets
@@ -110,7 +111,7 @@ public class Images {
             if (wirelets.length > 0) {
                 wrapper = WireletSelectionArray.of(CompositeWirelet.flattenAll(wirelets));
             }
-            ApplicationLaunchContext aic = ApplicationLaunchContext.launch(application.lazyBuild(), wrapper);
+            ApplicationLaunchContext aic = ApplicationLaunchContext.launch(state, application.lazyBuild(), wrapper);
 
             return template.newHolder(aic);
         }

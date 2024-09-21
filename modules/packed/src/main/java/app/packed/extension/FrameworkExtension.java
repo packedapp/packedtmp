@@ -27,4 +27,12 @@ package app.packed.extension;
  *
  * @apiNote This class is not sealed as the framework may consists of multiple modules in the future.
  */
-public abstract class FrameworkExtension<E extends FrameworkExtension<E>> extends Extension<E> {}
+public abstract class FrameworkExtension<E extends FrameworkExtension<E>> extends Extension<E> {
+
+    /**
+     * @param handle
+     */
+    protected FrameworkExtension(ExtensionHandle handle) {
+        super(handle);
+    }
+}

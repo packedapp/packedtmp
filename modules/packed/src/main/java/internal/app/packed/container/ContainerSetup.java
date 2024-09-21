@@ -41,8 +41,10 @@ import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.ContainerBeanStore;
+import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.AbstractTreeMirror;
@@ -51,16 +53,15 @@ import internal.app.packed.component.Mirrorable;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
+import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.service.ServiceNamespaceSetup;
+import internal.app.packed.service.ServiceNamespaceHandle;
+import internal.app.packed.util.AbstractNamedTreeNode;
 import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.NamedTreeNode;
-import internal.app.packed.util.TreeNode;
-import internal.app.packed.util.TreeNode.ActualNode;
 
 /** The internal configuration of a container. */
-public final class ContainerSetup
-        implements ComponentSetup, ActualNode<ContainerSetup>, ContextualizedElementSetup, Mirrorable<ContainerMirror>, BuildLocalSource {
+public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
+        implements ComponentSetup, ContextualizedElementSetup, Mirrorable<ContainerMirror>, BuildLocalSource {
 
     /** A handle that can access ContainerConfiguration#container. */
     private static final VarHandle VH_CONTAINER_CONFIGURATION_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerConfiguration.class,
@@ -100,13 +101,10 @@ public final class ContainerSetup
     /** The lifetime the container is a part of. */
     public final ContainerLifetimeSetup lifetime;
 
-    /** A named tree node representing this container in the application. */
-    public final NamedTreeNode<ContainerSetup> node;
-
     /** The container's service manager. */
-    public final ServiceNamespaceSetup sm;
+    private ServiceNamespaceHandle sm;
 
-//    NamespaceTemplate namespaceTemplate = NamespaceTemplate.of(ServiceNamespaceSetup.class, c -> {});
+    public final PackedContainerTemplate template;
 
     /**
      * Create a new container.
@@ -118,18 +116,17 @@ public final class ContainerSetup
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     ContainerSetup(PackedContainerInstaller installer, ApplicationSetup application, AssemblySetup assembly) {
-        this.node = new NamedTreeNode<>(installer.parent, this);
+        super(installer.parent);
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
-
+        this.template = installer.template;
         installer.locals.forEach((p, o) -> locals().set((PackedContainerLocal) p, this, o));
 
         if (installer.template.kind() == PackedContainerKind.PARENT_LIFETIME) {
-            this.lifetime = node.parent.lifetime;
+            this.lifetime = installer.parent.lifetime;
         } else {
             this.lifetime = new ContainerLifetimeSetup(installer, this, null);
         }
-        this.sm = new ServiceNamespaceSetup(null, this);
         // If a name has been set using a wirelet, we ignore calls to #named(String)
         this.ignoreRename = installer.nameFromWirelet != null;
     }
@@ -199,7 +196,7 @@ public final class ContainerSetup
                 b.invokeBeanOnAssemblyClose();
             }
         }
-        for (ContainerSetup c : node.children.values()) {
+        for (ContainerSetup c : treeChildren.values()) {
             if (assembly == c.assembly) {
                 c.invokeOnAssemblyClose(as);
             }
@@ -208,7 +205,7 @@ public final class ContainerSetup
 
     /** {@return whether or not the container is the root container in the application.} */
     public boolean isApplicationRoot() {
-        return node.parent == null;
+        return treeParent == null;
     }
 
     /** {@return whether or not this container is the root container in the assembly} */
@@ -216,7 +213,7 @@ public final class ContainerSetup
         // The check for parent == null
         // is because AssemblySetup.container is set after BaseExtension is installed
         // for the root container. And we use this method to test
-        return node.parent == null || assembly.container == this;
+        return treeParent == null || assembly.container == this;
     }
 
     /** {@inheritDoc} */
@@ -228,6 +225,11 @@ public final class ContainerSetup
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionClass) {
         requireNonNull(extensionClass, "extensionClass is null");
         return extensions.containsKey(extensionClass);
+    }
+
+    /** {@return whether or not this container is the root of its lifetime.} */
+    public boolean isLifetimeRoot() {
+        return this == lifetime.container;
     }
 
 //    /** {@return the path of this container} */
@@ -248,11 +250,6 @@ public final class ContainerSetup
 //        }
 //        };
 //    }
-
-    /** {@return whether or not this container is the root of its lifetime.} */
-    public boolean isLifetimeRoot() {
-        return this == lifetime.container;
-    }
 
     /**
      * If the container is registered with its own lifetime. This method returns a list of the container's lifetime
@@ -293,7 +290,7 @@ public final class ContainerSetup
 
         // Check that this component is still active and the name can be set
 
-        String currentName = node.name;
+        String currentName = name;
 
         // If the name of the component (container) has been set using a wirelet.
         // Any attempt to override will be ignored
@@ -302,19 +299,13 @@ public final class ContainerSetup
         }
 
         // Unless we are the root container. We need to insert or update this container in the parent container
-        if (node.parent != null) {
-            if (node.parent.node.children.putIfAbsent(newName, this) != null) {
+        if (treeParent!= null) {
+            if (treeParent.treeChildren.putIfAbsent(newName, this) != null) {
                 throw new IllegalArgumentException("A container with the specified name '" + newName + "' already exists in the parent");
             }
-            node.parent.node.children.remove(currentName);
+            treeParent.treeChildren.remove(currentName);
         }
-        node.name = newName;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public TreeNode<ContainerSetup> node() {
-        return node;
+        name = newName;
     }
 
     public <T extends Wirelet> WireletSelection<T> selectWireletsUnsafe(Class<T> wireletClass) {
@@ -327,6 +318,16 @@ public final class ContainerSetup
 //      return new BuildtimeWireletSelection<>(wirelets, wireletClass);
 
         throw new UnsupportedOperationException();
+    }
+
+    public ServiceNamespaceHandle servicesMain() {
+        ServiceNamespaceHandle s = sm;
+        if (s == null) {
+            s = this.sm = base().namespaceLazy(ServiceNamespaceHandle.NT, "main", inst -> {
+                return inst.install(ii -> new ServiceNamespaceHandle(inst, null, this));
+            });
+        }
+        return s;
     }
 
     /**

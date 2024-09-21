@@ -29,6 +29,7 @@ import app.packed.extension.BeanIntrospector;
 import app.packed.extension.BeanTrigger.AnnotatedVariableBeanTrigger;
 import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
 import app.packed.service.Provide;
 import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.mirror.oldMaybe.ProvidedServiceMirror;
@@ -86,7 +87,13 @@ public class TestNew extends BaseAssembly {
     }
 
     public static class MyExt extends Extension<MyExt> {
-        MyExt() {}
+
+        /**
+         * @param handle
+         */
+        MyExt(ExtensionHandle handle) {
+            super(handle);
+        }
 
         @Override
         protected BeanIntrospector newBeanIntrospector() {
@@ -96,7 +103,7 @@ public class TestNew extends BaseAssembly {
                 public void activatedByAnnotatedVariable(Annotation hook, BindableVariable h) {
                     if (hook.annotationType() == XX.class) {
                         String str = h.annotations().readRequired(XX.class).value();
-                        h.bindConstant(str.toUpperCase());
+                        h.bindInstant(str.toUpperCase());
                     } else {
                         super.activatedByAnnotatedVariable(hook, h);
                     }

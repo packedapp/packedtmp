@@ -61,7 +61,7 @@ public final class ServiceSetup {
         this.key = requireNonNull(key);
     }
 
-    public void remove(ServiceNamespaceSetup sm, ServiceBindingSetup sbs) {
+    public void remove(ServiceNamespaceHandle sm, ServiceBindingSetup sbs) {
         bindings.remove(sbs);
         if (bindings.isEmpty()) {
             sm.entries.remove(key);

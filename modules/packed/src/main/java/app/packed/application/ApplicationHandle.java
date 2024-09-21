@@ -24,12 +24,13 @@ import app.packed.build.BuildGoal;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.container.Wirelet;
+import app.packed.runtime.RunState;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.Images.ImageEager;
 import internal.app.packed.application.Images.ImageNonReusable;
+import internal.app.packed.container.wirelets.WireletSelectionArray;
 import internal.app.packed.application.PackedApplicationInstaller;
-import internal.app.packed.container.WireletSelectionArray;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /**
@@ -41,12 +42,14 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
     final ApplicationSetup application;
 
     /** The lazy generated application configuration. */
+    @Nullable
     private C configuration;
 
     @Nullable
     private final BaseImage<?> image;
 
     /** The lazy generated application mirror. */
+    @Nullable
     private ApplicationMirror mirror;
 
     /**
@@ -56,14 +59,14 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
      *            the installer for the application
      */
     public ApplicationHandle(ApplicationTemplate.Installer<A> installer) {
-        PackedApplicationInstaller<A> i = (PackedApplicationInstaller<A>) installer;
-        this.application = requireNonNull(i.application);
+        PackedApplicationInstaller<A> inst = (PackedApplicationInstaller<A>) installer;
+        this.application = requireNonNull(inst.application);
 
         // Build an image if that is the target.
         BaseImage<?> img = null;
-        if (i.goal == BuildGoal.IMAGE) {
+        if (inst.goal == BuildGoal.IMAGE) {
             img = new ImageEager<>(application);
-            if (!i.optionBuildReusableImage) {
+            if (!inst.optionBuildReusableImage) {
                 img = new ImageNonReusable<>(img);
             }
         }
@@ -97,7 +100,7 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
      */
     public final BaseImage<?> image() {
         BaseImage<?> i = image;
-        if (image == null) {
+        if (i == null) {
             throw new IllegalStateException("The application must be installed with BuildImage, was " + application.goal);
         }
         return i;
@@ -107,6 +110,19 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
     @Override
     public final boolean isConfigurable() {
         return application.container().assembly.isConfigurable();
+    }
+
+    @SuppressWarnings("unchecked")
+    public final A launch(RunState state, Wirelet... wirelets) {
+        ApplicationLaunchContext alc = ApplicationLaunchContext.launch(state, this, WireletSelectionArray.of(wirelets));
+        MethodHandle mh = application.launch;
+        Object result;
+        try {
+            result = mh.invokeExact(alc);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+        return (A) result;
     }
 
     /** {@return a mirror for the application} */
@@ -119,6 +135,15 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
         return m;
     }
 
+    @SuppressWarnings("unchecked")
+    protected C newApplicationConfiguration() {
+        return (C) new ApplicationConfiguration(this);
+    }
+
+    protected ApplicationMirror newApplicationMirror() {
+        return new ApplicationMirror(this);
+    }
+
     // Then we need to have a buildtime repository also
     // But then we change at runtime??? Because we still have the handles..
     // Nah, vil jeg ikke have
@@ -127,27 +152,5 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
         // But have instances in multiple InstanceManagers
         // We can have removeFromRepository();
         return Optional.empty();
-    }
-
-    @SuppressWarnings("unchecked")
-    public final A launch(Wirelet... wirelets) {
-        ApplicationLaunchContext alc = ApplicationLaunchContext.launch(this, WireletSelectionArray.of(wirelets));
-        MethodHandle mh = application.launch;
-        Object result;
-        try {
-            result = mh.invokeExact(alc);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-        return (A) result;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected C newApplicationConfiguration() {
-        return (C) new ApplicationConfiguration(this);
-    }
-
-    protected ApplicationMirror newApplicationMirror() {
-        return new ApplicationMirror(this);
     }
 }

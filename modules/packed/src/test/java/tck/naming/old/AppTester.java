@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import app.packed.application.BaseImage;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.runtime.RunState;
 import sandbox.program.ProgramX;
 
 /**
@@ -39,7 +40,7 @@ public class AppTester {
     }
 
     public AppTester(BaseImage<ProgramX> img, Wirelet... wirelets) {
-        this(img.launch(wirelets));
+        this(img.launch(RunState.RUNNING, wirelets));
     }
 
     public void assertPathExist(CharSequence s) {

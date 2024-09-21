@@ -23,14 +23,17 @@ import app.packed.bean.ManagedBeanRequiredException;
 import app.packed.bean.SyntheticBean;
 import app.packed.build.BuildException;
 import app.packed.build.action.BuildActionable;
+import app.packed.component.guest.FromGuest;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerMirror;
+import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint.ServiceanbleBeanHandle;
 import app.packed.extension.BeanElement.BeanField;
 import app.packed.extension.BeanElement.BeanMethod;
+import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.lifetime.Main;
 import app.packed.lifetime.OnInitialize;
 import app.packed.lifetime.OnStart;
@@ -40,6 +43,7 @@ import app.packed.operation.Op1;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTemplate;
+import app.packed.runtime.ManagedLifecycle;
 import app.packed.service.Export;
 import app.packed.service.Provide;
 import app.packed.service.ServiceContract;
@@ -63,9 +67,6 @@ import internal.app.packed.entrypoint.OldEntryPointSetup.MainThreadOfControl;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.PackedServiceLocator;
-import sandbox.extension.container.ContainerTemplate;
-import sandbox.extension.container.guest.GuestIntoAdaptor;
-import sandbox.lifetime.external.LifecycleController;
 
 /**
  * An extension that defines the foundational APIs for managing beans, services, containers and applications.
@@ -97,24 +98,22 @@ import sandbox.lifetime.external.LifecycleController;
 
 public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
+    /**
+     * All your base are belong to us.
+     *
+     * @param handle
+     *            the extension's handle
+     */
+    BaseExtension(ExtensionHandle handle) {
+        super(handle);
+    }
+
     // We use an initial value for now, because we share FromLinks and the boolean fields
     // But right now we only have a single field
     static final ContainerLocal<FromLinks> FROM_LINKS = ContainerLocal.of(FromLinks::new);
 
     // Codegen vars that we need to resolve
     final ArrayList<BindableVariable> varsToResolve = new ArrayList<>();
-
-    /** All your base are belong to us. */
-    BaseExtension() {}
-
-//    Map<Key<?>, Supplier<?>> codegens = new HashMap<>();
-
-//    <K> void addCodeGenerated(Key<K> key, Supplier<? extends K> supplier) {
-    // We need per extension...
-//        if (codegens.putIfAbsent(key, supplier) != null) {
-//            throw new IllegalStateException("A supplier has previously been provided for key [key = " + key + "]");
-//        }
-//    }
 
     // One of 3 models...
     // Fails on other exports
@@ -155,7 +154,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkIsConfigurable();
 
-        extension.container.sm.exportAll = true;
+        extension.container.servicesMain().exportAll = true;
     }
 
     /**
@@ -273,12 +272,12 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         ha.configuration().exportAs(ServiceLocator.class);
 
         // PackedServiceLocator needs a Map<Key, MethodHandle> which is created in the code generation phase
-        BeanSetup.crack(ha).addCodeGenerated(new Key<Map<Key<?>, MethodHandle>>() {}, () -> extension.container.sm.exportedServices());
+        BeanSetup.crack(ha).bindCodeGenerator(new Key<Map<Key<?>, MethodHandle>>() {}, () -> extension.container.servicesMain().exportedServices());
 
         // Alternative, If we do not use it for anything else
         newBeanBuilderSelf(BeanKind.CONTAINER.template()).installIfAbsent(PackedServiceLocator.class, BeanConfiguration.class, BeanHandle::new, bh -> {
             bh.exportAs(ServiceLocator.class);
-            BeanSetup.crack(bh).addCodeGenerated(new Key<Map<Key<?>, MethodHandle>>() {}, () -> extension.container.sm.exportedServices());
+            BeanSetup.crack(bh).bindCodeGenerator(new Key<Map<Key<?>, MethodHandle>>() {}, () -> extension.container.servicesMain().exportedServices());
         });
     }
 
@@ -397,7 +396,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             /** Handles {@link ContainerGuest}, {@link InvocationArgument} and {@link CodeGenerated}. */
             @Override
             public void activatedByAnnotatedVariable(Annotation annotation, BindableVariable v) {
-                if (annotation instanceof GuestIntoAdaptor) {
+                if (annotation instanceof FromGuest) {
                     Variable va = v.variable();
                     if (va.rawType().equals(ApplicationMirror.class)) { // AssignableTo in case of
                         // TODO we need to be able to insert some casts here ApplicationMirror -> to actual type
@@ -405,8 +404,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                     } else if (va.rawType().equals(String.class)) {
                         // Burde vel vaere en generics BeanInvocationContext her???
                         v.bindOp(new Op1<ApplicationLaunchContext, String>(a -> a.name()) {});
-                    } else if (va.rawType().equals(LifecycleController.class)) {
-                        v.bindOp(new Op1<ApplicationLaunchContext, LifecycleController>(a -> a.runner.runtime) {});
+                    } else if (va.rawType().equals(ManagedLifecycle.class)) {
+                        v.bindOp(new Op1<ApplicationLaunchContext, ManagedLifecycle>(a -> a.runner.runtime) {});
                     } else if (va.rawType().equals(ServiceLocator.class)) {
                         v.bindOp(new Op1<ApplicationLaunchContext, ServiceLocator>(a -> a.serviceLocator()) {});
                     } else {
@@ -446,17 +445,17 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 //                    }
                     binding.bindContext(ExtensionContext.class);
                 } else if (actualHook == DeploymentMirror.class) {
-                    binding.bindConstant(operation.bean.container.application.deployment.mirror());
+                    binding.bindInstant(operation.bean.container.application.deployment.mirror());
                 } else if (actualHook == ApplicationMirror.class) {
-                    binding.bindConstant(operation.bean.container.application.mirror());
+                    binding.bindInstant(operation.bean.container.application.mirror());
                 } else if (actualHook == ContainerMirror.class) {
-                    binding.bindConstant(operation.bean.container.mirror());
+                    binding.bindInstant(operation.bean.container.mirror());
                 } else if (actualHook == AssemblyMirror.class) {
-                    binding.bindConstant(operation.bean.container.assembly.mirror());
+                    binding.bindInstant(operation.bean.container.assembly.mirror());
                 } else if (actualHook == BeanMirror.class) {
-                    binding.bindConstant(operation.bean.mirror());
+                    binding.bindInstant(operation.bean.mirror());
                 } else if (actualHook == OperationMirror.class) {
-                    binding.bindConstant(operation.mirror());
+                    binding.bindInstant(operation.mirror());
                 } else {
                     // will always fail
                     binding.checkAssignableTo(ExtensionContext.class, DeploymentMirror.class, ApplicationMirror.class, ContainerMirror.class,
@@ -497,7 +496,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                         }
                     }
                     OperationSetup operation = OperationSetup.crack(method.newOperation(temp2).install(OperationHandle::new));
-                    bean.container.sm.provide(method.toKey(), operation, new FromOperationResult(operation));
+                    bean.container.servicesMain().provide(method.toKey(), operation, new FromOperationResult(operation));
                 } else if (annotation instanceof Export) {
                     OperationTemplate temp2 = OperationTemplate.defaults().reconfigure(c -> c.returnType(method.operationType().returnRawType()));
 
@@ -507,7 +506,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
                         }
                     }
                     OperationSetup operation = OperationSetup.crack(method.newOperation(temp2).install(OperationHandle::new));
-                    bean.container.sm.export(method.toKey(), operation);
+                    bean.container.servicesMain().export(method.toKey(), operation);
                 } else if (annotation instanceof Main) {
                     if (!isInApplicationLifetime()) {
                         throw new BeanInstallationException("Must be in the application lifetime to use @" + Main.class.getSimpleName());
@@ -540,8 +539,8 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /** {@inheritDoc} */
     @Override
-    protected BaseExtensionPoint newExtensionPoint() {
-        return new BaseExtensionPoint();
+    protected BaseExtensionPoint newExtensionPoint(ExtensionUseSite usesite) {
+        return new BaseExtensionPoint(usesite);
     }
 
     /**

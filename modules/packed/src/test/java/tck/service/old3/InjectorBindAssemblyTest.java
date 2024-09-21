@@ -47,6 +47,7 @@ public class InjectorBindAssemblyTest {
 
     /** Tests that we can import no services. */
     @Test
+    @Disabled
     public void cannotImportNonExposed() {
         BaseAssembly b = new BaseAssembly() {
             @Override

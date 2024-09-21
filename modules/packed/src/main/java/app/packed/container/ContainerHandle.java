@@ -27,7 +27,6 @@ import app.packed.operation.OperationHandle;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.context.publish.ContextTemplate;
-import sandbox.extension.container.ContainerTemplate;
 import sandbox.extension.context.ContextSpanKind;
 
 /**

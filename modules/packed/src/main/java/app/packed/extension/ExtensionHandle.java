@@ -15,11 +15,14 @@
  */
 package app.packed.extension;
 
+import internal.app.packed.extension.PackedExtensionHandle;
+
 /**
  *
  */
 // Supports all non callback methods from extension... IDK
 // So an ExtensionConfiguration???
-interface ExtensionHandle {
+public sealed interface ExtensionHandle permits PackedExtensionHandle {
 
+    <P extends ExtensionPoint<?>> P use(Class<P> extensionPointClass);
 }

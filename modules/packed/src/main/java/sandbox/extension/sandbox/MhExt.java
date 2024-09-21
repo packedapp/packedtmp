@@ -26,6 +26,7 @@ import app.packed.bean.ComputedConstant;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
+import app.packed.extension.ExtensionHandle;
 import app.packed.lifetime.OnInitialize;
 import app.packed.operation.OperationHandle;
 
@@ -70,7 +71,13 @@ public class MhExt extends BaseAssembly {
 
     public static class MyE extends Extension<MyE> {
 
-        MyE() {}
+
+        /**
+         * @param handle
+         */
+        protected MyE(ExtensionHandle handle) {
+            super(handle);
+        }
 
         BeanHandle<?> h;
 

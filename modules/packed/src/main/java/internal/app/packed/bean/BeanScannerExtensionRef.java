@@ -16,7 +16,7 @@
 package internal.app.packed.bean;
 
 import app.packed.extension.BeanIntrospector;
-import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.extension.ExtensionSetup;
 
 /**
  * An instance of this class is created for each extension that participates in the introspection of a single bean.

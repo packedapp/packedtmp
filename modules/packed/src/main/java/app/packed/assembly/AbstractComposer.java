@@ -23,7 +23,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
-import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 

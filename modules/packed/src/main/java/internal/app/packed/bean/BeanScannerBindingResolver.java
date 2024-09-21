@@ -22,8 +22,8 @@ import app.packed.util.Variable;
 import internal.app.packed.bean.BeanHookModel.AnnotatedParameterType;
 import internal.app.packed.bean.BeanHookModel.ParameterType;
 import internal.app.packed.binding.InternalDependency;
-import internal.app.packed.container.AuthoritySetup;
-import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.build.AuthoritySetup;
+import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -78,10 +78,10 @@ final class BeanScannerBindingResolver {
 
 //        bean.sns().bind(ia.key(), !ia.isOptional(), operation, index);
         if (e == null) {
-            operation.bindings[index] = bean.container.sm.bind(ia.key(), !ia.isOptional(), operation, index);
+            operation.bindings[index] = bean.container.servicesMain().bind(ia.key(), !ia.isOptional(), operation, index);
         } else {
             ExtensionSetup es = operation.bean.container.extensions.get(e);
-            operation.bindings[index] = es.sm.bind(ia.key(), !ia.isOptional(), operation, index);
+            operation.bindings[index] = es.sm().bind(ia.key(), !ia.isOptional(), operation, index);
         }
     }
 }

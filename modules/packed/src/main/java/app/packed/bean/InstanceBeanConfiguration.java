@@ -64,7 +64,6 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
         super.bindInstance(key, instance);
         return this;
     }
-
 }
 
 //Skal bruges paa params som skal "bootstrappes" med...

@@ -20,8 +20,8 @@ import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.ComputedConstant;
+import app.packed.build.BuildAuthority;
 import app.packed.build.hook.BuildHook;
-import app.packed.component.Authority;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
@@ -37,15 +37,15 @@ import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
+import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.ComponentSetup;
-import internal.app.packed.container.AuthoritySetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
+import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
@@ -54,7 +54,7 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
 import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationSetup;
 import internal.app.packed.operation.PackedOperationTemplate;
-import internal.app.packed.service.ServiceNamespaceSetup;
+import internal.app.packed.service.ServiceNamespaceHandle;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -167,13 +167,11 @@ public final class BeanSetup implements ComponentSetup, ContextualizedElementSet
         }
     }
 
-    public <K> void addCodeGenerated(Key<K> key, Supplier<? extends K> supplier) {
+    public <K> void bindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
         requireNonNull(key, "key is null");
         requireNonNull(supplier, "supplier is null");
 
-//      if (true) {
-//          addCodeGenerated(key, supplier);
-//      }
+
         Map<Key<?>, BindableVariable> m = locals().get(BeanSetup.CODEGEN, this);
         BindableVariable var = m.get(key);
         if (var == null) {
@@ -287,15 +285,15 @@ public final class BeanSetup implements ComponentSetup, ContextualizedElementSet
 //        return new PackedNamespacePath(paths);
 //    }
 
-    public Authority owner() {
+    public BuildAuthority owner() {
         return owner.authority();
     }
 
-    public ServiceNamespaceSetup serviceNamespace() {
+    public ServiceNamespaceHandle serviceNamespace() {
         if (owner instanceof ExtensionSetup es) {
-            return es.sm;
+            return es.sm();
         } else {
-            return container.sm;
+            return container.servicesMain();
         }
     }
 

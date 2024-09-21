@@ -17,6 +17,7 @@ package sandbox.program;
 
 import app.packed.assembly.BaseAssembly;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
 
 /**
  *
@@ -35,7 +36,13 @@ public class Ele extends BaseAssembly {
     }
 
     public static class MyE extends Extension<MyE> {
-        MyE() {}
+
+        /**
+         * @param handle
+         */
+        protected MyE(ExtensionHandle handle) {
+            super(handle);
+        }
     }
 
     record Foo() {

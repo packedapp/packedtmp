@@ -30,6 +30,7 @@ import app.packed.assembly.DelegatingAssembly;
 import app.packed.build.hook.BuildHook;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerLocal;
+import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
@@ -37,9 +38,12 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
+import internal.app.packed.assembly.AssemblySetup;
+import internal.app.packed.container.wirelets.CompositeWirelet;
+import internal.app.packed.container.wirelets.InternalBuildWirelet;
+import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
-import sandbox.extension.container.ContainerTemplate;
 
 /** Implementation of {@link ContainerTemplate.Installer} */
 public final class PackedContainerInstaller implements ContainerTemplate.Installer {
@@ -74,6 +78,7 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
 
     /** The parent of the new container. Or <code>null</code> if a root container. */
     @Nullable
+    public
     ContainerSetup parent;
 
     /** The template for the new container. */
@@ -218,7 +223,7 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
 
         String n = nn;
         if (parent != null) {
-            HashMap<String, ContainerSetup> c = parent.node.children;
+            HashMap<String, ContainerSetup> c = parent.treeChildren;
             if (c.size() == 0) {
                 c.put(n, container);
             } else {
@@ -230,7 +235,7 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
                 }
             }
         }
-        container.node.name = n;
+        container.name = n;
 
         this.container = container;
 

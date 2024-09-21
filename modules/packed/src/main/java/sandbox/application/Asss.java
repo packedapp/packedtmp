@@ -22,6 +22,7 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
 import app.packed.build.BuildProcess;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
 import app.packed.lifetime.OnInitialize;
 
 /**
@@ -75,7 +76,10 @@ public class Asss extends BaseAssembly {
     public record Boo(Foo f) {}
 
     public static class MyExt extends Extension<MyExt> {
-        MyExt() {}
+
+        MyExt(ExtensionHandle handle) {
+            super(handle);
+        }
 
         @Override
         protected void onNew() {

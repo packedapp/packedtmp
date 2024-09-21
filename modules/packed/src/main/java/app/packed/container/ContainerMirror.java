@@ -16,8 +16,8 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
+import app.packed.build.BuildAuthority;
 import app.packed.build.hook.BuildHookMirror;
-import app.packed.component.Authority;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
@@ -34,9 +34,9 @@ import app.packed.operation.OperationMirror;
 import app.packed.util.Nullable;
 import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.ExtensionModel;
-import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.context.ContextSetup;
+import internal.app.packed.extension.ExtensionModel;
+import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.ClassUtil;
@@ -107,7 +107,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
      * need to include those.
      */
     public Stream<BeanMirror> beans() {
-        return allBeans().filter(m -> m.declaredBy() == Authority.application());
+        return allBeans().filter(m -> m.declaredBy() == BuildAuthority.application());
     }
 
     /**
@@ -119,7 +119,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
 
     /** {@return a set of all boundaries to this container's parent. Or empty if family root.} */
     public EnumSet<ContainerBoundaryKind> bondariesToParent() {
-        ContainerSetup parent = handle.container.node.parent;
+        ContainerSetup parent = handle.container.treeParent;
         if (parent != null) {
             ContainerSetup c = handle.container;
 
@@ -242,7 +242,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
      * @return the name of this container
      */
     public String name() {
-        return handle.container.node.name;
+        return handle.container.name;
     }
 
     /** {@return all the namespaces this container operates within.} */

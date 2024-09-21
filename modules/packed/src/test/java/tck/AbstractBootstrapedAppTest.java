@@ -30,16 +30,17 @@ import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.component.Authority;
+import app.packed.build.BuildAuthority;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationMirror;
+import app.packed.runtime.RunState;
 import app.packed.service.ServiceableBeanConfiguration;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationTemplate;
-import internal.app.packed.container.WireletSelectionArray;
+import internal.app.packed.container.wirelets.WireletSelectionArray;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import tck.AbstractAppTest.InternalTestState.State3Build;
 
@@ -102,7 +103,7 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         ApplicationSetup as = b.application;
 
         // Right now we do not support runtime wirelets
-        ApplicationLaunchContext alc = ApplicationLaunchContext.launch(as, WireletSelectionArray.of(wirelets));
+        ApplicationLaunchContext alc = ApplicationLaunchContext.launch(RunState.TERMINATED, as, WireletSelectionArray.of(wirelets));
 
         A app = (A) internals.template.newHolder(alc);
         b.app = app;
@@ -156,7 +157,7 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         }
 
         public BeanMirror findSingleBean(ContainerMirror c) {
-            List<BeanMirror> beans = c.beans().filter(b -> b.declaredBy() == Authority.application()).toList();
+            List<BeanMirror> beans = c.beans().filter(b -> b.declaredBy() == BuildAuthority.application()).toList();
             assertThat(beans).hasSize(1);
             return beans.get(0);
         }

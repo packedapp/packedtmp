@@ -22,6 +22,7 @@ import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.container.Wirelets;
+import app.packed.runtime.RunState;
 
 /**
  *
@@ -87,7 +88,7 @@ public final class CliApp {
 
         /** Runs the application represented by this image. */
         public void run() {
-            image.launch();
+            image.launch(RunState.TERMINATED);
         }
 
         /**
@@ -97,7 +98,7 @@ public final class CliApp {
          *            optional wirelets
          */
         public void run(Wirelet... wirelets) {
-            image.launch(wirelets);
+            image.launch(RunState.TERMINATED, wirelets);
         }
     }
 

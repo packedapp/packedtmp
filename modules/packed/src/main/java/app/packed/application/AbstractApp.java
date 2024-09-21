@@ -17,15 +17,23 @@ package app.packed.application;
 
 import java.util.concurrent.TimeUnit;
 
+import app.packed.component.guest.FromGuest;
+import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
+import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
 
 /**
  * Ideen var lidt at man bare extended nogle faa metoder. Og saa havde man en working implementation.
  */
-// IDK
+// IDK hvad er det man vil?
 class AbstractApp implements App {
+    final ManagedLifecycle lc;
+
+    AbstractApp(ManagedLifecycle lc) {
+        this.lc = lc;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -53,7 +61,7 @@ class AbstractApp implements App {
     /** {@inheritDoc} */
     @Override
     public RunState state() {
-        throw new UnsupportedOperationException();
+        return lc.currentState();
     }
 
     /** {@inheritDoc} */
@@ -68,13 +76,13 @@ class AbstractApp implements App {
         /** {@inheritDoc} */
         @Override
         public void run() {
-            image.launch();
+            image.launch(RunState.TERMINATED);
         }
 
         /** {@inheritDoc} */
         @Override
         public void run(Wirelet... wirelets) {
-            image.launch(wirelets);
+            image.launch(RunState.TERMINATED, wirelets);
         }
 
         /** {@inheritDoc} */
@@ -92,10 +100,12 @@ class AbstractApp implements App {
 
     /** Default implementation of App. */
     static final class DefaultApp extends AbstractApp {
+        DefaultApp(@FromGuest ManagedLifecycle c) {
+            super(c);
+        }
 
-        /** The bootstrap app. */
-        static final BootstrapApp<Void> BOOTSTRAP = ApplicationTemplate.of(c -> {}).newBootstrapApp();
-
-        static final BootstrapApp<DefaultApp> BOOTSTRAP2 = ApplicationTemplate.of(DefaultApp.class, c -> {}).newBootstrapApp();
+        static final BootstrapApp<DefaultApp> BOOTSTRAP = ApplicationTemplate.of(DefaultApp.class, c -> {
+            c.container(ContainerTemplate.MANAGED);
+        }).newBootstrapApp();
     }
 }

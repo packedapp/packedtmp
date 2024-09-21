@@ -29,10 +29,7 @@ import app.packed.assembly.Assembly;
 import app.packed.bean.BeanTemplate;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
-import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.PackedContainerKind;
-import internal.app.packed.container.PackedContainerTemplate;
-import internal.app.packed.container.PackedContainerTemplate.PackedContainerTemplateConfigurator;
+import app.packed.runtime.RunState;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /**
@@ -95,22 +92,20 @@ public final /* value */ class PackedBootstrapApp<A> implements BootstrapApp<A> 
         return (BaseImage<A>) handle.image();
     }
 
-
     /** {@inheritDoc} */
     @Override
-    public A launch(Assembly assembly, Wirelet... wirelets) {
+    public A launch(RunState state, Assembly assembly, Wirelet... wirelets) {
         ApplicationTemplate.Installer<A> installer = template.newInstaller(BuildGoal.LAUNCH, wirelets);
 
         // Build the application
         ApplicationHandle<?, ?> handle = installer.install(assembly, ApplicationHandle::new);
 
         // Launch the application
-        ApplicationLaunchContext aic = ApplicationLaunchContext.launch(handle, null);
+        ApplicationLaunchContext aic = ApplicationLaunchContext.launch(state, handle, null);
 
         // Create and return an instance of the application interface
         return template.newHolder(aic);
     }
-
 
     /** {@inheritDoc} */
     @Override
@@ -143,9 +138,7 @@ public final /* value */ class PackedBootstrapApp<A> implements BootstrapApp<A> 
         // Build the bootstrap application
         installer.buildApplication(new Composer.BootstrapAppAssembly(composer, a -> {}));
 
-        PackedContainerTemplateConfigurator containerTemplate = new PackedContainerTemplateConfigurator(
-                new PackedContainerTemplate(PackedContainerKind.ROOT_UNMANAGED, template.guestClass()));
-        PackedApplicationTemplate<A> t = new PackedApplicationTemplate<>(template.guestClass(), null, containerTemplate.pbt, composer.mh, false);
+        PackedApplicationTemplate<A> t = new PackedApplicationTemplate<>(template.guestClass(), null, template.containerTemplate(), composer.mh);
         return new PackedBootstrapApp<>(t);
     }
 
@@ -172,11 +165,8 @@ public final /* value */ class PackedBootstrapApp<A> implements BootstrapApp<A> 
             if (template.guestClass() == Void.class) {
                 return;
             }
-            // We need some hack to install a
-            ExtensionSetup es = ExtensionSetup.crack(base());
-
-            // Create a the guest bean installer
-            BeanTemplate.Installer installer = PackedApplicationTemplate.GB.newInstaller(es, es.container.assembly);
+            // Create a new installer
+            BeanTemplate.Installer installer = PackedApplicationTemplate.GB.newInstallerForUser(base());
 
             // Install it (code is shared with App-On-App)
             template.installGuestBean(installer, m -> mh = m);
@@ -191,4 +181,3 @@ public final /* value */ class PackedBootstrapApp<A> implements BootstrapApp<A> 
         }
     }
 }
-

@@ -26,6 +26,7 @@ import app.packed.extension.BeanIntrospector;
 import app.packed.extension.BeanTrigger.AnnotatedVariableBeanTrigger;
 import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
 import app.packed.lifetime.OnInitialize;
 import app.packed.operation.Op0;
 import app.packed.operation.Op1;
@@ -67,7 +68,13 @@ public class OSITest extends BaseAssembly {
     @interface BuildTime {}
 
     static class MyExt extends Extension<MyExt> {
-        MyExt() {}
+
+        /**
+         * @param handle
+         */
+        protected MyExt(ExtensionHandle handle) {
+            super(handle);
+        }
 
         @Override
         protected BeanIntrospector newBeanIntrospector() {

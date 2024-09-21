@@ -22,7 +22,9 @@ import org.junit.jupiter.api.Test;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
+import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
+import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import tck.AppAppTest;
 
 /**
@@ -39,6 +41,13 @@ public class OnNewInstallExtensionTest extends AppAppTest {
     @DependsOn(extensions = Ex2.class)
     static final class Ex1 extends Extension<Ex1> {
 
+        /**
+         * @param handle
+         */
+        Ex1(ExtensionHandle handle) {
+            super(handle);
+        }
+
         @Override
         protected void onNew() {
             use(Ex2.Sub.class);
@@ -48,10 +57,18 @@ public class OnNewInstallExtensionTest extends AppAppTest {
     @DependsOn(extensions = Ex3.class)
     static final class Ex2 extends Extension<Ex2> {
 
-        @Override
-        protected Sub newExtensionPoint() {
-            return new Sub();
+        /**
+         * @param handle
+         */
+         Ex2(ExtensionHandle handle) {
+            super(handle);
         }
+
+        @Override
+        protected Sub newExtensionPoint(ExtensionUseSite usesite) {
+            return new Sub(usesite);
+        }
+
         @Override
         protected void onNew() {
             use(Ex3.Ex3ExtensionPoint.class);
@@ -59,17 +76,38 @@ public class OnNewInstallExtensionTest extends AppAppTest {
 
         class Sub extends ExtensionPoint<Ex2> {
 
+            /**
+             * @param usesite
+             */
+            protected Sub(ExtensionUseSite usesite) {
+                super(usesite);
+            }
+
         }
     }
 
     static final class Ex3 extends Extension<Ex3> {
 
+        /**
+         * @param handle
+         */
+        protected Ex3(ExtensionHandle handle) {
+            super(handle);
+        }
+
         @Override
-        protected Ex3ExtensionPoint newExtensionPoint() {
-            return new Ex3ExtensionPoint();
+        protected Ex3ExtensionPoint newExtensionPoint(ExtensionUseSite usesite) {
+            return new Ex3ExtensionPoint(usesite);
         }
 
         class Ex3ExtensionPoint extends ExtensionPoint<Ex3> {
+
+            /**
+             * @param usesite
+             */
+            protected Ex3ExtensionPoint(ExtensionUseSite usesite) {
+                super(usesite);
+            }
 
         }
     }

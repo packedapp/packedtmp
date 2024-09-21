@@ -41,7 +41,14 @@ public class ExtensionDescriptorTest {
     @DependsOn(extensions = EmptyExtension.class)
     static class VariousExtension extends Extension<VariousExtension> {
 
-        //@ExposeAttribute(declaredBy = ExtensionDescriptorTest.class, name = "description")
+        /**
+         * @param handle
+         */
+        VariousExtension(ExtensionHandle handle) {
+            super(handle);
+        }
+
+        // @ExposeAttribute(declaredBy = ExtensionDescriptorTest.class, name = "description")
         SomeContract expose() {
             return new SomeContract();
         }
@@ -68,5 +75,13 @@ public class ExtensionDescriptorTest {
         }
     }
 
-    static class EmptyExtension extends Extension<EmptyExtension> {}
+    static class EmptyExtension extends Extension<EmptyExtension> {
+
+        /**
+         * @param handle
+         */
+        protected EmptyExtension(ExtensionHandle handle) {
+            super(handle);
+        }
+    }
 }

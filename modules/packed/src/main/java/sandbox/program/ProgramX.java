@@ -20,11 +20,13 @@ import app.packed.application.ApplicationTemplate;
 import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
+import app.packed.component.guest.FromGuest;
+import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
+import app.packed.runtime.ManagedLifecycle;
+import app.packed.runtime.RunState;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Key;
-import sandbox.extension.container.guest.GuestIntoAdaptor;
-import sandbox.lifetime.external.LifecycleController;
 
 /**
  * An App (application) is a type of artifact provided by Packed.
@@ -52,7 +54,7 @@ public interface ProgramX extends AutoCloseable {
      *
      * @return this application's host.
      */
-    LifecycleController runtime();
+    ManagedLifecycle runtime();
 
     /**
      * Returns this app's service locator.
@@ -148,13 +150,13 @@ public interface ProgramX extends AutoCloseable {
      *             if the application could not be build, initialized or started
      */
     static ProgramX start(Assembly assembly, Wirelet... wirelets) {
-        return driver().launch(assembly, wirelets);
+        return driver().launch(RunState.RUNNING, assembly, wirelets);
     }
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementationX(@GuestIntoAdaptor String name, @GuestIntoAdaptor ServiceLocator services,
-        @GuestIntoAdaptor LifecycleController runtime) implements ProgramX {
+record ProgramImplementationX(@FromGuest String name, @FromGuest ServiceLocator services,
+        @FromGuest ManagedLifecycle runtime) implements ProgramX {
 
     ProgramImplementationX {
         // System.out.println(services.keys());
@@ -163,7 +165,7 @@ record ProgramImplementationX(@GuestIntoAdaptor String name, @GuestIntoAdaptor S
     /** An driver for creating App instances. */
 
     static final BootstrapApp<ProgramImplementationX> DRIVER =
-            ApplicationTemplate.of(ProgramImplementationX.class, c -> c.managedLifetime()).newBootstrapApp();
+            ApplicationTemplate.of(ProgramImplementationX.class, c -> c.container(ContainerTemplate.MANAGED)).newBootstrapApp();
 
 
     /** {@inheritDoc} */

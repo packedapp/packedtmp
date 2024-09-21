@@ -29,12 +29,12 @@ import java.util.function.Supplier;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BeanTrigger.InheritableBindingClassBeanTrigger;
 import app.packed.util.Nullable;
-import internal.app.packed.container.CompositeWirelet;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.InternalBuildWirelet;
 import internal.app.packed.container.NameCheck;
 import internal.app.packed.container.PackedContainerInstaller;
-import internal.app.packed.container.WrappingWirelet;
+import internal.app.packed.container.wirelets.CompositeWirelet;
+import internal.app.packed.container.wirelets.InternalBuildWirelet;
+import internal.app.packed.container.wirelets.WrappingWirelet;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /**
@@ -265,7 +265,7 @@ public abstract class Wirelet {
 
             /** {@inheritDoc} */
             @Override
-            protected void onBuild(PackedContainerInstaller installer) {
+            public  void onBuild(PackedContainerInstaller installer) {
                 installer.nameFromWirelet = name;// has already been validated
             }
         }

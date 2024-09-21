@@ -1,11 +1,10 @@
 package app.packed.extension;
 
-import app.packed.component.Authority;
-import app.packed.util.Nullable;
-import internal.app.packed.container.ExtensionModel;
-import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.PackedExtensionPointContext;
-import internal.app.packed.util.types.TypeVariableExtractor;
+import static java.util.Objects.requireNonNull;
+
+import app.packed.build.BuildAuthority;
+import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.extension.PackedExtensionUseSite;
 
 /**
  * Extension points are the main mechanism by which an extension can use another extension. Developers that do not
@@ -47,34 +46,21 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  */
 public abstract class ExtensionPoint<E extends Extension<E>> {
 
-    /** Maps an ExtensionPoint class to the type parameter (E). */
-    final static ClassValue<Class<? extends Extension<?>>> TYPE_VARIABLE_EXTRACTOR = new ClassValue<>() {
-
-        /** A type variable extractor. */
-        private static final TypeVariableExtractor EXTRACTOR = TypeVariableExtractor.of(ExtensionPoint.class);
-
-        /** {@inheritDoc} */
-        @Override
-        protected Class<? extends Extension<?>> computeValue(Class<?> type) {
-            return ExtensionModel.extractE(EXTRACTOR, type);
-        }
-    };
-
     /**
      * A context for this extension point. Is initialized via {@link #initialize(PackedExtensionPointContext)}..
      * <p>
      * This field should only be read via {@link #contextUse()}.
      */
-    //TODO USE MAGIC initializer
-    @Nullable
-    private PackedExtensionPointContext context;
+    private final PackedExtensionUseSite usesite;
 
     /**
      * Create a new extension point.
      * <p>
      * Subclasses should never exposed any public constructors.
      */
-    protected ExtensionPoint() {}
+    protected ExtensionPoint(ExtensionUseSite usesite) {
+        this.usesite = (internal.app.packed.extension.PackedExtensionUseSite) requireNonNull(usesite);
+    }
 
     /**
      * Checks that the extension that uses this extension point is still configurable.
@@ -95,13 +81,13 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
         }
     }
 
-    protected final UseSite context() {
+    protected final ExtensionUseSite context() {
         return contextUse();
     }
 
     /** {@return the context for this extension point.} */
-    final PackedExtensionPointContext contextUse() {
-        PackedExtensionPointContext c = context;
+    final PackedExtensionUseSite contextUse() {
+        PackedExtensionUseSite c = usesite;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of an extension point.");
         }
@@ -117,20 +103,20 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     final ExtensionSetup extensionSetup() {
         return contextUse().extension();
     }
-
-    /**
-     * Invoked by {@link packed.internal.container.ExtensionMirrorModel#initialize(ExtensionMirror, ExtensionSetup)} to set
-     * the context of this extension point.
-     *
-     * @param context
-     *            the context of this extension point
-     */
-    final void initialize(ExtensionSetup extension, ExtensionSetup usedBy) {
-        if (this.context != null) {
-            throw new IllegalStateException("This extension point has already been initialized.");
-        }
-        this.context = new PackedExtensionPointContext(extension, usedBy);
-    }
+//
+//    /**
+//     * Invoked by {@link packed.internal.container.ExtensionMirrorModel#initialize(ExtensionMirror, ExtensionSetup)} to set
+//     * the context of this extension point.
+//     *
+//     * @param context
+//     *            the context of this extension point
+//     */
+//    final void initialize(ExtensionSetup extension, ExtensionSetup usedBy) {
+//        if (this.context != null) {
+//            throw new IllegalStateException("This extension point has already been initialized.");
+//        }
+//        this.context = new PackedExtensionPointContext(extension, usedBy);
+//    }
 
     /** {@return the type of extension that are using the extension point.} */
     protected final Class<? extends Extension<?>> usedBy() {
@@ -143,7 +129,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     // Inner class: UseSite
     //// Er lidt underlig maaske med UseSite hvis man tager den som parameter
     //// Men vil ikke mere hvor man skal tage et ExtensionPointContext???
-    public sealed interface UseSite permits PackedExtensionPointContext {
-        Authority author();
+    public sealed interface ExtensionUseSite permits PackedExtensionUseSite {
+        BuildAuthority author();
     }
 }

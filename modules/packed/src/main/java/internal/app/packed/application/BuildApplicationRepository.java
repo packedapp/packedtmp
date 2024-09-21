@@ -31,27 +31,22 @@ import app.packed.build.BuildGoal;
  */
 public final class BuildApplicationRepository {
 
-    private Map<String, ApplicationHandle<?, ?>> handles = new HashMap<>();
+    private final Map<String, Fut> buildThese = new HashMap<>();
 
-    final PackedApplicationTemplate<?> template;
+    final Map<String, ApplicationHandle<?, ?>> handles = new HashMap<>();
 
-    private Map<String, Fut> toBuild = new HashMap<>();
+    final HashMap<ApplicationTemplate<?>, MethodHandle> ms = new HashMap<>();
 
-    public MethodHandle guest;
-
-    public BuildApplicationRepository(ApplicationTemplate<?> template) {
-        this.template = (PackedApplicationTemplate<?>) requireNonNull(template);
-    }
-
-    public void add(String name, Consumer<?> installer) {
-        toBuild.putIfAbsent(name, new Fut(name, installer));
+    public void add(PackedApplicationTemplate<?> template, String name, Consumer<?> installer) {
+        buildThese.putIfAbsent(name, new Fut(template, name, installer));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void build() {
-        for (Fut f : toBuild.values()) {
+        for (Fut f : buildThese.values()) {
 
-            PackedApplicationInstaller<?> pai = template.newInstaller(BuildGoal.IMAGE);
+            PackedApplicationInstaller<?> pai = f.template.newInstaller(BuildGoal.IMAGE);
+            pai.launcher = requireNonNull(ms.get(f.template));
             pai.bar = this;
             ((Consumer) f.installer).accept(pai);
 
@@ -61,14 +56,13 @@ public final class BuildApplicationRepository {
         }
     }
 
-    public Map<String, ApplicationHandle<?, ?>> forInit() {
+    Map<String, ApplicationHandle<?, ?>> forInit() {
         return handles;
     }
 
-    /**
-    *
-    */
-    public record Fut(String name, Consumer<?> installer) {
-
+    public void onLauncherBuild(ApplicationTemplate<?> template, MethodHandle mh) {
+        ms.put(template, mh);
     }
+
+    private record Fut(PackedApplicationTemplate<?> template, String name, Consumer<?> installer) {}
 }

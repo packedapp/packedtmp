@@ -1,5 +1,7 @@
 package app.packed.assembly;
 
+import static java.util.Objects.requireNonNull;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +17,7 @@ import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.util.AnnotationList;
 import app.packed.util.TreeView;
 import app.packed.util.TreeView.Node;
-import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ContainerSetup.PackedContainerTreeMirror;
 
@@ -23,12 +25,14 @@ import internal.app.packed.container.ContainerSetup.PackedContainerTreeMirror;
  * A mirror of an assembly.
  * <p>
  * An instance of AssemblyMirror can be injected into a bean at runtime simply by declaring a dependency on it.
+ * <p>
+ * There are currently no support for allowing this class to be extended.
  *
  * @see ApplicationMirror#assembly()
  * @see ContainerMirror#assembly()
  */
 @BindingClassBeanTrigger(extension = BaseExtension.class)
-public non-sealed class AssemblyMirror implements BuildCodeSourceMirror {
+public final class AssemblyMirror implements BuildCodeSourceMirror {
 
     /** The assembly we are mirroring. */
     private final AssemblySetup assembly;
@@ -39,9 +43,8 @@ public non-sealed class AssemblyMirror implements BuildCodeSourceMirror {
      * @throws IllegalStateException
      *             if attempting to explicitly construct an assembly mirror instance
      */
-    public AssemblyMirror() {
-        // Will fail if the assembly mirror is not initialized by the framework
-        this.assembly = AssemblySetup.MIRROR_INITIALIZER.initialize();
+    AssemblyMirror(AssemblySetup assembly) {
+        this.assembly = requireNonNull(assembly);
     }
 
     /**
@@ -66,11 +69,6 @@ public non-sealed class AssemblyMirror implements BuildCodeSourceMirror {
     /** {@return the node representing this assembly in the application's tree of assemblies.} */
     // alternativ. application.assemblies().find(node).get();
     public TreeView.Node<AssemblyMirror> applicationNode() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@return the security model for the assembly} */
-    public AssemblySecurityModelMirror securityModel() {
         throw new UnsupportedOperationException();
     }
 
@@ -110,7 +108,7 @@ public non-sealed class AssemblyMirror implements BuildCodeSourceMirror {
 
     private ArrayList<AssemblyMirror> children(AssemblySetup assembly, ContainerSetup cs, ArrayList<AssemblyMirror> list) {
         if (assembly == cs.assembly) {
-            for (var e = cs.node.firstChild; e != null; e = e.node.nextSibling) {
+            for (var e = cs.treeFirstChild; e != null; e = e.treeNextSibling) {
                 children(assembly, e, list);
             }
 
@@ -169,15 +167,15 @@ public non-sealed class AssemblyMirror implements BuildCodeSourceMirror {
         return assembly.delegatingAssemblies;
     }
 
-//    /** {@return the deployment this assembly is a part of.} */
-//    public DeploymentMirror deployment() {
-//        return assembly.container.application.deployment.mirror();
-//    }
-
     /** {@return the application this assembly contributes to.} */
     public Node<AssemblyMirror> deploymentNode() {
         throw new UnsupportedOperationException();
     }
+
+//    /** {@return the deployment this assembly is a part of.} */
+//    public DeploymentMirror deployment() {
+//        return assembly.container.application.deployment.mirror();
+//    }
 
     /** {@inheritDoc} */
     @Override
@@ -195,6 +193,11 @@ public non-sealed class AssemblyMirror implements BuildCodeSourceMirror {
     // isApplicationRoot?
     public boolean isApplicationRoot() {
         return assembly.container.isApplicationRoot();
+    }
+
+    /** {@return the security model for the assembly} */
+    public AssemblySecurityModelMirror securityModel() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */

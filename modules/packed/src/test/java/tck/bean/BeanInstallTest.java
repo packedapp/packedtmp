@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.component.Authority;
+import app.packed.build.BuildAuthority;
 import app.packed.operation.Op0;
 import tck.AppAppTest;
 
@@ -54,7 +54,7 @@ public class BeanInstallTest extends AppAppTest {
         assertEquals(bc, b.beanClass());
         assertEquals(bsk, b.beanSourceKind());
         assertThat(b.contexts()).isEmpty();
-        assertThat(b.declaredBy()).isSameAs(Authority.application());
+        assertThat(b.declaredBy()).isSameAs(BuildAuthority.application());
         assertEquals(b.container().lifetime(), b.lifetime());
 
         assertEquals("R", b.name());

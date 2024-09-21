@@ -22,14 +22,14 @@ import app.packed.namespace.NamespaceConfiguration;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.namespace.NamespaceTemplate.Installer;
-import internal.app.packed.container.AuthoritySetup;
-import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.build.AuthoritySetup;
+import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
 
 /**
  *
  */
-public class PackedNamespaceInstaller implements NamespaceTemplate.Installer {
+public final class PackedNamespaceInstaller implements NamespaceTemplate.Installer {
     final PackedNamespaceTemplate template;
     final ExtensionSetup root;
     final AuthoritySetup owner;

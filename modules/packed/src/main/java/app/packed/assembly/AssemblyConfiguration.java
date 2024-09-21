@@ -24,8 +24,8 @@ import java.util.stream.Stream;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.util.TreeView;
-import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.PackedAssemblyFinder;
+import internal.app.packed.assembly.AssemblySetup;
+import internal.app.packed.assembly.PackedAssemblyFinder;
 
 /**
  * The configuration of an assembly.
