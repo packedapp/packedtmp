@@ -49,7 +49,7 @@ import sandbox.extension.container.guest.GuestIntoAdaptor;
 public final class Te {
 
     /** The bootstrap app. */
-    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(Holder.class, c -> c.managedLifetime().expectsResult(Object.class));
+    private static final BootstrapApp<Holder> BOOTSTRAP = ApplicationTemplate.of(Holder.class, c -> c.managedLifetime()).newBootstrapApp();
 
     public static void main(String[] args) {
         BOOTSTRAP.getClass();

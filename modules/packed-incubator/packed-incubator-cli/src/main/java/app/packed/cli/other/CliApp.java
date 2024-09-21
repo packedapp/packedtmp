@@ -66,7 +66,7 @@ public final class CliApp {
      */
     private static BootstrapApp<Void> bootstrap() {
         class ServiceLocatorBootstrap {
-            private static final BootstrapApp<Void> APP = BootstrapApp.of(ApplicationTemplate.UNMANGED, c -> {});
+            private static final BootstrapApp<Void> APP = ApplicationTemplate.of(c -> {}).newBootstrapApp();
         }
         return ServiceLocatorBootstrap.APP;
     }

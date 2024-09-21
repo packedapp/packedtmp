@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 
 import app.packed.component.Authority;
 import app.packed.extension.BeanIntrospector;
@@ -28,7 +29,11 @@ import internal.app.packed.util.ThrowableUtil;
  * This class implements {@link Comparable} in order to provide a deterministic order between extensions in the same
  * container.
  */
-public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> implements BuildLocalSource , AuthoritySetup , Comparable<ExtensionSetup> {
+public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> implements BuildLocalSource, AuthoritySetup, Comparable<ExtensionSetup> {
+
+    /** A handle that can access {@link ContainerHandleHandle#container}. */
+    private static final VarHandle VH_EXTENSION_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), Extension.class, "extension",
+            ExtensionSetup.class);
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class,
@@ -151,6 +156,10 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
             }
         }
         return d;
+    }
+
+    public static ExtensionSetup crack(Extension<?> extension) {
+        return (ExtensionSetup) VH_EXTENSION_TO_HANDLE.get(extension);
     }
 
     /**

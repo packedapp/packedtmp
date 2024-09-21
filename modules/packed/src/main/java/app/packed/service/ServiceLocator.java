@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.application.ApplicationTemplate;
 import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.AbstractComposer;
@@ -316,8 +317,8 @@ public interface ServiceLocator {
      */
     private static BootstrapApp<ServiceLocator> bootstrap() {
         class ServiceLocatorBootstrap {
-            private static final BootstrapApp<ServiceLocator> APP = BootstrapApp.of(new Op1<@GuestIntoAdaptor ServiceLocator, ServiceLocator>(e -> e) {},
-                    c -> {});
+            private static final BootstrapApp<ServiceLocator> APP = ApplicationTemplate.of(new Op1<@GuestIntoAdaptor ServiceLocator, ServiceLocator>(e -> e) {},
+                    c -> {}).newBootstrapApp();
         }
         return ServiceLocatorBootstrap.APP;
     }

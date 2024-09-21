@@ -16,6 +16,7 @@
 package app.packed.application.hosttest;
 
 import app.packed.assembly.BaseAssembly;
+import app.packed.lifetime.OnInitialize;
 
 /**
  *
@@ -26,7 +27,15 @@ public class SubApplication extends BaseAssembly {
     @Override
     protected void build() {
         System.out.println("Building sub app");
-        installInstance("asd");
+        install(SomeBean.class);
+    }
+
+    public static class SomeBean {
+
+        @OnInitialize
+        public void doo() {
+            System.out.println("Sub initialied!!! YOU ARE FUCKING AWESOME");
+        }
     }
 
 }

@@ -36,7 +36,7 @@ public final class DeploymentSetup {
 
     public final BuildLocalMap locales = new BuildLocalMap();
 
-    public DeploymentSetup(ApplicationSetup root, PackedApplicationInstaller containerBuilder) {
+    public DeploymentSetup(ApplicationSetup root, PackedApplicationInstaller<?> containerBuilder) {
         this.root = requireNonNull(root);
         this.goal = containerBuilder.goal;
     }

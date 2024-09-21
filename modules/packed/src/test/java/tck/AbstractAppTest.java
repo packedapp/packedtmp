@@ -161,7 +161,7 @@ abstract class AbstractAppTest<A> {
 
     sealed interface InternalTestState {
 
-        final class State1Setup implements InternalTestState , TestAppSetup {
+        final class State1Setup implements InternalTestState, TestAppSetup {
 
             final AbstractAppTest<?> aat;
 
@@ -195,8 +195,9 @@ abstract class AbstractAppTest<A> {
         }
 
         final class State2Building implements InternalTestState {
-            static final PackedApplicationTemplate PAT = new PackedApplicationTemplate(new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION));
-            final PackedApplicationInstaller b;
+            static final PackedApplicationTemplate<Void> PAT = new PackedApplicationTemplate<>(Void.class,
+                    new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION));
+            final PackedApplicationInstaller<?> b;
             final AssemblySetup assembly;
 
             public final ContainerConfiguration cc;

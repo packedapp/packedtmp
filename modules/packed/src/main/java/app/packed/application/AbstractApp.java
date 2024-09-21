@@ -94,6 +94,8 @@ class AbstractApp implements App {
     static final class DefaultApp extends AbstractApp {
 
         /** The bootstrap app. */
-        static final BootstrapApp<Void> BOOTSTRAP = BootstrapApp.of(ApplicationTemplate.DEFAULT, c -> {});
+        static final BootstrapApp<Void> BOOTSTRAP = ApplicationTemplate.of(c -> {}).newBootstrapApp();
+
+        static final BootstrapApp<DefaultApp> BOOTSTRAP2 = ApplicationTemplate.of(DefaultApp.class, c -> {}).newBootstrapApp();
     }
 }

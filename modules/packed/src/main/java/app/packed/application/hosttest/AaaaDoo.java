@@ -24,7 +24,6 @@ import app.packed.application.ApplicationTemplate;
 import app.packed.assembly.BaseAssembly;
 import app.packed.lifetime.OnInitialize;
 import app.packed.util.Key;
-import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
 
@@ -33,31 +32,23 @@ import internal.app.packed.container.PackedContainerTemplate;
  */
 public class AaaaDoo extends BaseAssembly {
 
-    ApplicationTemplate T = ApplicationTemplate.of(c -> {
-        c.guest(GuestBean.class);
+    ApplicationTemplate<GuestBean> T = ApplicationTemplate.of(GuestBean.class, c -> {
         c.container(new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION));
     });
 
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        ApplicationRepositoryConfiguration<MyAppHandle> c = use(MyExtension.class).newRepo();
-
+        ApplicationRepositoryConfiguration<MyAppHandle, GuestBean> c = use(MyExtension.class).newRepo(T);
         c.provideAs(new Key<ApplicationRepository<MyAppHandle>>() {});
-
-        c.build1(T, "foo", i -> i.install(new SubApplication(), MyAppHandle::new));
-
-        c.build1(T, "foox", i -> i.install(new SubApplication(), MyAppHandle::new));
-
-        c.build1(T, "food", i -> i.install(new SubApplication(), MyAppHandle::new));
+        c.buildLater("foo", i -> i.install(new SubApplication(), MyAppHandle::new));
+        c.buildLater("foox", i -> i.install(new SubApplication(), MyAppHandle::new));
+        c.buildLater("food", i -> i.install(new SubApplication(), MyAppHandle::new));
 
         install(MyBean.class);
-//        c.build2(T, new SubApplication(), MyAppHandle::new);
     }
 
-    static record GuestBean() {
-
-    }
+    static record GuestBean() {}
 
     public static void main(String[] args) {
         App.run(new AaaaDoo());
@@ -75,11 +66,11 @@ public class AaaaDoo extends BaseAssembly {
             repo.stream().forEach(c -> {
                 System.out.println("Sub app " + c.mirror().name());
             });
+
             MyAppHandle mh = repo.get("foo").get();
-
-            ApplicationSetup as = ApplicationSetup.crack(mh);
-
-            System.out.println(as);
+            for (int i = 0; i < 100; i++) {
+                GuestBean launch = mh.launch();
+            }
         }
     }
 }

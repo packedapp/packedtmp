@@ -172,6 +172,7 @@ public final class ServiceNamespaceSetup /* extends NamespaceHandle<BaseExtensio
     //    System.out.println(fla.);
         // TODO Check same lifetime as the container, or own prototype service
 
+       // new Exception().printStackTrace();
         ServiceProviderSetup provider = entry.setProvider(operation, resolution);
 
         if (exportAll) {

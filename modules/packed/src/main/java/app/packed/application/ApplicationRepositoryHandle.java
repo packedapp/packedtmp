@@ -15,25 +15,33 @@
  */
 package app.packed.application;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanTemplate.Installer;
 import internal.app.packed.application.BuildApplicationRepository;
+import internal.app.packed.bean.BeanSetup;
 
-class ApplicationRepositoryBeanHandle<H extends ApplicationHandle<?,?>> extends BeanHandle<ApplicationRepositoryConfiguration<H>> {
+class ApplicationRepositoryHandle<H extends ApplicationHandle<?, A>, A> extends BeanHandle<ApplicationRepositoryConfiguration<H, A>> {
 
-    final BuildApplicationRepository bar = new BuildApplicationRepository();
+    final BuildApplicationRepository bar;
 
-    ApplicationRepositoryBeanHandle(Installer installer) {
+    final ApplicationTemplate<A> template;
+
+    ApplicationRepositoryHandle(Installer installer, ApplicationTemplate<A> template) {
         super(installer);
+        this.template = requireNonNull(template);
+        this.bar = new BuildApplicationRepository(template);
     }
 
     @Override
-    protected ApplicationRepositoryConfiguration<H> newBeanConfiguration() {
+    protected ApplicationRepositoryConfiguration<H, A> newBeanConfiguration() {
         return new ApplicationRepositoryConfiguration<>(this);
     }
 
     @Override
     protected void onAssemblyClose() {
         bindInstance(BuildApplicationRepository.class, bar);
+        BeanSetup.crack(this).container.application.subChildren.add(bar);
     }
 }

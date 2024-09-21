@@ -17,6 +17,9 @@ package app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.util.Optional;
+
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
@@ -26,11 +29,13 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.Images.ImageEager;
 import internal.app.packed.application.Images.ImageNonReusable;
 import internal.app.packed.application.PackedApplicationInstaller;
+import internal.app.packed.container.WireletSelectionArray;
+import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /**
  * An extendable handle for an application.
  */
-public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, G> extends ComponentHandle {
+public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A> extends ComponentHandle {
 
     /** The handle's application. */
     final ApplicationSetup application;
@@ -44,15 +49,14 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, G>
     /** The lazy generated application mirror. */
     private ApplicationMirror mirror;
 
-
     /**
      * Creates a new application handle.
      *
      * @param installer
      *            the installer for the application
      */
-    public ApplicationHandle(ApplicationTemplate.Installer installer) {
-        PackedApplicationInstaller i = (PackedApplicationInstaller) installer;
+    public ApplicationHandle(ApplicationTemplate.Installer<A> installer) {
+        PackedApplicationInstaller<A> i = (PackedApplicationInstaller<A>) installer;
         this.application = requireNonNull(i.application);
 
         // Build an image if that is the target.
@@ -115,8 +119,27 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, G>
         return m;
     }
 
-    public Object launch(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
+    // Then we need to have a buildtime repository also
+    // But then we change at runtime??? Because we still have the handles..
+    // Nah, vil jeg ikke have
+    public final Optional<ApplicationRepository<?>> repository() {
+        // So a handle can be in one repository.
+        // But have instances in multiple InstanceManagers
+        // We can have removeFromRepository();
+        return Optional.empty();
+    }
+
+    @SuppressWarnings("unchecked")
+    public final A launch(Wirelet... wirelets) {
+        ApplicationLaunchContext alc = ApplicationLaunchContext.launch(this, WireletSelectionArray.of(wirelets));
+        MethodHandle mh = application.launch;
+        Object result;
+        try {
+            result = mh.invokeExact(alc);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+        return (A) result;
     }
 
     @SuppressWarnings("unchecked")

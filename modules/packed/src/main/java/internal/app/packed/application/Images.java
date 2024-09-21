@@ -58,7 +58,7 @@ public class Images {
             this(new AtomicReference<>(image));
         }
 
-        public ImageNonReusable(PackedApplicationTemplate template, ApplicationSetup application) {
+        public ImageNonReusable(PackedApplicationTemplate<?> template, ApplicationSetup application) {
             this(new AtomicReference<>(new ImageEager<>(application)));
         }
 
@@ -98,10 +98,9 @@ public class Images {
         }
     }
 
-    public /* value */ record ImageLazy<A>(PackedApplicationTemplate template, FutureApplicationSetup application) implements BaseImage<A> {
+    public /* value */ record ImageLazy<A>(PackedApplicationTemplate<A> template, FutureApplicationSetup application) implements BaseImage<A> {
 
         /** {@inheritDoc} */
-        @SuppressWarnings("unchecked")
         @Override
         public A launch(Wirelet... wirelets) {
             requireNonNull(wirelets, "wirelets is null");
@@ -113,7 +112,7 @@ public class Images {
             }
             ApplicationLaunchContext aic = ApplicationLaunchContext.launch(application.lazyBuild(), wrapper);
 
-            return (A) template.newHolder(aic);
+            return template.newHolder(aic);
         }
     }
 }

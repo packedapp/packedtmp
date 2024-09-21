@@ -16,6 +16,8 @@
 package app.packed.application.hosttest;
 
 import app.packed.application.ApplicationRepositoryConfiguration;
+import app.packed.application.ApplicationTemplate;
+import app.packed.application.hosttest.AaaaDoo.GuestBean;
 import app.packed.extension.Extension;
 
 public class MyExtension extends Extension<MyExtension> {
@@ -26,8 +28,8 @@ public class MyExtension extends Extension<MyExtension> {
 
     }
 
-    public ApplicationRepositoryConfiguration<MyAppHandle> newRepo() {
-        ApplicationRepositoryConfiguration<MyAppHandle> c = ApplicationRepositoryConfiguration.install(base());
+    public ApplicationRepositoryConfiguration<MyAppHandle, GuestBean> newRepo(ApplicationTemplate<GuestBean> template) {
+        ApplicationRepositoryConfiguration<MyAppHandle, GuestBean> c = ApplicationRepositoryConfiguration.install(base(), template);
         return c;
     }
 

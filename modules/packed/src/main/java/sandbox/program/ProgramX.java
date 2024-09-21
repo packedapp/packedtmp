@@ -16,11 +16,11 @@
 package sandbox.program;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.application.ApplicationTemplate;
 import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.extension.BaseExtensionPoint;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Key;
 import sandbox.extension.container.guest.GuestIntoAdaptor;
@@ -161,10 +161,10 @@ record ProgramImplementationX(@GuestIntoAdaptor String name, @GuestIntoAdaptor S
     }
 
     /** An driver for creating App instances. */
-    static final BootstrapApp<ProgramImplementationX> DRIVER = BootstrapApp.of(ProgramImplementationX.class, c -> {
-        c.managedLifetime();
-        c.addChannel(BaseExtensionPoint.EXPORTED_SERVICE_LOCATOR);
-    });
+
+    static final BootstrapApp<ProgramImplementationX> DRIVER =
+            ApplicationTemplate.of(ProgramImplementationX.class, c -> c.managedLifetime()).newBootstrapApp();
+
 
     /** {@inheritDoc} */
     @Override

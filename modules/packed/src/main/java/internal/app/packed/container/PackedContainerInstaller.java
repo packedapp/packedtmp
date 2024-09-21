@@ -50,7 +50,7 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
 
     /** Non-null if this container is being installed as the root container of an application. */
     @Nullable
-    public final PackedApplicationInstaller applicationInstaller;
+    public final PackedApplicationInstaller<?> applicationInstaller;
 
     /** The container we are creating */
     public ContainerSetup container;
@@ -83,7 +83,7 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
     public final ArrayList<Wirelet> unconsumedWirelets = new ArrayList<>();
 
     // Cannot take ExtensionSetup, as BaseExtension is not instantiated for a root container
-    public PackedContainerInstaller(PackedContainerTemplate template, @Nullable PackedApplicationInstaller application, @Nullable ContainerSetup parent,
+    public PackedContainerInstaller(PackedContainerTemplate template, @Nullable PackedApplicationInstaller<?> application, @Nullable ContainerSetup parent,
             Class<? extends Extension<?>> installedBy) {
         this.applicationInstaller = application;
         this.template = requireNonNull(template, "template is null");

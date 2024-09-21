@@ -54,7 +54,7 @@ import sandbox.extension.container.guest.GuestIntoAdaptor;
 public final class JobAppOld {
 
     /** The bootstrap app. */
-    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(Holder.class, c -> c.managedLifetime().expectsResult(Object.class));
+    private static final BootstrapApp<Holder> BOOTSTRAP = ApplicationTemplate.of(Holder.class, c -> c.managedLifetime()).newBootstrapApp();
 
     @SuppressWarnings("unchecked")
     public static <T> Result<T> compute(Class<T> resultType, Assembly assembly, Wirelet... wirelets) {

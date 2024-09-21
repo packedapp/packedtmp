@@ -16,19 +16,15 @@
 package app.packed.application;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
-import app.packed.assembly.Assembly;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
-import app.packed.container.Wirelet;
+import app.packed.bean.BeanTemplate.Installer;
 import app.packed.extension.BaseExtensionPoint;
 import app.packed.service.ServiceableBeanConfiguration;
 import app.packed.util.Key;
-import internal.app.packed.application.DeploymentSetup;
-import internal.app.packed.application.Fut;
+import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.RuntimeApplicationRepository;
-import internal.app.packed.bean.BeanSetup;
 
 /**
  *
@@ -37,12 +33,25 @@ import internal.app.packed.bean.BeanSetup;
 // Vi skal fx ikke til at injecte ting.
 // Saa ma have noget reanonly i bean template
 // Fordi vi kan finde configuration senere ved at itererer
-public class ApplicationRepositoryConfiguration<H extends ApplicationHandle<?,?>> extends ServiceableBeanConfiguration<ApplicationRepository<H>> {
+public final class ApplicationRepositoryConfiguration<H extends ApplicationHandle<?, A>, A> extends ServiceableBeanConfiguration<ApplicationRepository<H>> {
 
-    private static final BeanTemplate TEMPLATE = BeanTemplate.of(BeanKind.CONTAINER, b -> b.createAs(RuntimeApplicationRepository.class));
+    private static final BeanTemplate REPOSITORY_TEMPLATE = BeanTemplate.of(BeanKind.CONTAINER, b -> b.createAs(RuntimeApplicationRepository.class));
 
     /** The application repository bean handle. */
-    final ApplicationRepositoryBeanHandle<H> handle;
+    final ApplicationRepositoryHandle<H, A> handle;
+
+    /**
+     * @param handle
+     *            the bean's handle
+     */
+    ApplicationRepositoryConfiguration(ApplicationRepositoryHandle<H, A> handle) {
+        super(handle);
+        this.handle = handle;
+    }
+
+    public void buildLater(String name, Consumer<? super ApplicationTemplate.Installer<A>> installer) {
+        handle.bar.add(name, installer);
+    }
 
     @Override
     public ServiceableBeanConfiguration<ApplicationRepository<H>> provideAs(Class<? super ApplicationRepository<H>> key) {
@@ -56,32 +65,21 @@ public class ApplicationRepositoryConfiguration<H extends ApplicationHandle<?,?>
         return this;
     }
 
-    /**
-     * @param handle
-     *            the bean's handle
-     */
-    ApplicationRepositoryConfiguration(ApplicationRepositoryBeanHandle<H> handle) {
-        super(handle);
-        this.handle = handle;
+    /** {@return the template being used for the repository) */
+    public ApplicationTemplate<A> template() {
+        return handle.template;
     }
 
-    public void build1(ApplicationTemplate template, String name, Consumer<? super ApplicationTemplate.Installer> installer) {
-        BeanSetup bean = BeanSetup.crack(this);
-        bean.container.application.children.add(new Fut(handle.bar, template, name, installer));
-    }
-
-    @SuppressWarnings("unused")
-    public void build2(ApplicationTemplate template, Assembly assembly, Function<? super ApplicationTemplate.Installer, H> newHandle, Wirelet... wirelets) {
-        BeanSetup bean = BeanSetup.crack(this);
-        DeploymentSetup ds = bean.container.application.deployment;
-    }
-
-    public void buildNow(ApplicationTemplate template, Assembly assembly, Consumer<? super ApplicationTemplate.Installer> installer, Wirelet... wirelets) {
-
-    }
-
-    public static <H extends ApplicationHandle<?,?>> ApplicationRepositoryConfiguration<H> install(BaseExtensionPoint point) {
-        ApplicationRepositoryBeanHandle<H> h = point.newBean(TEMPLATE).install(RuntimeApplicationRepository.class, ApplicationRepositoryBeanHandle::new);
+    // We do not support configurable templates for a repository.
+    // We need to build the guest bean together with the application
+    // So we cannot take new templates as runtime. Unless we want like a small app like BootstrapApp inbetween
+    public static <A, H extends ApplicationHandle<?, A>> ApplicationRepositoryConfiguration<H, A> install(BaseExtensionPoint point,
+            ApplicationTemplate<A> template) {
+        ApplicationRepositoryHandle<H, A> h = point.newBean(REPOSITORY_TEMPLATE).install(RuntimeApplicationRepository.class,
+                i -> new ApplicationRepositoryHandle<>(i, template));
+        PackedApplicationTemplate<A> pat = (PackedApplicationTemplate<A>) template;
+        Installer i = point.newBean(PackedApplicationTemplate.GB);
+        pat.installGuestBean(i, m -> h.bar.guest = m);
         return h.configuration();
     }
 }

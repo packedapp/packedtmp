@@ -18,11 +18,11 @@ package sandbox.program;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.application.ApplicationTemplate;
 import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.extension.BaseExtensionPoint;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Key;
 import sandbox.extension.container.ContainerTemplateLink;
@@ -108,7 +108,8 @@ interface ProgramY extends AutoCloseable {
      * @return an artifact driver for App
      */
     private static BootstrapApp<ProgramImplementation> driver() {
-        return ProgramImplementation.DRIVER;
+        throw new UnsupportedOperationException();
+//        return ProgramImplementation.DRIVER;
     }
 
     /**
@@ -156,8 +157,8 @@ interface ProgramY extends AutoCloseable {
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementation(@GuestIntoAdaptor String name, @GuestIntoAdaptor ServiceLocator services,
-        @GuestIntoAdaptor LifecycleController runtime) implements ProgramY {
+record ProgramImplementation(@GuestIntoAdaptor String name, @GuestIntoAdaptor ServiceLocator services, @GuestIntoAdaptor LifecycleController runtime)
+        implements ProgramY {
 
     ProgramImplementation {
         // System.out.println(services.keys());
@@ -166,11 +167,14 @@ record ProgramImplementation(@GuestIntoAdaptor String name, @GuestIntoAdaptor Se
     static ContainerTemplateLink EL = ContainerTemplateLink.of(MethodHandles.lookup(), Ele.MyE.class, "doo").provideExpose(Long.class).build();
 
     /** An driver for creating App instances. */
-    static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ProgramImplementation.class, c -> {
-        c.managedLifetime();
-        c.addChannel(BaseExtensionPoint.EXPORTED_SERVICE_LOCATOR);
-        c.addChannel(EL);
-    });
+    static final BootstrapApp<ProgramImplementation> DRIVER =
+            ApplicationTemplate.of(ProgramImplementation.class, c -> c.managedLifetime()).newBootstrapApp();
+//
+//            BootstrapApp.of(ProgramImplementation.class, c -> {
+//        c.managedLifetime();
+//        // c.addChannel(BaseExtensionPoint.EXPORTED_SERVICE_LOCATOR);
+//      //  c.addChannel(EL);
+//    });
 
     /** {@inheritDoc} */
     @Override

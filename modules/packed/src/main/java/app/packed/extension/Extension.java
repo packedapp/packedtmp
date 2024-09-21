@@ -398,7 +398,8 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
     }
 
     protected final <T> ServiceableBeanConfiguration<T> provide(Class<T> implementation) {
-        return base().install(implementation).provide();
+        ServiceableBeanConfiguration<T> sbc = base().install(implementation);
+        return sbc.provide();
     }
 
     /**

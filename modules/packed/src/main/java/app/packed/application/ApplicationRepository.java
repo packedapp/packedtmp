@@ -25,6 +25,9 @@ import internal.app.packed.application.RuntimeApplicationRepository;
  * <p>
  * For now, we don't track instances here. We need some else for this
  */
+// Maybe it is easy to track instances
+// On uninstall, we mark the handled to no longer usable.
+// And then we go through all containers and shutdown them down
 public sealed interface ApplicationRepository<H extends ApplicationHandle<?,?>> permits RuntimeApplicationRepository {
 
     Optional<H> get(String name);

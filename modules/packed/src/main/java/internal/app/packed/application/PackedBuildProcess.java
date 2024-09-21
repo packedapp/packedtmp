@@ -29,13 +29,13 @@ public final class PackedBuildProcess implements BuildProcess {
 
     static final ScopedValue<PackedBuildProcess> VAR = ScopedValue.newInstance();
 
-    public final PackedApplicationInstaller application;
+    public final PackedApplicationInstaller<?> application;
 
     private final long processId;
 
     Thread thread;
 
-    PackedBuildProcess(PackedApplicationInstaller application) {
+    PackedBuildProcess(PackedApplicationInstaller<?> application) {
         this.processId = PROCESS_ID_BUILDER.incrementAndGet();
         this.application = requireNonNull(application);
         this.thread = Thread.currentThread();

@@ -169,7 +169,7 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
     }
 
     /** Used for extracting the internal configuration of BootstrapApp. */
-    record BootstrapAppInternals(PackedApplicationTemplate template) {
+    record BootstrapAppInternals(PackedApplicationTemplate<?> template) {
 
         /**
          * Create a new application interface using the specified launch context.

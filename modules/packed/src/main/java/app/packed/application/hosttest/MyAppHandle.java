@@ -15,17 +15,17 @@
  */
 package app.packed.application.hosttest;
 
-import app.packed.application.App;
 import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationTemplate.Installer;
+import app.packed.application.hosttest.AaaaDoo.GuestBean;
 
-public class MyAppHandle extends ApplicationHandle<ApplicationConfiguration, App> {
+public class MyAppHandle extends ApplicationHandle<ApplicationConfiguration, GuestBean> {
 
     /**
      * @param installer
      */
-    public MyAppHandle(Installer installer) {
+    public MyAppHandle(Installer<GuestBean> installer) {
         super(installer);
     }
 

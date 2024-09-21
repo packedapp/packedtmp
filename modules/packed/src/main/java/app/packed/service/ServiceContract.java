@@ -25,8 +25,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ApplicationTemplate;
-import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionMirror;
@@ -72,10 +70,6 @@ import app.packed.util.Key;
 
 // provides -> exports??? Nej.. taenker vi tager termerne fra Module systems
 public final class ServiceContract {
-
-    /** The driver used for creating mirrors daemon driver. */
-    // I think we need to expose ServiceCompanion... otherwise this should be empty
-    public static final BootstrapApp<Void> MIRROR_DRIVER = BootstrapApp.of(ApplicationTemplate.UNMANGED, c -> {});
 
     /** A contract with no requirements and no services provided. */
     public static final ServiceContract EMPTY = new ServiceContract(Set.of(), Set.of(), Set.of());
@@ -258,7 +252,7 @@ public final class ServiceContract {
      * @return the contract
      */
     public static ServiceContract of(Assembly assembly, Wirelet... wirelets) {
-        ApplicationMirror m = MIRROR_DRIVER.mirrorOf(assembly, wirelets);
+        ApplicationMirror m = ServiceLocator.mirrorOf(assembly, wirelets);
         return m.container().findExtension(BaseExtensionMirror.class).map(e -> e.serviceContract()).orElse(ServiceContract.EMPTY);
     }
 

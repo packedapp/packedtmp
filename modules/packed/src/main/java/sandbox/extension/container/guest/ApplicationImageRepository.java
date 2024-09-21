@@ -19,8 +19,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.application.ApplicationTemplate;
-
 /**
  *
  */
@@ -35,7 +33,7 @@ public interface ApplicationImageRepository {
 
     // Syntes ikke vi skal returnere en standard ApplicationInstaller...
 
-    ApplicationTemplate.Configurator deploy(ApplicationTemplate template);
+  //  ApplicationTemplate.Configurator deploy(ApplicationTemplate<?> template);
 
     Map<String, ComponentGuest> allGuests(); //idk
 

@@ -38,7 +38,9 @@ import internal.app.packed.util.ThrowableUtil;
 /**
  *
  */
-public final class PackedApplicationInstaller implements ApplicationTemplate.Installer {
+public final class PackedApplicationInstaller<A> implements ApplicationTemplate.Installer<A> {
+
+    public BuildApplicationRepository bar;
 
     public ApplicationSetup application;
 
@@ -59,14 +61,14 @@ public final class PackedApplicationInstaller implements ApplicationTemplate.Ins
 
     final PackedBuildProcess pbp;
 
-    final PackedApplicationTemplate template;
+    final PackedApplicationTemplate<?> template;
 
-    public Function<? super ApplicationTemplate.Installer, ?> newHandle = ApplicationHandle::new;
+    public Function<? super ApplicationTemplate.Installer<A>, ?> newHandle = ApplicationHandle::new;
 
     // Vi har jo ikke en runtime installer endnu...
     public RuntimeApplicationRepository<?> repository;
 
-    PackedApplicationInstaller(PackedApplicationTemplate template, BuildGoal goal) {
+    PackedApplicationInstaller(PackedApplicationTemplate<?> template, BuildGoal goal) {
         this.template = template;
         this.goal = goal;
         this.lk = template.containerTemplate().lifecycleKind();
@@ -77,7 +79,7 @@ public final class PackedApplicationInstaller implements ApplicationTemplate.Ins
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public <H extends ApplicationHandle<?,?>> H install(Assembly assembly, Function<? super Installer, H> factory, Wirelet... wirelets) {
+    public <H extends ApplicationHandle<?, A>> H install(Assembly assembly, Function<? super Installer<A>, H> factory, Wirelet... wirelets) {
         requireNonNull(assembly, "assembly is null");
         this.newHandle = requireNonNull(factory, "factory is null");
 
@@ -131,7 +133,7 @@ public final class PackedApplicationInstaller implements ApplicationTemplate.Ins
         ApplicationSetup as = new ApplicationSetup(this);
         this.application = as;
 
-        as.handle = (ApplicationHandle<?,?>) newHandle.apply(this);
+        as.handle = (ApplicationHandle<?, ?>) newHandle.apply(this);
         locals.forEach((l, v) -> as.locals().set((PackedApplicationLocal) l, as, v));
 
         // Initialize the root container

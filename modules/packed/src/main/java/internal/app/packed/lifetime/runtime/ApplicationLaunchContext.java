@@ -17,6 +17,10 @@ package internal.app.packed.lifetime.runtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
 import app.packed.container.Wirelet;
@@ -35,7 +39,7 @@ import sandbox.lifetime.external.LifecycleController;
  */
 @BindingClassBeanTrigger(extension = BaseExtension.class)
 public final class ApplicationLaunchContext implements Context<BaseExtension> {
-
+    public static final MethodHandle EMPTY_MH = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
     /** The configuration of the application we are launching. */
     public final ApplicationSetup application;
 
@@ -94,7 +98,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
      *            optional wirelets is always null if not launched from an image
      * @return the application instance
      */
-    public static ApplicationLaunchContext launch(ApplicationHandle<?,?> handle, @Nullable WireletSelectionArray<?> wirelets) {
+    public static ApplicationLaunchContext launch(ApplicationHandle<?, ?> handle, @Nullable WireletSelectionArray<?> wirelets) {
         ApplicationSetup application = ApplicationSetup.crack(handle);
         return launch(application, wirelets);
     }

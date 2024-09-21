@@ -28,7 +28,7 @@ import app.packed.component.Authority;
 import app.packed.container.ContainerHandle;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.util.Nullable;
-import internal.app.packed.application.Fut;
+import internal.app.packed.application.BuildApplicationRepository;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.AbstractTreeMirror;
@@ -41,7 +41,7 @@ import internal.app.packed.util.TreeNode.ActualNode;
 import internal.app.packed.util.types.ClassUtil;
 
 /** The internal configuration of an assembly. */
-public final class AssemblySetup implements BuildLocalSource , ActualNode<AssemblySetup> , AuthoritySetup , Mirrorable<AssemblyMirror> {
+public final class AssemblySetup implements BuildLocalSource, ActualNode<AssemblySetup>, AuthoritySetup, Mirrorable<AssemblyMirror> {
 
     /** A magic initializer for {@link BeanMirror}. */
     public static final MagicInitializer<AssemblySetup> MIRROR_INITIALIZER = MagicInitializer.of(AssemblyMirror.class);
@@ -169,7 +169,7 @@ public final class AssemblySetup implements BuildLocalSource , ActualNode<Assemb
             // polling
             ArrayList<ExtensionSetup> list = new ArrayList<>(extensions.size());
 
-            container.invokeOnAssemblyClose(container.assembly); //onCloseAss on bean
+            container.invokeOnAssemblyClose(container.assembly); // onCloseAss on bean
             for (ExtensionSetup e = extensions.pollLast(); e != null; e = extensions.pollLast()) {
                 list.add(e);
                 for (NamespaceHandle<?, ?> s : container.application.namespaces.values()) {
@@ -195,13 +195,13 @@ public final class AssemblySetup implements BuildLocalSource , ActualNode<Assemb
             // The application has been built successfully, generate code if needed
             container.application.close();
 
-            for(Fut f : container.application.children) {
-                f.bar.build(container.application, f);
+            for (BuildApplicationRepository r: container.application.subChildren) {
+                r.build();
             }
 
         } else {
             // Similar to above, except we do not call Extension#onApplicationClose
-            container.invokeOnAssemblyClose(container.assembly); //onCloseAss on bean
+            container.invokeOnAssemblyClose(container.assembly); // onCloseAss on bean
 
             for (ExtensionSetup e = extensions.pollLast(); e != null; e = extensions.pollLast()) {
 

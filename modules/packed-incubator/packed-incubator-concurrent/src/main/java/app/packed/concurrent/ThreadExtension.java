@@ -74,7 +74,8 @@ public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
     BeanConfiguration initSchedulingBean() {
         BeanConfiguration b = schedulingBean;
         if (b == null) {
-            b = schedulingBean = provide(SchedulingTaskManager.class).bindInstance(ExecutorConfiguration.class, main().scheduler);
+            b = schedulingBean = provide(SchedulingTaskManager.class);
+            b.bindInstance(ExecutorConfiguration.class, main().scheduler);
         }
         return b;
     }

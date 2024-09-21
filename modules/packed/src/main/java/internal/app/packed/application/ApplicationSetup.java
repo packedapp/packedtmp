@@ -17,6 +17,7 @@ package internal.app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public final class ApplicationSetup implements ComponentSetup, BuildLocalSource,
             ApplicationHandle.class);
 
     /** Any (statically defined) children this application has. */
-    public final ArrayList<Fut> children = new ArrayList<>();
+    public final ArrayList<BuildApplicationRepository> subChildren = new ArrayList<>();
 
     /**
      * A list of actions that will be executed doing the code generating phase. Or null if code generation is disabled or
@@ -111,9 +112,11 @@ public final class ApplicationSetup implements ComponentSetup, BuildLocalSource,
     /** The current phase of the application's build process. */
     private ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
 
-    public final PackedApplicationTemplate template;
+    public final PackedApplicationTemplate<?> template;
 
     public final BuildGoal goal;
+
+    public MethodHandle launch;
 
     /**
      * Create a new application.
@@ -121,11 +124,12 @@ public final class ApplicationSetup implements ComponentSetup, BuildLocalSource,
      * @param installer
      *            the application installer
      */
-    ApplicationSetup(PackedApplicationInstaller installer) {
+    ApplicationSetup(PackedApplicationInstaller<?> installer) {
         this.template = installer.template;
         this.deployment = new DeploymentSetup(this, installer);
         this.codegenActions = deployment.goal.isCodeGenerating() ? new ArrayList<>() : null;
         this.goal = installer.goal;
+        this.launch = installer.bar == null ? null : requireNonNull(installer.bar.guest);
     }
 
     /**
@@ -196,7 +200,7 @@ public final class ApplicationSetup implements ComponentSetup, BuildLocalSource,
         throw new IllegalStateException();
     }
 
-    ApplicationHandle<?,?> handle() {
+    ApplicationHandle<?, ?> handle() {
         return requireNonNull(handle);
     }
 
@@ -213,11 +217,11 @@ public final class ApplicationSetup implements ComponentSetup, BuildLocalSource,
     }
 
     public static ApplicationSetup crack(ApplicationConfiguration configuration) {
-        ApplicationHandle<?,?> handle = (ApplicationHandle<?,?>) VH_APPLICATION_CONFIGURATION_TO_HANDLE.get(configuration);
+        ApplicationHandle<?, ?> handle = (ApplicationHandle<?, ?>) VH_APPLICATION_CONFIGURATION_TO_HANDLE.get(configuration);
         return crack(handle);
     }
 
-    public static ApplicationSetup crack(ApplicationHandle<?,?> handle) {
+    public static ApplicationSetup crack(ApplicationHandle<?, ?> handle) {
         return (ApplicationSetup) VH_APPLICATION_HANDLE_TO_SETUP.get(handle);
     }
 
@@ -232,7 +236,7 @@ public final class ApplicationSetup implements ComponentSetup, BuildLocalSource,
     }
 
     public static ApplicationSetup crack(ApplicationMirror mirror) {
-        ApplicationHandle<?,?> handle = (ApplicationHandle<?,?>) VH_APPLICATION_MIRROR_TO_HANDLE.get(mirror);
+        ApplicationHandle<?, ?> handle = (ApplicationHandle<?, ?>) VH_APPLICATION_MIRROR_TO_HANDLE.get(mirror);
         return crack(handle);
     }
 

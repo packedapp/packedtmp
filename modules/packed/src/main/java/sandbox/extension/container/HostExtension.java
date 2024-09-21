@@ -63,9 +63,9 @@ public class HostExtension extends FrameworkExtension<HostExtension> {
 
     // Det kan vaere vi tager adaptor settings ud af application templaten. Men hmm for container er det jo fint
     public interface ApplicationHostBeanBuilder extends HostBeanBuilder {
-        ComponentGuestAdaptorBeanConfiguration<?> addGuestAdaptor(ApplicationTemplate template, Class<?> bean);
+        ComponentGuestAdaptorBeanConfiguration<?> addGuestAdaptor(ApplicationTemplate<?> template, Class<?> bean);
 
-        ComponentGuestAdaptorBeanConfiguration<?> addGuestAdaptor(ApplicationTemplate template, Op<?> bean);
+        ComponentGuestAdaptorBeanConfiguration<?> addGuestAdaptor(ApplicationTemplate<?> template, Op<?> bean);
 
         // Deploys static app to host with the specified name
         // All guest adaptors must be assingable to adaptorType

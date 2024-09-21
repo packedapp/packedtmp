@@ -13,24 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tck;
+package app.packed.application;
 
-import app.packed.application.ApplicationTemplate;
-import app.packed.application.BootstrapApp;
-import app.packed.operation.Op1;
-import app.packed.service.ServiceLocator;
-import sandbox.extension.container.guest.GuestIntoAdaptor;
+import app.packed.container.Wirelet;
 
 /**
  *
  */
-public class ServiceLocatorAppTest extends AbstractBootstrapedAppTest<ServiceLocator> {
+// Do we need a special Guest???
+// I mean we want to hook into
+public interface ApplicationInstanceManager {
 
-    private static final BootstrapApp<ServiceLocator> APP = ApplicationTemplate.of(new Op1<@GuestIntoAdaptor ServiceLocator, ServiceLocator>(e -> e) {},
-            c -> {}).newBootstrapApp();
-
-    public ServiceLocatorAppTest() {
-        super(APP);
-    }
-
+    // Probably Guest<A>
+    <A> A create(ApplicationHandle<?, A> handle, Wirelet... wirelets);
 }

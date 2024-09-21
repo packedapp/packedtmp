@@ -242,10 +242,6 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
             bean.scanner = null;
         }
 
-        if (bean.owner instanceof ExtensionSetup es && bean.beanKind == BeanKind.CONTAINER) {
-            es.sm.addBean(bean);
-        }
-
         // Add the bean to the container and initialize the name of the bean
         container.beans.installAndSetBeanName(bean, namePrefix);
 
