@@ -17,7 +17,7 @@ package internal.app.packed.binding;
 
 import org.assertj.core.api.AbstractAssert;
 
-import app.packed.util.Key;
+import app.packed.binding.Key;
 
 /**
  *

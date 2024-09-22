@@ -18,7 +18,7 @@ package app.packed.cli;
 import java.util.LinkedHashMap;
 
 import app.packed.bean.BeanInstallationException;
-import app.packed.extension.BeanElement.BeanMethod;
+import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.operation.OperationTemplate;

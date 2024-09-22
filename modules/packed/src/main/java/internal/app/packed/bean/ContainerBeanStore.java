@@ -29,7 +29,7 @@ import internal.app.packed.extension.ExtensionSetup;
 /**
  * Stores all beans for a single container.
  * <p>
- * At some point when the logic has stabilised we might move the logic back into BeanSetup.
+ * At some point when the logic has stabilised we might move it back into ContainerSetup.
  */
 public final class ContainerBeanStore implements Iterable<BeanSetup> {
 

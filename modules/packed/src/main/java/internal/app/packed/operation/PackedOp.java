@@ -23,11 +23,11 @@ import java.lang.invoke.MethodType;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import app.packed.binding.Variable;
 import app.packed.operation.CapturingOp;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
-import app.packed.util.Variable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.IntermediateOp.BoundOp;

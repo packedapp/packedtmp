@@ -19,8 +19,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import app.packed.binding.Key;
 import app.packed.service.ServiceableBeanConfiguration;
-import app.packed.util.Key;
 import internal.app.packed.application.PackedApplicationTemplate;
 
 /**

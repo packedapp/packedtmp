@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
+import app.packed.binding.Key;
 import app.packed.service.mirror.oldMaybe.KeyBasedBindingMirror;
-import app.packed.util.Key;
 import internal.app.packed.service.ServiceBindingSetup;
 
 /**

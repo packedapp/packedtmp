@@ -15,7 +15,7 @@
  */
 package internal.app.packed.concurrent;
 
-import app.packed.bean.ComputedConstant;
+import app.packed.binding.ComputedConstant;
 import app.packed.extension.ExtensionContext;
 import app.packed.lifetime.OnStart;
 import internal.app.packed.concurrent.VirtualThreadScheduledTaskManager.DaemonOperationRunner;

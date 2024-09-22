@@ -17,8 +17,8 @@ package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
 
+import app.packed.binding.Variable;
 import app.packed.extension.Extension;
-import app.packed.util.Variable;
 import internal.app.packed.bean.BeanHookModel.AnnotatedParameterType;
 import internal.app.packed.bean.BeanHookModel.ParameterType;
 import internal.app.packed.binding.InternalDependency;

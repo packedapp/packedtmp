@@ -23,10 +23,10 @@ import java.lang.invoke.MethodType;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
+import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.container.Wirelet;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.service.ServiceLocator;

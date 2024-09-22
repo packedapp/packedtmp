@@ -18,9 +18,9 @@ package internal.app.packed.bean;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 
-import app.packed.extension.BeanElement.BeanConstructor;
+import app.packed.bean.BeanElement.BeanConstructor;
+import app.packed.binding.Key;
 import app.packed.operation.OperationTemplate;
-import app.packed.util.Key;
 
 /**
  *

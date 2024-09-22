@@ -6,10 +6,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import app.packed.binding.Key;
 import app.packed.service.ServiceContract;
 import app.packed.service.mirror.oldMaybe.ExportedServiceMirror;
 import app.packed.service.mirror.oldMaybe.ProvidedServiceMirror;
-import app.packed.util.Key;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.service.ExportedService;

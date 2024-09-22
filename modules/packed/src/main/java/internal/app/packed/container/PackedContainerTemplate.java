@@ -19,12 +19,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import app.packed.binding.Key;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifecycleKind;
 import app.packed.operation.OperationTemplate;
-import app.packed.util.Key;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.context.publish.ContextTemplate;
@@ -38,6 +38,14 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
         this(kind, void.class);
     }
 
+    public PackedContainerTemplate(PackedContainerKind kind, Class<?> holderType) {
+        this(kind, holderType, new PackedContainerTemplatePackList(List.of()), void.class);
+    }
+
+    public PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, PackedContainerTemplatePackList links, Class<?> resultType) {
+        this(kind, holderClass, links, resultType, LifecycleKind.UNMANAGED);
+    }
+
     public LifecycleKind lifecycleKind() {
         if (kind == PackedContainerKind.ROOT_UNMANAGED || kind == PackedContainerKind.UNMANAGED) {
             return LifecycleKind.UNMANAGED;
@@ -45,20 +53,16 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
         return LifecycleKind.MANAGED;
     }
 
-    PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, PackedContainerTemplatePackList links, Class<?> resultType) {
-        this(kind, holderClass, links, resultType, LifecycleKind.UNMANAGED);
-    }
 
     public PackedContainerInstaller newInstaller(Class<? extends Extension<?>> installedBy, ApplicationSetup application, @Nullable ContainerSetup parent) {
-        PackedContainerInstaller pcb = new PackedContainerInstaller(this, null, parent, installedBy);
+        PackedContainerInstaller installer = new PackedContainerInstaller(this, null, parent, installedBy);
 
-        for (PackedContainerTemplatePack b : pcb.template.links().packs) {
+        for (PackedContainerTemplatePack b : installer.template.links().packs) {
             if (b.onUse() != null) {
-                b.onUse().accept(pcb);
+                b.onUse().accept(installer);
             }
-//            b.build(pcb);
         }
-        return pcb;
+        return installer;
     }
 
     /** {@inheritDoc} */
@@ -73,9 +77,6 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
         return c.pbt;
     }
 
-    public PackedContainerTemplate(PackedContainerKind kind, Class<?> holderType) {
-        this(kind, holderType, new PackedContainerTemplatePackList(List.of()), void.class);
-    }
 
     public final static class PackedContainerTemplateConfigurator implements ContainerTemplate.Configurator {
 

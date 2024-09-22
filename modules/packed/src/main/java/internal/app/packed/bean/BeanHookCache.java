@@ -22,8 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import app.packed.extension.BeanTrigger.AnnotatedFieldBeanTrigger;
-import app.packed.extension.BeanTrigger.AnnotatedVariableBeanTrigger;
+import app.packed.bean.BeanTrigger.AnnotatedFieldBeanTrigger;
+import app.packed.bean.BeanTrigger.AnnotatedVariableBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;

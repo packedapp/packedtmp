@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
+import app.packed.bean.BeanTrigger.InheritableBindingClassBeanTrigger;
+import app.packed.binding.BindingMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
@@ -33,7 +35,6 @@ import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanTrigger.InheritableBindingClassBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.service.mirror.ServiceProviderMirror;

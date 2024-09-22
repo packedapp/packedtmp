@@ -24,9 +24,9 @@ import java.lang.invoke.VarHandle;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import app.packed.binding.BindableVariable;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
-import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import internal.app.packed.bean.PackedBindableVariable;

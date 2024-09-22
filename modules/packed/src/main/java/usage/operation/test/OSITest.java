@@ -22,9 +22,9 @@ import java.time.LocalDateTime;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.extension.BeanIntrospector;
-import app.packed.extension.BeanTrigger.AnnotatedVariableBeanTrigger;
-import app.packed.extension.BindableVariable;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanTrigger.AnnotatedVariableBeanTrigger;
+import app.packed.binding.BindableVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.lifetime.OnInitialize;

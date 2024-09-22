@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.extension.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.namespace.sandbox.NamespaceOperation;
 
 /**

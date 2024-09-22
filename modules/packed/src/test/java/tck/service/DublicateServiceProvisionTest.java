@@ -21,9 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import app.packed.binding.Key;
+import app.packed.binding.KeyAlreadyInUseException;
 import app.packed.service.Provide;
-import app.packed.util.Key;
-import app.packed.util.KeyAlreadyInUseException;
 import tck.AppAppTest;
 import testutil.stubs.Qualifiers.IntQualifier;
 import testutil.stubs.Qualifiers.StringQualifier;

@@ -22,10 +22,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
+import app.packed.binding.Key;
+import app.packed.binding.KeyAlreadyInUseException;
 import app.packed.service.UnsatisfiableDependencyException;
 import app.packed.service.mirror.ServiceBindingMirror;
-import app.packed.util.Key;
-import app.packed.util.KeyAlreadyInUseException;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution;

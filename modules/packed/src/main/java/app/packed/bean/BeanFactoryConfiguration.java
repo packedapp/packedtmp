@@ -15,13 +15,14 @@
  */
 package app.packed.bean;
 
+import app.packed.binding.Key;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
-import app.packed.util.Key;
 
 /**
  * A configuration for an operation that creates a new bean instance.
  */
+// Tror den primare grund er at vi kan finde dem let
 public class BeanFactoryConfiguration extends OperationConfiguration {
 
     /**

@@ -5,12 +5,12 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.assembly.Assembly;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.extension.BeanIntrospector;
+import app.packed.bean.BeanElement.BeanMethod;
+import app.packed.binding.UnwrappedBindableVariable;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionHandle;
-import app.packed.extension.UnwrappedBindableVariable;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.operation.OperationHandle;

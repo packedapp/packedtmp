@@ -18,7 +18,7 @@ package app.packed.service;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-import app.packed.util.Key;
+import app.packed.binding.Key;
 
 /**
  *

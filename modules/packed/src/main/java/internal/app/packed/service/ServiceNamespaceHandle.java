@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import app.packed.bean.BeanSourceKind;
+import app.packed.binding.Key;
+import app.packed.binding.KeyAlreadyInUseException;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionContext;
 import app.packed.namespace.NamespaceHandle;
@@ -30,8 +32,6 @@ import app.packed.namespace.NamespaceTemplate;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceNamespaceConfiguration;
-import app.packed.util.Key;
-import app.packed.util.KeyAlreadyInUseException;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution;

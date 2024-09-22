@@ -15,10 +15,10 @@
  */
 package app.packed.service.mirror.oldMaybe;
 
+import app.packed.binding.Key;
 import app.packed.namespace.NamespaceOperationMirror;
 import app.packed.operation.OperationHandle;
 import app.packed.service.mirror.ServiceNamespaceMirror;
-import app.packed.util.Key;
 import internal.app.packed.service.ExportedService;
 
 /**

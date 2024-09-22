@@ -30,8 +30,8 @@ import java.util.OptionalLong;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.util.Key;
-import app.packed.util.Qualifier;
+import app.packed.binding.Key;
+import app.packed.binding.Qualifier;
 
 /**
  *

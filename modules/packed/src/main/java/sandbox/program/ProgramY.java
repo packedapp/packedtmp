@@ -22,13 +22,13 @@ import app.packed.application.ApplicationTemplate;
 import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
+import app.packed.binding.Key;
 import app.packed.component.guest.FromGuest;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.service.ServiceLocator;
-import app.packed.util.Key;
 import sandbox.extension.container.ContainerTemplateLink;
 
 /**

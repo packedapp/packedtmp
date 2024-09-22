@@ -12,15 +12,22 @@ import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanClassMutator;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanElement.BeanField;
+import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstallationException;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanTemplate;
-import app.packed.bean.ComputedConstant;
 import app.packed.bean.Inject;
 import app.packed.bean.ManagedBeanRequiredException;
 import app.packed.bean.SyntheticBean;
+import app.packed.binding.BindableVariable;
+import app.packed.binding.ComputedConstant;
+import app.packed.binding.Key;
+import app.packed.binding.UnwrappedBindableVariable;
+import app.packed.binding.Variable;
 import app.packed.build.BuildException;
 import app.packed.build.action.BuildActionable;
 import app.packed.component.guest.FromGuest;
@@ -31,8 +38,6 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtensionPoint.ServiceanbleBeanHandle;
-import app.packed.extension.BeanElement.BeanField;
-import app.packed.extension.BeanElement.BeanMethod;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.lifetime.Main;
 import app.packed.lifetime.OnInitialize;
@@ -51,8 +56,6 @@ import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceNamespaceConfiguration;
 import app.packed.service.ServiceOutgoingTransformer;
 import app.packed.service.ServiceableBeanConfiguration;
-import app.packed.util.Key;
-import app.packed.util.Variable;
 import internal.app.packed.application.DeploymentMirror;
 import internal.app.packed.bean.BeanLifecycleOrder;
 import internal.app.packed.bean.BeanSetup;
@@ -64,6 +67,7 @@ import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.entrypoint.OldEntryPointSetup;
 import internal.app.packed.entrypoint.OldEntryPointSetup.MainThreadOfControl;
+import internal.app.packed.handlers.BeanHandlers;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.PackedServiceLocator;
@@ -386,8 +390,9 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
 
                     OperationSetup operation = OperationSetup.crack(field.newGetOperation(OperationTemplate.defaults()).install(OperationHandle::new));
 
+                    BeanSetup bean = BeanHandlers.invokeBeanIntrospectorBean(this);
                     // Hmm, vi har jo slet ikke lavet namespacet endnu
-                    bean().serviceNamespace().provide(key, operation, new FromOperationResult(operation));
+                    bean.serviceNamespace().provide(key, operation, new FromOperationResult(operation));
                 } else {
                     super.activatedByAnnotatedField(hook, field);
                 }
@@ -474,7 +479,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
             /** Handles {@link Inject}, {@link OnInitialize}, {@link OnStart} and {@link OnStop}. */
             @Override
             public void triggeredByAnnotatedMethod(Annotation annotation, BeanMethod method) {
-                BeanSetup bean = bean();
+                BeanSetup bean = BeanHandlers.invokeBeanIntrospectorBean(this);
 
                 if (annotation instanceof Inject) {
                     OperationHandle<?> handle = checkNotStaticBean(Inject.class, method);

@@ -6,6 +6,7 @@ module app.packed {
     exports app.packed.application;
     exports app.packed.assembly;
     exports app.packed.bean;
+    exports app.packed.binding;
     exports app.packed.build;
     exports app.packed.build.hook;
     exports app.packed.component;

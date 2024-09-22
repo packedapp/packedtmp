@@ -23,6 +23,7 @@ package app.packed.operation;
  */
 // BeanLifecycleOrder
 // DependencyOrder <---
+// In app.packed.lifetime/lifecycle?
 public enum OperationDependencyOrder {
 
     /** The operation will be executed before any dependencies. */

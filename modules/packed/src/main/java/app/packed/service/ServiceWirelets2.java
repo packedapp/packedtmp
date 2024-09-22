@@ -17,8 +17,8 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.binding.Key;
 import app.packed.container.Wirelet;
-import app.packed.util.Key;
 
 /**
  * Various wirelets that applies to {@link BaseExtension}.

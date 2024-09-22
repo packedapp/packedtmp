@@ -19,8 +19,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.BeanTrigger.AnnotatedVariableBeanTrigger;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanTrigger.AnnotatedVariableBeanTrigger;
 
 /**
  * Can be used to annotated injectable parameters into a host bean.

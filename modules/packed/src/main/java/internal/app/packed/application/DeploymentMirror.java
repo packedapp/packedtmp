@@ -21,10 +21,10 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.build.BuildMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.lifetime.ContainerLifetimeMirror;
 

@@ -15,8 +15,8 @@
  */
 package internal.app.packed.binding;
 
+import app.packed.binding.BindingMirror;
 import app.packed.build.BuildAuthority;
-import app.packed.operation.BindingMirror;
 import internal.app.packed.container.PackedContainerTemplatePack;
 
 /**

@@ -15,7 +15,7 @@
  */
 package app.packed.concurrent.other;
 
-import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
+import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 
 /**
  *

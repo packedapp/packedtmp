@@ -19,12 +19,12 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import app.packed.binding.Key;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceNamespaceConfiguration;
-import app.packed.util.Key;
 
 /**
  * A service namespace represents a namespace where every service has a unique {@link Key key}.

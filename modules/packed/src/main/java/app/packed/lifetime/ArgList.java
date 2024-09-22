@@ -17,8 +17,8 @@ package app.packed.lifetime;
 
 import java.util.List;
 
+import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 
 /**
  *

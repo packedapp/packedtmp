@@ -19,10 +19,10 @@ import app.packed.application.App;
 import app.packed.application.ApplicationRepository;
 import app.packed.application.ApplicationRepositoryConfiguration;
 import app.packed.assembly.BaseAssembly;
+import app.packed.binding.Key;
 import app.packed.component.guest.GuestBean.GuestApplicationHandle;
 import app.packed.lifetime.OnInitialize;
 import app.packed.runtime.RunState;
-import app.packed.util.Key;
 
 /**
  *

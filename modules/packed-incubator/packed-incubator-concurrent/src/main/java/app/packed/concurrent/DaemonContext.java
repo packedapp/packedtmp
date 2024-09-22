@@ -17,8 +17,8 @@ package app.packed.concurrent;
 
 import java.util.concurrent.TimeUnit;
 
+import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.context.Context;
-import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 
 /**
  *

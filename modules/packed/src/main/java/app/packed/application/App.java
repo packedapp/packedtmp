@@ -19,11 +19,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import app.packed.application.AbstractApp.DefaultApp;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
+import internal.app.packed.application.PackedApp;
 
 /**
  * An entry point for... This class contains a number of methods that can be to execute or analyze programs that are
@@ -87,7 +87,7 @@ public interface App extends AutoCloseable {
      */
     @SuppressWarnings("unused")
     static void checkedRun(RunState state, Assembly assembly, Wirelet... wirelets) throws ExecutionException {
-        DefaultApp.BOOTSTRAP.launch(state, assembly, wirelets);
+        PackedApp.BOOTSTRAP.launch(state, assembly, wirelets);
     }
 
     /**
@@ -104,7 +104,7 @@ public interface App extends AutoCloseable {
      * @return an image that can be used to launch a single instance of the application
      */
     static App.Image imageOf(Assembly assembly, Wirelet... wirelets) {
-        return new DefaultApp.AppImage(DefaultApp.BOOTSTRAP.imageOf(assembly, wirelets));
+        return new PackedApp.AppImage(PackedApp.BOOTSTRAP.imageOf(assembly, wirelets));
     }
 
     /**
@@ -119,7 +119,7 @@ public interface App extends AutoCloseable {
      *             if the application could not be build
      */
     static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        return DefaultApp.BOOTSTRAP.mirrorOf(assembly, wirelets);
+        return PackedApp.BOOTSTRAP.mirrorOf(assembly, wirelets);
     }
 
     /**
@@ -157,11 +157,11 @@ public interface App extends AutoCloseable {
      *             if the application failed to build or run
      */
     static void run(Assembly assembly, Wirelet... wirelets) {
-        DefaultApp.BOOTSTRAP.launch(RunState.TERMINATED, assembly, wirelets);
+        PackedApp.BOOTSTRAP.launch(RunState.TERMINATED, assembly, wirelets);
     }
 
     static App start(Assembly assembly, Wirelet... wirelets) {
-        return DefaultApp.BOOTSTRAP.launch(RunState.RUNNING, assembly, wirelets);
+        return PackedApp.BOOTSTRAP.launch(RunState.RUNNING, assembly, wirelets);
     }
 
     // Kunne jo vaere man gerne ville returnere et eller andet???
@@ -190,7 +190,7 @@ public interface App extends AutoCloseable {
      *             if the application could not be build
      */
     static void verify(Assembly assembly, Wirelet... wirelets) {
-        DefaultApp.BOOTSTRAP.verify(assembly, wirelets);
+        PackedApp.BOOTSTRAP.verify(assembly, wirelets);
     }
 
     /** An image for App. */

@@ -22,12 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import app.packed.binding.Key;
+import app.packed.binding.Provider;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceConfiguration;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.operation.OperationConfiguration;
-import app.packed.operation.Provider;
-import app.packed.util.Key;
 import internal.app.packed.service.PackedServiceLocator;
 import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.MethodHandleUtil;

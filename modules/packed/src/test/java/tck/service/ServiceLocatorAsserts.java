@@ -24,8 +24,8 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
+import app.packed.binding.Key;
 import app.packed.service.ServiceLocator;
-import app.packed.util.Key;
 
 /**
  *

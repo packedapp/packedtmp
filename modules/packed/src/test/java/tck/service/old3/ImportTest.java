@@ -23,10 +23,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import app.packed.assembly.BaseAssembly;
+import app.packed.binding.Key;
+import app.packed.binding.Qualifier;
 import app.packed.operation.Op1;
 import app.packed.service.ServiceLocator;
-import app.packed.util.Key;
-import app.packed.util.Qualifier;
 import sandbox.service.ServiceWirelets;
 
 /**

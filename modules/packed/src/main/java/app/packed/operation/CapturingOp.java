@@ -24,8 +24,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
+import app.packed.binding.Variable;
 import app.packed.util.Nullable;
-import app.packed.util.Variable;
 import internal.app.packed.binding.InternalDependency;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.operation.SamType;

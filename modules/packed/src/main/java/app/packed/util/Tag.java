@@ -20,6 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.binding.Qualifier;
+
 /** A {@link Qualifier} that holds a generic string. */
 @Retention(RetentionPolicy.RUNTIME)
 @Qualifier

@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Arrays;
 
-import app.packed.util.Qualifier;
+import app.packed.binding.Qualifier;
 
 /** Various instances of annotations that can be used for tests. */
 public class Qualifiers {

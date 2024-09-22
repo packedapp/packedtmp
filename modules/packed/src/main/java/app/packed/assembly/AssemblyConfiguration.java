@@ -30,7 +30,6 @@ import internal.app.packed.assembly.PackedAssemblyFinder;
 /**
  * The configuration of an assembly.
  */
-// Is not a component... Syntes stadig maaske, IDK???
 public final class AssemblyConfiguration {
 
     final AssemblySetup assembly;

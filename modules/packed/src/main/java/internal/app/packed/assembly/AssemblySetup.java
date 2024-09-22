@@ -15,8 +15,6 @@
  */
 package internal.app.packed.assembly;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +28,7 @@ import app.packed.build.BuildAuthority;
 import app.packed.container.ContainerHandle;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.util.Nullable;
+import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.BuildApplicationRepository;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
@@ -39,17 +38,14 @@ import internal.app.packed.component.Mirrorable;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.handlers.AssemblyHandlers;
+import internal.app.packed.handlers.NamespaceHandlers;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.service.CircularServiceDependencyChecker;
 import internal.app.packed.util.AbstractTreeNode;
-import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.ThrowableUtil;
 
 /** The internal configuration of an assembly. */
 public final class AssemblySetup extends AbstractTreeNode<AssemblySetup> implements BuildLocalSource, AuthoritySetup, Mirrorable<AssemblyMirror> {
-
-    /** A MethodHandle for invoking {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_NEW_ASSEMBLY_MIRROR = LookupUtil.findConstructor(MethodHandles.lookup(), AssemblyMirror.class, AssemblySetup.class);
 
     /** The assembly instance. */
     public final Assembly assembly;
@@ -79,7 +75,7 @@ public final class AssemblySetup extends AbstractTreeNode<AssemblySetup> impleme
      * allow adding new extensions while closing the assembly.
      */
     /// Hmm applications er vist separate assembly saa
- public   final TreeSet<ExtensionSetup> extensions = new TreeSet<>();
+    public final TreeSet<ExtensionSetup> extensions = new TreeSet<>();
 
     /** Whether or not this assembly is available for configuration. */
     private boolean isConfigurable = true; // Kind of like a state I would say
@@ -107,9 +103,9 @@ public final class AssemblySetup extends AbstractTreeNode<AssemblySetup> impleme
         AssemblySetup as = new AssemblySetup(installer, assembly);
         if (installer.parent == null) {
             // This method creates both the application setup and container setup
-            as.container = installer.applicationInstaller.newApplication(as).container();
+            as.container = ApplicationSetup.newApplication(installer.applicationInstaller, as).container();
         } else {
-            as.container = installer.newContainer(installer.parent.application, as, ContainerHandle::new);
+            as.container = ContainerSetup.newContainer(installer, installer.parent.application, as, ContainerHandle::new);
         }
         return as;
     }
@@ -155,11 +151,7 @@ public final class AssemblySetup extends AbstractTreeNode<AssemblySetup> impleme
     public AssemblyMirror mirror() {
         AssemblyMirror m = mirror;
         if (m == null) {
-            try {
-                m = mirror = (AssemblyMirror) MH_NEW_ASSEMBLY_MIRROR.invokeExact(this);
-            } catch (Throwable t) {
-                throw ThrowableUtil.orUndeclared(t);
-            }
+            m = mirror = AssemblyHandlers.newAssemblyMirror(this);
         }
         return m;
     }
@@ -175,13 +167,13 @@ public final class AssemblySetup extends AbstractTreeNode<AssemblySetup> impleme
             // polling
             ArrayList<ExtensionSetup> list = new ArrayList<>(extensions.size());
 
-            container.invokeOnAssemblyClose(container.assembly); // onCloseAss on bean
+            container.onAssemblyClose(container.assembly); // onCloseAss on bean
             for (ExtensionSetup e = extensions.pollLast(); e != null; e = extensions.pollLast()) {
                 list.add(e);
                 for (NamespaceHandle<?, ?> s : container.application.namespaces.values()) {
                     NamespaceSetup ns = NamespaceSetup.crack(s);
                     if (ns.root == e) {
-                        ns.invokeNamespaceOnNamespaceClose();
+                        NamespaceHandlers.invokeNamespaceOnNamespaceClose(s);
                     }
                 }
                 e.invokeExtensionOnAssemblyClose();
@@ -207,7 +199,7 @@ public final class AssemblySetup extends AbstractTreeNode<AssemblySetup> impleme
 
         } else {
             // Similar to above, except we do not call Extension#onApplicationClose
-            container.invokeOnAssemblyClose(container.assembly); // onCloseAss on bean
+            container.onAssemblyClose(container.assembly); // onCloseAss on bean
 
             for (ExtensionSetup e = extensions.pollLast(); e != null; e = extensions.pollLast()) {
 

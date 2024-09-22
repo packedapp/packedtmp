@@ -21,8 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanTrigger.AnnotatedMethodBeanTrigger;
 
 /**
  * Trying to build an application with more than a single method annotated with this annotation will fail with

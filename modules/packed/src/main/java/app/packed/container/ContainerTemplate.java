@@ -22,10 +22,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
+import app.packed.binding.Key;
 import app.packed.extension.Extension;
 import app.packed.operation.Op1;
 import app.packed.operation.OperationTemplate;
-import app.packed.util.Key;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;

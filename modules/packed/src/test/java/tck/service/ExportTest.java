@@ -24,9 +24,9 @@ import static testutil.stubs.Letters.D0;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.binding.Key;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceableBeanConfiguration;
-import app.packed.util.Key;
 import tck.ServiceLocatorAppTest;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;

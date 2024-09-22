@@ -17,9 +17,6 @@ package internal.app.packed.namespace;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,9 +28,8 @@ import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.handlers.NamespaceHandlers;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.ThrowableUtil;
 
 /**
  *
@@ -44,14 +40,6 @@ public final class NamespaceSetup implements ComponentSetup {
 
     /** The default name of a namespace. */
     public static final String DEFAULT_NAME = "main";
-
-    /** A handle for invoking the protected method {@link NamespaceHandle#onNamespaceClose()}. */
-    private static final MethodHandle MH_HANDLE_ON_NAMESPACE_CLOSE = LookupUtil.findVirtual(MethodHandles.lookup(), NamespaceHandle.class, "onNamespaceClose",
-            void.class);
-
-    /** A handle that can access {@link NamespaceHandle#namespace}. */
-    private static final VarHandle VH_NAMESPACE_HANDLE_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), NamespaceHandle.class, "namespace",
-            NamespaceSetup.class);
 
     NamespaceHandle handle;
 
@@ -90,14 +78,6 @@ public final class NamespaceSetup implements ComponentSetup {
         return requireNonNull(handle);
     }
 
-    /** Call {@link Extension#onAssemblyClose()}. */
-    public void invokeNamespaceOnNamespaceClose() {
-        try {
-            MH_HANDLE_ON_NAMESPACE_CLOSE.invokeExact(handle);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -111,7 +91,7 @@ public final class NamespaceSetup implements ComponentSetup {
     }
 
     public static NamespaceSetup crack(NamespaceHandle<?, ?> handle) {
-        return (NamespaceSetup) VH_NAMESPACE_HANDLE_TO_SETUP.get(handle);
+        return NamespaceHandlers.getNamespaceHandleNamespace(handle);
     }
 
     public record NamespaceKey(Class<? extends NamespaceHandle<?, ?>> handleClass, String name) {}

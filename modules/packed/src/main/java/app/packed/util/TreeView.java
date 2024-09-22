@@ -71,7 +71,6 @@ public interface TreeView<N> extends BaseTreeView<N> {
         throw new UnsupportedOperationException();
     }
 
-
     default TreeView<Map.Entry<N, Boolean>> activityTree(Iterable<? super N> active) {
         // Ideen er lidt at have et tree. Og saa dem der er aktiv in a tree...
 
@@ -119,21 +118,34 @@ public interface TreeView<N> extends BaseTreeView<N> {
         N value();
     }
 
+}
+
+
+/**
+ *
+ */
+
+// Like a tree, but only some are active
+// ActiveTreeView?
+interface PartialTreeView {
+
+}
+
 ///** {@return an unmodifiable view of all of the children of this component.} */
 //default Stream<N> children() {
-//  // childIterable?
-//  // does not work because container().containerChildren may be null
-//  throw new UnsupportedOperationException();
-//  // return CollectionUtil.unmodifiableView(container().containerChildren, c -> c.mirror());
+//// childIterable?
+//// does not work because container().containerChildren may be null
+//throw new UnsupportedOperationException();
+//// return CollectionUtil.unmodifiableView(container().containerChildren, c -> c.mirror());
 //}
 
 //default Stream<N> descendents(boolean includeThis) {
-//  // Maaske have en TreeSelector
-//  // Der er 3 interessant ting taenker jeg.
-//  // direct children
-//  // direct ancestors
-//  // direct ancestors + this
-//  throw new UnsupportedOperationException();
+//// Maaske have en TreeSelector
+//// Der er 3 interessant ting taenker jeg.
+//// direct children
+//// direct ancestors
+//// direct ancestors + this
+//throw new UnsupportedOperationException();
 //}
 
 //Maaske har vi en hjaelper klasse.
@@ -151,9 +163,8 @@ public interface TreeView<N> extends BaseTreeView<N> {
 
 //Assembly
 //Application
-//    interface Node<N> {
-//        N container();
+//  interface Node<N> {
+//      N container();
 //
-//        int depth();
-//    }
-}
+//      int depth();
+//  }

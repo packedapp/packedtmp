@@ -2,8 +2,6 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -16,6 +14,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.build.BuildAuthority;
 import app.packed.build.hook.BuildHookMirror;
 import app.packed.component.ComponentMirror;
@@ -25,7 +24,6 @@ import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
@@ -37,8 +35,7 @@ import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.extension.ExtensionModel;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.ThrowableUtil;
+import internal.app.packed.handlers.ExtensionHandlers;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
@@ -66,9 +63,6 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
         }
     };
 
-    /** A MethodHandle for invoking {@link ExtensionMirror#initialize(ExtensionSetup)}. */
-    private static final MethodHandle MH_EXTENSION_MIRROR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), ExtensionMirror.class, "initialize",
-            void.class, ExtensionSetup.class);
 
     /** The container we are mirroring. */
     final ContainerHandle<?> handle;
@@ -315,13 +309,8 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
         if (extension != null) {
             // Call Extension#newExtensionMirror
             mirror = extension.newExtensionMirror(mirrorClass);
-
-            // Call ExtensionMirror#initialize(ExtensionSetup)
-            try {
-                MH_EXTENSION_MIRROR_INITIALIZE.invokeExact(mirror, extension);
-            } catch (Throwable t) {
-                throw ThrowableUtil.orUndeclared(t);
-            }
+            // Should take an ExtensionHandle
+            ExtensionHandlers.invokeExtensionMirrorInitialize(mirror, extension);
         }
 
         return mirrorClass.cast(mirror);

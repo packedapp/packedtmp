@@ -18,11 +18,10 @@ package internal.app.packed.application;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import app.packed.application.ApplicationBuildHook;
 import app.packed.application.ApplicationConfiguration;
@@ -33,40 +32,22 @@ import app.packed.assembly.Assembly;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
+import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerLocal;
 import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.util.Nullable;
+import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.Mirrorable;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.handlers.ApplicationHandlers;
 import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
-import internal.app.packed.util.LookupUtil;
 
-/**
- * Internal configuration of an application.
- * <p>
- * This class is placed in {@code internal.app.packed.container} because it is so tightly integrated with containers
- * that it made sense to put it here as well.
- */
+/** The internal configuration of an application. */
 public final class ApplicationSetup implements ComponentSetup, BuildLocalSource, Mirrorable<ApplicationMirror> {
-
-    /** A handle that can access ApplicationConfiguration#application. */
-    private static final VarHandle VH_APPLICATION_CONFIGURATION_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), ApplicationConfiguration.class,
-            "handle", ApplicationHandle.class);
-
-    /** A handle that can access {@link BeanHandleHandle#bean}. */
-    private static final VarHandle VH_APPLICATION_HANDLE_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ApplicationHandle.class, "application",
-            ApplicationSetup.class);
-
-    /** A handle that can access ApplicationMirror#application. */
-    private static final VarHandle VH_APPLICATION_MIRROR_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), ApplicationMirror.class, "handle",
-            ApplicationHandle.class);
-
-    /** Any (statically defined) children this application has. */
-    public final ArrayList<BuildApplicationRepository> subChildren = new ArrayList<>();
 
     /**
      * A list of actions that will be executed doing the code generating phase. Or null if code generation is disabled or
@@ -98,10 +79,14 @@ public final class ApplicationSetup implements ComponentSetup, BuildLocalSource,
      */
     public final Map<String, Class<? extends Extension<?>>> extensions = new HashMap<>();
 
-    ApplicationHandle<?, ?> handle;
+    public final BuildGoal goal;
+
+    private ApplicationHandle<?, ?> handle;
 
     /** All hooks applied on the application. */
     public final ArrayList<ApplicationBuildHook> hooks = new ArrayList<>();
+
+    public MethodHandle launch;
 
     /** This map maintains all locals for the entire application. */
     private final BuildLocalMap locals = new BuildLocalMap();
@@ -112,11 +97,10 @@ public final class ApplicationSetup implements ComponentSetup, BuildLocalSource,
     /** The current phase of the application's build process. */
     private ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
 
+    /** Any (statically defined) children this application has. */
+    public final ArrayList<BuildApplicationRepository> subChildren = new ArrayList<>();
+
     public final PackedApplicationTemplate<?> template;
-
-    public final BuildGoal goal;
-
-    public MethodHandle launch;
 
     /**
      * Create a new application.
@@ -124,12 +108,12 @@ public final class ApplicationSetup implements ComponentSetup, BuildLocalSource,
      * @param installer
      *            the application installer
      */
-    ApplicationSetup(PackedApplicationInstaller<?> installer) {
+    private ApplicationSetup(PackedApplicationInstaller<?> installer) {
         this.template = installer.template;
         this.deployment = new DeploymentSetup(this, installer);
         this.codegenActions = deployment.goal.isCodeGenerating() ? new ArrayList<>() : null;
         this.goal = installer.goal;
-        this.launch=installer.launcher;
+        this.launch = installer.launcher;
     }
 
     /**
@@ -217,12 +201,11 @@ public final class ApplicationSetup implements ComponentSetup, BuildLocalSource,
     }
 
     public static ApplicationSetup crack(ApplicationConfiguration configuration) {
-        ApplicationHandle<?, ?> handle = (ApplicationHandle<?, ?>) VH_APPLICATION_CONFIGURATION_TO_HANDLE.get(configuration);
-        return crack(handle);
+        return crack(ApplicationHandlers.getApplicationConfigurationHandle(configuration));
     }
 
     public static ApplicationSetup crack(ApplicationHandle<?, ?> handle) {
-        return (ApplicationSetup) VH_APPLICATION_HANDLE_TO_SETUP.get(handle);
+        return ApplicationHandlers.getApplicationHandleApplication(handle);
     }
 
     public static ApplicationSetup crack(ApplicationLocal.Accessor accessor) {
@@ -236,8 +219,21 @@ public final class ApplicationSetup implements ComponentSetup, BuildLocalSource,
     }
 
     public static ApplicationSetup crack(ApplicationMirror mirror) {
-        ApplicationHandle<?, ?> handle = (ApplicationHandle<?, ?>) VH_APPLICATION_MIRROR_TO_HANDLE.get(mirror);
-        return crack(handle);
+        return crack(ApplicationHandlers.getApplicationMirrorHandle(mirror));
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes"})
+    public static ApplicationSetup newApplication(PackedApplicationInstaller<?> installer, AssemblySetup assembly) {
+        ApplicationSetup as = installer.application = new ApplicationSetup(installer);
+
+        Function f = installer.handleFactory;
+        as.handle = (ApplicationHandle<?, ?>) f.apply(installer);
+
+        installer.locals.forEach((l, v) -> as.locals().set((PackedApplicationLocal) l, as, v));
+
+        // Initialize the root container
+        as.container = ContainerSetup.newContainer(installer.container, as, assembly, ContainerHandle::new);
+        return as;
     }
 
     /** The build phase of the application. */

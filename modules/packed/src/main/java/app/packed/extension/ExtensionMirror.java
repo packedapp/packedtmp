@@ -62,6 +62,7 @@ public abstract non-sealed class ExtensionMirror<E extends Extension<E>> impleme
      */
     @Nullable
     // Move to magic setup
+    // TODO take ExtensionHandle
     private ExtensionTreeViewNode<E> navigator;
 
     /**

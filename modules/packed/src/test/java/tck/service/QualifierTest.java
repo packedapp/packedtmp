@@ -19,8 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.binding.Key;
 import app.packed.service.Provide;
-import app.packed.util.Key;
 import tck.ServiceLocatorAppTest;
 import testutil.stubs.Qualifiers.StringQualifier;
 

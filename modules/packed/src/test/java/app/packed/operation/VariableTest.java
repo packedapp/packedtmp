@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.util.Variable;
+import app.packed.binding.Variable;
 
 /**
  *

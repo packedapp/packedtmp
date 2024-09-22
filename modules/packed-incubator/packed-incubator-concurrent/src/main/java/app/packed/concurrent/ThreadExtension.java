@@ -21,13 +21,13 @@ import java.time.Duration;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanConfiguration;
-import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.extension.BeanIntrospector;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanElement.BeanMethod;
+import app.packed.binding.UnwrappedBindableVariable;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.extension.FrameworkExtension;
-import app.packed.extension.UnwrappedBindableVariable;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.concurrent.ExecutorConfiguration;
 import internal.app.packed.concurrent.ScheduleImpl;
@@ -55,6 +55,8 @@ import internal.app.packed.context.publish.ContextTemplate;
 
 // Hvad hvis lukker den ned asynchront indefra containeren??
 
+// Maybe it is built-in..
+// Can't fanthom many applications not threads
 public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
 
     /**

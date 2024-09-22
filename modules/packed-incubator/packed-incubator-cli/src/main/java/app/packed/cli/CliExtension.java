@@ -20,14 +20,14 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.assembly.Assembly;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
-import app.packed.extension.BeanElement.BeanMethod;
-import app.packed.extension.BeanIntrospector;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.FrameworkExtension;
 

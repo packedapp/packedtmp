@@ -18,8 +18,6 @@ package internal.app.packed.operation;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,18 +49,14 @@ import internal.app.packed.context.ContextualizedElementSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.entrypoint.EntryPointSetup;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.handlers.OperationHandlers;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceProviderSetup;
-import internal.app.packed.util.LookupUtil;
 
-/** Represents an operation on a bean. */
+/** The internal configuration of (bean) operation. */
 public final class OperationSetup implements ComponentSetup , ContextualizedElementSetup {
-
-    /** A handle that can access {@link OperationHandle#handle}. */
-    private static final VarHandle VH_OPERATION_HANDLE_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), OperationHandle.class, "operation",
-            OperationSetup.class);
 
     /** The bean this operation belongs to. */
     public final BeanSetup bean;
@@ -85,6 +79,7 @@ public final class OperationSetup implements ComponentSetup , ContextualizedElem
     private MethodHandle generatedMethodHandle;
 
     /** The operation's handle. */
+    @Nullable
     private OperationHandle<?> handle;
 
     /**
@@ -112,7 +107,7 @@ public final class OperationSetup implements ComponentSetup , ContextualizedElem
     /** The type of this operation. */
     public final OperationType type;
 
-    OperationSetup(PackedOperationInstaller installer, PackedOperationTarget pot) {
+   private OperationSetup(PackedOperationInstaller installer, PackedOperationTarget pot) {
         this.operator = requireNonNull(installer.operator);
         this.pot = requireNonNull(pot);
         this.bean = requireNonNull(installer.bean);
@@ -234,7 +229,7 @@ public final class OperationSetup implements ComponentSetup , ContextualizedElem
      * @return the operation setup
      */
     public static OperationSetup crack(OperationHandle<?> handle) {
-        return (OperationSetup) VH_OPERATION_HANDLE_TO_SETUP.get(handle);
+        return OperationHandlers.getOperationHandleOperation(handle);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

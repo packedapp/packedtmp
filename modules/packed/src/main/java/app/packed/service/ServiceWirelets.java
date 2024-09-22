@@ -15,8 +15,8 @@
  */
 package app.packed.service;
 
+import app.packed.binding.Key;
 import app.packed.container.Wirelet;
-import app.packed.util.Key;
 
 /**
  *

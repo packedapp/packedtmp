@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
+import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.InternalExtensionException;
 import internal.app.packed.util.LookupUtil;

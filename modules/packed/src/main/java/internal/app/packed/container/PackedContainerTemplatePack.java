@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import app.packed.binding.Key;
 import app.packed.extension.Extension;
-import app.packed.util.Key;
 import sandbox.extension.container.ContainerTemplateLink;
 
 /**

@@ -27,10 +27,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
+import app.packed.binding.Variable;
 import app.packed.util.AnnotationList;
-import app.packed.util.Variable;
+import internal.app.packed.binding.PackedVariable;
 import internal.app.packed.util.PackedAnnotationList;
-import internal.app.packed.util.PackedVariable;
 
 /**
  * An operation type represents the arguments and return variable for an operation.

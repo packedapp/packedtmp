@@ -17,46 +17,36 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
 import app.packed.assembly.DelegatingAssembly;
+import app.packed.binding.Key;
 import app.packed.build.hook.BuildHook;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
-import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.util.Key;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.wirelets.CompositeWirelet;
 import internal.app.packed.container.wirelets.InternalBuildWirelet;
-import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.ThrowableUtil;
+import internal.app.packed.handlers.AssemblyHandlers;
 
 /** Implementation of {@link ContainerTemplate.Installer} */
 public final class PackedContainerInstaller implements ContainerTemplate.Installer {
-
-    /** A handle that can invoke {@link BuildableAssembly#doBuild(AssemblyModel, ContainerSetup)}. */
-    private static final MethodHandle MH_ASSEMBLY_BUILD = LookupUtil.findVirtual(MethodHandles.lookup(), Assembly.class, "build", AssemblySetup.class,
-            PackedContainerInstaller.class);
 
     /** Non-null if this container is being installed as the root container of an application. */
     @Nullable
     public final PackedApplicationInstaller<?> applicationInstaller;
 
-    /** The container we are creating */
+    /** The container that was created on a successful install. */
     public ContainerSetup container;
 
     /** Delegating assemblies. Empty unless any {@link DelegatingAssembly} has been used. */
@@ -74,12 +64,11 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
     String name;
 
     @Nullable
-    public String nameFromWirelet;
+    String nameFromWirelet;
 
     /** The parent of the new container. Or <code>null</code> if a root container. */
     @Nullable
-    public
-    ContainerSetup parent;
+    public final ContainerSetup parent;
 
     /** The template for the new container. */
     public final PackedContainerTemplate template;
@@ -130,7 +119,7 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
         checkNotInstalledYet();
         // TODO can install container
         processBuildWirelets(wirelets);
-        ContainerSetup container = newContainer(parent.application, parent.assembly, factory);
+        ContainerSetup container = ContainerSetup.newContainer(this, parent.application, parent.assembly, factory);
         return (H) container.handle();
     }
 
@@ -153,13 +142,7 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
      */
     public ContainerSetup invokeAssemblyBuild(Assembly assembly) {
         requireNonNull(assembly, "assembly is null");
-        AssemblySetup s;
-        try {
-            // Call package private method Assembly#build(PackedContainerBuilder builder)
-            s = (AssemblySetup) MH_ASSEMBLY_BUILD.invokeExact(assembly, this);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
+        AssemblySetup s = AssemblyHandlers.invokeAssemblyBuild(assembly, this);
         return s.container;
     }
 
@@ -184,76 +167,6 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
     public ContainerTemplate.Installer named(String name) {
         this.name = name;
         return this;
-    }
-
-    public <H extends ContainerHandle<?>> ContainerSetup newContainer(ApplicationSetup application, AssemblySetup assembly,
-            Function<? super ContainerTemplate.Installer, H> factory) {
-        // Create the new container using this installer
-        ContainerSetup container = new ContainerSetup(this, application, assembly);
-
-        // Initializes the name of the container
-        String nn = nameFromWirelet;
-
-        // Set the name of the container if it was not set by a wirelet
-        if (nn == null) {
-            // I think try and move some of this to ComponentNameWirelet
-            String n = name;
-            if (n == null) {
-                // TODO Should only be used on the root container in the assembly
-                Class<? extends Assembly> source = assembly.assembly.getClass();
-                if (Assembly.class.isAssignableFrom(source)) {
-                    String nnn = source.getSimpleName();
-                    if (nnn.length() > 8 && nnn.endsWith("Assembly")) {
-                        nnn = nnn.substring(0, nnn.length() - 8);
-                    }
-                    if (nnn.length() > 0) {
-                        // checkName, if not just App
-                        // TODO need prefix
-                        n = nnn;
-                    }
-                    if (nnn.length() == 0) {
-                        n = "Assembly";
-                    }
-                } else {
-                    n = "Unknown";
-                }
-            }
-            nn = n;
-        }
-
-        String n = nn;
-        if (parent != null) {
-            HashMap<String, ContainerSetup> c = parent.treeChildren;
-            if (c.size() == 0) {
-                c.put(n, container);
-            } else {
-                int counter = 1;
-                while (c.putIfAbsent(n, container) != null) {
-                    n = n + counter++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test
-                                       // adding 1
-                    // million of the same component type
-                }
-            }
-        }
-        container.name = n;
-
-        this.container = container;
-
-        H apply = factory.apply(this);
-        container.handle = requireNonNull(apply);
-        // Create ContainerConfiguration
-
-        // BaseExtension is automatically used by every container
-        ExtensionSetup.install(BaseExtension.class, container, null);
-
-        return container;
-    }
-
-    /**
-     * @return
-     */
-    public ContainerSetup newHandleFromConfiguration() {
-        return requireNonNull(container);
     }
 
     /**
@@ -286,53 +199,7 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
             if (b.onUse() != null) {
                 b.onUse().accept(pcb);
             }
-//            b.build(pcb);
         }
         return pcb;
     }
-
 }
-//@Deprecated
-//public void processWirelets(Wirelet[] wirelets) {
-//  requireNonNull(wirelets, "wirelets is null");
-//  // Most of this method is just processing wirelets
-//  Wirelet prefix = template.wirelet();
-//
-//  // We do not current set Container.WW
-//  WireletWrapper ww = null;
-//
-//  if (wirelets.length > 0 || prefix != null) {
-//      // If it is the root
-//      Wirelet[] ws;
-//      if (prefix == null) {
-//          ws = CompositeWirelet.flattenAll(wirelets);
-//      } else {
-//          ws = CompositeWirelet.flatten2(prefix, Wirelet.combine(wirelets));
-//      }
-//
-//      ww = new WireletWrapper(ws);
-//
-//      // May initialize the component's name, onWire, ect
-//      // Do we need to consume internal wirelets???
-//      // Maybe that is what they are...
-//      int unconsumed = 0;
-//      for (Wirelet w : ws) {
-//          if (w instanceof InternalWirelet internal) {
-//              internal.onInstall(this);
-//          } else {
-//              unconsumed++;
-//          }
-//      }
-//      if (unconsumed > 0) {
-//          ww.unconsumed = unconsumed;
-//      }
-//  }
-////  this.wirelets = wirelets;
-//}
-// BootstrapAppContainerBuilder (does not take wirelets)
-
-// RootContainerBuilder
-
-// ExtensionContainerBuilder (Implements ContainerBuilder)
-
-// LinkedContainerBuilder

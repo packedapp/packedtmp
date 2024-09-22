@@ -23,6 +23,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanLocal.Accessor;
+import app.packed.binding.Key;
 import app.packed.build.BuildAuthority;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
@@ -32,7 +33,6 @@ import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.Installer;
-import app.packed.util.Key;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.binding.BindingResolution.FromConstant;

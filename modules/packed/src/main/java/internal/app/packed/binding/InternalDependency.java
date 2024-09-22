@@ -26,11 +26,11 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
+import app.packed.binding.Key;
+import app.packed.binding.Variable;
 import app.packed.build.BuildException;
 import app.packed.operation.OperationType;
-import app.packed.util.Key;
 import app.packed.util.Nullable;
-import app.packed.util.Variable;
 import internal.app.packed.errorhandling.ErrorMessageBuilder;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.Types;

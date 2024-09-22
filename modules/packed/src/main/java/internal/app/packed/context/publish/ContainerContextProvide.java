@@ -21,9 +21,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.BeanTrigger.AnnotatedFieldBeanTrigger;
+import app.packed.bean.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanTrigger.AnnotatedFieldBeanTrigger;
-import app.packed.extension.BeanTrigger.AnnotatedMethodBeanTrigger;
 
 /**
  * Ideen er at provide context fra en bean. Typisk container brug.

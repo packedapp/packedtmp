@@ -15,7 +15,7 @@
  */
 package internal.app.packed.bean;
 
-import app.packed.extension.BeanElement;
+import app.packed.bean.BeanElement;
 
 /**
  *

@@ -30,12 +30,12 @@ import java.util.StringJoiner;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
+import app.packed.binding.Variable;
 import app.packed.operation.Op0;
 import app.packed.operation.Op1;
 import app.packed.util.Nullable;
-import app.packed.util.Variable;
+import internal.app.packed.binding.PackedVariable;
 import internal.app.packed.errorhandling.ErrorProcessor;
-import internal.app.packed.util.PackedVariable;
 import internal.app.packed.util.StringFormatter;
 
 /**

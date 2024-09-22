@@ -10,12 +10,12 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanLocal.Accessor;
+import app.packed.binding.Key;
 import app.packed.build.BuildAuthority;
 import app.packed.build.action.BuildActionable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.context.Context;
 import app.packed.operation.OperationConfiguration;
-import app.packed.util.Key;
 
 /**
  * The configuration of a bean.

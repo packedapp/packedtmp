@@ -31,6 +31,8 @@ import java.util.Optional;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
+import app.packed.binding.InvalidKeyException;
+import app.packed.binding.Key;
 import internal.app.packed.util.types.GenericType;
 import testutil.stubs.Qualifiers;
 import testutil.stubs.Qualifiers.CharQualifier;

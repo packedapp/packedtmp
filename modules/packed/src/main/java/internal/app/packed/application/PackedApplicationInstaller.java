@@ -28,10 +28,8 @@ import app.packed.application.ApplicationTemplate;
 import app.packed.application.ApplicationTemplate.Installer;
 import app.packed.assembly.Assembly;
 import app.packed.build.BuildGoal;
-import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifecycleKind;
-import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -52,20 +50,20 @@ public final class PackedApplicationInstaller<A> implements ApplicationTemplate.
     public final BuildGoal goal;
 
     /** The function used to create a new application handle, when the application has been installed. */
-    private Function<? super ApplicationTemplate.Installer<A>, ?> handleFactory = ApplicationHandle::new;
+    Function<? super ApplicationTemplate.Installer<A>, ?> handleFactory = ApplicationHandle::new;
 
     public MethodHandle launcher;
 
     public final LifecycleKind lk;
 
     /** Application locals that the application is initialized with. */
-    private final IdentityHashMap<PackedApplicationLocal<?>, Object> locals = new IdentityHashMap<>();
+    final IdentityHashMap<PackedApplicationLocal<?>, Object> locals = new IdentityHashMap<>();
 
     public boolean optionBuildApplicationLazy;
 
     public boolean optionBuildReusableImage;
 
-    final PackedBuildProcess pbp;
+    final PackedBuildProcess buildProcess;
 
     final PackedApplicationTemplate<?> template;
 
@@ -74,21 +72,21 @@ public final class PackedApplicationInstaller<A> implements ApplicationTemplate.
         this.goal = goal;
         this.lk = template.containerTemplate().lifecycleKind();
         this.container = new PackedContainerInstaller(template.containerTemplate(), this, null, null);
-        this.pbp = new PackedBuildProcess(this);
+        this.buildProcess = new PackedBuildProcess(this);
     }
 
     public ApplicationSetup buildApplication(Assembly assembly) {
         requireNonNull(assembly, "assembly is null");
 
         // Prepare the ScopedValue.Carrier that sets the for setting the build process for the build thread
-        Carrier c = ScopedValue.where(PackedBuildProcess.VAR, pbp);
+        Carrier c = ScopedValue.where(PackedBuildProcess.VAR, buildProcess);
 
         try {
             return c.call(() -> container.invokeAssemblyBuild(assembly)).application;
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         } finally {
-            pbp.thread = null;
+            buildProcess.thread = null;
         }
     }
 
@@ -113,7 +111,7 @@ public final class PackedApplicationInstaller<A> implements ApplicationTemplate.
         this.handleFactory = requireNonNull(handleFactory, "handleFactory is null");
 
         // Prepare the ScopedValue.Carrier that sets the for setting the build process for the build thread
-        Carrier c = ScopedValue.where(PackedBuildProcess.VAR, pbp);
+        Carrier c = ScopedValue.where(PackedBuildProcess.VAR, buildProcess);
 
         try {
             // will set this.application
@@ -121,21 +119,9 @@ public final class PackedApplicationInstaller<A> implements ApplicationTemplate.
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         } finally {
-            pbp.thread = null;
+            buildProcess.thread = null;
         }
-        return (H) requireNonNull(application.handle);
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public ApplicationSetup newApplication(AssemblySetup assembly) {
-        ApplicationSetup as = this.application = new ApplicationSetup(this);
-
-        as.handle = (ApplicationHandle<?, ?>) handleFactory.apply(this);
-        locals.forEach((l, v) -> as.locals().set((PackedApplicationLocal) l, as, v));
-
-        // Initialize the root container
-        as.container = container.newContainer(as, assembly, ContainerHandle::new);
-        return as;
+        return (H) application.handle();
     }
 
     /** {@inheritDoc} */

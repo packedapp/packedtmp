@@ -21,9 +21,9 @@ import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.binding.Key;
+import app.packed.binding.Variable;
 import app.packed.util.AnnotationList;
-import app.packed.util.Key;
-import app.packed.util.Variable;
 import tck.AppAppTest;
 import tck.HookTestingExtension.FieldHook.FieldPrivateInstanceString;
 

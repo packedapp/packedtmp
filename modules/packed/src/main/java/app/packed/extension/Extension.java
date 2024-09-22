@@ -29,6 +29,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import app.packed.BaseModuleNames;
+import app.packed.bean.BeanIntrospector;
 import app.packed.build.BuildAuthority;
 import app.packed.build.BuildCodeSource;
 import app.packed.build.BuildGoal;
@@ -42,7 +44,6 @@ import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.service.ServiceableBeanConfiguration;
-import app.packed.util.BaseModuleConstants;
 import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionSetup;
@@ -580,7 +581,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
     }
 }
 
-@ExtensionProperty(name = BaseModuleConstants.CONFIG_EXTENSION_PROPERTY_DEFAULT_NAME, value = "web")
+@ExtensionProperty(name = BaseModuleNames.CONFIG_EXTENSION_PROPERTY_DEFAULT_NAME, value = "web")
 class PropUsage {}
 
 //

@@ -19,10 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Supplier;
 
+import app.packed.binding.BindingKind;
+import app.packed.binding.BindingMirror;
 import app.packed.build.BuildAuthority;
 import app.packed.component.ComponentPath;
-import app.packed.operation.BindingKind;
-import app.packed.operation.BindingMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.ServiceBindingSetup;

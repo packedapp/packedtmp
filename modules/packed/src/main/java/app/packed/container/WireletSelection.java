@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import internal.app.packed.container.wirelets.WireletSelectionArray;
 
 /**

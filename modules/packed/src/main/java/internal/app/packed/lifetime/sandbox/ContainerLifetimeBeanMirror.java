@@ -21,8 +21,8 @@ import java.util.Optional;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanMirror;
+import app.packed.binding.BindingMirror;
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.operation.BindingMirror;
 import sandbox.lifetime.LifetimeOperationMirror;
 
 // Why lifetime bean

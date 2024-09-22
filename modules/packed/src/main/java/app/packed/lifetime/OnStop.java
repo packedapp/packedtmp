@@ -22,8 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.operation.OperationDependencyOrder;
 
 /**

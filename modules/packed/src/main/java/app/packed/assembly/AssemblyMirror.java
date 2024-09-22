@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.build.BuildCodeSourceMirror;
 import app.packed.build.hook.BuildHookMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.util.AnnotationList;
 import app.packed.util.TreeView;
 import app.packed.util.TreeView.Node;

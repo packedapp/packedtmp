@@ -23,9 +23,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import app.packed.assembly.Assembly;
+import app.packed.binding.Key;
+import app.packed.binding.Qualifier;
 import app.packed.container.Wirelet;
-import app.packed.util.Key;
-import app.packed.util.Qualifier;
 
 /**
  *

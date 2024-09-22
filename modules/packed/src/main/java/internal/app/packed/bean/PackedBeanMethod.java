@@ -22,10 +22,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.util.function.Function;
 
-import app.packed.extension.BeanElement.BeanMethod;
+import app.packed.bean.BeanElement.BeanMethod;
+import app.packed.binding.Key;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
-import app.packed.util.Key;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.OperationSetup;

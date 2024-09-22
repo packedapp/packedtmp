@@ -17,22 +17,23 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
+import app.packed.assembly.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerMirror;
+import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.context.Context;
@@ -54,26 +55,15 @@ import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.handlers.BeanHandlers;
+import internal.app.packed.handlers.ContainerHandlers;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.service.ServiceNamespaceHandle;
 import internal.app.packed.util.AbstractNamedTreeNode;
-import internal.app.packed.util.LookupUtil;
 
 /** The internal configuration of a container. */
 public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
         implements ComponentSetup, ContextualizedElementSetup, Mirrorable<ContainerMirror>, BuildLocalSource {
-
-    /** A handle that can access ContainerConfiguration#container. */
-    private static final VarHandle VH_CONTAINER_CONFIGURATION_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerConfiguration.class,
-            "handle", ContainerHandle.class);
-
-    /** A handle that can access {@link ContainerHandleHandle#container}. */
-    private static final VarHandle VH_CONTAINER_HANDLE_TO_SETUP = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerHandle.class, "container",
-            ContainerSetup.class);
-
-    /** A handle that can access ContainerMirror#container. */
-    private static final VarHandle VH_CONTAINER_MIRROR_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), ContainerMirror.class, "handle",
-            ContainerHandle.class);
 
     /** The application this container is a part of. */
     public final ApplicationSetup application;
@@ -84,13 +74,15 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
     /** All the beans installed in the container. */
     public final ContainerBeanStore beans = new ContainerBeanStore();
 
-    private HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
+    private final HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
 
     /** Extensions used by this container. We keep them in a LinkedHashMap so that we can return a deterministic view. */
     // Or maybe extension types are always sorted??
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
-    ContainerHandle<?> handle;
+    /** The container's handle. */
+    @Nullable
+    private ContainerHandle<?> handle;
 
     /**
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
@@ -115,7 +107,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
      *            the assembly the defines the container
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ContainerSetup(PackedContainerInstaller installer, ApplicationSetup application, AssemblySetup assembly) {
+   private ContainerSetup(PackedContainerInstaller installer, ApplicationSetup application, AssemblySetup assembly) {
         super(installer.parent);
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
@@ -185,22 +177,8 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
         contexts.forEach(action);
     }
 
-    ContainerHandle<?> handle() {
+    public ContainerHandle<?> handle() {
         return requireNonNull(handle);
-    }
-
-    /** Call {@link Extension#onAssemblyClose()}. */
-    public void invokeOnAssemblyClose(AuthoritySetup as) {
-        for (BeanSetup b : beans) {
-            if (b.owner == as) {
-                b.invokeBeanOnAssemblyClose();
-            }
-        }
-        for (ContainerSetup c : treeChildren.values()) {
-            if (assembly == c.assembly) {
-                c.invokeOnAssemblyClose(as);
-            }
-        }
     }
 
     /** {@return whether or not the container is the root container in the application.} */
@@ -216,12 +194,10 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
         return treeParent == null || assembly.container == this;
     }
 
-    /** {@inheritDoc} */
     public boolean isConfigurable() {
         return assembly.isConfigurable();
     }
 
-    /** {@inheritDoc} */
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionClass) {
         requireNonNull(extensionClass, "extensionClass is null");
         return extensions.containsKey(extensionClass);
@@ -231,25 +207,6 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
     public boolean isLifetimeRoot() {
         return this == lifetime.container;
     }
-
-//    /** {@return the path of this container} */
-//    @Override
-//    public OldApplicationPath path() {
-//        int depth = node.depth();
-//        return switch (depth) {
-//        case 0 -> OldApplicationPath.ROOT;
-//        case 1 -> new PackedNamespacePath(node.name);
-//        default -> {
-//            String[] paths = new String[depth];
-//            ContainerSetup acc = this;
-//            for (int i = depth - 1; i >= 0; i--) {
-//                paths[i] = acc.node.name;
-//                acc = acc.node.parent;
-//            }
-//            yield new PackedNamespacePath(paths);
-//        }
-//        };
-//    }
 
     /**
      * If the container is registered with its own lifetime. This method returns a list of the container's lifetime
@@ -299,13 +256,27 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
         }
 
         // Unless we are the root container. We need to insert or update this container in the parent container
-        if (treeParent!= null) {
+        if (treeParent != null) {
             if (treeParent.treeChildren.putIfAbsent(newName, this) != null) {
                 throw new IllegalArgumentException("A container with the specified name '" + newName + "' already exists in the parent");
             }
             treeParent.treeChildren.remove(currentName);
         }
         name = newName;
+    }
+
+    /** Call {@link Extension#onAssemblyClose()}. */
+    public void onAssemblyClose(AuthoritySetup as) {
+        for (BeanSetup b : beans) {
+            if (b.owner == as) {
+                BeanHandlers.invokeBeanHandleOnAssemblyClose(b.handle());
+            }
+        }
+        for (ContainerSetup c : treeChildren.values()) {
+            if (assembly == c.assembly) {
+                c.onAssemblyClose(as);
+            }
+        }
     }
 
     public <T extends Wirelet> WireletSelection<T> selectWireletsUnsafe(Class<T> wireletClass) {
@@ -391,12 +362,12 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
      * @return the bean setup
      */
     public static ContainerSetup crack(ContainerConfiguration configuration) {
-        ContainerHandle<?> handle = (ContainerHandle<?>) VH_CONTAINER_CONFIGURATION_TO_SETUP.get(configuration);
+        ContainerHandle<?> handle = ContainerHandlers.getContainerConfigurationHandle(configuration);
         return crack(handle);
     }
 
     public static ContainerSetup crack(ContainerHandle<?> handle) {
-        return (ContainerSetup) VH_CONTAINER_HANDLE_TO_SETUP.get(handle);
+        return ContainerHandlers.getContainerHandleContainer(handle);
     }
 
     public static ContainerSetup crack(ContainerLocal.Accessor accessor) {
@@ -408,8 +379,71 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
     }
 
     public static ContainerSetup crack(ContainerMirror mirror) {
-        ContainerHandle<?> handle = (ContainerHandle<?>) VH_CONTAINER_MIRROR_TO_HANDLE.get(mirror);
+        ContainerHandle<?> handle = ContainerHandlers.getContainerMirrorHandle(mirror);
         return crack(handle);
+    }
+
+    public static <H extends ContainerHandle<?>> ContainerSetup newContainer(PackedContainerInstaller installer, ApplicationSetup application,
+            AssemblySetup assembly, Function<? super ContainerTemplate.Installer, H> factory) {
+        // Create the new container using this installer
+        ContainerSetup container = new ContainerSetup(installer, application, assembly);
+
+        // Initializes the name of the container
+        String nn = installer.nameFromWirelet;
+
+        // Set the name of the container if it was not set by a wirelet
+        if (nn == null) {
+            // I think try and move some of this to ComponentNameWirelet
+            String n = installer.name;
+            if (n == null) {
+                // TODO Should only be used on the root container in the assembly
+                Class<? extends Assembly> source = assembly.assembly.getClass();
+                if (Assembly.class.isAssignableFrom(source)) {
+                    String nnn = source.getSimpleName();
+                    if (nnn.length() > 8 && nnn.endsWith("Assembly")) {
+                        nnn = nnn.substring(0, nnn.length() - 8);
+                    }
+                    if (nnn.length() > 0) {
+                        // checkName, if not just App
+                        // TODO need prefix
+                        n = nnn;
+                    }
+                    if (nnn.length() == 0) {
+                        n = "Assembly";
+                    }
+                } else {
+                    n = "Unknown";
+                }
+            }
+            nn = n;
+        }
+
+        String n = nn;
+        if (installer.parent != null) {
+            HashMap<String, ContainerSetup> c = installer.parent.treeChildren;
+            if (c.size() == 0) {
+                c.put(n, container);
+            } else {
+                int counter = 1;
+                while (c.putIfAbsent(n, container) != null) {
+                    n = n + counter++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test
+                                       // adding 1
+                    // million of the same component type
+                }
+            }
+        }
+        container.name = n;
+
+        installer.container = container;
+
+        H apply = factory.apply(installer);
+        container.handle = requireNonNull(apply);
+        // Create ContainerConfiguration
+
+        // BaseExtension is automatically used by every container
+        ExtensionSetup.install(BaseExtension.class, container, null);
+
+        return container;
     }
 
     /** Implementation of {@link ContainerMirror.OfTree} */

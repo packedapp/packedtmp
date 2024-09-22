@@ -17,24 +17,20 @@ package internal.app.packed.extension;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import java.util.function.Function;
 
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
-import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.extension.InternalExtensionException;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceTemplate;
+import internal.app.packed.handlers.ExtensionHandlers;
 import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
 import internal.app.packed.namespace.PackedNamespaceInstaller;
 import internal.app.packed.namespace.PackedNamespaceTemplate;
-import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.StringFormatter;
-import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
 /**
@@ -55,9 +51,6 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
         }
     };
 
-    /** A MethodHandle for invoking {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_EXTENSION_NEW_EXTENSION_POINT = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "newExtensionPoint",
-            ExtensionPoint.class, ExtensionUseSite.class);
 
     /** {@inheritDoc} */
     @Override
@@ -81,7 +74,7 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
 
         PackedExtensionUseSite c = new PackedExtensionUseSite(otherExtension, extension);
         // Create a new extension point
-        ExtensionPoint<?> newExtensionPoint = newExtensionPoint(otherExtension.instance(), c);
+        ExtensionPoint<?> newExtensionPoint = ExtensionHandlers.newExtensionPoint(otherExtension.instance(), c);
 
         if (newExtensionPoint == null) {
             throw new NullPointerException(
@@ -99,14 +92,6 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
         return extensionPointClass.cast(newExtensionPoint);
     }
 
-    /** Call {@link Extension#onAssemblyClose()}. */
-    public ExtensionPoint<?> newExtensionPoint(Extension<?> extension, ExtensionUseSite usesite) {
-        try {
-            return (ExtensionPoint<?>) MH_EXTENSION_NEW_EXTENSION_POINT.invokeExact(extension, usesite);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-    }
 
     @SuppressWarnings("unchecked")
     public final <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name, Function<NamespaceTemplate.Installer, T> factory) {

@@ -15,8 +15,8 @@
  */
 package app.packed.service.mirror.oldMaybe;
 
-import app.packed.operation.BindingMirror;
-import app.packed.util.Key;
+import app.packed.binding.BindingMirror;
+import app.packed.binding.Key;
 
 /**
  *

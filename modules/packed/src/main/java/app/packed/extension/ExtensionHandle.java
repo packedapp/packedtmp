@@ -18,7 +18,7 @@ package app.packed.extension;
 import internal.app.packed.extension.PackedExtensionHandle;
 
 /**
- *
+ * A handle for an extension, that can be passed along to code outside of the extension itself.
  */
 // Supports all non callback methods from extension... IDK
 // So an ExtensionConfiguration???

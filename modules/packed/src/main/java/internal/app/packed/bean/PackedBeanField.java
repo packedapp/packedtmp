@@ -22,20 +22,20 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
-import app.packed.extension.BeanElement.BeanField;
+import app.packed.bean.BeanElement.BeanField;
+import app.packed.binding.Key;
+import app.packed.binding.Variable;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
-import app.packed.util.Key;
-import app.packed.util.Variable;
 import internal.app.packed.bean.BeanHookCache.HookOnFieldAnnotation;
+import internal.app.packed.binding.PackedVariable;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
 import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.util.PackedAnnotationList;
-import internal.app.packed.util.PackedVariable;
 
 /** Implementation of {@link BeanField}. */
 // Previous we had a PackedBeanMember, but there are actually only 2-3 common operations. So don't go there again.

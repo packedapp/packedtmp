@@ -26,16 +26,12 @@ import java.lang.annotation.Target;
 import java.util.EnumSet;
 import java.util.function.Supplier;
 
+import app.packed.bean.BeanTrigger.InheritableBindingClassBeanTrigger;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanTrigger.InheritableBindingClassBeanTrigger;
 import app.packed.util.Nullable;
-import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.NameCheck;
-import internal.app.packed.container.PackedContainerInstaller;
+import internal.app.packed.container.ContainerWirelets.ContainerOverrideNameWirelet;
 import internal.app.packed.container.wirelets.CompositeWirelet;
-import internal.app.packed.container.wirelets.InternalBuildWirelet;
 import internal.app.packed.container.wirelets.WrappingWirelet;
-import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /**
  * Wirelets are a small pieces of "glue code" that can be specified when wiring containers.
@@ -242,34 +238,6 @@ public abstract class Wirelet {
     // String intrapolation? Wirelet.ContainerMirror?
     // StringTemplate? Hvor fx navn kommer
     public static Wirelet named(String name) {
-        final class ContainerOverrideNameWirelet extends InternalBuildWirelet {
-
-            /** The (validated) name to override with. */
-            private final String name;
-
-            /**
-             * Creates a new name wirelet
-             *
-             * @param name
-             *            the name to override any existing container name with
-             */
-            ContainerOverrideNameWirelet(String name) {
-                this.name = NameCheck.checkComponentName(name); // throws IAE
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public void onImageLaunch(ContainerSetup c, ApplicationLaunchContext ic) {
-                ic.name = name;
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public  void onBuild(PackedContainerInstaller installer) {
-                installer.nameFromWirelet = name;// has already been validated
-            }
-        }
-
         return new ContainerOverrideNameWirelet(name);
     }
 

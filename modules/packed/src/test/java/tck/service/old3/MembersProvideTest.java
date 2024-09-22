@@ -22,10 +22,10 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.binding.Key;
 import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceLocator.Composer;
-import app.packed.util.Key;
 import testutil.stubs.Qualifiers.StringQualifier;
 
 /**

@@ -17,8 +17,8 @@ package tck.context;
 
 import java.lang.invoke.MethodHandles;
 
+import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.context.Context;
-import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.context.publish.ContextTemplate;

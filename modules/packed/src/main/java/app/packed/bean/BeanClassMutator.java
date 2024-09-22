@@ -28,11 +28,10 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import app.packed.assembly.Assembly;
-import app.packed.extension.BeanElement;
+import app.packed.binding.Variable;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
-import app.packed.util.Variable;
 
 
 // Hmm maybe this class simply transforms how the class is viewed

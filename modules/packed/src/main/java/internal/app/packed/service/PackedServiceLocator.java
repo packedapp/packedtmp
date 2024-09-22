@@ -22,12 +22,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.bean.ComputedConstant;
+import app.packed.binding.ComputedConstant;
+import app.packed.binding.Key;
+import app.packed.binding.Provider;
 import app.packed.extension.ExtensionContext;
-import app.packed.operation.Provider;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceSelection;
-import app.packed.util.Key;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Default implementation of ServiceLocator. */

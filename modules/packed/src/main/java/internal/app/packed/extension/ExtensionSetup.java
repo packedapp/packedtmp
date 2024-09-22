@@ -2,12 +2,8 @@ package internal.app.packed.extension;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
-
+import app.packed.bean.BeanIntrospector;
 import app.packed.build.BuildAuthority;
-import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionPoint;
@@ -18,10 +14,9 @@ import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.handlers.ExtensionHandlers;
 import internal.app.packed.service.ServiceNamespaceHandle;
 import internal.app.packed.util.AbstractTreeNode;
-import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.ThrowableUtil;
 
 /**
  * Internal configuration of an extension.
@@ -32,33 +27,6 @@ import internal.app.packed.util.ThrowableUtil;
  * container.
  */
 public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> implements BuildLocalSource, AuthoritySetup, Comparable<ExtensionSetup> {
-
-    /** A handle that can access {@link ContainerHandleHandle#container}. */
-    private static final VarHandle VH_EXTENSION_TO_HANDLE = LookupUtil.findVarHandle(MethodHandles.lookup(), Extension.class, "extension",
-            ExtensionSetup.class);
-
-    /** A handle that can access {@link ContainerHandleHandle#container}. */
-    private static final VarHandle VH_EXTENSION_POINT_TO_USESITE = LookupUtil.findVarHandle(MethodHandles.lookup(), ExtensionPoint.class, "usesite",
-            PackedExtensionUseSite.class);
-
-    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class,
-            "newBeanIntrospector", BeanIntrospector.class);
-
-    /** A MethodHandle for invoking {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_EXTENSION_NEW_EXTENSION_MIRROR = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "newExtensionMirror",
-            ExtensionMirror.class);
-
-    /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
-    private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "onApplicationClose",
-            void.class);
-
-    /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
-    private static final MethodHandle MH_EXTENSION_ON_ASSEMBLY_CLOSE = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "onAssemblyClose",
-            void.class);
-
-    /** A handle for invoking the protected method {@link Extension#onNew()}. */
-    private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.findVirtual(MethodHandles.lookup(), Extension.class, "onNew", void.class);
 
     /** The container where the extension is used. */
     public final ContainerSetup container;
@@ -117,12 +85,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
     public void closeApplication() {
         tree.isConfigurable = false;
-
-        try {
-            MH_EXTENSION_ON_APPLICATION_CLOSE.invokeExact(instance);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
+        ExtensionHandlers.invokeExtensionOnAssemblyClose(instance);
         closeApplication0();
     }
 
@@ -139,12 +102,8 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
     /** Call {@link Extension#onAssemblyClose()}. */
     public void invokeExtensionOnAssemblyClose() {
-        container.invokeOnAssemblyClose(this);
-        try {
-            MH_EXTENSION_ON_ASSEMBLY_CLOSE.invokeExact(instance);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
+        container.onAssemblyClose(this);
+        ExtensionHandlers.invokeExtensionOnAssemblyClose(instance);
     }
 
     /** {@inheritDoc} */
@@ -176,12 +135,12 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
 
     public static ExtensionSetup crack(Extension<?> extension) {
         requireNonNull(extension, "extension is null");
-        return (ExtensionSetup) VH_EXTENSION_TO_HANDLE.get(extension);
+        return ExtensionHandlers.getExtensionHandle(extension);
     }
 
     public static PackedExtensionUseSite crack(ExtensionPoint<?> extensionPoint) {
         requireNonNull(extensionPoint, "extensionPoint is null");
-        return (PackedExtensionUseSite) VH_EXTENSION_POINT_TO_USESITE.get(extensionPoint);
+        return ExtensionHandlers.getExtensionPointPackedExtensionUseSite(extensionPoint);
     }
 
     /**
@@ -211,12 +170,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
      * @return the new introspector
      */
     public BeanIntrospector newBeanIntrospector() {
-        BeanIntrospector bi;
-        try {
-            bi = (BeanIntrospector) MH_EXTENSION_NEW_BEAN_INTROSPECTOR.invokeExact(instance());
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
+        BeanIntrospector bi = ExtensionHandlers.invokeExtensionNewBeanIntrospector(instance());
         if (bi == null) {
             throw new InternalExtensionException("newBeanIntrospector returned null for " + this);
         }
@@ -224,12 +178,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     }
 
     public ExtensionMirror<?> newExtensionMirror(Class<? extends ExtensionMirror<?>> mirrorClass) {
-        ExtensionMirror<?> mirror;
-        try {
-            mirror = (ExtensionMirror<?>) MH_EXTENSION_NEW_EXTENSION_MIRROR.invokeExact(instance());
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
+        ExtensionMirror<?> mirror = ExtensionHandlers.invokeExtensionNewExtensionMirror(instance());
         if (mirror == null) {
             throw new InternalExtensionException("Extension " + model.fullName() + " returned null from " + model.name() + ".newExtensionMirror()");
         }
@@ -265,7 +214,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
      *            the extension that requested the extension or null if user
      * @return the new extension
      */
- public   static ExtensionSetup install(Class<? extends Extension<?>> extensionType, ContainerSetup container, @Nullable ExtensionSetup requestedByExtension) {
+    public static ExtensionSetup install(Class<? extends Extension<?>> extensionType, ContainerSetup container, @Nullable ExtensionSetup requestedByExtension) {
         // Install the extension recursively into all ancestors in the same application (if not already installed)
         ExtensionSetup extensionParent = container.isApplicationRoot() ? null : container.treeParent.useExtension(extensionType, requestedByExtension);
 
@@ -281,11 +230,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         }
 
         // Invoke Extension#onNew() before returning the extension
-        try {
-            MH_EXTENSION_ON_NEW.invokeExact(instance);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
+        ExtensionHandlers.invokeExtensionOnNew(instance);
         return extension;
     }
 

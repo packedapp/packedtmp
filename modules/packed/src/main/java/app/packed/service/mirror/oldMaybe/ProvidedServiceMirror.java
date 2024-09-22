@@ -19,11 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.stream.Stream;
 
+import app.packed.binding.Key;
 import app.packed.namespace.NamespaceOperationMirror;
 import app.packed.operation.OperationHandle;
 import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.mirror.ServiceNamespaceMirror;
-import app.packed.util.Key;
 import internal.app.packed.service.ServiceProviderSetup;
 
 /**

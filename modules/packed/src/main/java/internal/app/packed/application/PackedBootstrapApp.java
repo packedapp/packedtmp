@@ -24,11 +24,12 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
-import app.packed.assembly.AbstractComposer;
 import app.packed.assembly.Assembly;
+import app.packed.assembly.BuildableAssembly;
 import app.packed.bean.BeanTemplate;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
+import app.packed.extension.BaseExtension;
 import app.packed.runtime.RunState;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
@@ -132,52 +133,39 @@ public final /* value */ class PackedBootstrapApp<A> implements BootstrapApp<A> 
         // Create new installer for the bootstrap app
         PackedApplicationInstaller<A> installer = PackedApplicationTemplate.newBootstrapAppInstaller();
 
-        // We need a composer or assembly to build a new (bootstrap) application
-        Composer composer = new Composer(template);
+        // We need a an assembly to build the (bootstrap) application
+        BootstrapAppAssembly assembly = new BootstrapAppAssembly(template);
 
         // Build the bootstrap application
-        installer.buildApplication(new Composer.BootstrapAppAssembly(composer, a -> {}));
+        installer.buildApplication(assembly);
 
-        PackedApplicationTemplate<A> t = new PackedApplicationTemplate<>(template.guestClass(), null, template.containerTemplate(), composer.mh);
+        // Create the application template.
+        PackedApplicationTemplate<A> t = new PackedApplicationTemplate<>(template.guestClass(), null, template.containerTemplate(), assembly.mh);
         return new PackedBootstrapApp<>(t);
     }
 
-    /**
-     * A composer for creating bootstrap app instances.
-     *
-     * @see BootstrapApp#of(Class, ComposerAction)
-     * @see BootstrapApp#of(Op, ComposerAction)
-     * @see BootstrapApp#of(ComposerAction)
-     */
-    private static final class Composer extends AbstractComposer {
+    /** The assembly responsible for building the bootstrap app. */
+    private static class BootstrapAppAssembly extends BuildableAssembly {
 
         private MethodHandle mh = ApplicationLaunchContext.EMPTY_MH;
 
         private final PackedApplicationTemplate<?> template;
 
-        private Composer(PackedApplicationTemplate<?> template) {
+        private BootstrapAppAssembly(PackedApplicationTemplate<?> template) {
             this.template = template;
         }
 
         /** {@inheritDoc} */
         @Override
-        protected void preCompose() {
+        protected void build() {
             if (template.guestClass() == Void.class) {
                 return;
             }
             // Create a new installer
-            BeanTemplate.Installer installer = PackedApplicationTemplate.GB.newInstallerForUser(base());
+            BeanTemplate.Installer installer = PackedApplicationTemplate.GB.newInstallerForUser(assembly().containerRoot().use(BaseExtension.class));
 
             // Install it (code is shared with App-On-App)
             template.installGuestBean(installer, m -> mh = m);
-        }
-
-        /** An composer wrapping Assembly. */
-        private static class BootstrapAppAssembly extends ComposableAssembly<Composer> {
-
-            private BootstrapAppAssembly(Composer c, ComposerAction<? super Composer> action) {
-                super(c, action);
-            }
         }
     }
 }

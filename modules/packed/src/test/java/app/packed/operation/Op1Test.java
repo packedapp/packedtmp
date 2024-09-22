@@ -22,7 +22,7 @@ import java.lang.annotation.Annotation;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.util.Variable;
+import app.packed.binding.Variable;
 import testutil.stubs.Qualifiers.IntQualifier;
 
 /** Tests {@link Op1}. */

@@ -1,7 +1,7 @@
 package app.packed.concurrent;
 
+import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.context.Context;
-import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 
 /**
  * A context object available for scheduling.

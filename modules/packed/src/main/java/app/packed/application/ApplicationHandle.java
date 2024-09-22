@@ -29,8 +29,8 @@ import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.Images.ImageEager;
 import internal.app.packed.application.Images.ImageNonReusable;
-import internal.app.packed.container.wirelets.WireletSelectionArray;
 import internal.app.packed.application.PackedApplicationInstaller;
+import internal.app.packed.container.wirelets.WireletSelectionArray;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /**

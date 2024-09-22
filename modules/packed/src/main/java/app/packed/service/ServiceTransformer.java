@@ -18,7 +18,7 @@ package app.packed.service;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.util.Key;
+import app.packed.binding.Key;
 
 /**
  *

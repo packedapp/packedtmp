@@ -32,23 +32,22 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InaccessibleBeanMemberException;
-import app.packed.extension.BeanIntrospector;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.handlers.BeanHandlers;
 import internal.app.packed.integration.devtools.PackedDevToolsIntegration;
 import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
 import internal.app.packed.operation.PackedOperationTemplate;
-import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.StringFormatter;
-import internal.app.packed.util.ThrowableUtil;
 
 /**
  * This class represents a single bean being introspected.
@@ -60,10 +59,6 @@ public final class BeanScanner {
 
     /** We {@code java.base} module, which we never process classes from. */
     private static final Module JAVA_BASE_MODULE = Object.class.getModule();
-
-    /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
-    private static final MethodHandle MH_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.findVirtual(MethodHandles.lookup(), BeanIntrospector.class, "initialize",
-            void.class, BeanScannerExtensionRef.class);
 
     private final OpenClass accessor;
 
@@ -131,11 +126,7 @@ public final class BeanScanner {
             BeanScannerExtensionRef bse = new BeanScannerExtensionRef(this, extension, introspector);
 
             // Call BeanIntrospector#initialize(BeanScannerExtension)
-            try {
-                MH_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, bse);
-            } catch (Throwable t) {
-                throw ThrowableUtil.orUndeclared(t);
-            }
+            BeanHandlers.invokeBeanIntrospectorInitialize(introspector, bse);
 
             // Notify the bean introspector that it is being used
             introspector.beforeHooks();

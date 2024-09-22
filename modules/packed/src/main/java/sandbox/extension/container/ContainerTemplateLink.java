@@ -23,10 +23,10 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import app.packed.binding.Key;
 import app.packed.build.BuildException;
 import app.packed.container.ContainerLocal;
 import app.packed.extension.Extension;
-import app.packed.util.Key;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplatePack;
 import internal.app.packed.container.PackedContainerTemplatePack.KeyFragment;

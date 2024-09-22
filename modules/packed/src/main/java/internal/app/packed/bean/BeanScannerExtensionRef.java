@@ -15,7 +15,7 @@
  */
 package internal.app.packed.bean;
 
-import app.packed.extension.BeanIntrospector;
+import app.packed.bean.BeanIntrospector;
 import internal.app.packed.extension.ExtensionSetup;
 
 /**

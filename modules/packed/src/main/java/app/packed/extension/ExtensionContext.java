@@ -15,8 +15,8 @@
  */
 package app.packed.extension;
 
+import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.context.Context;
-import app.packed.extension.BeanTrigger.BindingClassBeanTrigger;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 
 /**

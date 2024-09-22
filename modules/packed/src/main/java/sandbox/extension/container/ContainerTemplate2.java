@@ -20,9 +20,9 @@ import java.util.Optional;
 import java.util.SequencedSet;
 import java.util.function.Consumer;
 
+import app.packed.binding.Key;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationType;
-import app.packed.util.Key;
 
 /**
  *

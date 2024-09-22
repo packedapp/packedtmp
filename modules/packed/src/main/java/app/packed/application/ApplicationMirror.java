@@ -9,12 +9,12 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.assembly.AssemblyMirror;
+import app.packed.bean.BeanTrigger.InheritableBindingClassBeanTrigger;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.BeanTrigger.InheritableBindingClassBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;

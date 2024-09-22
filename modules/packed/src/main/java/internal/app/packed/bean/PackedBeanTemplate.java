@@ -117,7 +117,7 @@ public record PackedBeanTemplate(BeanKind kind, LifetimeTemplate lifetime, Opera
         /** {@inheritDoc} */
         @Override
         public Configurator createAs(Class<?> clazz) {
-            if (template.createAs.isPrimitive() || PackedBeanInstaller.ILLEGAL_BEAN_CLASSES.contains(template.createAs)) {
+            if (template.createAs.isPrimitive() || BeanSetup.ILLEGAL_BEAN_CLASSES.contains(template.createAs)) {
                 throw new IllegalArgumentException(template.createAs + " is not valid argument");
             }
             return init(template.kind, template.lifetime, template.bot, template.createAs, template.beanLocals);

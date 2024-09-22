@@ -19,17 +19,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import app.packed.binding.BindableVariable;
+import app.packed.binding.BindingMirror;
+import app.packed.binding.Key;
+import app.packed.binding.UnwrappedBindableVariable;
+import app.packed.binding.Variable;
 import app.packed.context.Context;
-import app.packed.extension.BindableVariable;
 import app.packed.extension.Extension;
-import app.packed.extension.UnwrappedBindableVariable;
-import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate.Descriptor;
 import app.packed.util.AnnotationList;
-import app.packed.util.Key;
 import app.packed.util.Nullable;
-import app.packed.util.Variable;
 
 /**
  *

@@ -21,6 +21,7 @@ import java.lang.reflect.AnnotatedElement;
  *
  */
 
+// Maybe AnnotationList.Transformer
 // <T> <- Where T is the target? IDK
 public interface AnnotationListTransformer {
     // I think we want something about the target...

@@ -17,8 +17,8 @@ package app.packed.service.mirror.oldMaybe;
 
 import java.util.Map;
 
+import app.packed.binding.Key;
 import app.packed.service.ServiceContract;
-import app.packed.util.Key;
 
 /**
  *

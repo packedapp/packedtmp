@@ -22,8 +22,8 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.function.Function;
 
+import app.packed.binding.Key;
 import app.packed.operation.Op;
-import app.packed.util.Key;
 
 /**
  *
@@ -220,7 +220,7 @@ public interface ServiceOutgoingTransformer extends ServiceTransformer.Outgoing 
      *             if the type of any new key is not assignable to the service type
      */
     // Take text from Map#compute
-    default void rekeyAll(Function<Key<?>, app.packed.util.Key<?>> rekeyingFunction) {
+    default void rekeyAll(Function<Key<?>, app.packed.binding.Key<?>> rekeyingFunction) {
         for (Key<?> s : keys()) {
             Key<?> key = rekeyingFunction.apply(s);
             if (key == null) {

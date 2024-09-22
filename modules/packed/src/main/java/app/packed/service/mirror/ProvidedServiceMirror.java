@@ -18,7 +18,7 @@ package app.packed.service.mirror;
 import java.util.SequencedCollection;
 import java.util.stream.Stream;
 
-import app.packed.util.Key;
+import app.packed.binding.Key;
 
 /**
  *
