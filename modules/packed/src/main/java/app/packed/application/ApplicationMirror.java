@@ -23,11 +23,10 @@ import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.service.ServiceContract;
 import app.packed.util.TreeView;
-import internal.app.packed.assembly.AssemblySetup.PackedAssemblyTreeMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.ContainerSetup.PackedContainerTreeMirror;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.util.PackedTreeView;
 
 /**
  * A mirror of an application.
@@ -56,13 +55,13 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
      * @param handle
      *            the application's handle
      */
-    public ApplicationMirror(ApplicationHandle<?,?> handle) {
+    public ApplicationMirror(ApplicationHandle<?, ?> handle) {
         this.handle = requireNonNull(handle);
     }
 
     /** {@return a tree representing all the assemblies used for creating this application} */
-    public AssemblyMirror.OfTree assemblies() {
-        return new PackedAssemblyTreeMirror(handle.application.container().assembly, null);
+    public TreeView<AssemblyMirror> assemblies() {
+        return new PackedTreeView<>(handle.application.container().assembly, null, c -> c.mirror());
     }
 
     /** {@return a mirror of the (root) assembly that defines the application} */
@@ -87,8 +86,8 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     }
 
     /** {@return a container tree mirror representing all the containers defined within the application.} */
-    public ContainerMirror.OfTree containers() {
-        return new PackedContainerTreeMirror(handle.application.container(), null);
+    public TreeView<ContainerMirror> containers() {
+        return new PackedTreeView<>(handle.application.container(), null, c -> c.mirror());
     }
 
     /** {@return a stream of all of the operations declared by the bean.} */
@@ -249,23 +248,6 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     public <E extends ExtensionMirror<?>> void useIfPresent(Class<E> type, Consumer<? super E> action) {
         throw new UnsupportedOperationException();
     }
-
-    /**
-    *
-    */
-    // Problemet med ApplicationTree er vel navngivning
-
-    // Hvorfor ikke bare ApplicationMirror.ofTree eller inTree + InSet
-    // Tror ikke denne bliver brugt mere
-    public interface OfTree extends TreeView<ApplicationMirror> {
-
-        /** {@return all the assemblies that make of the application.} */
-        AssemblyMirror.OfTree assemblies();
-    }
-
-    // ApplicationMirror bootstappedBy(); // nah hvad hvis det er et child som root.
-    // Maa have noget paa Application som Host? Ikke parent da det ikke er en Application
-
 }
 
 //

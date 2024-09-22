@@ -16,10 +16,9 @@
 package app.packed.context;
 
 import app.packed.bean.BeanMirror;
-import app.packed.container.ContainerMirror;
 import app.packed.operation.OperationMirror;
 
 /**
  *
  */
-public sealed interface ContextScopeMirror permits OperationMirror, BeanMirror, ContainerMirror.OfTree {}
+public sealed interface ContextScopeMirror permits OperationMirror, BeanMirror /*, ContainerMirror.OfTree */ {}

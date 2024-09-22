@@ -21,10 +21,14 @@ import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerSetup;
 
 /**
- *
+ * A tree node with a name. It only checks that no children have identical names
  */
-// Cannot have multiple children of the same
 public class AbstractNamedTreeNode<T extends AbstractNamedTreeNode<T>> extends AbstractTreeNode<T> {
+
+    public String name;
+
+    /** Maintains unique names for child containers. */
+    public final HashMap<String, ContainerSetup> treeChildren = new HashMap<>();
 
     /**
      * @param treeParent
@@ -32,11 +36,5 @@ public class AbstractNamedTreeNode<T extends AbstractNamedTreeNode<T>> extends A
     protected AbstractNamedTreeNode(@Nullable T treeParent) {
         super(treeParent);
     }
-
-
-    public String name;
-
-    /** Maintains unique names for child containers. */
-    public final HashMap<String, ContainerSetup> treeChildren = new HashMap<>();
 
 }

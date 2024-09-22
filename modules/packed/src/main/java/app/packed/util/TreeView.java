@@ -15,7 +15,6 @@
  */
 package app.packed.util;
 
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -24,23 +23,26 @@ import java.util.stream.Stream;
 /**
  *
  */
-// Hvis det er kun er mirrors den bliver brugt paa...
-// Saa skal den maaske hedde noget andet
-
-// extends Iterable<N>???? IDK Not particular useful without more details I think
-public interface TreeView<N> extends BaseTreeView<N> {
+public interface TreeView<N> {
 
     default boolean contains(N node) {
         throw new UnsupportedOperationException();
     }
 
+    /** {@return the number of nodes in the tree.} */
+    default int count() {
+        return Math.toIntExact(stream().count());
+    }
+
     default void forEach(Consumer<N> action) {
-        throw new UnsupportedOperationException();
+        stream().forEach(action);
     }
 
     default void forEachWithDepth(BiConsumer<Integer, N> action) {
         throw new UnsupportedOperationException();
     }
+
+    <S> TreeView<S> map(Function<? super N, ? extends S> mapper);
 
     default void nodeForEach(Consumer<Node<N>> action) {
         throw new UnsupportedOperationException();
@@ -50,63 +52,28 @@ public interface TreeView<N> extends BaseTreeView<N> {
         throw new UnsupportedOperationException();
     }
 
-    // Maybe just nodeRoot
-    default Node<N> nodeRoot() {
-        throw new UnsupportedOperationException();
-    }
-
-    default Stream<Node<N>> nodeStream() {
-        throw new UnsupportedOperationException();
-    }
-
-    // Hmm???
-    default void print(Function<? super N, String> f) {}
-
-    default <S> TreeView<S> map(Function<N, S> mapper) {
-        throw new UnsupportedOperationException();
-    }
-
     /** {@return the root node in the tree.} */
-    default N root() {
-        throw new UnsupportedOperationException();
-    }
+    N root();
 
-    default TreeView<Map.Entry<N, Boolean>> activityTree(Iterable<? super N> active) {
-        // Ideen er lidt at have et tree. Og saa dem der er aktiv in a tree...
+    // Maybe just nodeRoot
+    Node<N> rootNode();
 
-        // toSet
-        // map-> n-> n, n.isInSet()
-        throw new UnsupportedOperationException();
-    }
+    Stream<N> stream();
 
-    /**
-     * A tree plus a node
-     */
-    // Det den her kan er at bibeholde treet naar man refererer.
-    // Fx siger AssemblyMirror.applicationNode
+    Stream<Node<N>> streamNodes();
 
     // Fx ContainerMirror.children har jo bare alle boern med ligegyldig om filtrerne
     public interface Node<N> extends Iterable<N> {
 
-        /** {@return the number of nodes in the tree.} */
-        int count();
+        TreeView<N> asRoot();
 
-        default int depth() {
-            // Tror vi laver en recursive parent counter
-            return 0;
-        }
+        int depth();
 
         /**
          * {@return whether or not this extension has a parent extension.} Only extensions that are used in the root container
          * of an application does not have a parent extension.
          */
         boolean isRoot();
-
-        default <S> Node<S> map(Function<N, S> mapper) {
-            // ContainerSetup -> makeTree -> Root, Predicate
-            // containerSetup.map(s->s.mirror())
-            throw new UnsupportedOperationException();
-        }
 
         /**
          * @return
@@ -117,17 +84,6 @@ public interface TreeView<N> extends BaseTreeView<N> {
 
         N value();
     }
-
-}
-
-
-/**
- *
- */
-
-// Like a tree, but only some are active
-// ActiveTreeView?
-interface PartialTreeView {
 
 }
 

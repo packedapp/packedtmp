@@ -13,10 +13,9 @@ import java.util.stream.Stream;
 
 import app.packed.build.BuildCodeSourceMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.util.Nullable;
 import app.packed.util.TreeView.Node;
-import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.extension.ExtensionTreeViewNode;
+import internal.app.packed.extension.PackedExtensionHandle;
+import internal.app.packed.util.PackedTreeView;
 
 /**
  * The base class for specialized extension mirrors.
@@ -56,15 +55,17 @@ public abstract non-sealed class ExtensionMirror<E extends Extension<E>> impleme
      * This class contains a number of all* methods. There are no exact criteria for what methods to include. Only that they
      * should be generally helpful for developers extending this class.
      */
+//
+//    /**
+//     * The extensions that are being mirrored. Is initially null but populated via
+//     * {@link #initialize(ExtensionNavigatorImpl)}
+//     */
+//    @Nullable
+//    // Move to magic setup
+//    // TODO take ExtensionHandle
+//    private ExtensionTreeViewNode<E> navigator;
 
-    /**
-     * The extensions that are being mirrored. Is initially null but populated via
-     * {@link #initialize(ExtensionNavigatorImpl)}
-     */
-    @Nullable
-    // Move to magic setup
-    // TODO take ExtensionHandle
-    private ExtensionTreeViewNode<E> navigator;
+    private final PackedExtensionHandle<E> handle;
 
     /**
      * Create a new extension mirror.
@@ -74,7 +75,9 @@ public abstract non-sealed class ExtensionMirror<E extends Extension<E>> impleme
      * Attempting to use any of the methods on this class from the constructor of a subclass, will result in an
      * {@link IllegalStateException} being thrown.
      */
-    protected ExtensionMirror() {}
+    protected ExtensionMirror(ExtensionHandle<E> handle) {
+        this.handle = (PackedExtensionHandle<E>) requireNonNull(handle);
+    }
 
     /**
      * Returns whether any extensions match the provided predicate.
@@ -107,11 +110,6 @@ public abstract non-sealed class ExtensionMirror<E extends Extension<E>> impleme
         }
     }
 
-    /** {@return a non-empty stream of all of the extension instances we are mirroring.} */
-    protected final Stream<E> allStream() {
-        return navigator().stream();
-    }
-
     /**
      * @param mapper
      *            a mapper from the extension to an integer
@@ -141,48 +139,23 @@ public abstract non-sealed class ExtensionMirror<E extends Extension<E>> impleme
         return result;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final boolean equals(Object other) {
-        return other instanceof ExtensionMirror<?> m && getClass() == m.getClass() && navigator().equals(m.navigator());
+    protected final Stream<E> allStream() {
+        return navigator().stream();
     }
 
-    /** {@return a descriptor for the extension this mirror is a part of.} */
-    public final ExtensionDescriptor extensionDescriptor() {
-        return navigator0().extensionDescriptor();
-    }
-
-    /** {@return the root container of this extension mirror.} */
+    /** {@return the container this extension is part of.} */
     public final ContainerMirror container() {
-        return navigator.root().extension.container.mirror();
+        return handle.extension().container.mirror();
     }
 
     /** {@return the class of the extension.} */
     public final Class<? extends Extension<?>> extensionClass() {
-        return extensionDescriptor().type();
+        return handle.extension().extensionType;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final int hashCode() {
-        return navigator().hashCode();
-    }
-
-    /**
-     * Invoked by a MethodHandle from ExtensionMirrorHelper to set the internal configuration of the extension.
-     *
-     * @param extension
-     *            the extension to mirror
-     * @param the
-     *            type of the extension
-     */
-    final void initialize(ExtensionSetup extension) {
-        @SuppressWarnings("unchecked")
-        ExtensionTreeViewNode<E> extensions = new ExtensionTreeViewNode<>(extension, (Class<E>) extension.extensionType);
-        if (this.navigator != null) {
-            throw new IllegalStateException("This mirror has already been initialized.");
-        }
-        this.navigator = requireNonNull(extensions);
+    /** {@return a descriptor for the extension this mirror is a part of.} */
+    public final ExtensionDescriptor extensionDescriptor() {
+        return ExtensionDescriptor.of(extensionClass());
     }
 
     /**
@@ -191,23 +164,9 @@ public abstract non-sealed class ExtensionMirror<E extends Extension<E>> impleme
      * @throws IllegalStateException
      *             if called from the constructor of the mirror
      */
+    @SuppressWarnings("unchecked")
     protected final Node<E> navigator() {
-        return navigator0();
-    }
-
-    /**
-     * {@return all the extensions that are being mirrored.}
-     *
-     * @throws IllegalStateException
-     *             if called from the constructor of the mirror
-     */
-    protected final ExtensionTreeViewNode<E> navigator0() {
-        ExtensionTreeViewNode<E> n = navigator;
-        if (n == null) {
-            throw new IllegalStateException(
-                    "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorInitialize.");
-        }
-        return n;
+        return new PackedTreeView<>(handle.extension().root(), null, e -> (E) e.instance()).toNode(handle.extension());
     }
 
     /** {@inheritDoc} */
@@ -216,18 +175,3 @@ public abstract non-sealed class ExtensionMirror<E extends Extension<E>> impleme
         return "Mirror for " + extensionDescriptor().type().getCanonicalName();
     }
 }
-//
-///** {@return the full name of the extension.} */
-//public final String extensionFullName() {
-//    return extensionDescriptor().fullName();
-//}
-//
-///** {@return the name of the extension.} */
-//public final String extensionName() {
-//    return extensionDescriptor().name();
-//}
-//
-///** {@return the type of extension this mirror is a part of.} */
-//public final Class<? extends Extension<?>> extensionType() {
-//    return extensionDescriptor().type();
-//}

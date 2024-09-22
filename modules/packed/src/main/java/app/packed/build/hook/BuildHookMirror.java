@@ -27,6 +27,7 @@ import app.packed.build.BuildCodeSourceMirror;
 import app.packed.build.BuildMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
+import app.packed.util.TreeView;
 
 /**
  * Represents a single instance of a {@link BuildTransformer build transformer}.
@@ -83,7 +84,7 @@ interface ZandboxM {
     Optional<StackTraceElement[]> declarationSite(); // Well it could be an annotation...
 
     /** {@return a tree of assemblies where this transformer is being evaluated for use.} */
-    AssemblyMirror.OfTree evaluatedAssemblies(); // needs better name, or maybe it is okay
+    TreeView<AssemblyMirror> evaluatedAssemblies(); // needs better name, or maybe it is okay
 
     Optional<Class<? extends AssemblyPropagator>> propagator();
 

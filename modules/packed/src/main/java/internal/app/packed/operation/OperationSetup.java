@@ -42,7 +42,6 @@ import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
-import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
@@ -56,7 +55,7 @@ import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceProviderSetup;
 
 /** The internal configuration of (bean) operation. */
-public final class OperationSetup implements ComponentSetup , ContextualizedElementSetup {
+public final class OperationSetup implements ContextualizedElementSetup {
 
     /** The bean this operation belongs to. */
     public final BeanSetup bean;
@@ -107,7 +106,7 @@ public final class OperationSetup implements ComponentSetup , ContextualizedElem
     /** The type of this operation. */
     public final OperationType type;
 
-   private OperationSetup(PackedOperationInstaller installer, PackedOperationTarget pot) {
+    private OperationSetup(PackedOperationInstaller installer, PackedOperationTarget pot) {
         this.operator = requireNonNull(installer.operator);
         this.pot = requireNonNull(pot);
         this.bean = requireNonNull(installer.bean);
@@ -127,7 +126,6 @@ public final class OperationSetup implements ComponentSetup , ContextualizedElem
     }
 
     /** {@inheritDoc} */
-    @Override
     public ComponentPath componentPath() {
         return ComponentKind.OPERATION.pathNew(bean.componentPath(), name());
     }

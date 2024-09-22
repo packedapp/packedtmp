@@ -17,8 +17,6 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.ContainerMirror;
-
 /**
  *
  */
@@ -42,7 +40,6 @@ public sealed abstract class ContainerTreeSetup {
         this.root = requireNonNull(root);
     }
 
-    public abstract ContainerMirror.OfTree mirror();
 
     public final class SingleContainerTreeSetup extends ContainerTreeSetup {
 
@@ -50,11 +47,6 @@ public sealed abstract class ContainerTreeSetup {
             super(root);
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public ContainerMirror.OfTree mirror() {
-            throw new UnsupportedOperationException();
-        }
 
         public int size() {
             return 1;

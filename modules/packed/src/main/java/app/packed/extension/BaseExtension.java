@@ -539,7 +539,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     /** {@return a mirror for this extension.} */
     @Override
     protected BaseExtensionMirror newExtensionMirror() {
-        return new BaseExtensionMirror(extension.container);
+        return new BaseExtensionMirror(handle(), extension.container);
     }
 
     /** {@inheritDoc} */

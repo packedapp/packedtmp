@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import app.packed.assembly.Assembly;
 import app.packed.component.ComponentConfiguration;
@@ -49,9 +48,6 @@ import internal.app.packed.bean.ContainerBeanStore;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
-import internal.app.packed.component.AbstractTreeMirror;
-import internal.app.packed.component.ComponentSetup;
-import internal.app.packed.component.Mirrorable;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
@@ -64,7 +60,7 @@ import internal.app.packed.service.ServiceNamespaceHandle;
 import internal.app.packed.util.AbstractNamedTreeNode;
 /** The internal configuration of a container. */
 public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
-        implements ComponentSetup, ContextualizedElementSetup, Mirrorable<ContainerMirror>, BuildLocalSource {
+        implements ContextualizedElementSetup, BuildLocalSource {
 
     /** The application this container is a part of. */
     public final ApplicationSetup application;
@@ -142,7 +138,6 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
     }
 
     /** {@inheritDoc} */
-    @Override
     public ComponentPath componentPath() {
         throw new UnsupportedOperationException();
     }
@@ -448,12 +443,12 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
 
         return container;
     }
-
-    /** Implementation of {@link ContainerMirror.OfTree} */
-    public static final class PackedContainerTreeMirror extends AbstractTreeMirror<ContainerMirror, ContainerSetup> implements ContainerMirror.OfTree {
-
-        public PackedContainerTreeMirror(ContainerSetup root, @Nullable Predicate<? super ContainerSetup> filter) {
-            super(root, filter);
-        }
-    }
+//
+//    /** Implementation of {@link ContainerMirror.OfTree} */
+//    public static final class PackedContainerTreeMirror extends AbstractTreeMirror<ContainerMirror, ContainerSetup>  {
+//
+//        public PackedContainerTreeMirror(ContainerSetup root, @Nullable Predicate<? super ContainerSetup> filter) {
+//            super(root, filter);
+//        }
+//    }
 }

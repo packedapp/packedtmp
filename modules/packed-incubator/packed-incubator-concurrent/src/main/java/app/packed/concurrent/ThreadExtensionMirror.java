@@ -18,6 +18,7 @@ package app.packed.concurrent;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
+import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionMirror;
 import app.packed.util.Tag;
 import internal.app.packed.util.QualifierUtil;
@@ -28,6 +29,13 @@ import internal.app.packed.util.QualifierUtil;
 // Not sure I want this...
 // Do
 public final class ThreadExtensionMirror extends ExtensionMirror<ThreadExtension> {
+
+    /**
+     * @param handle
+     */
+    protected ThreadExtensionMirror(ExtensionHandle<ThreadExtension> handle) {
+        super(handle);
+    }
 
     static final Function<String, Tag> FT = QualifierUtil.syntheticFunction(MethodHandles.lookup(), Tag.class, String.class, "value");
 }

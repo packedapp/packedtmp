@@ -21,7 +21,6 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
 import app.packed.context.ContextMirror;
-import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
@@ -35,7 +34,6 @@ import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.extension.ExtensionModel;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.handlers.ExtensionHandlers;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
@@ -309,8 +307,8 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
         if (extension != null) {
             // Call Extension#newExtensionMirror
             mirror = extension.newExtensionMirror(mirrorClass);
+            requireNonNull(mirror);
             // Should take an ExtensionHandle
-            ExtensionHandlers.invokeExtensionMirrorInitialize(mirror, extension);
         }
 
         return mirrorClass.cast(mirror);
@@ -323,23 +321,6 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
     // Hvis vi siger at et domain er hele appen. Hvad goere vi i C3. Er den tilgaengelig under et "fake" navn???
     //
 
-    /**
-     * Represents one or more containers ordered in a tree with a single node as the root.
-     * <p>
-     * Unless otherwise specified the tree is ordered accordingly to the installation order of each container.
-     */
-    // TODO make sealed, currently there is a bug in Eclipse
-    public non-sealed interface OfTree extends TreeView<ContainerMirror> , ContextScopeMirror {
-
-        // Must form a tree as well
-        default AssemblyMirror.OfTree assemblies() {
-            throw new UnsupportedOperationException();
-        }
-        // Maaske er det en enum?
-        // isAllOfApplication
-        // isPartialSubtreeOfApplication();
-
-    }
     // Vi skal have den fordi namespace simpelthen bliver noedt til at definere den
     // Vi har en main database der bruges i P og saa bruger vi den i C1, C2 bruger den under alias "NotMain", og definere
     // sin egen main.

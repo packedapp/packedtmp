@@ -29,7 +29,8 @@ public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {
      * @param container
      *            the container the extension is a part of
      */
-    BaseExtensionMirror(ContainerSetup container) {
+    BaseExtensionMirror(ExtensionHandle<BaseExtension> handle,  ContainerSetup container) {
+        super(handle);
         this.container = requireNonNull(container);
     }
 

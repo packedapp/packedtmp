@@ -25,7 +25,6 @@ import app.packed.component.ComponentPath;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceMirror;
 import internal.app.packed.build.AuthoritySetup;
-import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.handlers.NamespaceHandlers;
@@ -36,7 +35,7 @@ import internal.app.packed.operation.OperationSetup;
  */
 // Is an application a namespace for Components??? My brain just fried
 @SuppressWarnings("rawtypes")
-public final class NamespaceSetup implements ComponentSetup {
+public final class NamespaceSetup {
 
     /** The default name of a namespace. */
     public static final String DEFAULT_NAME = "main";
@@ -68,7 +67,6 @@ public final class NamespaceSetup implements ComponentSetup {
     }
 
     /** {@inheritDoc} */
-    @Override
     public ComponentPath componentPath() {
         throw new UnsupportedOperationException();
     }
@@ -80,7 +78,6 @@ public final class NamespaceSetup implements ComponentSetup {
 
 
     /** {@inheritDoc} */
-    @Override
     public NamespaceMirror<?> mirror() {
         return handle().mirror();
     }

@@ -19,7 +19,7 @@ import app.packed.util.TreeView;
 import app.packed.util.TreeView.Node;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.ContainerSetup.PackedContainerTreeMirror;
+import internal.app.packed.util.PackedTreeView;
 
 /**
  * A mirror of an assembly.
@@ -144,8 +144,8 @@ public final class AssemblyMirror implements BuildCodeSourceMirror {
     }
 
     /** {@return the tree of containers this assembly defines.} */
-    public ContainerMirror.OfTree containers() {
-        return new PackedContainerTreeMirror(assembly.container, c -> c.assembly == assembly);
+    public TreeView<ContainerMirror> containers() {
+        return new PackedTreeView<>(assembly.container, c -> c.assembly == assembly, c -> c.mirror());
     }
 
     public Stream<BuildHookMirror> declaredBuildHooks() {
@@ -196,7 +196,7 @@ public final class AssemblyMirror implements BuildCodeSourceMirror {
     }
 
     /** {@return the security model for the assembly} */
-    public AssemblySecurityModelMirror securityModel() {
+    public AssemblySecurity securityModel() {
         throw new UnsupportedOperationException();
     }
 
@@ -204,31 +204,6 @@ public final class AssemblyMirror implements BuildCodeSourceMirror {
     @Override
     public String toString() {
         return "Assembly:" + application().name() + ":/";
-    }
-
-    /**
-     * Represents a collection of assemblies that are ordered in a rooted tree.
-     * <p>
-     * This
-     */
-
-    // Multi app.
-    // application.assemblies() All assemblies that make of the application. Child applications not included.
-
-    // application.tree().assemblies() <--- Application tree for assemblies
-
-    public interface OfTree extends TreeView<AssemblyMirror> {
-
-        default ContainerMirror.OfTree containers() {
-            throw new UnsupportedOperationException();
-        }
-
-        /**
-         *
-         */
-        default void print() {}
-
-        default void printWithDuration() {}
     }
 
 }

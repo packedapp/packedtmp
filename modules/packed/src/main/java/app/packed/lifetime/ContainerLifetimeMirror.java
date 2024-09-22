@@ -76,7 +76,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
      *
      * @see ContainerMirror#beansInSameLifetime()
      */
-    public ContainerMirror.OfTree tree() {
+    public TreeView<ContainerMirror> tree() {
         throw new UnsupportedOperationException();
     }
 
@@ -119,13 +119,6 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
     public Optional<ContainerLifetimeMirror> parent() {
         return Optional.ofNullable(lifetime().treeParent).map(e -> e.mirror());
     }
-
-    /**
-    *
-    */
-   public interface OfTree extends TreeView<ContainerLifetimeMirror> {
-
-   }
 
 }
 

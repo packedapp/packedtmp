@@ -30,10 +30,6 @@ import internal.app.packed.extension.PackedExtensionUseSite;
 /** Var and method handles for the app.packed.extension package. */
 public final class ExtensionHandlers extends Handlers {
 
-    /** A MethodHandle for invoking {@link ExtensionMirror#initialize(ExtensionSetup)}. */
-    private static final MethodHandle MH_EXTENSION_MIRROR_INITIALIZE =method(MethodHandles.lookup(), ExtensionMirror.class, "initialize",
-            void.class, ExtensionSetup.class);
-
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = method(MethodHandles.lookup(), Extension.class, "newBeanIntrospector",
             BeanIntrospector.class);
@@ -61,16 +57,6 @@ public final class ExtensionHandlers extends Handlers {
 
     /** A var handle for {@link #getExtensionHandle(Extension)}. */
     private static final VarHandle VH_EXTENSION_TO_HANDLE = field(MethodHandles.lookup(), Extension.class, "extension", ExtensionSetup.class);
-
-    public static void invokeExtensionMirrorInitialize(ExtensionMirror<?> mirror, ExtensionSetup extension) {
-
-        // Call ExtensionMirror#initialize(ExtensionSetup)
-        try {
-            MH_EXTENSION_MIRROR_INITIALIZE.invokeExact(mirror, extension);
-        } catch (Throwable t) {
-            throw throwIt(t);
-        }
-    }
 
     public static ExtensionSetup getExtensionHandle(Extension<?> extension) {
         return (ExtensionSetup) VH_EXTENSION_TO_HANDLE.get(extension);

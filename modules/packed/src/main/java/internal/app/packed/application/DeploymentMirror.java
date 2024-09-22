@@ -27,6 +27,7 @@ import app.packed.container.ContainerMirror;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.lifetime.ContainerLifetimeMirror;
+import app.packed.util.TreeView;
 
 /**
  *
@@ -56,12 +57,12 @@ public class DeploymentMirror implements BuildMirror {
     }
 
     /** {@return a tree of all the applications that make of the deployment.} */
-    public ApplicationMirror.OfTree applications() {
+    public TreeView<ApplicationMirror> applications() {
         throw new UnsupportedOperationException();
     }
 
     /** {@return a tree of all the assemblies that make of the deployment.} */
-    public AssemblyMirror.OfTree assemblies() {
+    public TreeView<AssemblyMirror> assemblies() {
         throw new UnsupportedOperationException();
     }
 
@@ -70,7 +71,7 @@ public class DeploymentMirror implements BuildMirror {
     }
 
     /** {@return a tree of all the containers that make of the deployment.} */
-    public ContainerMirror.OfTree containers() {
+    public TreeView<ContainerMirror> containers() {
         throw new UnsupportedOperationException();
     }
 
@@ -86,7 +87,7 @@ public class DeploymentMirror implements BuildMirror {
         throw new UnsupportedOperationException();
     }
 
-    public ContainerLifetimeMirror.OfTree lifetimes() {
+    public TreeView<ContainerLifetimeMirror> lifetimes() {
         throw new UnsupportedOperationException();
     }
 

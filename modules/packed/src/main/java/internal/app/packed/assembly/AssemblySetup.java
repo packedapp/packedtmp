@@ -19,7 +19,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.function.Predicate;
 
 import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyMirror;
@@ -33,8 +32,6 @@ import internal.app.packed.application.BuildApplicationRepository;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
-import internal.app.packed.component.AbstractTreeMirror;
-import internal.app.packed.component.Mirrorable;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.extension.ExtensionSetup;
@@ -45,7 +42,7 @@ import internal.app.packed.service.CircularServiceDependencyChecker;
 import internal.app.packed.util.AbstractTreeNode;
 
 /** The internal configuration of an assembly. */
-public final class AssemblySetup extends AbstractTreeNode<AssemblySetup> implements BuildLocalSource, AuthoritySetup, Mirrorable<AssemblyMirror> {
+public final class AssemblySetup extends AbstractTreeNode<AssemblySetup> implements BuildLocalSource, AuthoritySetup {
 
     /** The assembly instance. */
     public final Assembly assembly;
@@ -147,7 +144,6 @@ public final class AssemblySetup extends AbstractTreeNode<AssemblySetup> impleme
     AssemblyMirror mirror;
 
     /** {@return a mirror for this assembly.} */
-    @Override
     public AssemblyMirror mirror() {
         AssemblyMirror m = mirror;
         if (m == null) {
@@ -212,13 +208,5 @@ public final class AssemblySetup extends AbstractTreeNode<AssemblySetup> impleme
 
     public Assembly.State state() {
         throw new UnsupportedOperationException();
-    }
-
-    /** An implementation of a tree of assembly mirrors. */
-    public static final class PackedAssemblyTreeMirror extends AbstractTreeMirror<AssemblyMirror, AssemblySetup> implements AssemblyMirror.OfTree {
-
-        public PackedAssemblyTreeMirror(AssemblySetup root, @Nullable Predicate<? super AssemblySetup> filter) {
-            super(root, filter);
-        }
     }
 }

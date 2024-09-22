@@ -25,6 +25,7 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
+import app.packed.util.TreeView;
 
 /** A mirror of a namespace. */
 public non-sealed class NamespaceMirror<E extends Extension<E>> implements ComponentMirror {
@@ -113,7 +114,7 @@ public non-sealed class NamespaceMirror<E extends Extension<E>> implements Compo
     // One where it is available, and one where it is active. And by used I mean???
     // Hmm, A reference to one of its elements?? Hmm. Maybe where it is used it not very well defined
     // I think Available is the right thing to return
-    public final ContainerMirror.OfTree namespaceScope() {
+    public final TreeView<ContainerMirror> namespaceScope() {
         throw new UnsupportedOperationException();
     }
 

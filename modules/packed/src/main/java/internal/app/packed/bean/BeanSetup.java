@@ -19,13 +19,13 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocal.Accessor;
+import app.packed.bean.BeanMirror;
+import app.packed.bean.BeanSourceKind;
+import app.packed.bean.BeanTemplate;
 import app.packed.binding.BindableVariable;
 import app.packed.binding.ComputedConstant;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
-import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanSourceKind;
-import app.packed.bean.BeanTemplate;
 import app.packed.build.BuildAuthority;
 import app.packed.build.hook.BuildHook;
 import app.packed.component.ComponentKind;
@@ -43,7 +43,6 @@ import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
-import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
@@ -63,7 +62,7 @@ import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.service.ServiceNamespaceHandle;
 
 /** The internal configuration of a bean. */
-public final class BeanSetup implements ComponentSetup, ContextualizedElementSetup, BuildLocalSource {
+public final class BeanSetup implements ContextualizedElementSetup, BuildLocalSource {
 
     /** A bean local for variables that use {@link app.packed.extension.BaseExtensionPoint.CodeGenerated}. */
     public static final PackedBeanLocal<Map<Key<?>, BindableVariable>> CODEGEN = new PackedBeanLocal<>(() -> new HashMap<>());
@@ -171,7 +170,6 @@ public final class BeanSetup implements ComponentSetup, ContextualizedElementSet
     }
 
     /** {@inheritDoc} */
-    @Override
     public ComponentPath componentPath() {
         return ComponentKind.BEAN.pathNew(container.componentPath(), name());
     }

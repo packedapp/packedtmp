@@ -113,7 +113,8 @@ public final class ContextSetup {
             } else if (context.root instanceof BeanSetup bs) {
                 return bs.mirror();
             } else {
-                return context.containerTree.mirror();
+                throw new UnsupportedOperationException();
+                //return context.containerTree.mirror();
             }
         }
 

@@ -32,6 +32,7 @@ import internal.app.packed.handlers.ExtensionHandlers;
 import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
 import internal.app.packed.namespace.PackedNamespaceInstaller;
 import internal.app.packed.namespace.PackedNamespaceTemplate;
+import internal.app.packed.util.PackedTreeView;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
@@ -114,10 +115,22 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
         return (T) namespaceHandle;
     }
 
+    /**
+     * {@return an instance of this extension that is used in the application's root container. Will return this if this
+     * extension is the root extension}
+     */
+    @SuppressWarnings("unchecked")
+    public final E applicationRoot() {
+        return (E) extension.root().instance();
+    }
+
+    /** {@inheritDoc} */
     @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings("unchecked")
     public final TreeView.Node<E> applicationNode() {
-       return new ExtensionTreeViewNode(extension, extension.extensionType);
+        ExtensionSetup es = extension.root();
+        PackedTreeView<ExtensionSetup, E> tree = new PackedTreeView<>(es, null, e -> (E) e.instance());
+        return tree.toNode(extension);
     }
 
     @Override

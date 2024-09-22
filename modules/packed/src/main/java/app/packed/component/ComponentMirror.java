@@ -18,14 +18,12 @@ package app.packed.component;
 import java.util.Set;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.build.BuildAuthority;
 import app.packed.build.BuildMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
-import app.packed.util.TreeView;
 
 /**
  * A mirror representing a component, which is the basic building block in the framework.
@@ -60,23 +58,6 @@ public sealed interface ComponentMirror extends BuildMirror permits ApplicationM
         return Set.of();
     }
 
-    /**
-     * Represents one or more containers ordered in a tree with a single node as the root.
-     * <p>
-     * Unless otherwise specified the tree is ordered accordingly to the installation order of each container.
-     */
-    // TODO make sealed, currently there is a bug in Eclipse
-    public interface OfTree extends TreeView<ComponentMirror> {
-
-        // Must form a tree as well
-        default AssemblyMirror.OfTree assemblies() {
-            throw new UnsupportedOperationException();
-        }
-        // Maaske er det en enum?
-        // isAllOfApplication
-        // isPartialSubtreeOfApplication();
-
-    }
     /** {@return the build step that installed the component} */
     // Installation is a runtime concept... You don't install an extension, you add it
     // What about assemblies, you link them??

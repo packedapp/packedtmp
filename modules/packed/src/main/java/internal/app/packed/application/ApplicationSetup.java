@@ -40,14 +40,12 @@ import app.packed.util.Nullable;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
-import internal.app.packed.component.ComponentSetup;
-import internal.app.packed.component.Mirrorable;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.handlers.ApplicationHandlers;
 import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
 
 /** The internal configuration of an application. */
-public final class ApplicationSetup implements ComponentSetup, BuildLocalSource, Mirrorable<ApplicationMirror> {
+public final class ApplicationSetup implements BuildLocalSource {
 
     /**
      * A list of actions that will be executed doing the code generating phase. Or null if code generation is disabled or
@@ -171,7 +169,6 @@ public final class ApplicationSetup implements ComponentSetup, BuildLocalSource,
         phase = ApplicationBuildPhase.COMPLETED;
     }
 
-    @Override
     public ComponentPath componentPath() {
         return ComponentKind.APPLICATION.pathNew(container.name);
     }
@@ -195,7 +192,6 @@ public final class ApplicationSetup implements ComponentSetup, BuildLocalSource,
     }
 
     /** {@return a new application mirror.} */
-    @Override
     public ApplicationMirror mirror() {
         return handle().mirror();
     }
@@ -222,7 +218,7 @@ public final class ApplicationSetup implements ComponentSetup, BuildLocalSource,
         return crack(ApplicationHandlers.getApplicationMirrorHandle(mirror));
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static ApplicationSetup newApplication(PackedApplicationInstaller<?> installer, AssemblySetup assembly) {
         ApplicationSetup as = installer.application = new ApplicationSetup(installer);
 
