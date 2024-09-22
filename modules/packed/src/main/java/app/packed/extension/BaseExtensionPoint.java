@@ -131,9 +131,9 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return the installer
      */
     public BeanTemplate.Installer newBean(BeanTemplate template) {
-        return template.newInstaller(this);
-        // Tror den fin den her
-//        return ((PackedBeanTemplate) template).newInstaller(extension().extension, extension().extension.container.assembly);
+        PackedBeanTemplate t = (PackedBeanTemplate) template;
+        ExtensionSetup e = usesite.usedBy();
+        return t.newInstaller(e, e.container.assembly);
     }
 
 //    // Vi bliver jo noedt til at have en baade med og uden use site
@@ -151,11 +151,9 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return the installer
      */
     public BeanTemplate.Installer newBean(BeanTemplate template, ExtensionUseSite forExtension) {
-        // Skal den her overhovede vaere public???
-        // Maybe move this to UseSite.. Nah other extension should also allow to install components.
-        // Where we cannot put the methods on usesite
         requireNonNull(forExtension, "forExtension is null");
-        return ((PackedBeanTemplate) template).newInstaller(extension().extension, ((PackedExtensionUseSite) forExtension).usedBy());
+        PackedBeanTemplate t = (PackedBeanTemplate) template;
+        return t.newInstaller(extension().extension, ((PackedExtensionUseSite) forExtension).usedBy());
     }
 
     /**

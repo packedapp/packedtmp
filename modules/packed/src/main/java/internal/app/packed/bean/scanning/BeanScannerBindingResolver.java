@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.bean.scanning;
 
 import java.lang.annotation.Annotation;
 
 import app.packed.binding.Variable;
 import app.packed.extension.Extension;
-import internal.app.packed.bean.BeanHookModel.AnnotatedParameterType;
-import internal.app.packed.bean.BeanHookModel.ParameterType;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.scanning.BeanHookModel.AnnotatedParameterType;
+import internal.app.packed.bean.scanning.BeanHookModel.ParameterType;
 import internal.app.packed.binding.InternalDependency;
 import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.binding.PackedBindableWrappedVariable;

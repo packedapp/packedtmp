@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.bean.scanning;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;

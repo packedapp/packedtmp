@@ -23,8 +23,8 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
-import internal.app.packed.bean.BeanScannerExtensionRef;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.scanning.BeanScannerExtensionRef;
 
 /**
  *

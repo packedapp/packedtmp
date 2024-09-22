@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.bean.scanning;
 
 import static java.util.Objects.requireNonNull;
 
@@ -32,17 +32,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 
-import app.packed.bean.BeanFactoryConfiguration;
-import app.packed.bean.BeanFactoryMirror;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.extension.Extension;
-import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTemplate;
-import app.packed.operation.OperationTemplate.Installer;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.PackedBeanInstaller.BeanFactoryOperationHandle;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.handlers.BeanHandlers;
@@ -105,7 +102,7 @@ public final class BeanScanner {
 
     public final ArrayDeque<OperationSetup> unBoundOperations = new ArrayDeque<>();
 
-    BeanScanner(BeanSetup bean) {
+    public BeanScanner(BeanSetup bean) {
         this.bean = bean;
         this.beanClass = bean.beanClass;
         this.customLookup = bean.container.assembly.customLookup;
@@ -162,7 +159,7 @@ public final class BeanScanner {
     }
 
     /** Introspect the bean. */
-    void introspect() {
+    public void introspect() {
         // First, we process all annotations on the class
 
         // Can we add operations here???
@@ -367,25 +364,6 @@ public final class BeanScanner {
         }
     }
 
-    static class BeanFactoryOperationHandle extends OperationHandle<BeanFactoryConfiguration> {
-
-        /**
-         * @param installer
-         */
-        public BeanFactoryOperationHandle(Installer installer) {
-            super(installer);
-        }
-
-        @Override
-        protected BeanFactoryConfiguration newOperationConfiguration() {
-            return new BeanFactoryConfiguration(this);
-        }
-
-        @Override
-        protected OperationMirror newOperationMirror() {
-            return new BeanFactoryMirror(this);
-        }
-    }
 
     /**
      * An open class is a thin wrapper for a single class and a {@link Lookup} object.

@@ -19,7 +19,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
-import app.packed.build.BuildGoal;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op;
@@ -38,17 +37,6 @@ public sealed interface ApplicationTemplate<A> permits PackedApplicationTemplate
      * @return the new bootstrap app.
      */
     BootstrapApp<A> newBootstrapApp();
-
-    /**
-     * Creates a new {@link Installer} from this template.
-     *
-     * @param goal
-     *            the build goal
-     * @param wirelets
-     *            optional wirelets
-     * @return a new application installer
-     */
-    ApplicationTemplate.Installer<A> newInstaller(BuildGoal goal, Wirelet... wirelets);
 
     /**
      * @param <A>

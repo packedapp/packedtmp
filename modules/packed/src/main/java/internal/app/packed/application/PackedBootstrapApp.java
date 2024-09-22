@@ -31,6 +31,7 @@ import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.runtime.RunState;
+import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /**
@@ -161,8 +162,11 @@ public final /* value */ class PackedBootstrapApp<A> implements BootstrapApp<A> 
             if (template.guestClass() == Void.class) {
                 return;
             }
+            BaseExtension base = assembly().containerRoot().use(BaseExtension.class);
+            ExtensionSetup es = ExtensionSetup.crack(base);
+
             // Create a new installer
-            BeanTemplate.Installer installer = PackedApplicationTemplate.GB.newInstallerForUser(assembly().containerRoot().use(BaseExtension.class));
+            BeanTemplate.Installer installer = PackedApplicationTemplate.GB.newInstaller(es, es.container.assembly);
 
             // Install it (code is shared with App-On-App)
             template.installGuestBean(installer, m -> mh = m);

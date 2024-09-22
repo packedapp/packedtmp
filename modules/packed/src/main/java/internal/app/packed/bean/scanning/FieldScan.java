@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.bean.scanning;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -26,8 +26,8 @@ import java.util.TreeMap;
 import app.packed.bean.BeanInstallationException;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
-import internal.app.packed.bean.BeanHookCache.HookOnAnnotatedBinding;
-import internal.app.packed.bean.BeanHookCache.HookOnFieldAnnotation;
+import internal.app.packed.bean.scanning.BeanHookCache.HookOnAnnotatedBinding;
+import internal.app.packed.bean.scanning.BeanHookCache.HookOnFieldAnnotation;
 import internal.app.packed.util.PackedAnnotationList;
 
 /**

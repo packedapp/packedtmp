@@ -28,10 +28,10 @@ import app.packed.binding.Variable;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
-import internal.app.packed.bean.PackedBeanConstructor;
-import internal.app.packed.bean.PackedBeanElement;
-import internal.app.packed.bean.PackedBeanField;
-import internal.app.packed.bean.PackedBeanMethod;
+import internal.app.packed.bean.scanning.PackedBeanConstructor;
+import internal.app.packed.bean.scanning.PackedBeanElement;
+import internal.app.packed.bean.scanning.PackedBeanField;
+import internal.app.packed.bean.scanning.PackedBeanMethod;
 
 /**
  *

@@ -16,7 +16,7 @@ import app.packed.assembly.DelegatingAssembly;
 import app.packed.build.BuildException;
 import app.packed.build.hook.ApplyBuildHook;
 import app.packed.build.hook.BuildHook;
-import internal.app.packed.bean.BeanHookModel;
+import internal.app.packed.bean.scanning.BeanHookModel;
 import internal.app.packed.build.hook.BuildHookMap;
 import internal.app.packed.build.hook.StaticBuildHookMap;
 import internal.app.packed.util.ThrowableUtil;

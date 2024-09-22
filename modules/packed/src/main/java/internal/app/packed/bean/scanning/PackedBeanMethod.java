@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.bean.scanning;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,8 +23,8 @@ import java.lang.reflect.Method;
 import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.binding.Key;
 import app.packed.operation.OperationTemplate;
-import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
+import internal.app.packed.bean.scanning.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.util.PackedAnnotationList;
 

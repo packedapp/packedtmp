@@ -22,6 +22,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanFactoryConfiguration;
+import app.packed.bean.BeanFactoryMirror;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanLocal;
@@ -29,6 +31,9 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.bean.BeanTemplate;
 import app.packed.extension.InternalExtensionException;
 import app.packed.operation.Op;
+import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationMirror;
+import app.packed.operation.OperationTemplate.Installer;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.ContainerBeanStore.BeanClassKey;
 import internal.app.packed.build.AuthoritySetup;
@@ -177,5 +182,25 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
         checkNotInstalledYet();
         this.locals.put((PackedBeanLocal<?>) requireNonNull(local, "local is null"), requireNonNull(value, "value is null"));
         return this;
+    }
+
+    public static class BeanFactoryOperationHandle extends OperationHandle<BeanFactoryConfiguration> {
+
+        /**
+         * @param installer
+         */
+        public BeanFactoryOperationHandle(Installer installer) {
+            super(installer);
+        }
+
+        @Override
+        protected BeanFactoryConfiguration newOperationConfiguration() {
+            return new BeanFactoryConfiguration(this);
+        }
+
+        @Override
+        protected OperationMirror newOperationMirror() {
+            return new BeanFactoryMirror(this);
+        }
     }
 }

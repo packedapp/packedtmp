@@ -109,8 +109,15 @@ public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Packed
         });
     }
 
-    // Skal ikke baade have det paa install metoden og den her syntes jeg
-    @Override
+    /**
+     * Creates a new {@link Installer} from this template.
+     *
+     * @param goal
+     *            the build goal
+     * @param wirelets
+     *            optional wirelets
+     * @return a new application installer
+     */
     public PackedApplicationInstaller<A> newInstaller(BuildGoal goal, Wirelet... wirelets) {
         PackedApplicationInstaller<A> installer = new PackedApplicationInstaller<>(this, goal);
         installer.container.processBuildWirelets(wirelets);

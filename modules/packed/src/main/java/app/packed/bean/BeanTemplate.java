@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.extension.ExtensionPoint;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.PackedBeanInstaller;
@@ -96,8 +95,6 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     static BeanTemplate of(BeanKind kind, Consumer<? super Configurator> action) {
         return PackedBeanTemplate.reconfigureExisting(new PackedBeanTemplate(kind), action);
     }
-
-    BeanTemplate.Installer newInstaller(ExtensionPoint<?> bep);
 
     /**
      * A configuration object for configuring or reconfiguring a bean template.

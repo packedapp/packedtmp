@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.bean.scanning;
 
 import app.packed.bean.BeanElement;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.PackedBindableVariable;
 
 /**
  *
  */
-public sealed abstract class PackedBeanElement implements BeanElement permits PackedBeanClass, PackedBeanMember, PackedBindableVariable {
+public sealed abstract class PackedBeanElement implements BeanElement permits PackedBeanField, PackedBeanClass, PackedBeanMember, PackedBindableVariable {
 
     public abstract BeanSetup bean();
 }

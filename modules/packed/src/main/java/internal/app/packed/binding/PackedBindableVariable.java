@@ -37,9 +37,9 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate.Descriptor;
 import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.PackedBeanElement;
+import internal.app.packed.bean.scanning.BeanScanner;
+import internal.app.packed.bean.scanning.PackedBeanElement;
 import internal.app.packed.binding.BindingResolution.FromCodeGenerated;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromInvocationArgument;
@@ -111,7 +111,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
     /** {@inheritDoc} */
     @Override
     public BeanSetup bean() {
-        return operation.bean;
+        return scanner.bean;
     }
 
     private void bind(BindingResolution provider) {

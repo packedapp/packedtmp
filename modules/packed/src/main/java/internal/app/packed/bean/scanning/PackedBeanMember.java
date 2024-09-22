@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.bean.scanning;
 
 import java.lang.reflect.Member;
 
 import app.packed.util.AnnotationList;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.util.PackedAnnotationList;
 
 /** The super class of operational members. The inheritance hierarchy follows that of {@link Member}. */
-abstract sealed class PackedBeanMember<M extends Member> extends PackedBeanElement permits PackedBeanExecutable {
+abstract sealed class PackedBeanMember<M extends Member> extends PackedBeanElement permits PackedBeanExecutable{
 
     /** Annotations on the member. */
     private final PackedAnnotationList annotations;
@@ -37,6 +38,7 @@ abstract sealed class PackedBeanMember<M extends Member> extends PackedBeanEleme
         this.member = member;
         this.annotations = annotations;
     }
+
 
     /** {@return a list of annotations on the member.} */
     @Override

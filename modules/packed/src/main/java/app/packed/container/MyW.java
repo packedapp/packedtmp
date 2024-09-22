@@ -81,7 +81,6 @@ public class MyW extends BaseAssembly {
         }
 
         void install() {
-            BeanKind.CONTAINER.template().newInstaller(base()).install(FFF.class, MyBeanHandle::new);
             base().newBean(BeanKind.CONTAINER.template()).install(FFF.class, MyBeanHandle::new);
         }
     }

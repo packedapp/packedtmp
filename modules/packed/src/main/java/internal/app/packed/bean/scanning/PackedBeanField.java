@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.bean.scanning;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
@@ -27,7 +27,8 @@ import app.packed.binding.Variable;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
-import internal.app.packed.bean.BeanHookCache.HookOnFieldAnnotation;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.scanning.BeanHookCache.HookOnFieldAnnotation;
 import internal.app.packed.binding.PackedVariable;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.PackedOperationTemplate;
@@ -35,7 +36,7 @@ import internal.app.packed.util.PackedAnnotationList;
 
 /** Implementation of {@link BeanField}. */
 // Previous we had a PackedBeanMember, but there are actually only 2-3 common operations. So don't go that road again.
-public final class PackedBeanField implements BeanField, Comparable<PackedBeanField> {
+public final class PackedBeanField extends PackedBeanElement implements BeanField, Comparable<PackedBeanField> {
 
     /** Whether or not operations that read from the field can be created. */
     final boolean allowGet;
@@ -153,5 +154,11 @@ public final class PackedBeanField implements BeanField, Comparable<PackedBeanFi
     @Override
     public Variable variable() {
         return new PackedVariable(annotations, field.getGenericType());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanSetup bean() {
+        return extension.scanner.bean;
     }
 }
