@@ -50,7 +50,7 @@ import internal.app.packed.entrypoint.EntryPointSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.handlers.OperationHandlers;
 import internal.app.packed.namespace.NamespaceSetup;
-import internal.app.packed.operation.PackedOperationTarget.MemberOperationSetup;
+import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceProviderSetup;
 
@@ -243,7 +243,7 @@ public final class OperationSetup implements ContextualizedElementSetup {
 //            super.mirrorSupplier = BeanFactoryMirror::new;
 //        }
 
-        installer.pot = new MemberOperationSetup(member, methodHandle);
+        installer.pot = new MemberOperationTarget(member, methodHandle);
 
         OperationSetup os = installer.newOperation((Function) configurationCreator);
         return os;
@@ -264,7 +264,7 @@ public final class OperationSetup implements ContextualizedElementSetup {
             NamespaceSetup s = NamespaceSetup.crack(installer.addToNamespace);
             s.operations.add(os);
         }
-        os.handle = handle;
+        os.handle = installer.oh = handle;
         os.bean.operations.add(os);
         return os;
     }

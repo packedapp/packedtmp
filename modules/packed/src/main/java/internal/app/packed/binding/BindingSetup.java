@@ -28,6 +28,7 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 
 /** The configuration of an operation's binding. */
+// TODO make it single class, and have the bindings a field
 public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetup, BindingSetup.HookBindingSetup, ServiceBindingSetup {
 
     /**
@@ -36,6 +37,8 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
      * May be the application itself if using {@link app.packed.operation.Op#bind(Object)} or similar.
      */
     public final BuildAuthority boundBy;
+
+    private BindingMirror mirror;
 
     /** Supplies a mirror for the binding */
     public Supplier<? extends BindingMirror> mirrorSupplier;
@@ -52,10 +55,16 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
         this.boundBy = requireNonNull(boundBy);
     }
 
+    /**
+     * @return
+     */
+    public ComponentPath componentPath() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return the binding kind.} */
     public abstract BindingKind kind();
 
-    private BindingMirror mirror;
     /** {@return a new mirror.} */
     public BindingMirror mirror() {
         BindingMirror m = mirror;
@@ -130,13 +139,6 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
         public BindingResolution resolver() {
             return provider;
         }
-    }
-
-    /**
-     * @return
-     */
-    public ComponentPath componentPath() {
-       throw new UnsupportedOperationException();
     }
 }
 

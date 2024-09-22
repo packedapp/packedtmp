@@ -16,17 +16,26 @@
 package app.packed.service;
 
 import app.packed.extension.BaseExtension;
-import app.packed.namespace.NamespaceMirror;
+import app.packed.namespace.NamespaceHandle;
+import app.packed.namespace.NamespaceTemplate.Installer;
 
 /**
  *
  */
-public final class ServiceNamespaceMirror extends NamespaceMirror<BaseExtension>{
+// Problemet er at, det her handle nok bliver noedt til at vaere i intern package.
+// Tror bare vi maa kalde vi MH
+class ServiceNamespaceHandle extends NamespaceHandle<BaseExtension, ServiceNamespaceConfiguration> {
 
     /**
-     * @param handle
+     * @param installer
      */
-    ServiceNamespaceMirror(ServiceNamespaceHandle handle) {
-        super(handle);
+    protected ServiceNamespaceHandle(Installer installer) {
+        super(installer);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected ServiceNamespaceConfiguration newNamespaceConfiguration(BaseExtension e) {
+        return new ServiceNamespaceConfiguration(this, e);
     }
 }

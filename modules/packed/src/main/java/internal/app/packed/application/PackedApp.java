@@ -27,13 +27,13 @@ import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
+import internal.app.packed.ValueBased;
 
-/**
- * Ideen var lidt at man bare extended nogle faa metoder. Og saa havde man en working implementation.
- */
-// IDK hvad er det man vil?
+/** The default implementation of {@link App}. */
+@ValueBased
 public final class PackedApp implements App {
-    public static final BootstrapApp<PackedApp> BOOTSTRAP = ApplicationTemplate.of(PackedApp.class, c -> {
+
+   public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = ApplicationTemplate.of(PackedApp.class, c -> {
         c.container(ContainerTemplate.MANAGED);
     }).newBootstrapApp();
 

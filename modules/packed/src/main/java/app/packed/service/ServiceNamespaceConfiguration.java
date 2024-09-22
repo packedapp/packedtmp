@@ -26,7 +26,6 @@ import app.packed.binding.Key;
 import app.packed.binding.Provider;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceConfiguration;
-import app.packed.namespace.NamespaceHandle;
 import app.packed.operation.OperationConfiguration;
 import internal.app.packed.service.PackedServiceLocator;
 import internal.app.packed.util.CollectionUtil;
@@ -40,15 +39,11 @@ public final class ServiceNamespaceConfiguration extends NamespaceConfiguration<
     /**
      * @param namespace
      */
-    protected ServiceNamespaceConfiguration(NamespaceHandle<BaseExtension, ?> namespace) {
-        super(namespace);
+    ServiceNamespaceConfiguration(ServiceNamespaceHandle handle, BaseExtension e) {
+        super(handle, e);
     }
 
-    // sbc.provide-> Knows the fucking service namespace...
-    public <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
-        return extension().install(implementation);
-    }
-
+    // Hmm, specificere ved namespacet under provide?
     <T> OperationConfiguration provide(Class<T> key, Provider<? extends T> provider) {
         return provide(Key.of(key), provider);
     }
@@ -157,6 +152,5 @@ public final class ServiceNamespaceConfiguration extends NamespaceConfiguration<
         checkIsConfigurable();
         throw new UnsupportedOperationException();
     }
-
 
 }

@@ -19,10 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.build.BuildAuthority;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentPath;
 import app.packed.container.ContainerPropagator;
 import app.packed.extension.Extension;
-import app.packed.util.TreeView;
+import app.packed.extension.ExtensionHandle;
+import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.namespace.NamespaceSetup;
 
 /**
@@ -32,15 +33,15 @@ import internal.app.packed.namespace.NamespaceSetup;
  */
 public non-sealed abstract class NamespaceConfiguration<E extends Extension<E>> extends ComponentConfiguration {
 
+    private final E extension;
+
     /** A handle for the namespace. */
     private final NamespaceHandle<E, ?> handle;
 
-    protected NamespaceConfiguration(NamespaceHandle<E, ?> namespace) {
+    protected NamespaceConfiguration(NamespaceHandle<E, ?> namespace, E extension) {
         this.handle = requireNonNull(namespace);
-    }
-
-    private NamespaceSetup ns() {
-        return handle.namespace;
+        this.extension = requireNonNull(extension);
+        // TODO check that the extension is the right type for the namespace
     }
 
     public final BuildAuthority authority() {
@@ -55,57 +56,12 @@ public non-sealed abstract class NamespaceConfiguration<E extends Extension<E>> 
 
     }
 
-//    @Override
-//    public final ComponentPath componentPath() {
-//        // We have the unique name of the extension/namespace
-//        // We have the path of the container
-//        // We have the name of the namespace
-//
-//        // Maybe namespace types need a unique name similar to extensions within an application
-//        // I think they are specific type of componentKind for each namespace
-//        return null;
-//    }
-
-    // The container
-    public final ComponentPath containerPath() {
-        return ns().root.container.componentPath();
-    }
-
-    /** {@return the extension instance for which this configuration has been created.} */
-    @SuppressWarnings("unchecked")
     protected final E extension() {
-        return (E) ns().root.instance();
+        return extension;
     }
 
-    public final String name() {
-        return ns().name();
-    }
-
-    protected final TreeView.Node<Extension<?>> node() {
-        throw new UnsupportedOperationException();
-    }
-
-    // Unless Explicitly set
-    // Kan vi rename efter den er blevet bundet???
-    // Kan risikere kollisioner i en assembly laengere nede
-
-    public NamespaceConfiguration<E> noPropagation() {
-        return propagate(ContainerPropagator.LOCAL);
-    }
-
-    // Der er et eller andet naar vi laver namespaces efter at have linket... En container
-    // Af gode grund kan den ikke vaere tilgaengelig
-
-    // Tror sgu ikke vi kan reneme it namespace
-//    public NamespaceConfiguration<E> named(String name) {
-//        handle.named(name);
-//        return this;
-//    }
-
-    public NamespaceConfiguration<E> propagate(ContainerPropagator propagator) {
-   //     throw new UnsupportedOperationException();
-
-        return this;
+    protected final ExtensionHandle<E> extensionHandle() {
+        return new PackedExtensionHandle<>(ExtensionSetup.crack(extension));
     }
 
     /** {@inheritDoc} */
@@ -114,8 +70,34 @@ public non-sealed abstract class NamespaceConfiguration<E extends Extension<E>> 
         return handle;
     }
 
-    protected final <EE extends Extension<?>> E extension(NamespaceHandle<E, ?> ha) {
-        throw new UnsupportedOperationException();
+    /** {@return the name of the namespace} */
+    public final String name() {
+        return ns().name();
+    }
+
+    public NamespaceConfiguration<E> noPropagation() {
+        return propagate(ContainerPropagator.LOCAL);
+    }
+
+    private NamespaceSetup ns() {
+        return handle.namespace;
+    }
+
+    public NamespaceConfiguration<E> propagate(ContainerPropagator propagator) {
+        // throw new UnsupportedOperationException();
+
+        return this;
+    }
+
+    /** {@return the root extension of the namespace} */
+    @SuppressWarnings("unchecked")
+    protected final E rootExtension() {
+        return (E) ns().root.instance();
+    }
+
+    /** {@return the root extension of the namespace} */
+    protected final ExtensionHandle<E> rootExtensionHandle() {
+        return new PackedExtensionHandle<>(ns().root);
     }
 }
 

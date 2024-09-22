@@ -47,6 +47,12 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
         this.namespace = requireNonNull(((PackedNamespaceInstaller) installer).namespace);
     }
 
+    /** {@return the root extension of this domain.} */
+    @SuppressWarnings("unchecked")
+    public final E applicationRootExtension() {
+        return (E) namespace.root.root().instance();
+    }
+
     /** {@inheritDoc} */
     @Override
     public final ComponentPath componentPath() {
@@ -87,7 +93,7 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
     }
 
     /** {@inheritDoc} */
-    protected abstract C newNamespaceConfiguration(E e);
+    protected abstract C newNamespaceConfiguration(E extension);
 
     /**
      * <p>
@@ -100,9 +106,9 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
         return new NamespaceMirror<E>(this);
     }
 
-    protected void onNamespaceClose() {}
-
     protected void onAssemblyClose(E rootExtension, boolean isNamespaceRoot) {}
+
+    protected void onNamespaceClose() {}
 
     /** {@return a stream of all of the operations declared in the namespace.} */
     public final Stream<OperationHandle<?>> operations() {
@@ -133,11 +139,5 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
     @SuppressWarnings("unchecked")
     public final E rootExtension() {
         return (E) namespace.root.instance();
-    }
-
-    /** {@return the root extension of this domain.} */
-    @SuppressWarnings("unchecked")
-    public final E applicationRootExtension() {
-        return (E) namespace.root.root().instance();
     }
 }

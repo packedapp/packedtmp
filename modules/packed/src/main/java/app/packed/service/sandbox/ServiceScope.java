@@ -13,17 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.service.sandbox;
 
 /**
  *
  */
-public class ServiceProxy {
-    // Service proxies are configured at build time.
-
-    // Comes with a couple of default built-in interesting policies
-
-    // Around, interception, ect..
-    // Some debugging
-    // Lazy create (typisk for requirements)
+// ServiceOrigin
+public enum ServiceScope {
+    OPERATION, BEAN, NAMESPACE;
 }

@@ -22,12 +22,12 @@ import app.packed.namespace.NamespaceConfiguration;
 /**
  * A CLI namespace where all commands and general options are unique.
  */
-public class CliNamespaceConfiguration extends NamespaceConfiguration<CliExtension> {
+public final class CliNamespaceConfiguration extends NamespaceConfiguration<CliExtension> {
 
     final CliNamespaceHandle handle;
 
     public CliNamespaceConfiguration(CliNamespaceHandle o, CliExtension cli) {
-        super(o);
+        super(o, cli);
         this.handle = o;
     }
 

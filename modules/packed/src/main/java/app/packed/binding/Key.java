@@ -37,7 +37,7 @@ import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.util.AnnotationList;
 import app.packed.util.Tag;
 import internal.app.packed.bean.PackedBeanMethod;
-import internal.app.packed.bean.PackedBindableVariable;
+import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.util.AnnotationUtil;
 import internal.app.packed.util.PackedAnnotationList;
 import internal.app.packed.util.StringFormatter;

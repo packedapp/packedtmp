@@ -21,11 +21,12 @@ import java.util.Optional;
 
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
+import internal.app.packed.component.PackedComponentKind;
 import internal.app.packed.component.PackedComponentKind.PackedComponentKindBuilder;
 
 /** The type of a component. */
 //https://backstage.io/docs/features/software-catalog/descriptor-format/
-public interface ComponentKind {
+public sealed interface ComponentKind permits PackedComponentKind {
 
     /** A component kind representing an application. */
     ComponentKind APPLICATION = builder("Application", BaseExtension.class, "Application").requireFragmentString("application").build();

@@ -28,15 +28,12 @@ import internal.app.packed.extension.PackedExtensionUseSite;
  *
  * NOTE: In order to properly implement an extension point you:
  * <ul>
- * <li>Must override {@link Extension#newExtensionPoint()} in order to provide a new instance of the extension
- * point.</li>
- * <li>Must place the extension point in the same module as the extension itself (iff the extension is defined in a
- * module).</li>
+ * <li>Must override {@link Extension#newExtensionPoint(ExtensionUseSite)} in order to provide a new instance of the
+ * extension point.</li>
+ * <li>Must place the extension point in the same module and package as the extension itself (iff the extension is
+ * defined in a module).</li>
  * <li>Should name the extension point class {@code $NAME_OF_EXTENSION$}Point.</li>
  * </ul>
- * <p>
- * Attempting to use any of the methods on this class from the constructor of a subclass, will result in an
- * {@link IllegalStateException} being thrown.
  *
  * @see Extension#use(Class)
  * @see UseSite
@@ -46,12 +43,8 @@ import internal.app.packed.extension.PackedExtensionUseSite;
  */
 public abstract class ExtensionPoint<E extends Extension<E>> {
 
-    /**
-     * A context for this extension point. Is initialized via {@link #initialize(PackedExtensionPointContext)}..
-     * <p>
-     * This field should only be read via {@link #contextUse()}.
-     */
-    private final PackedExtensionUseSite usesite;
+    /** The use site of this extension point. */
+    final PackedExtensionUseSite usesite;
 
     /**
      * Create a new extension point.
@@ -59,7 +52,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
      * Subclasses should never exposed any public constructors.
      */
     protected ExtensionPoint(ExtensionUseSite usesite) {
-        this.usesite = (internal.app.packed.extension.PackedExtensionUseSite) requireNonNull(usesite);
+        this.usesite = (PackedExtensionUseSite) requireNonNull(usesite);
     }
 
     /**
@@ -75,52 +68,25 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
         // We only check the extension that uses the extension point.
         // Because the extension the extension points belongs to, is always a direct
         // dependency and will be closed before the extension that provides the extension point.
-        ExtensionSetup extension = contextUse().usedBy();
+        ExtensionSetup extension = usesite.usedBy();
         if (!extension.isConfigurable()) {
             throw new IllegalStateException(extension.extensionType + " is no longer configurable");
         }
     }
 
     protected final ExtensionUseSite context() {
-        return contextUse();
-    }
-
-    /** {@return the context for this extension point.} */
-    final PackedExtensionUseSite contextUse() {
-        PackedExtensionUseSite c = usesite;
-        if (c == null) {
-            throw new IllegalStateException("This operation cannot be invoked from the constructor of an extension point.");
-        }
-        return c;
+        return usesite;
     }
 
     /** {@return the extension instance that this extension point is a part of} */
     @SuppressWarnings("unchecked")
     protected final E extension() {
-        return (E) extensionSetup().instance();
+        return (E) usesite.extension().instance();
     }
-
-    final ExtensionSetup extensionSetup() {
-        return contextUse().extension();
-    }
-//
-//    /**
-//     * Invoked by {@link packed.internal.container.ExtensionMirrorModel#initialize(ExtensionMirror, ExtensionSetup)} to set
-//     * the context of this extension point.
-//     *
-//     * @param context
-//     *            the context of this extension point
-//     */
-//    final void initialize(ExtensionSetup extension, ExtensionSetup usedBy) {
-//        if (this.context != null) {
-//            throw new IllegalStateException("This extension point has already been initialized.");
-//        }
-//        this.context = new PackedExtensionPointContext(extension, usedBy);
-//    }
 
     /** {@return the type of extension that are using the extension point.} */
     protected final Class<? extends Extension<?>> usedBy() {
-        return contextUse().usedBy().extensionType;
+        return usesite.usedBy().extensionType;
     }
 
     /**

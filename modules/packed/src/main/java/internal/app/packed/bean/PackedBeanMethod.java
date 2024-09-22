@@ -18,18 +18,13 @@ package internal.app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
-import java.util.function.Function;
 
 import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.binding.Key;
-import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
-import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.PackedOperationInstaller;
 import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.util.PackedAnnotationList;
 
@@ -51,32 +46,10 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
     public OperationTemplate.Installer newOperation(OperationTemplate template) {
         requireNonNull(template);
         checkConfigurable();
+        PackedOperationTemplate t = (PackedOperationTemplate) template;
 
         // We should be able to create this lazily
-        MethodHandle methodHandle = extension.scanner.unreflectMethod(member);
-
-        return new PackedOperationInstaller(((PackedOperationTemplate) template), operationType(), extension.scanner.bean, extension.extension) {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public final <H extends OperationHandle<?>> H install(Function<? super OperationTemplate.Installer, H> configurationCreator) {
-
-                OperationSetup operation = OperationSetup.newMemberOperationSetup(this, new OperationMethodTarget(member), methodHandle, configurationCreator);
-//              extension.scanner.bean.operations.all.add(operation);
-                extension.scanner.unBoundOperations.add(operation);
-                return (H) (this.oh = operation.handle());
-            }
-        };
-//
-//        PackedOperationInstaller poi = ((PackedOperationTemplate) template).newInstaller(operationType(), extension.scanner.bean, extension.extension);
-//
-//        return new PackedOperationInstaller(po) {
-//
-//            @Override
-//            public OperationHandle<?> install() {
-//
-//            }};
-
+        return t.newInstaller(extension, extension.scanner.unreflectMethod(member), new OperationMethodTarget(member), type);
     }
 
     /** {@inheritDoc} */

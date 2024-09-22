@@ -33,8 +33,6 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
     /** The next op in the chain. */
     private final PackedOp<?> nextOp;
 
-    // final int[] permutationsArrays = new int[0];
-
     /**
      * @param type
      * @param operation

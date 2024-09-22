@@ -29,7 +29,7 @@ import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
-import internal.app.packed.bean.PackedBindableVariable;
+import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
 

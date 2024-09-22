@@ -37,6 +37,7 @@ import app.packed.container.ContainerLocal;
 import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.util.Nullable;
+import internal.app.packed.application.deployment.DeploymentSetup;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
@@ -169,6 +170,7 @@ public final class ApplicationSetup implements BuildLocalSource {
         phase = ApplicationBuildPhase.COMPLETED;
     }
 
+    /** {@return the component path of the application} */
     public ComponentPath componentPath() {
         return ComponentKind.APPLICATION.pathNew(container.name);
     }
@@ -191,7 +193,7 @@ public final class ApplicationSetup implements BuildLocalSource {
         return locals;
     }
 
-    /** {@return a new application mirror.} */
+    /** {@return a mirror for the application} */
     public ApplicationMirror mirror() {
         return handle().mirror();
     }

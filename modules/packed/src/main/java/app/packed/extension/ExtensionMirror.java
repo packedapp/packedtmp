@@ -15,7 +15,6 @@ import app.packed.build.BuildCodeSourceMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.util.TreeView.Node;
 import internal.app.packed.extension.PackedExtensionHandle;
-import internal.app.packed.util.PackedTreeView;
 
 /**
  * The base class for specialized extension mirrors.
@@ -55,17 +54,8 @@ public abstract non-sealed class ExtensionMirror<E extends Extension<E>> impleme
      * This class contains a number of all* methods. There are no exact criteria for what methods to include. Only that they
      * should be generally helpful for developers extending this class.
      */
-//
-//    /**
-//     * The extensions that are being mirrored. Is initially null but populated via
-//     * {@link #initialize(ExtensionNavigatorImpl)}
-//     */
-//    @Nullable
-//    // Move to magic setup
-//    // TODO take ExtensionHandle
-//    private ExtensionTreeViewNode<E> navigator;
 
-    private final PackedExtensionHandle<E> handle;
+    final PackedExtensionHandle<E> handle;
 
     /**
      * Create a new extension mirror.
@@ -97,7 +87,7 @@ public abstract non-sealed class ExtensionMirror<E extends Extension<E>> impleme
     protected final <T> List<T> allCollectToList(BiConsumer<E, List<T>> action) {
         requireNonNull(action, "action is null");
         ArrayList<T> result = new ArrayList<>();
-        for (E t : navigator()) {
+        for (E t : node()) {
             action.accept(t, result);
         }
         return result;
@@ -105,9 +95,13 @@ public abstract non-sealed class ExtensionMirror<E extends Extension<E>> impleme
 
     protected final void allForEach(Consumer<E> action) {
         requireNonNull(action, "action is null");
-        for (E t : navigator()) {
+        for (E t : node()) {
             action.accept(t);
         }
+    }
+
+    protected final Stream<E> allStream() {
+        return node().stream();
     }
 
     /**
@@ -122,7 +116,7 @@ public abstract non-sealed class ExtensionMirror<E extends Extension<E>> impleme
     protected final int allSumInt(ToIntFunction<? super E> mapper) {
         requireNonNull(mapper, "mapper is null");
         int result = 0;
-        for (E t : navigator()) {
+        for (E t : node()) {
             int tmp = mapper.applyAsInt(t);
             result = Math.addExact(result, tmp);
         }
@@ -132,15 +126,11 @@ public abstract non-sealed class ExtensionMirror<E extends Extension<E>> impleme
     protected final long allSumLong(ToLongFunction<? super E> mapper) {
         requireNonNull(mapper, "mapper is null");
         long result = 0;
-        for (E t : navigator()) {
+        for (E t : node()) {
             long tmp = mapper.applyAsLong(t);
             result = Math.addExact(result, tmp);
         }
         return result;
-    }
-
-    protected final Stream<E> allStream() {
-        return navigator().stream();
     }
 
     /** {@return the container this extension is part of.} */
@@ -164,9 +154,8 @@ public abstract non-sealed class ExtensionMirror<E extends Extension<E>> impleme
      * @throws IllegalStateException
      *             if called from the constructor of the mirror
      */
-    @SuppressWarnings("unchecked")
-    protected final Node<E> navigator() {
-        return new PackedTreeView<>(handle.extension().root(), null, e -> (E) e.instance()).toNode(handle.extension());
+    protected final Node<E> node() {
+        return handle.applicationNode();
     }
 
     /** {@inheritDoc} */

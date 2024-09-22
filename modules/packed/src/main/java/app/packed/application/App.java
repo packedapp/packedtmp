@@ -87,7 +87,7 @@ public interface App extends AutoCloseable {
      */
     @SuppressWarnings("unused")
     static void checkedRun(RunState state, Assembly assembly, Wirelet... wirelets) throws ExecutionException {
-        PackedApp.BOOTSTRAP.launch(state, assembly, wirelets);
+        PackedApp.BOOTSTRAP_APP.launch(state, assembly, wirelets);
     }
 
     /**
@@ -104,7 +104,7 @@ public interface App extends AutoCloseable {
      * @return an image that can be used to launch a single instance of the application
      */
     static App.Image imageOf(Assembly assembly, Wirelet... wirelets) {
-        return new PackedApp.AppImage(PackedApp.BOOTSTRAP.imageOf(assembly, wirelets));
+        return new PackedApp.AppImage(PackedApp.BOOTSTRAP_APP.imageOf(assembly, wirelets));
     }
 
     /**
@@ -119,7 +119,7 @@ public interface App extends AutoCloseable {
      *             if the application could not be build
      */
     static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        return PackedApp.BOOTSTRAP.mirrorOf(assembly, wirelets);
+        return PackedApp.BOOTSTRAP_APP.mirrorOf(assembly, wirelets);
     }
 
     /**
@@ -157,11 +157,11 @@ public interface App extends AutoCloseable {
      *             if the application failed to build or run
      */
     static void run(Assembly assembly, Wirelet... wirelets) {
-        PackedApp.BOOTSTRAP.launch(RunState.TERMINATED, assembly, wirelets);
+        PackedApp.BOOTSTRAP_APP.launch(RunState.TERMINATED, assembly, wirelets);
     }
 
     static App start(Assembly assembly, Wirelet... wirelets) {
-        return PackedApp.BOOTSTRAP.launch(RunState.RUNNING, assembly, wirelets);
+        return PackedApp.BOOTSTRAP_APP.launch(RunState.RUNNING, assembly, wirelets);
     }
 
     // Kunne jo vaere man gerne ville returnere et eller andet???
@@ -190,7 +190,7 @@ public interface App extends AutoCloseable {
      *             if the application could not be build
      */
     static void verify(Assembly assembly, Wirelet... wirelets) {
-        PackedApp.BOOTSTRAP.verify(assembly, wirelets);
+        PackedApp.BOOTSTRAP_APP.verify(assembly, wirelets);
     }
 
     /** An image for App. */

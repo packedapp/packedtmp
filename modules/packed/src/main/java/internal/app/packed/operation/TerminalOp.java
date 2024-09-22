@@ -20,10 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
-import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
-import internal.app.packed.operation.PackedOperationTarget.FunctionOperationSetup;
-import internal.app.packed.operation.PackedOperationTarget.MethodHandleOperationSetup;
+import internal.app.packed.operation.PackedOperationTarget.FunctionOperationTarget;
+import internal.app.packed.operation.PackedOperationTarget.MethodHandleOperationTarget;
 
 /** A terminal op. */
 public abstract sealed class TerminalOp<R> extends PackedOp<R> {
@@ -58,9 +57,10 @@ public abstract sealed class TerminalOp<R> extends PackedOp<R> {
 
             PackedOperationInstaller poi = template.newInstaller(type, newOs.bean(), newOs.operator());
             poi.embeddedInto = newOs.embeddedIn();
-            poi.pot = new FunctionOperationSetup(mhOperation, samType, implementationMethod);
+            poi.pot = new FunctionOperationTarget(mhOperation, samType, implementationMethod);
 
-            return poi.newOperation(OperationHandle::new);
+            // Add to unresolved?
+            return poi.newOperation(newOs.newHandle());
         }
     }
 
@@ -76,8 +76,8 @@ public abstract sealed class TerminalOp<R> extends PackedOp<R> {
         public OperationSetup newOperationSetup(NewOS newOs) {
             PackedOperationInstaller installer = newOs.template().newInstaller(type, newOs.bean(), newOs.operator());
             installer.embeddedInto = newOs.embeddedIn();
-            installer.pot = new MethodHandleOperationSetup(mhOperation);
-            return installer.newOperation(OperationHandle::new);
+            installer.pot = new MethodHandleOperationTarget(mhOperation);
+            return installer.newOperation(newOs.newHandle() );
         }
     }
 }

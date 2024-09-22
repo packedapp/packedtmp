@@ -45,7 +45,7 @@ final class ThreadNamespaceHandle extends NamespaceHandle<ThreadExtension, Threa
     /** {@inheritDoc} */
     @Override
     protected ThreadNamespaceConfiguration newNamespaceConfiguration(ThreadExtension e) {
-        return new ThreadNamespaceConfiguration(this);
+        return new ThreadNamespaceConfiguration(this, e);
     }
 
     @Override

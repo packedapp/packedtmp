@@ -30,15 +30,15 @@ import internal.app.packed.concurrent.ExecutorConfiguration;
 // Fyldt med Thread factories/pools
 // Hvad med extensions??? Vi vil gerne kunne configure deres.
 // Maaske deler vi en enkelt. Maaske har vi noget hierrakisk hvor vi nedarver settings
-public class ThreadNamespaceConfiguration extends NamespaceConfiguration<ThreadExtension> {
+public final class ThreadNamespaceConfiguration extends NamespaceConfiguration<ThreadExtension> {
 
     final ThreadNamespaceHandle handle;
 
     /**
      * @param handle
      */
-    protected ThreadNamespaceConfiguration(ThreadNamespaceHandle handle) {
-        super(handle);
+    ThreadNamespaceConfiguration(ThreadNamespaceHandle handle, ThreadExtension extension) {
+        super(handle, extension);
         this.handle = handle;
     }
 
@@ -56,7 +56,6 @@ public class ThreadNamespaceConfiguration extends NamespaceConfiguration<ThreadE
     public void register(ExecutorService scheduler, boolean shutdownOnExit) {
         handle.scheduler = new ExecutorConfiguration(scheduler, shutdownOnExit);
     }
-
 
     // If ExecutorService a task will be executed with sleep. Don't use this unless
     // Otherwise the

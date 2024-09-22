@@ -23,16 +23,18 @@ import java.util.function.Function;
 import app.packed.application.BaseImage;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
+import internal.app.packed.ValueBased;
+import internal.app.packed.application.deployment.FutureApplicationSetup;
 import internal.app.packed.container.wirelets.CompositeWirelet;
 import internal.app.packed.container.wirelets.WireletSelectionArray;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
-/**
- *
- */
-public class Images {
-    /** A application launcher that maps the result of launching. */
-    public /* value */ record ImageMapped<A, F>(BaseImage<F> image, Function<? super F, ? extends A> mapper) implements BaseImage<A> {
+/** Various implementations of {@link BaseImage} */
+public sealed interface PackedBaseImage<A> extends BaseImage<A> {
+
+    /** A application image that maps the result of a launch. */
+    @ValueBased
+    public record ImageMapped<A, F>(BaseImage<F> image, Function<? super F, ? extends A> mapper) implements PackedBaseImage<A> {
 
         /** {@inheritDoc} */
         @Override
@@ -53,7 +55,8 @@ public class Images {
     /**
      * Implementation of {@link ApplicationLauncher} used by {@link BootstrapApp#newImage(Assembly, Wirelet...)}.
      */
-    public record ImageNonReusable<A>(AtomicReference<BaseImage<A>> ref) implements BaseImage<A> {
+    @ValueBased
+    public record ImageNonReusable<A>(AtomicReference<BaseImage<A>> ref) implements PackedBaseImage<A> {
 
         public ImageNonReusable(BaseImage<A> image) {
             this(new AtomicReference<>(image));
@@ -80,7 +83,8 @@ public class Images {
     /**
      * Implementation of {@link ApplicationLauncher} used by {@link OldBootstrapApp#newImage(Assembly, Wirelet...)}.
      */
-    public /* value */ record ImageEager<A>(ApplicationSetup application) implements BaseImage<A> {
+    @ValueBased
+    public /* value */ record ImageEager<A>(ApplicationSetup application) implements PackedBaseImage<A> {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
@@ -99,7 +103,8 @@ public class Images {
         }
     }
 
-    public /* value */ record ImageLazy<A>(PackedApplicationTemplate<A> template, FutureApplicationSetup application) implements BaseImage<A> {
+    @ValueBased
+    public record ImageLazy<A>(PackedApplicationTemplate<A> template, FutureApplicationSetup application) implements PackedBaseImage<A> {
 
         /** {@inheritDoc} */
         @Override

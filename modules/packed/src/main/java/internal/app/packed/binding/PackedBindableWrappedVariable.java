@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.binding;
 
 import java.util.List;
 import java.util.Set;
@@ -34,29 +34,23 @@ import app.packed.util.Nullable;
 /**
  *
  */
-public final class PackedBindableWrappedVariable implements UnwrappedBindableVariable {
-
-    public final PackedBindableVariable v;
-
-    PackedBindableWrappedVariable(PackedBindableVariable v) {
-        this.v = v;
-    }
+public record PackedBindableWrappedVariable(PackedBindableVariable var) implements UnwrappedBindableVariable {
 
     /** {@inheritDoc} */
     @Override
     public UnwrappedBindableVariable allowStaticFieldBinding() {
-        v.allowStaticFieldBinding();
+        var.allowStaticFieldBinding();
         return this;
     }
 
     @Override
     public AnnotationList annotations() {
-        return v.annotations();
+        return var.annotations();
     }
 
     @Override
     public Set<Class<? extends Context<?>>> availableContexts() {
-        return v.availableContexts();
+        return var.availableContexts();
     }
 
 //    @Override
@@ -73,26 +67,26 @@ public final class PackedBindableWrappedVariable implements UnwrappedBindableVar
     /** {@inheritDoc} */
     @Override
     public PackedBindableWrappedVariable bindComputedConstant(Supplier<?> consumer) {
-        v.bindComputedConstant(consumer);
+        var.bindComputedConstant(consumer);
         return this;
     }
 
     @Override
     public PackedBindableWrappedVariable bindInstant(@Nullable Object obj) {
-        v.bindInstant(obj);
+        var.bindInstant(obj);
         return this;
     }
 
     @Override
     public PackedBindableWrappedVariable bindContext(Class<? extends Context<?>> context) {
-        v.bindContext(context);
+        var.bindContext(context);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public BindableVariable bindInvocationArgument(int index) {
-        return v.bindInvocationArgument(index);
+        return var.bindInvocationArgument(index);
     }
 
     /** {@inheritDoc} */
@@ -103,13 +97,13 @@ public final class PackedBindableWrappedVariable implements UnwrappedBindableVar
 
     @Override
     public PackedBindableWrappedVariable bindOp(Op<?> op) {
-        v.bindOp(op);
+        var.bindOp(op);
         return this;
     }
 
     @Override
     public Class<?> checkAssignableTo(Class<?>... additionalClazzes) {
-        return v.checkAssignableTo(additionalClazzes);
+        return var.checkAssignableTo(additionalClazzes);
     }
 
     /** {@inheritDoc} */
@@ -126,12 +120,12 @@ public final class PackedBindableWrappedVariable implements UnwrappedBindableVar
 
     @Override
     public boolean equals(Object obj) {
-        return v.equals(obj);
+        return var.equals(obj);
     }
 
     @Override
     public void failWith(String postFix) {
-        v.failWith(postFix);
+        var.failWith(postFix);
     }
 
     /** {@inheritDoc} */
@@ -142,17 +136,17 @@ public final class PackedBindableWrappedVariable implements UnwrappedBindableVar
 
     @Override
     public int hashCode() {
-        return v.hashCode();
+        return var.hashCode();
     }
 
     @Override
     public Class<? extends Extension<?>> invokedBy() {
-        return v.invokedBy();
+        return var.invokedBy();
     }
 
     @Override
     public boolean isBound() {
-        return v.isBound();
+        return var.isBound();
     }
 
     /** {@inheritDoc} */
@@ -194,7 +188,7 @@ public final class PackedBindableWrappedVariable implements UnwrappedBindableVar
     /** {@inheritDoc} */
     @Override
     public Descriptor operation() {
-        return v.operation();
+        return var.operation();
     }
 
     /** {@inheritDoc} */
@@ -205,31 +199,31 @@ public final class PackedBindableWrappedVariable implements UnwrappedBindableVar
 
     @Override
     public Class<?> rawType() {
-        return v.rawType();
+        return var.rawType();
     }
 
     @Override
     public BindableVariable specializeMirror(Supplier<? extends BindingMirror> supplier) {
-        return v.specializeMirror(supplier);
+        return var.specializeMirror(supplier);
     }
 
     @Override
     public Key<?> toKey() {
-        return v.toKey();
+        return var.toKey();
     }
 
     @Override
     public String toString() {
-        return v.toString();
+        return var.toString();
     }
 
     @Override
     public UnwrappedBindableVariable unwrap() {
-        return v.unwrap();
+        return var.unwrap();
     }
 
     @Override
     public Variable variable() {
-        return v.variable();
+        return var.variable();
     }
 }

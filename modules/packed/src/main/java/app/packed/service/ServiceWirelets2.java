@@ -23,8 +23,6 @@ import app.packed.container.Wirelet;
 /**
  * Various wirelets that applies to {@link BaseExtension}.
  */
-// ServiceWirelets not BaseWirelets. ArgList.of("Sad").toWirelet()
-// I think it is okay that we don't return ExtensionWirelet for most of the classes.
 public class ServiceWirelets2 {
 
     // Double Provide overrides, Double Provide fails

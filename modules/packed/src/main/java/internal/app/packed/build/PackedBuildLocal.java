@@ -23,11 +23,18 @@ import java.util.function.Supplier;
 
 import app.packed.build.BuildLocal;
 import app.packed.util.Nullable;
+import internal.app.packed.application.PackedApplicationLocal;
+import internal.app.packed.bean.PackedBeanLocal;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
+import internal.app.packed.container.PackedContainerLocal;
+import internal.app.packed.extension.PackedExtensionLocal;
 
-/** The base class for component locals. */
-public abstract non-sealed class PackedBuildLocal<A, T>
-        implements BuildLocal<A, T> /* permits PackedApplicationLocal, PackedContainerLocal, PackedBeanLocal */ {
+/**
+ * The base class for component locals.
+ * @implNote this class should be a value class as we rely on the identity of it
+ */
+public abstract sealed class PackedBuildLocal<A, T>
+        implements BuildLocal<A, T> permits PackedApplicationLocal, PackedContainerLocal, PackedBeanLocal, PackedExtensionLocal {
 
     /** An optional supplier that can provide initial values for a bean local. */
     final @Nullable Supplier<? extends T> initialValueSupplier;

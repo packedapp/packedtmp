@@ -30,6 +30,7 @@ import app.packed.binding.Provider;
  * @see ServiceLocator#selectAll()
  * @see ServiceLocator#selectAssignableTo(Class)
  */
+// Should it include scoped services?
 public interface ServiceSelection<S> extends ServiceLocator {
 
     /**

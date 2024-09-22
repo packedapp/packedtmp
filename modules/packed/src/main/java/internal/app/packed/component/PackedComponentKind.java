@@ -30,7 +30,7 @@ import internal.app.packed.component.PackedComponentPath.SchemaFragment;
 /**
  *
  */
-public class PackedComponentKind implements ComponentKind {
+public final class PackedComponentKind implements ComponentKind {
 
     final int fragmentCount = 4;
 

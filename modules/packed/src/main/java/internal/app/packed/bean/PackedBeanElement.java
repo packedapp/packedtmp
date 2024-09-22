@@ -16,6 +16,7 @@
 package internal.app.packed.bean;
 
 import app.packed.bean.BeanElement;
+import internal.app.packed.binding.PackedBindableVariable;
 
 /**
  *

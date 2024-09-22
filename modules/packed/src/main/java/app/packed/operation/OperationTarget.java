@@ -25,7 +25,7 @@ import internal.app.packed.operation.OperationMemberTarget.OperationConstructorT
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.PackedOperationTarget;
-import internal.app.packed.operation.PackedOperationTarget.FunctionOperationSetup;
+import internal.app.packed.operation.PackedOperationTarget.FunctionOperationTarget;
 
 /**
  * The target of an operation.
@@ -52,7 +52,7 @@ public sealed interface OperationTarget {
     }
 
     /** Represents a operation that invokes the single abstract method on a functional interface. */
-    sealed interface OfFunction extends OperationTarget permits FunctionOperationSetup {
+    sealed interface OfFunction extends OperationTarget permits FunctionOperationTarget {
 
         /** {@return the functional interface.} */
         Class<?> functionalInterface();
@@ -72,7 +72,7 @@ public sealed interface OperationTarget {
     }
 
     /** Represents an operation that invokes a {@link MethodHandle method handle}. */
-    sealed interface OfMethodHandle extends OperationTarget permits PackedOperationTarget.MethodHandleOperationSetup, PackedOperationTarget.BeanAccessOperationSetup {
+    sealed interface OfMethodHandle extends OperationTarget permits PackedOperationTarget.MethodHandleOperationTarget, PackedOperationTarget.BeanAccessOperationTarget {
 
         /** {@return the method type of the method handle.} */
         MethodType methodType();

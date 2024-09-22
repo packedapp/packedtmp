@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.assembly;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
@@ -25,12 +25,12 @@ import app.packed.bean.BeanMetaBeanTrigger.CustomBindingHook;
 /**
  *
  */
-class AssemblyMetaHolder {
+public class AssemblyMetaHolder {
 
-    final Class<? extends Annotation> annotationType;
-    final Set<String> bindings;
+    public final Class<? extends Annotation> annotationType;
+    public final Set<String> bindings;
 
-    AssemblyMetaHolder(Class<? extends Annotation> annotationType) {
+    public AssemblyMetaHolder(Class<? extends Annotation> annotationType) {
         this.annotationType = annotationType;
 
         // Find Bindings Hooks

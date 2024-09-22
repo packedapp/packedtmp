@@ -27,7 +27,7 @@ import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.PackedBindableVariable;
+import internal.app.packed.binding.PackedBindableVariable;
 
 /**
  * Represents a variable that can be bound at build time by an extension.

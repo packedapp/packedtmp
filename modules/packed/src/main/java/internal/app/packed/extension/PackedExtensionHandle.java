@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
@@ -28,6 +29,7 @@ import app.packed.extension.InternalExtensionException;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.util.TreeView;
+import internal.app.packed.ValueBased;
 import internal.app.packed.handlers.ExtensionHandlers;
 import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
 import internal.app.packed.namespace.PackedNamespaceInstaller;
@@ -39,7 +41,26 @@ import internal.app.packed.util.types.TypeVariableExtractor;
 /**
  *
  */
+@ValueBased
 public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup extension) implements ExtensionHandle<E> {
+
+    public final void runOnCodegen(Runnable action) {
+        checkIsConfigurable();
+        extension.container.application.addCodegenAction(action);
+    }
+
+    /**
+     * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
+     *
+     * @throws IllegalStateException
+     *             if the extension is no longer configurable.
+     */
+    @Override
+    public final void checkIsConfigurable() {
+        if (!extension.isConfigurable()) {
+            throw new IllegalStateException(extension.extensionType + " is no longer configurable");
+        }
+    }
 
     /** Maps an ExtensionPoint class to the type parameter (E). */
     public final static ClassValue<Class<? extends Extension<?>>> TYPE_VARIABLE_EXTRACTOR = new ClassValue<>() {
@@ -143,5 +164,11 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
     @Override
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return extension.container.isExtensionUsed(extensionType);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath containerPath() {
+        return extension.container.componentPath();
     }
 }

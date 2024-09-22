@@ -26,14 +26,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import app.packed.BaseModuleNames;
 import app.packed.bean.BeanIntrospector;
-import app.packed.build.BuildAuthority;
 import app.packed.build.BuildCodeSource;
 import app.packed.build.BuildGoal;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
@@ -121,8 +118,9 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      * {@return an instance of this extension that is used in the application's root container. Will return this if this
      * extension is the root extension}
      */
+    @SuppressWarnings("unchecked")
     protected final E applicationRoot() {
-        return applicationNode().root();
+        return (E) extension.root().instance();
     }
 
     /** {@return the base extension point.} */
@@ -142,17 +140,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      *             if the extension is no longer configurable.
      */
     protected final void checkIsConfigurable() {
-        if (!extension.isConfigurable()) {
-            throw new IllegalStateException(extension.extensionType + " is no longer configurable");
-        }
-    }
-
-    // Ideen er at man kan streame alle componenter configurationer
-    // Baade mirrors or configurations er vel interessante
-    // Alternativ Returnere vi en stream, som Packed selv filtrerer, paa operators og typer
-    protected final void componentConfigurations(BuildAuthority operator, Class<? extends ComponentConfiguration> componentConfigurationClass,
-            Stream.Builder<? super ComponentConfiguration> builder) {
-
+        handle.checkIsConfigurable();
     }
 
     /** {@return the path of the container that this extension belongs to.} */
@@ -193,7 +181,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
 
     /** {@return whether or not this extension's container is the root container in the application.} */
     protected final boolean isApplicationRoot() {
-        return extension.container.isApplicationRoot();
+        return extension.treeParent == null;
     }
 
     /**
@@ -209,7 +197,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
     // Problemet er at den ikke fungere skide godt paa fx JFR extension.
     // Her er det jo root container vi skal teste
     protected final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-        return extension.container.isExtensionUsed(extensionType);
+        return handle.isExtensionUsed(extensionType);
     }
 
     protected final boolean isInApplicationLifetime() {
@@ -239,7 +227,8 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
         return (E) s.instance();
     }
 
-    protected final <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name, Function<NamespaceTemplate.Installer, T> factory) {
+    protected final <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name,
+            Function<NamespaceTemplate.Installer, T> factory) {
         return handle.namespaceLazy(template, name, factory);
     }
 
@@ -267,8 +256,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      *             if the extension defines an extension mirror but does not override this method.
      */
     protected ExtensionMirror<E> newExtensionMirror() {
-        // This exception is only throw if the extension forgot to override the method
-        throw new InternalExtensionException("A customized extension mirror was declared, but this method was not overridden by " + extension.extensionType);
+        throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
     }
 
     /**
@@ -282,7 +270,6 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      *             if the extension defines an extension point but does not override this method.
      */
     protected ExtensionPoint<E> newExtensionPoint(ExtensionUseSite usesite) {
-        // I think it is the same as newExtensionMirror an internal excetion
         throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
     }
 
@@ -356,8 +343,8 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
     protected void onNew() {}
 
     /**
-     * @return the parent of this extension if present. Or empty if the extension is in the root container of the
-     *         application.
+     * {@return the parent of this extension if present. Or empty if the extension is in the root container of the
+     * application.}
      */
     protected final Optional<E> parent() {
         return handle.parent();
@@ -380,10 +367,8 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      *             if the extension is no longer configurable
      * @see BuildGoal#isCodeGenerating()
      */
-    // add void runOnBuildCompleted, void runOnBuildFailed(Throwable cause); lad os lige faa nogle use cases foerst
     protected final void runOnCodegen(Runnable action) {
-        checkIsConfigurable();
-        extension.container.application.addCodegenAction(action);
+        handle.runOnCodegen(action);
     }
 
     /**

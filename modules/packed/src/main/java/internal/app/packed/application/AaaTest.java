@@ -34,7 +34,7 @@ public class AaaTest extends BaseAssembly {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        App a = PackedApp.BOOTSTRAP.launch(RunState.STARTING, new AaaTest());
+        App a = PackedApp.BOOTSTRAP_APP.launch(RunState.STARTING, new AaaTest());
 
         System.out.println("STate " + a.state());
         Thread.sleep(4000);

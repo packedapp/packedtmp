@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.PackedBindableWrappedVariable;
+import internal.app.packed.binding.PackedBindableWrappedVariable;
 
 /**
  * A bindable variable whose type has been unwrapped from various "container objects" such as {@link Optional},

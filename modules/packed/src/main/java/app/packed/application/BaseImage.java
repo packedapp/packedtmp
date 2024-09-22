@@ -22,10 +22,8 @@ import java.util.function.Function;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import app.packed.util.Result;
-import internal.app.packed.application.Images.ImageEager;
-import internal.app.packed.application.Images.ImageLazy;
-import internal.app.packed.application.Images.ImageMapped;
-import internal.app.packed.application.Images.ImageNonReusable;
+import internal.app.packed.application.PackedBaseImage;
+import internal.app.packed.application.PackedBaseImage.ImageMapped;
 
 /**
  * Represents a ,..
@@ -33,7 +31,7 @@ import internal.app.packed.application.Images.ImageNonReusable;
  * Instances of this class are typically not exposed to end-users. Instead it is typically wrapped in another image
  * class such as {@link App.Image}.
  */
-public sealed interface BaseImage<A> permits ImageEager, ImageLazy, ImageNonReusable, ImageMapped {
+public sealed interface BaseImage<A> permits PackedBaseImage {
 
     // Descriptors??? iisLazy, Mirror?
 

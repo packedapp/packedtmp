@@ -15,7 +15,7 @@
  */
 package app.packed.build;
 
-import internal.app.packed.application.PackedBuildProcess;
+import internal.app.packed.build.PackedBuildProcess;
 
 /**
  * Only available while building the application.

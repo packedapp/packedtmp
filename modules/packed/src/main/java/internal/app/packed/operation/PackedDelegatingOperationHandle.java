@@ -29,7 +29,7 @@ import internal.app.packed.bean.BeanScanner;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionUseSite;
-import internal.app.packed.operation.PackedOperationTarget.MemberOperationSetup;
+import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
 
 /**
  *
@@ -70,7 +70,7 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
     public OperationHandle<?> newOperation(ExtensionSetup extension, PackedOperationTemplate template) {
         // checkConfigurable
         PackedOperationInstaller poi = template.newInstaller(operationType, bean, extension);
-        poi.pot = new MemberOperationSetup(target, methodHandle);
+        poi.pot = new MemberOperationTarget(target, methodHandle);
 
         OperationSetup os = poi.newOperation(OperationHandle::new);
 

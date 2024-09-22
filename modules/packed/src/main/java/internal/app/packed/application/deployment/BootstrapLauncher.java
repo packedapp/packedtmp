@@ -1,4 +1,4 @@
-package internal.app.packed.application;
+package internal.app.packed.application.deployment;
 
 import java.util.Optional;
 import java.util.function.Function;

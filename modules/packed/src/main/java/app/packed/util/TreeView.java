@@ -62,11 +62,12 @@ public interface TreeView<N> {
 
     Stream<Node<N>> streamNodes();
 
-    // Fx ContainerMirror.children har jo bare alle boern med ligegyldig om filtrerne
     public interface Node<N> extends Iterable<N> {
 
+        /** Creates a new tree view with this node as the root. */
         TreeView<N> asRoot();
 
+        /** {@return the depth of the node in its tree, with the root having depth 0} */
         int depth();
 
         /**

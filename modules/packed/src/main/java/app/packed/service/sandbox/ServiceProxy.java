@@ -13,11 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package app.packed.service.sandbox;
 
 /**
  *
  */
-public class FamilySetup {
+class ServiceProxy {
+    // Service proxies are configured at build time.
 
+    // Comes with a couple of default built-in interesting policies
+
+    // Around, interception, ect..
+    // Some debugging
+    // Lazy create (typisk for requirements)
 }

@@ -22,7 +22,7 @@ import app.packed.operation.OperationHandle;
 /**
  * A configuration for an operation that creates a new bean instance.
  */
-// Tror den primare grund er at vi kan finde dem let
+// Tror den primare grund er at vi kan finder dem let
 public class BeanFactoryConfiguration extends OperationConfiguration {
 
     /**

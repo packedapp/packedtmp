@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package internal.app.packed.application.deployment;
 
 import static java.util.Objects.requireNonNull;
 
 import app.packed.build.BuildGoal;
+import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.build.BuildLocalMap;
 
 /** Represents a deployment. */

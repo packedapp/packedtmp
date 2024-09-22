@@ -25,8 +25,10 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationRepository;
 import app.packed.application.ApplicationTemplate;
+import internal.app.packed.ValueBased;
 
 /** Implementation of {@link ApplicationRepository}. */
+@ValueBased
 public final class PackedApplicationRepository<H extends ApplicationHandle<?, ?>> implements ApplicationRepository<H> {
 
     /** All applications that are installed in the container. */

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.binding;
 
 import static java.util.Objects.checkIndex;
 import static java.util.Objects.requireNonNull;
@@ -33,10 +33,13 @@ import app.packed.context.NotInContextException;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.operation.Op;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate.Descriptor;
 import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
-import internal.app.packed.binding.BindingResolution;
+import internal.app.packed.bean.BeanScanner;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.PackedBeanElement;
 import internal.app.packed.binding.BindingResolution.FromCodeGenerated;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromInvocationArgument;
@@ -49,7 +52,7 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.operation.PackedOp.NewOS;
-import internal.app.packed.operation.PackedOperationTarget.MemberOperationSetup;
+import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
 import internal.app.packed.operation.PackedOperationTemplate;
 
 /** Implementation of {@link BindableVariable}. */
@@ -189,7 +192,8 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
         PackedOperationTemplate template = operation.template.reconfigure(c -> c.returnType(pop.type().returnRawType()));
 
         // Create the nested operation
-        OperationSetup os = pop.newOperationSetup(new NewOS(operation.bean, bindingExtension, template, new EmbeddedIntoOperation(operation, index)));
+        OperationSetup os = pop
+                .newOperationSetup(new NewOS(operation.bean, bindingExtension, template, OperationHandle::new, new EmbeddedIntoOperation(operation, index)));
         bind(new FromOperationResult(os));
 
         // Resolve the new operation immediately
@@ -199,7 +203,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
 
     private void checkBeforeBind() {
         checkNotBound();
-        if (operation.pot instanceof MemberOperationSetup mos && mos.target instanceof OperationFieldTarget fos && Modifier.isStatic(fos.modifiers())
+        if (operation.pot instanceof MemberOperationTarget mos && mos.target instanceof OperationFieldTarget fos && Modifier.isStatic(fos.modifiers())
                 && !allowStaticFieldBinding) {
             throw new BeanInstallationException("Static field binding is not supported for");
         }

@@ -13,32 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package internal.app.packed.build;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.ScopedValue.Carrier;
 import java.util.concurrent.atomic.AtomicLong;
 
 import app.packed.build.BuildProcess;
+import internal.app.packed.application.PackedApplicationInstaller;
 
 /**
  *
  */
+// Here in app.packed.application because of all the packed private fields
 public final class PackedBuildProcess implements BuildProcess {
-    final static AtomicLong PROCESS_ID_BUILDER = new AtomicLong();
 
-    static final ScopedValue<PackedBuildProcess> VAR = ScopedValue.newInstance();
+    /** Generates build process id's. */
+    private final static AtomicLong PROCESS_ID_BUILDER = new AtomicLong();
+
+    private static final ScopedValue<PackedBuildProcess> VAR = ScopedValue.newInstance();
 
     public final PackedApplicationInstaller<?> application;
 
-    private final long processId;
+    private final long processId = PROCESS_ID_BUILDER.incrementAndGet();
 
-    Thread thread;
+    private Thread thread;
 
-    PackedBuildProcess(PackedApplicationInstaller<?> application) {
-        this.processId = PROCESS_ID_BUILDER.incrementAndGet();
+    public PackedBuildProcess(PackedApplicationInstaller<?> application) {
         this.application = requireNonNull(application);
         this.thread = Thread.currentThread();
+    }
+
+    public void checkBuildThread() {
+        Thread t = thread;
+        if (Thread.currentThread() != t) {
+            if (t == null) {
+                throw new IllegalStateException("Not building");
+            }
+            throw new IllegalStateException("Not on Build thread");
+        }
     }
 
     /** {@inheritDoc} */
@@ -47,7 +61,15 @@ public final class PackedBuildProcess implements BuildProcess {
         return processId;
     }
 
+    public Carrier carrier() {
+        return ScopedValue.where(PackedBuildProcess.VAR, this);
+    }
+
     public static PackedBuildProcess get() {
         return VAR.get();
+    }
+
+    public void finished() {
+        thread = null;
     }
 }

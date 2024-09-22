@@ -39,13 +39,13 @@ public sealed abstract class PackedOperationTarget {
     }
 
     /** An operation that returns the bean instance the operation is defined on. */
-    public static final class BeanAccessOperationSetup extends PackedOperationTarget implements OperationTarget.OfMethodHandle {
+    public static final class BeanAccessOperationTarget extends PackedOperationTarget implements OperationTarget.OfMethodHandle {
 
         /**
          * @param operator
          * @param site
          */
-        public BeanAccessOperationSetup() {}
+        public BeanAccessOperationTarget() {}
 
         /** {@inheritDoc} */
         @Override
@@ -61,7 +61,7 @@ public sealed abstract class PackedOperationTarget {
     }
 
     /** An operation that invokes the abstract method on a {@link FunctionalInterface}. */
-    public static final class FunctionOperationSetup extends PackedOperationTarget implements OperationTarget.OfFunction {
+    public static final class FunctionOperationTarget extends PackedOperationTarget implements OperationTarget.OfFunction {
 
         /** The method that implements the single abstract method. */
         private final Method implementationMethod;
@@ -75,7 +75,7 @@ public sealed abstract class PackedOperationTarget {
          * @param operator
          * @param site
          */
-        public FunctionOperationSetup(MethodHandle methodHandle, SamType samType, Method implementationMethod) {
+        public FunctionOperationTarget(MethodHandle methodHandle, SamType samType, Method implementationMethod) {
             this.methodHandle = requireNonNull(methodHandle);
             this.samType = requireNonNull(samType);
             this.implementationMethod = requireNonNull(implementationMethod);
@@ -107,7 +107,7 @@ public sealed abstract class PackedOperationTarget {
     }
 
     /** An operation that invokes or accesses a {@link Member}. */
-    public static final class MemberOperationSetup extends PackedOperationTarget {
+    public static final class MemberOperationTarget extends PackedOperationTarget {
 
         private final MethodHandle methodHandle;
 
@@ -117,7 +117,7 @@ public sealed abstract class PackedOperationTarget {
         // MH -> mirror - no gen
         // MH -> Gen - With caching (writethrough to whereever the bean cache it)
         // MH -> LazyGen - With caching
-        public MemberOperationSetup(OperationMemberTarget<?> member, MethodHandle methodHandle) {
+        public MemberOperationTarget(OperationMemberTarget<?> member, MethodHandle methodHandle) {
             this.target = requireNonNull(member);
             this.methodHandle = requireNonNull(methodHandle);
 
@@ -140,7 +140,7 @@ public sealed abstract class PackedOperationTarget {
     }
 
     /** An operation that invokes a method handle. */
-    public static final class MethodHandleOperationSetup extends PackedOperationTarget implements OperationTarget.OfMethodHandle {
+    public static final class MethodHandleOperationTarget extends PackedOperationTarget implements OperationTarget.OfMethodHandle {
 
         final MethodHandle methodHandle;
 
@@ -148,7 +148,7 @@ public sealed abstract class PackedOperationTarget {
          * @param operator
          * @param site
          */
-        public MethodHandleOperationSetup(MethodHandle methodHandle) {
+        public MethodHandleOperationTarget(MethodHandle methodHandle) {
             this.methodHandle = requireNonNull(methodHandle);
         }
 

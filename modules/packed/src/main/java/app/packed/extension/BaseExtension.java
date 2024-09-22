@@ -54,15 +54,15 @@ import app.packed.service.Provide;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceNamespaceConfiguration;
-import app.packed.service.ServiceOutgoingTransformer;
 import app.packed.service.ServiceableBeanConfiguration;
-import internal.app.packed.application.DeploymentMirror;
+import app.packed.service.sandbox.ServiceOutgoingTransformer;
+import internal.app.packed.application.deployment.DeploymentMirror;
 import internal.app.packed.bean.BeanLifecycleOrder;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanTemplate;
-import internal.app.packed.bean.PackedBindableWrappedVariable;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
+import internal.app.packed.binding.PackedBindableWrappedVariable;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.entrypoint.OldEntryPointSetup;
@@ -437,7 +437,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             @Override
             public void activatedByVariableType(Class<?> hook, Class<?> actualHook, UnwrappedBindableVariable binding) {
-                OperationSetup operation = ((PackedBindableWrappedVariable) binding).v.operation;
+                OperationSetup operation = ((PackedBindableWrappedVariable) binding).var().operation;
 
                 if (ApplicationLaunchContext.class.isAssignableFrom(hook)) {
                     binding.bindContext(ApplicationLaunchContext.class);
@@ -539,7 +539,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     /** {@return a mirror for this extension.} */
     @Override
     protected BaseExtensionMirror newExtensionMirror() {
-        return new BaseExtensionMirror(handle(), extension.container);
+        return new BaseExtensionMirror(handle());
     }
 
     /** {@inheritDoc} */

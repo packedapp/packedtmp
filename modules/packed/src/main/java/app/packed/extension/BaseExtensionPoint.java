@@ -28,7 +28,7 @@ import internal.app.packed.extension.PackedExtensionUseSite;
 import sandbox.extension.container.ContainerTemplateLink;
 
 /** An {@link ExtensionPoint extension point} for {@link BaseExtension}. */
-public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
+public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     public static ContainerTemplateLink CONTAINER_MIRROR = ContainerTemplateLink.of(MethodHandles.lookup(), BaseExtension.class, "ContainerMirror").build();
 
@@ -168,12 +168,12 @@ public class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     public ContainerTemplate.Installer newContainer(ContainerTemplate template) {
         // Kan only use channels that are direct dependencies of the usage extension
-        ExtensionSetup es = contextUse().usedBy();
+        ExtensionSetup es = usesite.usedBy();
         return PackedContainerInstaller.of((PackedContainerTemplate) template, es.extensionType, es.container.application, es.container);
     }
 
     public int registerEntryPoint(Class<?> hook) {
-        return super.extensionSetup().container.lifetime.entryPoints.takeOver(extension(), usedBy());// .registerEntryPoint(usedBy(), isMain);
+        return usesite.extension().container.lifetime.entryPoints.takeOver(extension(), usedBy());// .registerEntryPoint(usedBy(), isMain);
     }
 
     private static ContainerTemplateLink.Configurator baseBuilder(String name) {

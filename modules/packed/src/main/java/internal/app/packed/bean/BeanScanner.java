@@ -32,13 +32,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 
+import app.packed.bean.BeanFactoryConfiguration;
+import app.packed.bean.BeanFactoryMirror;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTemplate;
+import app.packed.operation.OperationTemplate.Installer;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.handlers.BeanHandlers;
@@ -150,10 +154,10 @@ public final class BeanScanner {
         }
         ot = ot.reconfigure(c -> c.returnType(beanClass));
 
-        PackedOperationInstaller poi = ot.newInstaller(constructor.operationType(), bean, bean.installedBy);
+        PackedOperationInstaller installer = ot.newInstaller(constructor.operationType(), bean, bean.installedBy);
 
-        OperationSetup os = OperationSetup.newMemberOperationSetup(poi, new OperationConstructorTarget(constructor.constructor()), mh, OperationHandle::new);
-        // bean.operations.all.add(os);
+        OperationSetup os = OperationSetup.newMemberOperationSetup(installer, new OperationConstructorTarget(constructor.constructor()), mh,
+                BeanFactoryOperationHandle::new);
         resolveNow(os);
     }
 
@@ -360,6 +364,26 @@ public final class BeanScanner {
             }
 
             // Maybe store things directly in BeanScannerExtension
+        }
+    }
+
+    static class BeanFactoryOperationHandle extends OperationHandle<BeanFactoryConfiguration> {
+
+        /**
+         * @param installer
+         */
+        public BeanFactoryOperationHandle(Installer installer) {
+            super(installer);
+        }
+
+        @Override
+        protected BeanFactoryConfiguration newOperationConfiguration() {
+            return new BeanFactoryConfiguration(this);
+        }
+
+        @Override
+        protected OperationMirror newOperationMirror() {
+            return new BeanFactoryMirror(this);
         }
     }
 

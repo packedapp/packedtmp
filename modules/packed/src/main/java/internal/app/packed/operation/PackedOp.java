@@ -22,10 +22,13 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.binding.Variable;
 import app.packed.operation.CapturingOp;
 import app.packed.operation.Op;
+import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationTemplate.Installer;
 import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
@@ -162,5 +165,6 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
         }
     }
 
-    public record NewOS(BeanSetup bean, ExtensionSetup operator, PackedOperationTemplate template, @Nullable EmbeddedIntoOperation embeddedIn) {}
+    public record NewOS(BeanSetup bean, ExtensionSetup operator, PackedOperationTemplate template, Function<? super Installer, OperationHandle<?>> newHandle,
+            @Nullable EmbeddedIntoOperation embeddedIn) {}
 }

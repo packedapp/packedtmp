@@ -1,7 +1,5 @@
 package app.packed.extension;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -11,27 +9,21 @@ import app.packed.service.ServiceContract;
 import app.packed.service.mirror.oldMaybe.ExportedServiceMirror;
 import app.packed.service.mirror.oldMaybe.ProvidedServiceMirror;
 import app.packed.util.Nullable;
-import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.service.ExportedService;
 import internal.app.packed.service.ServiceProviderSetup;
 import internal.app.packed.service.ServiceSetup;
 
 /** A mirror for {@link BaseExtension}. */
-// Or just directly on Application, Container... Move services into the main stream
 public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {
 
-    /** The container the extension is a part of. */
-    private final ContainerSetup container;
-
     /**
-     * Creates a new mirror
+     * Creates a new base extension mirror
      *
-     * @param container
-     *            the container the extension is a part of
+     * @param handle
+     *            a handle for the extension
      */
-    BaseExtensionMirror(ExtensionHandle<BaseExtension> handle,  ContainerSetup container) {
+    BaseExtensionMirror(ExtensionHandle<BaseExtension> handle) {
         super(handle);
-        this.container = requireNonNull(container);
     }
 
     /**
@@ -40,7 +32,7 @@ public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {
      * If the configuration of the container has not been completed. This method return a contract on a best effort basis.
      */
     public ServiceContract serviceContract() {
-        return container.servicesMain().newContract();
+        return handle.extension().container.servicesMain().newContract();
     }
 
     // Detaljeret info, ogsaa med dependency graph som kan extractes...
@@ -59,7 +51,7 @@ public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {
     @SuppressWarnings("exports")
     public Map<Key<?>, ExportedServiceMirror> serviceExports() {
         LinkedHashMap<Key<?>, ExportedServiceMirror> result = new LinkedHashMap<>();
-        for (ExportedService e : container.servicesMain().exports.values()) {
+        for (ExportedService e : handle.extension().container.servicesMain().exports.values()) {
             ExportedServiceMirror mirror = (ExportedServiceMirror) e.operation.mirror();
             result.put(e.key, mirror);
         }
@@ -71,7 +63,7 @@ public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {
     public Map<Key<?>, ProvidedServiceMirror> serviceProviders() {
         // Not really a map view
         LinkedHashMap<Key<?>, ProvidedServiceMirror> result = new LinkedHashMap<>();
-        for (ServiceSetup e : container.servicesMain().entries.values()) {
+        for (ServiceSetup e : handle.extension().container.servicesMain().entries.values()) {
             @Nullable
             ServiceProviderSetup provider = e.provider();
             if (provider != null) {

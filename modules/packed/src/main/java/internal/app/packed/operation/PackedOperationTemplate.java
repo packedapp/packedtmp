@@ -2,6 +2,7 @@ package internal.app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +14,7 @@ import app.packed.extension.ExtensionContext;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
+import internal.app.packed.bean.BeanScannerExtensionRef;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.context.publish.ContextTemplate;
@@ -62,15 +64,30 @@ public final class PackedOperationTemplate implements OperationTemplate {
         return new PackedOperationTemplateDescriptor(this);
     }
 
+    public PackedOperationInstaller newInstaller(BeanScannerExtensionRef extension, MethodHandle methodHandle, OperationMemberTarget<?> target,
+            OperationType operationType) {
+        return new PackedOperationInstaller(this, operationType, extension.scanner.bean, extension.extension) {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public final <H extends OperationHandle<?>> H install(Function<? super OperationTemplate.Installer, H> handleFactory) {
+                OperationSetup operation = OperationSetup.newMemberOperationSetup(this, target, methodHandle, handleFactory);
+                extension.scanner.unBoundOperations.add(operation);
+                return (H) operation.handle();
+            }
+        };
+    }
+
     public PackedOperationInstaller newInstaller(OperationType operationType, BeanSetup bean, ExtensionSetup operator) {
-        return new PackedOperationInstaller(this, operationType, bean, operator) {
+        PackedOperationInstaller pai = new PackedOperationInstaller(this, operationType, bean, operator) {
 
             @SuppressWarnings({ "unchecked", "rawtypes" })
             @Override
-            public final <H extends OperationHandle<?>> H install(Function<? super OperationTemplate.Installer, H> configurationCreator) {
-                return (H) super.newOperation((Function) configurationCreator).handle();
+            public final <H extends OperationHandle<?>> H install(Function<? super OperationTemplate.Installer, H> handleFactory) {
+                return (H) newOperation((Function) handleFactory).handle();
             }
         };
+        return pai;
     }
 
     /** {@inheritDoc} */
@@ -132,6 +149,13 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
         /** {@inheritDoc} */
         @Override
+        public Configurator inContext(ContextTemplate context) {
+            this.template = template.withContext(context);
+            return this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
         public Configurator returnIgnore() {
             this.template = template.returnIgnore();
             return this;
@@ -141,13 +165,6 @@ public final class PackedOperationTemplate implements OperationTemplate {
         @Override
         public Configurator returnType(Class<?> type) {
             this.template = template.returnType(type);
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Configurator inContext(ContextTemplate context) {
-            this.template = template.withContext(context);
             return this;
         }
     }

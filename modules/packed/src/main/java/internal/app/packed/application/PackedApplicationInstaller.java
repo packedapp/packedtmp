@@ -30,6 +30,7 @@ import app.packed.assembly.Assembly;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifecycleKind;
+import internal.app.packed.build.PackedBuildProcess;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -75,18 +76,19 @@ public final class PackedApplicationInstaller<A> implements ApplicationTemplate.
         this.buildProcess = new PackedBuildProcess(this);
     }
 
+
     public ApplicationSetup buildApplication(Assembly assembly) {
         requireNonNull(assembly, "assembly is null");
 
         // Prepare the ScopedValue.Carrier that sets the for setting the build process for the build thread
-        Carrier c = ScopedValue.where(PackedBuildProcess.VAR, buildProcess);
+        Carrier c = buildProcess.carrier();
 
         try {
             return c.call(() -> container.invokeAssemblyBuild(assembly)).application;
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         } finally {
-            buildProcess.thread = null;
+            buildProcess.finished();
         }
     }
 
@@ -111,15 +113,14 @@ public final class PackedApplicationInstaller<A> implements ApplicationTemplate.
         this.handleFactory = requireNonNull(handleFactory, "handleFactory is null");
 
         // Prepare the ScopedValue.Carrier that sets the for setting the build process for the build thread
-        Carrier c = ScopedValue.where(PackedBuildProcess.VAR, buildProcess);
-
+        Carrier c = buildProcess.carrier();
         try {
             // will set this.application
             c.call(() -> container.invokeAssemblyBuild(assembly));
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         } finally {
-            buildProcess.thread = null;
+            buildProcess.finished();
         }
         return (H) application.handle();
     }

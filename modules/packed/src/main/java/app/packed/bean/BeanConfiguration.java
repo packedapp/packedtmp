@@ -153,12 +153,10 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         handle.bindCodeGenerator(key, supplier);
     }
 
+    // provideTo??
+    // provideAs vs provideI
     public <K> BeanConfiguration bindInstance(Class<K> key, K instance) {
         // Future Functionality:
-
-        // overrideService(key, Provider) -> Needs some use cases
-        // And when is it generated? When the bean is instantiated?
-        // And is is per bean or use site?
 
         // overrideService(key, Op) ->
         // The issue is here that Op needs to be resolved.

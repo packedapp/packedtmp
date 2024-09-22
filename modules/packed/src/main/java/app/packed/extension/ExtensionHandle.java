@@ -18,6 +18,7 @@ package app.packed.extension;
 import java.util.Optional;
 import java.util.function.Function;
 
+import app.packed.component.ComponentPath;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.util.TreeView;
@@ -27,12 +28,25 @@ import internal.app.packed.extension.PackedExtensionHandle;
  * A handle for an {@link Extension}, that can be passed along to code outside of the extension itself.
  */
 public sealed interface ExtensionHandle<E extends Extension<E>> permits PackedExtensionHandle {
+
     TreeView.Node<E> applicationNode();
+
+    /**
+     * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
+     *
+     * @throws IllegalStateException
+     *             if the extension is no longer configurable.
+     */
+    void checkIsConfigurable();
+
+    /** {@return the path of the container that this extension belongs to.} */
+    ComponentPath containerPath();
 
     boolean isExtensionUsed(Class<? extends Extension<?>> extensionType);
 
     <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name, Function<NamespaceTemplate.Installer, T> factory);
 
+    /** {@return any parent extension this extension might have in the same application} */
     Optional<E> parent();
 
     <P extends ExtensionPoint<?>> P use(Class<P> extensionPointClass);

@@ -35,13 +35,6 @@ import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
  */
 public abstract non-sealed class PackedOperationInstaller implements OperationTemplate.Installer {
 
-    @Override
-    public <H extends OperationHandle<?>, N extends NamespaceHandle<?, ?>> H install(N namespace, BiFunction<? super Installer, N, H> factory) {
-        checkConfigurable();
-        this.addToNamespace = requireNonNull(namespace);
-        return install(f -> factory.apply(f, namespace));
-    }
-
     NamespaceHandle<?, ?> addToNamespace;
 
     public final BeanSetup bean;
@@ -85,6 +78,13 @@ public abstract non-sealed class PackedOperationInstaller implements OperationTe
      */
     public OperationHandle<?> initializeOperationConfiguration() {
         return requireNonNull(oh);
+    }
+
+    @Override
+    public <H extends OperationHandle<?>, N extends NamespaceHandle<?, ?>> H install(N namespace, BiFunction<? super Installer, N, H> factory) {
+        checkConfigurable();
+        this.addToNamespace = requireNonNull(namespace);
+        return install(f -> factory.apply(f, namespace));
     }
 
     OperationSetup newOperation(Function<? super Installer, OperationHandle<?>> newHandle) {

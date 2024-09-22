@@ -120,6 +120,5 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
         context.runner.run(state);
 
         return context;
-
     }
 }

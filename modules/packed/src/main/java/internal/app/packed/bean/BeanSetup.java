@@ -36,6 +36,7 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
+import internal.app.packed.bean.BeanScanner.BeanFactoryOperationHandle;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromConstant;
 import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
@@ -57,7 +58,7 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.operation.PackedOp.NewOS;
 import internal.app.packed.operation.PackedOperationInstaller;
-import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationSetup;
+import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationTarget;
 import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.service.ServiceNamespaceHandle;
 
@@ -216,7 +217,7 @@ public final class BeanSetup implements ContextualizedElementSetup, BuildLocalSo
         PackedOperationTemplate template = (PackedOperationTemplate) OperationTemplate.defaults().reconfigure(c -> c.returnType(beanClass));
 
         PackedOperationInstaller installer = template.newInstaller(OperationType.of(beanClass), this, installedBy);
-        installer.pot = new BeanAccessOperationSetup();
+        installer.pot = new BeanAccessOperationTarget();
         installer.namePrefix = "InstantAccess";
 
         return OperationSetup.crack(installer.install(OperationHandle::new));
@@ -361,7 +362,8 @@ public final class BeanSetup implements ContextualizedElementSetup, BuildLocalSo
                 ot = bean.lifetime.lifetimes().get(0).template;
             }
 
-            op.newOperationSetup(new NewOS(bean, bean.installedBy, ot, null));
+            // TODO should be marked as bean factory
+            op.newOperationSetup(new NewOS(bean, bean.installedBy, ot, BeanFactoryOperationHandle::new, null));
 
             // Op'en bliver resolved med BeanClassen i scanneren...
             // Ved ikke om det giver mening, vil umiddelbart sige nej
