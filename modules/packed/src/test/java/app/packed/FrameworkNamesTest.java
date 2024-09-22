@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.framework;
+package app.packed;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.BaseModuleNames;
 import app.packed.extension.BaseExtension;
 
 /**

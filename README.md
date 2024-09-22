@@ -5,7 +5,7 @@ Packed
 [![Actions Status](https://github.com/packedapp/packedtmp/workflows/Java%20CI/badge.svg)](https://github.com/packedapp/packedtmp/actions)
 [![License](http://img.shields.io/:license-apache-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.html) 
 [![Coverage Status](https://coveralls.io/repos/github/packedapp/packedtmp/badge.svg?branch=master)](https://coveralls.io/github/packedapp/packedtmp?branch=master)
-[![JDK compatibility: 19+](https://img.shields.io/badge/JDK_compatibility-19+-blue.svg)](#)
+[![JDK compatibility: 23+](https://img.shields.io/badge/JDK_compatibility-23+-blue.svg)](#)
 
 
 Notice
@@ -28,4 +28,4 @@ To install and compile the source code locally, run:
   mvn install
 ```
 
-Note that Packed requires Java 19 to compile and run.
+Note that Packed requires Java 23    to compile and run.

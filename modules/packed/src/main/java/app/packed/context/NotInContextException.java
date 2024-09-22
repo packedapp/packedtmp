@@ -20,6 +20,13 @@ import app.packed.build.BuildException;
 /**
  *
  */
+
+// OperationNotInContext?
+
+// The bean is in context, but the operation is not
+// Ville vaere en god fejlbeskrivelse for bean contexts..
+// Maaske kan beans slet ikke vaere i contexts...
+
 // Hmm StaticContextUnavilable?
 // TransactionContext.get()
 

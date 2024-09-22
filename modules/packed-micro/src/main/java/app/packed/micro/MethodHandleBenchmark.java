@@ -18,8 +18,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import internal.app.packed.util.MethodHandleUtil;
-import internal.app.packed.util.notused.LazyMethodHandleFactory;
-import internal.app.packed.util.notused.LazyMethodHandleFactory2;
 
 @Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
@@ -60,17 +58,17 @@ public class MethodHandleBenchmark {
         return LOOKUP.findVirtual(String.class, "toUpperCase", MethodType.methodType(String.class));
     }
 
-    @Benchmark
-    public MethodHandle testCreateLazyMethodHandle() throws Throwable {
-        // Measures the time to create a lazy MethodHandle (without invoking it)
-        return LazyMethodHandleFactory.lazy(METHOD_TYPE, this::createMethodHandle);
-    }
-
-    @Benchmark
-    public MethodHandle testCreateLazyMethodHandle2() throws Throwable {
-        // Measures the time to create a lazy MethodHandle (without invoking it)
-        return LazyMethodHandleFactory2.lazy(METHOD_TYPE, this::createMethodHandle);
-    }
+//    @Benchmark
+//    public MethodHandle testCreateLazyMethodHandle() throws Throwable {
+//        // Measures the time to create a lazy MethodHandle (without invoking it)
+//        return LazyMethodHandleFactory.lazy(METHOD_TYPE, this::createMethodHandle);
+//    }
+//
+//    @Benchmark
+//    public MethodHandle testCreateLazyMethodHandle2() throws Throwable {
+//        // Measures the time to create a lazy MethodHandle (without invoking it)
+//        return LazyMethodHandleFactory2.lazy(METHOD_TYPE, this::createMethodHandle);
+//    }
 
     @Benchmark
     public MethodHandle testCreateLazyMethodHandle3() throws Throwable {

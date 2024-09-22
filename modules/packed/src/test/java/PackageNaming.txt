@@ -1,12 +1,7 @@
 ------- Unit tests ---------
-
 app.packed
 internal.app.packed
-
 ------- TCK tests ----------
-
 tck
-
 --------- Test Util
-
-testutil.
+testutil
