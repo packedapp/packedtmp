@@ -24,7 +24,6 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -48,9 +47,6 @@ import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionHandle;
-import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
-import internal.app.packed.namespace.PackedNamespaceInstaller;
-import internal.app.packed.namespace.PackedNamespaceTemplate;
 import internal.app.packed.util.types.ClassUtil;
 
 /**
@@ -94,7 +90,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
     /** The internal configuration of the extension. */
     final ExtensionSetup extension;
 
-    final PackedExtensionHandle<?> handle;
+    final PackedExtensionHandle<E> handle;
 
     /**
      * Creates a new extension. Subclasses should have a single package-private constructor taking {@link ExtensionHandle}
@@ -106,8 +102,8 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      * @throws IllegalStateException
      *             if attempting to construct the extension manually
      */
-    protected Extension(ExtensionHandle handle) {
-        this.handle = (PackedExtensionHandle<?>) requireNonNull(handle);
+    protected Extension(ExtensionHandle<E> handle) {
+        this.handle = (PackedExtensionHandle<E>) requireNonNull(handle);
         // Will fail if the extension is not initialized by the framework
         this.extension = ((PackedExtensionHandle<?>) handle).extension();
     }
@@ -117,9 +113,8 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      *
      * @return an extension navigator
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final TreeView.Node<E> applicationNode() {
-        return new ExtensionTreeViewNode(extension, extension.extensionType);
+        return handle.applicationNode();
     }
 
     /**
@@ -192,7 +187,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
         return s == null ? Optional.empty() : Optional.ofNullable((E) s.instance());
     }
 
-    protected final ExtensionHandle handle() {
+    protected final ExtensionHandle<E> handle() {
         return handle;
     }
 
@@ -244,47 +239,9 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
         return (E) s.instance();
     }
 
-    @SuppressWarnings("unchecked")
-    public final <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name, Function<NamespaceTemplate.Installer, T> factory) {
-        NamespaceKey nk = new NamespaceKey(template.handleClass(), name);
-        requireNonNull(factory);
-
-        Map<NamespaceKey, NamespaceHandle<?, ?>> m = extension.container.application.namespaces;
-
-        // cannot use computeIfAbsent, as we want to store the handle before the install method returns
-        NamespaceHandle<?, ?> namespaceHandle = m.get(nk);
-        if (namespaceHandle == null) {
-            PackedNamespaceInstaller pni = new PackedNamespaceInstaller((PackedNamespaceTemplate) template, extension, extension, name);
-            namespaceHandle = factory.apply(pni);
-            if (namespaceHandle != pni.handle) {
-                throw new InternalExtensionException("must return newly installed namespace handle");
-            }
-        }
-
-        return (T) namespaceHandle;
+    protected final <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name, Function<NamespaceTemplate.Installer, T> factory) {
+        return handle.namespaceLazy(template, name, factory);
     }
-
-//    // Eneste problem er vi ikke cache dem... Brugerne kunne selv cache dem...
-//    // Altsaa vi vil jo gerne lave namespacet lazily...
-//    // Hmm, hvis vi nu installere foreste service i et barn... Bor root vel stadig vaere application root
-//    // Ja med mindre, man siger noway hosay
-//    // Saa maaske bare en template???
-//    protected final <T extends NamespaceConfiguration<?>> T namespace(NamespaceHandle<?, ?> handle, Supplier<T> supplier) {
-//        // I think it is the same as newExtensionMirror an internal excetion
-//        throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
-//    }
-
-//    @SuppressWarnings("unchecked")
-//    protected final <F extends NamespaceHandle<E, ?>> F namespace(NamespaceTemplate<F> template) {
-//        PackedNamespaceTemplate<F> t = (PackedNamespaceTemplate<F>) template;
-//        HashMap<PackedNamespaceTemplate<?>, NamespaceHandle<?, ?>> m = extension.container.application.namespaces;
-//        return (F) m.computeIfAbsent(t, e -> {
-//            NamespaceSetup ds = new NamespaceSetup(t, extension, extension);
-//            F d = NamespaceSetup.MI.run(t.supplier, ds);
-//            ds.operator = d;
-//            return d;
-//        });
-//    }
 
     /**
      * Returns a bean introspector.
@@ -396,18 +353,14 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
      * @see #onAssemblyClose()
      * @see #onApplicationClose()
      */
-    // TODO Hmm doesnt work properly any more... Why?
-    // I think either we need to fail for example
     protected void onNew() {}
 
     /**
      * @return the parent of this extension if present. Or empty if the extension is in the root container of the
      *         application.
      */
-    @SuppressWarnings("unchecked")
     protected final Optional<E> parent() {
-        ExtensionSetup parent = extension.treeParent;
-        return parent == null ? Optional.empty() : Optional.of((E) parent.instance());
+        return handle.parent();
     }
 
     protected final <T> ServiceableBeanConfiguration<T> provide(Class<T> implementation) {
@@ -583,31 +536,3 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
 
 @ExtensionProperty(name = BaseModuleNames.CONFIG_EXTENSION_PROPERTY_DEFAULT_NAME, value = "web")
 class PropUsage {}
-
-//
-///** {@return instance of this extension that is used in the lifetimes assembly container.} */
-//@SuppressWarnings("unchecked")
-//// I don't know if we need this for anything...
-//final E assemblyRoot() {
-//    ExtensionSetup s = extension;
-//    while (s.treeParent != null) {
-//        if (s.container.assembly != s.treeParent.container.assembly) {
-//            s = s.treeParent;
-//        }
-//    }
-//    return (E) s.instance();
-//}
-//
-///**
-// * Returns a container handle for the extension's container. If this extension installed the container.
-// * <p>
-// * When creating a new container the assembly. The handle returned is always closed
-// *
-// * @return
-// * @throws UnsupportedOperationException
-// *             if this extension this not install this extension's container
-// */
-//// I'm not sure this is needed
-//protected final ContainerHandle containerHandle() {
-//    throw new UnsupportedOperationException();
-//}

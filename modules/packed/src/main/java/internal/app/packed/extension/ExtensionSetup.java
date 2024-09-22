@@ -4,7 +4,9 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.bean.BeanIntrospector;
 import app.packed.build.BuildAuthority;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.InternalExtensionException;
@@ -76,7 +78,10 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         ServiceNamespaceHandle s = sm;
         if (s == null) {
             ServiceNamespaceHandle par = treeParent == null ? null : treeParent.sm();
-            s = this.sm = container.base().namespaceLazy(ServiceNamespaceHandle.NT, extensionType.getSimpleName() + "#main", inst -> {
+            ExtensionSetup base = ExtensionSetup.crack(container.base());
+            ExtensionHandle<BaseExtension> eh = new PackedExtensionHandle<>(base);
+
+            s = this.sm = eh.namespaceLazy(ServiceNamespaceHandle.NT, extensionType.getSimpleName() + "#main", inst -> {
                 return inst.install(ii -> new ServiceNamespaceHandle(ii, par, container));
             });
         }

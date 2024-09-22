@@ -15,6 +15,7 @@
  */
 package app.packed.service.mirror.oldMaybe;
 
+import app.packed.binding.BindingHandle;
 import app.packed.binding.Key;
 
 /**
@@ -24,6 +25,13 @@ import app.packed.binding.Key;
  */
 // Alternativt peger den bare paa en ConstantMirror i beanen's namespace??
 public class OverriddenServiceBindingMirror extends KeyBasedBindingMirror {
+
+    /**
+     * @param handle
+     */
+    public OverriddenServiceBindingMirror(BindingHandle handle) {
+        super(handle);
+    }
 
     @Override
     public Key<?> key() {

@@ -20,9 +20,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.assembly.Assembly;
+import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerLocal;
@@ -39,7 +39,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
     /**
      * @param handle
      */
-    CliExtension(ExtensionHandle handle) {
+    CliExtension(ExtensionHandle<CliExtension> handle) {
         super(handle);
     }
 

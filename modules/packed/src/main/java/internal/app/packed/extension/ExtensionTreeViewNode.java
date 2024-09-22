@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package internal.app.packed.extension;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,8 +21,9 @@ import java.util.Iterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionDescriptor;
 import app.packed.util.TreeView;
-import internal.app.packed.extension.ExtensionSetup;
 
 /**
  * Represents a rooted tree of extensions of the same type with a single node as the origin.
@@ -32,7 +33,7 @@ import internal.app.packed.extension.ExtensionSetup;
  *
  * @see Extension#applicationNavigator()
  */
-final /* primitive */ class ExtensionTreeViewNode<E extends Extension<E>> implements TreeView.Node<E> {
+public final /* primitive */ class ExtensionTreeViewNode<E extends Extension<E>> implements TreeView.Node<E> {
 
     /** We use the extension type mainly for casting. */
     private final Class<E> extensionType;
@@ -40,7 +41,7 @@ final /* primitive */ class ExtensionTreeViewNode<E extends Extension<E>> implem
     /** The origin of the navigator. */
     private final ExtensionSetup origin;
 
-    ExtensionTreeViewNode(ExtensionSetup origin, Class<E> extensionType) {
+  public ExtensionTreeViewNode(ExtensionSetup origin, Class<E> extensionType) {
         this.origin = requireNonNull(origin);
         this.extensionType = requireNonNull(extensionType);
     }
@@ -62,7 +63,7 @@ final /* primitive */ class ExtensionTreeViewNode<E extends Extension<E>> implem
         return obj instanceof ExtensionTreeViewNode<?> en && (origin == en.origin);
     }
 
-    ExtensionDescriptor extensionDescriptor() {
+    public ExtensionDescriptor extensionDescriptor() {
         return origin.model;
     }
 

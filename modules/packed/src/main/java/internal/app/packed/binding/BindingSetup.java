@@ -26,14 +26,9 @@ import app.packed.component.ComponentPath;
 import app.packed.util.Nullable;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.ServiceBindingSetup;
-import internal.app.packed.util.MagicInitializer;
-import internal.app.packed.util.types.ClassUtil;
 
 /** The configuration of an operation's binding. */
 public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetup, BindingSetup.HookBindingSetup, ServiceBindingSetup {
-
-    /** A magic initializer for {@link BindingMirror}. */
-    public static final MagicInitializer<BindingSetup> MIRROR_INITIALIZER = MagicInitializer.of(BindingMirror.class);
 
     /**
      * The realm that owns the binding.
@@ -60,9 +55,14 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
     /** {@return the binding kind.} */
     public abstract BindingKind kind();
 
+    private BindingMirror mirror;
     /** {@return a new mirror.} */
     public BindingMirror mirror() {
-        return MIRROR_INITIALIZER.run(() -> ClassUtil.newMirror(BindingMirror.class, BindingMirror::new, mirrorSupplier), this);
+        BindingMirror m = mirror;
+        if (m == null) {
+            m = mirror = new BindingMirror(new PackedBindingHandle(this));
+        }
+        return m;
     }
 
     public abstract BindingResolution resolver();

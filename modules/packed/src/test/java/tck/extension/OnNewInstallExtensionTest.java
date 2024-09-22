@@ -44,7 +44,7 @@ public class OnNewInstallExtensionTest extends AppAppTest {
         /**
          * @param handle
          */
-        Ex1(ExtensionHandle handle) {
+        Ex1(ExtensionHandle<Ex1> handle) {
             super(handle);
         }
 
@@ -60,7 +60,7 @@ public class OnNewInstallExtensionTest extends AppAppTest {
         /**
          * @param handle
          */
-         Ex2(ExtensionHandle handle) {
+         Ex2(ExtensionHandle<Ex2> handle) {
             super(handle);
         }
 
@@ -91,7 +91,7 @@ public class OnNewInstallExtensionTest extends AppAppTest {
         /**
          * @param handle
          */
-        protected Ex3(ExtensionHandle handle) {
+        protected Ex3(ExtensionHandle<Ex3> handle) {
             super(handle);
         }
 

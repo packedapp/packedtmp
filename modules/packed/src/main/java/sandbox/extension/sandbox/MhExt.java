@@ -75,7 +75,7 @@ public class MhExt extends BaseAssembly {
         /**
          * @param handle
          */
-        protected MyE(ExtensionHandle handle) {
+        protected MyE(ExtensionHandle<MyE> handle) {
             super(handle);
         }
 

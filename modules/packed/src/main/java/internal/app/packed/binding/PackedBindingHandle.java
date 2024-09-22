@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.util.unused;
+package internal.app.packed.binding;
+
+import app.packed.binding.BindingHandle;
 
 /**
  *
  */
-
-// Vi har alle nodes hvor det bliver evalueret (N)
-// Og alle nodes hvor det bliver (optional) applied
-
-// Saa det er faktisk 2 trees...
-public interface PropagationTreeView<N, A> {
+public record PackedBindingHandle(BindingSetup binding) implements BindingHandle {
 
 }

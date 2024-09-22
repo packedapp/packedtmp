@@ -15,14 +15,25 @@
  */
 package app.packed.extension;
 
+import java.util.Optional;
+import java.util.function.Function;
+
+import app.packed.namespace.NamespaceHandle;
+import app.packed.namespace.NamespaceTemplate;
+import app.packed.util.TreeView;
 import internal.app.packed.extension.PackedExtensionHandle;
 
 /**
- * A handle for an extension, that can be passed along to code outside of the extension itself.
+ * A handle for an {@link Extension}, that can be passed along to code outside of the extension itself.
  */
-// Supports all non callback methods from extension... IDK
-// So an ExtensionConfiguration???
-public sealed interface ExtensionHandle permits PackedExtensionHandle {
+public sealed interface ExtensionHandle<E extends Extension<E>> permits PackedExtensionHandle {
+    TreeView.Node<E> applicationNode();
+
+    boolean isExtensionUsed(Class<? extends Extension<?>> extensionType);
+
+    <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name, Function<NamespaceTemplate.Installer, T> factory);
+
+    Optional<E> parent();
 
     <P extends ExtensionPoint<?>> P use(Class<P> extensionPointClass);
 }

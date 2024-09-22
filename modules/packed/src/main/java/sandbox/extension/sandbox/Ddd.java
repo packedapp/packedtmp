@@ -24,10 +24,10 @@ import java.lang.annotation.Target;
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
+import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerTemplate;
@@ -66,7 +66,7 @@ public class Ddd extends BaseAssembly {
         /**
          * @param handle
          */
-        protected MyEntityExtension(ExtensionHandle handle) {
+        protected MyEntityExtension(ExtensionHandle<MyEntityExtension> handle) {
             super(handle);
         }
 

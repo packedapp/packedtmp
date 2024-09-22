@@ -5,9 +5,9 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.assembly.Assembly;
+import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.binding.UnwrappedBindableVariable;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionHandle;
@@ -57,7 +57,7 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
     /**
      * @param handle
      */
-    protected ScheduledJobExtension(ExtensionHandle handle) {
+    protected ScheduledJobExtension(ExtensionHandle<ScheduledJobExtension> handle) {
         super(handle);
     }
 

@@ -16,6 +16,7 @@ import app.packed.container.ContainerMirror;
 import app.packed.util.Nullable;
 import app.packed.util.TreeView.Node;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.extension.ExtensionTreeViewNode;
 
 /**
  * The base class for specialized extension mirrors.

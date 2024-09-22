@@ -32,7 +32,7 @@ public abstract class FrameworkExtension<E extends FrameworkExtension<E>> extend
     /**
      * @param handle
      */
-    protected FrameworkExtension(ExtensionHandle handle) {
+    protected FrameworkExtension(ExtensionHandle<E> handle) {
         super(handle);
     }
 }

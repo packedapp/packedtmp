@@ -39,6 +39,7 @@ import app.packed.container.WireletSelection;
 import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
@@ -55,12 +56,12 @@ import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.handlers.BeanHandlers;
 import internal.app.packed.handlers.ContainerHandlers;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.service.ServiceNamespaceHandle;
 import internal.app.packed.util.AbstractNamedTreeNode;
-
 /** The internal configuration of a container. */
 public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
         implements ComponentSetup, ContextualizedElementSetup, Mirrorable<ContainerMirror>, BuildLocalSource {
@@ -107,7 +108,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
      *            the assembly the defines the container
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-   private ContainerSetup(PackedContainerInstaller installer, ApplicationSetup application, AssemblySetup assembly) {
+    private ContainerSetup(PackedContainerInstaller installer, ApplicationSetup application, AssemblySetup assembly) {
         super(installer.parent);
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
@@ -294,7 +295,9 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
     public ServiceNamespaceHandle servicesMain() {
         ServiceNamespaceHandle s = sm;
         if (s == null) {
-            s = this.sm = base().namespaceLazy(ServiceNamespaceHandle.NT, "main", inst -> {
+            ExtensionSetup base = ExtensionSetup.crack(base());
+            ExtensionHandle<BaseExtension> eh = new PackedExtensionHandle<>(base);
+            s = this.sm = eh.namespaceLazy(ServiceNamespaceHandle.NT, "main", inst -> {
                 return inst.install(ii -> new ServiceNamespaceHandle(inst, null, this));
             });
         }

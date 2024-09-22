@@ -218,7 +218,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      * @return a new extension instance
      */
     Extension<?> newInstance(ExtensionSetup extension) {
-        ExtensionHandle handle = new PackedExtensionHandle<>(extension);
+        ExtensionHandle<?> handle = new PackedExtensionHandle<>(extension);
         try {
             return (Extension<?>) mhConstructor.invokeExact(handle);
         } catch (Throwable e) {

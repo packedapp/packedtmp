@@ -72,7 +72,7 @@ class AcmeExtension extends Extension<AcmeExtension> {
     /**
      * @param handle
      */
-    AcmeExtension(ExtensionHandle handle) {
+    AcmeExtension(ExtensionHandle<AcmeExtension> handle) {
         super(handle);
     }
 }

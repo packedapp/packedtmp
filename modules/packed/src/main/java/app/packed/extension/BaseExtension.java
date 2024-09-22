@@ -100,7 +100,7 @@ import internal.app.packed.service.PackedServiceLocator;
 //// provide
 //// transform/rewrite??? depends on 1 or two interfaces
 
-public class BaseExtension extends FrameworkExtension<BaseExtension> {
+public final class BaseExtension extends FrameworkExtension<BaseExtension> {
 
     /**
      * All your base are belong to us.
@@ -108,7 +108,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @param handle
      *            the extension's handle
      */
-    BaseExtension(ExtensionHandle handle) {
+    BaseExtension(ExtensionHandle<BaseExtension> handle) {
         super(handle);
     }
 
@@ -587,7 +587,7 @@ public class BaseExtension extends FrameworkExtension<BaseExtension> {
         throw new UnsupportedOperationException();
     }
 
-    protected final ServiceNamespaceConfiguration services(String name, Consumer<?> newConfiguration) {
+    protected ServiceNamespaceConfiguration services(String name, Consumer<?> newConfiguration) {
         return services("main");
     }
 

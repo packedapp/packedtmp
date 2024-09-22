@@ -23,6 +23,7 @@ import app.packed.operation.OperationMirror;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingResolution.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
+import internal.app.packed.binding.PackedBindingHandle;
 import sandbox.operation.mirror.BindingProviderKind;
 import sandbox.operation.mirror.BindingTarget;
 import sandbox.operation.mirror.DependenciesMirror;
@@ -44,9 +45,9 @@ public class BindingMirror implements BuildMirror {
      * @throws IllegalStateException
      *             if attempting to explicitly construct an binding mirror instance
      */
-    public BindingMirror() {
+    public BindingMirror(BindingHandle handle) {
         // Will fail if the binding mirror is not initialized by the framework
-        this.binding = BindingSetup.MIRROR_INITIALIZER.initialize();
+        this.binding = ((PackedBindingHandle) handle).binding();
     }
 
     /** {@return the kind of binding.} */

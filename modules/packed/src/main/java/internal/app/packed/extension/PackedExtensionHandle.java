@@ -18,6 +18,7 @@ package internal.app.packed.extension;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import app.packed.extension.Extension;
@@ -26,6 +27,7 @@ import app.packed.extension.ExtensionPoint;
 import app.packed.extension.InternalExtensionException;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceTemplate;
+import app.packed.util.TreeView;
 import internal.app.packed.handlers.ExtensionHandlers;
 import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
 import internal.app.packed.namespace.PackedNamespaceInstaller;
@@ -36,7 +38,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
 /**
  *
  */
-public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup extension) implements ExtensionHandle {
+public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup extension) implements ExtensionHandle<E> {
 
     /** Maps an ExtensionPoint class to the type parameter (E). */
     public final static ClassValue<Class<? extends Extension<?>>> TYPE_VARIABLE_EXTRACTOR = new ClassValue<>() {
@@ -51,10 +53,9 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
         }
     };
 
-
     /** {@inheritDoc} */
     @Override
-    public final <P extends ExtensionPoint<?>> P use(Class<P> extensionPointClass) {
+    public <P extends ExtensionPoint<?>> P use(Class<P> extensionPointClass) {
         requireNonNull(extensionPointClass, "extensionPointClass is null");
 
         // Extract the extension class (<E>) from ExtensionPoint<E>
@@ -92,9 +93,9 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
         return extensionPointClass.cast(newExtensionPoint);
     }
 
-
+    @Override
     @SuppressWarnings("unchecked")
-    public final <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name, Function<NamespaceTemplate.Installer, T> factory) {
+    public <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name, Function<NamespaceTemplate.Installer, T> factory) {
         NamespaceKey nk = new NamespaceKey(template.handleClass(), name);
         requireNonNull(factory);
 
@@ -111,5 +112,23 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
         }
 
         return (T) namespaceHandle;
+    }
+
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public final TreeView.Node<E> applicationNode() {
+       return new ExtensionTreeViewNode(extension, extension.extensionType);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Optional<E> parent() {
+        ExtensionSetup parent = extension.treeParent;
+        return parent == null ? Optional.empty() : Optional.of((E) parent.instance());
+    }
+
+    @Override
+    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
+        return extension.container.isExtensionUsed(extensionType);
     }
 }

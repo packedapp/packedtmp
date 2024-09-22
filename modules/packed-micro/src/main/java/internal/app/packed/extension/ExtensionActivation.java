@@ -112,7 +112,7 @@ public class ExtensionActivation {
         /**
          * @param handle
          */
-        protected MyExtension(ExtensionHandle handle) {
+        protected MyExtension(ExtensionHandle<MyExtension> handle) {
             super(handle);
         }
         // public void foo(SingletonConfiguration<?> cc, Foo s) {}

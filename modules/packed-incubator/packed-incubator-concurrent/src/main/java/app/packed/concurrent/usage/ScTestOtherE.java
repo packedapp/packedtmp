@@ -24,8 +24,8 @@ import java.time.Duration;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanElement.BeanMethod;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.concurrent.ScheduledOperationConfiguration;
 import app.packed.concurrent.SchedulingContext;
@@ -64,7 +64,7 @@ public class ScTestOtherE extends BaseAssembly {
         /**
          * @param handle
          */
-        protected MyE(ExtensionHandle handle) {
+        protected MyE(ExtensionHandle<MyE> handle) {
             super(handle);
         }
 

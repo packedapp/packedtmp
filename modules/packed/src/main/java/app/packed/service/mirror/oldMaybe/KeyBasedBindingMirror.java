@@ -15,6 +15,7 @@
  */
 package app.packed.service.mirror.oldMaybe;
 
+import app.packed.binding.BindingHandle;
 import app.packed.binding.BindingMirror;
 import app.packed.binding.Key;
 
@@ -24,6 +25,13 @@ import app.packed.binding.Key;
  */
 // Er maaske nået til Context Services, Extension Services, Container Services
 public abstract class KeyBasedBindingMirror extends BindingMirror {
+
+    /**
+     * @param handle
+     */
+    public KeyBasedBindingMirror(BindingHandle handle) {
+        super(handle);
+    }
 
     /** {@return the binding key.} */
     public abstract Key<?> key();

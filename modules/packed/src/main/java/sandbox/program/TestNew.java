@@ -91,7 +91,7 @@ public class TestNew extends BaseAssembly {
         /**
          * @param handle
          */
-        MyExt(ExtensionHandle handle) {
+        MyExt(ExtensionHandle<MyExt> handle) {
             super(handle);
         }
 

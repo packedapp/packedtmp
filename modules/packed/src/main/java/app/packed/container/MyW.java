@@ -76,7 +76,7 @@ public class MyW extends BaseAssembly {
         /**
          * @param handle
          */
-        protected MyExt(ExtensionHandle handle) {
+        protected MyExt(ExtensionHandle<MyExt> handle) {
             super(handle);
         }
 

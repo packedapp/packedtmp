@@ -124,26 +124,6 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
         }
     }
 
-    // can we attach information to the method???
-    // fx @Lock(sdfsdfsdf) uden @Query???
-    public void triggeredByAnnotatedMethod(Annotation hook, BeanMethod method) {
-        // Test if getClass()==BeanScanner forgot to implement
-        // Not we want to return generic bean scanner from newBeanScanner
-        throw new InternalExtensionException(extension().fullName() + " failed to handle method annotation(s) " + hook);
-    }
-
-    /**
-     * @param on
-     *
-     * @see AnnotatedMethodHook
-     */
-    // Called exactly once per extension???
-    public void triggeredByAnnotatedMethod(AnnotationList hooks, BeanMethod method) {
-        for (Annotation a : hooks) {
-            triggeredByAnnotatedMethod(a, method);
-        }
-    }
-
     /**
      * <p>
      * This method is never called directly by the framework. Instead the framework will always call
@@ -187,12 +167,6 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
         return requireNonNull(setup().scanner.bean);
     }
 
-//    public boolean hasAttachment(Class<?> attachmentType) {
-//        requireNonNull(attachmentType);
-//        Map<Class<?>, Object> a = setup().bean.attachments;
-//        return a != null && a.containsKey(attachmentType);
-//    }
-
     /** {@return an annotation reader for the bean class.} */
     public final AnnotationList beanAnnotations() {
         return new PackedAnnotationList(beanClass().getAnnotations());
@@ -202,6 +176,12 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
     public final BuildAuthority beanAuthor() {
         return bean().owner();
     }
+
+//    public boolean hasAttachment(Class<?> attachmentType) {
+//        requireNonNull(attachmentType);
+//        Map<Class<?>, Object> a = setup().bean.attachments;
+//        return a != null && a.containsKey(attachmentType);
+//    }
 
     /** {@return the bean class that is being introspected.} */
     public final Class<?> beanClass() {
@@ -270,6 +250,7 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
         }
         this.setup = ce;
     }
+
     /** {@return whether or not the bean is in same lifetime as the application.} */
     public final boolean isInApplicationLifetime() {
         BeanSetup b = bean();
@@ -280,7 +261,6 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
     public final boolean isInContainerLifetime() {
         return bean().lifetime instanceof ContainerLifetimeSetup;
     }
-
     /** {@return whether or not this introspector is the installing introspector.} */
     public final boolean isInstallingIntrospector() {
         throw new UnsupportedOperationException();
@@ -298,6 +278,26 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
             throw new IllegalStateException("This method cannot be called from the constructor of " + getClass());
         }
         return s;
+    }
+
+    // can we attach information to the method???
+    // fx @Lock(sdfsdfsdf) uden @Query???
+    public void triggeredByAnnotatedMethod(Annotation hook, BeanMethod method) {
+        // Test if getClass()==BeanScanner forgot to implement
+        // Not we want to return generic bean scanner from newBeanScanner
+        throw new InternalExtensionException(extension().fullName() + " failed to handle method annotation(s) " + hook);
+    }
+
+    /**
+     * @param on
+     *
+     * @see AnnotatedMethodHook
+     */
+    // Called exactly once per extension???
+    public void triggeredByAnnotatedMethod(AnnotationList hooks, BeanMethod method) {
+        for (Annotation a : hooks) {
+            triggeredByAnnotatedMethod(a, method);
+        }
     }
 }
 

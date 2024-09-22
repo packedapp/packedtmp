@@ -44,7 +44,7 @@ public class ExtensionDescriptorTest {
         /**
          * @param handle
          */
-        VariousExtension(ExtensionHandle handle) {
+        VariousExtension(ExtensionHandle<VariousExtension> handle) {
             super(handle);
         }
 
@@ -80,7 +80,7 @@ public class ExtensionDescriptorTest {
         /**
          * @param handle
          */
-        protected EmptyExtension(ExtensionHandle handle) {
+        protected EmptyExtension(ExtensionHandle<EmptyExtension> handle) {
             super(handle);
         }
     }

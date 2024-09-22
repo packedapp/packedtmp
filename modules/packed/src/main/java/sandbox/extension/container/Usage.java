@@ -32,7 +32,7 @@ public class Usage extends Extension<Usage> {
     /**
      * @param handle
      */
-    protected Usage(ExtensionHandle handle) {
+    protected Usage(ExtensionHandle<Usage>  handle) {
         super(handle);
     }
 

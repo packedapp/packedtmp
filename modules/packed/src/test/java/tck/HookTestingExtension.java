@@ -31,9 +31,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 
-import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanElement.BeanField;
 import app.packed.bean.BeanElement.BeanMethod;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AnnotatedFieldBeanTrigger;
 import app.packed.bean.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.binding.ComputedConstant;
@@ -57,7 +57,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
     /**
      * @param handle
      */
-    protected HookTestingExtension(ExtensionHandle handle) {
+     HookTestingExtension(ExtensionHandle<HookTestingExtension> handle) {
         super(handle);
     }
 

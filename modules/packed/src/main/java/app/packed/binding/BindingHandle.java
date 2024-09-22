@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.util.notused;
+package app.packed.binding;
+
+import internal.app.packed.binding.PackedBindingHandle;
 
 /**
  *
  */
-public class NamedComponent {
-    int state;
-    String name;
-}
+public sealed interface BindingHandle permits PackedBindingHandle {
 
-// Container, Bean, Operation
-// Assembly
+}

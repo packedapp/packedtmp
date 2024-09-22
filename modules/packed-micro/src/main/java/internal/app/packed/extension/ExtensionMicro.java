@@ -66,7 +66,7 @@ public class ExtensionMicro {
         /**
          * @param handle
          */
-        protected MyExtension(ExtensionHandle handle) {
+        protected MyExtension(ExtensionHandle<MyExtension> handle) {
             super(handle);
         }
     }

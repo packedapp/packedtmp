@@ -53,7 +53,7 @@ public class HookOnExtensionActivationMicro {
         /**
          * @param handle
          */
-        protected Comp1Field(ExtensionHandle handle) {
+        protected Comp1Field(ExtensionHandle<Comp1Field> handle) {
             super(handle);
         }
 
@@ -65,7 +65,7 @@ public class HookOnExtensionActivationMicro {
         /**
          * @param handle
          */
-        protected Comp1Method(ExtensionHandle handle) {
+         Comp1Method(ExtensionHandle<Comp1Method> handle) {
             super(handle);
         }
 
@@ -77,7 +77,7 @@ public class HookOnExtensionActivationMicro {
         /**
          * @param handle
          */
-        protected Comp1Field1Method(ExtensionHandle handle) {
+         Comp1Field1Method(ExtensionHandle<Comp1Field1Method> handle) {
             super(handle);
         }
 
@@ -92,7 +92,7 @@ public class HookOnExtensionActivationMicro {
         /**
          * @param handle
          */
-        protected Comp3Fields3Methods(ExtensionHandle handle) {
+        protected Comp3Fields3Methods(ExtensionHandle<Comp3Fields3Methods> handle) {
             super(handle);
         }
 
@@ -117,7 +117,7 @@ public class HookOnExtensionActivationMicro {
         /**
          * @param handle
          */
-        protected Comp5Fields5Methods(ExtensionHandle handle) {
+        protected Comp5Fields5Methods(ExtensionHandle<Comp5Fields5Methods> handle) {
             super(handle);
         }
 

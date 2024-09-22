@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
+import app.packed.binding.BindingHandle;
 import app.packed.binding.Key;
 import app.packed.service.mirror.oldMaybe.KeyBasedBindingMirror;
 import internal.app.packed.service.ServiceBindingSetup;
@@ -48,7 +49,8 @@ public class ServiceBindingMirror extends KeyBasedBindingMirror {
     /** The service binding */
     private final ServiceBindingSetup binding;
 
-    public ServiceBindingMirror(@SuppressWarnings("exports") ServiceBindingSetup binding) {
+    public ServiceBindingMirror(BindingHandle handle, @SuppressWarnings("exports") ServiceBindingSetup binding) {
+        super(handle);
         this.binding = requireNonNull(binding);
     }
 

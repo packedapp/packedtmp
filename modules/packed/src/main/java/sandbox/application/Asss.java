@@ -77,7 +77,7 @@ public class Asss extends BaseAssembly {
 
     public static class MyExt extends Extension<MyExt> {
 
-        MyExt(ExtensionHandle handle) {
+        MyExt(ExtensionHandle<MyExt> handle) {
             super(handle);
         }
 

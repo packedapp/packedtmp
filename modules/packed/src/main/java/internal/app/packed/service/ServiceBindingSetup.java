@@ -22,6 +22,7 @@ import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingResolution;
 import internal.app.packed.binding.BindingSetup;
+import internal.app.packed.binding.PackedBindingHandle;
 import internal.app.packed.operation.OperationSetup;
 
 /** Represents a binding to service (which may not exist.). */
@@ -41,7 +42,7 @@ public final class ServiceBindingSetup extends BindingSetup {
         super(operation, index, operation.operator.authority());
         this.entry = requireNonNull(entry);
         this.isRequired = isRequired;
-        this.mirrorSupplier = () -> new ServiceBindingMirror(this);
+        this.mirrorSupplier = () -> new ServiceBindingMirror(new PackedBindingHandle(this), this);
     }
 
     /** {@inheritDoc} */

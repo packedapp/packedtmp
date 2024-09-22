@@ -37,7 +37,7 @@ public class CannotCallFromConstructorExtensionTest {
         /**
          * @param handle
          */
-        protected CallingMethodsFromTheConstructor(ExtensionHandle handle) {
+        protected CallingMethodsFromTheConstructor(ExtensionHandle<CallingMethodsFromTheConstructor> handle) {
             super(handle);
             String msg = "This operation cannot be invoked from the constructor of an extension. If you need to perform initialization before the extension is returned to the user, override Extension#onNew()";
             // assertThatIllegalStateException().isThrownBy(() -> buildContext()).withMessage(msg);
@@ -51,7 +51,7 @@ public class CannotCallFromConstructorExtensionTest {
         /**
          * @param handle
          */
-        protected TestExtension1(ExtensionHandle handle) {
+        protected TestExtension1(ExtensionHandle<TestExtension1> handle) {
             super(handle);
         }
 
@@ -67,7 +67,7 @@ public class CannotCallFromConstructorExtensionTest {
         /**
          * @param handle
          */
-        protected TestExtension(ExtensionHandle handle) {
+        protected TestExtension(ExtensionHandle<TestExtension> handle) {
             super(handle);
         }
         // public ArtifactBuildContext publicBuildContext() {

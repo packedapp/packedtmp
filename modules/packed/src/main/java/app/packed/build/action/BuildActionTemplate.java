@@ -72,7 +72,7 @@ class MyExt extends NewBaseExtension<MyExt> {
     /**
      * @param handle
      */
-    protected MyExt(ExtensionHandle handle) {
+    protected MyExt(ExtensionHandle<MyExt> handle) {
         super(handle);
     }
 
@@ -117,7 +117,7 @@ class NewBaseExtension<E extends NewBaseExtension<E>> extends Extension<E> {
     /**
      * @param handle
      */
-    protected NewBaseExtension(ExtensionHandle handle) {
+    protected NewBaseExtension(ExtensionHandle<E> handle) {
         super(handle);
     }
 

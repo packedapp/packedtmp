@@ -21,8 +21,8 @@ import java.time.Duration;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanElement.BeanMethod;
+import app.packed.bean.BeanIntrospector;
 import app.packed.binding.UnwrappedBindableVariable;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
@@ -62,7 +62,7 @@ public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
     /**
      * @param handle
      */
-    ThreadExtension(ExtensionHandle handle) {
+    ThreadExtension(ExtensionHandle<ThreadExtension> handle) {
         super(handle);
     }
 

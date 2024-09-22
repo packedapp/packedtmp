@@ -87,7 +87,7 @@ public class BasicExtensionTest extends AppAppTest {
 
     public static final class TestExtension1 extends Extension<TestExtension1> {
 
-        TestExtension1(ExtensionHandle handle) {
+        TestExtension1(ExtensionHandle<TestExtension1> handle) {
             super(handle);
         }
 
@@ -95,7 +95,7 @@ public class BasicExtensionTest extends AppAppTest {
 
     public static final class TestExtension2 extends Extension<TestExtension2> {
 
-        TestExtension2(ExtensionHandle handle) {
+        TestExtension2(ExtensionHandle<TestExtension2> handle) {
             super(handle);
         }
     }

@@ -101,7 +101,7 @@ public class ImageMicro {
         /**
          * @param handle
          */
-        protected MyExtension(ExtensionHandle handle) {
+        MyExtension(ExtensionHandle<MyExtension> handle) {
             super(handle);
         }
     }
