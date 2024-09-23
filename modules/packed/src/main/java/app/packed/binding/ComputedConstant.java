@@ -46,4 +46,6 @@ import app.packed.extension.BaseExtension;
 // It is nice documentation though. Ohh we only generate this once
 // But then again we may have other constants where you could just start doubting
 // For example some of the new host/guest which is also computed
+
+// Remove this and used ordinary bean service injection
 public @interface ComputedConstant {}

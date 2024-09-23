@@ -17,11 +17,11 @@ package app.packed.binding;
 
 import java.util.Optional;
 
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 import app.packed.build.BuildMirror;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.binding.BindingResolution;
-import internal.app.packed.binding.BindingResolution.FromOperationResult;
+import internal.app.packed.binding.BindingAccessor;
+import internal.app.packed.binding.BindingAccessor.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.PackedBindingHandle;
 import sandbox.operation.mirror.BindingProviderKind;
@@ -51,12 +51,12 @@ public class BindingMirror implements BuildMirror {
     }
 
     /** {@return the kind of binding.} */
-    public final BindingKind bindingKind() {
+    public final ResolutionKind bindingKind() {
         return binding.kind();
     }
 
     /** {@return who created the binding.} */
-    public final BuildAuthority boundBy() {
+    public final BuildActor boundBy() {
         return binding.boundBy;
     }
 
@@ -86,7 +86,7 @@ public class BindingMirror implements BuildMirror {
     // Parametere er var.
     // Bindingen er resultatet naar den er resolvet
     public final int parameterIndex() {
-        return binding.operationBindingIndex;
+        return binding.index;
     }
 
     /** {@inheritDoc} */
@@ -98,7 +98,7 @@ public class BindingMirror implements BuildMirror {
     /** {@return the underlying variable that has been bound.} */
     public final Variable variable() {
         BindingSetup b = binding;
-        return b.operation.type.parameter(b.operationBindingIndex);
+        return b.operation.type.parameter(b.index);
     }
 
     /** {@return the dependencies this binding introduces.} */
@@ -123,7 +123,7 @@ public class BindingMirror implements BuildMirror {
 
     public final Optional<OperationMirror> zProvidingOperation() {
         // What about lifetime
-        BindingResolution p = binding.resolver();
+        BindingAccessor p = binding.resolver();
         if (p instanceof FromOperationResult fo) {
             return Optional.ofNullable(fo.operation().mirror());
         }

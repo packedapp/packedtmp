@@ -29,7 +29,8 @@ import app.packed.runtime.RunState;
 
 // Is a factory a lifecycle operation? I don't think so. No. Ordering makes no sense
 // Inject isn't a lifecycle operation either
-public class LifecycleOperationMirror extends OperationMirror {
+public sealed class LifecycleOperationMirror extends OperationMirror
+        permits OnInitializeLifecycleOperationMirror, OnStartLifecycleOperationMirror, OnStopLifecycleOperationMirror {
 
     /**
      * @param handle
@@ -60,12 +61,6 @@ public class LifecycleOperationMirror extends OperationMirror {
 
     public RunState runState() {
         return RunState.INITIALIZED;
-    }
-
-    public String stage() {
-        // Maaske har vi en mere finindeling her end i runState()
-        // Saa vi fx ogsaa kan sige <<instantiate>>
-        return "<<instantiate>>";
     }
 
     public List<LifecycleOperationMirror> previousLifetime() {

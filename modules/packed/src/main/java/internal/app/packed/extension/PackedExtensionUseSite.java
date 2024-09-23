@@ -15,7 +15,7 @@
  */
 package internal.app.packed.extension;
 
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 
 /**
@@ -25,7 +25,7 @@ public record PackedExtensionUseSite(ExtensionSetup extension, ExtensionSetup us
 
     /** {@inheritDoc} */
     @Override
-    public BuildAuthority author() {
+    public BuildActor author() {
         return extension.authority();
     }
 }

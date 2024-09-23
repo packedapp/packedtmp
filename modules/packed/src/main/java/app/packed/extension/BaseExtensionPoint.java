@@ -10,8 +10,8 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
-import app.packed.bean.BeanTemplate.Installer;
 import app.packed.container.ContainerTemplate;
+import app.packed.context.ContextTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationDependencyOrder;
@@ -19,12 +19,14 @@ import app.packed.operation.OperationTemplate;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.service.ServiceLocator;
-import app.packed.service.ServiceableBeanConfiguration;
+import app.packed.service.ProvideableBeanConfiguration;
+import internal.app.packed.bean.PackedBeanInstaller.ServiceanbleBeanHandle;
 import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionUseSite;
+import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import sandbox.extension.container.ContainerTemplateLink;
 
 /** An {@link ExtensionPoint extension point} for {@link BaseExtension}. */
@@ -51,8 +53,17 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         super(usesite);
     }
 
-    public <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<ServiceableBeanConfiguration<T>> h = newBean(BeanKind.CONTAINER.template(), context()).install(implementation, ServiceanbleBeanHandle::new);
+    final static BeanTemplate CONTAINER;
+    static {
+        ContextTemplate ct = ContextTemplate.of(MethodHandles.lookup(), ExtensionContext.class, PackedExtensionContext.class);
+        CONTAINER = BeanKind.CONTAINER.template().reconfigure(c -> {
+            c.inContext(ct);
+        });
+
+    }
+
+    public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
+        BeanHandle<ProvideableBeanConfiguration<T>> h = newBean(CONTAINER, context()).install(implementation, ServiceanbleBeanHandle::new);
         return h.configuration();
     }
 
@@ -63,8 +74,8 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            an operation responsible for creating an instance of the bean when the container is initialized
      * @return a configuration object representing the installed bean
      */
-    public <T> ServiceableBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<ServiceableBeanConfiguration<T>> h = newBean(BeanKind.CONTAINER.template(), context()).install(op, ServiceanbleBeanHandle::new);
+    public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
+        BeanHandle<ProvideableBeanConfiguration<T>> h = newBean(CONTAINER, context()).install(op, ServiceanbleBeanHandle::new);
         return h.configuration();
     }
 
@@ -81,7 +92,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 //        return new PackedContainerBuilder(ContainerTemplate.IN_PARENT, s.extensionType, s.container.application, s.container);
 //    }
 
-    public <T> ServiceableBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
+    public <T> ProvideableBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
         return installIfAbsent(clazz, c -> {});
     }
 
@@ -98,16 +109,16 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *           Even for action and the returned bean
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T> ServiceableBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ServiceableBeanConfiguration<T>> action) {
+    public <T> ProvideableBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ProvideableBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
         Function<BeanTemplate.Installer, ServiceanbleBeanHandle<?>> f = ServiceanbleBeanHandle::new;
-        BeanHandle<?> handle = newBean(BeanKind.CONTAINER.template(), context()).installIfAbsent(clazz, ServiceableBeanConfiguration.class, (Function) f,
-                h -> action.accept((ServiceableBeanConfiguration<T>) h.configuration()));
-        return (ServiceableBeanConfiguration<T>) handle.configuration();
+        BeanHandle<?> handle = newBean(CONTAINER, context()).installIfAbsent(clazz, ProvideableBeanConfiguration.class, (Function) f,
+                h -> action.accept((ProvideableBeanConfiguration<T>) h.configuration()));
+        return (ProvideableBeanConfiguration<T>) handle.configuration();
     }
 
-    public <T> ServiceableBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<ServiceableBeanConfiguration<T>> h = newBean(BeanKind.CONTAINER.template(), context()).installInstance(instance,
+    public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
+        BeanHandle<ProvideableBeanConfiguration<T>> h = newBean(CONTAINER, context()).installInstance(instance,
                 ServiceanbleBeanHandle::new);
         return h.configuration();
     }
@@ -178,20 +189,6 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         return ContainerTemplateLink.of(MethodHandles.lookup(), BaseExtension.class, name);
     }
 
-    static class ServiceanbleBeanHandle<T> extends BeanHandle<ServiceableBeanConfiguration<T>> {
-
-        /**
-         * @param installer
-         */
-        ServiceanbleBeanHandle(Installer installer) {
-            super(installer);
-        }
-
-        @Override
-        protected ServiceableBeanConfiguration<T> newBeanConfiguration() {
-            return new ServiceableBeanConfiguration<>(this);
-        }
-    }
 }
 
 class unknown {

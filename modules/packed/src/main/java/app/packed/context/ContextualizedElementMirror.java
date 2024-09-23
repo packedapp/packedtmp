@@ -31,7 +31,7 @@ import app.packed.operation.OperationMirror;
  */
 public sealed interface ContextualizedElementMirror permits ContainerMirror, BeanMirror, OperationMirror {
 
-    /** {@return an unchangeable set view of all the contexts that the element operates within.} */
+    /** {@return an unchangeable map view of all the contexts that the element operates within.} */
     Map<Class<? extends Context<?>>, ContextMirror> contexts();
 }
 

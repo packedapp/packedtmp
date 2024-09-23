@@ -18,7 +18,7 @@ package internal.app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.IdentityHashMap;
+import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -26,8 +26,8 @@ import app.packed.assembly.Assembly;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.binding.Key;
 import app.packed.build.hook.BuildHook;
+import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerHandle;
-import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
@@ -35,19 +35,17 @@ import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.assembly.AssemblySetup;
+import internal.app.packed.component.PackedComponentInstaller;
 import internal.app.packed.container.wirelets.CompositeWirelet;
 import internal.app.packed.container.wirelets.InternalBuildWirelet;
 import internal.app.packed.handlers.AssemblyHandlers;
 
 /** Implementation of {@link ContainerTemplate.Installer} */
-public final class PackedContainerInstaller implements ContainerTemplate.Installer {
+public final class PackedContainerInstaller extends PackedComponentInstaller<ContainerSetup, PackedContainerInstaller> implements ContainerTemplate.Installer {
 
     /** Non-null if this container is being installed as the root container of an application. */
     @Nullable
     public final PackedApplicationInstaller<?> applicationInstaller;
-
-    /** The container that was created on a successful install. */
-    public ContainerSetup container;
 
     /** Delegating assemblies. Empty unless any {@link DelegatingAssembly} has been used. */
     public final ArrayList<Class<? extends DelegatingAssembly>> delegatingAssemblies = new ArrayList<>();
@@ -57,8 +55,7 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
     /** The extension that is installing the container. */
     final Class<? extends Extension<?>> installedBy;
 
-    /** Container locals that the container is initialized with. */
-    final IdentityHashMap<PackedContainerLocal<?>, Object> locals = new IdentityHashMap<>();
+    public boolean isFromAssembly;
 
     /** The name of the container. */
     String name;
@@ -79,26 +76,22 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
     // Cannot take ExtensionSetup, as BaseExtension is not instantiated for a root container
     public PackedContainerInstaller(PackedContainerTemplate template, @Nullable PackedApplicationInstaller<?> application, @Nullable ContainerSetup parent,
             Class<? extends Extension<?>> installedBy) {
+        super(template.componentTags(), new HashMap<>());
         this.applicationInstaller = application;
         this.template = requireNonNull(template, "template is null");
         this.parent = parent;
         this.installedBy = installedBy;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    protected ApplicationSetup application(ContainerSetup setup) {
+        return setup.application;
+    }
+
     @Override
     public <T> ContainerTemplate.Installer carrierProvideConstant(Key<T> key, T constant) {
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     *
-     * @throws IllegalStateException
-     *             if the container is no longer configurable
-     */
-    public void checkNotInstalledYet() {
-        if (!parent.assembly.isConfigurable()) {
-            throw new IllegalStateException("This assembly is no longer configurable");
-        }
     }
 
     /** {@inheritDoc} */
@@ -107,6 +100,7 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
     public <H extends ContainerHandle<?>> H install(Assembly assembly, Function<? super ContainerTemplate.Installer, H> factory, Wirelet... wirelets) {
         checkNotInstalledYet();
         // TODO can install container (assembly.isConfigurable());
+        this.isFromAssembly = true;
         processBuildWirelets(wirelets);
         ContainerSetup container = invokeAssemblyBuild(assembly);
         return (H) container.handle();
@@ -146,20 +140,13 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
         return s.container;
     }
 
-    public <T> ContainerTemplate.Installer localConsume(ContainerLocal<T> local, Consumer<T> action) {
+    public <T> ContainerTemplate.Installer localConsume(ContainerBuildLocal<T> local, Consumer<T> action) {
 //        PackedAbstractContainerLocal<?> cl = (PackedAbstractContainerLocal<?>) local;
 
 //        cl.g
 //        action.accept((T) cl.get(this));
 //        return this;
         throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> ContainerTemplate.Installer localSet(ContainerLocal<T> local, T value) {
-        locals.put((PackedContainerLocal<?>) local, value);
-        return this;
     }
 
     /** {@inheritDoc} */
@@ -201,5 +188,11 @@ public final class PackedContainerInstaller implements ContainerTemplate.Install
             }
         }
         return pcb;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> PackedContainerInstaller setLocal(ContainerBuildLocal<T> local, T value) {
+        return super.setLocal(local, value);
     }
 }

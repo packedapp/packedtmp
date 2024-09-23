@@ -9,9 +9,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import app.packed.bean.BeanLocal.Accessor;
 import app.packed.binding.Key;
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 import app.packed.build.action.BuildActionable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.context.Context;
@@ -24,16 +23,16 @@ import app.packed.operation.OperationConfiguration;
  * {@link app.packed.extension.BaseExtension#install(Class)}. It can also, for example, be obtained via
  * {@link app.packed.container.ContainerConfiguration#beans()}.
  */
-public non-sealed class BeanConfiguration extends ComponentConfiguration implements Accessor {
+public non-sealed class BeanConfiguration extends ComponentConfiguration implements BeanBuildLocal.Accessor {
 
-    /** The bean handle. We don't store BeanSetup directly because BeanHandle contains a lot of useful logic. */
+    /** The bean handle. */
     private final BeanHandle<?> handle;
 
     /**
-     * Create a new bean configuration using the specified installer.
+     * Create a new bean configuration using the specified handle.
      *
-     * @param installer
-     *            the bean installer
+     * @param handle
+     *            the bean's handle
      */
     public BeanConfiguration(BeanHandle<?> handle) {
         this.handle = requireNonNull(handle, "handle is null");
@@ -56,23 +55,22 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
 
     /** {@return the owner of the bean.} */
     // Declared by???
-    public final BuildAuthority author() {
+    public final BuildActor author() {
         return handle.owner();
+    }
+
+    /**
+     * {@return a set of the contexts that available to the bean} These contexts can only be injected doing the construction
+     * of the bean. Either through a factory method or using {@link Inject}.
+     */
+    public final Set<? extends Context<?>> availableContexts() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@return the bean class.} */
     public final Class<?> beanClass() {
         return handle.beanClass();
     }
-
-    // Alternativt tager vi ikke en bean. Men en container som er implicit
-    // Det betyder nu ogsaa at CodeGenerated er for hele containeren og ikke bare en bean.
-    // Maaske supportere begge ting?
-    // Det eneste jeg kunne forstille mig at man ikke ville container wide var hvis man havde en bean
-    // per X. Men taenker men saa har et arrays
-
-    // Hmm, vi faar ogsaa foerst fejl senere saa. Men siden det er en extension. Er det nok ikke det store problem i praksis
-    // Evt. Bliver den bare aldrig kaldt.... Det er fint
 
     /**
      * Registers a code generating supplier whose supplied value can be consumed by a variable annotated with
@@ -102,10 +100,6 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      * @see CodeGenerated
      * @see BindableVariable#bindGeneratedConstant(Supplier)
      */
-    // It is so simple maybe add it to bean configuration
-    // Or maybe a subset space...
-    // BeanConfiguration overrideService(Class<? extends Annotation>> subset, Key, Supplier);
-
     /** {@return the kind of bean that is being configured.} */
     public final BeanKind beanKind() {
         return handle.beanKind();
@@ -149,13 +143,18 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
 
     // bindCodeGenerator <--- Will install it as a normal service....
     // was bindComputedConstant
+    // bind(Supplier) <-- every time we create the bean
+    // bindSuppler(BuildTime, CodegenTime, Lazy, PerUsage); // Multithreaded???
     public <K> void bindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
         handle.bindCodeGenerator(key, supplier);
     }
 
     // provideTo??
     // provideAs vs provideI
-    public <K> BeanConfiguration bindInstance(Class<K> key, K instance) {
+
+    // bindinstance
+
+    public <K> BeanConfiguration bindServiceInstance(Class<K> key, K instance) {
         // Future Functionality:
 
         // overrideService(key, Op) ->
@@ -163,26 +162,24 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         // Maybe Op includes a service that have already been overridden.
         // Not saying its impossible. But currently we do not support
         // Adding operations dynamically after the bean has been scanned.
-        return bindInstance(Key.of(key), instance);
+        return bindServiceInstance(Key.of(key), instance);
     }
 
     /**
-     * Overrides a previously resolved service with the specified key.
+     * Binds a (bean) service from the specified key to the specified instance.
+     * <p>
+     * If a service has already been specified on the bean with the same key it is overwritten.
      *
      * @param <K>
-     *            type of the constant
+     *            type of the instance
      * @param key
      *            the key of the service
-     * @param constant
-     *            the constant to bind the service to
+     * @param instance
+     *            the instance to bind the service to
      * @return this configuration
-     * @throws IllegalArgumentException
-     *             if the bean does not have binding that are resolved as a service with the specified key
      */
-    @BuildActionable("bean.overrideService")
-    // On OpConf it is just bind
-    public <K> BeanConfiguration bindInstance(Key<K> key, K instance) {
-        handle.overrideService(key, instance);
+    public <K> BeanConfiguration bindServiceInstance(Key<K> key, K instance) {
+        handle.bindServiceInstance(key, instance);
         return this;
     }
 
@@ -232,7 +229,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     }
 
     // Ideen er at have alle de keys that are resolved as services
-    protected Set<Key<?>> keys() {
+    protected Set<Key<?>> requestedServiceKeys() {
         throw new UnsupportedOperationException();
     }
 
@@ -264,7 +261,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
 
     // Called if bean is renamed
     // Returning String is currentName
-    public String onBeanRename(BiConsumer<String, String> oldNewName) {
+    String onBeanRename(BiConsumer<String, String> oldNewName) {
         throw new UnsupportedOperationException();
     }
 
@@ -279,7 +276,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      * @throws IllegalStateException
      *             if the number of configurations found is not exactly 1
      */
-    public final <T extends OperationConfiguration> T operation(Class<T> operationType) {
+    final <T extends OperationConfiguration> T operation(Class<T> operationType) {
         List<T> list = operations(operationType).toList();
         if (list.size() != 1) {
             throw new IllegalStateException("Expected exactly 1 configuration for operation type: " + operationType.getName() + ", but found: " + list.size());
@@ -287,12 +284,19 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         return list.get(0);
     }
 
-    /** {@return configurations for all operations defined by this bean.} */
+    /** {@return a stream of operation configurations for all the operations that currently defined on this bean} */
     public final Stream<? extends OperationConfiguration> operations() {
         return handle.bean.operations.stream().map(m -> m.handle().configuration()).filter(e -> e != null);
     }
 
-    /** {@return configurations for all operations defined by this bean.} */
+    /**
+     * {@return a stream of operation configurations for all the operations that currently defined on this bean}
+     *
+     * @param <T>
+     *            the type of operation configuration
+     * @param operationType
+     *            the of operations configurations the stream should include
+     */
     @SuppressWarnings("unchecked")
     public final <T extends OperationConfiguration> Stream<T> operations(Class<T> operationType) {
         return (Stream<T>) operations().filter(e -> operationType.isInstance(e));

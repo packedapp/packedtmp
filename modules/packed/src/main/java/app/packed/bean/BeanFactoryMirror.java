@@ -15,13 +15,14 @@
  */
 package app.packed.bean;
 
-import app.packed.lifetime.LifecycleOperationMirror;
 import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationMirror;
 
 /**
  * A mirror for an operation that create {@link #bean() bean} instances.
  */
-public class BeanFactoryMirror extends LifecycleOperationMirror {
+// This is not a lifecycle operation
+public class BeanFactoryMirror extends OperationMirror {
 
     /**
      * @param handle

@@ -25,7 +25,7 @@ import internal.app.packed.application.PackedApplicationRepository;
 import internal.app.packed.extension.ExtensionSetup;
 
 /**
- * An Application repository can be used to install child applications at runtime.
+ * An application repository can be used to install child applications at runtime.
  * <p>
  * For now, we don't track instances here. We need some else for this
  */
@@ -60,11 +60,14 @@ public sealed interface ApplicationRepository<H extends ApplicationHandle<?, ?>>
     // An application can be, NA, INSTALLING, AVAILABLE
     // Don't know if we at runtime
     // Hvad hvis man ikke vil installere noget paa runtime...
-    static <A, H extends ApplicationHandle<?, A>> ApplicationRepositoryConfiguration<H, A> install(BaseExtension extension) {
-        return ApplicationRepositoryHandle.install(ExtensionSetup.crack(extension), ExtensionSetup.crack(extension).container.assembly);
-    }
+
+    // boolean availableAtRuntime
 
     static <A, H extends ApplicationHandle<?, A>> ApplicationRepositoryConfiguration<H, A> install(BaseExtensionPoint point) {
         throw new UnsupportedOperationException();
+    }
+
+    static <A, H extends ApplicationHandle<?, A>> ApplicationRepositoryConfiguration<H, A> install(Class<H> handleType, BaseExtension extension) {
+        return ApplicationRepositoryHandle.install(ExtensionSetup.crack(extension), ExtensionSetup.crack(extension).container.assembly);
     }
 }

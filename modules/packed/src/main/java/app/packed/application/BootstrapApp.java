@@ -22,6 +22,7 @@ import java.util.function.Function;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
+import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedBootstrapApp;
 
 /**
@@ -40,7 +41,8 @@ import internal.app.packed.application.PackedBootstrapApp;
  * Normally, you never create more than a single instance of a bootstrap app. Bootstrap applications are, unless
  * otherwise specified, safe to use concurrently.
  *
- * @return
+ * @param <E>
+ *            the type of applications this bootstrap app creates
  */
 public sealed interface BootstrapApp<A> permits PackedBootstrapApp, MappedBootstrapApp {
 
@@ -176,9 +178,27 @@ public sealed interface BootstrapApp<A> permits PackedBootstrapApp, MappedBootst
         // Lad os ogsaa lige se med expectsResult, inde vi implementere det
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * Creates a new {@link BootstrapApp} from the specified application template.
+     *
+     * @param template
+     *            the application template to create the bootstrap app from
+     * @return the new bootstrap app.
+     */
+    static <A> BootstrapApp<A> of(ApplicationTemplate<A> template) {
+        return PackedBootstrapApp.of((PackedApplicationTemplate<A>) template);
+    }
 }
 
+// I don't if we have any usecases Maybe just skip it
 record MappedBootstrapApp<A, E>(BootstrapApp<A> app, Function<? super A, ? extends E> mapper) implements BootstrapApp<E> {
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> BootstrapApp<T> map(Function<? super E, ? extends T> mapper) {
+        return new MappedBootstrapApp<>(app, this.mapper.andThen(mapper));
+    }
 
     /** {@inheritDoc} */
     @Override

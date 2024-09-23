@@ -15,6 +15,8 @@
  */
 package app.packed.component;
 
+import java.util.Set;
+
 import app.packed.application.ApplicationHandle;
 import app.packed.bean.BeanHandle;
 import app.packed.container.ContainerHandle;
@@ -54,4 +56,17 @@ public sealed abstract class ComponentHandle permits ApplicationHandle, Containe
 
     /** { @return a mirror for the component} */
     public abstract ComponentMirror mirror();
+
+    /**
+     * @param tags
+     * @return
+     */
+    public void componentTag(String... tags) {
+        throw new UnsupportedOperationException();
+    }
+
+    public Set<String> componentTags() {
+        throw new UnsupportedOperationException();
+    }
+
 }

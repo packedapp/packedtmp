@@ -41,8 +41,8 @@ public class InjectorBindAssemblyTest {
             protected void build() {}
         };
 
-        Assertions.npe(() -> ServiceLocator.of(c -> c.link((BaseAssembly) null)), "assembly");
-        Assertions.npe(() -> ServiceLocator.of(c -> c.link(b, (Wirelet[]) null)), "wirelets");
+        Assertions.npe(() -> ServiceLocator.of(c -> c.link("child", (BaseAssembly) null)), "assembly");
+        Assertions.npe(() -> ServiceLocator.of(c -> c.link("child", b, (Wirelet[]) null)), "wirelets");
     }
 
     /** Tests that we can import no services. */
@@ -57,7 +57,7 @@ public class InjectorBindAssemblyTest {
         };
 
         ServiceLocator i = ServiceLocator.of(c -> {
-            c.link(b);
+            c.link("child", b);
         });
         assertThat(i.keys().size()).isEqualTo(0L);
     }
@@ -74,7 +74,7 @@ public class InjectorBindAssemblyTest {
         };
 
         ServiceLocator i = ServiceLocator.of(c -> {
-            c.link(b);
+            c.link("child", b);
         });
         assertThat(i.use(String.class)).isEqualTo("X");
     }
@@ -92,7 +92,7 @@ public class InjectorBindAssemblyTest {
         };
 
         ServiceLocator i = ServiceLocator.of(c -> {
-            c.link(b);
+            c.link("child", b);
         });
         assertThat(i.use(Long.class)).isEqualTo(1L);
         assertThat(i.use(Long.class)).isEqualTo(2L);

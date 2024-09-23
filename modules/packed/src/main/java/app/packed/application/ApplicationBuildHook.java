@@ -37,7 +37,7 @@ public non-sealed abstract class ApplicationBuildHook extends BuildHook {
 }
 
 class MyA extends ApplicationBuildHook {
-    static final ApplicationLocal<String> AS = ApplicationLocal.of();
+    static final ApplicationBuildLocal<String> AS = ApplicationBuildLocal.of();
 
     /** {@inheritDoc} */
     @Override

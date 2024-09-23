@@ -23,10 +23,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.bean.BeanKind;
+import app.packed.context.ContextTemplate;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.namespace.NamespaceHandle;
-import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.operation.PackedOperationInstaller;
 import internal.app.packed.operation.PackedOperationTemplate;
 

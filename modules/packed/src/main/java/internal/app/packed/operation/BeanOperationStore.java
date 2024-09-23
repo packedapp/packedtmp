@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.bean.BeanLifecycleOperation;
 import internal.app.packed.bean.BeanLifecycleOrder;
-import internal.app.packed.service.ServiceProviderSetup;
+import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderSetup;
 import internal.app.packed.util.LazyNamer;
 
 /** This class manages all operations declared by a bean. */
@@ -54,7 +54,7 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
     public boolean providingOperationsVisited;
 
     /** A list of services provided by the bean, used for circular dependency checks. */
-    public final List<ServiceProviderSetup> serviceProviders = new ArrayList<>();
+    public final List<NamespaceServiceProviderSetup> serviceProviders = new ArrayList<>();
 
     void add(OperationSetup os) {
         all.add(os);
@@ -62,7 +62,6 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
 
     public void addLifecycleOperation(BeanLifecycleOrder runOrder, OperationHandle<?> operation) {
         lifecycleOperations.add(new BeanLifecycleOperation(runOrder, operation));
-      //  operation.specializeMirror(LifecycleOperationMirror::new);
     }
 
     public OperationSetup first() {

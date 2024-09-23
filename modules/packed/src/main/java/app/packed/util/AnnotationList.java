@@ -22,6 +22,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import internal.app.packed.util.PackedAnnotationList;
@@ -81,6 +82,8 @@ public sealed interface AnnotationList extends Iterable<Annotation> permits Pack
      */
     //// foo bean was expected method to dddoooo to be annotated with
     <T extends Annotation> T readRequired(Class<T> annotationClass);
+
+    <T extends Annotation> Optional<T> read(Class<T> annotationClass);
 
     /** {@return the number of annotations in the list.} */
     int size();

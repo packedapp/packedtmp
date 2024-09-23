@@ -15,7 +15,7 @@
  */
 package app.packed.assembly;
 
-import app.packed.application.ApplicationLocal;
+import app.packed.application.ApplicationBuildLocal;
 import app.packed.assembly.AbstractComposer.ComposableAssembly;
 import app.packed.build.BuildCodeSource;
 import internal.app.packed.assembly.AssemblySetup;
@@ -53,7 +53,7 @@ import internal.app.packed.container.PackedContainerInstaller;
  * This class cannot be extended directly, you would typically extend {@link BaseAssembly} instead.
  */
 @AssemblySecurity(AssemblySecurity.Default.class)
-public sealed abstract class Assembly implements BuildCodeSource , ApplicationLocal.Accessor
+public sealed abstract class Assembly implements BuildCodeSource , ApplicationBuildLocal.Accessor
         permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
 
     /**

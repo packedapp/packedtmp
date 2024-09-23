@@ -31,13 +31,13 @@ import app.packed.application.BootstrapApp;
 import app.packed.assembly.AbstractComposer;
 import app.packed.assembly.AbstractComposer.ComposableAssembly;
 import app.packed.assembly.AbstractComposer.ComposerAction;
-import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
+import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
-import app.packed.component.guest.FromGuest;
-import app.packed.assembly.Assembly;
+import app.packed.component.guest.FromComponentGuest;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
+import app.packed.context.ContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
@@ -112,7 +112,8 @@ import internal.app.packed.service.PackedServiceLocator;
  * <p>
  * Unless otherwise specified the set of services provided by a service locator is unchangeable.
  */
-@BindingClassBeanTrigger(extension = BaseExtension.class)
+@ContextualServiceProvider(extension = BaseExtension.class)
+// I don't think this should have a service provider
 public interface ServiceLocator {
 
     /**
@@ -319,8 +320,8 @@ public interface ServiceLocator {
      */
     private static BootstrapApp<ServiceLocator> bootstrap() {
         class ServiceLocatorBootstrap {
-            private static final BootstrapApp<ServiceLocator> APP = ApplicationTemplate
-                    .of(new Op1<@FromGuest ServiceLocator, ServiceLocator>(e -> e) {}, c -> c.container(ContainerTemplate.UNMANAGED)).newBootstrapApp();
+            private static final BootstrapApp<ServiceLocator> APP =BootstrapApp.of( ApplicationTemplate
+                    .of(new Op1<@FromComponentGuest ServiceLocator, ServiceLocator>(e -> e) {}, c -> c.container(ContainerTemplate.UNMANAGED)));
         }
         return ServiceLocatorBootstrap.APP;
     }
@@ -398,15 +399,15 @@ public interface ServiceLocator {
         /** For internal use only. */
         private Composer() {}
 
-        public <T> ServiceableBeanConfiguration<T> install(Class<T> op) {
+        public <T> ProvideableBeanConfiguration<T> install(Class<T> op) {
             return base().install(op);
         }
 
-        public <T> ServiceableBeanConfiguration<T> install(Op<T> op) {
+        public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
             return base().install(op);
         }
 
-        public <T> ServiceableBeanConfiguration<T> installInstance(T instance) {
+        public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
             return base().installInstance(instance);
         }
 
@@ -416,8 +417,8 @@ public interface ServiceLocator {
          * @param wirelets
          *            optional import/export wirelets
          */
-        public void link(Assembly assembly, Wirelet... wirelets) {
-            base().link(assembly, wirelets);
+        public void link(String name, Assembly assembly, Wirelet... wirelets) {
+            base().link(name, assembly, wirelets);
         }
 
         @Override
@@ -455,7 +456,7 @@ public interface ServiceLocator {
          *            the implementation to provide a singleton instance of
          * @return a service configuration for the service
          */
-        public <T> ServiceableBeanConfiguration<T> provide(Class<T> implementation) {
+        public <T> ProvideableBeanConfiguration<T> provide(Class<T> implementation) {
             return base().install(implementation).provide();
         }
 
@@ -471,7 +472,7 @@ public interface ServiceLocator {
          *            the factory to bind
          * @return a service configuration for the service
          */
-        public <T> ServiceableBeanConfiguration<T> provide(Op<T> op) {
+        public <T> ProvideableBeanConfiguration<T> provide(Op<T> op) {
             return base().install(op).provide();
         }
 
@@ -533,15 +534,15 @@ public interface ServiceLocator {
         // All annotations will be processed like provide() except that constructors will not be processed
         // Ohh we need to analyze them differently, because we should ignore all constructors.
         // Should not fail if we fx have two public constructors of equal lenght
-        public <T> ServiceableBeanConfiguration<T> provideInstance(T instance) {
+        public <T> ProvideableBeanConfiguration<T> provideInstance(T instance) {
             return base().installInstance(instance).provide();
         }
 
-        public <T> ServiceableBeanConfiguration<T> providePrototype(Class<T> implementation) {
+        public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
             return use(BaseExtension.class).installPrototype(implementation);
         }
 
-        public <T> ServiceableBeanConfiguration<T> providePrototype(Op<T> factory) {
+        public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> factory) {
             return use(BaseExtension.class).installPrototype(factory);
         }
     }

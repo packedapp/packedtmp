@@ -21,11 +21,13 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import app.packed.application.ApplicationConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.util.TreeView;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.assembly.PackedAssemblyFinder;
+import internal.app.packed.util.PackedTreeView;
 
 /**
  * The configuration of an assembly.
@@ -34,6 +36,7 @@ public final class AssemblyConfiguration {
 
     final AssemblySetup assembly;
 
+    // Syntes ogssa man skal have build processen... IDK
     AssemblyConfiguration(AssemblySetup assembly) {
         this.assembly = assembly;
     }
@@ -45,6 +48,9 @@ public final class AssemblyConfiguration {
         return new PackedAssemblyFinder(getClass(), assembly);
     }
 
+    public ApplicationConfiguration application() {
+        return assembly.container.application.handle().configuration();
+    }
 //  protected final <T extends ComponentConfiguration> Stream<T> componentConfigurationSingleton(Class<T> configurationType) {
 //
 //  }
@@ -78,7 +84,7 @@ public final class AssemblyConfiguration {
 
     /** {@return a tree view of all the containers defined by the assembly} */
     public TreeView<? extends ContainerConfiguration> containers() {
-        throw new UnsupportedOperationException();
+        return new PackedTreeView<>(assembly.container, c -> c.assembly == assembly, c -> c.configuration());
     }
 
     // I think maybe allow null to revert back to Assembly Based lookup

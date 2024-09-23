@@ -18,8 +18,8 @@ package internal.app.packed.context;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.context.Context;
+import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension;
-import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.extension.ExtensionModel;
 import internal.app.packed.util.types.TypeVariableExtractor;
 

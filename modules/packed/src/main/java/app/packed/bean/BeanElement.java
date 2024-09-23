@@ -21,7 +21,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
-import app.packed.bean.BeanLocal.Accessor;
+import app.packed.bean.BeanBuildLocal.Accessor;
 import app.packed.binding.BindableVariable;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;

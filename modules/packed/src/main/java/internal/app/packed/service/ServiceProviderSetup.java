@@ -17,26 +17,127 @@ package internal.app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import internal.app.packed.binding.BindingResolution;
+import java.util.ArrayList;
+
+import app.packed.binding.Key;
+import internal.app.packed.binding.BindingAccessor;
+import internal.app.packed.binding.BindingAccessor.SupplierOrInstance;
+import internal.app.packed.binding.Keyed;
+import internal.app.packed.context.ContextSetup;
 import internal.app.packed.operation.OperationSetup;
 
 /**
  *
  */
-public final class ServiceProviderSetup {
+public abstract class ServiceProviderSetup implements Keyed {
 
-    /** The service manager entry. */
-    public final ServiceSetup entry;
+    private final Key<?> key;
 
-    /** The operation that provides the service. */
-    public final OperationSetup operation;
+    /** All bindings (in a interned linked list) that points to this provider. */
+    public final ArrayList<ServiceBindingSetup> bindings = new ArrayList<>();
 
-    /** How the service is provided. */
-    public final BindingResolution resolution;
+    public ServiceProviderSetup(Key<?> key) {
+        this.key = key;
+    }
 
-    ServiceProviderSetup(OperationSetup operation, ServiceSetup entry, BindingResolution resolution) {
-        this.operation = requireNonNull(operation);
-        this.entry = requireNonNull(entry);
-        this.resolution = requireNonNull(resolution);
+    public abstract BindingAccessor binding();
+
+    @Override
+    public Key<?> key() {
+        return key;
+    }
+
+    public static final class BeanServiceProviderSetup extends ServiceProviderSetup {
+        private final SupplierOrInstance binding;
+
+        public BeanServiceProviderSetup(Key<?> key, SupplierOrInstance binding) {
+            super(key);
+            this.binding = requireNonNull(binding);
+        }
+
+        @Override
+        public BindingAccessor binding() {
+            return binding;
+        }
+
+        public SupplierOrInstance bindingInstance() {
+            return binding;
+        }
+    }
+
+    public static final class ContextServiceProviderSetup extends ServiceProviderSetup {
+        private final BindingAccessor binding;
+        private final ContextSetup context;
+
+        public ContextServiceProviderSetup(Key<?> key, ContextSetup context, BindingAccessor binding) {
+            super(key);
+            this.context = context;
+            this.binding = binding;
+        }
+
+        @Override
+        public BindingAccessor binding() {
+            return binding;
+        }
+
+        public ContextSetup context() {
+            return context;
+        }
+    }
+
+    public static final class NamespaceServiceProviderSetup extends ServiceProviderSetup {
+        private final BindingAccessor binding;
+
+        /** Used for checking for dependency cycles. */
+        public boolean hasBeenCheckForDependencyCycles;
+
+        private final ServiceNamespaceHandle namespace;
+
+        private final OperationSetup operation;
+
+        public NamespaceServiceProviderSetup(Key<?> key, ServiceNamespaceHandle namespace, OperationSetup operation, BindingAccessor binding) {
+            super(key);
+            this.namespace = namespace;
+            this.operation = operation;
+            this.binding = binding;
+        }
+
+        @Override
+        public BindingAccessor binding() {
+            return binding;
+        }
+
+        public ServiceNamespaceHandle namespace() {
+            return namespace;
+        }
+
+        public OperationSetup operation() {
+            return operation;
+        }
+    }
+
+    public static final class OperationServiceProviderSetup extends ServiceProviderSetup {
+        private final SupplierOrInstance binding;
+        private final OperationSetup operation;
+
+        public OperationServiceProviderSetup(Key<?> key, OperationSetup operation, SupplierOrInstance binding) {
+            super(key);
+            this.operation = operation;
+            this.binding = binding;
+        }
+
+        @Override
+        public BindingAccessor binding() {
+            // Implement binding logic here
+            return null;
+        }
+
+        public SupplierOrInstance bindingInstance() {
+            return binding;
+        }
+
+        public OperationSetup operation() {
+            return operation;
+        }
     }
 }

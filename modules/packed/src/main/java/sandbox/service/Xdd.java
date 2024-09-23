@@ -29,7 +29,7 @@ public class Xdd extends BaseAssembly {
     @Override
     protected void build() {
         provideInstance(4444L);
-        install(Foo.class).bindInstance(String.class, "Bdoo").bindInstance(Integer.class, 12333).bindInstance(Long.class, 123L);
+        install(Foo.class).bindServiceInstance(String.class, "Bdoo").bindServiceInstance(Integer.class, 12333).bindServiceInstance(Long.class, 123L);
     }
 
     public static void main(String[] args) {

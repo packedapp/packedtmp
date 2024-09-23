@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 
 import app.packed.binding.Key;
 import app.packed.build.BuildException;
-import app.packed.container.ContainerLocal;
+import app.packed.container.ContainerBuildLocal;
 import app.packed.extension.Extension;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplatePack;
@@ -192,7 +192,7 @@ public sealed interface ContainerTemplateLink permits PackedContainerTemplatePac
         }
 
         // Typically used with locals with lazy initialization
-        public <T> Configurator localConsume(ContainerLocal<T> local, Consumer<T> action) {
+        public <T> Configurator localConsume(ContainerBuildLocal<T> local, Consumer<T> action) {
             pack = pack.withUse(c -> c.localConsume(local, action));
             return this;
         }
@@ -206,8 +206,8 @@ public sealed interface ContainerTemplateLink permits PackedContainerTemplatePac
          * @see ContainerTemplate#localSet(ContainerLocal, Object)
          * @see ContainerBuilder#localSet(ContainerLocal, Object)
          */
-        public <T> Configurator localSet(ContainerLocal<T> local, T value) {
-            pack = pack.withUse(c -> c.localSet(local, value));
+        public <T> Configurator localSet(ContainerBuildLocal<T> local, T value) {
+            pack = pack.withUse(c -> c.setLocal(local, value));
             return this;
         }
 

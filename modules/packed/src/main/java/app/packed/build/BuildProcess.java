@@ -15,6 +15,9 @@
  */
 package app.packed.build;
 
+import java.util.Optional;
+
+import app.packed.assembly.Assembly;
 import internal.app.packed.build.PackedBuildProcess;
 
 /**
@@ -33,10 +36,12 @@ import internal.app.packed.build.PackedBuildProcess;
 //Altsaa vi har jo altid en rod taenker jeg. Men saa kan vi have tasks som er delayed??
 //Og codegen er jo noget andet... Er ikke sikker på vi registrere de tasks som mirrors
 //Har vi en forrest???
-public interface BuildProcess {
+public sealed interface BuildProcess permits PackedBuildProcess {
 
     /** { @return the unique build process id} */
     long processId();
+
+    Optional<Class<? extends Assembly>> currentAssembly();
 
     static BuildProcess current() {
         return PackedBuildProcess.get();

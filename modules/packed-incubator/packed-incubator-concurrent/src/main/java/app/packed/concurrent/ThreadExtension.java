@@ -24,6 +24,7 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanIntrospector;
 import app.packed.binding.UnwrappedBindableVariable;
+import app.packed.context.ContextTemplate;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
@@ -32,7 +33,6 @@ import app.packed.operation.OperationTemplate;
 import internal.app.packed.concurrent.ExecutorConfiguration;
 import internal.app.packed.concurrent.ScheduleImpl;
 import internal.app.packed.concurrent.SchedulingTaskManager;
-import internal.app.packed.context.publish.ContextTemplate;
 
 /**
  * This extension allows for multiple threads within an application.
@@ -85,7 +85,7 @@ public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
         BeanConfiguration b = schedulingBean;
         if (b == null) {
             b = schedulingBean = provide(SchedulingTaskManager.class);
-            b.bindInstance(ExecutorConfiguration.class, main().scheduler);
+            b.bindServiceInstance(ExecutorConfiguration.class, main().scheduler);
         }
         return b;
     }

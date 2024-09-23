@@ -40,7 +40,7 @@ public class BaseAssemblyTest extends AppAppTest {
     public void notResuableLink() {
         HelloWorldAssembly hwa = new HelloWorldAssembly();
         App.run(hwa);
-        assertThatThrownBy(() -> link(hwa)).isExactlyInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> link("child", hwa)).isExactlyInstanceOf(IllegalStateException.class);
     }
 
     /** Tests that a assembly cannot link itself. */
@@ -49,7 +49,7 @@ public class BaseAssemblyTest extends AppAppTest {
         BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {
-                link(this);
+                link("child", this);
             }
         };
         assertThatThrownBy(() -> App.run(b)).isExactlyInstanceOf(IllegalStateException.class);

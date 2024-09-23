@@ -1,12 +1,12 @@
 package app.packed.concurrent;
 
-import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.context.Context;
+import app.packed.context.ContextualServiceProvider;
 
 /**
  * A context object available for scheduling.
  */
-@BindingClassBeanTrigger(extension = ThreadExtension.class, requiresContext = SchedulingContext.class)
+@ContextualServiceProvider(extension = ThreadExtension.class, requiresContext = SchedulingContext.class)
 public interface SchedulingContext extends Context<ThreadExtension> {
 
     /** {@return cancel future invocation of the scheduled operations. In progress operations will be allowed to finish} */

@@ -3,7 +3,7 @@ package internal.app.packed.extension;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.bean.BeanIntrospector;
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
@@ -11,14 +11,12 @@ import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
-import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.handlers.ExtensionHandlers;
-import internal.app.packed.service.ServiceNamespaceHandle;
-import internal.app.packed.util.AbstractTreeNode;
+import internal.app.packed.service.MainServiceNamespaceHandle;
 
 /**
  * Internal configuration of an extension.
@@ -28,7 +26,7 @@ import internal.app.packed.util.AbstractTreeNode;
  * This class implements {@link Comparable} in order to provide a deterministic order between extensions in the same
  * container.
  */
-public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> implements BuildLocalSource, AuthoritySetup, Comparable<ExtensionSetup> {
+public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> implements BuildLocalSource, Comparable<ExtensionSetup> {
 
     /** The container where the extension is used. */
     public final ContainerSetup container;
@@ -44,7 +42,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     public final ExtensionModel model;
 
     /** The extension's injection manager. */
-    private ServiceNamespaceHandle sm;
+    private MainServiceNamespaceHandle sm;
 
     /** The extension realm this extension is a part of. */
     public final ExtensionTree tree;
@@ -60,37 +58,26 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
      *            the type of extension this setup class represents
      */
     private ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension<?>> extensionType) {
-        super(parent);
+        this(parent, container, extensionType, parent == null ? new ExtensionTree(container.application, extensionType) : parent.tree);
+    }
+
+    private ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension<?>> extensionType, ExtensionTree tree) {
+        super(parent, tree.servicesToResolve);
         this.container = requireNonNull(container);
         this.extensionType = requireNonNull(extensionType);
-        if (parent == null) {
-            this.tree = new ExtensionTree(container.application, extensionType);
-
-            // this.sm = new ServiceNamespaceHandle(null, null);
-        } else {
-            this.tree = parent.tree;
-            // this.sm = new ServiceNamespaceHandle(parent.sm, null);
-        }
+        this.tree = requireNonNull(tree);
         this.model = requireNonNull(tree.model);
     }
 
-    public ServiceNamespaceHandle sm() {
-        ServiceNamespaceHandle s = sm;
-        if (s == null) {
-            ServiceNamespaceHandle par = treeParent == null ? null : treeParent.sm();
-            ExtensionSetup base = ExtensionSetup.crack(container.base());
-            ExtensionHandle<BaseExtension> eh = new PackedExtensionHandle<>(base);
-
-            s = this.sm = eh.namespaceLazy(ServiceNamespaceHandle.NT, extensionType.getSimpleName() + "#main", inst -> {
-                return inst.install(ii -> new ServiceNamespaceHandle(ii, par, container));
-            });
-        }
-        return s;
+    /** {@inheritDoc} */
+    @Override
+    public BuildActor authority() {
+        return tree.model.realm();
     }
 
     public void closeApplication() {
-        tree.isConfigurable = false;
         ExtensionHandlers.invokeExtensionOnAssemblyClose(instance);
+        tree.isConfigurable = false;
         closeApplication0();
     }
 
@@ -100,15 +87,11 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         for (ExtensionSetup child = treeFirstChild; child != null; child = child.treeNextSibling) {
             child.closeApplication0();
         }
-        if (sm != null) {
-            sm.verify();
+        // Only resolve services when we are at the root extension
+        if (treeParent == null) {
+            resolve();
         }
-    }
 
-    /** Call {@link Extension#onAssemblyClose()}. */
-    public void invokeExtensionOnAssemblyClose() {
-        container.onAssemblyClose(this);
-        ExtensionHandlers.invokeExtensionOnAssemblyClose(instance);
     }
 
     /** {@inheritDoc} */
@@ -138,16 +121,6 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         return d;
     }
 
-    public static ExtensionSetup crack(Extension<?> extension) {
-        requireNonNull(extension, "extension is null");
-        return ExtensionHandlers.getExtensionHandle(extension);
-    }
-
-    public static PackedExtensionUseSite crack(ExtensionPoint<?> extensionPoint) {
-        requireNonNull(extensionPoint, "extensionPoint is null");
-        return ExtensionHandlers.getExtensionPointPackedExtensionUseSite(extensionPoint);
-    }
-
     /**
      * Returns the extension instance.
      *
@@ -163,10 +136,22 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         return e;
     }
 
+    /** Call {@link Extension#onAssemblyClose()}. */
+    public void invokeExtensionOnAssemblyClose() {
+        container.onAssemblyClose(this);
+        ExtensionHandlers.invokeExtensionOnAssemblyClose(instance);
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean isConfigurable() {
         return tree.isConfigurable;
+    }
+
+    /** {@return a map of locals for the bean} */
+    @Override
+    public BuildLocalMap locals() {
+        return container.locals();
     }
 
     /**
@@ -196,10 +181,17 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         return mirror;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public BuildAuthority authority() {
-        return tree.model.realm();
+    public MainServiceNamespaceHandle sm() {
+        MainServiceNamespaceHandle s = sm;
+        if (s == null) {
+            MainServiceNamespaceHandle par = treeParent == null ? null : treeParent.sm();
+            ExtensionHandle<BaseExtension> eh = new PackedExtensionHandle<>(container.base());
+
+            s = this.sm = eh.namespaceLazy(MainServiceNamespaceHandle.TEMPLATE, extensionType.getSimpleName() + "#main", inst -> {
+                return inst.install(ii -> new MainServiceNamespaceHandle(ii, par, container));
+            });
+        }
+        return s;
     }
 
     /** {@inheritDoc} */
@@ -208,8 +200,18 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         return "Extension: " + extensionType.getCanonicalName();
     }
 
+    public static ExtensionSetup crack(Extension<?> extension) {
+        requireNonNull(extension, "extension is null");
+        return ExtensionHandlers.getExtensionHandle(extension);
+    }
+
+    public static PackedExtensionUseSite crack(ExtensionPoint<?> extensionPoint) {
+        requireNonNull(extensionPoint, "extensionPoint is null");
+        return ExtensionHandlers.getExtensionPointPackedExtensionUseSite(extensionPoint);
+    }
+
     /**
-     * Installs a new extension in the specified container.
+     * Create a new extension in the specified container.
      *
      * @param extensionType
      *            the type of extension to install
@@ -219,17 +221,20 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
      *            the extension that requested the extension or null if user
      * @return the new extension
      */
-    public static ExtensionSetup install(Class<? extends Extension<?>> extensionType, ContainerSetup container, @Nullable ExtensionSetup requestedByExtension) {
-        // Install the extension recursively into all ancestors in the same application (if not already installed)
+    public static ExtensionSetup newExtension(Class<? extends Extension<?>> extensionType, ContainerSetup container, @Nullable ExtensionSetup requestedByExtension) {
+        // Install the extension recursively into all container ancestors in the same application (if not already installed)
         ExtensionSetup extensionParent = container.isApplicationRoot() ? null : container.treeParent.useExtension(extensionType, requestedByExtension);
 
+        // Create the new extension
         ExtensionSetup extension = new ExtensionSetup(extensionParent, container, extensionType);
 
+        // Create the new extension instance, using a MethodHandle
         Extension<?> instance = extension.instance = extension.model.newInstance(extension);
 
         // Add the extension to the container's map of extensions
         container.extensions.put(extensionType, extension);
 
+        // If the container is the root of an assembly, add it there as well
         if (container.isAssemblyRoot()) {
             container.assembly.extensions.add(extension);
         }
@@ -237,48 +242,5 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         // Invoke Extension#onNew() before returning the extension
         ExtensionHandlers.invokeExtensionOnNew(instance);
         return extension;
-    }
-
-    /** {@return a map of locals for the bean} */
-    @Override
-    public BuildLocalMap locals() {
-        return container.locals();
-    }
-
-    /** A single instance of this class exists per extension per application. */
-    public static final class ExtensionTree {
-
-        /**
-         * The extension id. This id may be used when ordering extensions if there are multiple extensions with the same
-         * canonically name and extension depth.
-         */
-        private final int applicationExtensionId;
-
-        /** Whether or not this type of extension is still configurable. */
-        private boolean isConfigurable = true;
-
-        /** A model of the extension. */
-        private final ExtensionModel model;
-
-        public final String name;
-
-        /**
-         * Creates a new ExtensionTree.
-         *
-         * @param container
-         *            the root container
-         * @param extensionType
-         *            the type of extension
-         */
-        private ExtensionTree(ApplicationSetup application, Class<? extends Extension<?>> extensionType) {
-            this.applicationExtensionId = application.extensionIdCounter++;
-            this.model = ExtensionModel.of(extensionType);
-            String name = model.name();
-            int suffix = 1;
-            while (application.extensions.putIfAbsent(name, extensionType) != null) {
-                name = model.name() + suffix++;
-            }
-            this.name = name;
-        }
     }
 }

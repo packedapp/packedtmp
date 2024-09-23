@@ -47,6 +47,7 @@ import app.packed.operation.OperationMirror;
 // SExt.schedule(Op<?>)
 // @Schedule foo() on SExt.registerScheduler(Bean) ->OperationSpan
 // @Schedule
+// Class? than we need handle...
 public interface ContextMirror extends BuildMirror {
 
 //    default Author author() {

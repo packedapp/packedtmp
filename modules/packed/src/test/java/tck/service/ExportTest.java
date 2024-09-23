@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.binding.Key;
 import app.packed.service.ServiceLocator;
-import app.packed.service.ServiceableBeanConfiguration;
+import app.packed.service.ProvideableBeanConfiguration;
 import tck.ServiceLocatorAppTest;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
@@ -63,7 +63,7 @@ public class ExportTest extends ServiceLocatorAppTest {
 
     @Test
     public void export() {
-        ServiceableBeanConfiguration<A> sc = installInstance(A0).export();
+        ProvideableBeanConfiguration<A> sc = installInstance(A0).export();
         testPresent(app(), Key.of(A.class), e -> e == A0);
 
         installInstance(A0).export();

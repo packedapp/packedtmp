@@ -18,7 +18,7 @@ package sandbox.application;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
-import app.packed.component.guest.FromGuest;
+import app.packed.component.guest.FromComponentGuest;
 import app.packed.container.ContainerTemplate;
 
 /**
@@ -53,11 +53,11 @@ import app.packed.container.ContainerTemplate;
 public final class Te {
 
     /** The bootstrap app. */
-    private static final BootstrapApp<Holder> BOOTSTRAP = ApplicationTemplate.of(Holder.class, c -> c.container(ContainerTemplate.MANAGED)).newBootstrapApp();
+    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(ApplicationTemplate.of(Holder.class, c -> c.container(ContainerTemplate.MANAGED)));
 
     public static void main(String[] args) {
         BOOTSTRAP.getClass();
     }
 
-    record Holder(@FromGuest ApplicationMirror am) {}
+    record Holder(@FromComponentGuest ApplicationMirror am) {}
 }

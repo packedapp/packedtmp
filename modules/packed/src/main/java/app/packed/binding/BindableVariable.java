@@ -122,7 +122,7 @@ public sealed interface BindableVariable extends BeanElement permits PackedBinda
      *             if the variable has already been bound.
      * @see #bindGeneratedConstant(Supplier)
      */
-    BindableVariable bindInstant(@Nullable Object value);
+    BindableVariable bindInstance(@Nullable Object value);
 
     /**
      * @param index

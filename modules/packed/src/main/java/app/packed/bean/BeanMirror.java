@@ -12,10 +12,9 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
-import app.packed.bean.BeanLocal.Accessor;
-import app.packed.bean.BeanTrigger.InheritableBindingClassBeanTrigger;
+import app.packed.bean.BeanBuildLocal.Accessor;
 import app.packed.binding.Key;
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 import app.packed.build.action.BuildActionMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
@@ -24,12 +23,13 @@ import app.packed.context.Context;
 import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
+import app.packed.context.InheritableContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.service.mirror.ServiceProviderMirror;
-import app.packed.service.mirror.oldMaybe.OverriddenServiceBindingMirror;
+import app.packed.service.mirror.oldMaybe.BeanServiceBindingMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.operation.OperationSetup;
@@ -38,10 +38,10 @@ import sandbox.operation.mirror.DependenciesMirror;
 /**
  * A mirror of a bean.
  * <p>
- * An instance of BeanMirror can be injected at runtime simply by declaring a dependency on it.
+ * An instance of BeanMirror (or a subclass hereof) can be injected at runtime simply by declaring a dependency on it.
  */
-@InheritableBindingClassBeanTrigger(extension = BaseExtension.class)
-public non-sealed class BeanMirror implements Accessor , ComponentMirror , ContextualizedElementMirror , ContextScopeMirror , ServiceProviderMirror {
+@InheritableContextualServiceProvider(extension = BaseExtension.class)
+public non-sealed class BeanMirror implements Accessor, ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderMirror {
 
     /** The handle of the bean we are mirroring. */
     private final BeanHandle<?> handle;
@@ -111,10 +111,9 @@ public non-sealed class BeanMirror implements Accessor , ComponentMirror , Conte
         return ContextSetup.allMirrorsFor(handle.bean);
     }
 
-    /** {@return the owner of the bean.} */
-    // was owner. Maybe owner again
-    public final BuildAuthority declaredBy() {
-        return handle.bean.owner();
+    /** {@return the extension that installed the bean, typically BaseExtension} */
+    public final Class<? extends Extension<?>> installedByExtension() {
+        return handle.bean.installedBy.extensionType;
     }
 
     /** {@return the dependencies this bean introduces.} */
@@ -224,8 +223,13 @@ public non-sealed class BeanMirror implements Accessor , ComponentMirror , Conte
     }
 
     @SuppressWarnings("exports")
-    public Map<Key<?>, Collection<OverriddenServiceBindingMirror>> overriddenServices() {
+    public Map<Key<?>, Collection<BeanServiceBindingMirror>> overriddenServices() {
         throw new UnsupportedOperationException();
+    }
+
+    /** {@return the owner of the bean.} */
+    public final BuildActor owner() {
+        return handle.bean.owner();
     }
 
     /** {@return any proxy the bean may have.} */
@@ -396,13 +400,6 @@ interface SSandbox {
         // Kunne man forstille sig at en bean havde 2 constructors??
         // Som man valgte af paa runtime????
         throw new UnsupportedOperationException();
-    }
-
-    default Class<? extends Extension<?>> installedVia() {
-        // The extension that performed the actual installation of the bean
-        // Den burde ligge paa Component???
-        // Nah
-        return BaseExtension.class;
     }
 
     // No instances, Instantiable, ConstantInstance

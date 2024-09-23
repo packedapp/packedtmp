@@ -21,7 +21,7 @@ import app.packed.application.ApplicationTemplate;
 import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
-import app.packed.component.guest.FromGuest;
+import app.packed.component.guest.FromComponentGuest;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
@@ -59,7 +59,7 @@ import app.packed.util.Result;
 public final class JobAppOld {
 
     /** The bootstrap app. */
-    private static final BootstrapApp<Holder> BOOTSTRAP = ApplicationTemplate.of(Holder.class, c -> c.container(ContainerTemplate.MANAGED)).newBootstrapApp();
+    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(ApplicationTemplate.of(Holder.class, c -> c.container(ContainerTemplate.MANAGED)));
 
     @SuppressWarnings("unchecked")
     public static <T> Result<T> compute(Class<T> resultType, Assembly assembly, Wirelet... wirelets) {
@@ -70,19 +70,19 @@ public final class JobAppOld {
         throw new UnsupportedOperationException();
     }
 
+    public static void main(String[] args) {
+        BOOTSTRAP.getClass();
+    }
+
     public static <T> T run(Class<T> resultType, Assembly assembly, Wirelet... wirelets) {
         Holder result = BOOTSTRAP.expectsResult(resultType).launch(RunState.TERMINATED, assembly, wirelets);
         Object t = result.result.resultNow();
         return resultType.cast(t);
     }
 
-    public static void main(String[] args) {
-        BOOTSTRAP.getClass();
-    }
-
     static <T> Future<T> runAsync(Class<?> resultType, Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    record Holder(@FromGuest Future<?> result) {}
+    record Holder(@FromComponentGuest Future<?> result) {}
 }

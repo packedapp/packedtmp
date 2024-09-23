@@ -23,13 +23,13 @@ import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
+import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension;
 import app.packed.operation.Op1;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
-import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.container.ContainerTemplateLink;
 import sandbox.extension.context.ContextSpanKind;
 
@@ -91,6 +91,15 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
 
     public interface Configurator {
 
+        /**
+         * Add the specified tags to the application
+         *
+         * @param tags
+         *            the tags to add
+         * @return this configurator
+         */
+        Configurator componentTag(String... tags);
+
         default <T> Configurator carrierProvideConstant(Class<T> key, T arg) {
             return carrierProvideConstant(Key.of(key), arg);
         }
@@ -122,7 +131,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
         // Har kun visibility for the installing extension
         Configurator lifetimeOperationAddContext(int index, ContextTemplate template);
 
-        default <T> Configurator localSet(ContainerLocal<T> containerLocal, T value) {
+        default <T> Configurator localSet(ContainerBuildLocal<T> containerLocal, T value) {
             throw new UnsupportedOperationException();
         }
 
@@ -163,6 +172,8 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
      *      app.packed.extension.ExtensionPoint.UseSite)
      */
     sealed interface Installer permits PackedContainerInstaller {
+
+        Installer componentTag(String... tags);
 
         /**
          * Provides constants per Carrier Instance for this particular container builder
@@ -265,7 +276,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          */
         // Do we allow non-container scope??? I don't think so
         // initializeLocalWith??
-        <T> Installer localSet(ContainerLocal<T> containerLocal, T value);
+        <T> Installer setLocal(ContainerBuildLocal<T> containerLocal, T value);
 
         /**
          * <p>

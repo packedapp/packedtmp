@@ -51,6 +51,10 @@ import internal.app.packed.util.StringFormatter;
  */
 final record BeanScannerConstructor(Constructor<?> constructor, OperationType operationType) {
 
+    // Probably want to use some some reference shit.
+    // This will stay around forever
+    // Maybe we need a wirelet that says CacheAsMuchAsPossible we will be building a lot of application
+
     /** A cache of constructor. */
     static final ClassValue<BeanScannerConstructor> CACHE = new ClassValue<>() {
 

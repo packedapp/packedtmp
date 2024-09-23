@@ -23,7 +23,7 @@ import java.util.TreeSet;
 import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.assembly.DelegatingAssembly;
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 import app.packed.container.ContainerHandle;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.util.Nullable;
@@ -39,10 +39,9 @@ import internal.app.packed.handlers.AssemblyHandlers;
 import internal.app.packed.handlers.NamespaceHandlers;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.service.CircularServiceDependencyChecker;
-import internal.app.packed.util.AbstractTreeNode;
 
 /** The internal configuration of an assembly. */
-public final class AssemblySetup extends AbstractTreeNode<AssemblySetup> implements BuildLocalSource, AuthoritySetup {
+public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implements BuildLocalSource {
 
     /** The assembly instance. */
     public final Assembly assembly;
@@ -89,7 +88,7 @@ public final class AssemblySetup extends AbstractTreeNode<AssemblySetup> impleme
      *            the assembly instance
      */
     private AssemblySetup(PackedContainerInstaller installer, Assembly assembly) {
-        super(installer.parent == null ? null : installer.parent.assembly);
+        super(installer.parent == null ? null : installer.parent.assembly, new ArrayList<>());
         assert (!(assembly instanceof DelegatingAssembly));
         this.assembly = assembly;
         this.model = AssemblyModel.of(assembly.getClass());
@@ -107,10 +106,47 @@ public final class AssemblySetup extends AbstractTreeNode<AssemblySetup> impleme
         return as;
     }
 
+//    public void resolveServicesSelf() {
+//        resolveServices(this);
+//    }
+
+//
+//    public void resolveServices(AuthoritySetup<?> authority) {
+//        ArrayList<ServiceBindingSetup> unresolved = new ArrayList<>();
+//        resolveServices(authority, unresolved, container);
+//        for (ServiceBindingSetup sbs : unresolved) {
+//            System.out.println(sbs.operation + " for " + sbs.key);
+//            new Exception().printStackTrace();
+//        }
+//    }
+//
+//    // Tro
+//    private void resolveServices(AuthoritySetup<?> authority, ArrayList<ServiceBindingSetup> unresolved, ContainerSetup container) {
+//        // TODO add
+//        for (BeanSetup b : container.beans) {
+//            if (b.owner == authority) {
+//                for (OperationSetup o : b.operations) {
+//                    for (BindingSetup bi : o.bindings) {
+//                        if (bi instanceof ServiceBindingSetup sbs) {
+//                            ServiceProviderSetup sp = sbs.provider = sbs.resolve();
+//                            if (sp == null && sbs.isRequired) {
+//                                unresolved.add(sbs);
+//                            }
+//
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        for (Iterator<ContainerSetup> iterator = container.childIterator(); iterator.hasNext();) {
+//            resolveServices(authority, unresolved, iterator.next());
+//        }
+//    }
+
     /** {@inheritDoc} */
     @Override
-    public BuildAuthority authority() {
-        return BuildAuthority.application();
+    public BuildActor authority() {
+        return BuildActor.application();
     }
 
     /**
@@ -164,7 +200,12 @@ public final class AssemblySetup extends AbstractTreeNode<AssemblySetup> impleme
             ArrayList<ExtensionSetup> list = new ArrayList<>(extensions.size());
 
             container.onAssemblyClose(container.assembly); // onCloseAss on bean
+            container.assembly.resolve();
+
             for (ExtensionSetup e = extensions.pollLast(); e != null; e = extensions.pollLast()) {
+                if (e.treeParent!=null) {
+                    throw new Error();
+                }
                 list.add(e);
                 for (NamespaceHandle<?, ?> s : container.application.namespaces.values()) {
                     NamespaceSetup ns = NamespaceSetup.crack(s);
@@ -197,9 +238,13 @@ public final class AssemblySetup extends AbstractTreeNode<AssemblySetup> impleme
             // Similar to above, except we do not call Extension#onApplicationClose
             container.onAssemblyClose(container.assembly); // onCloseAss on bean
 
-            for (ExtensionSetup e = extensions.pollLast(); e != null; e = extensions.pollLast()) {
+            // Resolve all service
+            container.assembly.resolve();
 
+            for (ExtensionSetup e = extensions.pollLast(); e != null; e = extensions.pollLast()) {
                 e.invokeExtensionOnAssemblyClose();
+
+                // Resolve all service
             }
             isConfigurable = false;
             assemblyBuildFinishedTime = System.nanoTime();

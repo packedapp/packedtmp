@@ -15,6 +15,8 @@
  */
 package internal.app.packed.bean.scanning;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
@@ -47,22 +49,21 @@ public final class PackedBeanField extends PackedBeanElement implements BeanFiel
     /** Annotations on the field. */
     private final PackedAnnotationList annotations;
 
-    /** The extension that can create new operations from the member. */
-    private final BeanScannerExtensionRef extension;
-
     /** The field. */
     public final Field field;
 
     /** Hooks on the field */
     private final PackedAnnotationList hooks;
 
+    final BeanScannerParticipant participant;
+
     // Field, FieldAnnotations, Type, TypeAnnotations
     PackedBeanField(BeanScanner scanner, Field field, PackedAnnotationList annotations, PackedAnnotationList hookAnnotations, HookOnFieldAnnotation... hooks) {
-        this.extension = scanner.computeContributor(hooks[0].extensionType());
+        participant= scanner.computeContributor(hooks[0].extensionType());
         this.field = field;
         this.annotations = annotations;
 
-        boolean allowGet = extension.hasFullAccess();
+        boolean allowGet = participant.hasFullAccess();
         boolean allowSet = allowGet;
         for (HookOnFieldAnnotation annotatedField : hooks) {
             allowGet |= annotatedField.isGettable();
@@ -79,10 +80,16 @@ public final class PackedBeanField extends PackedBeanElement implements BeanFiel
         return annotations;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public BeanSetup bean() {
+        return participant.scanner.bean;
+    }
+
     /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */
     void checkConfigurable() {
-        if (!extension.extension.container.assembly.isConfigurable()) {
-            throw new IllegalStateException("This method must be called before the assembly is closed");
+        if (!participant.extension.isConfigurable()) {
+            throw new IllegalStateException("This method must be called before the extension is closed");
         }
     }
 
@@ -107,11 +114,15 @@ public final class PackedBeanField extends PackedBeanElement implements BeanFiel
     /** {@inheritDoc} */
     @Override
     public OperationTemplate.Installer newGetOperation(OperationTemplate template) {
+        requireNonNull(template, "template is null");
         checkConfigurable();
-        MethodHandle mh = extension.scanner.unreflectGetter(field);
+
+        // Get A direct method handle to a getter for the field
+        MethodHandle directMH = participant.scanner.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
+
         template = template.reconfigure(c -> c.returnType(field.getType()));
-        return newOperation(template, mh, accessMode);
+        return newOperation(template, directMH, accessMode);
     }
 
     private OperationTemplate.Installer newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
@@ -119,29 +130,35 @@ public final class PackedBeanField extends PackedBeanElement implements BeanFiel
         OperationType ft = OperationType.fromField(field, accessMode);
 
         // We should be able to create the method handle lazily
-        return t.newInstaller(extension, mh, new OperationFieldTarget(field, accessMode), ft);
+        return t.newInstaller(participant, mh, new OperationFieldTarget(field, accessMode), ft);
     }
 
     /** {@inheritDoc} */
     @Override
     public OperationTemplate.Installer newOperation(OperationTemplate template, VarHandle.AccessMode accessMode) {
+        requireNonNull(template, "template is null");
         checkConfigurable();
-        VarHandle varHandle = extension.scanner.unreflectVarHandle(field);
+
+        VarHandle varHandle = participant.scanner.unreflectVarHandle(field);
         MethodHandle mh = varHandle.toMethodHandle(accessMode);
+
         return newOperation(template, mh, accessMode);
     }
 
     /** {@inheritDoc} */
     @Override
     public OperationTemplate.Installer newSetOperation(OperationTemplate template) {
+        requireNonNull(template, "template is null");
         checkConfigurable();
-        MethodHandle mh = extension.scanner.unreflectSetter(field);
+
+        MethodHandle mh = participant.scanner.unreflectSetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
+
         return newOperation(template, mh, accessMode);
     }
 
     void onHook() {
-        extension.introspector.activatedByAnnotatedField(hooks, this);
+        participant.introspector.activatedByAnnotatedField(hooks, this);
     }
 
     /** {@inheritDoc} */
@@ -154,11 +171,5 @@ public final class PackedBeanField extends PackedBeanElement implements BeanFiel
     @Override
     public Variable variable() {
         return new PackedVariable(annotations, field.getGenericType());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanSetup bean() {
-        return extension.scanner.bean;
     }
 }

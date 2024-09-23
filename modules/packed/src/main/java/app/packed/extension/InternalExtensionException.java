@@ -53,4 +53,8 @@ public class InternalExtensionException extends BuildException {
     public InternalExtensionException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public InternalExtensionException(Class<? extends Extension<?>> extension, String message) {
+        super(extension.getSimpleName() + ": " + message);
+    }
 }

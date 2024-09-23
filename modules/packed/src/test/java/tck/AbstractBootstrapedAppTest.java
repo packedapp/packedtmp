@@ -30,14 +30,14 @@ import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationMirror;
 import app.packed.runtime.RunState;
-import app.packed.service.ServiceableBeanConfiguration;
+import app.packed.service.ProvideableBeanConfiguration;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.container.wirelets.WireletSelectionArray;
@@ -80,15 +80,15 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         return configuration().use(HookTestingExtension.class);
     }
 
-    protected final <T> ServiceableBeanConfiguration<T> install(Class<T> implementation) {
+    protected final <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
         return base().install(implementation);
     }
 
-    protected final <T> ServiceableBeanConfiguration<T> install(Op<T> implementation) {
+    protected final <T> ProvideableBeanConfiguration<T> install(Op<T> implementation) {
         return base().install(implementation);
     }
 
-    protected final <T> ServiceableBeanConfiguration<T> installInstance(T instance) {
+    protected final <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
         return base().installInstance(instance);
     }
 
@@ -110,8 +110,8 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         return app;
     }
 
-    protected final void link(Assembly assembly, Wirelet... wirelets) {
-        base().link(assembly, wirelets);
+    protected final void link(String name, Assembly assembly, Wirelet... wirelets) {
+        base().link(name, assembly, wirelets);
     }
 
     /** {@return a mirror for the application.} */
@@ -157,7 +157,7 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         }
 
         public BeanMirror findSingleBean(ContainerMirror c) {
-            List<BeanMirror> beans = c.beans().filter(b -> b.declaredBy() == BuildAuthority.application()).toList();
+            List<BeanMirror> beans = c.beans().filter(b -> b.owner() == BuildActor.application()).toList();
             assertThat(beans).hasSize(1);
             return beans.get(0);
         }

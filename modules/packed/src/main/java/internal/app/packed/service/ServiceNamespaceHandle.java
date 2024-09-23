@@ -15,143 +15,57 @@
  */
 package internal.app.packed.service;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Iterator;
+import java.util.Set;
 
-import app.packed.bean.BeanSourceKind;
 import app.packed.binding.Key;
-import app.packed.binding.KeyAlreadyInUseException;
+import app.packed.binding.KeyAlreadyProvidedException;
 import app.packed.extension.BaseExtension;
-import app.packed.extension.ExtensionContext;
 import app.packed.namespace.NamespaceHandle;
-import app.packed.namespace.NamespaceTemplate;
-import app.packed.service.ServiceContract;
-import app.packed.service.ServiceLocator;
+import app.packed.namespace.NamespaceTemplate.Installer;
 import app.packed.service.ServiceNamespaceConfiguration;
+import app.packed.service.ServiceNamespaceMirror;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.binding.BindingResolution;
-import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
-import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.binding.BindingAccessor;
+import internal.app.packed.binding.BindingAccessor.FromLifetimeArena;
+import internal.app.packed.binding.BindingAccessor.FromOperationResult;
+import internal.app.packed.handlers.ServiceHandlers;
+import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationTarget;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
-import internal.app.packed.util.CollectionUtil;
+import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderSetup;
+import internal.app.packed.service.util.SequencedServiceMap;
+import internal.app.packed.util.StringFormatter;
 
-/** Manages services in a single container. */
-public final class ServiceNamespaceHandle extends NamespaceHandle<BaseExtension, ServiceNamespaceConfiguration> {
+/**
+ *
+ */
+public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtension, ServiceNamespaceConfiguration> {
 
-    public static NamespaceTemplate NT = NamespaceTemplate.of(ServiceNamespaceHandle.class, c -> {});
+    /** All service providers in the namespace. */
+    final SequencedServiceMap<NamespaceServiceProviderSetup> providers = new SequencedServiceMap<>();
 
-    /** All entries in the service manager. This covers both bindings and service provisions. */
-    public final LinkedHashMap<Key<?>, ServiceSetup> entries = new LinkedHashMap<>();
-
-    // All provided services are automatically exported
-    public boolean exportAll;
-
-    /** A map of exported service method method handles, must be computed. */
-    @Nullable
-    private Map<Key<?>, MethodHandle> exportedServices;
-
-    /** Exported services from the container. */
-    public final LinkedHashMap<Key<?>, ExportedService> exports = new LinkedHashMap<>();
-
-    @Nullable
-    public final ServiceNamespaceHandle parent;
-
-    public ServiceNamespaceHandle(NamespaceTemplate.Installer installer, @Nullable ServiceNamespaceHandle parent, ContainerSetup container) {
+    /**
+     * @param installer
+     */
+    protected ServiceNamespaceHandle(Installer installer) {
         super(installer);
-        // For now we a ServiceLocator as the root of the application.
-        // Bridges
-        this.parent = parent;
-
-        if (container != null && container.isApplicationRoot()) {
-            container.application.addCodegenAction(() -> exportedServices = exportedServices());
-        }
     }
 
-    public void addBean(BeanSetup bean) {
-        provide(Key.of(bean.beanClass), bean.instanceAccessOperation(), bean.beanInstanceBindingProvider());
+    public Set<Key<?>> keys() {
+        return providers.keySet();
     }
 
-    public ServiceBindingSetup bind(Key<?> key, boolean isRequired, OperationSetup operation, int operationBindingIndex) {
-        ServiceSetup e = entries.computeIfAbsent(key, ServiceSetup::new);
-        return e.bind(isRequired, operation, operationBindingIndex);
+    /** {@inheritDoc} */
+    @Override
+    protected final ServiceNamespaceConfiguration newNamespaceConfiguration(BaseExtension e) {
+        return ServiceHandlers.newServiceNamespaceConfiguration(this, e);
     }
 
-    // 3 Muligheder -> Field, Method, BeanInstance
-    public ExportedService export(Key<?> key, OperationSetup operation) {
-        ExportedService es = new ExportedService(operation, key);
-        ExportedService existing = exports.putIfAbsent(es.key, es);
-        if (existing != null) {
-            // A service with the key has already been exported
-            throw new KeyAlreadyInUseException("Jmm " + es.key);
-        }
-//        es.operation.mirrorSupplier = h -> new ExportedServiceMirror(h, es);
-        return es;
-    }
-
-    public Map<Key<?>, MethodHandle> exportedServices() {
-        Map<Key<?>, MethodHandle> result = CollectionUtil.copyOf(exports, n -> {
-            MethodHandle mh;
-            OperationSetup o = n.operation;
-
-            int accessor = -1;
-            if (o.pot instanceof BeanAccessOperationTarget) {
-                accessor = o.bean.lifetimeStoreIndex;
-                // test if prototype bean
-                if (accessor == -1 && o.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
-                    o = o.bean.operations.first();
-                }
-            }
-            if (!(o.pot instanceof MemberOperationTarget) && o.bean.beanSourceKind == BeanSourceKind.INSTANCE) {
-                // It is a a constant
-                mh = MethodHandles.constant(Object.class, o.bean.beanSource);
-                mh = MethodHandles.dropArguments(mh, 0, ExtensionContext.class);
-            } else if (accessor >= 0) {
-                mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, accessor);
-            } else {
-                mh = o.generateMethodHandle();
-            }
-            mh = mh.asType(mh.type().changeReturnType(Object.class));
-            assert (mh.type().equals(MethodType.methodType(Object.class, ExtensionContext.class)));
-            return mh;
-        });
-        return result;
-    }
-
-    public ServiceContract newContract() {
-        ServiceContract.Builder builder = ServiceContract.builder();
-
-        // Add all exports
-        exports.keySet().forEach(k -> builder.provide(k));
-
-        // All all requirements
-        for (Entry<Key<?>, ServiceSetup> e : entries.entrySet()) {
-            ServiceSetup sme = e.getValue();
-            if (sme.provider() == null) {
-                if (sme.isRequired) {
-                    builder.require(e.getKey());
-                } else {
-                    builder.requireOptional(e.getKey());
-                }
-            }
-        }
-
-        return builder.build();
-    }
-
-    public ServiceLocator newExportedServiceLocator(ExtensionContext context) {
-        Map<Key<?>, MethodHandle> m = exportedServices;
-        if (m == null) {
-            throw new UnsupportedOperationException("Exported services not available");
-        }
-        return new PackedServiceLocator(context, m);
+    /** {@inheritDoc} */
+    @Override
+    protected final ServiceNamespaceMirror newNamespaceMirror() {
+        return ServiceHandlers.newServiceNamespaceMirror(this);
     }
 
     /**
@@ -166,41 +80,60 @@ public final class ServiceNamespaceHandle extends NamespaceHandle<BaseExtension,
      *            the operation that provides the service
      * @return a provided service
      */
-    public ServiceProviderSetup provide(Key<?> key, OperationSetup operation, BindingResolution resolution) {
-        ServiceSetup entry = entries.computeIfAbsent(key, ServiceSetup::new);
-
+    public NamespaceServiceProviderSetup provide(Key<?> key, OperationSetup operation, BindingAccessor resolution) {
+        // Have no idea what we are doing here
         if (resolution instanceof FromLifetimeArena fla) {
             if (key.rawType() != fla.type()) {
                 resolution = new FromLifetimeArena(fla.containerLifetime(), fla.index(), key.rawType());
             }
         }
-        // System.out.println(fla.);
-        // TODO Check same lifetime as the container, or own prototype service
 
-        // new Exception().printStackTrace();
-        ServiceProviderSetup provider = entry.setProvider(operation, resolution);
-
-        if (exportAll) {
-            export(key, operation);
+        // Check if we have an existing provider for the key
+        NamespaceServiceProviderSetup existing = providers.get(key);
+        if (existing != null) {
+            throw new KeyAlreadyProvidedException(provideDublicateProvideErrorMsg(existing, operation));
         }
 
-        return provider;
+        // Create a new service provider and add to the map of existing service providers
+        NamespaceServiceProviderSetup newProvider = new NamespaceServiceProviderSetup(key, this, operation, resolution);
+        providers.put(key, newProvider);
+        return newProvider;
     }
 
-    /**
-     * @param result
-     */
-    public void provideAll(Map<Key<?>, MethodHandle> result) {}
+    private String provideDublicateProvideErrorMsg(NamespaceServiceProviderSetup existingProvider, OperationSetup newOperation) {
+        OperationSetup existingOperation = existingProvider.operation();
 
-    public void verify() {
-        for (ServiceSetup e : entries.values()) {
-            e.verify();
+        Key<?> key = existingProvider.key();
+        // The same bean providing the same service
+        if (existingOperation.bean == newOperation.bean) {
+            return "This bean is already providing a service for " + key.toString() + ", beanClass = "
+                    + StringFormatter.format(existingOperation.bean.beanClass);
         }
+
+        if (existingProvider.binding() instanceof FromLifetimeArena) {
+            return "Cannot provide a service for " + key.toString() + ", as another bean of type " + StringFormatter.format(existingOperation.bean.beanClass)
+                    + " is already providing a service for the same key";
+
+            // return "Another bean of type " + format(existingTarget.bean.beanClass) + " is already providing a service for Key<" +
+            // key.toStringSimple() + ">";
+
+            // return "Another bean of type " + format(existingTarget.bean.beanClass) + " is already providing a service for Key<" +
+            // key.toStringSimple() + ">";
+        } else if (existingProvider.binding() instanceof FromOperationResult os) {
+            if (os.operation().target instanceof MemberOperationTarget m && m.target instanceof OperationMethodTarget t) {
+                String ss = StringFormatter.formatShortWithParameters(t.method());
+                return "A method " + ss + " is already providing a service for " + key;
+            }
+        }
+        return newOperation + " A service has already been bound for key " + key;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected ServiceNamespaceConfiguration newNamespaceConfiguration(BaseExtension e) {
-        throw new UnsupportedOperationException();
+    @Nullable
+    public NamespaceServiceProviderSetup provider(Key<?> key) {
+        return providers.get(key);
+    }
+
+    public Iterator<NamespaceServiceProviderSetup> providers() {
+        return providers.iterator();
     }
 }

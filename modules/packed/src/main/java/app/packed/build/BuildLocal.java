@@ -18,9 +18,9 @@ package app.packed.build;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.application.ApplicationLocal;
-import app.packed.bean.BeanLocal;
-import app.packed.container.ContainerLocal;
+import app.packed.application.ApplicationBuildLocal;
+import app.packed.bean.BeanBuildLocal;
+import app.packed.container.ContainerBuildLocal;
 import internal.app.packed.build.PackedBuildLocal;
 
 /**
@@ -52,7 +52,7 @@ import internal.app.packed.build.PackedBuildLocal;
 
 // Or ComponentLocal. Depends on where we end of with Authority, Assembly, and so on
 // BuildProcessLocal???
-public sealed interface BuildLocal<A, T> permits PackedBuildLocal, ApplicationLocal, ContainerLocal, BeanLocal {
+public sealed interface BuildLocal<A, T> permits PackedBuildLocal, ApplicationBuildLocal, ContainerBuildLocal, BeanBuildLocal {
 
     /**
      * Returns the current value of this local for the entity represented by the specified accessor.

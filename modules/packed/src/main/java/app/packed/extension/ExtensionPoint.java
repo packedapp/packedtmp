@@ -2,7 +2,7 @@ package app.packed.extension;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionUseSite;
 
@@ -96,6 +96,6 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     //// Er lidt underlig maaske med UseSite hvis man tager den som parameter
     //// Men vil ikke mere hvor man skal tage et ExtensionPointContext???
     public sealed interface ExtensionUseSite permits PackedExtensionUseSite {
-        BuildAuthority author();
+        BuildActor author();
     }
 }

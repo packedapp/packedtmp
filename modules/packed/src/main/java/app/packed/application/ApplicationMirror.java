@@ -9,11 +9,11 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.assembly.AssemblyMirror;
-import app.packed.bean.BeanTrigger.InheritableBindingClassBeanTrigger;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
+import app.packed.context.InheritableContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
@@ -43,8 +43,8 @@ import internal.app.packed.util.PackedTreeView;
  * Like many other mirrors classes the type of application mirror being returned can be specialized. See
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)} for details.
  */
-@InheritableBindingClassBeanTrigger(extension = BaseExtension.class)
-public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationLocal.Accessor {
+@InheritableContextualServiceProvider(extension = BaseExtension.class)
+public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationBuildLocal.Accessor {
 
     /** The application's handle. */
     private final ApplicationHandle<?, ?> handle;
@@ -80,6 +80,24 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         return handle.application.componentPath();
     }
 
+    // All mirrors "owned" by the user
+    public Stream<ComponentMirror> components() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * {@return an immutable set of tags that have been set on the application}
+     *
+     * @see ApplicationConfiguration#componentTag(String...)
+     * @see ApplicationHandle#componentTag(String...)
+     * @see ApplicationTemplate.Installer#componentTag(String...)
+     * @see ApplicationTemplate.Configurator#componentTag(String...)
+     **/
+    @Override
+    public Set<String> componentTags() {
+        return handle.componentTags();
+    }
+
     /** {@return a mirror of the root container in the application.} */
     public ContainerMirror container() {
         return handle.application.container().mirror();
@@ -88,30 +106,6 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     /** {@return a container tree mirror representing all the containers defined within the application.} */
     public TreeView<ContainerMirror> containers() {
         return new PackedTreeView<>(handle.application.container(), null, c -> c.mirror());
-    }
-
-    /** {@return a stream of all of the operations declared by the bean.} */
-    public Stream<OperationMirror> operations() {
-        return handle.application.container.stream().map(s -> s.mirror()).flatMap(ContainerMirror::operations);
-    }
-
-    /**
-     * Returns a stream of all of the operations declared by the bean with the specified mirror type.
-     *
-     * @param <T>
-     * @param operationType
-     *            the type of operations to include
-     * @return a collection of all of the operations declared by the bean of the specified type.
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
-        requireNonNull(operationType, "operationType is null");
-        return (Stream<T>) operations().filter(f -> operationType.isAssignableFrom(f.getClass()));
-    }
-
-    // All mirrors "owned" by the user
-    public Stream<ComponentMirror> components() {
-        throw new UnsupportedOperationException();
     }
 
     /** {@return a collection of all entry points the application may have.} */
@@ -161,17 +155,9 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
      * @see Wirelet#named(String)
      */
     public String name() {
-        return handle.application.container().name;
+        return handle.application.container().name();
     }
 
-    // ApplicationMirror
-    // All namespaces with root container
-    // All namespaces in the whole application
-    // All namespaces with a non-user owner
-
-    // Alternatively all keysspaces not owned by the application must be prefixed with $
-    // $FooExtension$main I think I like this better
-    // NamespaceKey <Type, Owner?, ContainerPath, Name>
 
     // Application owned namespace...
     // Optional???
@@ -189,6 +175,34 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
             }
         }
         return Optional.empty();
+    }
+
+    // ApplicationMirror
+    // All namespaces with root container
+    // All namespaces in the whole application
+    // All namespaces with a non-user owner
+
+    // Alternatively all keysspaces not owned by the application must be prefixed with $
+    // $FooExtension$main I think I like this better
+    // NamespaceKey <Type, Owner?, ContainerPath, Name>
+
+    /** {@return a stream of all of the operations declared by the bean.} */
+    public Stream<OperationMirror> operations() {
+        return handle.application.container.stream().map(s -> s.mirror()).flatMap(ContainerMirror::operations);
+    }
+
+    /**
+     * Returns a stream of all of the operations declared by the bean with the specified mirror type.
+     *
+     * @param <T>
+     * @param operationType
+     *            the type of operations to include
+     * @return a collection of all of the operations declared by the bean of the specified type.
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
+        requireNonNull(operationType, "operationType is null");
+        return (Stream<T>) operations().filter(f -> operationType.isAssignableFrom(f.getClass()));
     }
 
     public void print() {

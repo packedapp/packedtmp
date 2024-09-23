@@ -17,7 +17,6 @@ package app.packed.bean;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -183,65 +182,5 @@ public @interface BeanTrigger {
 //        // IDK, don't we just want to ignore it most of the time???
 //        // Nah maybe fail. People might think it does something
 //        boolean requiresVoidReturn() default false;
-    }
-
-    /**
-     *
-     * <p>
-     * If the type is a generic type. It will match it independent on any actual types. There is no support for for refining
-     * this. It must be handled in the extension.
-     */
-    @Target(ElementType.TYPE)
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    @BeanTrigger
-    // Type was replaced by Class. Because
-    // Have a version that is inheritable??? Will only work with class not interface, and will always point to the same
-    // class
-    public @interface BindingClassBeanTrigger {
-
-        /** The extension this hook is a part of. Must be located in the same module as the annotated type. */
-        // Maybe allow any module. And then have a String tags() section @BCA(extension=BaseExtension,
-        // tags="ProvideAlternative") @MyProvide
-        Class<? extends Extension<?>> extension();
-
-        /**
-         * Contexts that are required in order to use the binding class.
-         * <p>
-         * If this binding is attempted to be used without the context being available a
-         * {@link app.packed.context.NotInContextException} will be thrown.
-         * <p>
-         *
-         * If this method returns multiple contexts they will <strong>all</strong> be required.
-         *
-         * @return required contexts
-         */
-        Class<? extends Context<?>>[] requiresContext() default {};
-    }
-
-    @Target(ElementType.TYPE)
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    @BeanTrigger
-    @Inherited
-    public @interface InheritableBindingClassBeanTrigger {
-
-        /** The extension this hook is a part of. Must be located in the same module as the annotated type. */
-        // Maybe allow any module. And then have a String tags() section @BCA(extension=BaseExtension,
-        // tags="ProvideAlternative") @MyProvide
-        Class<? extends Extension<?>> extension();
-
-        /**
-         * Contexts that are required in order to use the binding class.
-         * <p>
-         * If this binding is attempted to be used without the context being available a
-         * {@link app.packed.context.NotInContextException} will be thrown.
-         * <p>
-         *
-         * If this method returns multiple contexts they will <strong>all</strong> be required.
-         *
-         * @return required contexts
-         */
-        Class<? extends Context<?>>[] requiresContext() default {};
     }
 }

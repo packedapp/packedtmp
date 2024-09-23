@@ -17,18 +17,18 @@ package tck.context;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.context.Context;
+import app.packed.context.ContextTemplate;
+import app.packed.context.ContextualServiceProvider;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
-import internal.app.packed.context.publish.ContextTemplate;
 import tck.AbstractBootstrapedAppTest;
 import tck.HookTestingExtension;
 
 /** Various context class and their templates that can be used where applicable. */
 public class ContextsHelpers {
 
-    @BindingClassBeanTrigger(extension = HookTestingExtension.class)
+    @ContextualServiceProvider(extension = HookTestingExtension.class)
     public record NoImplContext(int i) implements Context<HookTestingExtension> {
         /** A template. */
         public static final ContextTemplate CT = ContextTemplate.of(MethodHandles.lookup(), NoImplContext.class, NoImplContext.class);

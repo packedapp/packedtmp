@@ -32,14 +32,14 @@ import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
 public final class PackedNamespaceInstaller implements NamespaceTemplate.Installer {
     final PackedNamespaceTemplate template;
     final ExtensionSetup root;
-    final AuthoritySetup owner;
+    final AuthoritySetup<?> owner;
 
     public NamespaceSetup namespace;
 
     public NamespaceHandle<?, ?> handle;
     private final String name;
 
-    public PackedNamespaceInstaller(PackedNamespaceTemplate template, ExtensionSetup root, AuthoritySetup owner, String name) {
+    public PackedNamespaceInstaller(PackedNamespaceTemplate template, ExtensionSetup root, AuthoritySetup<?> owner, String name) {
         this.template = template;
         this.root = root;
         this.owner = owner;

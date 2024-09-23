@@ -17,7 +17,7 @@ package sandbox.extension.sandbox;
 
 import java.lang.invoke.VarHandle.AccessMode;
 
-import internal.app.packed.context.publish.ContextTemplate;
+import app.packed.context.ContextTemplate;
 
 /**
  *

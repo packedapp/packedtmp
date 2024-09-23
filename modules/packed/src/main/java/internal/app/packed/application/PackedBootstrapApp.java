@@ -31,35 +31,13 @@ import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.runtime.RunState;
+import internal.app.packed.ValueBased;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
-/**
- * A bootstrap app is a special type of application that can be used to create other (non-bootstrap) application.
- * <p>
- * Bootstrap apps cannot directly modify the applications that it bootstraps. It cannot, for example, install an
- * extension in the application. However, it can say it can only bootstrap applications that have the extension
- * installed, failing with a build exception if the developer does not install the extension. As such, the bootstrap app
- * can only setup requirements for the application that it bootstraps. It cannot directly make the needed changes to the
- * bootstrapped application.
- * <p>
- * Bootstrap applications are rarely used directly by users. Instead users typically use thin wrappers such as
- * {@link App} or {@link app.packed.service.ServiceLocator} to create new applications. However, if greater control of
- * the application is needed users may create their own bootstrap application.
- * <p>
- * Normally, you never create more than a single instance of a bootstrap app. Bootstrap applications are, unless
- * otherwise specified, safe to use concurrently.
- *
- * @param <A>
- *            the type of application this bootstrap app creates.
- * @see App
- * @see JobApp
- * @see DaemonApp
- * @see app.packed.cli.CliApp
- * @see app.packed.service.ServiceLocator
- */
-// ProducerApp??? It just generatesX
-public final /* value */ class PackedBootstrapApp<A> implements BootstrapApp<A> {
+/** Implementation of {@link BootstrapApp}. */
+@ValueBased
+public final class PackedBootstrapApp<A> implements BootstrapApp<A> {
 
     /** The application template for new applications. */
     private final PackedApplicationTemplate<A> template;
@@ -76,9 +54,9 @@ public final /* value */ class PackedBootstrapApp<A> implements BootstrapApp<A> 
 
     /** {@inheritDoc} */
     @Override
-    public BootstrapApp<A> expectsResult(Class<?> resultType) {
+    public PackedBootstrapApp<A> expectsResult(Class<?> resultType) {
         // Ideen er bootstrapApp.expectsResult(FooBar.class).launch(...);
-        return this;
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -88,7 +66,7 @@ public final /* value */ class PackedBootstrapApp<A> implements BootstrapApp<A> 
         ApplicationTemplate.Installer<A> installer = template.newInstaller(BuildGoal.IMAGE, wirelets);
 
         // Build the application
-        ApplicationHandle<?, ?> handle = installer.install(assembly, ApplicationHandle::new);
+        ApplicationHandle<?, ?> handle = installer.install(assembly, template.bootstrapHandleFactory());
 
         // Returns an image for the application
         return (BaseImage<A>) handle.image();
@@ -100,7 +78,8 @@ public final /* value */ class PackedBootstrapApp<A> implements BootstrapApp<A> 
         ApplicationTemplate.Installer<A> installer = template.newInstaller(BuildGoal.LAUNCH, wirelets);
 
         // Build the application
-        ApplicationHandle<?, ?> handle = installer.install(assembly, ApplicationHandle::new);
+        // Okay vi maa jo kunne saette default handle... Fx specificer mirror
+        ApplicationHandle<?, ?> handle = installer.install(assembly, template.bootstrapHandleFactory());
 
         // Launch the application
         ApplicationLaunchContext aic = ApplicationLaunchContext.launch(state, handle, null);
@@ -115,7 +94,7 @@ public final /* value */ class PackedBootstrapApp<A> implements BootstrapApp<A> 
         ApplicationTemplate.Installer<A> installer = template.newInstaller(BuildGoal.MIRROR, wirelets);
 
         // Build the application
-        ApplicationHandle<?, ?> handle = installer.install(assembly, ApplicationHandle::new);
+        ApplicationHandle<?, ?> handle = installer.install(assembly, template.bootstrapHandleFactory());
 
         // Returns a mirror for the application
         return handle.mirror();
@@ -127,10 +106,10 @@ public final /* value */ class PackedBootstrapApp<A> implements BootstrapApp<A> 
         ApplicationTemplate.Installer<A> installer = template.newInstaller(BuildGoal.VERIFY, wirelets);
 
         // Builds (and verifies) the application
-        installer.install(assembly, ApplicationHandle::new);
+        installer.install(assembly, template.bootstrapHandleFactory());
     }
 
-    static <A> BootstrapApp<A> fromTemplate(PackedApplicationTemplate<A> template) {
+    public static <A> BootstrapApp<A> of(PackedApplicationTemplate<A> template) {
         // Create new installer for the bootstrap app
         PackedApplicationInstaller<A> installer = PackedApplicationTemplate.newBootstrapAppInstaller();
 
@@ -141,13 +120,15 @@ public final /* value */ class PackedBootstrapApp<A> implements BootstrapApp<A> 
         installer.buildApplication(assembly);
 
         // Create the application template.
-        PackedApplicationTemplate<A> t = new PackedApplicationTemplate<>(template.guestClass(), null, template.containerTemplate(), assembly.mh);
+        PackedApplicationTemplate<A> t = new PackedApplicationTemplate<>(template.guestClass(), null, ApplicationHandle::new, template.containerTemplate(),
+                template.componentTags(), assembly.mh);
         return new PackedBootstrapApp<>(t);
     }
 
     /** The assembly responsible for building the bootstrap app. */
     private static class BootstrapAppAssembly extends BuildableAssembly {
 
+        /** The method handle to launch the application, the empty MH is used if A is Void.class */
         private MethodHandle mh = ApplicationLaunchContext.EMPTY_MH;
 
         private final PackedApplicationTemplate<?> template;
@@ -162,13 +143,15 @@ public final /* value */ class PackedBootstrapApp<A> implements BootstrapApp<A> 
             if (template.guestClass() == Void.class) {
                 return;
             }
+
+            // Get the internal BaseExtension, we need this to use a customer BeanTemplate
             BaseExtension base = assembly().containerRoot().use(BaseExtension.class);
             ExtensionSetup es = ExtensionSetup.crack(base);
 
             // Create a new installer
             BeanTemplate.Installer installer = PackedApplicationTemplate.GB.newInstaller(es, es.container.assembly);
 
-            // Install it (code is shared with App-On-App)
+            // Install the guest bean if needed (code is shared with App-On-App)
             template.installGuestBean(installer, m -> mh = m);
         }
     }

@@ -32,13 +32,6 @@ import internal.app.packed.application.PackedApplicationTemplate.PackedApplicati
 public sealed interface ApplicationTemplate<A> permits PackedApplicationTemplate {
 
     /**
-     * Creates a new {@link BootstrapApp} from this template.
-     *
-     * @return the new bootstrap app.
-     */
-    BootstrapApp<A> newBootstrapApp();
-
-    /**
      * @param <A>
      * @param hostClass
      * @param configurator
@@ -48,39 +41,59 @@ public sealed interface ApplicationTemplate<A> permits PackedApplicationTemplate
      *             if attempting to create an application template without {@link Configurator#container(Consumer) setting}
      *             a container template for the application's root container
      */
-    static <A> ApplicationTemplate<A> of(Class<A> hostClass, Consumer<? super Configurator> configurator) {
+    static <A> ApplicationTemplate<A> of(Class<A> hostClass, Consumer<? super Configurator<A>> configurator) {
         return new PackedApplicationTemplate<A>(hostClass, null).configure(configurator);
     }
 
-    static ApplicationTemplate<Void> of(Consumer<? super Configurator> configure) {
+    static ApplicationTemplate<Void> of(Consumer<? super Configurator<Void>> configure) {
         return of(Void.class, configure);
     }
 
-    static <A> ApplicationTemplate<A> of(Op<A> hostOp, Consumer<? super Configurator> configurator) {
+    static <A> ApplicationTemplate<A> of(Op<A> hostOp, Consumer<? super Configurator<A>> configurator) {
         Class<?> type = hostOp.type().returnRawType();
         return new PackedApplicationTemplate<A>(type, hostOp, null).configure(configurator);
     }
 
-    sealed interface Configurator permits PackedApplicationTemplateConfigurator {
+    /**
+     * {@return an application handle factory that is used if the template is used with a bootstrap app}
+     * <p>
+     * If the template is used to create an application that is non-bootstrap app this method will not be called.
+     */
+    Function<? super ApplicationTemplate.Installer<A>, ? extends ApplicationHandle<?, A>> bootstrapHandleFactory();
 
-        Configurator container(Consumer<? super ContainerTemplate.Configurator> configure);
+    sealed interface Configurator<A> permits PackedApplicationTemplateConfigurator {
+
+        Configurator<A> bootstrapHandleFactory(Function<? super ApplicationTemplate.Installer<A>, ? extends ApplicationHandle<?, A>> handleFactory);
+
+        /**
+         * Add the specified tags to the application
+         *
+         * @param tags
+         *            the tags to add
+         * @return this configurator
+         */
+        Configurator<A> componentTag(String... tags);
+
+        Configurator<A> container(Consumer<? super ContainerTemplate.Configurator> configure);
 
         // Configuration of the root container
-        Configurator container(ContainerTemplate template);
+        Configurator<A> container(ContainerTemplate template);
 
         // Mark the application as removable()
-        Configurator removeable();
+        Configurator<A> removeable();
 
-        <T> Configurator setLocal(ApplicationLocal<T> local, T value);
+        <T> Configurator<A> setLocal(ApplicationBuildLocal<T> local, T value);
     }
 
     /** An installer for applications. */
     sealed interface Installer<A> permits PackedApplicationInstaller {
 
-        <H extends ApplicationHandle<?, A>> H install(Assembly assembly,
-                Function<? super ApplicationTemplate.Installer<A>, H> handleFactory, Wirelet... wirelets);
+        Installer<A> componentTag(String... tags);
 
-        <T> Installer<A> setLocal(ApplicationLocal<T> local, T value);
+        <H extends ApplicationHandle<?, A>> H install(Assembly assembly, Function<? super ApplicationTemplate.Installer<A>, H> handleFactory,
+                Wirelet... wirelets);
+
+        <T> Installer<A> setLocal(ApplicationBuildLocal<T> local, T value);
     }
 }
 

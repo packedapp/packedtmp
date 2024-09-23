@@ -35,7 +35,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import app.packed.Framework;
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
@@ -99,7 +99,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** The {@link ExtensionDescriptor#orderingDepth() depth} of this extension. */
     private final int ordringDepth;
 
-    private final BuildAuthority realm;
+    private final BuildActor realm;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -109,7 +109,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      */
     private ExtensionModel(Builder builder) {
         this.extensionClass = builder.extensionClass;
-        this.realm = BuildAuthority.extension(extensionClass);
+        this.realm = BuildActor.extension(extensionClass);
         this.mhConstructor = builder.mhConstructor;
         this.ordringDepth = builder.depth;
         this.dependencies = Set.copyOf(builder.dependencies);
@@ -239,7 +239,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return ordringDepth;
     }
 
-    public BuildAuthority realm() {
+    public BuildActor realm() {
         return realm;
     }
 
@@ -326,9 +326,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
             }
 
             if (Modifier.isAbstract(extensionClass.getModifiers())) {
-                throw new InternalExtensionException(StringFormatter.format(extensionClass) + " cannot be an abstract class");
+                throw new InternalExtensionException("Extension " + StringFormatter.format(extensionClass) + " cannot be an abstract class");
             } else if (ClassUtil.isInnerOrLocal(extensionClass)) {
-                throw new InternalExtensionException(StringFormatter.format(extensionClass) + " cannot be an an inner or local class");
+                throw new InternalExtensionException("Extension " + StringFormatter.format(extensionClass) + " cannot be an an inner or local class");
             }
 
             // An extension must provide an empty constructor

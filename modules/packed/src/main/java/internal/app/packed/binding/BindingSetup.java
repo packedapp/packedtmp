@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Supplier;
 
-import app.packed.binding.BindingKind;
 import app.packed.binding.BindingMirror;
-import app.packed.build.BuildAuthority;
+import app.packed.binding.ResolutionKind;
+import app.packed.build.BuildActor;
 import app.packed.component.ComponentPath;
 import app.packed.util.Nullable;
 import internal.app.packed.operation.OperationSetup;
@@ -36,7 +36,10 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
      * <p>
      * May be the application itself if using {@link app.packed.operation.Op#bind(Object)} or similar.
      */
-    public final BuildAuthority boundBy;
+    public final BuildActor boundBy;
+
+    /** The index of this binding into {@link OperationSetup#bindings}. */
+    public final int index;
 
     private BindingMirror mirror;
 
@@ -46,12 +49,9 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
     /** The operation this binding is a part of. */
     public final OperationSetup operation;
 
-    /** The index into {@link OperationSetup#bindings}. */
-    public final int operationBindingIndex;
-
-    protected BindingSetup(OperationSetup operation, int operationBindingIndex, BuildAuthority boundBy) {
+    protected BindingSetup(OperationSetup operation, int index, BuildActor boundBy) {
         this.operation = requireNonNull(operation);
-        this.operationBindingIndex = operationBindingIndex;
+        this.index = index;
         this.boundBy = requireNonNull(boundBy);
     }
 
@@ -63,7 +63,7 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
     }
 
     /** {@return the binding kind.} */
-    public abstract BindingKind kind();
+    public abstract ResolutionKind kind();
 
     /** {@return a new mirror.} */
     public BindingMirror mirror() {
@@ -74,7 +74,7 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
         return m;
     }
 
-    public abstract BindingResolution resolver();
+    public abstract BindingAccessor resolver();
 
     /**
      * A binding that was created do to some kind of binding hook.
@@ -85,21 +85,21 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
     public static final class HookBindingSetup extends BindingSetup {
 
         /** Provider for the binding. */
-        public final BindingResolution provider;
+        public final BindingAccessor provider;
 
-        public HookBindingSetup(OperationSetup operation, int index, BuildAuthority user, BindingResolution provider) {
+        public HookBindingSetup(OperationSetup operation, int index, BuildActor user, BindingAccessor provider) {
             super(operation, index, user);
             this.provider = requireNonNull(provider);
         }
 
         /** {@inheritDoc} */
         @Override
-        public BindingKind kind() {
-            return BindingKind.HOOK;
+        public ResolutionKind kind() {
+            return ResolutionKind.HOOK;
         }
 
         @Override
-        public BindingResolution resolver() {
+        public BindingAccessor resolver() {
             return provider;
         }
     }
@@ -115,28 +115,28 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
 
         /** Provider for the binding. */
         @Nullable
-        public final BindingResolution provider;
+        public final BindingAccessor provider;
 
         /**
          * @param operation
          * @param index
          * @param user
          */
-        public ManualBindingSetup(OperationSetup operation, int index, BuildAuthority user, BindingResolution provider) {
+        public ManualBindingSetup(OperationSetup operation, int index, BuildActor user, BindingAccessor provider) {
             super(operation, index, user);
             this.provider = provider;
         }
 
         /** {@inheritDoc} */
         @Override
-        public BindingKind kind() {
-            return BindingKind.MANUAL;
+        public ResolutionKind kind() {
+            return ResolutionKind.MANUAL;
         }
 
         /** {@inheritDoc} */
         @Override
         @Nullable
-        public BindingResolution resolver() {
+        public BindingAccessor resolver() {
             return provider;
         }
     }

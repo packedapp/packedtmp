@@ -26,6 +26,12 @@ import internal.app.packed.component.PackedComponentKind.PackedComponentKindBuil
 
 /** The type of a component. */
 //https://backstage.io/docs/features/software-catalog/descriptor-format/
+
+// Application=FileSystem
+// Container = Folder
+// Bean = Files
+// Operation = Line in the file
+// Binding = Letter on the line
 public sealed interface ComponentKind permits PackedComponentKind {
 
     /** A component kind representing an application. */

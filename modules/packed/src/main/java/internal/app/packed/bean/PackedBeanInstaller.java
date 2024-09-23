@@ -17,36 +17,29 @@ package internal.app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.IdentityHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import app.packed.bean.BeanBuildLocal;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanFactoryConfiguration;
-import app.packed.bean.BeanFactoryMirror;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.BeanTemplate;
+import app.packed.bean.BeanTemplate.Installer;
 import app.packed.extension.InternalExtensionException;
 import app.packed.operation.Op;
-import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationTemplate.Installer;
-import app.packed.util.Nullable;
+import app.packed.service.ProvideableBeanConfiguration;
+import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.ContainerBeanStore.BeanClassKey;
 import internal.app.packed.build.AuthoritySetup;
+import internal.app.packed.component.PackedComponentInstaller;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.PackedOp;
 
 /** This class is responsible for installing new beans. */
-public final class PackedBeanInstaller implements BeanTemplate.Installer {
-
-    /** Initially null, set to the installed bean once it is installed. */
-    @Nullable
-    public BeanSetup bean;
+public final class PackedBeanInstaller extends PackedComponentInstaller<BeanSetup, PackedBeanInstaller> implements BeanTemplate.Installer {
 
     /** The container the bean will be installed into. */
     final ContainerSetup container;
@@ -54,13 +47,10 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
     /** The extension that is installing the bean. */
     final ExtensionSetup installingExtension;
 
-    /** Initial bean locals for the new bean. */
-    final IdentityHashMap<PackedBeanLocal<?>, Object> locals;
-
     String namePrefix;
 
     /** The owner of the bean. */
-    final AuthoritySetup owner;
+    final AuthoritySetup<?> owner;
 
     /** The bean's template. */
     // Maybe we can override it??? If we want to delegate
@@ -78,24 +68,18 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
      * @param owner
      *            the owner of the new bean
      */
-    PackedBeanInstaller(PackedBeanTemplate template, ExtensionSetup installingExtension, AuthoritySetup owner) {
+    PackedBeanInstaller(PackedBeanTemplate template, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
+        super(template.locals());
         this.template = requireNonNull(template, "template is null");
         this.installingExtension = requireNonNull(installingExtension);
         this.owner = requireNonNull(owner);
         this.container = installingExtension.container;
-        this.locals = new IdentityHashMap<>(template.beanLocals());
     }
 
-    /**
-     * Checks that the installer has not already been used to create a new bean.
-     * <p>
-     * There is technically no reason to not allow this installer to be reused. But we will need to make a copy of the
-     * locals if we want to support this.
-     */
-    void checkNotInstalledYet() {
-        if (bean != null) {
-            throw new IllegalStateException("A bean has already been created from this installer");
-        }
+    /** {@inheritDoc} */
+    @Override
+    protected ApplicationSetup application(BeanSetup setup) {
+        return setup.container.application;
     }
 
     /**
@@ -178,29 +162,22 @@ public final class PackedBeanInstaller implements BeanTemplate.Installer {
 
     /** {@inheritDoc} */
     @Override
-    public <T> PackedBeanInstaller setLocal(BeanLocal<T> local, T value) {
-        checkNotInstalledYet();
-        this.locals.put((PackedBeanLocal<?>) requireNonNull(local, "local is null"), requireNonNull(value, "value is null"));
-        return this;
+    public <T> PackedBeanInstaller setLocal(BeanBuildLocal<T> local, T value) {
+        return super.setLocal(local, value);
     }
 
-    public static class BeanFactoryOperationHandle extends OperationHandle<BeanFactoryConfiguration> {
+    public static class ServiceanbleBeanHandle<T> extends BeanHandle<ProvideableBeanConfiguration<T>> {
 
         /**
          * @param installer
          */
-        public BeanFactoryOperationHandle(Installer installer) {
+        public ServiceanbleBeanHandle(Installer installer) {
             super(installer);
         }
 
         @Override
-        protected BeanFactoryConfiguration newOperationConfiguration() {
-            return new BeanFactoryConfiguration(this);
-        }
-
-        @Override
-        protected OperationMirror newOperationMirror() {
-            return new BeanFactoryMirror(this);
+        protected ProvideableBeanConfiguration<T> newBeanConfiguration() {
+            return new ProvideableBeanConfiguration<>(this);
         }
     }
 }

@@ -39,7 +39,6 @@ import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.PackedBeanInstaller.BeanFactoryOperationHandle;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.handlers.BeanHandlers;
@@ -47,6 +46,7 @@ import internal.app.packed.integration.devtools.PackedDevToolsIntegration;
 import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
+import internal.app.packed.operation.PackedOperationInstaller.BeanFactoryOperationHandle;
 import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.util.StringFormatter;
 
@@ -55,7 +55,7 @@ import internal.app.packed.util.StringFormatter;
  */
 public final class BeanScanner {
 
-    /** The app.packed.base module. */
+    /** The app.packed.base module, we will never scan classes in this module. */
     private static final Module APP_PACKED_BASE_MODULE = OpenClass.class.getModule();
 
     /** We {@code java.base} module, which we never process classes from. */
@@ -73,7 +73,7 @@ public final class BeanScanner {
 
     /** The various extensions that are part of the reflection process. */
     // We sort it in the end
-    private final IdentityHashMap<Class<? extends Extension<?>>, BeanScannerExtensionRef> extensions = new IdentityHashMap<>();
+    private final IdentityHashMap<Class<? extends Extension<?>>, BeanScannerParticipant> extensions = new IdentityHashMap<>();
 
     /** The hook model for the bean. */
     final BeanHookModel hookModel;
@@ -116,7 +116,7 @@ public final class BeanScanner {
      * @param fullAccess
      * @return the contributor
      */
-    BeanScannerExtensionRef computeContributor(Class<? extends Extension<?>> extensionType) {
+    BeanScannerParticipant computeContributor(Class<? extends Extension<?>> extensionType) {
         return extensions.computeIfAbsent(extensionType, c -> {
             // Get the extension (installing it if necessary)
             ExtensionSetup extension = bean.container.useExtension(extensionType, null);
@@ -124,7 +124,7 @@ public final class BeanScanner {
             // Create a new introspector
             BeanIntrospector introspector = extension.newBeanIntrospector();
 
-            BeanScannerExtensionRef bse = new BeanScannerExtensionRef(this, extension, introspector);
+            BeanScannerParticipant bse = new BeanScannerParticipant(this, extension, introspector);
 
             // Call BeanIntrospector#initialize(BeanScannerExtension)
             BeanHandlers.invokeBeanIntrospectorInitialize(introspector, bse);
@@ -139,8 +139,10 @@ public final class BeanScanner {
     private void findConstructor() {
         BeanScannerConstructor constructor = BeanScannerConstructor.CACHE.get(beanClass);
 
+        // Get the Constructor
         Constructor<?> con = constructor.constructor();
 
+        // Extract a direct method handle from the constructor
         MethodHandle mh = unreflectConstructor(con);
 
         PackedOperationTemplate ot;
@@ -153,7 +155,7 @@ public final class BeanScanner {
 
         PackedOperationInstaller installer = ot.newInstaller(constructor.operationType(), bean, bean.installedBy);
 
-        OperationSetup os = OperationSetup.newMemberOperationSetup(installer, new OperationConstructorTarget(constructor.constructor()), mh,
+        OperationSetup os = PackedOperationInstaller.newOperationFromMember(installer, new OperationConstructorTarget(constructor.constructor()), mh,
                 BeanFactoryOperationHandle::new);
         resolveNow(os);
     }
@@ -268,7 +270,7 @@ public final class BeanScanner {
         resolveOperations();
 
         // Call into every BeanIntrospector and tell them it is all over
-        for (BeanScannerExtensionRef e : extensions.values()) {
+        for (BeanScannerParticipant e : extensions.values()) {
             e.introspector.afterHooks();
         }
     }
@@ -364,7 +366,6 @@ public final class BeanScanner {
         }
     }
 
-
     /**
      * An open class is a thin wrapper for a single class and a {@link Lookup} object.
      */
@@ -377,11 +378,11 @@ public final class BeanScanner {
         /** A lookup that can be used on non-public members. */
         private MethodHandles.Lookup privateLookup;
 
-        OpenClass(MethodHandles.Lookup lookup) {
+        private OpenClass(MethodHandles.Lookup lookup) {
             this.lookup = requireNonNull(lookup);
         }
 
-        Lookup lookup(Member member) {
+        private Lookup lookup(Member member) {
             // If we already have a private lookup for the bean return it
             MethodHandles.Lookup lookup = privateLookup;
             if (lookup != null) {

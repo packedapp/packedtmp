@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.util.Nullable;
 import internal.app.packed.assembly.AssemblySetup;
+import internal.app.packed.build.PackedBuildProcess;
 import internal.app.packed.container.PackedContainerInstaller;
 
 /**
@@ -95,24 +96,29 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
         AssemblyConfiguration existing = configuration;
         if (existing == null) { // assembly has not been used in a build process before
             AssemblySetup assembly = AssemblySetup.newSetup(builder, this);
-
-            AssemblyConfiguration ac = configuration = new AssemblyConfiguration(assembly);
-
+            PackedBuildProcess p = PackedBuildProcess.get();
+            p.push(assembly);
             try {
-                // Run AssemblyHook.beforeBuild for any hooks present
-                assembly.model.hooks.forEach(AssemblyBuildHook.class, h -> h.beforeBuild(ac));
+                AssemblyConfiguration ac = configuration = new AssemblyConfiguration(assembly);
 
-                // Call the actual build() method on the assembly
-                build();
+                try {
+                    // Run AssemblyHook.beforeBuild for any hooks present
+                    assembly.model.hooks.forEach(AssemblyBuildHook.class, h -> h.beforeBuild(ac));
 
-                // Run AssemblyHook.afterBuild for any hooks present
-                assembly.model.hooks.forEachReversed(AssemblyBuildHook.class, h -> h.afterBuild(ac));
+                    // Call the actual build() method on the assembly
+                    build();
+
+                    // Run AssemblyHook.afterBuild for any hooks present
+                    assembly.model.hooks.forEachReversed(AssemblyBuildHook.class, h -> h.afterBuild(ac));
+                } finally {
+                    // Sets #configuration to a marker object that indicates the assembly has been used
+                    existing = Assembly.USED;
+                }
+
+                assembly.postBuild();
             } finally {
-                // Sets #configuration to a marker object that indicates the assembly has been used
-                existing = Assembly.USED;
+                p.pop(assembly);
             }
-
-            assembly.postBuild();
             return assembly;
         } else if (existing == Assembly.USED) {
             // Assembly has already been used (successfully or unsuccessfully)

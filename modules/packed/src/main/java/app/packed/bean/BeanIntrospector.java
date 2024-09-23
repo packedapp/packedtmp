@@ -22,10 +22,10 @@ import java.lang.annotation.Annotation;
 import app.packed.bean.BeanElement.BeanClass;
 import app.packed.bean.BeanElement.BeanField;
 import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.bean.BeanLocal.Accessor;
+import app.packed.bean.BeanBuildLocal.Accessor;
 import app.packed.binding.BindableVariable;
 import app.packed.binding.UnwrappedBindableVariable;
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
@@ -33,7 +33,7 @@ import app.packed.lifetime.LifecycleKind;
 import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.scanning.BeanScannerExtensionRef;
+import internal.app.packed.bean.scanning.BeanScannerParticipant;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.util.PackedAnnotationList;
 import internal.app.packed.util.StringFormatter;
@@ -59,7 +59,7 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
      * {@link #initialize(ExtensionDescriptor, BeanSetup)}.
      */
     @Nullable
-    private BeanScannerExtensionRef setup;
+    private BeanScannerParticipant setup;
 
     public void activatedByAnnotatedClass(Annotation annotated, BeanClass clazz) {}
 
@@ -173,7 +173,7 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
     }
 
     /** {@return the owner of the bean.} */
-    public final BuildAuthority beanAuthor() {
+    public final BuildActor beanAuthor() {
         return bean().owner();
     }
 
@@ -244,7 +244,7 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
      * @throws IllegalStateException
      *             if called more than once
      */
-    final void initialize(BeanScannerExtensionRef ce) {
+    final void initialize(BeanScannerParticipant ce) {
         if (this.setup != null) {
             throw new IllegalStateException("This scanner has already been initialized.");
         }
@@ -272,8 +272,8 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
      * @throws IllegalStateException
      *             if called from the constructor of the class
      */
-    private BeanScannerExtensionRef setup() {
-        BeanScannerExtensionRef s = setup;
+    private BeanScannerParticipant setup() {
+        BeanScannerParticipant s = setup;
         if (s == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of " + getClass());
         }

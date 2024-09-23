@@ -18,27 +18,18 @@ package internal.app.packed.context.publish;
 import java.util.Map;
 import java.util.Set;
 
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 import app.packed.context.Context;
 
 /**
  * All methods on this interface is only for informational purposes.
  */
-// Context values er jo interessant for embedded operations...
-
-// ContainerBuilder   ContainerHandle
-// BeanBuilder        BeanHandle          BeanIntrospector, BeanVariable
-// OperationBuilder   OperationHandle
-
-// Simple
-//// ContainerConfiguration, BeanConfiguration, OperationConfiguration
-
 public interface ContextualizedElement {
 
     /** {@return a set of the contexts available for this bean.} */
     // This method is mainly used for informational purposes.
     // Kan ikke se man har brug for andet en
-    default Set<Class<? extends Context<?>>> contextAvailable(BuildAuthority author) {
+    default Set<Class<? extends Context<?>>> contextAvailable(BuildActor author) {
         throw new UnsupportedOperationException();
     }
 

@@ -54,14 +54,14 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public <K> InstanceBeanConfiguration<T> bindInstance(Class<K> key, K instance) {
-        return bindInstance(Key.of(key), instance);
+    public <K> InstanceBeanConfiguration<T> bindServiceInstance(Class<K> key, K instance) {
+        return bindServiceInstance(Key.of(key), instance);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <K> InstanceBeanConfiguration<T> bindInstance(Key<K> key, K instance) {
-        super.bindInstance(key, instance);
+    public <K> InstanceBeanConfiguration<T> bindServiceInstance(Key<K> key, K instance) {
+        super.bindServiceInstance(key, instance);
         return this;
     }
 }

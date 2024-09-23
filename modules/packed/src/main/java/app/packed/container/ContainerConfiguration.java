@@ -20,7 +20,7 @@ import internal.app.packed.util.types.ClassUtil;
  * <p>
  * Unlike {@link app.packed.bean.BeanConfiguration} this class cannot be extended.
  */
-public non-sealed class ContainerConfiguration extends ComponentConfiguration implements ContainerLocal.Accessor {
+public non-sealed class ContainerConfiguration extends ComponentConfiguration implements ContainerBuildLocal.Accessor {
 
     /**
      * A marker configuration object indicating that an assembly (or composer) has already been used for building a
@@ -166,7 +166,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return handle.container.toString();
+        return handle.toString();
     }
 
     /**

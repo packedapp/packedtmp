@@ -18,6 +18,7 @@ package internal.app.packed.util;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -142,6 +143,11 @@ public final class PackedTreeView<N extends AbstractTreeNode<N>, T> implements T
         @Override
         public T value() {
             return tree.mapper.apply(node);
+        }
+
+        @Override
+        public String toString() {
+            return Objects.toString(value());
         }
     }
 }

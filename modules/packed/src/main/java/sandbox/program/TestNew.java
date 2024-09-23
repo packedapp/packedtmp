@@ -31,7 +31,7 @@ import app.packed.binding.BindableVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.service.Provide;
-import app.packed.service.mirror.ServiceBindingMirror;
+import app.packed.service.mirror.NamespaceServiceBindingMirror;
 import app.packed.service.mirror.oldMaybe.ProvidedServiceMirror;
 
 /**
@@ -52,7 +52,7 @@ public class TestNew extends BaseAssembly {
 
         for (BeanMirror b : App.mirrorOf(new TestNew()).container().beans().toList()) {
             b.operations(ProvidedServiceMirror.class).forEach(e -> {
-                List<ServiceBindingMirror> sbm = e.useSites().toList();
+                List<NamespaceServiceBindingMirror> sbm = e.useSites().toList();
                 System.out.println(sbm);
                 System.out.println("Bean " + b.componentPath() + " provides services for key " + e.key());
                 for (var v : sbm) {
@@ -103,7 +103,7 @@ public class TestNew extends BaseAssembly {
                 public void activatedByAnnotatedVariable(Annotation hook, BindableVariable h) {
                     if (hook.annotationType() == XX.class) {
                         String str = h.annotations().readRequired(XX.class).value();
-                        h.bindInstant(str.toUpperCase());
+                        h.bindInstance(str.toUpperCase());
                     } else {
                         super.activatedByAnnotatedVariable(hook, h);
                     }

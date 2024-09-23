@@ -21,7 +21,7 @@ import app.packed.application.App;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
-import app.packed.component.guest.FromGuest;
+import app.packed.component.guest.FromComponentGuest;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
@@ -33,13 +33,13 @@ import internal.app.packed.ValueBased;
 @ValueBased
 public final class PackedApp implements App {
 
-   public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = ApplicationTemplate.of(PackedApp.class, c -> {
+   public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp.of(ApplicationTemplate.of(PackedApp.class, c -> {
         c.container(ContainerTemplate.MANAGED);
-    }).newBootstrapApp();
+    }));
 
     final ManagedLifecycle lc;
 
-    PackedApp(@FromGuest ManagedLifecycle lc) {
+    PackedApp(@FromComponentGuest ManagedLifecycle lc) {
         this.lc = lc;
     }
 

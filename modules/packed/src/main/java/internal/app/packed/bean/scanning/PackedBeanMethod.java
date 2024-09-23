@@ -18,21 +18,22 @@ package internal.app.packed.bean.scanning;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
 import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.binding.Key;
 import app.packed.operation.OperationTemplate;
-import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.bean.scanning.BeanHookModel.AnnotatedMethod;
+import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.util.PackedAnnotationList;
 
 /** Internal implementation of BeanMethod. Discard after use. */
 public final class PackedBeanMethod extends PackedBeanExecutable<Method> implements BeanMethod {
 
-    PackedBeanMethod(BeanScannerExtensionRef contributor, Method method, Annotation[] annotations, boolean allowInvoke) {
-        super(contributor, method, annotations);
+    PackedBeanMethod(BeanScannerParticipant participant, Method method, Annotation[] annotations, boolean allowInvoke) {
+        super(participant, method, annotations);
     }
 
     /** {@inheritDoc} */
@@ -44,12 +45,14 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
     /** {@inheritDoc} */
     @Override
     public OperationTemplate.Installer newOperation(OperationTemplate template) {
-        requireNonNull(template);
+        PackedOperationTemplate t = (PackedOperationTemplate)  requireNonNull(template);
         checkConfigurable();
-        PackedOperationTemplate t = (PackedOperationTemplate) template;
 
+        // Attempt to unreflect the method (Create a direct method handle for it)
+
+        MethodHandle methodHandle = participant.scanner.unreflectMethod(member);
         // We should be able to create this lazily
-        return t.newInstaller(extension, extension.scanner.unreflectMethod(member), new OperationMethodTarget(member), type);
+        return t.newInstaller(participant, methodHandle, new OperationMethodTarget(member), type);
     }
 
     /** {@inheritDoc} */
@@ -71,7 +74,7 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
             Class<? extends Annotation> a1Type = a1.annotationType();
             AnnotatedMethod fh = iBean.hookModel.testMethodAnnotation(a1Type);
             if (fh != null) {
-                BeanScannerExtensionRef contributor = iBean.computeContributor(fh.extensionType());
+                BeanScannerParticipant contributor = iBean.computeContributor(fh.extensionType());
 
                 PackedBeanMethod pbm = new PackedBeanMethod(contributor, method, annotations, fh.isInvokable());
                 PackedAnnotationList pac = new PackedAnnotationList(new Annotation[] { a1 });

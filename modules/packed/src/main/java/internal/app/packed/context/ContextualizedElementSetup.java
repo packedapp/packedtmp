@@ -15,7 +15,7 @@
  */
 package internal.app.packed.context;
 
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import app.packed.context.Context;
 import app.packed.context.ContextualizedElementMirror;
@@ -30,7 +30,7 @@ public sealed interface ContextualizedElementSetup permits OperationSetup, BeanS
     @Nullable
     ContextSetup findContext(Class<? extends Context<?>> contextClass);
 
-    void forEachContext(BiConsumer<? super Class<? extends Context<?>>, ? super ContextSetup> action);
+    void forEachContext(Consumer<? super ContextSetup> action);
 
     /** {@return a mirror for the element.} */
     ContextualizedElementMirror mirror();

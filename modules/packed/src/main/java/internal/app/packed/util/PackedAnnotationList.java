@@ -21,6 +21,7 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.util.AnnotationList;
@@ -84,6 +85,19 @@ public record PackedAnnotationList(Annotation... annotations) implements Annotat
         return null;
     }
 
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Annotation> Optional<T> read(Class<T> annotationClass) {
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType() == annotationClass) {
+                return Optional.of((T) annotation);
+            }
+        }
+        return Optional.empty();
+    }
+
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -133,4 +147,5 @@ public record PackedAnnotationList(Annotation... annotations) implements Annotat
     public List<Annotation> toList() {
         return List.of(annotations);
     }
+
 }

@@ -27,24 +27,16 @@ public abstract sealed class ComponentConfiguration
         permits ApplicationConfiguration, BeanConfiguration, ContainerConfiguration, NamespaceConfiguration, OperationConfiguration {
 
     /**
-     * Checks that the container's assembly is still configurable.
+     * Check that the component is still configurable.
      *
      * @throws IllegalStateException
-     *             if the container's assembly is no longer configurable
+     *             if the component is no longer configurable
      */
     protected final void checkIsConfigurable() {
         if (!isConfigurable()) {
             throw new IllegalStateException("The " + componentPath().componentKind().name() + " is no longer configurable");
         }
     }
-
-    /**
-     * <p>
-     * Typically a component configuration will define a such {@link app.packed.bean.BeanConfiguration#beanHandle}
-     *
-     * @return the component handle
-     */
-    protected abstract ComponentHandle handle();
 
     /** {@return the path of the component} */
     public final ComponentPath componentPath() {
@@ -63,6 +55,7 @@ public abstract sealed class ComponentConfiguration
     @BuildActionable("component.addTags")
     public ComponentConfiguration componentTag(String... tags) {
         throw new UnsupportedOperationException();
+        // return handle().componentPag(tags);
     }
 
     /** {@inheritDoc} */
@@ -70,6 +63,14 @@ public abstract sealed class ComponentConfiguration
     public final boolean equals(Object obj) {
         return obj instanceof ComponentConfiguration cc && handle().equals(cc.handle());
     }
+
+    /**
+     * <p>
+     * Typically a component configuration will define a such {@link app.packed.bean.BeanConfiguration#beanHandle}
+     *
+     * @return the component handle
+     */
+    protected abstract ComponentHandle handle();
 
     /** {@inheritDoc} */
     @Override
@@ -82,6 +83,9 @@ public abstract sealed class ComponentConfiguration
      * <p>
      * Typically this is determined by whether or not the defining assembly of the component is still configurable.
      */
+
+    // I think the handle is configurable after the assembly has closed????
+    // So I think handle.isConfigurable!=configuration.configurable
     public final boolean isConfigurable() {
         return handle().isConfigurable();
     }

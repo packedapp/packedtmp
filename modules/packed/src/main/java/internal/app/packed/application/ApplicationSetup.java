@@ -24,16 +24,16 @@ import java.util.Map;
 import java.util.function.Function;
 
 import app.packed.application.ApplicationBuildHook;
+import app.packed.application.ApplicationBuildLocal;
 import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationHandle;
-import app.packed.application.ApplicationLocal;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.Assembly;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
+import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerHandle;
-import app.packed.container.ContainerLocal;
 import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.util.Nullable;
@@ -41,6 +41,7 @@ import internal.app.packed.application.deployment.DeploymentSetup;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
+import internal.app.packed.component.ComponentTagManager;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.handlers.ApplicationHandlers;
 import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
@@ -80,6 +81,7 @@ public final class ApplicationSetup implements BuildLocalSource {
 
     public final BuildGoal goal;
 
+    /** The application's handle, instantiated by {@link #newApplication(PackedApplicationInstaller, AssemblySetup)}. */
     private ApplicationHandle<?, ?> handle;
 
     /** All hooks applied on the application. */
@@ -101,6 +103,7 @@ public final class ApplicationSetup implements BuildLocalSource {
 
     public final PackedApplicationTemplate<?> template;
 
+    public ComponentTagManager ctm = new ComponentTagManager();
     /**
      * Create a new application.
      *
@@ -172,7 +175,7 @@ public final class ApplicationSetup implements BuildLocalSource {
 
     /** {@return the component path of the application} */
     public ComponentPath componentPath() {
-        return ComponentKind.APPLICATION.pathNew(container.name);
+        return ComponentKind.APPLICATION.pathNew(container.name());
     }
 
     public ContainerSetup container() {
@@ -183,7 +186,7 @@ public final class ApplicationSetup implements BuildLocalSource {
         throw new IllegalStateException();
     }
 
-    ApplicationHandle<?, ?> handle() {
+    public ApplicationHandle<?, ?> handle() {
         return requireNonNull(handle);
     }
 
@@ -206,13 +209,14 @@ public final class ApplicationSetup implements BuildLocalSource {
         return ApplicationHandlers.getApplicationHandleApplication(handle);
     }
 
-    public static ApplicationSetup crack(ApplicationLocal.Accessor accessor) {
+    public static ApplicationSetup crack(ApplicationBuildLocal.Accessor accessor) {
         requireNonNull(accessor, "accessor is null");
         return switch (accessor) {
         case ApplicationConfiguration a -> ApplicationSetup.crack(a);
         case ApplicationMirror a -> ApplicationSetup.crack(a);
+        case ApplicationHandle<?, ?> a -> ApplicationSetup.crack(a);
         case Assembly b -> throw new UnsupportedOperationException();
-        case ContainerLocal.Accessor b -> ContainerSetup.crack(b).application;
+        case ContainerBuildLocal.Accessor b -> ContainerSetup.crack(b).application;
         };
     }
 
@@ -227,7 +231,7 @@ public final class ApplicationSetup implements BuildLocalSource {
         Function f = installer.handleFactory;
         as.handle = (ApplicationHandle<?, ?>) f.apply(installer);
 
-        installer.locals.forEach((l, v) -> as.locals().set((PackedApplicationLocal) l, as, v));
+        installer.locals.forEach((l, v) -> as.locals().set((PackedApplicationBuildLocal) l, as, v));
 
         // Initialize the root container
         as.container = ContainerSetup.newContainer(installer.container, as, assembly, ContainerHandle::new);

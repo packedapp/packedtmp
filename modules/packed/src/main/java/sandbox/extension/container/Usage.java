@@ -15,7 +15,7 @@
  */
 package sandbox.extension.container;
 
-import app.packed.component.guest.FromGuest;
+import app.packed.component.guest.FromComponentGuest;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerTemplate;
@@ -50,5 +50,5 @@ public class Usage extends Extension<Usage> {
 //        return h.configuration();
 //    }
 
-    record Guest(@FromGuest ServiceLocator sl, String foo) {}
+    record Guest(@FromComponentGuest ServiceLocator sl, String foo) {}
 }

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import app.packed.service.CircularDependencyException;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderSetup;
 
 /**
  * A service multi-composer is responsible for managing 1 or more {@link ServiceManager0 service composers} that are
@@ -36,8 +37,8 @@ import internal.app.packed.container.ContainerSetup;
  */
 public final class CircularServiceDependencyChecker {
 
-    private static void dependencyCyclesFind(ArrayDeque<ServiceSetup> stack, ArrayDeque<ServiceSetup> dependencies, ContainerSetup container) {
-        for (ServiceSetup node : container.servicesMain().entries.values()) {
+    private static void dependencyCyclesFind(ArrayDeque<NamespaceServiceProviderSetup> stack, ArrayDeque<NamespaceServiceProviderSetup> dependencies, ContainerSetup container) {
+        for (NamespaceServiceProviderSetup node : container.servicesMain().providers) {
             if (!node.hasBeenCheckForDependencyCycles) { // only process those nodes that have not been visited yet
                 detectCycle(node, stack, dependencies);
             }
@@ -50,8 +51,8 @@ public final class CircularServiceDependencyChecker {
     }
 
     public static void dependencyCyclesFind(ContainerSetup container) {
-        ArrayDeque<ServiceSetup> stack = new ArrayDeque<>();
-        ArrayDeque<ServiceSetup> dependencies = new ArrayDeque<>();
+        ArrayDeque<NamespaceServiceProviderSetup> stack = new ArrayDeque<>();
+        ArrayDeque<NamespaceServiceProviderSetup> dependencies = new ArrayDeque<>();
         dependencyCyclesFind(stack, dependencies, container);
     }
 
@@ -68,20 +69,18 @@ public final class CircularServiceDependencyChecker {
      * @throws BuildException
      *             if there is a cycle in the graph
      */
-    private static void detectCycle(ServiceSetup entry, ArrayDeque<ServiceSetup> stack, ArrayDeque<ServiceSetup> dependencies) {
-        ServiceProviderSetup ps = entry.provider();
-        ArrayList<ServiceBindingSetup> bindings = entry.bindings;
-        if (ps == null || bindings.isEmpty()) {
+    private static void detectCycle(NamespaceServiceProviderSetup ps, ArrayDeque<NamespaceServiceProviderSetup> stack, ArrayDeque<NamespaceServiceProviderSetup> dependencies) {
+        ArrayList<ServiceBindingSetup> bindings = ps.bindings;
+        if (bindings.isEmpty()) {
             return; // leaf
         }
 
         // We have both bindings and provide
 
-        stack.push(entry);
+        stack.push(ps);
         for (ServiceBindingSetup binding : bindings) {
             BeanSetup bean = binding.operation.bean;
-            for (ServiceProviderSetup psDep : bean.operations.serviceProviders) {
-                ServiceSetup next = psDep.entry;
+            for (NamespaceServiceProviderSetup next : bean.operations.serviceProviders) {
                 if (next.hasBeenCheckForDependencyCycles) {
                     continue;
                 }
@@ -107,17 +106,17 @@ public final class CircularServiceDependencyChecker {
 
     }
 
-    private static String createErrorMessage(ArrayDeque<ServiceSetup> dependencies) {
+    private static String createErrorMessage(ArrayDeque<NamespaceServiceProviderSetup> dependencies) {
         int size = dependencies.size();
         StringBuilder sb = new StringBuilder("Circular dependencies between " + size + " services: ");
         if (size == 2) {
-            sb.append(dependencies.pollLast().key);
+            sb.append(dependencies.pollLast().key());
             sb.append(" <-> ");
-            sb.append(dependencies.pollLast().key);
+            sb.append(dependencies.pollLast().key());
         } else {
-            ServiceSetup e = dependencies.pollLast();
+            NamespaceServiceProviderSetup e = dependencies.pollLast();
             do {
-                sb.append(e.key);
+                sb.append(e.key());
                 if (!dependencies.isEmpty()) {
                     sb.append(" -> ");
                 }

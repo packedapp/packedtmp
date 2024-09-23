@@ -22,11 +22,11 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import app.packed.context.ContextTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanTemplate;
-import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.application.LifetimeTemplate;
 
 /**
@@ -151,9 +151,7 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
          */
         // Man skal vel angive hvordan context fungere.
         // Er den stored, eller skal den med til alle operation?
-        default Configurator inContext(ContextTemplate context) {
-            throw new UnsupportedOperationException();
-        }
+         Configurator inContext(ContextTemplate context);
 
         /**
          * <p>
@@ -198,7 +196,7 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
          *            the value to set
          * @return this configurator
          */
-        <T> Configurator localSet(BeanLocal<T> local, T value);
+        <T> Configurator localSet(BeanBuildLocal<T> local, T value);
     }
 
     /** A descriptor for a BeanTemplate. This class is mainly used for informational purposes. */
@@ -245,6 +243,12 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
      *          which methods can be invoked before or only after the scanning
      */
     sealed interface Installer permits PackedBeanInstaller {
+
+        Installer componentTag(String... tags);
+
+        default BeanHandle<BeanConfiguration> install(Class<?> beanClass) {
+            return install(beanClass, BeanHandle::new);
+        }
 
         /**
          * Installs the bean using the specified class as the bean source.
@@ -298,7 +302,7 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
          *            the value of the local
          * @return this builder
          */
-        <T> Installer setLocal(BeanLocal<T> local, T value);
+        <T> Installer setLocal(BeanBuildLocal<T> local, T value);
     }
 
 }

@@ -40,7 +40,7 @@ public class NameGeneratedTest extends AbstractApplicationTest {
         appOf(cs.apply(c -> {})).nameIs(defaultName);
         appOf(cs.apply(c -> {})).nameIs(defaultName);
         // We can override default name
-        appOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.named("Boo")).nameIs("Boo");
+        appOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.renameApplication("Boo")).nameIs("Boo");
 
         // Images
         imageOf(cs.apply(c -> {})).nameIs(defaultName);
@@ -48,30 +48,30 @@ public class NameGeneratedTest extends AbstractApplicationTest {
         imageOf(cs.apply(c -> {})).newApp().nameIs(defaultName);
 
         // We can override default name from images
-        imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.named("Boo")).nameIs("Boo");
-        imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.named("Boo")).newApp().nameIs("Boo");
+        imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.renameApplication("Boo")).nameIs("Boo");
+        imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.renameApplication("Boo")).newApp().nameIs("Boo");
 
         // As a child
         appOf(new AbstractConsumableAssembly(c -> {
-            c.link(cs.apply(cc -> {
+            c.link("child", cs.apply(cc -> {
                 cc.pathIs("/" + defaultName);
             }));
         }) {}).nameIs("Assembly");
 
         // As multiple children
         appOf(new AbstractConsumableAssembly(c -> {
-            c.link(cs.apply(cc -> {
+            c.link("child", cs.apply(cc -> {
                 cc.pathIs("/" + defaultName);
             }));
-            c.link(cs.apply(cc -> {
+            c.link("child", cs.apply(cc -> {
                 cc.pathIs("/" + defaultName + "1");
             }));
         }) {}).nameIs("Assembly");
 
         // As two level nested
         appOf(new AbstractConsumableAssembly(c -> {
-            c.link(cs.apply(cc -> {
-                cc.link(cs.apply(ccc -> {
+            c.link("child", cs.apply(cc -> {
+                cc.link("child", cs.apply(ccc -> {
                     ccc.pathIs("/" + defaultName + "/" + defaultName);
                 }));
             }));
@@ -79,9 +79,9 @@ public class NameGeneratedTest extends AbstractApplicationTest {
 
         // As 3 level nested
         appOf(new AbstractConsumableAssembly(c -> {
-            c.link(cs.apply(cc -> {
-                cc.link(cs.apply(ccc -> {
-                    ccc.link(cs.apply(cccc -> {
+            c.link("child", cs.apply(cc -> {
+                cc.link("child", cs.apply(ccc -> {
+                    ccc.link("child", cs.apply(cccc -> {
                         cccc.pathIs("/" + defaultName + "/" + defaultName + "/" + defaultName);
                     }));
                 }));

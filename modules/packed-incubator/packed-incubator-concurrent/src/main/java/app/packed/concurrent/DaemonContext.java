@@ -17,13 +17,13 @@ package app.packed.concurrent;
 
 import java.util.concurrent.TimeUnit;
 
-import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.context.Context;
+import app.packed.context.ContextualServiceProvider;
 
 /**
  *
  */
-@BindingClassBeanTrigger(extension = ThreadExtension.class, requiresContext = DaemonContext.class)
+@ContextualServiceProvider(extension = ThreadExtension.class, requiresContext = DaemonContext.class)
 public interface DaemonContext extends Context<ThreadExtension> {
 
     boolean isShutdown();

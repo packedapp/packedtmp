@@ -18,16 +18,12 @@ package internal.app.packed.operation;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.bean.BeanKind;
-import app.packed.bean.CannotDeclareInstanceMemberException;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
@@ -35,13 +31,14 @@ import app.packed.extension.InternalExtensionException;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
-import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.Installer;
 import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
+import internal.app.packed.ValueBased;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.binding.BindingResolution.FromOperationResult;
+import internal.app.packed.binding.BindingAccessor.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
+import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
@@ -50,12 +47,14 @@ import internal.app.packed.entrypoint.EntryPointSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.handlers.OperationHandlers;
 import internal.app.packed.namespace.NamespaceSetup;
-import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceProviderSetup;
+import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderSetup;
+import internal.app.packed.service.ServiceProviderSetup.OperationServiceProviderSetup;
+import internal.app.packed.service.util.SequencedServiceMap;
 
 /** The internal configuration of (bean) operation. */
-public final class OperationSetup implements ContextualizedElementSetup {
+public final class OperationSetup implements ContextualizedElementSetup, ComponentSetup {
 
     /** The bean this operation belongs to. */
     public final BeanSetup bean;
@@ -63,8 +62,8 @@ public final class OperationSetup implements ContextualizedElementSetup {
     /** Bindings for this operation. */
     public final BindingSetup[] bindings;
 
-    /** The contexts on the bean. Is HashMap now we because it uses less memory when empty. */
-    private final HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
+    /** Declared contexts on the operation. Is HashMap now we because it uses less memory than IHM when empty. */
+    public final HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
 
     /** Any operation this operation is embedded into. */
     @Nullable
@@ -96,9 +95,12 @@ public final class OperationSetup implements ContextualizedElementSetup {
     public String namePrefix; // name = operator.simpleName + "Operation"
 
     /** The operator of the operation. */
-    public final ExtensionSetup operator;
+    public final ExtensionSetup installedByExtension;
 
-    public final PackedOperationTarget pot;
+    /** ServiceProviders bound specifically for the operation. */
+    public final SequencedServiceMap<OperationServiceProviderSetup> serviceProviders = new SequencedServiceMap<>();
+
+    public final PackedOperationTarget target;
 
     /** The operation's template. */
     public final PackedOperationTemplate template;
@@ -106,9 +108,15 @@ public final class OperationSetup implements ContextualizedElementSetup {
     /** The type of this operation. */
     public final OperationType type;
 
-    private OperationSetup(PackedOperationInstaller installer, PackedOperationTarget pot) {
-        this.operator = requireNonNull(installer.operator);
-        this.pot = requireNonNull(pot);
+    /**
+     * Create a new operation.
+     *
+     * @param installer
+     *            the operation's installer
+     */
+    private OperationSetup(PackedOperationInstaller installer) {
+        this.installedByExtension = requireNonNull(installer.operator);
+        this.target = requireNonNull(installer.operationTarget);
         this.bean = requireNonNull(installer.bean);
         this.type = installer.operationType;
         this.embeddedInto = installer.embeddedInto;
@@ -120,8 +128,8 @@ public final class OperationSetup implements ContextualizedElementSetup {
         } else {
             this.entryPoint = null;
         }
-        for (PackedContextTemplate t : template.contexts.values()) {
-            contexts.put(t.contextClass(), new ContextSetup(t, this));
+        for (PackedContextTemplate ct : template.contexts.values()) {
+            contexts.put(ct.contextClass(), new ContextSetup(ct, this));
         }
     }
 
@@ -130,14 +138,18 @@ public final class OperationSetup implements ContextualizedElementSetup {
         return ComponentKind.OPERATION.pathNew(bean.componentPath(), name());
     }
 
+    public boolean isConfigurable() {
+        return installedByExtension.isConfigurable();
+    }
+
     public Set<BeanSetup> dependsOn() {
         HashSet<BeanSetup> result = new HashSet<>();
         // TODO hmm, skal inkludere extensions??? nope
         forEachBinding(b -> {
             if (b instanceof ServiceBindingSetup s) {
-                ServiceProviderSetup provider = s.entry.provider();
-                if (provider != null) {
-                    result.add(provider.operation.bean);
+                ServiceProviderSetup provider = s.resolvedProvider;
+                if (provider instanceof NamespaceServiceProviderSetup p) {
+                    result.add(p.operation().bean);
                 }
             }
         });
@@ -169,8 +181,8 @@ public final class OperationSetup implements ContextualizedElementSetup {
 
     /** {@inheritDoc} */
     @Override
-    public void forEachContext(BiConsumer<? super Class<? extends Context<?>>, ? super ContextSetup> action) {
-        contexts.forEach(action);
+    public void forEachContext(Consumer<? super ContextSetup> action) {
+        contexts.values().forEach(action);
         bean.forEachContext(action);
     }
 
@@ -185,16 +197,21 @@ public final class OperationSetup implements ContextualizedElementSetup {
         return mh;
     }
 
+    /** {@return the operation's handle} */
     public OperationHandle<?> handle() {
-        return requireNonNull(handle);
+        OperationHandle<?> h = handle;
+        if (h != null) {
+            return h;
+        }
+        throw new IllegalStateException();
     }
 
     /** {@return the initial method handle.} */
     public MethodHandle methodHandle() {
-        return pot.methodHandle();
+        return target.methodHandle();
     }
 
-    /** {@return a new mirror.} */
+    /** {@return the operation's mirror.} */
     @Override
     public OperationMirror mirror() {
         return handle().mirror();
@@ -211,7 +228,12 @@ public final class OperationSetup implements ContextualizedElementSetup {
 
     /** {@return the target of the operation.} */
     public OperationTarget target() {
-        return pot.target();
+        return target.target();
+    }
+
+    @Override
+    public String toString() {
+        return bean.name() + ":" + name();
     }
 
     /** {@return the type of operation.} */
@@ -230,45 +252,43 @@ public final class OperationSetup implements ContextualizedElementSetup {
         return OperationHandlers.getOperationHandleOperation(handle);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <H extends OperationHandle<?>> OperationSetup newMemberOperationSetup(PackedOperationInstaller installer, OperationMemberTarget<?> member,
-            MethodHandle methodHandle, Function<? super OperationTemplate.Installer, H> configurationCreator) {
-        if (installer.bean.beanKind == BeanKind.STATIC && !Modifier.isStatic(member.modifiers())) {
-            throw new CannotDeclareInstanceMemberException("Cannot create operation for non-static member " + member);
-        }
-        installer.namePrefix = member.name();
+    /**
+     * Create a new operation using the specified installer and handle factory.
+     *
+     * @param installer
+     *            the installer for the operation
+     * @param handleFactory
+     *            a function responsible for creating the operation's handle
+     * @return the new operation
+     * @throws InternalExtensionException
+     *             if the handleFactory returns null
+     */
+    static OperationSetup newOperation(PackedOperationInstaller installer, Function<? super Installer, OperationHandle<?>> handleFactory) {
+        // Cannot reuse an installer
+        installer.checkNotInstalledYet();
 
-        // super.namePrefix = member.name();
-//        if (member instanceof OperationConstructorTarget) {
-//            super.mirrorSupplier = BeanFactoryMirror::new;
-//        }
+        // Create the new operation, and set it on the installer. This must be done in order to create the handle in next step.
+        OperationSetup operation = installer.install(new OperationSetup(installer));
 
-        installer.pot = new MemberOperationTarget(member, methodHandle);
+        // Add the operation to the bean
+        installer.bean.operations.add(operation);
 
-        OperationSetup os = installer.newOperation((Function) configurationCreator);
-        return os;
-    }
-
-    static OperationSetup newOperation(PackedOperationInstaller installer, Function<? super Installer, OperationHandle<?>> newHandle) {
-        installer.checkConfigurable();
-
-        OperationSetup os = new OperationSetup(installer, installer.pot);
-        installer.operation = os;
-
-        // Create the OperationHandle
-        OperationHandle<?> handle = newHandle.apply(installer);
-        if (handle == null) {
-            throw new InternalExtensionException(newHandle + " returned null, when creating a new OperationHandle");
-        }
+        // Add the operation to any requested namespace
         if (installer.addToNamespace != null) {
-            NamespaceSetup s = NamespaceSetup.crack(installer.addToNamespace);
-            s.operations.add(os);
+            NamespaceSetup ns = NamespaceSetup.crack(installer.addToNamespace);
+            ns.operations.add(operation);
         }
-        os.handle = installer.oh = handle;
-        os.bean.operations.add(os);
-        return os;
+
+        // Create the operation's handle.
+        OperationHandle<?> handle = operation.handle = handleFactory.apply(installer);
+        if (handle == null) {
+            throw new InternalExtensionException(installer.operator.extensionType, handleFactory + " returned null, when creating a new OperationHandle");
+        }
+
+        return operation;
     }
 
     /** The parent of a nested operation. */
-    public /* value */ record EmbeddedIntoOperation(OperationSetup operation, int bindingIndex) {}
+    @ValueBased
+    public record EmbeddedIntoOperation(OperationSetup operation, int bindingIndex) {}
 }

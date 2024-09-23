@@ -66,7 +66,7 @@ public class NameFreezeTest extends AbstractApplicationTest {
     public void component_setName_cannotBeCalledAfter_link() {
         checkThrowsISE(c -> {
             BeanConfiguration ci = c.installInstance(1);
-            c.link(new EmptyAssembly());
+            c.link("child", new EmptyAssembly());
             ci.named("foo");
         }, "Cannot call this method after #link() has been invoked");
     }
@@ -128,7 +128,7 @@ public class NameFreezeTest extends AbstractApplicationTest {
     @Test
     @Disabled
     public void container_setName_cannotBeCalledAfter_link() {
-        checkThrowsISE(c -> c.link(new EmptyAssembly()).setName("Bar"), "Cannot call this method after #link() has been invoked");
+        checkThrowsISE(c -> c.link("child", new EmptyAssembly()).setName("Bar"), "Cannot call this method after #link() has been invoked");
     }
 
     /**

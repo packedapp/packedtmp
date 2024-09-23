@@ -24,9 +24,8 @@ import app.packed.bean.BeanMirror;
 import app.packed.extension.BaseExtensionMirror;
 import app.packed.service.Export;
 import app.packed.service.Provide;
-import app.packed.service.ServiceableBeanConfiguration;
+import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.mirror.oldMaybe.ExportedServiceMirror;
-import app.packed.service.mirror.oldMaybe.ProvidedServiceMirror;
 
 /**
  *
@@ -37,7 +36,7 @@ public class CheckCycles extends BaseAssembly {
     @Override
     protected void build() {
         //bean().multiInstall(A.class).provide();
-        ServiceableBeanConfiguration<A> aaa = base().install(A.class).allowMultiClass();
+        ProvideableBeanConfiguration<A> aaa = base().install(A.class).allowMultiClass();
         aaa.provide();
         //aaa.provide();
         provide(A.class);
@@ -51,7 +50,7 @@ public class CheckCycles extends BaseAssembly {
             System.out.println(b.beanClass().getSimpleName() + " " + b.factoryOperation().get().target());
         }
 
-        Collection<ProvidedServiceMirror> c = am.use(BaseExtensionMirror.class).serviceProviders().values();
+//        Collection<ProvidedServiceMirror> c = am.use(BaseExtensionMirror.class).serviceProviders().values();
 
         Collection<ExportedServiceMirror> ex = am.use(BaseExtensionMirror.class).serviceExports().values();
 
@@ -59,7 +58,7 @@ public class CheckCycles extends BaseAssembly {
 
         System.out.println(b.componentPath() + " " + b.dependencies().extensions());
 
-        c.forEach(e -> System.out.println(e.bean().componentPath() + " provided by " + e.key()));
+       // c.forEach(e -> System.out.println(e.bean().componentPath() + " provided by " + e.key()));
 
         ex.forEach(e -> System.out.println(e.bean().componentPath() + " exported by " + e.key()));
     }

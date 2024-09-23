@@ -18,10 +18,14 @@ package internal.app.packed.build;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.ScopedValue.Carrier;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
+import app.packed.assembly.Assembly;
 import app.packed.build.BuildProcess;
+import app.packed.util.Nullable;
 import internal.app.packed.application.PackedApplicationInstaller;
+import internal.app.packed.assembly.AssemblySetup;
 
 /**
  *
@@ -34,6 +38,10 @@ public final class PackedBuildProcess implements BuildProcess {
 
     private static final ScopedValue<PackedBuildProcess> VAR = ScopedValue.newInstance();
 
+    /** The active assembly. */
+    @Nullable
+    private AssemblySetup active;
+
     public final PackedApplicationInstaller<?> application;
 
     private final long processId = PROCESS_ID_BUILDER.incrementAndGet();
@@ -43,6 +51,10 @@ public final class PackedBuildProcess implements BuildProcess {
     public PackedBuildProcess(PackedApplicationInstaller<?> application) {
         this.application = requireNonNull(application);
         this.thread = Thread.currentThread();
+    }
+
+    public Carrier carrier() {
+        return ScopedValue.where(PackedBuildProcess.VAR, this);
     }
 
     public void checkBuildThread() {
@@ -57,19 +69,35 @@ public final class PackedBuildProcess implements BuildProcess {
 
     /** {@inheritDoc} */
     @Override
-    public long processId() {
-        return processId;
-    }
-
-    public Carrier carrier() {
-        return ScopedValue.where(PackedBuildProcess.VAR, this);
-    }
-
-    public static PackedBuildProcess get() {
-        return VAR.get();
+    public Optional<Class<? extends Assembly>> currentAssembly() {
+        AssemblySetup a = active;
+        if (a == null) {
+            return Optional.empty();
+        }
+        return Optional.of(a.assembly.getClass());
     }
 
     public void finished() {
         thread = null;
+    }
+
+    public void pop(AssemblySetup assembly) {
+        this.active = assembly;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long processId() {
+        return processId;
+    }
+
+    public AssemblySetup push(AssemblySetup assembly) {
+        AssemblySetup current = active;
+        this.active = requireNonNull(assembly);
+        return current;
+    }
+
+    public static PackedBuildProcess get() {
+        return VAR.get();
     }
 }

@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 import java.util.EnumSet;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanTrigger.InheritableBindingClassBeanTrigger;
+import app.packed.context.InheritableContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerWirelets.ContainerOverrideNameWirelet;
@@ -106,7 +106,7 @@ import internal.app.packed.container.wirelets.WrappingWirelet;
 // So now the "User" wirelet is just plain wirelet
 
 // Specified class must be visible when querying
-@InheritableBindingClassBeanTrigger(extension = BaseExtension.class)
+@InheritableContextualServiceProvider(extension = BaseExtension.class)
 public abstract class Wirelet {
 
     // How do com
@@ -225,9 +225,9 @@ public abstract class Wirelet {
     }
 
     /**
-     * Returns a wirelet that will set the name of the container to the specified name.
+     * Returns a wirelet that will set the name of the application to the specified name.
      * <p>
-     * This wirelet override any name that might previously have been set, for example, via
+     * This wirelet will have precedens over any name being set when building the application, for example, via
      * {@link ContainerConfiguration#named(String)}.
      * <p>
      *
@@ -235,9 +235,7 @@ public abstract class Wirelet {
      *            the name of the container
      * @return a wirelet that can be used to override the name of a container
      */
-    // String intrapolation? Wirelet.ContainerMirror?
-    // StringTemplate? Hvor fx navn kommer
-    public static Wirelet named(String name) {
+    public static Wirelet renameApplication(String name) {
         return new ContainerOverrideNameWirelet(name);
     }
 

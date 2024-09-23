@@ -22,4 +22,5 @@ import app.packed.bean.BeanElement.BeanClass;
  */
 public non-sealed abstract class PackedBeanClass extends PackedBeanElement implements BeanClass {
 
+
 }

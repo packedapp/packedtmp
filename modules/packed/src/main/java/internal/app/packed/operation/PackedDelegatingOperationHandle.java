@@ -70,7 +70,7 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
     public OperationHandle<?> newOperation(ExtensionSetup extension, PackedOperationTemplate template) {
         // checkConfigurable
         PackedOperationInstaller poi = template.newInstaller(operationType, bean, extension);
-        poi.pot = new MemberOperationTarget(target, methodHandle);
+        poi.operationTarget = new MemberOperationTarget(target, methodHandle);
 
         OperationSetup os = poi.newOperation(OperationHandle::new);
 

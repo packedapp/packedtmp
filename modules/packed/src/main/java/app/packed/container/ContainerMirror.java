@@ -14,14 +14,14 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 import app.packed.build.hook.BuildHookMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
 import app.packed.context.ContextMirror;
 import app.packed.context.ContextualizedElementMirror;
+import app.packed.context.InheritableContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
@@ -45,8 +45,8 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * <p>
  * At runtime you can have a ContainerMirror injected
  */
-@BindingClassBeanTrigger(extension = BaseExtension.class)
-public non-sealed class ContainerMirror implements ComponentMirror , ContextualizedElementMirror , ContainerLocal.Accessor {
+@InheritableContextualServiceProvider(extension = BaseExtension.class)
+public non-sealed class ContainerMirror implements ComponentMirror, ContextualizedElementMirror, ContainerBuildLocal.Accessor {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
@@ -60,7 +60,6 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
             return ExtensionModel.extractE(EXTRACTOR, type);
         }
     };
-
 
     /** The container we are mirroring. */
     final ContainerHandle<?> handle;
@@ -99,7 +98,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
      * need to include those.
      */
     public Stream<BeanMirror> beans() {
-        return allBeans().filter(m -> m.declaredBy() == BuildAuthority.application());
+        return allBeans().filter(m -> m.owner() == BuildActor.application());
     }
 
     /**
@@ -107,6 +106,11 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
      */
     public Stream<BeanMirror> beansInContainerLifetime() {
         return handle.container.beans.stream().filter(b -> b.lifetime == handle.container.lifetime).map(b -> b.mirror());
+    }
+
+    /** {@return the extension that installed the container} */
+    public final Class<? extends Extension<?>> installedByExtension() {
+        return BaseExtension.class; // TODO fix
     }
 
     /** {@return a set of all boundaries to this container's parent. Or empty if family root.} */
@@ -234,7 +238,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Contextuali
      * @return the name of this container
      */
     public String name() {
-        return handle.container.name;
+        return handle.container.name();
     }
 
     /** {@return all the namespaces this container operates within.} */

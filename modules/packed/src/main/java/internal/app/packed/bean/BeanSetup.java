@@ -5,20 +5,19 @@ import static java.util.Objects.requireNonNull;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanBuildHook;
+import app.packed.bean.BeanBuildLocal.Accessor;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanElement;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanLocal.Accessor;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.BeanTemplate;
@@ -26,7 +25,7 @@ import app.packed.binding.BindableVariable;
 import app.packed.binding.ComputedConstant;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 import app.packed.build.hook.BuildHook;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
@@ -36,20 +35,23 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.PackedBeanInstaller.BeanFactoryOperationHandle;
 import internal.app.packed.bean.scanning.BeanScanner;
 import internal.app.packed.bean.scanning.PackedBeanElement;
-import internal.app.packed.binding.BindingResolution;
-import internal.app.packed.binding.BindingResolution.FromConstant;
-import internal.app.packed.binding.BindingResolution.FromLifetimeArena;
-import internal.app.packed.binding.BindingResolution.FromOperationResult;
+import internal.app.packed.binding.BindingAccessor;
+import internal.app.packed.binding.BindingAccessor.FromCodeGenerated;
+import internal.app.packed.binding.BindingAccessor.FromConstant;
+import internal.app.packed.binding.BindingAccessor.FromLifetimeArena;
+import internal.app.packed.binding.BindingAccessor.FromOperationResult;
+import internal.app.packed.binding.SuppliedBindingKind;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
+import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
+import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.handlers.BeanHandlers;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
@@ -60,28 +62,30 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.operation.PackedOp.NewOS;
 import internal.app.packed.operation.PackedOperationInstaller;
+import internal.app.packed.operation.PackedOperationInstaller.BeanFactoryOperationHandle;
 import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationTarget;
 import internal.app.packed.operation.PackedOperationTemplate;
-import internal.app.packed.service.ServiceNamespaceHandle;
+import internal.app.packed.service.MainServiceNamespaceHandle;
+import internal.app.packed.service.ServiceProviderSetup.BeanServiceProviderSetup;
+import internal.app.packed.service.util.SequencedServiceMap;
 
 /** The internal configuration of a bean. */
-public final class BeanSetup implements ContextualizedElementSetup, BuildLocalSource {
-
-    /** A bean local for variables that use {@link app.packed.extension.BaseExtensionPoint.CodeGenerated}. */
-    public static final PackedBeanLocal<Map<Key<?>, BindableVariable>> CODEGEN = new PackedBeanLocal<>(() -> new HashMap<>());
+public final class BeanSetup implements ContextualizedElementSetup, BuildLocalSource, ComponentSetup {
 
     /** A list ofIllegal bean classes. Void is technically allowed but {@link #installWithoutSource()} needs to used. */
-    // Align with Key
+    // TODO Align with Key and allowed classes
     public static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Class.class, Key.class, Op.class, Optional.class, Provider.class);
-
-    // TODO Specialized bindings we will look up before a service
-    public final HashMap<Key<?>, ?> beanBindings = new HashMap<>();
 
     /** The bean class, is typical void.class for functional beans. */
     public final Class<?> beanClass;
 
     /** The kind of bean. */
     public final BeanKind beanKind;
+
+    /** Bean services that have been bound specifically to the bean. */
+    public final SequencedServiceMap<BindableVariable> beanServices = new SequencedServiceMap<>();
+
+    public final SequencedServiceMap<BeanServiceProviderSetup> serviceProviders = new SequencedServiceMap<>();
 
     /** The source ({@code null}, {@link Class}, {@link PackedOp}, otherwise the bean instance) */
     @Nullable
@@ -95,6 +99,9 @@ public final class BeanSetup implements ContextualizedElementSetup, BuildLocalSo
 
     private HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
 
+    /**
+     * The bean's handle. Initialized from {@link #newBean(PackedBeanInstaller, Class, BeanSourceKind, Object, Function)}
+     */
     @Nullable
     private BeanHandle<?> handle;
 
@@ -116,7 +123,7 @@ public final class BeanSetup implements ContextualizedElementSetup, BuildLocalSo
     public final BeanOperationStore operations = new BeanOperationStore();
 
     /** The owner of the bean. */
-    public final AuthoritySetup owner;
+    public final AuthoritySetup<?> owner;
 
     @Nullable
     public BeanScanner scanner;
@@ -143,9 +150,12 @@ public final class BeanSetup implements ContextualizedElementSetup, BuildLocalSo
             this.lifetimeStoreIndex = -1;
             // containerLifetime.addDetachedChildBean(bls);
         }
+        for (PackedContextTemplate t : installer.template.contexts().values()) {
+            contexts.put(t.contextClass(), new ContextSetup(t, this));
+        }
     }
 
-    public BindingResolution beanInstanceBindingProvider() {
+    public BindingAccessor beanInstanceBindingProvider() {
         if (beanSourceKind == BeanSourceKind.INSTANCE) {
             return new FromConstant(beanSource.getClass(), beanSource);
         } else if (beanKind == BeanKind.CONTAINER) { // we've already checked if instance
@@ -160,7 +170,10 @@ public final class BeanSetup implements ContextualizedElementSetup, BuildLocalSo
         requireNonNull(key, "key is null");
         requireNonNull(supplier, "supplier is null");
 
-        Map<Key<?>, BindableVariable> m = locals().get(BeanSetup.CODEGEN, this);
+        // Add the service provider for the bean
+        serviceProviders.put(key, new BeanServiceProviderSetup(key, new FromCodeGenerated(supplier, SuppliedBindingKind.CODEGEN)));
+
+        SequencedServiceMap<BindableVariable> m = beanServices;
         BindableVariable var = m.get(key);
         if (var == null) {
             throw new IllegalArgumentException("The specified bean must have an injection site that uses @" + ComputedConstant.class.getSimpleName() + " " + key
@@ -198,8 +211,8 @@ public final class BeanSetup implements ContextualizedElementSetup, BuildLocalSo
 
     /** {@inheritDoc} */
     @Override
-    public void forEachContext(BiConsumer<? super Class<? extends Context<?>>, ? super ContextSetup> action) {
-        contexts.forEach(action);
+    public void forEachContext(Consumer<? super ContextSetup> action) {
+        contexts.values().forEach(action);
         container.forEachContext(action);
     }
 
@@ -219,7 +232,7 @@ public final class BeanSetup implements ContextualizedElementSetup, BuildLocalSo
         PackedOperationTemplate template = (PackedOperationTemplate) OperationTemplate.defaults().reconfigure(c -> c.returnType(beanClass));
 
         PackedOperationInstaller installer = template.newInstaller(OperationType.of(beanClass), this, installedBy);
-        installer.pot = new BeanAccessOperationTarget();
+        installer.operationTarget = new BeanAccessOperationTarget();
         installer.namePrefix = "InstantAccess";
 
         return OperationSetup.crack(installer.install(OperationHandle::new));
@@ -261,11 +274,11 @@ public final class BeanSetup implements ContextualizedElementSetup, BuildLocalSo
 //        return new PackedNamespacePath(paths);
 //    }
 
-    public BuildAuthority owner() {
+    public BuildActor owner() {
         return owner.authority();
     }
 
-    public ServiceNamespaceHandle serviceNamespace() {
+    public MainServiceNamespaceHandle serviceNamespace() {
         if (owner instanceof ExtensionSetup es) {
             return es.sm();
         } else {
@@ -294,6 +307,11 @@ public final class BeanSetup implements ContextualizedElementSetup, BuildLocalSo
         case BeanIntrospector b -> crack(b);
         case BeanMirror b -> crack(b);
         };
+    }
+
+    public boolean isConfigurable() {
+
+        return true;
     }
 
     /**
@@ -338,21 +356,17 @@ public final class BeanSetup implements ContextualizedElementSetup, BuildLocalSo
      *            a function responsible for creating the bean's configuration
      * @return a handle for the bean
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings("unchecked")
     static <H extends BeanHandle<?>> H newBean(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
             Function<? super BeanTemplate.Installer, H> factory) {
         requireNonNull(factory, "factory is null");
         if (sourceKind != BeanSourceKind.SOURCELESS && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
         }
-        installer.checkNotInstalledYet();
-        // TODO check extension/assembly can still install beans
+        installer.checkNotInstalledYet(); // TODO check extension/assembly can still install beans
 
         // Create the Bean, this also marks this installer as unconfigurable
-        BeanSetup bean = installer.bean = new BeanSetup(installer, beanClass, sourceKind, source);
-
-        // Transfer any locals that have been set in the template or installer
-        installer.locals.forEach((l, v) -> bean.locals().set((PackedBeanLocal) l, bean, v));
+        BeanSetup bean = installer.install(new BeanSetup(installer, beanClass, sourceKind, source));
 
         // Creating an bean factory operation representing the Op if an Op was specified when creating the bean.
         if (sourceKind == BeanSourceKind.OP) {

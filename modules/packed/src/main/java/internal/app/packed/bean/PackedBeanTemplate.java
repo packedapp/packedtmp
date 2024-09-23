@@ -15,34 +15,56 @@
  */
 package internal.app.packed.bean;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import app.packed.bean.BeanBuildLocal;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanLocal;
 import app.packed.bean.BeanTemplate;
+import app.packed.context.Context;
+import app.packed.context.ContextTemplate;
 import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.PackedBuildLocal;
-import internal.app.packed.context.publish.ContextTemplate;
+import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.extension.ExtensionSetup;
 import sandbox.application.LifetimeTemplate;
 
 /** Implementation of {@link BeanTemplate}. */
 public record PackedBeanTemplate(BeanKind kind, LifetimeTemplate lifetime, OperationTemplate bot, @Nullable Class<?> createAs,
-        Map<PackedBeanLocal<?>, Object> beanLocals) implements BeanTemplate {
+        Map<PackedBeanBuildLocal<?>, Object> locals, Map<Class<? extends Context<?>>, PackedContextTemplate> contexts) implements BeanTemplate {
 
     public PackedBeanTemplate(BeanKind kind) {
-        this(kind, LifetimeTemplate.APPLICATION, null, Object.class, Map.of());
+        this(kind, LifetimeTemplate.APPLICATION, null, Object.class, Map.of(), Map.of());
     }
 
-    // Er det lifetime operationer???
     /** {@inheritDoc} */
     public PackedBeanTemplate withOperationTemplate(OperationTemplate bot) {
-        return new PackedBeanTemplate(kind, lifetime, bot, createAs, beanLocals);
+        return new PackedBeanTemplate(this.kind, this.lifetime, bot, this.createAs, this.locals, this.contexts);
+    }
+
+    public PackedBeanTemplate withContext(ContextTemplate context) {
+        HashMap<Class<? extends Context<?>>, PackedContextTemplate> cs = new HashMap<>(contexts);
+        cs.put(context.contextClass(), (PackedContextTemplate) context);
+        return new PackedBeanTemplate(this.kind, this.lifetime, this.bot, this.createAs, this.locals, Map.copyOf(cs));
+    }
+
+    public PackedBeanTemplate withBeanClass(Class<?> beanClass) {
+        return new PackedBeanTemplate(this.kind, this.lifetime, this.bot, beanClass, this.locals, this.contexts);
+    }
+
+    public PackedBeanTemplate withLifetimeTemplate(LifetimeTemplate lifetime) {
+        return new PackedBeanTemplate(this.kind, lifetime, this.bot, this.createAs, this.locals, this.contexts);
+    }
+
+    /** {@inheritDoc} */
+    public <T> PackedBeanTemplate withBeanLocals(BeanBuildLocal<T> beanLocal, T value) {
+        return new PackedBeanTemplate(this.kind, this.lifetime, bot, this.createAs,
+                PackedBuildLocal.initMap(this.locals, (PackedBeanBuildLocal<?>) beanLocal, value), this.contexts);
     }
 
     /**
@@ -54,7 +76,7 @@ public record PackedBeanTemplate(BeanKind kind, LifetimeTemplate lifetime, Opera
      *            the owner of the bean
      * @return the new bean installer
      */
-    public PackedBeanInstaller newInstaller(ExtensionSetup installingExtension, AuthoritySetup owner) {
+    public PackedBeanInstaller newInstaller(ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
         return new PackedBeanInstaller(this, installingExtension, owner);
     }
 
@@ -101,13 +123,15 @@ public record PackedBeanTemplate(BeanKind kind, LifetimeTemplate lifetime, Opera
             if (template.createAs.isPrimitive() || BeanSetup.ILLEGAL_BEAN_CLASSES.contains(template.createAs)) {
                 throw new IllegalArgumentException(template.createAs + " is not valid argument");
             }
-            return init(template.kind, template.lifetime, template.bot, template.createAs, template.beanLocals);
+            template = template.withBeanClass(clazz);
+            return this;
         }
 
         /** {@inheritDoc} */
         @Override
         public Configurator createAsBeanClass() {
-            return init(template.kind, template.lifetime, template.bot, null, template.beanLocals);
+            template = template.withBeanClass(null);
+            return this;
         }
 
         /** {@inheritDoc} */
@@ -116,23 +140,25 @@ public record PackedBeanTemplate(BeanKind kind, LifetimeTemplate lifetime, Opera
             return null;
         }
 
-        private Configurator init(BeanKind kind, LifetimeTemplate lifetime, OperationTemplate bot, @Nullable Class<?> createAs,
-                @Nullable Map<PackedBeanLocal<?>, Object> beanLocals) {
-            this.template = new PackedBeanTemplate(kind, lifetime, bot, createAs, beanLocals);
+        /** {@inheritDoc} */
+        @Override
+        public Configurator lifetime(LifetimeTemplate lifetime) {
+            template = template.withLifetimeTemplate(lifetime);
             return this;
         }
 
         /** {@inheritDoc} */
         @Override
-        public Configurator lifetime(LifetimeTemplate lifetime) {
-            return init(template.kind, lifetime, template.bot, template.createAs, template.beanLocals);
+        public <T> Configurator localSet(BeanBuildLocal<T> beanLocal, T value) {
+            template = template.withBeanLocals(beanLocal, value);
+            return this;
         }
 
         /** {@inheritDoc} */
         @Override
-        public <T> Configurator localSet(BeanLocal<T> beanLocal, T value) {
-            return init(template.kind, template.lifetime, template.bot, template.createAs,
-                    PackedBuildLocal.initMap(template.beanLocals, (PackedBeanLocal<?>) beanLocal, value));
+        public Configurator inContext(ContextTemplate context) {
+            template = template.withContext(context);
+            return this;
         }
     }
 
@@ -162,4 +188,5 @@ public record PackedBeanTemplate(BeanKind kind, LifetimeTemplate lifetime, Opera
             throw new UnsupportedOperationException();
         }
     }
+
 }

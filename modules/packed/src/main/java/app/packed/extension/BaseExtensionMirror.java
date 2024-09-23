@@ -1,17 +1,10 @@
 package app.packed.extension;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import app.packed.binding.Key;
 import app.packed.service.ServiceContract;
 import app.packed.service.mirror.oldMaybe.ExportedServiceMirror;
-import app.packed.service.mirror.oldMaybe.ProvidedServiceMirror;
-import app.packed.util.Nullable;
-import internal.app.packed.service.ExportedService;
-import internal.app.packed.service.ServiceProviderSetup;
-import internal.app.packed.service.ServiceSetup;
 
 /** A mirror for {@link BaseExtension}. */
 public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {
@@ -50,27 +43,19 @@ public final class BaseExtensionMirror extends ExtensionMirror<BaseExtension> {
     /** { @return a map of all the services that are exported by the container.} */
     @SuppressWarnings("exports")
     public Map<Key<?>, ExportedServiceMirror> serviceExports() {
-        LinkedHashMap<Key<?>, ExportedServiceMirror> result = new LinkedHashMap<>();
-        for (ExportedService e : handle.extension().container.servicesMain().exports.values()) {
-            ExportedServiceMirror mirror = (ExportedServiceMirror) e.operation.mirror();
-            result.put(e.key, mirror);
-        }
-        return Collections.unmodifiableMap(result);
+        return handle.extension().container.servicesMain().exports.toUnmodifiableSequenceMap(e -> (ExportedServiceMirror) e.operation.mirror());
     }
 
-    /** { @return a map of all the services that are provided internally in the container.} */
-    @SuppressWarnings("exports")
-    public Map<Key<?>, ProvidedServiceMirror> serviceProviders() {
-        // Not really a map view
-        LinkedHashMap<Key<?>, ProvidedServiceMirror> result = new LinkedHashMap<>();
-        for (ServiceSetup e : handle.extension().container.servicesMain().entries.values()) {
-            @Nullable
-            ServiceProviderSetup provider = e.provider();
-            if (provider != null) {
-                ProvidedServiceMirror mirror = (ProvidedServiceMirror) provider.operation.mirror();
-                result.put(e.key, mirror);
-            }
-        }
-        return Collections.unmodifiableMap(result);
-    }
+//    // Tror ikke de her overlever
+//    /** { @return a map of all the services that are provided internally in the container.} */
+//    @SuppressWarnings("exports")
+//    public Map<Key<?>, ProvidedServiceMirror> serviceProviders() {
+//        // Not really a map view
+//        LinkedHashMap<Key<?>, ProvidedServiceMirror> result = new LinkedHashMap<>();
+//        for (NamespaceServiceProviderSetup provider : handle.extension().container.servicesMain().providers) {
+//            ProvidedServiceMirror mirror = (ProvidedServiceMirror) provider.operation().mirror();
+//            result.put(provider.key(), mirror);
+//        }
+//        return Collections.unmodifiableMap(result);
+//    }
 }

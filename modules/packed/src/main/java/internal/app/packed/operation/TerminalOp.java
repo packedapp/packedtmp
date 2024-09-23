@@ -57,7 +57,7 @@ public abstract sealed class TerminalOp<R> extends PackedOp<R> {
 
             PackedOperationInstaller poi = template.newInstaller(type, newOs.bean(), newOs.operator());
             poi.embeddedInto = newOs.embeddedIn();
-            poi.pot = new FunctionOperationTarget(mhOperation, samType, implementationMethod);
+            poi.operationTarget = new FunctionOperationTarget(mhOperation, samType, implementationMethod);
 
             // Add to unresolved?
             return poi.newOperation(newOs.newHandle());
@@ -76,7 +76,7 @@ public abstract sealed class TerminalOp<R> extends PackedOp<R> {
         public OperationSetup newOperationSetup(NewOS newOs) {
             PackedOperationInstaller installer = newOs.template().newInstaller(type, newOs.bean(), newOs.operator());
             installer.embeddedInto = newOs.embeddedIn();
-            installer.pot = new MethodHandleOperationTarget(mhOperation);
+            installer.operationTarget = new MethodHandleOperationTarget(mhOperation);
             return installer.newOperation(newOs.newHandle() );
         }
     }

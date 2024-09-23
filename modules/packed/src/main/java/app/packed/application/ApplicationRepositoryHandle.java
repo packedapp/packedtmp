@@ -38,13 +38,13 @@ class ApplicationRepositoryHandle<H extends ApplicationHandle<?, A>, A> extends 
 
     private final ExtensionSetup baseExtension;
 
-    private final AuthoritySetup owner;
+    private final AuthoritySetup<?> owner;
 
     final BuildApplicationRepository repository = new BuildApplicationRepository();
 
     final HashMap<PackedApplicationTemplate<?>, Boolean> templates = new HashMap<>();
 
-    private ApplicationRepositoryHandle(Installer installer, ExtensionSetup baseExtension, AuthoritySetup owner) {
+    private ApplicationRepositoryHandle(Installer installer, ExtensionSetup baseExtension, AuthoritySetup<?> owner) {
         super(installer);
         this.baseExtension = baseExtension;
         this.owner = owner;
@@ -72,11 +72,11 @@ class ApplicationRepositoryHandle<H extends ApplicationHandle<?, A>, A> extends 
     /** {@inheritDoc} */
     @Override
     protected void onAssemblyClose() {
-        bindInstance(BuildApplicationRepository.class, repository);
+        bindServiceInstance(BuildApplicationRepository.class, repository);
         BeanSetup.crack(this).container.application.subChildren.add(repository);
     }
 
-    static <A, H extends ApplicationHandle<?, A>> ApplicationRepositoryConfiguration<H, A> install(ExtensionSetup es, AuthoritySetup owner) {
+    static <A, H extends ApplicationHandle<?, A>> ApplicationRepositoryConfiguration<H, A> install(ExtensionSetup es, AuthoritySetup<?> owner) {
         Installer installer = ApplicationRepositoryHandle.REPOSITORY_TEMPLATE.newInstaller(es, owner);
 
         ApplicationRepositoryHandle<H, A> h = installer.install(PackedApplicationRepository.class, i -> new ApplicationRepositoryHandle<>(i, es, owner));

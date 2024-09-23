@@ -23,7 +23,7 @@ import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
-import app.packed.component.guest.FromGuest;
+import app.packed.component.guest.FromComponentGuest;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
@@ -159,7 +159,7 @@ interface ProgramY extends AutoCloseable {
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementation(@FromGuest String name, @FromGuest ServiceLocator services, @FromGuest ManagedLifecycle runtime)
+record ProgramImplementation(@FromComponentGuest String name, @FromComponentGuest ServiceLocator services, @FromComponentGuest ManagedLifecycle runtime)
         implements ProgramY {
 
     ProgramImplementation {
@@ -169,7 +169,7 @@ record ProgramImplementation(@FromGuest String name, @FromGuest ServiceLocator s
     static ContainerTemplateLink EL = ContainerTemplateLink.of(MethodHandles.lookup(), Ele.MyE.class, "doo").provideExpose(Long.class).build();
 
     /** An driver for creating App instances. */
-    static final BootstrapApp<ProgramImplementation> DRIVER = ApplicationTemplate.of(ProgramImplementation.class, c -> c.container(ContainerTemplate.MANAGED)).newBootstrapApp();
+    static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ApplicationTemplate.of(ProgramImplementation.class, c -> c.container(ContainerTemplate.MANAGED)));
 //
 //            BootstrapApp.of(ProgramImplementation.class, c -> {
 //        c.managedLifetime();

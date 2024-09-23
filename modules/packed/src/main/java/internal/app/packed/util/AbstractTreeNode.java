@@ -1,6 +1,5 @@
 package internal.app.packed.util;
 
-
 import static java.util.Objects.requireNonNull;
 
 import java.util.Iterator;
@@ -73,6 +72,28 @@ public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
         return (T) this;
     }
 
+ // Returns an iterator over the children of this node
+    public Iterator<T> childIterator() {
+        return new Iterator<>() {
+            private T current = treeFirstChild;
+
+            @Override
+            public boolean hasNext() {
+                return current != null;
+            }
+
+            @Override
+            public T next() {
+                if (current == null) {
+                    throw new NoSuchElementException();
+                }
+                T result = current;
+                // Move to the next sibling
+                current = ((AbstractTreeNode<T>) current).treeNextSibling;
+                return result;
+            }
+        };
+    }
     /**
      * Returns a lazy stream that includes this node and all its children in pre-order.
      *
@@ -82,13 +103,12 @@ public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
         Iterator<T> iterator = new PreOrderIterator<>(self());
 
         // Convert the iterator to a Spliterator with appropriate characteristics (ORDERED, NONNULL)
-        return StreamSupport.stream(
-                Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED | Spliterator.NONNULL), false);
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED | Spliterator.NONNULL), false);
     }
 
     /**
-     * Returns a lazy stream that includes this node and its descendants in pre-order, excluding any node and its
-     * subtree if it does not satisfy the given predicate.
+     * Returns a lazy stream that includes this node and its descendants in pre-order, excluding any node and its subtree if
+     * it does not satisfy the given predicate.
      *
      * @param predicate
      *            the predicate to apply to nodes
@@ -98,8 +118,7 @@ public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
         Iterator<T> iterator = new FilteredPreOrderIterator<>(self(), predicate);
 
         // Convert the iterator to a Spliterator with appropriate characteristics (ORDERED, NONNULL)
-        return StreamSupport.stream(
-                Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED | Spliterator.NONNULL), false);
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED | Spliterator.NONNULL), false);
     }
 
     /** A pre-order iterator for a rooted tree. */

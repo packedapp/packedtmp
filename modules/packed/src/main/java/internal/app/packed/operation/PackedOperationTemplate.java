@@ -10,14 +10,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.context.Context;
+import app.packed.context.ContextTemplate;
 import app.packed.extension.ExtensionContext;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.scanning.BeanScannerExtensionRef;
+import internal.app.packed.bean.scanning.BeanScannerParticipant;
 import internal.app.packed.context.PackedContextTemplate;
-import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.extension.ExtensionSetup;
 
 public final class PackedOperationTemplate implements OperationTemplate {
@@ -64,14 +64,14 @@ public final class PackedOperationTemplate implements OperationTemplate {
         return new PackedOperationTemplateDescriptor(this);
     }
 
-    public PackedOperationInstaller newInstaller(BeanScannerExtensionRef extension, MethodHandle methodHandle, OperationMemberTarget<?> target,
+    public PackedOperationInstaller newInstaller(BeanScannerParticipant extension, MethodHandle methodHandle, OperationMemberTarget<?> target,
             OperationType operationType) {
         return new PackedOperationInstaller(this, operationType, extension.scanner.bean, extension.extension) {
 
             @SuppressWarnings("unchecked")
             @Override
             public final <H extends OperationHandle<?>> H install(Function<? super OperationTemplate.Installer, H> handleFactory) {
-                OperationSetup operation = OperationSetup.newMemberOperationSetup(this, target, methodHandle, handleFactory);
+                OperationSetup operation = PackedOperationInstaller.newOperationFromMember(this, target, methodHandle, handleFactory);
                 extension.scanner.unBoundOperations.add(operation);
                 return (H) operation.handle();
             }
@@ -79,15 +79,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
     }
 
     public PackedOperationInstaller newInstaller(OperationType operationType, BeanSetup bean, ExtensionSetup operator) {
-        PackedOperationInstaller pai = new PackedOperationInstaller(this, operationType, bean, operator) {
-
-            @SuppressWarnings({ "unchecked", "rawtypes" })
-            @Override
-            public final <H extends OperationHandle<?>> H install(Function<? super OperationTemplate.Installer, H> handleFactory) {
-                return (H) newOperation((Function) handleFactory).handle();
-            }
-        };
-        return pai;
+        return new PackedOperationInstaller(this, operationType, bean, operator);
     }
 
     /** {@inheritDoc} */
@@ -191,4 +183,5 @@ public final class PackedOperationTemplate implements OperationTemplate {
             return pot.methodType;
         }
     }
+
 }

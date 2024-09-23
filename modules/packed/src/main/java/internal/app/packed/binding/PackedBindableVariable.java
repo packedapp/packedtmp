@@ -29,7 +29,7 @@ import app.packed.binding.BindingMirror;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
 import app.packed.context.Context;
-import app.packed.context.NotInContextException;
+import app.packed.context.UnavilableContextException;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.operation.Op;
@@ -40,10 +40,10 @@ import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanScanner;
 import internal.app.packed.bean.scanning.PackedBeanElement;
-import internal.app.packed.binding.BindingResolution.FromCodeGenerated;
-import internal.app.packed.binding.BindingResolution.FromConstant;
-import internal.app.packed.binding.BindingResolution.FromInvocationArgument;
-import internal.app.packed.binding.BindingResolution.FromOperationResult;
+import internal.app.packed.binding.BindingAccessor.FromCodeGenerated;
+import internal.app.packed.binding.BindingAccessor.FromConstant;
+import internal.app.packed.binding.BindingAccessor.FromInvocationArgument;
+import internal.app.packed.binding.BindingAccessor.FromOperationResult;
 import internal.app.packed.binding.BindingSetup.HookBindingSetup;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.extension.ExtensionSetup;
@@ -114,7 +114,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
         return scanner.bean;
     }
 
-    private void bind(BindingResolution provider) {
+    private void bind(BindingAccessor provider) {
         assert (operation.bindings[index] == null);
         operation.bindings[index] = new HookBindingSetup(operation, index, bindingExtension.authority(), provider);
     }
@@ -124,13 +124,13 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
     public PackedBindableVariable bindComputedConstant(Supplier<?> supplier) {
         checkBeforeBind();
         // We can't really do any form of type checks until we call the supplier
-        bind(new FromCodeGenerated(supplier));
+        bind(new FromCodeGenerated(supplier, SuppliedBindingKind.CODEGEN));
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedBindableVariable bindInstant(@Nullable Object obj) {
+    public PackedBindableVariable bindInstance(@Nullable Object obj) {
         checkBeforeBind();
         if (obj == null) {
             if (variable.rawType().isPrimitive()) {
@@ -155,11 +155,10 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
     /** {@inheritDoc} */
     @Override
     public PackedBindableVariable bindContext(Class<? extends Context<?>> context) {
-        // todo normalize
         if (context != ExtensionContext.class) {
             ContextSetup findContext = operation.findContext(context);
             if (findContext == null) {
-                throw new NotInContextException("oops " + context);
+                throw new UnavilableContextException("oops " + context);
             }
         }
         MethodType mt = operation.template.descriptor().invocationType();
@@ -172,7 +171,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
     @Override
     public PackedBindableVariable bindInvocationArgument(int argumentIndex) {
         checkBeforeBind();
-        if (operation.operator != bindingExtension) {
+        if (operation.installedByExtension != bindingExtension) {
             throw new UnsupportedOperationException("For binding " + variable);
         }
         checkIndex(argumentIndex, operation.template.descriptor().invocationType().parameterCount());
@@ -203,7 +202,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
 
     private void checkBeforeBind() {
         checkNotBound();
-        if (operation.pot instanceof MemberOperationTarget mos && mos.target instanceof OperationFieldTarget fos && Modifier.isStatic(fos.modifiers())
+        if (operation.target instanceof MemberOperationTarget mos && mos.target instanceof OperationFieldTarget fos && Modifier.isStatic(fos.modifiers())
                 && !allowStaticFieldBinding) {
             throw new BeanInstallationException("Static field binding is not supported for");
         }
@@ -218,7 +217,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
     /** {@inheritDoc} */
     @Override
     public Class<? extends Extension<?>> invokedBy() {
-        return operation.operator.extensionType;
+        return operation.installedByExtension.extensionType;
     }
 
     /** {@return whether or not a binding has already been created.} */

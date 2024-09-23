@@ -34,6 +34,9 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
 
 /**
+ * A container handle is a build-time reference to an installed container. They are created by the framework when an
+ * extension installs a container on behalf of the user (or an another extension).
+ * <p>
  * An operation handle is direct reference to an underlying method, constructor, field, or similar low-level operation.
  * <p>
  * Operation handles are the main way in which the framework supports such as annotations on fields and methods.
@@ -101,10 +104,6 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     /** The lazy generated operation mirror. */
     private OperationMirror mirror;
 
-    // Hmm there is a difference between operating within contexts./
-    // And invocation argument contexts
-    // Set<Class<? extends Context<?>>> contexts();
-
     /** The internal operation configuration. */
     final OperationSetup operation;
 
@@ -115,7 +114,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
      *            the installer for the operation
      */
     public OperationHandle(OperationTemplate.Installer installer) {
-        this.operation = PackedOperationInstaller.crack(installer);
+        this.operation = ((PackedOperationInstaller) installer).toHandle();
     }
 
     /**
@@ -167,13 +166,20 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
             throw new UnsupportedOperationException();
         }
         // TODO we need to check that s is still active
-        return new PackedBindableVariable(operation.bean.scanner, operation, index, operation.operator, operation.type.parameter(index));
+        return new PackedBindableVariable(operation.bean.scanner, operation, index, operation.installedByExtension, operation.type.parameter(index));
     }
 
     /** {@inheritDoc} */
     @Override
     public final ComponentPath componentPath() {
         return operation.componentPath();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final void componentTag(String... tags) {
+        checkIsConfigurable();
+        operation.bean.container.application.ctm.addComponentTags(operation, tags);
     }
 
     /** { @return the user exposed configuration of the operation} */
@@ -222,7 +228,8 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     /** {@inheritDoc} */
     @Override
     public final boolean isConfigurable() {
-        return operation.operator.isConfigurable();
+        // Hah der er forskel paa handle og configuration
+        return operation.isConfigurable();
     }
 
     @Override
@@ -254,7 +261,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
 
     /** {@return the operator of the operation.} */
     public final Class<? extends Extension<?>> operator() {
-        return operation.operator.extensionType;
+        return operation.installedByExtension.extensionType;
     }
 
     /** {@return the target of this operation.} */

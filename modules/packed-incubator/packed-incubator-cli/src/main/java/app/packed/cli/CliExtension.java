@@ -25,7 +25,7 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
-import app.packed.container.ContainerLocal;
+import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.extension.ExtensionHandle;
@@ -45,7 +45,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
     // Vi har 1 per application.. Vi kan fx stadig injecte globalle parameters i enhver lifetime.
     // Det er bare commands der ikke fungere
-    static final ContainerLocal<Boolean> LAUNCHED = ContainerLocal.of();
+    static final ContainerBuildLocal<Boolean> LAUNCHED = ContainerBuildLocal.of();
 
     /** No. */
 

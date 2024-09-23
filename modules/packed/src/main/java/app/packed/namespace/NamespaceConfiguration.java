@@ -17,7 +17,7 @@ package app.packed.namespace;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerPropagator;
 import app.packed.extension.Extension;
@@ -44,7 +44,7 @@ public non-sealed abstract class NamespaceConfiguration<E extends Extension<E>> 
         // TODO check that the extension is the right type for the namespace
     }
 
-    public final BuildAuthority authority() {
+    public final BuildActor authority() {
         return ns().owner.authority();
     }
 

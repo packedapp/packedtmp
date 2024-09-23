@@ -26,8 +26,8 @@ import java.util.Map;
 import app.packed.bean.BeanMetaBeanTrigger;
 import app.packed.bean.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.bean.BeanTrigger.AnnotatedVariableBeanTrigger;
-import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
-import app.packed.bean.BeanTrigger.InheritableBindingClassBeanTrigger;
+import app.packed.context.ContextualServiceProvider;
+import app.packed.context.InheritableContextualServiceProvider;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
@@ -105,12 +105,12 @@ public final class BeanHookModel {
 
         @Override
         protected ParameterType computeValue(Class<?> type) {
-            BindingClassBeanTrigger h = type.getAnnotation(BindingClassBeanTrigger.class);
+            ContextualServiceProvider h = type.getAnnotation(ContextualServiceProvider.class);
 
-            InheritableBindingClassBeanTrigger ih = type.getAnnotation(InheritableBindingClassBeanTrigger.class);
+            InheritableContextualServiceProvider ih = type.getAnnotation(InheritableContextualServiceProvider.class);
 
             if (ih != null && type.isInterface()) {
-                throw new InternalExtensionException("@" + InheritableBindingClassBeanTrigger.class.getSimpleName()
+                throw new InternalExtensionException("@" + InheritableContextualServiceProvider.class.getSimpleName()
                         + " cannot be used on interfaces as interface annotations are never inherited, class = " + type);
             }
 
@@ -134,7 +134,7 @@ public final class BeanHookModel {
             if (ih != null) {
                 Class<?> clazz = type;
                 while (clazz != null) {
-                    if (clazz.getDeclaredAnnotation(InheritableBindingClassBeanTrigger.class) != null) {
+                    if (clazz.getDeclaredAnnotation(InheritableContextualServiceProvider.class) != null) {
                         break;
                     }
                     clazz = clazz.getSuperclass();

@@ -21,9 +21,9 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.build.BuildMirror;
 import app.packed.container.ContainerMirror;
+import app.packed.context.ContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.lifetime.ContainerLifetimeMirror;
@@ -39,7 +39,7 @@ import app.packed.util.TreeView;
 // Family < Deployment < Application < Container < Bean < Operation < Binding | Interceptor
 
 //Cluster|Node? < Java Process(Logical name) < Family
-@BindingClassBeanTrigger(extension = BaseExtension.class)
+@ContextualServiceProvider(extension = BaseExtension.class)
 public class DeploymentMirror implements BuildMirror {
 
     /** The deployment we are mirroring. */

@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanTrigger.InheritableBindingClassBeanTrigger;
 import app.packed.binding.BindingMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
@@ -34,6 +33,7 @@ import app.packed.context.Context;
 import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
+import app.packed.context.InheritableContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
@@ -53,8 +53,8 @@ import sandbox.operation.mirror.DependenciesMirror;
  * <li>Must be located in the same module as the extension it is a member of.</li>
  * </ul>
  */
-@InheritableBindingClassBeanTrigger(extension = BaseExtension.class)
-public non-sealed class OperationMirror implements ComponentMirror , ContextualizedElementMirror , ContextScopeMirror , ServiceProviderMirror {
+@InheritableContextualServiceProvider(extension = BaseExtension.class)
+public non-sealed class OperationMirror implements ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderMirror {
 
     /** The handle of the operation we are mirroring. */
     private final OperationHandle<?> handle;
@@ -98,6 +98,11 @@ public non-sealed class OperationMirror implements ComponentMirror , Contextuali
         return handle.componentPath();
     }
 
+    /** {@return the extension that installed the operation} */
+    public final Class<? extends Extension<?>> installedByExtension() {
+        return handle.operation.installedByExtension.extensionType;
+    }
+
     /** {@return an unchangeable set view of all the contexts that the operation operates within.} */
     @Override
     public final Map<Class<? extends Context<?>>, ContextMirror> contexts() {
@@ -126,7 +131,7 @@ public non-sealed class OperationMirror implements ComponentMirror , Contextuali
 
     /** {@return the extension that can invoke the operation.} */
     public final Class<? extends Extension<?>> invokedBy() {
-        return handle.operation.operator.extensionType;
+        return handle.operation.installedByExtension.extensionType;
     }
 
     /**

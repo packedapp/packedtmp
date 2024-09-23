@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
 
+import app.packed.binding.Key;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
 
@@ -48,6 +49,29 @@ public non-sealed class OperationConfiguration extends ComponentConfiguration {
     @Override
     protected final OperationHandle<?> handle() {
         return handle;
+    }
+
+
+    public <K> OperationConfiguration bindServiceInstance(Class<K> key, K instance) {
+        return bindServiceInstance(Key.of(key), instance);
+    }
+
+    /**
+     * Binds a (bean) service from the specified key to the specified instance.
+     *
+     * @param <K>
+     *            type of the instance
+     * @param key
+     *            the key of the service
+     * @param instance
+     *            the instance to bind the service to
+     * @return this configuration
+     * @throws IllegalArgumentException
+     *             if the bean does not have binding that are resolved as a service with the specified key. What if it wants
+     *             to use at runtime using service locator?
+     */
+    public <K> OperationConfiguration bindServiceInstance(Key<K> key, K instance) {
+        return this;
     }
 
     public OperationConfiguration named(String name) {

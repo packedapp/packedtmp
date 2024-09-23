@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.assembly.AssemblyMirror;
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 import app.packed.build.BuildCodeSourceMirror;
 import app.packed.build.BuildMirror;
 import app.packed.component.ComponentMirror;
@@ -46,7 +46,7 @@ public interface BuildActionMirror extends BuildMirror {
     AssemblyMirror assembly();
 
     /** {@return The authority on which behalf the action is performed} */
-    BuildAuthority authority();
+    BuildActor authority();
 
     boolean isNested();
 

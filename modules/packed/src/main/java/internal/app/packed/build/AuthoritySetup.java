@@ -15,18 +15,57 @@
  */
 package internal.app.packed.build;
 
-import app.packed.build.BuildAuthority;
+import static java.util.Objects.requireNonNull;
+
+import java.util.ArrayList;
+
+import app.packed.build.BuildActor;
+import app.packed.util.Nullable;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.service.ServiceBindingSetup;
+import internal.app.packed.service.ServiceProviderSetup;
+import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderSetup;
+import internal.app.packed.util.AbstractTreeNode;
 
 /**
  * The owner of a bean. Either the application (via an assembly) or an extension instance.
  */
-public sealed interface AuthoritySetup permits AssemblySetup, ExtensionSetup {
+public sealed abstract class AuthoritySetup<T extends AbstractTreeNode<T>> extends AbstractTreeNode<T> permits AssemblySetup, ExtensionSetup {
+
+    public final ArrayList<ServiceBindingSetup> servicesToResolve;
+
+    /**
+     * @param treeParent
+     */
+    protected AuthoritySetup(@Nullable T treeParent, ArrayList<ServiceBindingSetup> servicesToResolve) {
+        super(treeParent);
+        this.servicesToResolve = requireNonNull(servicesToResolve);
+    }
+
+    public void resolve() {
+        if (this instanceof ExtensionSetup es) {
+            if (es.treeParent != null) {
+                System.out.println(es.treeParent);
+                throw new Error();
+            }
+        }
+        ArrayList<ServiceBindingSetup> unresolved = new ArrayList<>();
+        for (ServiceBindingSetup sbs : servicesToResolve) {
+            ServiceProviderSetup sp = sbs.resolve();
+            if (sp instanceof NamespaceServiceProviderSetup n) {
+                n.bindings.add(sbs);
+            }
+            if (sp == null && sbs.isRequired) {
+                unresolved.add(sbs);
+            }
+        }
+
+    }
 
     /** {@return a realm representing the owner.} */
-    BuildAuthority authority();
+    public abstract BuildActor authority();
 
     /** {@return whether or not the authority entity is still configurable.} */
-    boolean isConfigurable();
+    public abstract boolean isConfigurable();
 }

@@ -95,8 +95,8 @@ public class MhExt extends BaseAssembly {
             b.bindCodeGenerator(MethodHandle.class, () -> {
                 if (h != null) {
                     OperationHandle<?> oh = h.lifetimeOperations().get(0);
-                    System.out.println(oh);
-                    System.out.println("ASDADS");
+                    //System.out.println(oh);
+                    //System.out.println("ASDADS");
                     return oh.generateMethodHandle();
                 }
                 return null;

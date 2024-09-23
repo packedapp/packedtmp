@@ -9,6 +9,7 @@ import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.binding.UnwrappedBindableVariable;
+import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionHandle;
 import app.packed.operation.Op;
@@ -17,7 +18,6 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import extensions.IncubatorExtension;
 import extensions.time.TimeExtension;
-import internal.app.packed.context.publish.ContextTemplate;
 
 // Tror den er separat fra Time extension
 

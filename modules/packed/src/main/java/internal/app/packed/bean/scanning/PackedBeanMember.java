@@ -18,27 +18,27 @@ package internal.app.packed.bean.scanning;
 import java.lang.reflect.Member;
 
 import app.packed.util.AnnotationList;
+import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.util.PackedAnnotationList;
 
 /** The super class of operational members. The inheritance hierarchy follows that of {@link Member}. */
-abstract sealed class PackedBeanMember<M extends Member> extends PackedBeanElement permits PackedBeanExecutable{
+abstract sealed class PackedBeanMember<M extends Member> extends PackedBeanElement permits PackedBeanExecutable {
 
     /** Annotations on the member. */
     private final PackedAnnotationList annotations;
 
-    /** The extension that can create new operations from the member. */
-    final BeanScannerExtensionRef extension;
-
     /** The member. */
     final M member;
 
-    PackedBeanMember(BeanScannerExtensionRef extension, M member, PackedAnnotationList annotations) {
-        this.extension = extension;
+    final BeanScannerParticipant participant;
+
+    PackedBeanMember(BeanScannerParticipant participant, M member, PackedAnnotationList annotations) {
+        this.participant = participant;
         this.member = member;
         this.annotations = annotations;
     }
-
 
     /** {@return a list of annotations on the member.} */
     @Override
@@ -48,13 +48,23 @@ abstract sealed class PackedBeanMember<M extends Member> extends PackedBeanEleme
 
     @Override
     public BeanSetup bean() {
-        return extension.scanner.bean;
+        return participant.scanner.bean;
     }
 
     /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */
     final void checkConfigurable() {
-        if (!extension.extension.container.assembly.isConfigurable()) {
-            throw new IllegalStateException("This method must be called before the assembly is closed");
+        // TODO we need to check the Authority instead of the assemvly
+        BeanSetup bean = bean();
+        if (bean.owner instanceof AssemblySetup) {
+            if (!participant.extension.container.assembly.isConfigurable()) {
+                throw new IllegalStateException("This method must be called before the assembly is closed");
+            }
+        } else {
+            ExtensionSetup e = (ExtensionSetup) bean.owner;
+            System.out.println(e.isConfigurable());
+            if (!e.isConfigurable()) {
+                throw new IllegalStateException("This method must be called before the extension is closed");
+            }
         }
     }
 

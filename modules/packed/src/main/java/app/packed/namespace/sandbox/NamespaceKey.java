@@ -15,7 +15,7 @@
  */
 package app.packed.namespace.sandbox;
 
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 
 /**
  *
@@ -23,7 +23,7 @@ import app.packed.build.BuildAuthority;
 
 // Ideen er vist at baade Users og Extensions kan have et "main" namespace for fx services.
 // Ved ikke om vi skal bruge bruge den i sidste ende
- record NamespaceKey(BuildAuthority authority, String name) {}
+ record NamespaceKey(BuildActor authority, String name) {}
 
 // Problemet er lidt her at vi ikke kan skrive et fyldestgoerende navn
 // Eftersom vi kan have flere extensions med samme navn...

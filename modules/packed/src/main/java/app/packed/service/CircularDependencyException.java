@@ -18,8 +18,10 @@ package app.packed.service;
 import app.packed.build.BuildException;
 
 /**
- * An exception thrown at build time to indicate a dependency cycle between multiple service providers.
+ * An exception thrown at build time to indicate a dependency cycle between multiple services.
  */
+// What about hooks?? I don't think so, because we cannot have circles with extensions
+// And hooks can only be used by dependant extensions or the user
 public class CircularDependencyException extends BuildException {
 
     private static final long serialVersionUID = 1L;

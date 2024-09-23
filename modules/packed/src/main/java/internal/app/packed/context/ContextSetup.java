@@ -29,14 +29,14 @@ import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerTreeSetup;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.service.ServiceProviderSetup.ContextServiceProviderSetup;
+import internal.app.packed.service.util.SequencedServiceMap;
 import internal.app.packed.util.collect.MappedMap;
 import internal.app.packed.util.collect.ValueMapper;
 
 /** Represents a context. */
-
 public final class ContextSetup {
 
-    // Maaske er den final alligevel
     @Nullable
     ContainerTreeSetup containerTree;
 
@@ -49,14 +49,21 @@ public final class ContextSetup {
     /** The template used when creating the context. */
     public final PackedContextTemplate template;
 
+    public final SequencedServiceMap<ContextServiceProviderSetup> serviceProvides = new SequencedServiceMap<>();
+
     public ContextSetup(PackedContextTemplate template, ContextualizedElementSetup root) {
         this.template = template;
         this.root = root;
     }
 
+    public Class<? extends Context<?>> contextClass() {
+        return template.contextClass();
+    }
+
+    // So copy of?
     public static Map<Class<? extends Context<?>>, ContextSetup> allContextsFor(ContextualizedElementSetup element) {
         HashMap<Class<? extends Context<?>>, ContextSetup> map = new HashMap<>();
-        element.forEachContext((c, cs) -> map.putIfAbsent(c, cs));
+        element.forEachContext(c -> map.putIfAbsent(c.contextClass(), c));
         return map;
     }
 

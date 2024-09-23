@@ -57,6 +57,8 @@ import app.packed.namespace.sandbox.NamespaceAnnotation;
 @NamespaceAnnotation
 @AnnotatedMethodBeanTrigger(extension = BaseExtension.class, allowInvoke = true)
 @AnnotatedFieldBeanTrigger(extension = BaseExtension.class, allowGet = true)
+// Hvis vi laver meta annoteringen, skal vi jo naesten lave den om til en repeatable..
+// Syntes godt man maa smide flere pa
 public @interface Provide {
     String namespace() default NamespaceAnnotation.DEFAULT_NAMESPACE;
 }

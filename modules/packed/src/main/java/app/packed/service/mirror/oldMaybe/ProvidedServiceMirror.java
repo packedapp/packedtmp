@@ -22,8 +22,8 @@ import java.util.stream.Stream;
 import app.packed.binding.Key;
 import app.packed.namespace.NamespaceOperationMirror;
 import app.packed.operation.OperationHandle;
-import app.packed.service.mirror.ServiceBindingMirror;
-import app.packed.service.mirror.ServiceNamespaceMirror;
+import app.packed.service.ServiceNamespaceMirror;
+import app.packed.service.mirror.NamespaceServiceBindingMirror;
 import internal.app.packed.service.ServiceProviderSetup;
 
 /**
@@ -48,7 +48,7 @@ public class ProvidedServiceMirror extends NamespaceOperationMirror {
 
     /** {@return the key of the service.} */
     public Key<?> key() {
-        return service.entry.key;
+        return service.key();
     }
 
     /**
@@ -60,8 +60,9 @@ public class ProvidedServiceMirror extends NamespaceOperationMirror {
     // Det her er den eneste interessant ting klasser bruges til
     // Kan vi have en mere general API saa kan vi dropper denne klasse
     // Vi vil jo gerne vide hvor bliver den her bean, service, ect brugt henne...
-    public Stream<ServiceBindingMirror> useSites() {
-        return service.entry.useSiteMirrors();
+    public Stream<NamespaceServiceBindingMirror> useSites() {
+        throw new UnsupportedOperationException();
+//        return service.entry.useSiteMirrors();
     }
 
     /** {@inheritDoc} */

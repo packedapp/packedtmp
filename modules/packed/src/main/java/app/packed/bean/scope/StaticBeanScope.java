@@ -18,6 +18,8 @@ package app.packed.bean.scope;
 /**
  * A bean with a static scope
  */
+// Maybe it is just application scope???
+// I cannot see what the difference it
 public class StaticBeanScope extends BeanScope {
 
 }

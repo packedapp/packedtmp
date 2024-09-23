@@ -22,15 +22,15 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
+import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
-import app.packed.container.ContainerLocal;
 import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
@@ -39,6 +39,7 @@ import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
+import app.packed.extension.InternalExtensionException;
 import app.packed.operation.OperationHandle;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
@@ -48,6 +49,7 @@ import internal.app.packed.bean.ContainerBeanStore;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
+import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedElementSetup;
@@ -56,11 +58,11 @@ import internal.app.packed.extension.PackedExtensionHandle;
 import internal.app.packed.handlers.BeanHandlers;
 import internal.app.packed.handlers.ContainerHandlers;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.service.ServiceNamespaceHandle;
+import internal.app.packed.service.MainServiceNamespaceHandle;
 import internal.app.packed.util.AbstractNamedTreeNode;
+
 /** The internal configuration of a container. */
-public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
-        implements ContextualizedElementSetup, BuildLocalSource {
+public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> implements ComponentSetup, ContextualizedElementSetup, BuildLocalSource {
 
     /** The application this container is a part of. */
     public final ApplicationSetup application;
@@ -91,9 +93,12 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
     public final ContainerLifetimeSetup lifetime;
 
     /** The container's service manager. */
-    private ServiceNamespaceHandle sm;
+    private MainServiceNamespaceHandle sm;
 
     public final PackedContainerTemplate template;
+
+    @Nullable
+    private ExtensionSetup base;
 
     /**
      * Create a new container.
@@ -103,13 +108,11 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
      * @param assembly
      *            the assembly the defines the container
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     private ContainerSetup(PackedContainerInstaller installer, ApplicationSetup application, AssemblySetup assembly) {
         super(installer.parent);
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
         this.template = installer.template;
-        installer.locals.forEach((p, o) -> locals().set((PackedContainerLocal) p, this, o));
 
         if (installer.template.kind() == PackedContainerKind.PARENT_LIFETIME) {
             this.lifetime = installer.parent.lifetime;
@@ -117,7 +120,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
             this.lifetime = new ContainerLifetimeSetup(installer, this, null);
         }
         // If a name has been set using a wirelet, we ignore calls to #named(String)
-        this.ignoreRename = installer.nameFromWirelet != null;
+        this.ignoreRename = installer.nameFromWirelet != null || installer.isFromAssembly;
     }
 
     /**
@@ -133,8 +136,8 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
     }
 
     /** {@return the base extension for this container.} */
-    public BaseExtension base() {
-        return (BaseExtension) useExtension(BaseExtension.class, null).instance();
+    public ExtensionSetup base() {
+        return requireNonNull(base);
     }
 
     /** {@inheritDoc} */
@@ -169,8 +172,8 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
 
     /** {@inheritDoc} */
     @Override
-    public void forEachContext(BiConsumer<? super Class<? extends Context<?>>, ? super ContextSetup> action) {
-        contexts.forEach(action);
+    public void forEachContext(Consumer<? super ContextSetup> action) {
+        contexts.values().forEach(action);
     }
 
     public ContainerHandle<?> handle() {
@@ -261,8 +264,12 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
         name = newName;
     }
 
+    public String name() {
+        return requireNonNull(name);
+    }
+
     /** Call {@link Extension#onAssemblyClose()}. */
-    public void onAssemblyClose(AuthoritySetup as) {
+    public void onAssemblyClose(AuthoritySetup<?> as) {
         for (BeanSetup b : beans) {
             if (b.owner == as) {
                 BeanHandlers.invokeBeanHandleOnAssemblyClose(b.handle());
@@ -287,13 +294,12 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
         throw new UnsupportedOperationException();
     }
 
-    public ServiceNamespaceHandle servicesMain() {
-        ServiceNamespaceHandle s = sm;
+    public MainServiceNamespaceHandle servicesMain() {
+        MainServiceNamespaceHandle s = sm;
         if (s == null) {
-            ExtensionSetup base = ExtensionSetup.crack(base());
-            ExtensionHandle<BaseExtension> eh = new PackedExtensionHandle<>(base);
-            s = this.sm = eh.namespaceLazy(ServiceNamespaceHandle.NT, "main", inst -> {
-                return inst.install(ii -> new ServiceNamespaceHandle(inst, null, this));
+            ExtensionHandle<BaseExtension> eh = new PackedExtensionHandle<>(base());
+            s = this.sm = eh.namespaceLazy(MainServiceNamespaceHandle.TEMPLATE, "main", inst -> {
+                return inst.install(ii -> new MainServiceNamespaceHandle(inst, null, this));
             });
         }
         return s;
@@ -347,7 +353,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
                     throw new IllegalStateException();
                 }
             }
-            extension = ExtensionSetup.install(extensionClass, this, requestedByExtension);
+            extension = ExtensionSetup.newExtension(extensionClass, this, requestedByExtension);
         }
         return extension;
     }
@@ -368,7 +374,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
         return ContainerHandlers.getContainerHandleContainer(handle);
     }
 
-    public static ContainerSetup crack(ContainerLocal.Accessor accessor) {
+    public static ContainerSetup crack(ContainerBuildLocal.Accessor accessor) {
         return switch (accessor) {
         case ContainerConfiguration bc -> crack(bc);
         case ContainerHandle<?> bc -> crack(bc);
@@ -382,10 +388,29 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
     }
 
     public static <H extends ContainerHandle<?>> ContainerSetup newContainer(PackedContainerInstaller installer, ApplicationSetup application,
-            AssemblySetup assembly, Function<? super ContainerTemplate.Installer, H> factory) {
-        // Create the new container using this installer
-        ContainerSetup container = new ContainerSetup(installer, application, assembly);
+            AssemblySetup assembly, Function<? super ContainerTemplate.Installer, H> handleFactory) {
+        // Cannot reuse an installer
+        installer.checkNotInstalledYet();
 
+        // Create the new container using this installer
+        ContainerSetup container = installer.install(new ContainerSetup(installer, application, assembly));
+
+        container.nameNewContainer(installer);
+
+        // Create the operation's handle.
+        ContainerHandle<?> handle = container.handle = handleFactory.apply(installer);
+        if (handle == null) {
+            // Must have an operator
+            throw new InternalExtensionException(BaseExtension.class, handleFactory + " returned null, when creating a new ContaienrHandle");
+        }
+
+        // BaseExtension is always present.
+        container.base = ExtensionSetup.newExtension(BaseExtension.class, container, null);
+
+        return container;
+    }
+
+    private void nameNewContainer(PackedContainerInstaller installer) {
         // Initializes the name of the container
         String nn = installer.nameFromWirelet;
 
@@ -420,35 +445,16 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup>
         if (installer.parent != null) {
             HashMap<String, ContainerSetup> c = installer.parent.treeChildren;
             if (c.size() == 0) {
-                c.put(n, container);
+                c.put(n, this);
             } else {
                 int counter = 1;
-                while (c.putIfAbsent(n, container) != null) {
+                while (c.putIfAbsent(n, this) != null) {
                     n = n + counter++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test
                                        // adding 1
                     // million of the same component type
                 }
             }
         }
-        container.name = n;
-
-        installer.container = container;
-
-        H apply = factory.apply(installer);
-        container.handle = requireNonNull(apply);
-        // Create ContainerConfiguration
-
-        // BaseExtension is automatically used by every container
-        ExtensionSetup.install(BaseExtension.class, container, null);
-
-        return container;
+        this.name = n;
     }
-//
-//    /** Implementation of {@link ContainerMirror.OfTree} */
-//    public static final class PackedContainerTreeMirror extends AbstractTreeMirror<ContainerMirror, ContainerSetup>  {
-//
-//        public PackedContainerTreeMirror(ContainerSetup root, @Nullable Predicate<? super ContainerSetup> filter) {
-//            super(root, filter);
-//        }
-//    }
 }

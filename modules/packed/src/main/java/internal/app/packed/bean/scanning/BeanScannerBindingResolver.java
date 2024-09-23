@@ -17,17 +17,16 @@ package internal.app.packed.bean.scanning;
 
 import java.lang.annotation.Annotation;
 
+import app.packed.binding.Key;
 import app.packed.binding.Variable;
-import app.packed.extension.Extension;
-import internal.app.packed.bean.BeanSetup;
+import app.packed.service.advanced.ServiceResolver;
 import internal.app.packed.bean.scanning.BeanHookModel.AnnotatedParameterType;
 import internal.app.packed.bean.scanning.BeanHookModel.ParameterType;
 import internal.app.packed.binding.InternalDependency;
 import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.binding.PackedBindableWrappedVariable;
-import internal.app.packed.build.AuthoritySetup;
-import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.service.ServiceBindingSetup;
 
 /**
  *
@@ -43,7 +42,7 @@ final class BeanScannerBindingResolver {
             Class<? extends Annotation> a1Type = a1.annotationType();
             AnnotatedParameterType hook = scanner.hookModel.testParameterAnnotation(a1Type);
             if (hook != null) {
-                BeanScannerExtensionRef ei = scanner.computeContributor(hook.extensionType());
+                BeanScannerParticipant ei = scanner.computeContributor(hook.extensionType());
 
                 PackedBindableVariable h = new PackedBindableVariable(scanner, operation, index, ei.extension, v);
                 ei.introspector.activatedByAnnotatedVariable(a1, h);
@@ -57,7 +56,7 @@ final class BeanScannerBindingResolver {
         ParameterType hook = scanner.hookModel.testParameterType(v.rawType());
 
         if (hook != null) {
-            BeanScannerExtensionRef contributor = scanner.computeContributor(hook.extensionType());
+            BeanScannerParticipant contributor = scanner.computeContributor(hook.extensionType());
             PackedBindableVariable h = new PackedBindableVariable(scanner, operation, index, contributor.extension, v);
 
             Class<?> cl = v.rawType();
@@ -68,23 +67,20 @@ final class BeanScannerBindingResolver {
             }
         }
 
-        // Finally, we resolve it as a service
+        // Okay guys we have a service
+
+        // Extract needed information
         InternalDependency ia = InternalDependency.fromVariable(v);
 
-        BeanSetup bean = operation.bean;
-        AuthoritySetup owner = operation.bean.owner;
+        // Let's see if we have specified a special service resolver on the binding
+        ServiceResolver sr = v.annotations().read(ServiceResolver.class).orElse(ServiceResolver.DEFAULT);
 
-        Class<? extends Extension<?>> e = owner instanceof ExtensionSetup es ? es.extensionType : null;
-        if (operation.embeddedInto != null) {
-            e = operation.operator.extensionType;
-        }
+        Key<?> key = ia.key();
+        boolean isRequired = !ia.isOptional();
 
-//        bean.sns().bind(ia.key(), !ia.isOptional(), operation, index);
-        if (e == null) {
-            operation.bindings[index] = bean.container.servicesMain().bind(ia.key(), !ia.isOptional(), operation, index);
-        } else {
-            ExtensionSetup es = operation.bean.container.extensions.get(e);
-            operation.bindings[index] = es.sm().bind(ia.key(), !ia.isOptional(), operation, index);
-        }
+        // Create the new binding, bind it to the operation, and register it for resolution later
+        ServiceBindingSetup binding = new ServiceBindingSetup(key, operation, index, isRequired, sr);
+        operation.bindings[index] = binding;
+        operation.bean.owner.servicesToResolve.add(binding);
     }
 }

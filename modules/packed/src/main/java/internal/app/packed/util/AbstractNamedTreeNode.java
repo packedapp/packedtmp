@@ -25,10 +25,10 @@ import internal.app.packed.container.ContainerSetup;
  */
 public class AbstractNamedTreeNode<T extends AbstractNamedTreeNode<T>> extends AbstractTreeNode<T> {
 
-    public String name;
+    protected String name;
 
     /** Maintains unique names for child containers. */
-    public final HashMap<String, ContainerSetup> treeChildren = new HashMap<>();
+    protected final HashMap<String, ContainerSetup> treeChildren = new HashMap<>();
 
     /**
      * @param treeParent

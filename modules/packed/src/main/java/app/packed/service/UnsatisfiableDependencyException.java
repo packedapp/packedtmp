@@ -19,9 +19,9 @@ import app.packed.build.BuildException;
 
 /** An exception thrown at build-time when a valid binding could not be created for an operation. */
 // Valid but the
-// Binding
+// Binding:
 // Giver bare ikke rigtig mening navngivningsmaessigt...
-// Dependency yws, binding no.
+// Dependency yvs, binding no.
 // IDeen er er lidt at lave en generiks vi kan ikke lave den binding fordi xxx.
 public class UnsatisfiableDependencyException extends BuildException {
 

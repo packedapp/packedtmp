@@ -23,9 +23,9 @@ import java.lang.invoke.MethodType;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.container.Wirelet;
 import app.packed.context.Context;
+import app.packed.context.ContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
@@ -38,7 +38,7 @@ import internal.app.packed.container.wirelets.WireletSelectionArray;
 /**
  * A temporary context object that is created whenever we launch an application.
  */
-@BindingClassBeanTrigger(extension = BaseExtension.class)
+@ContextualServiceProvider(extension = BaseExtension.class)
 public final class ApplicationLaunchContext implements Context<BaseExtension> {
     public static final MethodHandle EMPTY_MH = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
     /** The configuration of the application we are launching. */
@@ -56,7 +56,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
     private ApplicationLaunchContext(ApplicationSetup application, WireletSelectionArray<?> wirelets) {
         this.application = application;
         this.wirelets = wirelets;
-        this.name = requireNonNull(application.container().name);
+        this.name = requireNonNull(application.container().name());
         this.runner = new ContainerRunner(application);
     }
 

@@ -48,7 +48,7 @@ public class ImageBigMicro {
             // install(A.class);
             // install(NeedsA.class);
             for (int i = 0; i < 10; i++) {
-                link(new BaseAssembly() {
+                link("child" + i, new BaseAssembly() {
                     @Override
                     public void build() {
                         lookup(MethodHandles.lookup());
@@ -65,21 +65,21 @@ public class ImageBigMicro {
         public void build() {
             lookup(MethodHandles.lookup());
             for (int i = 0; i < 4; i++) {
-                link(new BaseAssembly() {
+                link("child" + i, new BaseAssembly() {
                     @Override
                     public void build() {
                         lookup(MethodHandles.lookup());
                         provide(A.class);
                         install(NeedsA.class);
                         for (int i = 0; i < 4; i++) {
-                            link(new BaseAssembly() {
+                            link("child" + i, new BaseAssembly() {
                                 @Override
                                 public void build() {
                                     lookup(MethodHandles.lookup());
                                     provide(A.class);
                                     install(NeedsA.class);
                                     for (int i = 0; i < 4; i++) {
-                                        link(new BaseAssembly() {
+                                        link("child" + i, new BaseAssembly() {
                                             @Override
                                             public void build() {
                                                 lookup(MethodHandles.lookup());
@@ -101,21 +101,21 @@ public class ImageBigMicro {
         public void build() {
             lookup(MethodHandles.lookup());
             for (int i = 0; i < 4; i++) {
-                link(new BaseAssembly() {
+                link("child" + i, new BaseAssembly() {
                     @Override
                     public void build() {
                         lookup(MethodHandles.lookup());
                         provideInstance(new A());
                         installInstance(new NeedsA(new A()));
                         for (int i = 0; i < 4; i++) {
-                            link(new BaseAssembly() {
+                            link("child" + i, new BaseAssembly() {
                                 @Override
                                 public void build() {
                                     lookup(MethodHandles.lookup());
                                     provideInstance(new A());
                                     installInstance(new NeedsA(new A()));
                                     for (int i = 0; i < 4; i++) {
-                                        link(new BaseAssembly() {
+                                        link("child" + i, new BaseAssembly() {
                                             @Override
                                             public void build() {
                                                 lookup(MethodHandles.lookup());

@@ -26,7 +26,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.service.ServiceableBeanConfiguration;
+import app.packed.service.ProvideableBeanConfiguration;
 
 /**
  *
@@ -57,20 +57,20 @@ class ContainerConfigurationTester {
         return this;
     }
 
-    public <T> ServiceableBeanConfiguration<T> stateless(Class<T> implementation) {
-        ServiceableBeanConfiguration<T> conf = cc.use(BaseExtension.class).install(implementation);
+    public <T> ProvideableBeanConfiguration<T> stateless(Class<T> implementation) {
+        ProvideableBeanConfiguration<T> conf = cc.use(BaseExtension.class).install(implementation);
         assertThat(conf).isNotNull();
         return conf;
     }
 
-    public <T> ServiceableBeanConfiguration<T> installInstance(T instance) {
-        ServiceableBeanConfiguration<T> conf = cc.use(BaseExtension.class).installInstance(instance);
+    public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
+        ProvideableBeanConfiguration<T> conf = cc.use(BaseExtension.class).installInstance(instance);
         assertThat(conf).isNotNull();
         return conf;
     }
 
-    public ContainerConfigurationTester link(BaseAssembly child, Wirelet... wirelets) {
-        use(BaseExtension.class).link(child, wirelets);
+    public ContainerConfigurationTester link(String name, BaseAssembly child, Wirelet... wirelets) {
+        use(BaseExtension.class).link(name, child, wirelets);
         return this;
     }
 

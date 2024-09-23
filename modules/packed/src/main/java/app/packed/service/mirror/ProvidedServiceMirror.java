@@ -18,7 +18,11 @@ package app.packed.service.mirror;
 import java.util.SequencedCollection;
 import java.util.stream.Stream;
 
+import app.packed.bean.BeanMirror;
 import app.packed.binding.Key;
+import app.packed.context.ContextMirror;
+import app.packed.operation.OperationMirror;
+import app.packed.service.ServiceNamespaceMirror;
 
 /**
  *
@@ -28,7 +32,6 @@ import app.packed.binding.Key;
 
 // Hvis ikke, har vi saa services tilgaengelig fra forskellige namespaces???
 // Baade Bean og Container
-
 
 // Hvad hvis den samme service er tilgaengelig under flere keys...
 
@@ -45,17 +48,30 @@ public interface ProvidedServiceMirror {
     /**
      * {@return the provider of the service.}
      * <p>
-     * May either be an operation on a bean.
-     * The bean itself
-     * Or a constant
+     * May either be an operation on a bean. The bean itself Or a constant
      */
     ServiceProviderMirror provider();
 
     // Returns the bindings where this particular service is used under the specified key.
     // Hvis en service er tilgaengelig under forskellige keys...
     // Saa er ServiceProviderMirror.bindings nok bedre
-    Stream<ServiceBindingMirror> bindings();
+    Stream<NamespaceServiceBindingMirror> bindings();
 
     // Ideen er lidt at den her viser. Hvilke exports o.s.v. vi skal igennem
     SequencedCollection<Object> servicePath();
+
+    interface FromOperation {
+        OperationMirror operation();
+    }
+
+    interface FromBean {
+        BeanMirror operation();
+    }
+
+    interface FromContext {
+        ContextMirror context();
+    }
+    interface FromServiceNamespace{
+        ServiceNamespaceMirror context();
+    }
 }

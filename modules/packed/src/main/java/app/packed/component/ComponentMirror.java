@@ -19,7 +19,7 @@ import java.util.Set;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 import app.packed.build.BuildMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.namespace.NamespaceMirror;
@@ -46,7 +46,7 @@ public sealed interface ComponentMirror extends BuildMirror permits ApplicationM
 
     /** {@return the path of the component} */
     // Giver mening hvis vi faar Applications.components();
-    default BuildAuthority componentOwner() {
+    default BuildActor componentOwner() {
         throw new UnsupportedOperationException();
     }
 

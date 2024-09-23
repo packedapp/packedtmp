@@ -17,43 +17,54 @@ package internal.app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Modifier;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import app.packed.bean.BeanFactoryConfiguration;
+import app.packed.bean.BeanFactoryMirror;
+import app.packed.bean.BeanKind;
+import app.packed.bean.CannotDeclareInstanceMemberException;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationTemplate.Installer;
 import app.packed.operation.OperationType;
+import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.component.PackedComponentInstaller;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
+import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
 
 /**
  *
  */
-public abstract non-sealed class PackedOperationInstaller implements OperationTemplate.Installer {
+public non-sealed class PackedOperationInstaller extends PackedComponentInstaller<OperationSetup, PackedOperationInstaller>
+        implements OperationTemplate.Installer {
 
     NamespaceHandle<?, ?> addToNamespace;
 
+    /** The bean the operation is being installed into. */
     public final BeanSetup bean;
 
-    public EmbeddedIntoOperation embeddedInto;
+    EmbeddedIntoOperation embeddedInto;
 
     public String namePrefix = "tbd";
 
-    public OperationHandle<?> oh;
+    public PackedOperationTarget operationTarget;
 
-    OperationSetup operation;
+    /** The type of the operation. */
+    final OperationType operationType;
 
-    public final OperationType operationType;
+    /** The extension that is installing the operation. */
+    final ExtensionSetup operator;
 
-    public final ExtensionSetup operator;
-
-    public PackedOperationTarget pot;
-
-    public final PackedOperationTemplate template;
+    /** The template of the operation. */
+    final PackedOperationTemplate template;
 
     public PackedOperationInstaller(PackedOperationTemplate template, OperationType operationType, BeanSetup bean, ExtensionSetup operator) {
         this.template = template;
@@ -62,10 +73,11 @@ public abstract non-sealed class PackedOperationInstaller implements OperationTe
         this.operator = operator;
     }
 
-    /**
-     *
-     */
-    void checkConfigurable() {}
+    /** {@inheritDoc} */
+    @Override
+    protected ApplicationSetup application(OperationSetup setup) {
+        return setup.bean.container.application;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -73,25 +85,55 @@ public abstract non-sealed class PackedOperationInstaller implements OperationTe
         return null;
     }
 
-    /**
-     * @return
-     */
-    public OperationHandle<?> initializeOperationConfiguration() {
-        return requireNonNull(oh);
+    @SuppressWarnings("unchecked")
+    @Override
+    public <H extends OperationHandle<?>> H install(Function<? super Installer, H> handleFactory) {
+        return (H) newOperation((Function<? super Installer, OperationHandle<?>>) handleFactory).handle();
     }
 
     @Override
-    public <H extends OperationHandle<?>, N extends NamespaceHandle<?, ?>> H install(N namespace, BiFunction<? super Installer, N, H> factory) {
-        checkConfigurable();
+    public final <H extends OperationHandle<?>, N extends NamespaceHandle<?, ?>> H install(N namespace, BiFunction<? super Installer, N, H> factory) {
+        checkNotInstalledYet();
         this.addToNamespace = requireNonNull(namespace);
         return install(f -> factory.apply(f, namespace));
     }
 
-    OperationSetup newOperation(Function<? super Installer, OperationHandle<?>> newHandle) {
+    final OperationSetup newOperation(Function<? super Installer, OperationHandle<?>> newHandle) {
         return OperationSetup.newOperation(this, newHandle);
     }
 
-    public static OperationSetup crack(OperationTemplate.Installer installer) {
-        return ((PackedOperationInstaller) installer).operation;
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <H extends OperationHandle<?>> OperationSetup newOperationFromMember(PackedOperationInstaller installer, OperationMemberTarget<?> member,
+            MethodHandle methodHandle, Function<? super OperationTemplate.Installer, H> configurationCreator) {
+        if (installer.bean.beanKind == BeanKind.STATIC && !Modifier.isStatic(member.modifiers())) {
+            throw new CannotDeclareInstanceMemberException("Cannot create operation for non-static member " + member);
+        }
+        installer.namePrefix = member.name();
+
+        installer.operationTarget = new MemberOperationTarget(member, methodHandle);
+
+        OperationSetup os = installer.newOperation((Function) configurationCreator);
+        return os;
+    }
+
+    /** A bean handle for a factory method. */
+    public static final class BeanFactoryOperationHandle extends OperationHandle<BeanFactoryConfiguration> {
+
+        /**
+         * @param installer
+         */
+        public BeanFactoryOperationHandle(OperationTemplate.Installer installer) {
+            super(installer);
+        }
+
+        @Override
+        protected BeanFactoryConfiguration newOperationConfiguration() {
+            return new BeanFactoryConfiguration(this);
+        }
+
+        @Override
+        protected OperationMirror newOperationMirror() {
+            return new BeanFactoryMirror(this);
+        }
     }
 }

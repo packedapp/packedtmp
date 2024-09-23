@@ -72,8 +72,8 @@ public record PackedBindableWrappedVariable(PackedBindableVariable var) implemen
     }
 
     @Override
-    public PackedBindableWrappedVariable bindInstant(@Nullable Object obj) {
-        var.bindInstant(obj);
+    public PackedBindableWrappedVariable bindInstance(@Nullable Object obj) {
+        var.bindInstance(obj);
         return this;
     }
 

@@ -18,7 +18,7 @@ package app.packed.service.mirror.oldMaybe;
 import app.packed.binding.Key;
 import app.packed.namespace.NamespaceOperationMirror;
 import app.packed.operation.OperationHandle;
-import app.packed.service.mirror.ServiceNamespaceMirror;
+import app.packed.service.ServiceNamespaceMirror;
 import internal.app.packed.service.ExportedService;
 
 /**
@@ -27,6 +27,10 @@ import internal.app.packed.service.ExportedService;
 
 // Skal vi kun have en klasse?
 // Skal vi have en faelles klasse? Hvad vil man soege efter
+// namespaces called exports
+// Exports kan kun vaere namespace mirrors
+
+// An exported service is always a ServiceProviderMirror.OfNamespace
 public class ExportedServiceMirror extends NamespaceOperationMirror {
 
     final ExportedService es;

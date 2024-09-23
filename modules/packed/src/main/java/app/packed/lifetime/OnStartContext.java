@@ -35,7 +35,6 @@ import app.packed.extension.BaseExtension;
 // Skal kunne forke ting.
 // Kunne awaite ting
 // Kunne faile
-// OnStartContext???
 // BeanStartContext (saa kan den lidt mere tydeligt bliver brugt af andre annoteringen)
 public interface OnStartContext extends Context<BaseExtension>{
 
@@ -45,6 +44,9 @@ public interface OnStartContext extends Context<BaseExtension>{
     // og en "Bean" lifecycle scope  (Before all dendencies)
 
     void fork(Runnable runnable); // what about when to join?
+
+    // Will keep running until it is finished
+    void forkNoAwait(Runnable runnable); // what about when to join?
 
     // Kan man lukke ned normalt under start?
     // Eller er det altid en cancel

@@ -15,29 +15,23 @@
  */
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.List;
 import java.util.Set;
 
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
+import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
-import internal.app.packed.context.publish.ContextTemplate;
 import sandbox.extension.context.ContextSpanKind;
 
 /**
- * A container handle is created when a container is installed an.
- *
- * a reference to an installed container, private to the extension that installed the container.
- *
- * <p>
- * A lot of methods on this class is also available on {@link ContainerBuilder}.
+ * A container handle is a build-time reference to an installed container. They are created by the framework when an
+ * extension installs a container on behalf of the user (or an another extension).
  */
-public non-sealed class ContainerHandle<C extends ContainerConfiguration> extends ComponentHandle implements ContainerLocal.Accessor {
+public non-sealed class ContainerHandle<C extends ContainerConfiguration> extends ComponentHandle implements ContainerBuildLocal.Accessor {
 
     /** The lazy generated container configuration. */
     private C configuration;
@@ -55,13 +49,20 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
      *            the installer for the container
      */
     public ContainerHandle(ContainerTemplate.Installer installer) {
-        this.container = requireNonNull(((PackedContainerInstaller) installer).container);
+        this.container = ((PackedContainerInstaller) installer).toHandle();
     }
 
     /** {@inheritDoc} */
     @Override
     public final ComponentPath componentPath() {
         return container.componentPath();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final void componentTag(String... tags) {
+        checkIsConfigurable();
+        container.application.ctm.addComponentTags(container, tags);
     }
 
     /** { @return the user exposed configuration of the bean} */
@@ -118,6 +119,7 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
         return container.lifetimeOperations();
     }
 
+    /** {@inheritDoc} */
     @Override
     public final ContainerMirror mirror() {
         ContainerMirror m = mirror;
@@ -132,10 +134,25 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
         return (C) new ContainerConfiguration(this);
     }
 
+    /**
+     * This method may be overridden by the party who is installer the extension. To provide a another implementation of
+     * container mirror, than the default {@link ContainerMirror}.
+     * <p>
+     * This method is only intended to be invoked by the framework.It will never invoke more than once for a container, the
+     * result will be cached and returned from subsequent calls to {@link #mirror}.
+     *
+     * @return create a new container mirror
+     */
     protected ContainerMirror newContainerMirror() {
         return new ContainerMirror(this);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        // Should ComponentPath
+        return "Container: " + container.name();
+    }
 }
 
 interface ZandboxHandle {

@@ -15,8 +15,8 @@
  */
 package app.packed.extension;
 
-import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
 import app.packed.context.Context;
+import app.packed.context.ContextualServiceProvider;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 
 /**
@@ -24,11 +24,12 @@ import internal.app.packed.lifetime.runtime.PackedExtensionContext;
  * <p>
  * An instance of this class is typically required when invoking operations.
  */
-
-// A context or not. Hvis det er en context. Skal den med i alle metoder der ligesom siger hvad er hvad.
-// Maaske er det kun med container lifetime, og maaske er det kun constructeren
-@BindingClassBeanTrigger(extension = BaseExtension.class)
+@ContextualServiceProvider(extension = BaseExtension.class)
 public sealed interface ExtensionContext extends Context<BaseExtension> permits PackedExtensionContext {}
+
+
+//A context or not. Hvis det er en context. Skal den med i alle metoder der ligesom siger hvad er hvad.
+//Maaske er det kun med container lifetime, og maaske er det kun constructeren
 
 //Vil mene det ikke er en Context. Syntes span fungere daarligt
 //Saa maaske er Context skidt

@@ -232,6 +232,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         return resultType;
     }
 
+    // Bliver kaldt fra method handles
     public static void invokeInitializer(BeanSetup bean, MethodHandle mh, ExtensionContext ec) {
         Object instance;
         try {
@@ -245,6 +246,8 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         if (!bean.beanClass.isInstance(instance)) {
             throw new Error("Expected " + bean.beanClass + ", was " + instance.getClass());
         }
+
+        // Store the new bean in the context
         PackedExtensionContext pec = (PackedExtensionContext) ec;
         pec.storeObject(bean.lifetimeStoreIndex, instance);
     }

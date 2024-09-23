@@ -79,17 +79,31 @@ import app.packed.operation.OperationDependencyOrder;
 
 // A bean is started when all OnStart methods on the bean has completed successfully
 
-@Target(ElementType.METHOD)
+@Target({ ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @AnnotatedMethodBeanTrigger(allowInvoke = true, extension = BaseExtension.class)
 public @interface OnStart {
 
     String JOIN_ON_AFTER_DEPENDENCIES = "AFTER_DEPENDENCIES";
 
-    String JOIN_ON_LIFETIME_COMPLETE = "LIFETIME_COMPLETE";
-
     /** Can be used, for example, */
     String JOIN_ON_KEEP_RUNNING = "LIFETIME_KEEP_RUNNING";
+
+    String JOIN_ON_LIFETIME_COMPLETE = "LIFETIME_COMPLETE";
+
+    /**
+     * If there are multiple methods with {@link OnStart} and the same {@link #order()} on a single bean. This attribute can
+     * be used to control the order in which they are invoked. With a higher bean order be invoked first for
+     * {@link OperationDependencyOrder#BEFORE_DEPENDENCIES}. And lower bean order be invoked first for
+     * {@link OperationDependencyOrder#AFTER_DEPENDENCIES}. If the bean order are identical the framework may invoke them in
+     * any order.
+     * <p>
+     * NOTE: Specifically this attribute can not be used to control any ordering with regards to any other beans.
+     *
+     * @return the bean order
+     * @implNote current the framework will invoked them in the order returned by {@link Class#getMethods()}
+     */
+    byte beanOrder() default 0; // use -1 and
 
     // Fork with default settings, otherwise use Fork
     /**
@@ -97,10 +111,19 @@ public @interface OnStart {
      */
     boolean fork() default false;
 
-    // forkMode
-    // forkAsDaemon (keepRunning) = Mark the bean as keep running,
+    /**
+     * If the annotated method is still running when the lifetime is stopped (for example, if another bean failed to start
+     * properly). This attribute can be used indicate to the framework that the thread executing the operation should be
+     * interrupted by the framework.
+     *
+     * @return
+     */
+    boolean interruptOnStopping() default false;
 
     String lifetime() default "bean"; // The lifetime the bean is in
+
+    // forkMode
+    // forkAsDaemon (keepRunning) = Mark the bean as keep running. Don't await
 
     /**
      * Returns how this operation is ordered compared to other start operations.
@@ -110,6 +133,28 @@ public @interface OnStart {
     // Jeg tror after_dependencies kraever vi monitorer bean state...
     // Fordi vi siger koer denne metode efter x-bean er started
     OperationDependencyOrder order() default OperationDependencyOrder.BEFORE_DEPENDENCIES;
+
+    /**
+     * Whether or not the bean should be marked as failed to start if the method throws
+     *
+     * @return
+     */
+    boolean stopOnFailure() default true; // Class<? extends Throwable> stopOnFailure() default Throwable.class
+
+    public enum ForkMode {
+        // Ignore dependencies, but before Application is marked as running
+        ANYTIME_BEFORE_APPLICATION_RUNNING,
+
+        // On the way back. Ved ikke om den giver mening
+        // Tror simpelthen ikke den giver mening
+        // Basalt set fungere den som @OnStop(reverse order) -> task.join
+        DEPENDANTS_STARTED, // Await on all dependants having started
+
+        DONT_FORK,
+
+        // Never await, keep running
+        NO_AWAIT
+    }
 }
 //
 ///**

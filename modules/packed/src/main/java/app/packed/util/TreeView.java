@@ -52,6 +52,12 @@ public interface TreeView<N> {
         throw new UnsupportedOperationException();
     }
 
+    default void print() {
+        streamNodes().forEach(n -> {
+            System.out.println("  ".repeat(n.depth()) + "  " + n);
+        });
+    }
+
     /** {@return the root node in the tree.} */
     N root();
 

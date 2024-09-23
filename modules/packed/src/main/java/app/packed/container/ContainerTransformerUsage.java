@@ -19,22 +19,22 @@ import app.packed.application.App;
 import app.packed.assembly.Assembly;
 import app.packed.assembly.BaseAssembly;
 import app.packed.assembly.DelegatingAssembly;
-import app.packed.bean.BeanLocal;
+import app.packed.bean.BeanBuildLocal;
 import app.packed.build.hook.BuildHook;
-import app.packed.service.ServiceableBeanConfiguration;
+import app.packed.service.ProvideableBeanConfiguration;
 
 /**
  *
  */
 public class ContainerTransformerUsage extends BaseAssembly {
 
-    static final BeanLocal<String> L = BeanLocal.of();
+    static final BeanBuildLocal<String> L = BeanBuildLocal.of();
 
     /** {@inheritDoc} */
     @Override
     protected void build() {
         assembly().containers().forEach(c -> c.beans().forEach(b -> b.operations().forEach(o -> o.componentPath())));
-        ServiceableBeanConfiguration<String> i = install(String.class);
+        ProvideableBeanConfiguration<String> i = install(String.class);
         i.operations().count();
     }
 

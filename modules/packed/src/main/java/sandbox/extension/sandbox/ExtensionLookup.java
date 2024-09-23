@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.container.ContainerLocal;
+import app.packed.container.ContainerBuildLocal;
 import app.packed.extension.Extension;
 import internal.app.packed.util.StackWalkerUtil;
 import internal.app.packed.util.types.ClassUtil;
@@ -44,7 +44,7 @@ public class ExtensionLookup {
     }
 
     // HAve ExtensionLookup<T>????
-    public ContainerLocal<?> local() {
+    public ContainerBuildLocal<?> local() {
         throw new UnsupportedOperationException();
     }
 

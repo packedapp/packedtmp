@@ -21,9 +21,9 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
-import app.packed.build.BuildAuthority;
+import app.packed.build.BuildActor;
 import app.packed.operation.OperationType;
-import internal.app.packed.binding.BindingResolution.FromConstant;
+import internal.app.packed.binding.BindingAccessor.FromConstant;
 import internal.app.packed.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.util.LookupUtil;
 
@@ -73,7 +73,7 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
             for (int i = 0; i < indexes.length; i++) {
                 int index = indexes[i];
                 Object argument = arguments[i];
-                os.bindings[index] = new ManualBindingSetup(os, index, BuildAuthority.application(), new FromConstant(argument.getClass(), argument));
+                os.bindings[index] = new ManualBindingSetup(os, index, BuildActor.application(), new FromConstant(argument.getClass(), argument));
             }
             return os;
         }

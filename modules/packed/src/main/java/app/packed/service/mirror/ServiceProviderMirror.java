@@ -32,8 +32,12 @@ import app.packed.operation.OperationMirror;
 // Vi har behov for at kunne se hvor en given provider er blevet brugt...
 //// Saa enten skal vi have en extra peger klasse (ProvidedServiceMirror).
 //// Eller ogsaa laver vi noget generisk useSite (Relationsship) functionalitet paa de forskellige mirrors.
-public sealed interface ServiceProviderMirror permits BeanMirror, OperationMirror, BuildArgumentMirror {
 
+// From Where
+// From Who
+
+
+public sealed interface ServiceProviderMirror permits BeanMirror, OperationMirror, BuildArgumentMirror {
 
     // Hvor faar man pathen? Man skal vel hen til bindingen, og saa gaa tilbage igen...
 

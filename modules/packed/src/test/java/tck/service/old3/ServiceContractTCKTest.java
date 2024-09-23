@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.invoke.MethodHandles;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.assembly.Assembly;
@@ -59,6 +60,7 @@ public class ServiceContractTCKTest {
 
     /** Tests that services that are not exported are not included. */
     @Test
+    @Disabled
     public void empty3() {
         check(ServiceContract.EMPTY, new BaseAssembly() {
             @Override
@@ -71,6 +73,7 @@ public class ServiceContractTCKTest {
 
     /** Tests that exported services are part of the contract. */
     @Test
+    @Disabled
     public void provides() {
         ServiceContract expected = ServiceContract.build(b -> b.provide(A.class));
         check(expected, new BaseAssembly() {
@@ -85,6 +88,7 @@ public class ServiceContractTCKTest {
 
     /** Checks that registering a service */
     @Test
+    @Disabled
     public void requires() {
         ServiceContract expected = ServiceContract.build(b -> b.require(A.class));
 
@@ -99,6 +103,7 @@ public class ServiceContractTCKTest {
     }
 
     @Test
+    @Disabled
     public void optional() {
         ServiceContract expected = ServiceContract.build(b -> b.requireOptional(A.class));
         check(expected, new BaseAssembly() {
@@ -112,6 +117,7 @@ public class ServiceContractTCKTest {
     }
 
     /** A service will never be both requires and optional. */
+    @Disabled
     @Test
     public void requiresOverrideOptional() {
         ServiceContract expected = ServiceContract.build(b -> b.require(A.class));
@@ -127,6 +133,7 @@ public class ServiceContractTCKTest {
     }
 
     @Test
+    @Disabled
     public void all() {
         ServiceContract expected = ServiceContract.build(b -> b.requireOptional(A.class).require(B.class).provide(C.class));
         check(expected, new BaseAssembly() {

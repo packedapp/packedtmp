@@ -19,18 +19,19 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
-import app.packed.bean.BeanTrigger.BindingClassBeanTrigger;
+import app.packed.context.ContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.InternalExtensionException;
+import internal.app.packed.ValueBased;
 import internal.app.packed.util.LookupUtil;
 
 /**
  * All strongly connected components relate to the same pod.
  */
-// Long term, this might just be an Object[] array. But for now its a class, in case we need stuff that isn't stored in the array.
-@BindingClassBeanTrigger(extension = BaseExtension.class)
-public final /* primitive */ class PackedExtensionContext implements ExtensionContext {
+@ContextualServiceProvider(extension = BaseExtension.class)
+@ValueBased
+public final class PackedExtensionContext implements ExtensionContext {
 
     /** A method handle for calling {@link #read(int)} at runtime. */
     public static final MethodHandle MH_CONSTANT_POOL_READER;

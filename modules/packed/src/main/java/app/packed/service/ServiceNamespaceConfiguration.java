@@ -18,7 +18,6 @@ package app.packed.service;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,20 +26,30 @@ import app.packed.binding.Provider;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceConfiguration;
 import app.packed.operation.OperationConfiguration;
+import internal.app.packed.service.ServiceNamespaceHandle;
 import internal.app.packed.service.PackedServiceLocator;
 import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.MethodHandleUtil;
 
 /**
- *
+ * A service namespace represents a namespace where every provided service in the service has a unique {@link Key key}.
+ * And where multiple bindings may exist to each provided service.
  */
 public final class ServiceNamespaceConfiguration extends NamespaceConfiguration<BaseExtension> {
 
     /**
-     * @param namespace
+     * Creates a new service namespace configuration.
+     *
+     * @param handle
+     *            the namespace's handle
+     * @param extension
+     *            the base extension, which the service namespace belongs to
+     *
+     * @implNote invoked via
+     *           {@link internal.app.packed.handlers.ServiceHandlers#newServiceNamespaceConfiguration(ServiceNamespaceHandle, BaseExtension)}
      */
-    ServiceNamespaceConfiguration(ServiceNamespaceHandle handle, BaseExtension e) {
-        super(handle, e);
+    ServiceNamespaceConfiguration(ServiceNamespaceHandle handle, BaseExtension extension) {
+        super(handle, extension);
     }
 
     // Hmm, specificere ved namespacet under provide?
@@ -64,7 +73,7 @@ public final class ServiceNamespaceConfiguration extends NamespaceConfiguration<
     public Set<Key<?>> provideAll(ServiceLocator locator) {
         requireNonNull(locator, "locator is null");
         checkIsConfigurable();
-        Map<Key<?>, MethodHandle> result = new HashMap<>();
+        Map<Key<?>, MethodHandle> result;
         if (locator instanceof PackedServiceLocator psl) {
             result = CollectionUtil.copyOf(psl.entries(), e -> e.bindTo(psl.context()));
         } else {
@@ -86,11 +95,11 @@ public final class ServiceNamespaceConfiguration extends NamespaceConfiguration<
      *            the constant to provide
      * @return a configuration representing the operation
      */
-    <T> OperationConfiguration provideConstant(Class<T> key, T constant) {
-        return provideConstant(Key.of(key), constant);
+    <T> OperationConfiguration provideInstance(Class<T> key, T constant) {
+        return provideInstance(Key.of(key), constant);
     }
 
-    <T> OperationConfiguration provideConstant(Key<T> key, T constant) {
+    <T> OperationConfiguration provideInstance(Key<T> key, T constant) {
         // Nah skaber den forvirring? Nej det syntes det er rart
         // at have muligheden for ikke at scanne
         throw new UnsupportedOperationException();
@@ -152,5 +161,4 @@ public final class ServiceNamespaceConfiguration extends NamespaceConfiguration<
         checkIsConfigurable();
         throw new UnsupportedOperationException();
     }
-
 }

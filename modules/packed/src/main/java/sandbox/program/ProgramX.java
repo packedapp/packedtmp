@@ -21,7 +21,7 @@ import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
-import app.packed.component.guest.FromGuest;
+import app.packed.component.guest.FromComponentGuest;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
@@ -155,8 +155,8 @@ public interface ProgramX extends AutoCloseable {
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementationX(@FromGuest String name, @FromGuest ServiceLocator services,
-        @FromGuest ManagedLifecycle runtime) implements ProgramX {
+record ProgramImplementationX(@FromComponentGuest String name, @FromComponentGuest ServiceLocator services,
+        @FromComponentGuest ManagedLifecycle runtime) implements ProgramX {
 
     ProgramImplementationX {
         // System.out.println(services.keys());
@@ -164,8 +164,8 @@ record ProgramImplementationX(@FromGuest String name, @FromGuest ServiceLocator 
 
     /** An driver for creating App instances. */
 
-    static final BootstrapApp<ProgramImplementationX> DRIVER =
-            ApplicationTemplate.of(ProgramImplementationX.class, c -> c.container(ContainerTemplate.MANAGED)).newBootstrapApp();
+    static final BootstrapApp<ProgramImplementationX> DRIVER =BootstrapApp.of(
+            ApplicationTemplate.of(ProgramImplementationX.class, c -> c.container(ContainerTemplate.MANAGED)));
 
 
     /** {@inheritDoc} */

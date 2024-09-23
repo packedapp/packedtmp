@@ -24,4 +24,10 @@ public record BeanLifecycleOperation(BeanLifecycleOrder runOrder, OperationHandl
     public int compareTo(BeanLifecycleOperation entry) {
         return runOrder.ordinal() - entry.runOrder.ordinal();
     }
+
+    public static void main(String[] args) {
+        System.out.println(Byte.MAX_VALUE);
+        System.out.println(Byte.MIN_VALUE);
+
+    }
 }

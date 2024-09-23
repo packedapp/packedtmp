@@ -15,14 +15,18 @@
  */
 package internal.app.packed.application;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
-import app.packed.application.ApplicationLocal;
+import app.packed.application.ApplicationBuildLocal;
+import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationTemplate;
-import app.packed.application.BootstrapApp;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
@@ -30,20 +34,21 @@ import app.packed.bean.BeanTemplate;
 import app.packed.build.BuildGoal;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
+import app.packed.context.ContextTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.PackedBeanTemplate;
+import internal.app.packed.component.ComponentTagManager;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
-import internal.app.packed.context.publish.ContextTemplate;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
  *
  */
-public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, PackedContainerTemplate containerTemplate, MethodHandle applicationLauncher)
-        implements ApplicationTemplate<A> {
+public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Function<? super Installer<A>, ? extends ApplicationHandle<?, A>> handleFactory,
+        PackedContainerTemplate containerTemplate, Set<String> componentTags, MethodHandle applicationLauncher) implements ApplicationTemplate<A> {
 
     static final ContextTemplate GB_CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationLaunchContext.class, ApplicationLaunchContext.class);
 
@@ -56,7 +61,7 @@ public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Packed
     }
 
     public PackedApplicationTemplate(Class<?> guestClass, Op<?> op, PackedContainerTemplate containerTemplate) {
-        this(guestClass, op, containerTemplate, null);
+        this(guestClass, op, ApplicationHandle::new, containerTemplate, Set.of(), null);
     }
 
     /**
@@ -94,7 +99,7 @@ public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Packed
             return;
         }
         if (op() == null) {
-            h = installer.install(guestClass(), BeanHandle::new);
+            h = installer.install(guestClass());
         } else {
             h = installer.install((Op<?>) op(), BeanHandle::new);
         }
@@ -111,6 +116,8 @@ public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Packed
 
     /**
      * Creates a new {@link Installer} from this template.
+     * <p>
+     * NOTE: this method must not be on {@link ApplicationTemplate}.
      *
      * @param goal
      *            the build goal
@@ -124,13 +131,7 @@ public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Packed
         return installer;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public BootstrapApp<A> newBootstrapApp() {
-        return PackedBootstrapApp.fromTemplate(this);
-    }
-
-    public ApplicationTemplate<A> configure(Consumer<? super Configurator> configure) {
+    public ApplicationTemplate<A> configure(Consumer<? super Configurator<A>> configure) {
         PackedApplicationTemplateConfigurator<A> c = new PackedApplicationTemplateConfigurator<>(this);
         configure.accept(c);
         if (c.pbt.containerTemplate == null) {
@@ -139,7 +140,13 @@ public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Packed
         return c.pbt;
     }
 
-    public final static class PackedApplicationTemplateConfigurator<A> implements ApplicationTemplate.Configurator {
+    /** {@inheritDoc} */
+    @Override
+    public Function<? super Installer<A>, ? extends ApplicationHandle<?, A>> bootstrapHandleFactory() {
+        return handleFactory;
+    }
+
+    public final static class PackedApplicationTemplateConfigurator<A> implements ApplicationTemplate.Configurator<A> {
 
         public PackedApplicationTemplate<A> pbt;
 
@@ -149,31 +156,49 @@ public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Packed
 
         /** {@inheritDoc} */
         @Override
-        public PackedApplicationTemplateConfigurator<A> container(ContainerTemplate template) {
-            this.pbt = new PackedApplicationTemplate<>(pbt.guestClass(), pbt.op(), (PackedContainerTemplate) template, pbt.applicationLauncher);
-            return null;
+        public Configurator<A> bootstrapHandleFactory(Function<? super Installer<A>, ? extends ApplicationHandle<?, A>> handleFactory) {
+            requireNonNull(handleFactory);
+            this.pbt = new PackedApplicationTemplate<>(pbt.guestClass(), pbt.op(), handleFactory, pbt.containerTemplate(), pbt.componentTags,
+                    pbt.applicationLauncher);
+            return this;
         }
 
         /** {@inheritDoc} */
         @Override
-        public Configurator removeable() {
-            return null;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public <T> Configurator setLocal(ApplicationLocal<T> local, T value) {
-            return null;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Configurator container(Consumer<? super ContainerTemplate.Configurator> configure) {
+        public Configurator<A> container(Consumer<? super ContainerTemplate.Configurator> configure) {
             if (pbt.containerTemplate == null) {
                 pbt = container(ContainerTemplate.GATEWAY).pbt;
             }
             PackedContainerTemplate pct = PackedContainerTemplate.configure(pbt.containerTemplate, configure);
             return container(pct);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public PackedApplicationTemplateConfigurator<A> container(ContainerTemplate template) {
+            this.pbt = new PackedApplicationTemplate<>(pbt.guestClass(), pbt.op(), pbt.handleFactory(), (PackedContainerTemplate) template, pbt.componentTags,
+                    pbt.applicationLauncher);
+            return this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Configurator<A> removeable() {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public <T> Configurator<A> setLocal(ApplicationBuildLocal<T> local, T value) {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Configurator<A> componentTag(String... tags) {
+            this.pbt = new PackedApplicationTemplate<>(pbt.guestClass(), pbt.op(), pbt.handleFactory, pbt.containerTemplate(),
+                    ComponentTagManager.copyAndAdd(pbt.componentTags, tags), pbt.applicationLauncher);
+            return this;
         }
 
     }
