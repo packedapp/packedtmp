@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationTemplate;
@@ -37,22 +37,24 @@ public final class BuildApplicationRepository {
 
     final HashMap<ApplicationTemplate<?>, MethodHandle> ms = new HashMap<>();
 
-    public void add(PackedApplicationTemplate<?> template, String name, Consumer<?> installer) {
-        buildThese.putIfAbsent(name, new Fut(template, name, installer));
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public <H extends ApplicationHandle<?, A>, A> void add(PackedApplicationTemplate<A> template, String name,
+            Function<? super ApplicationTemplate.Installer<A>, H> installer) {
+        buildThese.putIfAbsent(name, new Fut(template, name, (Function) installer));
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void build() {
-        for (Fut f : buildThese.values()) {
+        for (Fut fut : buildThese.values()) {
 
-            PackedApplicationInstaller<?> pai = f.template.newInstaller(BuildGoal.IMAGE);
-            pai.launcher = requireNonNull(ms.get(f.template));
+            PackedApplicationInstaller<?> pai = fut.template.newInstaller(BuildGoal.IMAGE);
+            pai.launcher = requireNonNull(ms.get(fut.template));
             pai.bar = this;
-            ((Consumer) f.installer).accept(pai);
 
-            ApplicationHandle<?, ?> ah = pai.application.handle();
+            Function<? super ApplicationTemplate.Installer<?>, ? extends ApplicationHandle<?, ?>> handleFactory = fut.installer;
 
-            handles.put(f.name, ah);
+            ApplicationHandle<?, ?> h = handleFactory.apply(pai);
+
+            handles.put(fut.name, h);
         }
     }
 
@@ -64,5 +66,5 @@ public final class BuildApplicationRepository {
         ms.put(template, mh);
     }
 
-    private record Fut(PackedApplicationTemplate<?> template, String name, Consumer<?> installer) {}
+    private record Fut(PackedApplicationTemplate<?> template, String name, Function<? super ApplicationTemplate.Installer<?>, ? extends ApplicationHandle<?, ?>> installer) {}
 }

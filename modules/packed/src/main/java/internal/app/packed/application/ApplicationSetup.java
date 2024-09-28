@@ -24,15 +24,12 @@ import java.util.Map;
 import java.util.function.Function;
 
 import app.packed.application.ApplicationBuildHook;
-import app.packed.application.ApplicationBuildLocal;
 import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
-import app.packed.assembly.Assembly;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
-import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerHandle;
 import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceHandle;
@@ -41,13 +38,14 @@ import internal.app.packed.application.deployment.DeploymentSetup;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
+import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.ComponentTagManager;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.handlers.ApplicationHandlers;
 import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
 
 /** The internal configuration of an application. */
-public final class ApplicationSetup implements BuildLocalSource {
+public final class ApplicationSetup implements BuildLocalSource, ComponentSetup {
 
     /**
      * A list of actions that will be executed doing the code generating phase. Or null if code generation is disabled or
@@ -56,8 +54,11 @@ public final class ApplicationSetup implements BuildLocalSource {
     @Nullable
     private ArrayList<Runnable> codegenActions;
 
+    /** Components tags on components in the application. */
+    public final ComponentTagManager componentTagManager = new ComponentTagManager();
+
     /** The root container of the application, is initialized from {@link PackedApplicationInstaller}. */
-    public ContainerSetup container;
+    private ContainerSetup container;
 
     /** The deployment the application is part of. */
     public final DeploymentSetup deployment;
@@ -101,9 +102,9 @@ public final class ApplicationSetup implements BuildLocalSource {
     /** Any (statically defined) children this application has. */
     public final ArrayList<BuildApplicationRepository> subChildren = new ArrayList<>();
 
+    /** The template used to create the application. */
     public final PackedApplicationTemplate<?> template;
 
-    public ComponentTagManager ctm = new ComponentTagManager();
     /**
      * Create a new application.
      *
@@ -114,7 +115,7 @@ public final class ApplicationSetup implements BuildLocalSource {
         this.template = installer.template;
         this.deployment = new DeploymentSetup(this, installer);
         this.codegenActions = deployment.goal.isCodeGenerating() ? new ArrayList<>() : null;
-        this.goal = installer.goal;
+        this.goal = installer.buildProcess.goal();
         this.launch = installer.launcher;
     }
 
@@ -150,10 +151,6 @@ public final class ApplicationSetup implements BuildLocalSource {
         }
     }
 
-    public ApplicationSetup checkWriteToLocals() {
-        return this;
-    }
-
     /** The application has been successfully assembled. Now generate any required code. */
     public void close() {
         // Only generate code if needed
@@ -174,6 +171,7 @@ public final class ApplicationSetup implements BuildLocalSource {
     }
 
     /** {@return the component path of the application} */
+    @Override
     public ComponentPath componentPath() {
         return ComponentKind.APPLICATION.pathNew(container.name());
     }
@@ -186,6 +184,7 @@ public final class ApplicationSetup implements BuildLocalSource {
         throw new IllegalStateException();
     }
 
+    @Override
     public ApplicationHandle<?, ?> handle() {
         return requireNonNull(handle);
     }
@@ -197,6 +196,7 @@ public final class ApplicationSetup implements BuildLocalSource {
     }
 
     /** {@return a mirror for the application} */
+    @Override
     public ApplicationMirror mirror() {
         return handle().mirror();
     }
@@ -209,32 +209,23 @@ public final class ApplicationSetup implements BuildLocalSource {
         return ApplicationHandlers.getApplicationHandleApplication(handle);
     }
 
-    public static ApplicationSetup crack(ApplicationBuildLocal.Accessor accessor) {
-        requireNonNull(accessor, "accessor is null");
-        return switch (accessor) {
-        case ApplicationConfiguration a -> ApplicationSetup.crack(a);
-        case ApplicationMirror a -> ApplicationSetup.crack(a);
-        case ApplicationHandle<?, ?> a -> ApplicationSetup.crack(a);
-        case Assembly b -> throw new UnsupportedOperationException();
-        case ContainerBuildLocal.Accessor b -> ContainerSetup.crack(b).application;
-        };
-    }
-
     public static ApplicationSetup crack(ApplicationMirror mirror) {
         return crack(ApplicationHandlers.getApplicationMirrorHandle(mirror));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static ApplicationSetup newApplication(PackedApplicationInstaller<?> installer, AssemblySetup assembly) {
-        ApplicationSetup as = installer.application = new ApplicationSetup(installer);
+
+        ApplicationSetup as = installer.install(new ApplicationSetup(installer));
 
         Function f = installer.handleFactory;
         as.handle = (ApplicationHandle<?, ?>) f.apply(installer);
-
-        installer.locals.forEach((l, v) -> as.locals().set((PackedApplicationBuildLocal) l, as, v));
+//        if (as.handle == null) {
+//            throw new InternalExtensionException(installer.operator.extensionType, handleFactory + " returned null, when creating a new OperationHandle");
+//        }
 
         // Initialize the root container
-        as.container = ContainerSetup.newContainer(installer.container, as, assembly, ContainerHandle::new);
+        as.container = ContainerSetup.newContainer(installer.containerInstaller, as, assembly, ContainerHandle::new);
         return as;
     }
 

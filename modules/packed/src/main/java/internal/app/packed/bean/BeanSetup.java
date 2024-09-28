@@ -186,6 +186,7 @@ public final class BeanSetup implements ContextualizedElementSetup, BuildLocalSo
     }
 
     /** {@inheritDoc} */
+    @Override
     public ComponentPath componentPath() {
         return ComponentKind.BEAN.pathNew(container.componentPath(), name());
     }
@@ -219,6 +220,7 @@ public final class BeanSetup implements ContextualizedElementSetup, BuildLocalSo
     /**
      * {@return the handle of the bean}
      */
+    @Override
     public BeanHandle<?> handle() {
         return requireNonNull(handle);
     }

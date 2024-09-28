@@ -17,7 +17,7 @@ package app.packed.application;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.binding.Key;
 import app.packed.service.ProvideableBeanConfiguration;
@@ -63,14 +63,15 @@ public final class ApplicationRepositoryConfiguration<H extends ApplicationHandl
     // Okay, vi har elastic search in an Assembly. Byg den
     // Expose some services. Og vi har nok en masse shared services.
     // Tror ikke helt vi er klar
-    public void buildDependecy(ApplicationTemplate<A> template, String name, Consumer<? super ApplicationTemplate.Installer<A>> installer) {
+
+    public void buildDependecy(ApplicationTemplate<A> template, String name, Function<? super ApplicationTemplate.Installer<A>, H> installer) {
         addRuntimeTemplate(template);
-        handle.repository.add((PackedApplicationTemplate<?>) template, name, installer);
+        handle.repository.add((PackedApplicationTemplate<A>) template, name, installer);
     }
 
-    public void buildLater(ApplicationTemplate<A> template, String name, Consumer<? super ApplicationTemplate.Installer<A>> installer) {
+    public void buildLater(ApplicationTemplate<A> template, String name, Function<? super ApplicationTemplate.Installer<A>, H> installer) {
         addRuntimeTemplate(template);
-        handle.repository.add((PackedApplicationTemplate<?>) template, name, installer);
+        handle.repository.add((PackedApplicationTemplate<A>) template, name, installer);
     }
 
     @Override

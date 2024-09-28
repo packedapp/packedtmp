@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import app.packed.assembly.Assembly;
+import app.packed.build.BuildGoal;
 import app.packed.build.BuildProcess;
 import app.packed.util.Nullable;
 import internal.app.packed.application.PackedApplicationInstaller;
@@ -48,11 +49,17 @@ public final class PackedBuildProcess implements BuildProcess {
 
     private Thread thread;
 
-    public PackedBuildProcess(PackedApplicationInstaller<?> application) {
+    private final BuildGoal goal;
+
+    public PackedBuildProcess(PackedApplicationInstaller<?> application, BuildGoal goal) {
         this.application = requireNonNull(application);
         this.thread = Thread.currentThread();
+        this.goal = goal;
     }
 
+    public BuildGoal goal() {
+        return goal;
+    }
     public Carrier carrier() {
         return ScopedValue.where(PackedBuildProcess.VAR, this);
     }

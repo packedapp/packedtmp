@@ -76,6 +76,9 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
     /** Whether or not this assembly is available for configuration. */
     private boolean isConfigurable = true; // Kind of like a state I would say
 
+    /** A mirror for the assembly. */
+    private AssemblyMirror mirror;
+
     /** A model of the assembly. */
     public final AssemblyModel model;
 
@@ -94,54 +97,6 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
         this.model = AssemblyModel.of(assembly.getClass());
         this.delegatingAssemblies = installer.delegatingAssemblies == null ? List.of() : List.copyOf(installer.delegatingAssemblies);
     }
-
-    public static AssemblySetup newSetup(PackedContainerInstaller installer, Assembly assembly) {
-        AssemblySetup as = new AssemblySetup(installer, assembly);
-        if (installer.parent == null) {
-            // This method creates both the application setup and container setup
-            as.container = ApplicationSetup.newApplication(installer.applicationInstaller, as).container();
-        } else {
-            as.container = ContainerSetup.newContainer(installer, installer.parent.application, as, ContainerHandle::new);
-        }
-        return as;
-    }
-
-//    public void resolveServicesSelf() {
-//        resolveServices(this);
-//    }
-
-//
-//    public void resolveServices(AuthoritySetup<?> authority) {
-//        ArrayList<ServiceBindingSetup> unresolved = new ArrayList<>();
-//        resolveServices(authority, unresolved, container);
-//        for (ServiceBindingSetup sbs : unresolved) {
-//            System.out.println(sbs.operation + " for " + sbs.key);
-//            new Exception().printStackTrace();
-//        }
-//    }
-//
-//    // Tro
-//    private void resolveServices(AuthoritySetup<?> authority, ArrayList<ServiceBindingSetup> unresolved, ContainerSetup container) {
-//        // TODO add
-//        for (BeanSetup b : container.beans) {
-//            if (b.owner == authority) {
-//                for (OperationSetup o : b.operations) {
-//                    for (BindingSetup bi : o.bindings) {
-//                        if (bi instanceof ServiceBindingSetup sbs) {
-//                            ServiceProviderSetup sp = sbs.provider = sbs.resolve();
-//                            if (sp == null && sbs.isRequired) {
-//                                unresolved.add(sbs);
-//                            }
-//
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        for (Iterator<ContainerSetup> iterator = container.childIterator(); iterator.hasNext();) {
-//            resolveServices(authority, unresolved, iterator.next());
-//        }
-//    }
 
     /** {@inheritDoc} */
     @Override
@@ -177,8 +132,6 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
         this.customLookup = lookup;// requireNonNull(lookup, "lookup is null");
     }
 
-    AssemblyMirror mirror;
-
     /** {@return a mirror for this assembly.} */
     public AssemblyMirror mirror() {
         AssemblyMirror m = mirror;
@@ -203,7 +156,7 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
             container.assembly.resolve();
 
             for (ExtensionSetup e = extensions.pollLast(); e != null; e = extensions.pollLast()) {
-                if (e.treeParent!=null) {
+                if (e.treeParent != null) {
                     throw new Error();
                 }
                 list.add(e);
@@ -253,5 +206,16 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
 
     public Assembly.State state() {
         throw new UnsupportedOperationException();
+    }
+
+    public static AssemblySetup newAssembly(PackedContainerInstaller installer, Assembly assembly) {
+        AssemblySetup as = new AssemblySetup(installer, assembly);
+        if (installer.parent == null) {
+            // This method creates both the application setup and container setup
+            as.container = ApplicationSetup.newApplication(installer.applicationInstaller, as).container();
+        } else {
+            as.container = ContainerSetup.newContainer(installer, installer.parent.application, as, ContainerHandle::new);
+        }
+        return as;
     }
 }

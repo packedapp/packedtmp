@@ -18,11 +18,12 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.util.Optional;
 
+import app.packed.bean.BeanBuildLocal.Accessor;
 import app.packed.bean.BeanElement.BeanClass;
 import app.packed.bean.BeanElement.BeanField;
 import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.bean.BeanBuildLocal.Accessor;
 import app.packed.binding.BindableVariable;
 import app.packed.binding.UnwrappedBindableVariable;
 import app.packed.build.BuildActor;
@@ -177,12 +178,6 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
         return bean().owner();
     }
 
-//    public boolean hasAttachment(Class<?> attachmentType) {
-//        requireNonNull(attachmentType);
-//        Map<Class<?>, Object> a = setup().bean.attachments;
-//        return a != null && a.containsKey(attachmentType);
-//    }
-
     /** {@return the bean class that is being introspected.} */
     public final Class<?> beanClass() {
         return bean().beanClass;
@@ -206,6 +201,13 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
     /** {@return the bean source kind.} */
     public final BeanSourceKind beanSourceKind() {
         return bean().beanSourceKind;
+    }
+
+    public final <H extends BeanHandle<?>> Optional<H> beanHandle(Class<H> handleKind) {
+        if (setup.extension == bean().installedBy) {
+            Optional.of(handleKind.cast(bean().handle()));
+        }
+        return Optional.empty();
     }
 
     /**
@@ -261,6 +263,7 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
     public final boolean isInContainerLifetime() {
         return bean().lifetime instanceof ContainerLifetimeSetup;
     }
+
     /** {@return whether or not this introspector is the installing introspector.} */
     public final boolean isInstallingIntrospector() {
         throw new UnsupportedOperationException();

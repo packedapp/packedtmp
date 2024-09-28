@@ -137,7 +137,7 @@ public abstract class AbstractComposer {
 
             AssemblyConfiguration existing = composer.configuration;
             if (existing == null) {
-                AssemblySetup a = AssemblySetup.newSetup(installer, this);
+                AssemblySetup a = AssemblySetup.newAssembly(installer, this);
                 AssemblyConfiguration as = composer.configuration = existing = new AssemblyConfiguration(a);
                 try {
                     composer.preCompose();

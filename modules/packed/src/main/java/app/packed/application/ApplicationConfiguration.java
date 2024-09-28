@@ -33,6 +33,9 @@ import app.packed.component.ComponentConfiguration;
 
 public non-sealed class ApplicationConfiguration extends ComponentConfiguration implements ApplicationBuildLocal.Accessor {
 
+    List<Class<? extends Assembly>> allowedAssemblies = List.of();
+    // matcher
+
     /** The application's handle. */
     private final ApplicationHandle<?, ?> handle;
 
@@ -59,19 +62,19 @@ public non-sealed class ApplicationConfiguration extends ComponentConfiguration 
         throw new BuildException("This operation can only be called from assemblies of type " + allowedAssemblies + ", current assembly = " + cl);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ApplicationConfiguration componentTag(String... tags) {
-        handle().componentTag(tags);
-        return this;
-    }
-
     // isConfigurable?? Models
 
     // Root assembly defines this, and is sharable between all assemblies
 
     // Per assembly, requires that we can create new application configurations.
     // when needed
+
+    /** {@inheritDoc} */
+    @Override
+    public ApplicationConfiguration componentTag(String... tags) {
+        handle.componentTag(tags);
+        return this;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -89,16 +92,13 @@ public non-sealed class ApplicationConfiguration extends ComponentConfiguration 
         System.out.println("Setting name");
     }
 
-    List<Class<? extends Assembly>> allowedAssemblies = List.of();
-    // matcher
-
-    public final void restrictUpdatesToThisAssembly() {
-        allowedAssemblies = List.of(BuildProcess.current().currentAssembly().get());
-    }
-
     @SafeVarargs
     public final void restrictUpdatesTo(Class<? extends Assembly>... assemblies) {
         checkUpdatable();
         this.allowedAssemblies = List.of(assemblies);
+    }
+
+    public final void restrictUpdatesToThisAssembly() {
+        allowedAssemblies = List.of(BuildProcess.current().currentAssembly().get());
     }
 }

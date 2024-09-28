@@ -24,7 +24,6 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionHandle;
-import internal.app.packed.namespace.NamespaceSetup;
 
 /**
  * The configuration of a namespace.
@@ -45,7 +44,7 @@ public non-sealed abstract class NamespaceConfiguration<E extends Extension<E>> 
     }
 
     public final BuildActor authority() {
-        return ns().owner.authority();
+        return handle.namespace.owner.authority();
     }
 
     // But how the fuck do you update these???
@@ -54,6 +53,11 @@ public non-sealed abstract class NamespaceConfiguration<E extends Extension<E>> 
     // OTher wise a bit annoying
     protected final void checkPermission(Object permission) {
 
+    }
+
+    @Override
+    public ComponentConfiguration componentTag(String... tags) {
+        return null;
     }
 
     protected final E extension() {
@@ -72,15 +76,11 @@ public non-sealed abstract class NamespaceConfiguration<E extends Extension<E>> 
 
     /** {@return the name of the namespace} */
     public final String name() {
-        return ns().name();
+        return handle.namespace.name();
     }
 
     public NamespaceConfiguration<E> noPropagation() {
         return propagate(ContainerPropagator.LOCAL);
-    }
-
-    private NamespaceSetup ns() {
-        return handle.namespace;
     }
 
     public NamespaceConfiguration<E> propagate(ContainerPropagator propagator) {
@@ -92,12 +92,12 @@ public non-sealed abstract class NamespaceConfiguration<E extends Extension<E>> 
     /** {@return the root extension of the namespace} */
     @SuppressWarnings("unchecked")
     protected final E rootExtension() {
-        return (E) ns().root.instance();
+        return (E) handle.namespace.root.instance();
     }
 
     /** {@return the root extension of the namespace} */
     protected final ExtensionHandle<E> rootExtensionHandle() {
-        return new PackedExtensionHandle<>(ns().root);
+        return new PackedExtensionHandle<>(handle.namespace.root);
     }
 }
 

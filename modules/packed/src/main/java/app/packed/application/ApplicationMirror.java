@@ -188,7 +188,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
 
     /** {@return a stream of all of the operations declared by the bean.} */
     public Stream<OperationMirror> operations() {
-        return handle.application.container.stream().map(s -> s.mirror()).flatMap(ContainerMirror::operations);
+        return handle.application.container().stream().map(s -> s.mirror()).flatMap(ContainerMirror::operations);
     }
 
     /**

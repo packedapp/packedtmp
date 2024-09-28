@@ -212,10 +212,10 @@ abstract class AbstractAppTest<A> {
                         protected void build() {}
                     };
                 }
-                assembly = AssemblySetup.newSetup(b.container, ba);
+                assembly = AssemblySetup.newAssembly(b.containerInstaller, ba);
                 // Do
                 cc = assembly.container.configuration();
-                b.container.processBuildWirelets(setup.wirelets.toArray(i -> new Wirelet[i]));
+                b.containerInstaller.processBuildWirelets(setup.wirelets.toArray(i -> new Wirelet[i]));
             }
         }
 

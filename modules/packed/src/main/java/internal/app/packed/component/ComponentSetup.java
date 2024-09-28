@@ -15,9 +15,21 @@
  */
 package internal.app.packed.component;
 
+import app.packed.component.ComponentHandle;
+import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentPath;
+import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.namespace.NamespaceSetup;
+import internal.app.packed.operation.OperationSetup;
+
 /**
  *
  */
-public interface ComponentSetup {
+public sealed interface ComponentSetup permits ApplicationSetup, ContainerSetup, BeanSetup, OperationSetup, NamespaceSetup {
 
+    ComponentPath componentPath();
+    ComponentMirror mirror();
+    ComponentHandle handle();
 }

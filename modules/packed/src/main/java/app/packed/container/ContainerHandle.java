@@ -62,7 +62,7 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
     @Override
     public final void componentTag(String... tags) {
         checkIsConfigurable();
-        container.application.ctm.addComponentTags(container, tags);
+        container.application.componentTagManager.addComponentTags(container, tags);
     }
 
     /** { @return the user exposed configuration of the bean} */

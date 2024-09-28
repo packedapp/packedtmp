@@ -52,7 +52,7 @@ public abstract class PackedComponentInstaller<C extends ComponentSetup, I exten
         this.componentTags = componentTags;
     }
 
-    protected abstract ApplicationSetup application(C setup);
+    protected abstract ApplicationSetup application(C component);
 
     /**
      *
@@ -75,7 +75,7 @@ public abstract class PackedComponentInstaller<C extends ComponentSetup, I exten
         this.componentSetup = component;
         this.isUsed = true;
         if (!componentTags.isEmpty()) {
-            application(component).ctm.map.put(component, Set.copyOf(componentTags));
+            application(component).componentTagManager.map.put(component, Set.copyOf(componentTags));
         }
 
         // Transfer any locals that have been set in the template or installer

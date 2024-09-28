@@ -17,12 +17,11 @@ package app.packed.component;
 
 import app.packed.application.ApplicationConfiguration;
 import app.packed.bean.BeanConfiguration;
-import app.packed.build.action.BuildActionable;
 import app.packed.container.ContainerConfiguration;
 import app.packed.namespace.NamespaceConfiguration;
 import app.packed.operation.OperationConfiguration;
 
-/** The abstract configuration of a component. */
+/** Configuration of a component. */
 public abstract sealed class ComponentConfiguration
         permits ApplicationConfiguration, BeanConfiguration, ContainerConfiguration, NamespaceConfiguration, OperationConfiguration {
 
@@ -52,11 +51,7 @@ public abstract sealed class ComponentConfiguration
      *
      * @see ComponentMirror#componentTags()
      */
-    @BuildActionable("component.addTags")
-    public ComponentConfiguration componentTag(String... tags) {
-        throw new UnsupportedOperationException();
-        // return handle().componentPag(tags);
-    }
+    public abstract ComponentConfiguration componentTag(String... tags);
 
     /** {@inheritDoc} */
     @Override
@@ -83,7 +78,6 @@ public abstract sealed class ComponentConfiguration
      * <p>
      * Typically this is determined by whether or not the defining assembly of the component is still configurable.
      */
-
     // I think the handle is configurable after the assembly has closed????
     // So I think handle.isConfigurable!=configuration.configurable
     public final boolean isConfigurable() {

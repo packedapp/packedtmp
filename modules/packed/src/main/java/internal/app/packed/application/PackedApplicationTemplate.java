@@ -127,7 +127,7 @@ public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Functi
      */
     public PackedApplicationInstaller<A> newInstaller(BuildGoal goal, Wirelet... wirelets) {
         PackedApplicationInstaller<A> installer = new PackedApplicationInstaller<>(this, goal);
-        installer.container.processBuildWirelets(wirelets);
+        installer.containerInstaller.processBuildWirelets(wirelets);
         return installer;
     }
 

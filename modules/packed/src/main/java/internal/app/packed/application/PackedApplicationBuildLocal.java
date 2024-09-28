@@ -20,10 +20,16 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationBuildLocal;
+import app.packed.application.ApplicationConfiguration;
+import app.packed.application.ApplicationHandle;
+import app.packed.application.ApplicationMirror;
+import app.packed.assembly.Assembly;
+import app.packed.container.ContainerBuildLocal;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.build.PackedBuildLocal;
+import internal.app.packed.container.PackedContainerBuildLocal;
 
 /** Implementation of {@link ApplicationLocal}. */
 public final class PackedApplicationBuildLocal<T> extends PackedBuildLocal<ApplicationBuildLocal.Accessor, T> implements ApplicationBuildLocal<T> {
@@ -45,6 +51,14 @@ public final class PackedApplicationBuildLocal<T> extends PackedBuildLocal<Appli
     @Override
     protected BuildLocalSource extract(ApplicationBuildLocal.Accessor accessor) {
         requireNonNull(accessor, "accessor is null");
-        return ApplicationSetup.crack(accessor);
+        return switch (accessor) {
+        case ApplicationConfiguration a -> ApplicationSetup.crack(a);
+        case ApplicationMirror a -> ApplicationSetup.crack(a);
+        case ApplicationHandle<?, ?> a -> ApplicationSetup.crack(a);
+        case Assembly b -> throw new UnsupportedOperationException();
+        case ContainerBuildLocal.Accessor b -> PackedContainerBuildLocal.crack(b).application;
+        };
+
+//        return ApplicationSetup.crack(accessor);
     }
 }

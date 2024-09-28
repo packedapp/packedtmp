@@ -28,7 +28,6 @@ import java.util.function.Function;
 import app.packed.assembly.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
-import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerMirror;
@@ -70,6 +69,9 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     /** The assembly that defines the container. */
     public final AssemblySetup assembly;
 
+    @Nullable
+    private ExtensionSetup base;
+
     /** All the beans installed in the container. */
     public final ContainerBeanStore beans = new ContainerBeanStore();
 
@@ -96,9 +98,6 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     private MainServiceNamespaceHandle sm;
 
     public final PackedContainerTemplate template;
-
-    @Nullable
-    private ExtensionSetup base;
 
     /**
      * Create a new container.
@@ -141,6 +140,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     }
 
     /** {@inheritDoc} */
+    @Override
     public ComponentPath componentPath() {
         throw new UnsupportedOperationException();
     }
@@ -176,6 +176,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         contexts.values().forEach(action);
     }
 
+    @Override
     public ContainerHandle<?> handle() {
         return requireNonNull(handle);
     }
@@ -229,6 +230,10 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         return handle().mirror();
     }
 
+    public String name() {
+        return requireNonNull(name);
+    }
+
     /**
      * Sets the name of the container
      *
@@ -264,8 +269,52 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         name = newName;
     }
 
-    public String name() {
-        return requireNonNull(name);
+    private void nameNewContainer(PackedContainerInstaller installer) {
+        // Initializes the name of the container
+        String nn = installer.nameFromWirelet;
+
+        // Set the name of the container if it was not set by a wirelet
+        if (nn == null) {
+            // I think try and move some of this to ComponentNameWirelet
+            String n = installer.name;
+            if (n == null) {
+                // TODO Should only be used on the root container in the assembly
+                Class<? extends Assembly> source = assembly.assembly.getClass();
+                if (Assembly.class.isAssignableFrom(source)) {
+                    String nnn = source.getSimpleName();
+                    if (nnn.length() > 8 && nnn.endsWith("Assembly")) {
+                        nnn = nnn.substring(0, nnn.length() - 8);
+                    }
+                    if (nnn.length() > 0) {
+                        // checkName, if not just App
+                        // TODO need prefix
+                        n = nnn;
+                    }
+                    if (nnn.length() == 0) {
+                        n = "Assembly";
+                    }
+                } else {
+                    n = "Unknown";
+                }
+            }
+            nn = n;
+        }
+
+        String n = nn;
+        if (installer.parent != null) {
+            HashMap<String, ContainerSetup> c = installer.parent.treeChildren;
+            if (c.size() == 0) {
+                c.put(n, this);
+            } else {
+                int counter = 1;
+                while (c.putIfAbsent(n, this) != null) {
+                    n = n + counter++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test
+                                       // adding 1
+                    // million of the same component type
+                }
+            }
+        }
+        this.name = n;
     }
 
     /** Call {@link Extension#onAssemblyClose()}. */
@@ -358,6 +407,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         return extension;
     }
 
+
     /**
      * Extracts a bean setup from a bean configuration.
      *
@@ -366,25 +416,15 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
      * @return the bean setup
      */
     public static ContainerSetup crack(ContainerConfiguration configuration) {
-        ContainerHandle<?> handle = ContainerHandlers.getContainerConfigurationHandle(configuration);
-        return crack(handle);
+        return crack(ContainerHandlers.getContainerConfigurationHandle(configuration));
     }
 
     public static ContainerSetup crack(ContainerHandle<?> handle) {
         return ContainerHandlers.getContainerHandleContainer(handle);
     }
 
-    public static ContainerSetup crack(ContainerBuildLocal.Accessor accessor) {
-        return switch (accessor) {
-        case ContainerConfiguration bc -> crack(bc);
-        case ContainerHandle<?> bc -> crack(bc);
-        case ContainerMirror bc -> crack(bc);
-        };
-    }
-
     public static ContainerSetup crack(ContainerMirror mirror) {
-        ContainerHandle<?> handle = ContainerHandlers.getContainerMirrorHandle(mirror);
-        return crack(handle);
+        return crack(ContainerHandlers.getContainerMirrorHandle(mirror));
     }
 
     public static <H extends ContainerHandle<?>> ContainerSetup newContainer(PackedContainerInstaller installer, ApplicationSetup application,
@@ -400,61 +440,12 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         // Create the operation's handle.
         ContainerHandle<?> handle = container.handle = handleFactory.apply(installer);
         if (handle == null) {
-            // Must have an operator
-            throw new InternalExtensionException(BaseExtension.class, handleFactory + " returned null, when creating a new ContaienrHandle");
+            throw new InternalExtensionException(BaseExtension.class, handleFactory + " returned null, when creating a new ContainerHandle");
         }
 
-        // BaseExtension is always present.
+        // BaseExtension is always present in any container.
         container.base = ExtensionSetup.newExtension(BaseExtension.class, container, null);
 
         return container;
-    }
-
-    private void nameNewContainer(PackedContainerInstaller installer) {
-        // Initializes the name of the container
-        String nn = installer.nameFromWirelet;
-
-        // Set the name of the container if it was not set by a wirelet
-        if (nn == null) {
-            // I think try and move some of this to ComponentNameWirelet
-            String n = installer.name;
-            if (n == null) {
-                // TODO Should only be used on the root container in the assembly
-                Class<? extends Assembly> source = assembly.assembly.getClass();
-                if (Assembly.class.isAssignableFrom(source)) {
-                    String nnn = source.getSimpleName();
-                    if (nnn.length() > 8 && nnn.endsWith("Assembly")) {
-                        nnn = nnn.substring(0, nnn.length() - 8);
-                    }
-                    if (nnn.length() > 0) {
-                        // checkName, if not just App
-                        // TODO need prefix
-                        n = nnn;
-                    }
-                    if (nnn.length() == 0) {
-                        n = "Assembly";
-                    }
-                } else {
-                    n = "Unknown";
-                }
-            }
-            nn = n;
-        }
-
-        String n = nn;
-        if (installer.parent != null) {
-            HashMap<String, ContainerSetup> c = installer.parent.treeChildren;
-            if (c.size() == 0) {
-                c.put(n, this);
-            } else {
-                int counter = 1;
-                while (c.putIfAbsent(n, this) != null) {
-                    n = n + counter++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test
-                                       // adding 1
-                    // million of the same component type
-                }
-            }
-        }
-        this.name = n;
     }
 }

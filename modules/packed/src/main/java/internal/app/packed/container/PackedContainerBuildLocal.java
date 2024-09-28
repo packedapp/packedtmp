@@ -20,6 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Supplier;
 
 import app.packed.container.ContainerBuildLocal;
+import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerHandle;
+import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
@@ -37,7 +40,7 @@ public final class PackedContainerBuildLocal<T> extends PackedBuildLocal<Contain
     @Override
     protected BuildLocalSource extract(ContainerBuildLocal.Accessor accessor) {
         requireNonNull(accessor, "accessor is null");
-        return ContainerSetup.crack(accessor);
+        return crack(accessor);
     }
 
     /** {@inheritDoc} */
@@ -52,5 +55,14 @@ public final class PackedContainerBuildLocal<T> extends PackedBuildLocal<Contain
             }
         }
         return new ContainerSetLocalWirelet();
+    }
+
+
+    public static ContainerSetup crack(ContainerBuildLocal.Accessor accessor) {
+        return switch (accessor) {
+        case ContainerConfiguration bc -> ContainerSetup.crack(bc);
+        case ContainerHandle<?> bc -> ContainerSetup.crack(bc);
+        case ContainerMirror bc -> ContainerSetup.crack(bc);
+        };
     }
 }

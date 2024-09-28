@@ -32,7 +32,6 @@ public final class DeploymentSetup {
     // Maaske smider vi som udgangspunkt ikke noget vaek
     public final ApplicationSetup root;
 
-
     /** The build goal. */
     public final BuildGoal goal;
 
@@ -40,13 +39,13 @@ public final class DeploymentSetup {
 
     public DeploymentSetup(ApplicationSetup root, PackedApplicationInstaller<?> containerBuilder) {
         this.root = requireNonNull(root);
-        this.goal = containerBuilder.goal;
+        this.goal = containerBuilder.buildProcess.goal();
     }
 
     /**
      * @return
      */
     public DeploymentMirror mirror() {
-       return new DeploymentMirror(this);
+        return new DeploymentMirror(this);
     }
 }

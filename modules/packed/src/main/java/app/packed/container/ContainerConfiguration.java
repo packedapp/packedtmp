@@ -22,20 +22,9 @@ import internal.app.packed.util.types.ClassUtil;
  */
 public non-sealed class ContainerConfiguration extends ComponentConfiguration implements ContainerBuildLocal.Accessor {
 
-    /**
-     * A marker configuration object indicating that an assembly (or composer) has already been used for building a
-     * container. Should never be exposed to end-users.
-     */
-    static final ContainerConfiguration USED = new ContainerConfiguration();
-
-    /** The container we are configuring. Is only null for {@link #USED}. */
+    /** The container we are configuring. */
     @Nullable
-    final ContainerHandle<?> handle;
-
-    /** Used by {@link #USED}. */
-    private ContainerConfiguration() {
-        this.handle = null;
-    }
+    private final ContainerHandle<?> handle;
 
     public ContainerConfiguration(ContainerHandle<?> handle) {
         this.handle = requireNonNull(handle);

@@ -95,7 +95,7 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
     AssemblySetup build(PackedContainerInstaller builder) {
         AssemblyConfiguration existing = configuration;
         if (existing == null) { // assembly has not been used in a build process before
-            AssemblySetup assembly = AssemblySetup.newSetup(builder, this);
+            AssemblySetup assembly = AssemblySetup.newAssembly(builder, this);
             PackedBuildProcess p = PackedBuildProcess.get();
             p.push(assembly);
             try {

@@ -20,11 +20,16 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import app.packed.component.ComponentPath;
+import app.packed.extension.Extension;
+import app.packed.namespace.NamespaceConfiguration;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceMirror;
+import app.packed.namespace.NamespaceTemplate.Installer;
 import internal.app.packed.build.AuthoritySetup;
+import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.handlers.NamespaceHandlers;
@@ -35,18 +40,16 @@ import internal.app.packed.operation.OperationSetup;
  */
 // Is an application a namespace for Components??? My brain just fried
 @SuppressWarnings("rawtypes")
-public final class NamespaceSetup {
+public final class NamespaceSetup implements ComponentSetup {
 
-    /** The default name of a namespace. */
-    public static final String DEFAULT_NAME = "main";
-
-    NamespaceHandle handle;
+    /** The handle of the namespace must be read through {@link #handle()}. */
+    private NamespaceHandle handle;
 
     // Must search up until root to find local names
     final Map<ContainerSetup, String> localNames = new HashMap<>();
 
     /** The name of the namespace. */
-    public String name = DEFAULT_NAME;
+    public String name = NamespaceHandle.DEFAULT_NAME;
 
     /** All operations defined in this namespace. */
     public final ArrayList<OperationSetup> operations = new ArrayList<>();
@@ -60,24 +63,26 @@ public final class NamespaceSetup {
     /** The namespace template */
     public final PackedNamespaceTemplate template;
 
-    public NamespaceSetup(PackedNamespaceTemplate template, ExtensionSetup root, AuthoritySetup owner) {
-        this.template = template;
-        this.root = root;
-        this.owner = owner;
+    public NamespaceSetup(PackedNamespaceInstaller installer) {
+        this.template = installer.template;
+        this.root = installer.root;
+        this.owner = installer.owner;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ComponentPath componentPath() {
         throw new UnsupportedOperationException();
     }
 
     /** { @return the handle of the namespace} */
+    @Override
     public NamespaceHandle handle() {
         return requireNonNull(handle);
     }
 
-
     /** {@inheritDoc} */
+    @Override
     public NamespaceMirror<?> mirror() {
         return handle().mirror();
     }
@@ -89,6 +94,18 @@ public final class NamespaceSetup {
 
     public static NamespaceSetup crack(NamespaceHandle<?, ?> handle) {
         return NamespaceHandlers.getNamespaceHandleNamespace(handle);
+    }
+
+    /** {@inheritDoc} */
+    static <E extends Extension<E>, H extends NamespaceHandle<E, ?>, C extends NamespaceConfiguration<E>> H newNamespace(PackedNamespaceInstaller installer,
+            Function<? super Installer, H> newHandle) {
+        NamespaceSetup namespace = installer.install(new NamespaceSetup(installer));
+        H apply = newHandle.apply(installer);
+        namespace.handle = apply;
+
+        installer.root.container.application.namespaces.put(new NamespaceKey(installer.template.handleClass(), installer.name), apply);
+        installer.handle = apply;
+        return apply;
     }
 
     public record NamespaceKey(Class<? extends NamespaceHandle<?, ?>> handleClass, String name) {}

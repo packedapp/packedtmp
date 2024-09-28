@@ -34,6 +34,9 @@ import internal.app.packed.namespace.PackedNamespaceInstaller;
  */
 public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C extends NamespaceConfiguration<E>> extends ComponentHandle {
 
+    /** The default name of a namespace. */
+    public static final String DEFAULT_NAME = "main";
+
     /** A cache of all namespace configurations, currently do not support namespaces uses by extensions. */
     private HashMap<E, C> configurations = new HashMap<>();
 
@@ -44,7 +47,7 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
     final NamespaceSetup namespace;
 
     protected NamespaceHandle(NamespaceTemplate.Installer installer) {
-        this.namespace = requireNonNull(((PackedNamespaceInstaller) installer).namespace);
+        this.namespace = ((PackedNamespaceInstaller) installer).toHandle();
     }
 
     /** {@return the root extension of this domain.} */

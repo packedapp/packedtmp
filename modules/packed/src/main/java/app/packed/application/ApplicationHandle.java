@@ -15,11 +15,8 @@
  */
 package app.packed.application;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.util.Optional;
-import java.util.Set;
 
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentHandle;
@@ -31,7 +28,6 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedBaseImage.ImageEager;
 import internal.app.packed.application.PackedBaseImage.ImageNonReusable;
-import internal.app.packed.component.ComponentTagManager;
 import internal.app.packed.container.wirelets.WireletSelectionArray;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
@@ -43,8 +39,12 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
     /** The handle's application. */
     final ApplicationSetup application;
 
-    /** A set of component tags that are on the application. */
-    private Set<String> componentTags;
+    /** {@inheritDoc} */
+    @Override
+    public final void componentTag(String... tags) {
+        checkIsConfigurable();
+        application.componentTagManager.addComponentTags(application, tags);
+    }
 
     /** The lazy generated application configuration. */
     @Nullable
@@ -65,11 +65,10 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
      */
     public ApplicationHandle(ApplicationTemplate.Installer<A> installer) {
         PackedApplicationInstaller<A> inst = (PackedApplicationInstaller<A>) installer;
-        this.application = requireNonNull(inst.application);
-        this.componentTags = requireNonNull(inst.componentTags);
+        this.application = inst.toHandle();
         // Build an image if that is the target.
         BaseImage<?> img = null;
-        if (inst.goal == BuildGoal.IMAGE) {
+        if (inst.buildProcess.goal() == BuildGoal.IMAGE) {
             img = new ImageEager<>(application);
             if (!inst.optionBuildReusableImage) {
                 img = new ImageNonReusable<>(img);
@@ -87,13 +86,6 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
     @Override
     public final ComponentPath componentPath() {
         return application.componentPath();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final void componentTag(String... tags) {
-        checkIsConfigurable();
-        componentTags = ComponentTagManager.copyAndAdd(componentTags, tags);
     }
 
     /** { @return the user exposed configuration of the bean} */

@@ -23,7 +23,7 @@ import app.packed.container.ContainerBuildLocal.Accessor;
 import app.packed.util.Nullable;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.build.PackedBuildLocal;
-import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.PackedContainerBuildLocal;
 
 /** Implementation of {@link ContainerLocal}. */
 //HMMM
@@ -37,7 +37,7 @@ public final class PackedExtensionLocal<T> extends PackedBuildLocal<Accessor, T>
     @Override
     protected BuildLocalSource extract(Accessor accessor) {
         requireNonNull(accessor, "accessor is null");
-        return ContainerSetup.crack(accessor);
+        return PackedContainerBuildLocal.crack(accessor);
     }
 
 //    /** {@inheritDoc} */
@@ -53,4 +53,6 @@ public final class PackedExtensionLocal<T> extends PackedBuildLocal<Accessor, T>
 //        }
 //        return new ContainerSetLocalWirelet();
 //    }
+
+
 }

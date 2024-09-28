@@ -22,22 +22,22 @@ import app.packed.namespace.NamespaceConfiguration;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.namespace.NamespaceTemplate.Installer;
+import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.build.AuthoritySetup;
+import internal.app.packed.component.PackedComponentInstaller;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
 
 /**
  *
  */
-public final class PackedNamespaceInstaller implements NamespaceTemplate.Installer {
-    final PackedNamespaceTemplate template;
-    final ExtensionSetup root;
+public final class PackedNamespaceInstaller extends PackedComponentInstaller<NamespaceSetup, PackedNamespaceInstaller> implements NamespaceTemplate.Installer {
+    public NamespaceHandle<?, ?> handle;
+    final String name;
+
     final AuthoritySetup<?> owner;
 
-    public NamespaceSetup namespace;
-
-    public NamespaceHandle<?, ?> handle;
-    private final String name;
+    final ExtensionSetup root;
+    final PackedNamespaceTemplate template;
 
     public PackedNamespaceInstaller(PackedNamespaceTemplate template, ExtensionSetup root, AuthoritySetup<?> owner, String name) {
         this.template = template;
@@ -48,13 +48,14 @@ public final class PackedNamespaceInstaller implements NamespaceTemplate.Install
 
     /** {@inheritDoc} */
     @Override
+    protected ApplicationSetup application(NamespaceSetup component) {
+        return component.root.container.application;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public <E extends Extension<E>, H extends NamespaceHandle<E, ?>, C extends NamespaceConfiguration<E>> H install(Function<? super Installer, H> newHandle) {
-        this.namespace = new NamespaceSetup(template, root, owner);
-        H apply = newHandle.apply(this);
-        namespace.handle = apply;
-        root.container.application.namespaces.put(new NamespaceKey(template.handleClass(), name), apply);
-        handle = apply;
-        return apply;
+        return NamespaceSetup.newNamespace(this, newHandle);
     }
 
 }

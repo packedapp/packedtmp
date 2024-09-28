@@ -40,7 +40,7 @@ public class ContainerRunner {
 
     public ContainerRunner(ApplicationSetup application) {
         this.runtime = new PackedManagedLifetime(this);
-        this.container = application.container;
+        this.container = application.container();
         // application.goal.isLaunchable() && application.driver.lifetimeKind() == OldLifetimeKind.MANAGED ? new
         // PackedManagedLifetime(this) : null;
     }

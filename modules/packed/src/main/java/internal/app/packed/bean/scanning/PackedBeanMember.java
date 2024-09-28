@@ -61,7 +61,6 @@ abstract sealed class PackedBeanMember<M extends Member> extends PackedBeanEleme
             }
         } else {
             ExtensionSetup e = (ExtensionSetup) bean.owner;
-            System.out.println(e.isConfigurable());
             if (!e.isConfigurable()) {
                 throw new IllegalStateException("This method must be called before the extension is closed");
             }

@@ -179,7 +179,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     @Override
     public final void componentTag(String... tags) {
         checkIsConfigurable();
-        operation.bean.container.application.ctm.addComponentTags(operation, tags);
+        operation.bean.container.application.componentTagManager.addComponentTags(operation, tags);
     }
 
     /** { @return the user exposed configuration of the operation} */

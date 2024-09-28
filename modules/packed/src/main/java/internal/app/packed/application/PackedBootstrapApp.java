@@ -117,7 +117,7 @@ public final class PackedBootstrapApp<A> implements BootstrapApp<A> {
         BootstrapAppAssembly assembly = new BootstrapAppAssembly(template);
 
         // Build the bootstrap application
-        installer.buildApplication(assembly);
+        installer.install(assembly, ApplicationHandle::new);
 
         // Create the application template.
         PackedApplicationTemplate<A> t = new PackedApplicationTemplate<>(template.guestClass(), null, ApplicationHandle::new, template.containerTemplate(),

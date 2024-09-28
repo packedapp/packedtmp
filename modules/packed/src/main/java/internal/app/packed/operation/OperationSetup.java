@@ -134,6 +134,7 @@ public final class OperationSetup implements ContextualizedElementSetup, Compone
     }
 
     /** {@inheritDoc} */
+    @Override
     public ComponentPath componentPath() {
         return ComponentKind.OPERATION.pathNew(bean.componentPath(), name());
     }
@@ -198,6 +199,7 @@ public final class OperationSetup implements ContextualizedElementSetup, Compone
     }
 
     /** {@return the operation's handle} */
+    @Override
     public OperationHandle<?> handle() {
         OperationHandle<?> h = handle;
         if (h != null) {
