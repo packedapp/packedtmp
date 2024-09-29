@@ -24,12 +24,15 @@ import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.operation.OperationSetup;
 
-/**
- *
- */
+/** Internal configuration of a component. */
 public sealed interface ComponentSetup permits ApplicationSetup, ContainerSetup, BeanSetup, OperationSetup, NamespaceSetup {
 
+    /** {@return the path of the component} */
     ComponentPath componentPath();
-    ComponentMirror mirror();
+
+    /** {@return the external visible handle of the component} */
     ComponentHandle handle();
+
+    /** {@return a mirror for the component} */
+    ComponentMirror mirror();
 }

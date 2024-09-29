@@ -18,7 +18,7 @@ package internal.app.packed.service;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.binding.Key;
-import app.packed.binding.ResolutionKind;
+import app.packed.binding.BindingKind;
 import app.packed.service.advanced.ServiceProviderKind;
 import app.packed.service.advanced.ServiceResolver;
 import app.packed.service.mirror.NamespaceServiceBindingMirror;
@@ -66,8 +66,8 @@ public final class ServiceBindingSetup extends BindingSetup {
 
     /** {@inheritDoc} */
     @Override
-    public ResolutionKind kind() {
-        return ResolutionKind.SERVICE;
+    public BindingKind kind() {
+        return BindingKind.SERVICE;
     }
 
     public ServiceProviderSetup resolve() {

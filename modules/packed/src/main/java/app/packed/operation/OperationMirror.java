@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import app.packed.bean.BeanMirror;
 import app.packed.binding.BindingMirror;
@@ -98,9 +99,10 @@ public non-sealed class OperationMirror implements ComponentMirror, Contextualiz
         return handle.componentPath();
     }
 
-    /** {@return the extension that installed the operation} */
-    public final Class<? extends Extension<?>> installedByExtension() {
-        return handle.operation.installedByExtension.extensionType;
+    /** {@inheritDoc} */
+    @Override
+    public final Set<String> componentTags() {
+        return handle.componentTags();
     }
 
     /** {@return an unchangeable set view of all the contexts that the operation operates within.} */
@@ -123,10 +125,20 @@ public non-sealed class OperationMirror implements ComponentMirror, Contextualiz
         return this == other || other instanceof OperationMirror m && handle == m.handle;
     }
 
+    @Override
+    public String toString() {
+        return handle.toString();
+    }
+
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
         return handle.hashCode();
+    }
+
+    /** {@return the extension that installed the operation} */
+    public final Class<? extends Extension<?>> installedByExtension() {
+        return handle.operation.installedByExtension.extensionType;
     }
 
     /** {@return the extension that can invoke the operation.} */

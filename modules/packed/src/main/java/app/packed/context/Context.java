@@ -27,11 +27,12 @@ import app.packed.extension.Extension;
  * @param <E>
  *            the extension the context is a part of
  */
-// Check that if try to inject a a ContextImplementation
-// And it does not have a service provider annotation
-// We fail with a good explanation
-
 public interface Context<E extends Extension<E>> {}
+
+//Check that if try to inject a a ContextImplementation
+//And it does not have a service provider annotation
+//We fail with a good explanation
+
 
 //Ved ikke om det er problematisk at tage E med paa runtime...
 //Den er jo ikke super needed. Og bliver jo encoded i klassen

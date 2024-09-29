@@ -18,10 +18,10 @@ package sandbox.program;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.assembly.BaseAssembly;
+import app.packed.lifecycle.OnInitialize;
+import app.packed.lifecycle.OnStart;
+import app.packed.lifecycle.OnStop;
 import app.packed.lifetime.Main;
-import app.packed.lifetime.OnInitialize;
-import app.packed.lifetime.OnStart;
-import app.packed.lifetime.OnStop;
 
 /**
  *

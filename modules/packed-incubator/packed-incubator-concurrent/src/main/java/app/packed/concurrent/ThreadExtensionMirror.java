@@ -18,9 +18,9 @@ package app.packed.concurrent;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
+import app.packed.binding.KeyClassifier;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionMirror;
-import app.packed.util.Tag;
 import internal.app.packed.util.QualifierUtil;
 
 /**
@@ -37,5 +37,5 @@ public final class ThreadExtensionMirror extends ExtensionMirror<ThreadExtension
         super(handle);
     }
 
-    static final Function<String, Tag> FT = QualifierUtil.syntheticFunction(MethodHandles.lookup(), Tag.class, String.class, "value");
+    static final Function<String, KeyClassifier> FT = QualifierUtil.syntheticFunction(MethodHandles.lookup(), KeyClassifier.class, String.class, "value");
 }

@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Supplier;
 
 import app.packed.binding.BindingMirror;
-import app.packed.binding.ResolutionKind;
+import app.packed.binding.BindingKind;
 import app.packed.build.BuildActor;
 import app.packed.component.ComponentPath;
 import app.packed.util.Nullable;
@@ -63,7 +63,7 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
     }
 
     /** {@return the binding kind.} */
-    public abstract ResolutionKind kind();
+    public abstract BindingKind kind();
 
     /** {@return a new mirror.} */
     public BindingMirror mirror() {
@@ -94,8 +94,8 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
 
         /** {@inheritDoc} */
         @Override
-        public ResolutionKind kind() {
-            return ResolutionKind.HOOK;
+        public BindingKind kind() {
+            return BindingKind.HOOK;
         }
 
         @Override
@@ -129,8 +129,8 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
 
         /** {@inheritDoc} */
         @Override
-        public ResolutionKind kind() {
-            return ResolutionKind.MANUAL;
+        public BindingKind kind() {
+            return BindingKind.MANUAL;
         }
 
         /** {@inheritDoc} */

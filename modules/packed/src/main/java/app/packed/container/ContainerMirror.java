@@ -2,10 +2,7 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -18,9 +15,6 @@ import app.packed.build.BuildActor;
 import app.packed.build.hook.BuildHookMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
-import app.packed.context.Context;
-import app.packed.context.ContextMirror;
-import app.packed.context.ContextualizedElementMirror;
 import app.packed.context.InheritableContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
@@ -31,9 +25,9 @@ import app.packed.operation.OperationMirror;
 import app.packed.util.Nullable;
 import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.context.ContextSetup;
 import internal.app.packed.extension.ExtensionModel;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.util.PackedTreeView;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
@@ -46,7 +40,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * At runtime you can have a ContainerMirror injected
  */
 @InheritableContextualServiceProvider(extension = BaseExtension.class)
-public non-sealed class ContainerMirror implements ComponentMirror, ContextualizedElementMirror, ContainerBuildLocal.Accessor {
+public non-sealed class ContainerMirror implements ComponentMirror, ContainerBuildLocal.Accessor {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
@@ -62,28 +56,31 @@ public non-sealed class ContainerMirror implements ComponentMirror, Contextualiz
     };
 
     /** The container we are mirroring. */
-    final ContainerHandle<?> handle;
+    private final ContainerHandle<?> handle;
 
     /**
      * Create a new container mirror.
      *
      * @param handle
      *            the container's handle
-     * @throws IllegalStateException
-     *             if attempting to explicitly construct a container mirror instance
      */
     public ContainerMirror(ContainerHandle<?> handle) {
         this.handle = requireNonNull(handle);
     }
 
     /** {@return a stream containing all beans defined by the container including beans that are declared by extensions.} */
-    public Stream<BeanMirror> allBeans() {
+    public final Stream<BeanMirror> allBeans() {
         return handle.container.beans.stream().map(b -> b.mirror());
     }
 
     /** {@return the application this container is a part of.} */
     public ApplicationMirror application() {
         return handle.container.application.mirror();
+    }
+
+    /** {@return a node representing this container in a tree containing all containers in the application.} */
+    public TreeView.Node<ContainerMirror> applicationNode() {
+        return new PackedTreeView<>(handle.container.application.container(), null, c -> c.mirror()).toNode(handle.container);
     }
 
     /** {@return the assembly wherein this container was defined.} */
@@ -97,88 +94,21 @@ public non-sealed class ContainerMirror implements ComponentMirror, Contextualiz
      * Notice: The returned stream does not include beans that are declared by extensions, use {@link #allBeans()} if you
      * need to include those.
      */
-    public Stream<BeanMirror> beans() {
+    public final Stream<BeanMirror> beans() {
         return allBeans().filter(m -> m.owner() == BuildActor.application());
     }
 
-    /**
-     * A view of all all of this containers beans that are in the same lifetime as the container itself.
-     */
-    public Stream<BeanMirror> beansInContainerLifetime() {
-        return handle.container.beans.stream().filter(b -> b.lifetime == handle.container.lifetime).map(b -> b.mirror());
-    }
-
-    /** {@return the extension that installed the container} */
-    public final Class<? extends Extension<?>> installedByExtension() {
-        return BaseExtension.class; // TODO fix
-    }
-
-    /** {@return a set of all boundaries to this container's parent. Or empty if family root.} */
-    public EnumSet<ContainerBoundaryKind> bondariesToParent() {
-        ContainerSetup parent = handle.container.treeParent;
-        if (parent != null) {
-            ContainerSetup c = handle.container;
-
-            // Deployment has all
-            if (parent.application.deployment != c.application.deployment) {
-                return EnumSet.allOf(ContainerBoundaryKind.class);
-            }
-
-            ArrayList<ContainerBoundaryKind> l = new ArrayList<>();
-
-            if (parent.application == c.application) {
-                l.add(ContainerBoundaryKind.APPLICATION);
-            }
-            if (parent.lifetime == c.lifetime) {
-                l.add(ContainerBoundaryKind.LIFETIME);
-            }
-            if (parent.assembly == c.assembly) {
-                l.add(ContainerBoundaryKind.ASSEMBLY);
-            }
-
-            if (!l.isEmpty()) {
-                return EnumSet.copyOf(l);
-            }
-        }
-        return EnumSet.noneOf(ContainerBoundaryKind.class);
-
+    /** {@inheritDoc} */
+    @Override
+    public final ComponentPath componentPath() {
+        return handle.componentPath();
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentPath componentPath() {
-        return handle.container.componentPath();
+    public final Set<String> componentTags() {
+        return handle.componentTags();
     }
-
-    /** {@return a stream of all of the operations declared by the bean.} */
-    public Stream<OperationMirror> operations() {
-        return beans().flatMap(BeanMirror::operations);
-    }
-
-    /**
-     * Returns a stream of all of the operations declared by the bean with the specified mirror type.
-     *
-     * @param <T>
-     * @param operationType
-     *            the type of operations to include
-     * @return a collection of all of the operations declared by the bean of the specified type.
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
-        requireNonNull(operationType, "operationType is null");
-        return (Stream<T>) operations().filter(f -> operationType.isAssignableFrom(f.getClass()));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Map<Class<? extends Context<?>>, ContextMirror> contexts() {
-        return ContextSetup.allMirrorsFor(handle.container);
-    }
-
-//    /** {@return the deployment this container is a part of.} */
-//    public DeploymentMirror deployment() {
-//        return container.application.deployment.mirror();
-//    }
 
     /** {@inheritDoc} */
     @Override
@@ -186,8 +116,13 @@ public non-sealed class ContainerMirror implements ComponentMirror, Contextualiz
         return this == other || other instanceof ContainerMirror m && handle.container == m.handle.container;
     }
 
+//    /** {@return the deployment this container is a part of.} */
+//    public DeploymentMirror deployment() {
+//        return container.application.deployment.mirror();
+//    }
+
     /** {@return a {@link Set} view of all extensions that are used in the container.} */
-    public Set<Class<? extends Extension<?>>> extensionTypes() {
+    public final Set<Class<? extends Extension<?>>> extensionTypes() {
         return handle.container.extensionTypes();
     }
 
@@ -212,6 +147,11 @@ public non-sealed class ContainerMirror implements ComponentMirror, Contextualiz
         return handle.container.hashCode();
     }
 
+    /** {@return the extension that installed the container} */
+    public final Class<? extends Extension<?>> installedByExtension() {
+        return BaseExtension.class; // TODO fix
+    }
+
     /**
      * Returns whether or not an extension of the specified type is in use by the container.
      *
@@ -220,7 +160,7 @@ public non-sealed class ContainerMirror implements ComponentMirror, Contextualiz
      * @return {@code true} if the container uses an extension of the specified type, otherwise {@code false}
      * @see ContainerConfiguration#isExtensionUsed(Class)
      */
-    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
+    public final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return handle.container.isExtensionUsed(extensionType);
     }
 
@@ -232,23 +172,38 @@ public non-sealed class ContainerMirror implements ComponentMirror, Contextualiz
     /**
      * Returns the name of this container.
      * <p>
-     * If no name was explicitly set when the container was configured. Packed will automatically assign an unique name to
-     * it.
+     * If no name is explicitly set for the container. The framework will automatically assign an unique (among siblings)
+     * name to it.
      *
      * @return the name of this container
      */
-    public String name() {
+    public final String name() {
         return handle.container.name();
     }
 
     /** {@return all the namespaces this container operates within.} */
-    public Stream<NamespaceMirror<?>> namespaces() {
+    public final Stream<NamespaceMirror<?>> namespaces() {
         throw new UnsupportedOperationException();
     }
 
-    /** {@return a node representing this container in a tree containing all containers in the application.} */
-    public TreeView.Node<ContainerMirror> nodeInApplication() {
-        throw new UnsupportedOperationException();
+    /** {@return a stream of all of the operations declared on beans in the container owned by the user} */
+    public final Stream<OperationMirror> operations() {
+        return beans().flatMap(BeanMirror::operations);
+    }
+
+    /**
+     * {@return a stream of all of the operations declared on beans in the container owned by the user of the specified
+     * type}
+     *
+     * @param <T>
+     *            the type of operation mirror
+     * @param operationType
+     *            the type of operation mirrors to include in the stream
+     */
+    @SuppressWarnings("unchecked")
+    public final <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
+        requireNonNull(operationType, "operationType is null");
+        return (Stream<T>) operations().filter(f -> operationType.isAssignableFrom(f.getClass()));
     }
 
     /** {@inheritDoc} */
@@ -317,19 +272,64 @@ public non-sealed class ContainerMirror implements ComponentMirror, Contextualiz
 
         return mirrorClass.cast(mirror);
     }
-
-//    public static Assembly verifiable(Assembly assembly, Consumer<? super ContainerMirror> verifier) {
-//        return Assemblies.verify(assembly, ContainerMirror.class, verifier);
-//    }
-
-    // Hvis vi siger at et domain er hele appen. Hvad goere vi i C3. Er den tilgaengelig under et "fake" navn???
-    //
-
-    // Vi skal have den fordi namespace simpelthen bliver noedt til at definere den
-    // Vi har en main database der bruges i P og saa bruger vi den i C1, C2 bruger den under alias "NotMain", og definere
-    // sin egen main.
-    // C3 definere kun sig egen main
 }
+
+
+//public static Assembly verifiable(Assembly assembly, Consumer<? super ContainerMirror> verifier) {
+//  return Assemblies.verify(assembly, ContainerMirror.class, verifier);
+//}
+
+// Hvis vi siger at et domain er hele appen. Hvad goere vi i C3. Er den tilgaengelig under et "fake" navn???
+//
+
+// Vi skal have den fordi namespace simpelthen bliver noedt til at definere den
+// Vi har en main database der bruges i P og saa bruger vi den i C1, C2 bruger den under alias "NotMain", og definere
+// sin egen main.
+// C3 definere kun sig egen main
+//
+///**
+// * A view of all all of this containers beans that are in the same lifetime as the container itself.
+// * <p>
+// * If you need to include beans that are also owned by extension's use {@link #allBeans()}.
+// *
+// * @see #allBeans()
+// */
+//public Stream<BeanMirror> beansInContainerLifetime() {
+//    return handle.container.beans.stream().filter(b -> b.lifetime == handle.container.lifetime).map(b -> b.mirror());
+//}
+
+
+//
+///** {@return a set of all boundaries to this container's parent. Or empty if family root.} */
+//public EnumSet<ContainerBoundaryKind> bondariesToParent() {
+//  ContainerSetup parent = handle.container.treeParent;
+//  if (parent != null) {
+//      ContainerSetup c = handle.container;
+//
+//      // Deployment has all
+//      if (parent.application.deployment != c.application.deployment) {
+//          return EnumSet.allOf(ContainerBoundaryKind.class);
+//      }
+//
+//      ArrayList<ContainerBoundaryKind> l = new ArrayList<>();
+//
+//      if (parent.application == c.application) {
+//          l.add(ContainerBoundaryKind.APPLICATION);
+//      }
+//      if (parent.lifetime == c.lifetime) {
+//          l.add(ContainerBoundaryKind.LIFETIME);
+//      }
+//      if (parent.assembly == c.assembly) {
+//          l.add(ContainerBoundaryKind.ASSEMBLY);
+//      }
+//
+//      if (!l.isEmpty()) {
+//          return EnumSet.copyOf(l);
+//      }
+//  }
+//  return EnumSet.noneOf(ContainerBoundaryKind.class);
+//
+//}
 
 //// MAYBE MAYBE, but need some use cases
 ///** {@return a node representing this container within an application.} */

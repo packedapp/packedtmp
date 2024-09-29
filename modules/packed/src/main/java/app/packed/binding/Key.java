@@ -35,7 +35,6 @@ import java.util.Set;
 import app.packed.bean.BeanElement.BeanField;
 import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.util.AnnotationList;
-import app.packed.util.Tag;
 import internal.app.packed.bean.scanning.PackedBeanMethod;
 import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.util.AnnotationUtil;
@@ -449,8 +448,8 @@ public abstract class Key<T> {
      */
     public final Key<T> withTag(String name) {
         requireNonNull(name, "name is null");
-        record TaggedAnno(Class<? extends Annotation> annotationType, String value) implements Tag {}
-        return withQualifier(new TaggedAnno(Tag.class, name));
+        record TaggedAnno(Class<? extends Annotation> annotationType, String value) implements KeyClassifier {}
+        return withQualifier(new TaggedAnno(KeyClassifier.class, name));
     }
 
     /**

@@ -108,12 +108,19 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
     /** {@inheritDoc} */
     public PackedOperationTemplate withContext(ContextTemplate context) {
+        PackedContextTemplate c = (PackedContextTemplate) context;
         Map<Class<? extends Context<?>>, PackedContextTemplate> m = new HashMap<>(contexts);
-        if (m.putIfAbsent(context.contextClass(), (PackedContextTemplate) context) != null) {
+        if (m.putIfAbsent(context.contextClass(), c) != null) {
             throw new IllegalArgumentException("This template already contains the context " + context.contextClass());
         }
+        //
         m = Map.copyOf(m);
-        MethodType mt = methodType.appendParameterTypes(context.contextImplementationClass());
+        MethodType mt;
+        if (!c.bindAsConstant()) {
+            mt = methodType.appendParameterTypes(context.contextImplementationClass());
+        } else {
+            mt = methodType;
+        }
         return new PackedOperationTemplate(m, extensionContext, beanInstanceIndex, mt, ignoreReturn);
     }
 

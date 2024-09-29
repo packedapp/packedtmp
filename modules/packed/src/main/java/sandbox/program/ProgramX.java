@@ -165,7 +165,7 @@ record ProgramImplementationX(@FromComponentGuest String name, @FromComponentGue
     /** An driver for creating App instances. */
 
     static final BootstrapApp<ProgramImplementationX> DRIVER =BootstrapApp.of(
-            ApplicationTemplate.of(ProgramImplementationX.class, c -> c.container(ContainerTemplate.MANAGED)));
+            ApplicationTemplate.of(ProgramImplementationX.class, c -> c.rootContainer(ContainerTemplate.MANAGED)));
 
 
     /** {@inheritDoc} */

@@ -22,6 +22,7 @@ package app.packed.service.advanced;
  */
 // was ServiceLookupScope
 // ServiceProviderKind
+// ServiceScope
 public enum ServiceProviderKind {
 
     /**

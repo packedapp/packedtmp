@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import app.packed.bean.Inject;
-import app.packed.lifetime.OnInitialize;
+import app.packed.lifecycle.OnInitialize;
 import testutil.stubs.Injectables.InjectA;
 import testutil.stubs.Letters.A;
 

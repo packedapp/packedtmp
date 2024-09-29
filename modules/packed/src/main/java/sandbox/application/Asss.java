@@ -23,7 +23,7 @@ import app.packed.bean.BeanTemplate;
 import app.packed.build.BuildProcess;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
-import app.packed.lifetime.OnInitialize;
+import app.packed.lifecycle.OnInitialize;
 
 /**
  *

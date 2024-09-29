@@ -1,7 +1,17 @@
 
+
+
+----- app.packed.application ----
+BaseImage.result
+ApplicationConfiguration
+ApplicationRepository
+
 ----- app.packed.build ----
 Cleanup hooks
 
 ----- app.packed.binding ----
 Cleanup bindings
 Figure out how binding-handles work 
+
+
+----- app.packed.namespace -----

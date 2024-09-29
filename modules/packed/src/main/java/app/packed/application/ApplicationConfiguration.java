@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import app.packed.assembly.Assembly;
 import app.packed.build.BuildException;
@@ -26,11 +27,17 @@ import app.packed.build.BuildProcess;
 import app.packed.component.ComponentConfiguration;
 
 /**
- *
+ * The configuration of an application.
  */
 // By default it is configuration everywhere..
 // Maybe have a freeze()/protect() operation/
 
+// isConfigurable?? Models
+
+// Root assembly defines this, and is sharable between all assemblies
+
+// Per assembly, requires that we can create new application configurations.
+// when needed
 public non-sealed class ApplicationConfiguration extends ComponentConfiguration implements ApplicationBuildLocal.Accessor {
 
     List<Class<? extends Assembly>> allowedAssemblies = List.of();
@@ -39,10 +46,22 @@ public non-sealed class ApplicationConfiguration extends ComponentConfiguration 
     /** The application's handle. */
     private final ApplicationHandle<?, ?> handle;
 
+    /**
+     * Create a new application configuration.
+     *
+     * @param handle
+     *            the application's handle
+     */
     public ApplicationConfiguration(ApplicationHandle<?, ?> handle) {
         this.handle = requireNonNull(handle);
     }
 
+    /**
+     * Checks that the is updatable
+     *
+     * @throws BuildException
+     *             if the operation
+     */
     protected final void checkUpdatable() {
         checkIsConfigurable();
         Optional<Class<? extends Assembly>> current = BuildProcess.current().currentAssembly();
@@ -62,18 +81,17 @@ public non-sealed class ApplicationConfiguration extends ComponentConfiguration 
         throw new BuildException("This operation can only be called from assemblies of type " + allowedAssemblies + ", current assembly = " + cl);
     }
 
-    // isConfigurable?? Models
-
-    // Root assembly defines this, and is sharable between all assemblies
-
-    // Per assembly, requires that we can create new application configurations.
-    // when needed
-
     /** {@inheritDoc} */
     @Override
     public ApplicationConfiguration componentTag(String... tags) {
         handle.componentTag(tags);
         return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> componentTags() {
+        return handle.componentTags();
     }
 
     /** {@inheritDoc} */

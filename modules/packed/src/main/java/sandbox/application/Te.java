@@ -53,7 +53,7 @@ import app.packed.container.ContainerTemplate;
 public final class Te {
 
     /** The bootstrap app. */
-    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(ApplicationTemplate.of(Holder.class, c -> c.container(ContainerTemplate.MANAGED)));
+    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(ApplicationTemplate.of(Holder.class, c -> c.rootContainer(ContainerTemplate.MANAGED)));
 
     public static void main(String[] args) {
         BOOTSTRAP.getClass();

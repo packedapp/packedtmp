@@ -15,7 +15,7 @@
  */
 package app.packed.context;
 
-import java.lang.invoke.MethodHandles;
+import java.util.function.Consumer;
 
 import app.packed.extension.Extension;
 import internal.app.packed.context.PackedContextTemplate;
@@ -62,12 +62,27 @@ public sealed interface ContextTemplate permits PackedContextTemplate {
 
     boolean isHidden();
 
-    static <T extends Context<?>> ContextTemplate of(MethodHandles.Lookup caller, Class<T> contextClass, Class<? extends T> implementation) {
-        return PackedContextTemplate.of(caller, false, contextClass, implementation);
+    static ContextTemplate of(Class<? extends Context<?>> contextClass, Consumer<? super Configurator> configurator) {
+        return PackedContextTemplate.of(contextClass, configurator);
     }
+//
+//    static <T extends Context<?>> ContextTemplate of(Class<T> contextClass, Class<? extends T> implementation) {
+//        return PackedContextTemplate.of(false, contextClass, implementation);
+//    }
+//
+//    static ContextTemplate ofHidden(Class<? extends Context<?>> contextImplementation) {
+//        return PackedContextTemplate.of(true, contextImplementation, contextImplementation);
+//    }
 
-    static ContextTemplate ofHidden(MethodHandles.Lookup caller, Class<? extends Context<?>> contextImplementation) {
-        return PackedContextTemplate.of(caller, true, contextImplementation, contextImplementation);
+    interface Configurator {
+        // Will not be visible to users of the class
+        // IDK Er den saa useful naar den skal ind gemmen constructoren?
+        Configurator hidden();
+
+        // Tror det er ment fx @RequestParam -> Kan tage en RequestContextImpl og skal ikke caste den.
+        Configurator implementationClass(Class<? extends Context<?>> implementationClass);
+
+        Configurator bindAsConstant();
     }
 
     interface Descriptor {}

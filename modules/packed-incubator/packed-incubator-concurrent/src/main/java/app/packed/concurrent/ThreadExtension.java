@@ -16,7 +16,6 @@
 package app.packed.concurrent;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandles;
 import java.time.Duration;
 import java.util.function.Consumer;
 
@@ -67,9 +66,9 @@ public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
     }
 
     /** A context template. */
-    static final ContextTemplate SCHEDULING_CONTEXT_TEMPLATE = ContextTemplate.of(MethodHandles.lookup(), SchedulingContext.class, SchedulingContext.class);
+    static final ContextTemplate SCHEDULING_CONTEXT_TEMPLATE = ContextTemplate.of(SchedulingContext.class, c -> {});
 
-    static final ContextTemplate DAEMON_CONTEXT_TEMPLATE = ContextTemplate.of(MethodHandles.lookup(), DaemonContext.class, DaemonContext.class);
+    static final ContextTemplate DAEMON_CONTEXT_TEMPLATE = ContextTemplate.of(DaemonContext.class, c -> {});
 
     static final OperationTemplate SCHEDULING_OPERATION_TEMPLATE = OperationTemplate.defaults()
             .reconfigure(c -> c.inContext(SCHEDULING_CONTEXT_TEMPLATE).returnIgnore());
@@ -108,7 +107,6 @@ public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
             @Override
             public void activatedByVariableType(Class<?> hook, Class<?> actualHook, UnwrappedBindableVariable v) {
                 if (hook == SchedulingContext.class || hook == DaemonContext.class) {
-//                    throw new UnsupportedOperationException();
                     v.bindInvocationArgument(1);
                 } else {
                     super.activatedByVariableType(hook, actualHook, v);

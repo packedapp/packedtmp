@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import app.packed.binding.Key;
-import app.packed.service.ProvideableBeanConfiguration;
+import app.packed.service.ProvidableBeanConfiguration;
 import internal.app.packed.application.PackedApplicationTemplate;
 
 /**
@@ -36,7 +36,7 @@ import internal.app.packed.application.PackedApplicationTemplate;
 // I don't know don't we always??
 
 // Maybe we don't extend it ServiableBean and have a provideAtRuntime();
-public final class ApplicationRepositoryConfiguration<H extends ApplicationHandle<?, A>, A> extends ProvideableBeanConfiguration<ApplicationRepository<H>> {
+public final class ApplicationRepositoryConfiguration<H extends ApplicationHandle<?, A>, A> extends ProvidableBeanConfiguration<ApplicationRepository<H>> {
 
     /** The application repository bean handle. */
     final ApplicationRepositoryHandle<H, A> handle;
@@ -75,13 +75,13 @@ public final class ApplicationRepositoryConfiguration<H extends ApplicationHandl
     }
 
     @Override
-    public ProvideableBeanConfiguration<ApplicationRepository<H>> provideAs(Class<? super ApplicationRepository<H>> key) {
+    public ProvidableBeanConfiguration<ApplicationRepository<H>> provideAs(Class<? super ApplicationRepository<H>> key) {
         super.provideAs(key);
         return this;
     }
 
     @Override
-    public ProvideableBeanConfiguration<ApplicationRepository<H>> provideAs(Key<? super ApplicationRepository<H>> key) {
+    public ProvidableBeanConfiguration<ApplicationRepository<H>> provideAs(Key<? super ApplicationRepository<H>> key) {
         super.provideAs(key);
         return this;
     }

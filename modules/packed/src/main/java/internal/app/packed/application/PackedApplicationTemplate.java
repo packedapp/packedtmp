@@ -18,8 +18,6 @@ package internal.app.packed.application;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -27,32 +25,34 @@ import java.util.function.Function;
 import app.packed.application.ApplicationBuildLocal;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationTemplate;
-import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
 import app.packed.build.BuildGoal;
+import app.packed.component.guest.ComponentHostContext;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.context.ContextTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
+import app.packed.util.Nullable;
 import internal.app.packed.bean.PackedBeanTemplate;
-import internal.app.packed.component.ComponentTagManager;
+import internal.app.packed.component.ComponentTagHolder;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
+import internal.app.packed.context.PackedComponentHostContext;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.util.ThrowableUtil;
 
-/**
- *
- */
-public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Function<? super Installer<A>, ? extends ApplicationHandle<?, A>> handleFactory,
-        PackedContainerTemplate containerTemplate, Set<String> componentTags, MethodHandle applicationLauncher) implements ApplicationTemplate<A> {
+/** Implementation of {@link ApplicationTemplate}. */
+public record PackedApplicationTemplate<A>(Class<?> guestClass, @Nullable Op<?> op,
+        Function<? super Installer<A>, ? extends ApplicationHandle<?, A>> handleFactory, PackedContainerTemplate containerTemplate, Set<String> componentTags,
+        MethodHandle applicationLauncher) implements ApplicationTemplate<A> {
 
-    static final ContextTemplate GB_CIT = ContextTemplate.of(MethodHandles.lookup(), ApplicationLaunchContext.class, ApplicationLaunchContext.class);
+    static final ContextTemplate GB_CIT = ContextTemplate.of(ApplicationLaunchContext.class, c -> {});
 
-    static final OperationTemplate GB_CON = OperationTemplate.raw().reconfigure(c -> c.inContext(GB_CIT).returnTypeObject());
+    static final ContextTemplate GB_HIT = ContextTemplate.of(ComponentHostContext.class, c->c.implementationClass(PackedComponentHostContext.class).bindAsConstant());
+
+    static final OperationTemplate GB_CON = OperationTemplate.raw().reconfigure(c -> c.inContext(GB_CIT).inContext(GB_HIT).returnTypeObject());
 
     public static final PackedBeanTemplate GB = new PackedBeanTemplate(BeanKind.UNMANAGED).withOperationTemplate(GB_CON);
 
@@ -94,22 +94,23 @@ public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Functi
     }
 
     public void installGuestBean(BeanTemplate.Installer installer, Consumer<? super MethodHandle> assigner) {
-        BeanHandle<BeanConfiguration> h;
         if (guestClass() == Void.class) {
             return;
         }
+        GuestBeanHandle h;
         if (op() == null) {
-            h = installer.install(guestClass());
+            h = installer.install(guestClass(), GuestBeanHandle::new);
         } else {
-            h = installer.install((Op<?>) op(), BeanHandle::new);
+            h = installer.install((Op<?>) op(), GuestBeanHandle::new);
         }
+
         h.lifetimeOperations().get(0).generateMethodHandleOnCodegen(m -> {
-            if (guestClass() == Void.class) {
-                // Produces null always. Expected signature BootstrapApp<Void>
-                m = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
-            } else {
+//            if (guestClass() == Void.class) {
+//                // Produces null always. Expected signature BootstrapApp<Void>
+//                m = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
+//            } else {
                 m = m.asType(m.type().changeReturnType(Object.class));
-            }
+//            }
             assigner.accept(m);
         });
     }
@@ -142,7 +143,7 @@ public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Functi
 
     /** {@inheritDoc} */
     @Override
-    public Function<? super Installer<A>, ? extends ApplicationHandle<?, A>> bootstrapHandleFactory() {
+    public Function<? super Installer<A>, ? extends ApplicationHandle<?, A>> bootstrapAppHandleFactory() {
         return handleFactory;
     }
 
@@ -156,7 +157,7 @@ public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Functi
 
         /** {@inheritDoc} */
         @Override
-        public Configurator<A> bootstrapHandleFactory(Function<? super Installer<A>, ? extends ApplicationHandle<?, A>> handleFactory) {
+        public Configurator<A> bootstrapAppHandleFactory(Function<? super Installer<A>, ? extends ApplicationHandle<?, A>> handleFactory) {
             requireNonNull(handleFactory);
             this.pbt = new PackedApplicationTemplate<>(pbt.guestClass(), pbt.op(), handleFactory, pbt.containerTemplate(), pbt.componentTags,
                     pbt.applicationLauncher);
@@ -165,17 +166,25 @@ public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Functi
 
         /** {@inheritDoc} */
         @Override
-        public Configurator<A> container(Consumer<? super ContainerTemplate.Configurator> configure) {
-            if (pbt.containerTemplate == null) {
-                pbt = container(ContainerTemplate.GATEWAY).pbt;
-            }
-            PackedContainerTemplate pct = PackedContainerTemplate.configure(pbt.containerTemplate, configure);
-            return container(pct);
+        public Configurator<A> componentTag(String... tags) {
+            this.pbt = new PackedApplicationTemplate<>(pbt.guestClass(), pbt.op(), pbt.handleFactory, pbt.containerTemplate(),
+                    ComponentTagHolder.copyAndAdd(pbt.componentTags, tags), pbt.applicationLauncher);
+            return this;
         }
 
         /** {@inheritDoc} */
         @Override
-        public PackedApplicationTemplateConfigurator<A> container(ContainerTemplate template) {
+        public Configurator<A> rootContainer(Consumer<? super ContainerTemplate.Configurator> configure) {
+            if (pbt.containerTemplate == null) {
+                pbt = rootContainer(ContainerTemplate.GATEWAY).pbt;
+            }
+            PackedContainerTemplate pct = PackedContainerTemplate.configure(pbt.containerTemplate, configure);
+            return rootContainer(pct);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public PackedApplicationTemplateConfigurator<A> rootContainer(ContainerTemplate template) {
             this.pbt = new PackedApplicationTemplate<>(pbt.guestClass(), pbt.op(), pbt.handleFactory(), (PackedContainerTemplate) template, pbt.componentTags,
                     pbt.applicationLauncher);
             return this;
@@ -183,23 +192,8 @@ public record PackedApplicationTemplate<A>(Class<?> guestClass, Op<?> op, Functi
 
         /** {@inheritDoc} */
         @Override
-        public Configurator<A> removeable() {
-            return null;
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public <T> Configurator<A> setLocal(ApplicationBuildLocal<T> local, T value) {
             return null;
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public Configurator<A> componentTag(String... tags) {
-            this.pbt = new PackedApplicationTemplate<>(pbt.guestClass(), pbt.op(), pbt.handleFactory, pbt.containerTemplate(),
-                    ComponentTagManager.copyAndAdd(pbt.componentTags, tags), pbt.applicationLauncher);
-            return this;
-        }
-
     }
 }

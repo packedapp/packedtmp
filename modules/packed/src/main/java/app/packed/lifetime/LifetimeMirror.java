@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import app.packed.bean.BeanMirror;
 import app.packed.build.BuildMirror;
 import app.packed.extension.Extension;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.operation.CompositeOperationMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.lifetime.LifetimeSetup;

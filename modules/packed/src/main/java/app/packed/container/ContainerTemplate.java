@@ -23,6 +23,7 @@ import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
+import app.packed.component.guest.ContainerTemplateLink;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension;
 import app.packed.operation.Op1;
@@ -30,7 +31,6 @@ import app.packed.operation.OperationTemplate;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
-import sandbox.extension.container.ContainerTemplateLink;
 import sandbox.extension.context.ContextSpanKind;
 
 /**
@@ -44,6 +44,19 @@ import sandbox.extension.context.ContextSpanKind;
  * @see app.packed.extension.BaseExtensionPoint#newContainer(ContainerTemplate)
  */
 public sealed interface ContainerTemplate permits PackedContainerTemplate {
+
+
+    // The issue here is that the application can get an instance of ContainerHandle
+    // For example, by setting it in a ThreadLocal...
+    // Alternative would be that you could have some ContainerMirror, ContainerFiguration methods
+    // But these also take a handle...
+    // Okay so If Application can decide configuration/mirror -> Then it has access to a ContainerHandle
+    // Which is probably okay
+    /** {@return the handle factory used for the root container of the application. */
+    default Function<? super ContainerTemplate.Installer, ? extends ContainerHandle<?>> rootContainerHandleFactory() {
+        return ContainerHandle::new;
+    }
+
 
     /**
      * A base template for a container that has the same lifetime as its parent container.
@@ -90,6 +103,11 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
     ContainerTemplate reconfigure(Consumer<? super Configurator> configure);
 
     public interface Configurator {
+
+        // Maybe put it on ContainerTemplate.
+        default Configurator configureRootContainerHandleFactory(Function<? super ContainerTemplate.Installer, ? extends ContainerHandle<?>> handleFactory) {
+            throw new UnsupportedOperationException();
+        }
 
         /**
          * Add the specified tags to the application

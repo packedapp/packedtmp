@@ -12,6 +12,7 @@ module app.packed {
     exports app.packed.container;
     exports app.packed.context;
     exports app.packed.extension;
+    exports app.packed.lifecycle;
     exports app.packed.lifetime;
     exports app.packed.namespace;
     exports app.packed.operation;
@@ -21,6 +22,7 @@ module app.packed {
 
     // temporary sandbox thingies
     exports app.packed.build.hook;
+    exports app.packed.component.guest;
     exports sandbox.extension.container;
     exports internal.app.packed.context.publish;
     exports app.packed.service.mirror;

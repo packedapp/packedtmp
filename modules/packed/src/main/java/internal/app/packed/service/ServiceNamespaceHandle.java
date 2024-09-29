@@ -20,6 +20,7 @@ import java.util.Set;
 
 import app.packed.binding.Key;
 import app.packed.binding.KeyAlreadyProvidedException;
+import app.packed.build.BuildActor;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceTemplate.Installer;
@@ -29,13 +30,13 @@ import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingAccessor;
 import internal.app.packed.binding.BindingAccessor.FromLifetimeArena;
 import internal.app.packed.binding.BindingAccessor.FromOperationResult;
-import internal.app.packed.handlers.ServiceHandlers;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderSetup;
 import internal.app.packed.service.util.SequencedServiceMap;
 import internal.app.packed.util.StringFormatter;
+import internal.app.packed.util.handlers.ServiceHandlers;
 
 /**
  *
@@ -58,7 +59,7 @@ public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtensi
 
     /** {@inheritDoc} */
     @Override
-    protected final ServiceNamespaceConfiguration newNamespaceConfiguration(BaseExtension e) {
+    protected final ServiceNamespaceConfiguration newNamespaceConfiguration(BaseExtension e, BuildActor actor) {
         return ServiceHandlers.newServiceNamespaceConfiguration(this, e);
     }
 

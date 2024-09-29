@@ -31,16 +31,8 @@ public non-sealed abstract class BeanBuildHook extends BuildHook {
      */
     public void onNew(BeanConfiguration configuration) {}
 
-    // sourceKind must be identical
-    public Object replaceSource(BeanSourceKind sourceKind, Object source) {
-        // return source == Foo.class ? TestFoo.class : source;
-        return source;
-    }
-
     // Argh besvaerligt at (at hvad?)
     public void onNew(@SuppressWarnings("exports") TransformerChain tc, BeanConfiguration bean) {}
-
-    // before being returned to the user
 
     /**
      * Called before a bean is scanned
@@ -49,6 +41,14 @@ public non-sealed abstract class BeanBuildHook extends BuildHook {
      *            a mutator for the bean
      */
     public void preScan(BeanClassMutator bean) {}
+
+    // before being returned to the user
+
+    // sourceKind must be identical
+    public Object replaceSource(BeanSourceKind sourceKind, Object source) {
+        // return source == Foo.class ? TestFoo.class : source;
+        return source;
+    }
 
     /**
      * When an application has finished building this method is called to check.

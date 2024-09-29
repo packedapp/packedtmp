@@ -2,7 +2,6 @@ package app.packed.concurrent.other;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 
 import app.packed.assembly.Assembly;
 import app.packed.bean.BeanElement.BeanMethod;
@@ -61,7 +60,7 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
         super(handle);
     }
 
-    private static final ContextTemplate CT = ContextTemplate.of(MethodHandles.lookup(), SchedulingContext.class, PackedSchedulingContext.class);
+    private static final ContextTemplate CT = ContextTemplate.of(SchedulingContext.class, c->c.implementationClass(PackedSchedulingContext.class));
 
     private static final OperationTemplate OT = OperationTemplate.defaults().reconfigure(c -> c.inContext(CT));
 

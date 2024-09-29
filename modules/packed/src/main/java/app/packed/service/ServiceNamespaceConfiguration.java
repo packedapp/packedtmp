@@ -23,11 +23,12 @@ import java.util.Set;
 
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
+import app.packed.build.BuildActor;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceConfiguration;
 import app.packed.operation.OperationConfiguration;
-import internal.app.packed.service.ServiceNamespaceHandle;
 import internal.app.packed.service.PackedServiceLocator;
+import internal.app.packed.service.ServiceNamespaceHandle;
 import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.MethodHandleUtil;
 
@@ -48,8 +49,8 @@ public final class ServiceNamespaceConfiguration extends NamespaceConfiguration<
      * @implNote invoked via
      *           {@link internal.app.packed.handlers.ServiceHandlers#newServiceNamespaceConfiguration(ServiceNamespaceHandle, BaseExtension)}
      */
-    ServiceNamespaceConfiguration(ServiceNamespaceHandle handle, BaseExtension extension) {
-        super(handle, extension);
+    ServiceNamespaceConfiguration(ServiceNamespaceHandle handle, BaseExtension extension, BuildActor actor) {
+        super(handle, extension, actor);
     }
 
     // Hmm, specificere ved namespacet under provide?

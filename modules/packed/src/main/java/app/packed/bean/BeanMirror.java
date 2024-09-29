@@ -96,7 +96,13 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
     /** {@inheritDoc} */
     @Override
     public final ComponentPath componentPath() {
-        return handle.bean.componentPath();
+        return handle.componentPath();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final Set<String> componentTags() {
+        return handle.componentTags();
     }
 
     /** {@return the container the bean belongs to.} */
@@ -109,11 +115,6 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
     // Is injectable into the bean factory. not all methods
     public final Map<Class<? extends Context<?>>, ContextMirror> contexts() {
         return ContextSetup.allMirrorsFor(handle.bean);
-    }
-
-    /** {@return the extension that installed the bean, typically BaseExtension} */
-    public final Class<? extends Extension<?>> installedByExtension() {
-        return handle.bean.installedBy.extensionType;
     }
 
     /** {@return the dependencies this bean introduces.} */
@@ -156,6 +157,11 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
         throw new UnsupportedOperationException();
     }
 
+    /** {@return the extension that installed the bean, typically BaseExtension} */
+    public final Class<? extends Extension<?>> installedByExtension() {
+        return handle.bean.installedBy.extensionType;
+    }
+
     /**
      * Returns the bean's lifetime.
      * <p>
@@ -188,7 +194,7 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
     }
 
     /** {@return a stream of all of the operations declared by the bean.} */
-    public Stream<OperationMirror> operations() {
+    public final Stream<OperationMirror> operations() {
         return handle.bean.operations.stream().map(OperationSetup::mirror);
     }
 
@@ -201,7 +207,7 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
      * @return a collection of all of the operations declared by the bean of the specified type.
      */
     @SuppressWarnings("unchecked")
-    public <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
+    public final <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
         requireNonNull(operationType, "operationType is null");
         return (Stream<T>) operations().filter(f -> operationType.isAssignableFrom(f.getClass()));
     }
@@ -233,7 +239,7 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
     }
 
     /** {@return any proxy the bean may have.} */
-    public Optional<BeanProxyMirror> proxy() {
+    public final Optional<BeanProxyMirror> proxy() {
         return Optional.empty();
     }
 

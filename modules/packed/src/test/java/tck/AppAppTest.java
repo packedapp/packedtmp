@@ -25,7 +25,7 @@ import app.packed.container.ContainerTemplate;
 public abstract class AppAppTest extends AbstractBootstrapedAppTest<Void> {
 
     /** The bootstrap app we are testing. */
-    private static final BootstrapApp<Void> APP = BootstrapApp.of(ApplicationTemplate.of(c -> c.container(ContainerTemplate.MANAGED)));
+    private static final BootstrapApp<Void> APP = BootstrapApp.of(ApplicationTemplate.of(c -> c.rootContainer(ContainerTemplate.MANAGED)));
 
     public AppAppTest() {
         super(APP);

@@ -62,7 +62,7 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
     @Override
     public final void componentTag(String... tags) {
         checkIsConfigurable();
-        container.application.componentTagManager.addComponentTags(container, tags);
+        container.application.componentTags.addComponentTags(container, tags);
     }
 
     /** { @return the user exposed configuration of the bean} */
@@ -119,7 +119,11 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
         return container.lifetimeOperations();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @see #newContainerMirror()
+     */
     @Override
     public final ContainerMirror mirror() {
         ContainerMirror m = mirror;
@@ -135,13 +139,15 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
     }
 
     /**
-     * This method may be overridden by the party who is installer the extension. To provide a another implementation of
-     * container mirror, than the default {@link ContainerMirror}.
+     * This method may be overridden a subclass to provide a another implementation of container mirror, than the default
+     * {@link ContainerMirror}.
      * <p>
-     * This method is only intended to be invoked by the framework.It will never invoke more than once for a container, the
-     * result will be cached and returned from subsequent calls to {@link #mirror}.
+     * This method will never be invoked more than once by the framework. The result will be cached and returned from
+     * subsequent calls to {@link #mirror}.
      *
      * @return create a new container mirror
+     *
+     * @see #mirror()
      */
     protected ContainerMirror newContainerMirror() {
         return new ContainerMirror(this);

@@ -17,6 +17,7 @@ package app.packed.namespace;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
@@ -47,6 +48,16 @@ public non-sealed class NamespaceMirror<E extends Extension<E>> implements Compo
     @Override
     public final ComponentPath componentPath() {
         return handle.componentPath();
+    }
+
+    @Override
+    public final BuildActor componentOwner() {
+        return handle.componentOwner();
+    }
+
+    @Override
+    public final Set<String> componentTags() {
+        return handle.componentTags();
     }
 
     /** {@inheritDoc} */
@@ -96,14 +107,6 @@ public non-sealed class NamespaceMirror<E extends Extension<E>> implements Compo
     /** {@return the name of this name.} */
     public final String namespaceName() {
         return handle.namespace.name;
-    }
-
-    /** {@return the owner of this namespace instance.} */
-    // I don't think there is an owner.
-    // What if a database is used by two extensions only?
-    // Maybe the DatabaseExtension itself??
-    public final BuildActor namespaceOwner() {
-        throw new UnsupportedOperationException();
     }
 
     /** {@return the root container of the namespace.} */

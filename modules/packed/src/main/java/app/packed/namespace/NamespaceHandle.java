@@ -20,9 +20,11 @@ import static java.util.Objects.requireNonNull;
 import java.util.HashMap;
 import java.util.stream.Stream;
 
+import app.packed.build.BuildActor;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.operation.OperationHandle;
 import app.packed.util.TreeView;
 import internal.app.packed.namespace.NamespaceSetup;
@@ -62,8 +64,30 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
         return namespace.componentPath();
     }
 
+    public final BuildActor componentOwner() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final void componentTag(String... tags) {
+        checkIsConfigurable();
+        namespace.container().application.componentTags.addComponentTags(namespace, tags);
+    }
+
+    /**
+     * Returns a configuration for this namespace for the specific extension.
+     *
+     * @param e
+     *            the extension to return a
+     * @return
+     */
     public final C configuration(E e) {
-        return configurations.computeIfAbsent(e, k -> newNamespaceConfiguration(k));
+        return configurations.computeIfAbsent(e, k -> newNamespaceConfiguration(k, BuildActor.application()));
+    }
+
+    public final C configuration(E e, ExtensionUseSite useSite) {
+        return configurations.computeIfAbsent(e, k -> newNamespaceConfiguration(k, useSite.author()));
     }
 
     /** {@return a tree view of all the extensions in the namespace} */
@@ -82,6 +106,7 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public final NamespaceMirror<E> mirror() {
         NamespaceMirror<E> m = mirror;
@@ -96,7 +121,7 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
     }
 
     /** {@inheritDoc} */
-    protected abstract C newNamespaceConfiguration(E extension);
+    protected abstract C newNamespaceConfiguration(E extension, BuildActor actor);
 
     /**
      * <p>
@@ -131,12 +156,6 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
         requireNonNull(handleType, "handleType is null");
         return (Stream<H>) operations().filter(f -> handleType.isAssignableFrom(f.getClass()));
     }
-    /**
-     * Returns a navigator for all extensions in the namespace.
-     *
-     * @return a navigator for all extensions in the namespace
-     */
-    // Ogsaa containere hvor den ikke noedvendig er brugt890[]?
 
     /** {@return the root extension of this domain.} */
     @SuppressWarnings("unchecked")

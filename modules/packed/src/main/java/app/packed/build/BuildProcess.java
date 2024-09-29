@@ -38,11 +38,17 @@ import internal.app.packed.build.PackedBuildProcess;
 //Har vi en forrest???
 public sealed interface BuildProcess permits PackedBuildProcess {
 
+    /**
+     * @return
+     */
+    Optional<Class<? extends Assembly>> currentAssembly();
+
+    BuildGoal goal();
+
     /** { @return the unique build process id} */
     long processId();
 
-    Optional<Class<? extends Assembly>> currentAssembly();
-
+    // Optional????
     static BuildProcess current() {
         return PackedBuildProcess.get();
     }

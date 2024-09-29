@@ -61,7 +61,6 @@ public class OperationContextTest extends AppAppTest {
 
     @Test
     public void mirrorsTest() throws Throwable {
-        assertThat(mirrors().container().contexts()).isEmpty();
         BeanMirror b = mirrors().bean();
         assertThat(b.contexts()).isEmpty();
         OperationMirror om = mirrors().findSingleOperation(b);

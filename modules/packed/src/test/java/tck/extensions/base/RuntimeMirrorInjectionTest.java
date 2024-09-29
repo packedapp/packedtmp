@@ -29,7 +29,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanMirror;
-import app.packed.binding.ResolutionKind;
+import app.packed.binding.BindingKind;
 import app.packed.binding.BindingMirror;
 import app.packed.build.BuildActor;
 import app.packed.container.ContainerMirror;
@@ -64,7 +64,7 @@ public class RuntimeMirrorInjectionTest extends ServiceLocatorAppTest {
                     BindingMirror bim = om.bindings().get(i);
                     assertEquals(om, bim.operation());
                     assertEquals(i, bim.parameterIndex());
-                    assertEquals(ResolutionKind.HOOK, bim.bindingKind());
+                    assertEquals(BindingKind.HOOK, bim.bindingKind());
                     assertSame(BuildActor.extension(BaseExtension.class), bim.boundBy());
                     assertTrue(bim.variable().annotations().isEmpty());
                     assertEquals(l.get(i), bim.variable().type());

@@ -30,21 +30,19 @@ import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.util.TreeView;
 import internal.app.packed.ValueBased;
-import internal.app.packed.handlers.ExtensionHandlers;
 import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
 import internal.app.packed.namespace.PackedNamespaceInstaller;
 import internal.app.packed.namespace.PackedNamespaceTemplate;
 import internal.app.packed.util.PackedTreeView;
 import internal.app.packed.util.StringFormatter;
+import internal.app.packed.util.handlers.ExtensionHandlers;
 import internal.app.packed.util.types.TypeVariableExtractor;
 
-/**
- *
- */
+/** Implementation of {@link ExtensionHandle} */
 @ValueBased
 public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup extension) implements ExtensionHandle<E> {
 
-    public final void runOnCodegen(Runnable action) {
+    public void runOnCodegen(Runnable action) {
         checkIsConfigurable();
         extension.container.application.addCodegenAction(action);
     }
@@ -56,7 +54,7 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
      *             if the extension is no longer configurable.
      */
     @Override
-    public final void checkIsConfigurable() {
+    public void checkIsConfigurable() {
         if (!extension.isConfigurable()) {
             throw new IllegalStateException(extension.extensionType + " is no longer configurable");
         }
@@ -126,9 +124,9 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
         // cannot use computeIfAbsent, as we want to store the handle before the install method returns
         NamespaceHandle<?, ?> namespaceHandle = m.get(nk);
         if (namespaceHandle == null) {
-            PackedNamespaceInstaller pni = new PackedNamespaceInstaller((PackedNamespaceTemplate) template, extension, extension, name);
-            namespaceHandle = factory.apply(pni);
-            if (namespaceHandle != pni.handle) {
+            PackedNamespaceInstaller installer = new PackedNamespaceInstaller((PackedNamespaceTemplate) template, extension, extension, name);
+            namespaceHandle = factory.apply(installer);
+            if (namespaceHandle != installer.handle) {
                 throw new InternalExtensionException("must return newly installed namespace handle");
             }
         }
@@ -141,14 +139,14 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
      * extension is the root extension}
      */
     @SuppressWarnings("unchecked")
-    public final E applicationRoot() {
+    public  E applicationRoot() {
         return (E) extension.root().instance();
     }
 
     /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
-    public final TreeView.Node<E> applicationNode() {
+    public TreeView.Node<E> applicationNode() {
         ExtensionSetup es = extension.root();
         PackedTreeView<ExtensionSetup, E> tree = new PackedTreeView<>(es, null, e -> (E) e.instance());
         return tree.toNode(extension);
@@ -161,6 +159,7 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
         return parent == null ? Optional.empty() : Optional.of((E) parent.instance());
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return extension.container.isExtensionUsed(extensionType);

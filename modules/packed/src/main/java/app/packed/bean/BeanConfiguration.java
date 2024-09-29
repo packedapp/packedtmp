@@ -191,6 +191,12 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         return this;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> componentTags() {
+        return handle.componentTags();
+    }
+
     /**
      * {@return set of contexts this bean operates within.}
      * <p>
@@ -226,11 +232,6 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     // Outside of the framework I think we can only test on ComponentPath, that may be fine
     public final boolean isInSameContainer(BeanConfiguration other) {
         return handle.bean.container == other.handle.bean.container;
-    }
-
-    // Ideen er at have alle de keys that are resolved as services
-    protected Set<Key<?>> requestedServiceKeys() {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -300,6 +301,11 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     @SuppressWarnings("unchecked")
     public final <T extends OperationConfiguration> Stream<T> operations(Class<T> operationType) {
         return (Stream<T>) operations().filter(e -> operationType.isInstance(e));
+    }
+
+    // Ideen er at have alle de keys that are resolved as services
+    protected Set<Key<?>> requestedServiceKeys() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */

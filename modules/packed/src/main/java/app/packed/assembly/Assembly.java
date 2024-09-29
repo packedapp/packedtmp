@@ -18,6 +18,8 @@ package app.packed.assembly;
 import app.packed.application.ApplicationBuildLocal;
 import app.packed.assembly.AbstractComposer.ComposableAssembly;
 import app.packed.build.BuildCodeSource;
+import app.packed.util.Nullable;
+import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.PackedContainerInstaller;
 
@@ -71,7 +73,7 @@ public sealed abstract class Assembly implements BuildCodeSource , ApplicationBu
      *
      * @apiNote this method is for internal use only
      */
-    abstract AssemblySetup build(PackedContainerInstaller builder);
+    abstract AssemblySetup build(@Nullable PackedApplicationInstaller<?> applicationInstaller, PackedContainerInstaller installer);
 
     /** The state of an {@link Assembly}. */
     public enum State {

@@ -28,18 +28,18 @@ import internal.app.packed.application.PackedBootstrapApp;
 /**
  * A bootstrap app is a special type of application that can be used to create other (non-bootstrap) application.
  * <p>
- * Bootstrap apps cannot directly modify the applications that it bootstraps. It cannot, for example, install an
+ * Bootstrap apps cannot directly modify the applications that it bootstraps. It cannot, for example, install a new
  * extension in the application. However, it can say it can only bootstrap applications that have the extension
  * installed, failing with a build exception if the developer does not install the extension. As such, the bootstrap app
- * can only setup requirements for the application that it bootstraps. It cannot directly make the needed changes to the
+ * can setup requirements for the application that it bootstraps. But it cannot directly make the needed changes to the
  * bootstrapped application.
  * <p>
  * Bootstrap applications are rarely used directly by users. Instead users typically use thin wrappers such as
  * {@link App} or {@link app.packed.service.ServiceLocator} to create new applications. However, if greater control of
- * the application is needed users may create their own bootstrap application.
+ * how an application behaves, a user may create their own bootstrap application.
  * <p>
- * Normally, you never create more than a single instance of a bootstrap app. Bootstrap applications are, unless
- * otherwise specified, safe to use concurrently.
+ * Normally, you never create more than a single instance of a bootstrap app. Bootstrap application instances safe for
+ * concurrent usage.
  *
  * @param <E>
  *            the type of applications this bootstrap app creates

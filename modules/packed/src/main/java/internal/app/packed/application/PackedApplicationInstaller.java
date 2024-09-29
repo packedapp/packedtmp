@@ -28,7 +28,7 @@ import app.packed.application.ApplicationTemplate.Installer;
 import app.packed.assembly.Assembly;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.LifecycleKind;
+import app.packed.lifecycle.LifecycleKind;
 import internal.app.packed.build.PackedBuildProcess;
 import internal.app.packed.component.PackedComponentInstaller;
 import internal.app.packed.container.ContainerSetup;
@@ -43,8 +43,10 @@ public final class PackedApplicationInstaller<A> extends PackedComponentInstalle
 
     public BuildApplicationRepository bar;
 
+    /** The build process the application is part of. */
     public final PackedBuildProcess buildProcess;
 
+    /** The installer for the root container of the application. */
     public final PackedContainerInstaller containerInstaller;
 
     // I would like to time stuff. But I have no idea on how to do it reliable with all the laziness

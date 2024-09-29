@@ -32,7 +32,7 @@ import internal.app.packed.component.PackedComponentPath.SchemaFragment;
  */
 public final class PackedComponentKind implements ComponentKind {
 
-    final int fragmentCount = 4;
+    final int fragmentCount;
 
     final SchemaFragment[] fragments;
     @Nullable
@@ -45,12 +45,13 @@ public final class PackedComponentKind implements ComponentKind {
     PackedComponentKind(PackedComponentKindBuilder builder) {
         this.name = builder.name;
         this.fragments = builder.fragments.toArray(new SchemaFragment[builder.fragments.size()]);
+        this.fragmentCount = fragments.length;
         if (builder.extension == null) {
             this.fullExtensionName = null;
             this.prefix = "name";
         } else {
             this.fullExtensionName = builder.extension.getCanonicalName();
-            this.prefix = builder.extension.getSimpleName() + "." + name;
+            this.prefix = builder.extension.getSimpleName() + "#" + name;
         }
     }
 
@@ -69,19 +70,23 @@ public final class PackedComponentKind implements ComponentKind {
     /** {@inheritDoc} */
     @Override
     public List<Entry<String, FragmentKind>> pathFragments() {
-       throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentPath pathNew(ComponentPath parent, Object... fragments) {
-        return null;
+        Object[] prev = ((PackedComponentPath) parent).fragments;
+        Object[] combined = new Object[prev.length + fragments.length];
+        System.arraycopy(prev, 0, combined, 0, prev.length);
+        System.arraycopy(fragments, 0, combined, prev.length, fragments.length);
+        return new PackedComponentPath(this, combined);
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentPath pathNew(Object... fragments) {
-        return null;
+        return new PackedComponentPath(this, fragments);
     }
 
     /** {@inheritDoc} */

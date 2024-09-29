@@ -32,6 +32,8 @@ import app.packed.extension.BaseExtension;
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
 @AnnotatedVariableBeanTrigger(extension = BaseExtension.class)
+
+// @ServiceResolver(context=ComponentHostContext.class, order = Kind.Context)
 public @interface FromComponentGuest {}
 //Er lidt specielt fordi ApplicationMirror kan baade vaere i Applicationen og i guesten
 

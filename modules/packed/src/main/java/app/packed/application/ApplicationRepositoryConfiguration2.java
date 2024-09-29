@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import app.packed.extension.BaseExtension;
-import app.packed.service.ProvideableBeanConfiguration;
+import app.packed.service.ProvidableBeanConfiguration;
 import internal.app.packed.application.PackedApplicationTemplate;
 
 /**
@@ -61,7 +61,7 @@ public final class ApplicationRepositoryConfiguration2<H extends ApplicationHand
         handle.addTemplate((PackedApplicationTemplate<?>) template);
     }
 
-    public ProvideableBeanConfiguration<ApplicationRepository<H>> installApplicationRepository() {
+    public ProvidableBeanConfiguration<ApplicationRepository<H>> installApplicationRepository() {
         throw new UnsupportedOperationException();
     }
 

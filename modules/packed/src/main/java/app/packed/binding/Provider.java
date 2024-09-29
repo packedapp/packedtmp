@@ -18,7 +18,7 @@ package app.packed.binding;
 import static java.util.Objects.requireNonNull;
 
 /**
- * A provider of values.
+ * A provider of instances.
  *
  * @param <T>
  *            the type of instances that are provided

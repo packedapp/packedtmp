@@ -34,7 +34,7 @@ public record GuestBean(long nanos) {
     }
 
     static final ApplicationTemplate<GuestBean> T = ApplicationTemplate.of(GuestBean.class, c -> {
-        c.container(new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION));
+        c.rootContainer(new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION));
     });
 
     static class GuestApplicationHandle extends ApplicationHandle<ApplicationConfiguration, GuestBean> {

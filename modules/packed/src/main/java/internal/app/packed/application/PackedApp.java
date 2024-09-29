@@ -21,6 +21,7 @@ import app.packed.application.App;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
+import app.packed.component.guest.ComponentHostContext;
 import app.packed.component.guest.FromComponentGuest;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
@@ -34,13 +35,13 @@ import internal.app.packed.ValueBased;
 public final class PackedApp implements App {
 
    public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp.of(ApplicationTemplate.of(PackedApp.class, c -> {
-        c.container(ContainerTemplate.MANAGED);
+        c.rootContainer(ContainerTemplate.MANAGED);
     }));
 
-    final ManagedLifecycle lc;
+    final ManagedLifecycle lifecycle;
 
-    PackedApp(@FromComponentGuest ManagedLifecycle lc) {
-        this.lc = lc;
+    PackedApp(@FromComponentGuest ManagedLifecycle lc, ComponentHostContext context) {
+        this.lifecycle = lc;
     }
 
     /** {@inheritDoc} */
@@ -55,6 +56,10 @@ public final class PackedApp implements App {
 
     }
 
+    @Override
+    public String toString() {
+        return state().toString();
+    }
     /**
      * Creates a new app image by wrapping the specified bootstrap image.
      *
@@ -69,7 +74,7 @@ public final class PackedApp implements App {
     /** {@inheritDoc} */
     @Override
     public RunState state() {
-        return lc.currentState();
+        return lifecycle.currentState();
     }
 
     /** {@inheritDoc} */

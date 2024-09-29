@@ -21,7 +21,7 @@ import app.packed.application.ApplicationRepositoryConfiguration;
 import app.packed.assembly.BaseAssembly;
 import app.packed.binding.Key;
 import app.packed.component.guest.usage.GuestBean.GuestApplicationHandle;
-import app.packed.lifetime.OnInitialize;
+import app.packed.lifecycle.OnInitialize;
 import app.packed.runtime.RunState;
 
 /**

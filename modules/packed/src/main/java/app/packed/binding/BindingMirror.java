@@ -17,6 +17,7 @@ package app.packed.binding;
 
 import java.util.Optional;
 
+import app.packed.binding.sandbox.BindingHandle;
 import app.packed.build.BuildActor;
 import app.packed.build.BuildMirror;
 import app.packed.operation.OperationMirror;
@@ -29,7 +30,7 @@ import sandbox.operation.mirror.BindingTarget;
 import sandbox.operation.mirror.DependenciesMirror;
 
 /**
- * A mirror representing a bound parameter of an operation.
+ * A mirror representing the bound parameter of an operation.
  *
  * @see OperationMirror#bindings()
  */
@@ -51,7 +52,7 @@ public class BindingMirror implements BuildMirror {
     }
 
     /** {@return the kind of binding.} */
-    public final ResolutionKind bindingKind() {
+    public final BindingKind bindingKind() {
         return binding.kind();
     }
 

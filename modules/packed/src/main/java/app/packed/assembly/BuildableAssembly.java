@@ -18,6 +18,7 @@ package app.packed.assembly;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.util.Nullable;
+import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.build.PackedBuildProcess;
 import internal.app.packed.container.PackedContainerInstaller;
@@ -92,10 +93,10 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
 
     /** {@inheritDoc} */
     @Override
-    AssemblySetup build(PackedContainerInstaller builder) {
+    AssemblySetup build(PackedApplicationInstaller<?> applicationInstaller,PackedContainerInstaller installer) {
         AssemblyConfiguration existing = configuration;
         if (existing == null) { // assembly has not been used in a build process before
-            AssemblySetup assembly = AssemblySetup.newAssembly(builder, this);
+            AssemblySetup assembly = AssemblySetup.newAssembly(installer, this);
             PackedBuildProcess p = PackedBuildProcess.get();
             p.push(assembly);
             try {

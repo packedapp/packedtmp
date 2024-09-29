@@ -16,11 +16,12 @@
 package app.packed.application;
 
 import java.lang.invoke.MethodHandle;
-import java.util.Optional;
 
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
+import app.packed.container.ContainerHandle;
+import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import app.packed.util.Nullable;
@@ -39,17 +40,11 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
     /** The handle's application. */
     final ApplicationSetup application;
 
-    /** {@inheritDoc} */
-    @Override
-    public final void componentTag(String... tags) {
-        checkIsConfigurable();
-        application.componentTagManager.addComponentTags(application, tags);
-    }
-
     /** The lazy generated application configuration. */
     @Nullable
     private C configuration;
 
+    /** An image if the application has been constructed using {@link BuildGoal#IMAGE}. */
     @Nullable
     private final BaseImage<?> image;
 
@@ -66,6 +61,7 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
     public ApplicationHandle(ApplicationTemplate.Installer<A> installer) {
         PackedApplicationInstaller<A> inst = (PackedApplicationInstaller<A>) installer;
         this.application = inst.toHandle();
+
         // Build an image if that is the target.
         BaseImage<?> img = null;
         if (inst.buildProcess.goal() == BuildGoal.IMAGE) {
@@ -78,6 +74,7 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
 
     }
 
+    /** {@return the build goal that was used to build the application} */
     public final BuildGoal buildGoal() {
         return application.goal;
     }
@@ -88,7 +85,21 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
         return application.componentPath();
     }
 
-    /** { @return the user exposed configuration of the bean} */
+    /** {@inheritDoc} */
+    @Override
+    public final void componentTag(String... tags) {
+        checkIsConfigurable();
+        application.componentTags.addComponentTags(application, tags);
+    }
+
+    /**
+     * { @return the user exposed configuration of the application}
+     * <p>
+     * This method will always return the same configuration instance.
+     * <p>
+     * This method relays to {@link #newApplicationConfiguration()} to create the actual configuration instance. And will
+     * then cache the instance for future usage.
+     */
     public final C configuration() {
         C c = configuration;
         if (c == null) {
@@ -98,9 +109,11 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
     }
 
     /**
+     * The image
+     *
      * @return the base image for the application
      * @throws IllegalStateException
-     *             if the application was not installed with {@link BuildGoal#IMAGE}.
+     *             if the application was build with {@link BuildGoal#IMAGE}.
      */
     public final BaseImage<?> image() {
         BaseImage<?> i = image;
@@ -116,6 +129,16 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
         return application.container().assembly.isConfigurable();
     }
 
+    /**
+     * Launches an instance of the application this handle represents.
+     * <p>
+     *
+     * @param state
+     *            the state to launch the application in
+     * @param wirelets
+     *            optional wirelets
+     * @return the application instance
+     */
     @SuppressWarnings("unchecked")
     public final A launch(RunState state, Wirelet... wirelets) {
         ApplicationLaunchContext alc = ApplicationLaunchContext.launch(state, this, WireletSelectionArray.of(wirelets));
@@ -139,22 +162,37 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
         return m;
     }
 
+    /**
+     * {@return a new configuration's object for the application}
+     * <p>
+     * This method can be overridden to return a subclass of {@link ApplicationConfiguration}.
+     */
     @SuppressWarnings("unchecked")
     protected C newApplicationConfiguration() {
         return (C) new ApplicationConfiguration(this);
     }
 
+    /**
+     * {@return a new mirror for the application}
+     * <p>
+     * This method can be overridden to return a subclass of {@link ApplicationMirror}.
+     */
     protected ApplicationMirror newApplicationMirror() {
         return new ApplicationMirror(this);
     }
 
-    // Then we need to have a buildtime repository also
-    // But then we change at runtime??? Because we still have the handles..
-    // Nah, vil jeg ikke have
-    public final Optional<ApplicationRepository<?>> repository() {
-        // So a handle can be in one repository.
-        // But have instances in multiple InstanceManagers
-        // We can have removeFromRepository();
-        return Optional.empty();
+    // Would be strange if we cannot decide the containerMirror/configuration that should be returned...
+    protected ContainerHandle<?> newRootContainerHandle(ContainerTemplate.Installer installer) {
+        return new ContainerHandle<>(installer);
     }
+
+//    // Then we need to have a buildtime repository also
+//    // But then we change at runtime??? Because we still have the handles..
+//    // Nah, vil jeg ikke have
+//    public final Optional<ApplicationRepository<?>> repository() {
+//        // So a handle can be in one repository.
+//        // But have instances in multiple InstanceManagers
+//        // We can have removeFromRepository();
+//        return Optional.empty();
+//    }
 }

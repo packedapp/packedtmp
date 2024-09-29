@@ -66,7 +66,7 @@ public abstract class PackedComponentInstaller<C extends ComponentSetup, I exten
     @SuppressWarnings("unchecked")
     public final I componentTag(String... tags) {
         checkNotInstalledYet();
-        this.componentTags = ComponentTagManager.copyAndAdd(componentTags, tags);
+        this.componentTags = ComponentTagHolder.copyAndAdd(componentTags, tags);
         return (I) this;
     }
 
@@ -75,7 +75,7 @@ public abstract class PackedComponentInstaller<C extends ComponentSetup, I exten
         this.componentSetup = component;
         this.isUsed = true;
         if (!componentTags.isEmpty()) {
-            application(component).componentTagManager.map.put(component, Set.copyOf(componentTags));
+            application(component).componentTags.map.put(component, Set.copyOf(componentTags));
         }
 
         // Transfer any locals that have been set in the template or installer

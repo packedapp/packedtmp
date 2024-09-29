@@ -16,7 +16,7 @@
 package app.packed.component.guest.usage;
 
 import app.packed.assembly.BaseAssembly;
-import app.packed.lifetime.OnInitialize;
+import app.packed.lifecycle.OnInitialize;
 
 /**
  *

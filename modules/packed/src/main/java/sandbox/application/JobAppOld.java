@@ -59,7 +59,7 @@ import app.packed.util.Result;
 public final class JobAppOld {
 
     /** The bootstrap app. */
-    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(ApplicationTemplate.of(Holder.class, c -> c.container(ContainerTemplate.MANAGED)));
+    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(ApplicationTemplate.of(Holder.class, c -> c.rootContainer(ContainerTemplate.MANAGED)));
 
     @SuppressWarnings("unchecked")
     public static <T> Result<T> compute(Class<T> resultType, Assembly assembly, Wirelet... wirelets) {

@@ -37,7 +37,7 @@ import app.packed.extension.BaseExtension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationMirror;
 import app.packed.runtime.RunState;
-import app.packed.service.ProvideableBeanConfiguration;
+import app.packed.service.ProvidableBeanConfiguration;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.container.wirelets.WireletSelectionArray;
@@ -80,15 +80,15 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         return configuration().use(HookTestingExtension.class);
     }
 
-    protected final <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
+    protected final <T> ProvidableBeanConfiguration<T> install(Class<T> implementation) {
         return base().install(implementation);
     }
 
-    protected final <T> ProvideableBeanConfiguration<T> install(Op<T> implementation) {
+    protected final <T> ProvidableBeanConfiguration<T> install(Op<T> implementation) {
         return base().install(implementation);
     }
 
-    protected final <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
+    protected final <T> ProvidableBeanConfiguration<T> installInstance(T instance) {
         return base().installInstance(instance);
     }
 

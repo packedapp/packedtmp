@@ -23,13 +23,13 @@ import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
+import app.packed.component.guest.ContainerTemplateLink;
 import app.packed.component.guest.FromComponentGuest;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.service.ServiceLocator;
-import sandbox.extension.container.ContainerTemplateLink;
 
 /**
  * An App (application) is a type of artifact provided by Packed.
@@ -169,7 +169,7 @@ record ProgramImplementation(@FromComponentGuest String name, @FromComponentGues
     static ContainerTemplateLink EL = ContainerTemplateLink.of(MethodHandles.lookup(), Ele.MyE.class, "doo").provideExpose(Long.class).build();
 
     /** An driver for creating App instances. */
-    static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ApplicationTemplate.of(ProgramImplementation.class, c -> c.container(ContainerTemplate.MANAGED)));
+    static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ApplicationTemplate.of(ProgramImplementation.class, c -> c.rootContainer(ContainerTemplate.MANAGED)));
 //
 //            BootstrapApp.of(ProgramImplementation.class, c -> {
 //        c.managedLifetime();

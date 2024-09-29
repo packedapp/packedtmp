@@ -25,7 +25,6 @@ import app.packed.assembly.AssemblyMirror;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.build.BuildActor;
 import app.packed.container.ContainerHandle;
-import app.packed.namespace.NamespaceHandle;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.BuildApplicationRepository;
@@ -35,10 +34,10 @@ import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.handlers.AssemblyHandlers;
-import internal.app.packed.handlers.NamespaceHandlers;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.service.CircularServiceDependencyChecker;
+import internal.app.packed.util.handlers.AssemblyHandlers;
+import internal.app.packed.util.handlers.NamespaceHandlers;
 
 /** The internal configuration of an assembly. */
 public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implements BuildLocalSource {
@@ -160,12 +159,23 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
                     throw new Error();
                 }
                 list.add(e);
-                for (NamespaceHandle<?, ?> s : container.application.namespaces.values()) {
-                    NamespaceSetup ns = NamespaceSetup.crack(s);
-                    if (ns.root == e) {
-                        NamespaceHandlers.invokeNamespaceOnNamespaceClose(s);
+
+                for (NamespaceSetup nss = e.tree.namespacesToClose.pollLast(); nss != null; nss = e.tree.namespacesToClose.pollLast()) {
+                    if (nss.root == e) {
+                        NamespaceHandlers.invokeNamespaceOnNamespaceClose(nss.handle());
                     }
                 }
+
+                    // Resolve all service
+//
+//
+//                // Problemet er vi kan tilfoeje ny namespaces naar extension'en lukker
+//                for (NamespaceHandle<?, ?> s : container.application.namespaces.values()) {
+//                    NamespaceSetup ns = NamespaceSetup.crack(s);
+//                    if (ns.root == e) {
+//                        NamespaceHandlers.invokeNamespaceOnNamespaceClose(s);
+//                    }
+//                }
                 e.invokeExtensionOnAssemblyClose();
             }
 
@@ -208,6 +218,7 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
         throw new UnsupportedOperationException();
     }
 
+    // Called from Asembly#build
     public static AssemblySetup newAssembly(PackedContainerInstaller installer, Assembly assembly) {
         AssemblySetup as = new AssemblySetup(installer, assembly);
         if (installer.parent == null) {

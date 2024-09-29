@@ -21,8 +21,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.binding.Key;
+import app.packed.component.guest.ContainerTemplateLink;
 import app.packed.extension.Extension;
-import sandbox.extension.container.ContainerTemplateLink;
 
 /**
  * Represent a communication channel between a parent container lifetime and a child container lifetime. This class is

@@ -32,8 +32,8 @@ import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.handlers.NamespaceHandlers;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.util.handlers.NamespaceHandlers;
 
 /**
  *
@@ -63,10 +63,14 @@ public final class NamespaceSetup implements ComponentSetup {
     /** The namespace template */
     public final PackedNamespaceTemplate template;
 
-    public NamespaceSetup(PackedNamespaceInstaller installer) {
+    private NamespaceSetup(PackedNamespaceInstaller installer) {
         this.template = installer.template;
         this.root = installer.root;
         this.owner = installer.owner;
+    }
+
+    public ContainerSetup container() {
+        return root.container;
     }
 
     /** {@inheritDoc} */
@@ -100,12 +104,13 @@ public final class NamespaceSetup implements ComponentSetup {
     static <E extends Extension<E>, H extends NamespaceHandle<E, ?>, C extends NamespaceConfiguration<E>> H newNamespace(PackedNamespaceInstaller installer,
             Function<? super Installer, H> newHandle) {
         NamespaceSetup namespace = installer.install(new NamespaceSetup(installer));
-        H apply = newHandle.apply(installer);
-        namespace.handle = apply;
+        H handle = newHandle.apply(installer);
+        namespace.handle = handle;
 
-        installer.root.container.application.namespaces.put(new NamespaceKey(installer.template.handleClass(), installer.name), apply);
-        installer.handle = apply;
-        return apply;
+        installer.root.container.application.namespaces.put(new NamespaceKey(installer.template.handleClass(), installer.name), handle);
+        installer.handle = handle;
+        installer.root.tree.namespacesToClose.add(namespace);
+        return handle;
     }
 
     public record NamespaceKey(Class<? extends NamespaceHandle<?, ?>> handleClass, String name) {}

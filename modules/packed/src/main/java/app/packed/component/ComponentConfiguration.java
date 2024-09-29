@@ -15,6 +15,8 @@
  */
 package app.packed.component;
 
+import java.util.Set;
+
 import app.packed.application.ApplicationConfiguration;
 import app.packed.bean.BeanConfiguration;
 import app.packed.container.ContainerConfiguration;
@@ -52,6 +54,9 @@ public abstract sealed class ComponentConfiguration
      * @see ComponentMirror#componentTags()
      */
     public abstract ComponentConfiguration componentTag(String... tags);
+
+    public abstract Set<String> componentTags();
+
 
     /** {@inheritDoc} */
     @Override

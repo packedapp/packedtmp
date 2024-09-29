@@ -19,29 +19,82 @@ import java.util.List;
 
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
+import internal.app.packed.ValueBased;
 
 /**
  * The path of a component.
  */
-public final /* primitive */ class PackedComponentPath implements ComponentPath {
-    final Object[] fragments; // We need to have a canonical representation of (of what?)
-    final PackedComponentKind schema;
+@ValueBased
+public final class PackedComponentPath implements ComponentPath {
+
+    final Object[] fragments;
+
+    /** The kind of component the path represents. */
+    private final PackedComponentKind kind;
 
     PackedComponentPath(PackedApplicationPathBuilder builder) {
-        this.schema = builder.schema;
+        this.kind = builder.schema;
         this.fragments = builder.fragments;
+    }
+
+    PackedComponentPath(PackedComponentKind kind, Object[] fragments) {
+        this.kind = kind;
+        this.fragments = fragments.clone();
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentKind componentKind() {
-        return schema;
+        return kind;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(kind.prefix).append(":");
+        for (int i = 0; i < kind.fragmentCount; i++) {
+            Object o = fragments[i];
+            switch (kind.fragments[i].fragmentKind) {
+            case CLASS -> sb.append(o);
+            case KEY -> sb.append(o);
+            case PATH -> sb.append(String.join("/", (List<String>) o));
+            case STRING -> sb.append(o);
+            }
+            sb.append(":");
+        }
+        return sb.toString();
     }
 
     public static void main(String[] args) {
-        ComponentKind.APPLICATION.pathNew("sfoo");
+        ComponentPath cp = ComponentKind.APPLICATION.pathNew("sfoo");
+        System.out.println(cp);
     }
 
+    /**
+     * Builds a resource path.
+     * <p>
+     * A builder is acquired by calling {@link Schema#builder()}.
+     */
+    interface Builder {
+
+        Builder addClass(Class<?> clazz);
+
+        Builder addName(String value);
+
+        Builder addPath(List<String> path);
+
+        Builder addPath(String... path);
+
+        /**
+         * {@return the new path}
+         *
+         * @throws IllegalStateException
+         *             if the path is not constructed correctly, for example, if there are fragments that have not been filled
+         *             out
+         */
+        ComponentPath build();
+    }
 
     static class PackedApplicationPathBuilder implements PackedComponentPath.Builder {
         private int cursor;
@@ -90,30 +143,6 @@ public final /* primitive */ class PackedComponentPath implements ComponentPath 
 
     }
 
-    /**
-     * Builds a resource path.
-     * <p>
-     * A builder is acquired by calling {@link Schema#builder()}.
-     */
-    interface Builder {
-
-        Builder addClass(Class<?> clazz);
-
-        Builder addName(String value);
-
-        Builder addPath(List<String> path);
-
-        Builder addPath(String... path);
-
-        /**
-         * {@return the new path}
-         *
-         * @throws IllegalStateException
-         *             if the path is not constructed correctly, for example, if there are fragments that have not been filled
-         *             out
-         */
-        ComponentPath build();
-    }
     record SchemaFragment(String name, ComponentPath.FragmentKind fragmentKind) {}
 
 }

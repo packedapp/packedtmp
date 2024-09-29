@@ -20,8 +20,8 @@ package app.packed.binding;
  */
 public enum BindingSourceKind {
 
-    /** A binding to a build-time constant. */
-    CONSTANT,
+    /** A binding to an instance that could be resolved while building the application. */
+    INSTANCE,
 
     ARGUMENT,
 

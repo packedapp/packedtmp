@@ -29,23 +29,19 @@ import app.packed.bean.BeanTemplate;
 import app.packed.bean.BeanTemplate.Installer;
 import app.packed.extension.InternalExtensionException;
 import app.packed.operation.Op;
-import app.packed.service.ProvideableBeanConfiguration;
+import app.packed.service.ProvidableBeanConfiguration;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.ContainerBeanStore.BeanClassKey;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.component.PackedComponentInstaller;
-import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.PackedOp;
 
-/** This class is responsible for installing new beans. */
+/** Implementation of {@link BeanTemplate.Installer}. */
 public final class PackedBeanInstaller extends PackedComponentInstaller<BeanSetup, PackedBeanInstaller> implements BeanTemplate.Installer {
 
-    /** The container the bean will be installed into. */
-    final ContainerSetup container;
-
     /** The extension that is installing the bean. */
-    final ExtensionSetup installingExtension;
+    final ExtensionSetup installledByExtension;
 
     String namePrefix;
 
@@ -63,33 +59,22 @@ public final class PackedBeanInstaller extends PackedComponentInstaller<BeanSetu
      *
      * @param template
      *            the template for the new bean
-     * @param installingExtension
+     * @param installledByExtension
      *            the extension who is installing the bean
      * @param owner
      *            the owner of the new bean
      */
-    PackedBeanInstaller(PackedBeanTemplate template, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
+    PackedBeanInstaller(PackedBeanTemplate template, ExtensionSetup installledByExtension, AuthoritySetup<?> owner) {
         super(template.locals());
         this.template = requireNonNull(template, "template is null");
-        this.installingExtension = requireNonNull(installingExtension);
+        this.installledByExtension = requireNonNull(installledByExtension);
         this.owner = requireNonNull(owner);
-        this.container = installingExtension.container;
     }
 
     /** {@inheritDoc} */
     @Override
     protected ApplicationSetup application(BeanSetup setup) {
         return setup.container.application;
-    }
-
-    /**
-     * Called from {@link BeanConfiguration#BeanConfiguration(sandbox.extension.bean.BeanHandle.Installer)}
-     */
-    public BeanHandle<?> initializeBeanConfiguration() {
-        // Should we check that this method is only called once???
-        // We can create multiple bean configurations from this installer
-        // Maybe that is okay
-        return new BeanHandle<>(this);
     }
 
     /** {@inheritDoc} */
@@ -115,7 +100,7 @@ public final class PackedBeanInstaller extends PackedComponentInstaller<BeanSetu
         requireNonNull(beanClass, "beanClass is null");
 
         BeanClassKey e = new BeanClassKey(owner.authority(), beanClass);
-        BeanSetup existingBean = container.beans.beanClasses.get(e);
+        BeanSetup existingBean = installledByExtension.container.beans.beanClasses.get(e);
         if (existingBean != null) {
             BeanConfiguration existingConfiguration = existingBean.handle().configuration();
 
@@ -166,18 +151,18 @@ public final class PackedBeanInstaller extends PackedComponentInstaller<BeanSetu
         return super.setLocal(local, value);
     }
 
-    public static class ServiceanbleBeanHandle<T> extends BeanHandle<ProvideableBeanConfiguration<T>> {
+    public static class ProvidableBeanHandle<T> extends BeanHandle<ProvidableBeanConfiguration<T>> {
 
         /**
          * @param installer
          */
-        public ServiceanbleBeanHandle(Installer installer) {
+        public ProvidableBeanHandle(Installer installer) {
             super(installer);
         }
 
         @Override
-        protected ProvideableBeanConfiguration<T> newBeanConfiguration() {
-            return new ProvideableBeanConfiguration<>(this);
+        protected ProvidableBeanConfiguration<T> newBeanConfiguration() {
+            return new ProvidableBeanConfiguration<>(this);
         }
     }
 }

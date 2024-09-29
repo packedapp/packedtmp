@@ -17,7 +17,7 @@ package app.packed.micro.application;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.lifetime.OnInitialize;
+import app.packed.lifecycle.OnInitialize;
 
 /**
  *

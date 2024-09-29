@@ -44,14 +44,14 @@ public final class ContextSetup {
     Object howToAccessToTheContext;
 
     /** The root of the context. */
-    public final ContextualizedElementSetup root;
+    public final ContextualizedComponentSetup root;
 
     /** The template used when creating the context. */
     public final PackedContextTemplate template;
 
     public final SequencedServiceMap<ContextServiceProviderSetup> serviceProvides = new SequencedServiceMap<>();
 
-    public ContextSetup(PackedContextTemplate template, ContextualizedElementSetup root) {
+    public ContextSetup(PackedContextTemplate template, ContextualizedComponentSetup root) {
         this.template = template;
         this.root = root;
     }
@@ -61,13 +61,13 @@ public final class ContextSetup {
     }
 
     // So copy of?
-    public static Map<Class<? extends Context<?>>, ContextSetup> allContextsFor(ContextualizedElementSetup element) {
+    public static Map<Class<? extends Context<?>>, ContextSetup> allContextsFor(ContextualizedComponentSetup element) {
         HashMap<Class<? extends Context<?>>, ContextSetup> map = new HashMap<>();
         element.forEachContext(c -> map.putIfAbsent(c.contextClass(), c));
         return map;
     }
 
-    public static Map<Class<? extends Context<?>>, ContextMirror> allMirrorsFor(ContextualizedElementSetup element) {
+    public static Map<Class<? extends Context<?>>, ContextMirror> allMirrorsFor(ContextualizedComponentSetup element) {
         return new MappedMap<>(allContextsFor(element), ContextSetupToContextMirrorValueMapper.INSTANCE);
     }
 
@@ -121,7 +121,6 @@ public final class ContextSetup {
                 return bs.mirror();
             } else {
                 throw new UnsupportedOperationException();
-                //return context.containerTree.mirror();
             }
         }
 

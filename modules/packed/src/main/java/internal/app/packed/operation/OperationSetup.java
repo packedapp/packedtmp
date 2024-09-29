@@ -41,20 +41,20 @@ import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
-import internal.app.packed.context.ContextualizedElementSetup;
+import internal.app.packed.context.ContextualizedComponentSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.entrypoint.EntryPointSetup;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.handlers.OperationHandlers;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceProviderSetup;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderSetup;
 import internal.app.packed.service.ServiceProviderSetup.OperationServiceProviderSetup;
 import internal.app.packed.service.util.SequencedServiceMap;
+import internal.app.packed.util.handlers.OperationHandlers;
 
 /** The internal configuration of (bean) operation. */
-public final class OperationSetup implements ContextualizedElementSetup, ComponentSetup {
+public final class OperationSetup implements ContextualizedComponentSetup, ComponentSetup {
 
     /** The bean this operation belongs to. */
     public final BeanSetup bean;
@@ -80,6 +80,9 @@ public final class OperationSetup implements ContextualizedElementSetup, Compone
     @Nullable
     private OperationHandle<?> handle;
 
+    /** The operator of the operation. */
+    public final ExtensionSetup installedByExtension;
+
     /**
      * The name prefix of the operation.
      * <p>
@@ -93,9 +96,6 @@ public final class OperationSetup implements ContextualizedElementSetup, Compone
     // Ved method overloading kan vi risikere at 2 operationer med samme navn
     // Hvilket ikke fungere hvis vi vil have component path operationer
     public String namePrefix; // name = operator.simpleName + "Operation"
-
-    /** The operator of the operation. */
-    public final ExtensionSetup installedByExtension;
 
     /** ServiceProviders bound specifically for the operation. */
     public final SequencedServiceMap<OperationServiceProviderSetup> serviceProviders = new SequencedServiceMap<>();
@@ -137,10 +137,6 @@ public final class OperationSetup implements ContextualizedElementSetup, Compone
     @Override
     public ComponentPath componentPath() {
         return ComponentKind.OPERATION.pathNew(bean.componentPath(), name());
-    }
-
-    public boolean isConfigurable() {
-        return installedByExtension.isConfigurable();
     }
 
     public Set<BeanSetup> dependsOn() {
@@ -208,6 +204,10 @@ public final class OperationSetup implements ContextualizedElementSetup, Compone
         throw new IllegalStateException();
     }
 
+    public boolean isConfigurable() {
+        return installedByExtension.isConfigurable();
+    }
+
     /** {@return the initial method handle.} */
     public MethodHandle methodHandle() {
         return target.methodHandle();
@@ -233,9 +233,10 @@ public final class OperationSetup implements ContextualizedElementSetup, Compone
         return target.target();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
-        return bean.name() + ":" + name();
+        return componentPath().toString();
     }
 
     /** {@return the type of operation.} */

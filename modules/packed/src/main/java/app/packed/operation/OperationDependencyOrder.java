@@ -24,6 +24,8 @@ package app.packed.operation;
 // BeanLifecycleOrder
 // DependencyOrder <---
 // In app.packed.lifetime/lifecycle?
+
+//PreOrder, PostOrder | OperationDependencyORder->DependencyOrder (Or just Ordering)
 public enum OperationDependencyOrder {
 
     /** The operation will be executed before any dependencies. */

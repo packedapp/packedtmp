@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.List;
 
 import app.packed.bean.BeanHandle;
-import app.packed.service.ProvideableBeanConfiguration;
+import app.packed.service.ProvidableBeanConfiguration;
 
 /**
  *
@@ -38,7 +38,7 @@ import app.packed.service.ProvideableBeanConfiguration;
 
 // accept list, reject list extensions
 
-public class PouchBeanConfiguration<T> extends ProvideableBeanConfiguration<T> {
+public class PouchBeanConfiguration<T> extends ProvidableBeanConfiguration<T> {
 
     /**
      * @param handle

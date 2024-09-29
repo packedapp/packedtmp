@@ -26,7 +26,7 @@ import internal.app.packed.application.PackedBaseImage;
 import internal.app.packed.application.PackedBaseImage.ImageMapped;
 
 /**
- * Represents a ,..
+ * A base image represents a pre-built application.
  * <p>
  * Instances of this class are typically not exposed to end-users. Instead it is typically wrapped in another image
  * class such as {@link App.Image}.
@@ -56,11 +56,13 @@ public sealed interface BaseImage<A> permits PackedBaseImage {
     }
 
     /**
-     * Launches an instance of the application that this image represents.
+     * Launches an instance of the application that this image represents in the specified state.
      * <p>
-     * What happens here is dependent on the underlying application template. The behaviour of this method is
-     * identical to {@link BootstrapApp#launch(Assembly, Wirelet...)}.
+     * What happens here is dependent on the underlying application template. The behaviour of this method is identical to
+     * {@link BootstrapApp#launch(Assembly, Wirelet...)}.
      *
+     * @param state
+     *            the state the application should launch into
      * @param wirelets
      *            optional wirelets
      * @return an application instance
@@ -70,13 +72,13 @@ public sealed interface BaseImage<A> permits PackedBaseImage {
     A launch(RunState state, Wirelet... wirelets);
 
     /**
-     * Returns a new base image that maps the result of a launch.
+     * Returns a new base image that maps this image.
      *
      * @param <E>
-     *            the type to map the launch result to
+     *            the type to map the image to
      * @param mapper
      *            the mapper
-     * @return a new base image that maps the result of a launch
+     * @return a new base image that maps the result of this image
      */
     default <E> BaseImage<E> map(Function<? super A, ? extends E> mapper) {
         requireNonNull(mapper, "mapper is null");

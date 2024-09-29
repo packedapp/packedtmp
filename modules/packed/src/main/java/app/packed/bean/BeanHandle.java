@@ -70,7 +70,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     @Override
     public final void componentTag(String... tags) {
         checkIsConfigurable();
-        bean.container.application.componentTagManager.addComponentTags(bean, tags);
+        bean.container.application.componentTags.addComponentTags(bean, tags);
     }
 
     /**
@@ -272,6 +272,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     }
 
     protected void onAssemblyClose() {}
+
 
     /** {@inheritDoc} */
     public final BuildActor owner() {

@@ -81,9 +81,9 @@ public final class BuildLocalMap {
         locals.put(new LocalKey(local, key), value);
     }
 
-    private record LocalKey(PackedBuildLocal<?, ?> local, Object key) {}
-
     public sealed interface BuildLocalSource permits ContainerSetup, BeanSetup, AssemblySetup, ApplicationSetup, ExtensionSetup {
         BuildLocalMap locals();
     }
+
+    private record LocalKey(PackedBuildLocal<?, ?> local, Object key) {}
 }

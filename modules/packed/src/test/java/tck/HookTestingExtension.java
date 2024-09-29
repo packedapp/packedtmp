@@ -36,7 +36,6 @@ import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanTrigger.AnnotatedFieldBeanTrigger;
 import app.packed.bean.BeanTrigger.AnnotatedMethodBeanTrigger;
-import app.packed.binding.ComputedConstant;
 import app.packed.binding.Key;
 import app.packed.binding.UnwrappedBindableVariable;
 import app.packed.extension.Extension;
@@ -170,7 +169,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
         final ExtensionContext ec;
         final Map<String, MethodHandle> mh;
 
-        HookBean(ExtensionContext ec, @ComputedConstant Map<String, MethodHandle> mh) {
+        HookBean(ExtensionContext ec, Map<String, MethodHandle> mh) {
             this.mh = mh;
             TestStore ts = AbstractAppTest.ts();
             for (Entry<String, MethodHandle> e : mh.entrySet()) {

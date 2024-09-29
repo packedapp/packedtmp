@@ -27,9 +27,18 @@ import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedApplicationTemplate.PackedApplicationTemplateConfigurator;
 
 /**
- *
+ * A template for creating new applications.
  */
 public sealed interface ApplicationTemplate<A> permits PackedApplicationTemplate {
+
+    /**
+     * {@return an application handle factory that is used if the template is used with a bootstrap app}
+     * <p>
+     * This method will only be called if used for a {@link BootstrapApp}.
+     *
+     * @see Configurator#bootstrapAppHandleFactory(Function)
+     */
+    Function<? super ApplicationTemplate.Installer<A>, ? extends ApplicationHandle<?, A>> bootstrapAppHandleFactory();
 
     /**
      * @param <A>
@@ -54,33 +63,52 @@ public sealed interface ApplicationTemplate<A> permits PackedApplicationTemplate
         return new PackedApplicationTemplate<A>(type, hostOp, null).configure(configurator);
     }
 
-    /**
-     * {@return an application handle factory that is used if the template is used with a bootstrap app}
-     * <p>
-     * If the template is used to create an application that is non-bootstrap app this method will not be called.
-     */
-    Function<? super ApplicationTemplate.Installer<A>, ? extends ApplicationHandle<?, A>> bootstrapHandleFactory();
-
+    /** A configuration object for creating an {@link ApplicationTemplate}. */
     sealed interface Configurator<A> permits PackedApplicationTemplateConfigurator {
 
-        Configurator<A> bootstrapHandleFactory(Function<? super ApplicationTemplate.Installer<A>, ? extends ApplicationHandle<?, A>> handleFactory);
+        /**
+         * Registers a handle factory for use with bootstrapped applications.
+         *
+         * @param handleFactory
+         *            the handle factory
+         * @return this configurator
+         */
+        Configurator<A> bootstrapAppHandleFactory(Function<? super ApplicationTemplate.Installer<A>, ? extends ApplicationHandle<?, A>> handleFactory);
 
         /**
-         * Add the specified tags to the application
+         * Add the specified tags to the application.
          *
          * @param tags
          *            the tags to add
          * @return this configurator
+         * @see ApplicationMirror#componentTags()
+         * @see ApplicationHandle#componentTag(String...)
+         * @see ApplicationConfiguration#componentTag(String...)
          */
         Configurator<A> componentTag(String... tags);
 
-        Configurator<A> container(Consumer<? super ContainerTemplate.Configurator> configure);
+//        // Mark the application as removable()
+//        Configurator<A> removeable();
 
-        // Configuration of the root container
-        Configurator<A> container(ContainerTemplate template);
+        /**
+         * Configures the container template that should be used for the root container of the application.
+         *
+         * @param configure
+         *            configure a new template
+         * @return this configurator
+         * @see #rootContainer(ContainerTemplate)
+         */
+        Configurator<A> rootContainer(Consumer<? super ContainerTemplate.Configurator> configure);
 
-        // Mark the application as removable()
-        Configurator<A> removeable();
+        /**
+         * Configures the container template that should be used for the root container of the application.
+         *
+         * @param template
+         *            a template for the root container of the application
+         * @return this configurator
+         * @see #rootContainer(Consumer)
+         */
+        Configurator<A> rootContainer(ContainerTemplate template);
 
         <T> Configurator<A> setLocal(ApplicationBuildLocal<T> local, T value);
     }
@@ -88,6 +116,16 @@ public sealed interface ApplicationTemplate<A> permits PackedApplicationTemplate
     /** An installer for applications. */
     sealed interface Installer<A> permits PackedApplicationInstaller {
 
+        /**
+         * Add the specified tags to the application.
+         *
+         * @param tags
+         *            the tags to add
+         * @return this configurator
+         * @see ApplicationMirror#componentTags()
+         * @see ApplicationHandle#componentTag(String...)
+         * @see ApplicationConfiguration#componentTag(String...)
+         */
         Installer<A> componentTag(String... tags);
 
         <H extends ApplicationHandle<?, A>> H install(Assembly assembly, Function<? super ApplicationTemplate.Installer<A>, H> handleFactory,

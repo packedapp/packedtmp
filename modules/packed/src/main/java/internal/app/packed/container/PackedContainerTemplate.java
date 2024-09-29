@@ -20,16 +20,16 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.binding.Key;
+import app.packed.component.guest.ContainerTemplateLink;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension;
-import app.packed.lifetime.LifecycleKind;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.component.ComponentTagManager;
-import sandbox.extension.container.ContainerTemplateLink;
+import internal.app.packed.component.ComponentTagHolder;
 
 /** Implementation of {@link ContainerTemplate}. */
 public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, PackedContainerTemplatePackList links, Class<?> resultType,
@@ -131,7 +131,7 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
         /** {@inheritDoc} */
         @Override
         public Configurator componentTag(String... tags) {
-            this.pbt = new PackedContainerTemplate(pbt.kind, pbt.holderClass, pbt.links, pbt.resultType, ComponentTagManager.copyAndAdd(pbt.componentTags, tags),
+            this.pbt = new PackedContainerTemplate(pbt.kind, pbt.holderClass, pbt.links, pbt.resultType, ComponentTagHolder.copyAndAdd(pbt.componentTags, tags),
                     pbt.lifecycleKind);
             return this;
 

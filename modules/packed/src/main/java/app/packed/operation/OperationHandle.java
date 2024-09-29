@@ -179,7 +179,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     @Override
     public final void componentTag(String... tags) {
         checkIsConfigurable();
-        operation.bean.container.application.componentTagManager.addComponentTags(operation, tags);
+        operation.bean.container.application.componentTags.addComponentTags(operation, tags);
     }
 
     /** { @return the user exposed configuration of the operation} */
@@ -272,7 +272,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     /** {@inheritDoc} */
     @Override
     public final String toString() {
-        return "OperationHandle: " + operation.toString();
+        return operation.toString();
     }
 
     /** {@return the type of this operation.} */

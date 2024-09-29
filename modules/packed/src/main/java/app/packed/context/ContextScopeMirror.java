@@ -21,4 +21,4 @@ import app.packed.operation.OperationMirror;
 /**
  *
  */
-public sealed interface ContextScopeMirror permits OperationMirror, BeanMirror /*, ContainerMirror.OfTree */ {}
+public sealed interface ContextScopeMirror permits OperationMirror, BeanMirror {}

@@ -27,7 +27,7 @@ import app.packed.bean.BeanTrigger.AnnotatedVariableBeanTrigger;
 import app.packed.binding.BindableVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
-import app.packed.lifetime.OnInitialize;
+import app.packed.lifecycle.OnInitialize;
 import app.packed.operation.Op0;
 import app.packed.operation.Op1;
 

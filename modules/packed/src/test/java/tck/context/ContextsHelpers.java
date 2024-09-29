@@ -15,8 +15,6 @@
  */
 package tck.context;
 
-import java.lang.invoke.MethodHandles;
-
 import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
 import app.packed.context.ContextualServiceProvider;
@@ -31,7 +29,7 @@ public class ContextsHelpers {
     @ContextualServiceProvider(extension = HookTestingExtension.class)
     public record NoImplContext(int i) implements Context<HookTestingExtension> {
         /** A template. */
-        public static final ContextTemplate CT = ContextTemplate.of(MethodHandles.lookup(), NoImplContext.class, NoImplContext.class);
+        public static final ContextTemplate CT = ContextTemplate.of(NoImplContext.class, c -> {});
 
         /** A simple operation with the context, that ignores return values. */
         public static final OperationTemplate OT = OperationTemplate.defaults().reconfigure(c -> c.inContext(NoImplContext.CT).returnIgnore());

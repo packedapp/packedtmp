@@ -18,36 +18,40 @@ package app.packed.concurrent;
 import java.util.List;
 
 import app.packed.bean.BeanConfiguration;
+import app.packed.build.BuildActor;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceTemplate;
-import app.packed.namespace.NamespaceTemplate.Installer;
 import internal.app.packed.concurrent.ExecutorConfiguration;
 import internal.app.packed.concurrent.ScheduledDaemon;
 import internal.app.packed.concurrent.ScheduledOperation;
 
 /**
- *
+ * A namespace for the thread management in Packed.
  */
 final class ThreadNamespaceHandle extends NamespaceHandle<ThreadExtension, ThreadNamespaceConfiguration> {
 
-    /** The default namespace template. */
+    /** The default thread namespace template. */
     static final NamespaceTemplate TEMPLATE = NamespaceTemplate.of(ThreadNamespaceHandle.class, c -> {});
 
     ExecutorConfiguration scheduler;
 
     /**
+     * Create a new handle.
+     *
      * @param installer
+     *            the namespace installer
      */
-    protected ThreadNamespaceHandle(Installer installer) {
+    protected ThreadNamespaceHandle(NamespaceTemplate.Installer installer) {
         super(installer);
     }
 
     /** {@inheritDoc} */
     @Override
-    protected ThreadNamespaceConfiguration newNamespaceConfiguration(ThreadExtension e) {
-        return new ThreadNamespaceConfiguration(this, e);
+    protected ThreadNamespaceConfiguration newNamespaceConfiguration(ThreadExtension e, BuildActor actor) {
+        return new ThreadNamespaceConfiguration(this, e, actor);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected ThreadNamespaceMirror newNamespaceMirror() {
         return new ThreadNamespaceMirror(this);
@@ -55,19 +59,19 @@ final class ThreadNamespaceHandle extends NamespaceHandle<ThreadExtension, Threa
 
     @Override
     protected void onNamespaceClose() {
+        // Get all t
         List<ScheduledOperationHandle> l = operations(ScheduledOperationHandle.class).toList();
+        List<DaemonOperationHandle> daemons = operations(DaemonOperationHandle.class).toList();
+
         if (l.size() > 0) {
             BeanConfiguration b = rootExtension().initSchedulingBean();
 
-            b.bindCodeGenerator(ScheduledOperation[].class, () -> {
-                return operations(ScheduledOperationHandle.class).map(ScheduledOperationHandle::schedule).toArray(e -> new ScheduledOperation[e]);
-            });
-            b.bindCodeGenerator(ScheduledDaemon[].class, () -> {
-                return operations(DaemonOperationHandle.class).map(DaemonOperationHandle::schedule).toArray(e -> new ScheduledDaemon[e]);
-            });
+            b.bindCodeGenerator(ScheduledOperation[].class,
+                    () -> operations(ScheduledOperationHandle.class).map(ScheduledOperationHandle::schedule).toArray(ScheduledOperation[]::new));
 
+            b.bindCodeGenerator(ScheduledDaemon[].class,
+                    () -> operations(DaemonOperationHandle.class).map(DaemonOperationHandle::schedule).toArray(ScheduledDaemon[]::new));
         }
-        System.out.println("CLosing ");
+        System.out.println("CLosing " + daemons.size());
     }
-
 }

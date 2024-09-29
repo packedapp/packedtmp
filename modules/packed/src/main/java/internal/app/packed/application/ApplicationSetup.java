@@ -30,7 +30,6 @@ import app.packed.application.ApplicationMirror;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
-import app.packed.container.ContainerHandle;
 import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.util.Nullable;
@@ -39,10 +38,10 @@ import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.ComponentSetup;
-import internal.app.packed.component.ComponentTagManager;
+import internal.app.packed.component.ComponentTagHolder;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.handlers.ApplicationHandlers;
 import internal.app.packed.namespace.NamespaceSetup.NamespaceKey;
+import internal.app.packed.util.handlers.ApplicationHandlers;
 
 /** The internal configuration of an application. */
 public final class ApplicationSetup implements BuildLocalSource, ComponentSetup {
@@ -55,9 +54,12 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     private ArrayList<Runnable> codegenActions;
 
     /** Components tags on components in the application. */
-    public final ComponentTagManager componentTagManager = new ComponentTagManager();
+    public final ComponentTagHolder componentTags = new ComponentTagHolder();
 
-    /** The root container of the application, is initialized from {@link PackedApplicationInstaller}. */
+    /**
+     * The root container of the application, is initialized in
+     * {@link #newApplication(PackedApplicationInstaller, AssemblySetup)}.
+     */
     private ContainerSetup container;
 
     /** The deployment the application is part of. */
@@ -213,20 +215,26 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
         return crack(ApplicationHandlers.getApplicationMirrorHandle(mirror));
     }
 
+    /**
+     * @param installer
+     * @param assembly
+     * @return the new application
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static ApplicationSetup newApplication(PackedApplicationInstaller<?> installer, AssemblySetup assembly) {
 
-        ApplicationSetup as = installer.install(new ApplicationSetup(installer));
+        ApplicationSetup application = installer.install(new ApplicationSetup(installer));
 
         Function f = installer.handleFactory;
-        as.handle = (ApplicationHandle<?, ?>) f.apply(installer);
+        application.handle = (ApplicationHandle<?, ?>) f.apply(installer);
 //        if (as.handle == null) {
 //            throw new InternalExtensionException(installer.operator.extensionType, handleFactory + " returned null, when creating a new OperationHandle");
 //        }
 
         // Initialize the root container
-        as.container = ContainerSetup.newContainer(installer.containerInstaller, as, assembly, ContainerHandle::new);
-        return as;
+        application.container = ContainerSetup.newContainer(installer.containerInstaller, application, assembly,
+                installer.containerInstaller.template.rootContainerHandleFactory());
+        return application;
     }
 
     /** The build phase of the application. */

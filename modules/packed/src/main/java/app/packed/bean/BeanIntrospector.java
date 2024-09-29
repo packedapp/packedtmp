@@ -30,7 +30,7 @@ import app.packed.build.BuildActor;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
-import app.packed.lifetime.LifecycleKind;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
@@ -205,7 +205,7 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
 
     public final <H extends BeanHandle<?>> Optional<H> beanHandle(Class<H> handleKind) {
         if (setup.extension == bean().installedBy) {
-            Optional.of(handleKind.cast(bean().handle()));
+            return Optional.of(handleKind.cast(bean().handle()));
         }
         return Optional.empty();
     }

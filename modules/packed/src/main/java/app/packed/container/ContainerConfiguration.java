@@ -10,7 +10,7 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.build.action.BuildActionable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
-import app.packed.lifetime.LifecycleKind;
+import app.packed.lifecycle.LifecycleKind;
 import app.packed.util.Nullable;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.util.types.ClassUtil;
@@ -180,5 +180,11 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
     public <E extends Extension<?>> E use(Class<E> extensionClass) {
         ExtensionSetup extension = handle.container.useExtension(extensionClass, null);
         return extensionClass.cast(extension.instance());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> componentTags() {
+        return handle.componentTags();
     }
 }

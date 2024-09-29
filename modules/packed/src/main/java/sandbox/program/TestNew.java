@@ -50,6 +50,9 @@ public class TestNew extends BaseAssembly {
     public static void main(String[] args) {
         App.run(new TestNew());
 
+        App.mirrorOf(new TestNew()).print();
+        System.out.println("_---");
+
         for (BeanMirror b : App.mirrorOf(new TestNew()).container().beans().toList()) {
             b.operations(ProvidedServiceMirror.class).forEach(e -> {
                 List<NamespaceServiceBindingMirror> sbm = e.useSites().toList();

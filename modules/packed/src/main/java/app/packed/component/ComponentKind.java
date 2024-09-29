@@ -75,6 +75,7 @@ public sealed interface ComponentKind permits PackedComponentKind {
 
     ComponentPath pathNew(Object... fragments);
 
+    // vs NAme??
     String pathPrefix();
 
     /** {@return a new component kind builder} */

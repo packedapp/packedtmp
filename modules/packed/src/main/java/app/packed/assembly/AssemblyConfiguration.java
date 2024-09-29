@@ -18,7 +18,6 @@ package app.packed.assembly;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationConfiguration;
@@ -34,16 +33,25 @@ import internal.app.packed.util.PackedTreeView;
  */
 public final class AssemblyConfiguration {
 
+    /** The internal configuration of the assembly. */
     final AssemblySetup assembly;
 
-    // Syntes ogssa man skal have build processen... IDK
+    /**
+     * Create a new assembly configuration.
+     *
+     * @param assembly
+     *            the internal configuration of the assembly
+     */
     AssemblyConfiguration(AssemblySetup assembly) {
         this.assembly = assembly;
     }
 
-    /** {@return an assembly finder that can be used to find assemblies on the class- or module-path.} */
-    // Classpath if the assembly is on the classpath, otherwise modulepath
-    // Maybe this is on the container level???? And not Assembly Level
+    /**
+     * {@return an assembly finder that can be used to find assemblies on the class- or module-path.}
+     * <p>
+     * If this assembly is on the modulepath the assembly finder will search for assemblies on the modulepath.
+     * Otherwise the classpath will be searched.
+     */
     public AssemblyFinder assemblyFinder() {
         return new PackedAssemblyFinder(getClass(), assembly);
     }
@@ -51,9 +59,6 @@ public final class AssemblyConfiguration {
     public ApplicationConfiguration application() {
         return assembly.container.application.handle().configuration();
     }
-//  protected final <T extends ComponentConfiguration> Stream<T> componentConfigurationSingleton(Class<T> configurationType) {
-//
-//  }
 
     /** {@return the current state of the assembly.} */
     protected Assembly.State assemblyState() {
@@ -92,20 +97,21 @@ public final class AssemblyConfiguration {
         requireNonNull(lookup, "lookup cannot be null");
     }
 
-    /**
-     * Specializes the {@link AssemblyMirror} that represents this assembly.
-     *
-     * @param supplier
-     *            the mirror supplier
-     * @throws IllegalStateException
-     *             if called from outside of {@link #build()}
-     */
-    public void specializeMirror(Supplier<? extends AssemblyMirror> supplier) {
-        requireNonNull(supplier, "supplier cannot be null");
-        throw new UnsupportedOperationException();
-    }
 }
 
+//// Assembly mirrors cannot be specialized for now
+///**
+// * Specializes the {@link AssemblyMirror} that represents this assembly.
+// *
+// * @param supplier
+// *            the mirror supplier
+// * @throws IllegalStateException
+// *             if called from outside of {@link #build()}
+// */
+//public void specializeMirror(Supplier<? extends AssemblyMirror> supplier) {
+//    requireNonNull(supplier, "supplier cannot be null");
+//    throw new UnsupportedOperationException();
+//}
 //
 //// Think just have a containers() method...
 //public final void forEach(Consumer<? super ContainerConfiguration> consumer) {

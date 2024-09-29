@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.binding.ComputedConstant;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
 import app.packed.extension.ExtensionContext;
@@ -31,7 +30,7 @@ import app.packed.service.ServiceSelection;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Default implementation of ServiceLocator. */
-public record PackedServiceLocator(ExtensionContext context, @ComputedConstant Map<Key<?>, MethodHandle> entries) implements ServiceLocator {
+public record PackedServiceLocator(ExtensionContext context, Map<Key<?>, MethodHandle> entries) implements ServiceLocator {
 
     /** {@inheritDoc} */
     @Override

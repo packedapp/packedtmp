@@ -15,9 +15,8 @@
  */
 package internal.app.packed.concurrent;
 
-import app.packed.binding.ComputedConstant;
 import app.packed.extension.ExtensionContext;
-import app.packed.lifetime.OnStart;
+import app.packed.lifecycle.OnStart;
 import internal.app.packed.concurrent.VirtualThreadScheduledTaskManager.DaemonOperationRunner;
 
 // Runtime
@@ -31,7 +30,7 @@ public class SchedulingTaskManager {
     final boolean shutdownOnExit;
     final ScheduledTaskManager vts;
 
-    public SchedulingTaskManager(ExecutorConfiguration scheduler, @ComputedConstant ScheduledOperation[] mhs, @ComputedConstant ScheduledDaemon[] daemons,
+    public SchedulingTaskManager(ExecutorConfiguration scheduler, ScheduledOperation[] mhs, ScheduledDaemon[] daemons,
             ExtensionContext cc) {
         if (scheduler == null) {
             this.vts = new VirtualThreadScheduledTaskManager(cc);

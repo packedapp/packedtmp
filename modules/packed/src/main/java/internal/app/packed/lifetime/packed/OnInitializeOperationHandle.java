@@ -15,8 +15,10 @@
  */
 package internal.app.packed.lifetime.packed;
 
-import app.packed.lifetime.OnInitialize;
+import app.packed.lifecycle.OnInitialize;
+import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationDependencyOrder;
+import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTemplate.Installer;
 import internal.app.packed.bean.BeanLifecycleOrder;
 
@@ -31,6 +33,16 @@ public final class OnInitializeOperationHandle extends LifecycleOperationHandle 
     public OnInitializeOperationHandle(Installer installer, OnInitialize annotation) {
         super(installer, annotation.order(), annotation.order() == OperationDependencyOrder.BEFORE_DEPENDENCIES ? BeanLifecycleOrder.INITIALIZE_PRE_ORDER
                 : BeanLifecycleOrder.INITIALIZE_POST_ORDER);
+    }
+
+    @Override
+    protected OperationConfiguration newOperationConfiguration() {
+        return super.newOperationConfiguration();
+    }
+
+    @Override
+    protected OperationMirror newOperationMirror() {
+        return super.newOperationMirror();
     }
 
 }

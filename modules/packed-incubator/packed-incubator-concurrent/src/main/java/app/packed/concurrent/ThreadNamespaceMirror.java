@@ -20,9 +20,13 @@ import java.util.stream.Stream;
 import app.packed.namespace.NamespaceMirror;
 
 /**
- *
+ * A mirror for a thread namespace.
+ * <p>
+ * A application
  */
-// Ideen er at kunne forstå
+// We must have one per extension...
+// I mean we have a service namespace per extension.
+// So would probably be strange to share one for extensions?
 public class ThreadNamespaceMirror extends NamespaceMirror<ThreadExtension> {
 
     /**
@@ -32,12 +36,12 @@ public class ThreadNamespaceMirror extends NamespaceMirror<ThreadExtension> {
         super(handle);
     }
 
-    // A stream of all scheduled operations in the namespace
+    /** {@return a stream of all scheduled operations in the namespace} */
     public Stream<ScheduledOperationMirror> scheduledOperations() {
         return operations(ScheduledOperationMirror.class);
     }
 
-    // A stream of all daemon operations in the namespace
+    /** {@return a stream of all daemon operations in the namespace} */
     public Stream<DaemonOperationMirror> daemonOperations() {
         return operations(DaemonOperationMirror.class);
     }

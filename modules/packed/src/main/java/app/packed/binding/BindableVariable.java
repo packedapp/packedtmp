@@ -106,6 +106,7 @@ public sealed interface BindableVariable extends BeanElement permits PackedBinda
      *             if the type of the context is not assignable to the underlying variable
      * @throws app.packed.context.ContextNotAvailableException
      *             if the context is not available
+     * @see #availableContexts()
      */
     BindableVariable bindContext(Class<? extends Context<?>> context);
 

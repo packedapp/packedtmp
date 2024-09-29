@@ -17,16 +17,17 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
@@ -34,7 +35,6 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
-import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
@@ -49,19 +49,16 @@ import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.ComponentSetup;
-import internal.app.packed.context.ContextInfo;
-import internal.app.packed.context.ContextSetup;
-import internal.app.packed.context.ContextualizedElementSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionHandle;
-import internal.app.packed.handlers.BeanHandlers;
-import internal.app.packed.handlers.ContainerHandlers;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.service.MainServiceNamespaceHandle;
 import internal.app.packed.util.AbstractNamedTreeNode;
+import internal.app.packed.util.handlers.BeanHandlers;
+import internal.app.packed.util.handlers.ContainerHandlers;
 
 /** The internal configuration of a container. */
-public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> implements ComponentSetup, ContextualizedElementSetup, BuildLocalSource {
+public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> implements ComponentSetup, BuildLocalSource {
 
     /** The application this container is a part of. */
     public final ApplicationSetup application;
@@ -74,8 +71,6 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
 
     /** All the beans installed in the container. */
     public final ContainerBeanStore beans = new ContainerBeanStore();
-
-    private final HashMap<Class<? extends Context<?>>, ContextSetup> contexts = new HashMap<>();
 
     /** Extensions used by this container. We keep them in a LinkedHashMap so that we can return a deterministic view. */
     // Or maybe extension types are always sorted??
@@ -142,7 +137,17 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     /** {@inheritDoc} */
     @Override
     public ComponentPath componentPath() {
-        throw new UnsupportedOperationException();
+        List<String> path = new ArrayList<>();
+        ContainerSetup currentNode = this;
+
+        while (currentNode != null) {
+            path.add(currentNode.name); // Add the current node's name
+            currentNode = currentNode.treeParent; // Move to the parent
+        }
+
+        Collections.reverse(path);
+
+        return ComponentKind.CONTAINER.pathNew(application.componentPath(), path);
     }
 
     /**
@@ -160,20 +165,6 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     /** {@return a unmodifiable view of all extension types that are in used in no particular order.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    @Nullable
-    public ContextSetup findContext(Class<? extends Context<?>> contextClass) {
-        Class<? extends Context<?>> cl = ContextInfo.normalize(contextClass);
-        return contexts.get(cl);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void forEachContext(Consumer<? super ContextSetup> action) {
-        contexts.values().forEach(action);
     }
 
     @Override
@@ -407,7 +398,6 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         return extension;
     }
 
-
     /**
      * Extracts a bean setup from a bean configuration.
      *
@@ -427,6 +417,18 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         return crack(ContainerHandlers.getContainerMirrorHandle(mirror));
     }
 
+    /**
+     * @param <H>
+     * @param installer
+     *            the installer for the container
+     * @param application
+     *            the application the container is a part of
+     * @param assembly
+     *            the assembly the container is a part of
+     * @param handleFactory
+     *            a handle factory for the container
+     * @return
+     */
     public static <H extends ContainerHandle<?>> ContainerSetup newContainer(PackedContainerInstaller installer, ApplicationSetup application,
             AssemblySetup assembly, Function<? super ContainerTemplate.Installer, H> handleFactory) {
         // Cannot reuse an installer

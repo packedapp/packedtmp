@@ -10,6 +10,7 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
+import app.packed.component.guest.ContainerTemplateLink;
 import app.packed.container.ContainerTemplate;
 import app.packed.context.ContextTemplate;
 import app.packed.operation.Op;
@@ -18,19 +19,20 @@ import app.packed.operation.OperationDependencyOrder;
 import app.packed.operation.OperationTemplate;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
-import app.packed.service.ProvideableBeanConfiguration;
+import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.service.ServiceLocator;
-import internal.app.packed.bean.PackedBeanInstaller.ServiceanbleBeanHandle;
+import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
 import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionUseSite;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
-import sandbox.extension.container.ContainerTemplateLink;
 
 /** An {@link ExtensionPoint extension point} for {@link BaseExtension}. */
 public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
+
+    final static BeanTemplate CONTAINER;
 
     public static ContainerTemplateLink CONTAINER_MIRROR = ContainerTemplateLink.of(MethodHandles.lookup(), BaseExtension.class, "ContainerMirror").build();
 
@@ -41,29 +43,23 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     public static final ContainerTemplateLink EXPORTED_SERVICE_LOCATOR = baseBuilder("ExportedServiceLocator")
             .localConsume(BaseExtension.FROM_LINKS, t -> t.exportServices = true).provideExpose(ServiceLocator.class).build();
 
-    // Teanker vi altid exportere den
-    // check that we have a managed lifetime. Maybe PackedManagedBeanController is already installed
-    // baseExtension.managedLifetimeBean.export(); // maybe it is already exported
-
     public static final ContainerTemplateLink MANAGED_LIFETIME = baseBuilder(ManagedLifecycle.class.getSimpleName()).provideExpose(ManagedLifecycle.class)
             .build();
+
+    static {
+        ContextTemplate ct = ContextTemplate.of(ExtensionContext.class, c -> c.implementationClass(PackedExtensionContext.class));
+        CONTAINER = BeanKind.CONTAINER.template().reconfigure(c -> {
+            c.inContext(ct);
+        });
+    }
 
     /** Creates a new base extension point. */
     BaseExtensionPoint(ExtensionUseSite usesite) {
         super(usesite);
     }
 
-    final static BeanTemplate CONTAINER;
-    static {
-        ContextTemplate ct = ContextTemplate.of(MethodHandles.lookup(), ExtensionContext.class, PackedExtensionContext.class);
-        CONTAINER = BeanKind.CONTAINER.template().reconfigure(c -> {
-            c.inContext(ct);
-        });
-
-    }
-
-    public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<ProvideableBeanConfiguration<T>> h = newBean(CONTAINER, context()).install(implementation, ServiceanbleBeanHandle::new);
+    public <T> ProvidableBeanConfiguration<T> install(Class<T> implementation) {
+        BeanHandle<ProvidableBeanConfiguration<T>> h = newBean(CONTAINER, context()).install(implementation, ProvidableBeanHandle::new);
         return h.configuration();
     }
 
@@ -74,25 +70,12 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            an operation responsible for creating an instance of the bean when the container is initialized
      * @return a configuration object representing the installed bean
      */
-    public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<ProvideableBeanConfiguration<T>> h = newBean(CONTAINER, context()).install(op, ServiceanbleBeanHandle::new);
+    public <T> ProvidableBeanConfiguration<T> install(Op<T> op) {
+        BeanHandle<ProvidableBeanConfiguration<T>> h = newBean(CONTAINER, context()).install(op, ProvidableBeanHandle::new);
         return h.configuration();
     }
 
-//
-//    public <T> ContainerHolderConfiguration<T> containerHolderInstallIfAbsent(Class<T> holderClass, Consumer<? super ContainerHolderConfiguration<T>> action) {
-//        throw new UnsupportedOperationException();
-//    }
-
-//    // Contexts
-//    public ContainerBuilder containerInstallerExistingLifetime(boolean isLazy) {
-//        // Kan only use channels that are direct dependencies of the usage extension
-//
-//        ExtensionSetup s = contextUse().usedBy();
-//        return new PackedContainerBuilder(ContainerTemplate.IN_PARENT, s.extensionType, s.container.application, s.container);
-//    }
-
-    public <T> ProvideableBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
+    public <T> ProvidableBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
         return installIfAbsent(clazz, c -> {});
     }
 
@@ -109,17 +92,25 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *           Even for action and the returned bean
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T> ProvideableBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ProvideableBeanConfiguration<T>> action) {
+    public <T> ProvidableBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ProvidableBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
-        Function<BeanTemplate.Installer, ServiceanbleBeanHandle<?>> f = ServiceanbleBeanHandle::new;
-        BeanHandle<?> handle = newBean(CONTAINER, context()).installIfAbsent(clazz, ProvideableBeanConfiguration.class, (Function) f,
-                h -> action.accept((ProvideableBeanConfiguration<T>) h.configuration()));
-        return (ProvideableBeanConfiguration<T>) handle.configuration();
+        Function<BeanTemplate.Installer, ProvidableBeanHandle<?>> f = ProvidableBeanHandle::new;
+        BeanHandle<?> handle = newBean(CONTAINER, context()).installIfAbsent(clazz, ProvidableBeanConfiguration.class, (Function) f,
+                h -> action.accept((ProvidableBeanConfiguration<T>) h.configuration()));
+        return (ProvidableBeanConfiguration<T>) handle.configuration();
     }
 
-    public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<ProvideableBeanConfiguration<T>> h = newBean(CONTAINER, context()).installInstance(instance,
-                ServiceanbleBeanHandle::new);
+    /**
+     * Installs a new bean instance.
+     *
+     * @param <T>
+     *            the type of instance
+     * @param instance
+     *            the bean instance
+     * @return a providable configuration for the new bean
+     */
+    public <T> ProvidableBeanConfiguration<T> installInstance(T instance) {
+        BeanHandle<ProvidableBeanConfiguration<T>> h = newBean(CONTAINER, context()).installInstance(instance, ProvidableBeanHandle::new);
         return h.configuration();
     }
 
@@ -146,13 +137,6 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         ExtensionSetup e = usesite.usedBy();
         return t.newInstaller(e, e.container.assembly);
     }
-
-//    // Vi bliver jo noedt til at have en baade med og uden use site
-//    public FunctionalBeanConfiguration installFunctional() {
-//        PackedBeanHandleBuilder bb = (PackedBeanHandleBuilder) beanBuilderForExtension(BeanKind.STATIC.template(), context());
-//        BeanHandle<?> handle = bb.installSourceless();
-//        return new FunctionalBeanConfiguration(handle);
-//    }
 
     /**
      * Creates a new bean installer to be able to install a new bean on behalf of a another extension.
@@ -188,8 +172,27 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     private static ContainerTemplateLink.Configurator baseBuilder(String name) {
         return ContainerTemplateLink.of(MethodHandles.lookup(), BaseExtension.class, name);
     }
-
 }
+
+//// Vi bliver jo noedt til at have en baade med og uden use site
+//public FunctionalBeanConfiguration installFunctional() {
+//  PackedBeanHandleBuilder bb = (PackedBeanHandleBuilder) beanBuilderForExtension(BeanKind.STATIC.template(), context());
+//  BeanHandle<?> handle = bb.installSourceless();
+//  return new FunctionalBeanConfiguration(handle);
+//}
+
+//
+//    public <T> ContainerHolderConfiguration<T> containerHolderInstallIfAbsent(Class<T> holderClass, Consumer<? super ContainerHolderConfiguration<T>> action) {
+//        throw new UnsupportedOperationException();
+//    }
+
+//    // Contexts
+//    public ContainerBuilder containerInstallerExistingLifetime(boolean isLazy) {
+//        // Kan only use channels that are direct dependencies of the usage extension
+//
+//        ExtensionSetup s = contextUse().usedBy();
+//        return new PackedContainerBuilder(ContainerTemplate.IN_PARENT, s.extensionType, s.container.application, s.container);
+//    }
 
 class unknown {
 

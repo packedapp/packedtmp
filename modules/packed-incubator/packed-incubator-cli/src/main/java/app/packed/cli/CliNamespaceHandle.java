@@ -17,8 +17,9 @@ package app.packed.cli;
 
 import java.util.LinkedHashMap;
 
-import app.packed.bean.BeanInstallationException;
 import app.packed.bean.BeanElement.BeanMethod;
+import app.packed.bean.BeanInstallationException;
+import app.packed.build.BuildActor;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.operation.OperationTemplate;
@@ -45,8 +46,8 @@ final class CliNamespaceHandle extends NamespaceHandle<CliExtension, CliNamespac
     }
 
     @Override
-    protected CliNamespaceConfiguration newNamespaceConfiguration(CliExtension e) {
-        return new CliNamespaceConfiguration(this, e);
+    protected CliNamespaceConfiguration newNamespaceConfiguration(CliExtension e, BuildActor actor) {
+        return new CliNamespaceConfiguration(this, e, actor);
     }
 
     void process(CliExtension extension, CliCommand c, BeanMethod method) {

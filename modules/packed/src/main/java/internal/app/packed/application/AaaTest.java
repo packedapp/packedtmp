@@ -17,9 +17,9 @@ package internal.app.packed.application;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.lifetime.OnInitialize;
-import app.packed.lifetime.OnStart;
-import app.packed.lifetime.OnStop;
+import app.packed.lifecycle.OnInitialize;
+import app.packed.lifecycle.OnStart;
+import app.packed.lifecycle.OnStop;
 import app.packed.runtime.RunState;
 
 /**

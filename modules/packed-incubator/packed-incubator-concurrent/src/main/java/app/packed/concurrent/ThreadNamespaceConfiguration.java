@@ -19,6 +19,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import app.packed.build.BuildActor;
 import app.packed.namespace.NamespaceConfiguration;
 import internal.app.packed.concurrent.ExecutorConfiguration;
 
@@ -37,8 +38,8 @@ public final class ThreadNamespaceConfiguration extends NamespaceConfiguration<T
     /**
      * @param handle
      */
-    ThreadNamespaceConfiguration(ThreadNamespaceHandle handle, ThreadExtension extension) {
-        super(handle, extension);
+    ThreadNamespaceConfiguration(ThreadNamespaceHandle handle, ThreadExtension extension, BuildActor actor) {
+        super(handle, extension, actor);
         this.handle = handle;
     }
 

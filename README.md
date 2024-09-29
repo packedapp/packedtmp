@@ -28,4 +28,4 @@ To install and compile the source code locally, run:
   mvn install
 ```
 
-Note that Packed requires Java 23    to compile and run.
+Note that Packed requires Java 23 to compile and run.

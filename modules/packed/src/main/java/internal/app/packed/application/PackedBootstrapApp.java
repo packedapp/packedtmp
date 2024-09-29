@@ -66,7 +66,7 @@ public final class PackedBootstrapApp<A> implements BootstrapApp<A> {
         ApplicationTemplate.Installer<A> installer = template.newInstaller(BuildGoal.IMAGE, wirelets);
 
         // Build the application
-        ApplicationHandle<?, ?> handle = installer.install(assembly, template.bootstrapHandleFactory());
+        ApplicationHandle<?, ?> handle = installer.install(assembly, template.bootstrapAppHandleFactory());
 
         // Returns an image for the application
         return (BaseImage<A>) handle.image();
@@ -79,7 +79,7 @@ public final class PackedBootstrapApp<A> implements BootstrapApp<A> {
 
         // Build the application
         // Okay vi maa jo kunne saette default handle... Fx specificer mirror
-        ApplicationHandle<?, ?> handle = installer.install(assembly, template.bootstrapHandleFactory());
+        ApplicationHandle<?, ?> handle = installer.install(assembly, template.bootstrapAppHandleFactory());
 
         // Launch the application
         ApplicationLaunchContext aic = ApplicationLaunchContext.launch(state, handle, null);
@@ -94,7 +94,7 @@ public final class PackedBootstrapApp<A> implements BootstrapApp<A> {
         ApplicationTemplate.Installer<A> installer = template.newInstaller(BuildGoal.MIRROR, wirelets);
 
         // Build the application
-        ApplicationHandle<?, ?> handle = installer.install(assembly, template.bootstrapHandleFactory());
+        ApplicationHandle<?, ?> handle = installer.install(assembly, template.bootstrapAppHandleFactory());
 
         // Returns a mirror for the application
         return handle.mirror();
@@ -106,9 +106,17 @@ public final class PackedBootstrapApp<A> implements BootstrapApp<A> {
         ApplicationTemplate.Installer<A> installer = template.newInstaller(BuildGoal.VERIFY, wirelets);
 
         // Builds (and verifies) the application
-        installer.install(assembly, template.bootstrapHandleFactory());
+        installer.install(assembly, template.bootstrapAppHandleFactory());
     }
 
+    /**
+     * Builds a new bootstrap app for applications represented by the specified template.
+     *
+     * @param <A>
+     * @param template
+     *            the template for the type applications that should be bootstrapped
+     * @return a new bootstrap app
+     */
     public static <A> BootstrapApp<A> of(PackedApplicationTemplate<A> template) {
         // Create new installer for the bootstrap app
         PackedApplicationInstaller<A> installer = PackedApplicationTemplate.newBootstrapAppInstaller();

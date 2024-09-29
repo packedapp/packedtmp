@@ -41,7 +41,6 @@ import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.handlers.BeanHandlers;
 import internal.app.packed.integration.devtools.PackedDevToolsIntegration;
 import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 import internal.app.packed.operation.OperationSetup;
@@ -49,6 +48,7 @@ import internal.app.packed.operation.PackedOperationInstaller;
 import internal.app.packed.operation.PackedOperationInstaller.BeanFactoryOperationHandle;
 import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.util.StringFormatter;
+import internal.app.packed.util.handlers.BeanHandlers;
 
 /**
  * This class represents a single bean being introspected.

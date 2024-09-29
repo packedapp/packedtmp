@@ -27,16 +27,18 @@ import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.component.PackedComponentInstaller;
 import internal.app.packed.extension.ExtensionSetup;
 
-/**
- *
- */
+/** Implementation of {@link NamespaceTemplate.Installer} */
 public final class PackedNamespaceInstaller extends PackedComponentInstaller<NamespaceSetup, PackedNamespaceInstaller> implements NamespaceTemplate.Installer {
+
     public NamespaceHandle<?, ?> handle;
     final String name;
 
     final AuthoritySetup<?> owner;
 
     final ExtensionSetup root;
+
+
+    /** The template for the new namespace. */
     final PackedNamespaceTemplate template;
 
     public PackedNamespaceInstaller(PackedNamespaceTemplate template, ExtensionSetup root, AuthoritySetup<?> owner, String name) {

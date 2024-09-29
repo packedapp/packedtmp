@@ -15,7 +15,7 @@
  */
 package internal.app.packed.lifetime.packed;
 
-import app.packed.lifetime.OnStop;
+import app.packed.lifecycle.OnStop;
 import app.packed.operation.OperationDependencyOrder;
 import app.packed.operation.OperationTemplate.Installer;
 import internal.app.packed.bean.BeanLifecycleOrder;

@@ -54,9 +54,7 @@ public sealed interface ComponentMirror extends BuildMirror permits ApplicationM
     ComponentPath componentPath();
 
     /** {@return a set of any tags that have been set on the component} */
-    default Set<String> componentTags() {
-        return Set.of();
-    }
+     Set<String> componentTags();
 
     /** {@return the build step that installed the component} */
     // Installation is a runtime concept... You don't install an extension, you add it

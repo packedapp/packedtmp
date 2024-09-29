@@ -18,6 +18,7 @@ package app.packed.operation;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
+import java.util.Set;
 
 import app.packed.binding.Key;
 import app.packed.component.ComponentConfiguration;
@@ -38,19 +39,6 @@ public non-sealed class OperationConfiguration extends ComponentConfiguration {
     public OperationConfiguration(OperationHandle<?> handle) {
         this.handle = requireNonNull(handle);
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public OperationConfiguration componentTag(String... tags) {
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected final OperationHandle<?> handle() {
-        return handle;
-    }
-
 
     public <K> OperationConfiguration bindServiceInstance(Class<K> key, K instance) {
         return bindServiceInstance(Key.of(key), instance);
@@ -74,6 +62,26 @@ public non-sealed class OperationConfiguration extends ComponentConfiguration {
         return this;
     }
 
+
+    /** {@inheritDoc} */
+    @Override
+    public OperationConfiguration componentTag(String... tags) {
+        handle.componentTag(tags);
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final Set<String> componentTags() {
+        return handle.componentTags();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected final OperationHandle<?> handle() {
+        return handle;
+    }
+
     public OperationConfiguration named(String name) {
         handle.named(name);
         return this;
@@ -89,7 +97,7 @@ public non-sealed class OperationConfiguration extends ComponentConfiguration {
     }
 
     // All operations defined by the same extension
-    protected Collection<OperationConfiguration> sieblings() {
+    protected final Collection<OperationConfiguration> sieblings() {
         throw new UnsupportedOperationException();
     }
 

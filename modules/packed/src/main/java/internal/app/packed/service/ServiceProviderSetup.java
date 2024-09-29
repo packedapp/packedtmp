@@ -31,10 +31,10 @@ import internal.app.packed.operation.OperationSetup;
  */
 public abstract class ServiceProviderSetup implements Keyed {
 
-    private final Key<?> key;
-
     /** All bindings (in a interned linked list) that points to this provider. */
     public final ArrayList<ServiceBindingSetup> bindings = new ArrayList<>();
+
+    private final Key<?> key;
 
     public ServiceProviderSetup(Key<?> key) {
         this.key = key;

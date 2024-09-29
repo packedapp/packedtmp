@@ -33,6 +33,9 @@ import app.packed.runtime.RunState;
 public @interface OnComponentGuestLifecycle {
 
     // if non empty, only for transitions from the specified
+    /**
+     * {@return if non-empty run states returned will f
+     */
     RunState[] fromStates() default {};
 
     // if non empty, only for transitions from the specified

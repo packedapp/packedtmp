@@ -28,10 +28,7 @@ import app.packed.util.Nullable;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.assembly.AssemblySetup;
 
-/**
- *
- */
-// Here in app.packed.application because of all the packed private fields
+/** Implementation if {@link BuildProcess}. */
 public final class PackedBuildProcess implements BuildProcess {
 
     /** Generates build process id's. */
@@ -45,11 +42,11 @@ public final class PackedBuildProcess implements BuildProcess {
 
     public final PackedApplicationInstaller<?> application;
 
+    private final BuildGoal goal;
+
     private final long processId = PROCESS_ID_BUILDER.incrementAndGet();
 
     private Thread thread;
-
-    private final BuildGoal goal;
 
     public PackedBuildProcess(PackedApplicationInstaller<?> application, BuildGoal goal) {
         this.application = requireNonNull(application);
@@ -57,9 +54,6 @@ public final class PackedBuildProcess implements BuildProcess {
         this.goal = goal;
     }
 
-    public BuildGoal goal() {
-        return goal;
-    }
     public Carrier carrier() {
         return ScopedValue.where(PackedBuildProcess.VAR, this);
     }
@@ -86,6 +80,12 @@ public final class PackedBuildProcess implements BuildProcess {
 
     public void finished() {
         thread = null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BuildGoal goal() {
+        return goal;
     }
 
     public void pop(AssemblySetup assembly) {

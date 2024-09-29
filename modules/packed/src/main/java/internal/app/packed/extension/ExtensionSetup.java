@@ -15,8 +15,8 @@ import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.handlers.ExtensionHandlers;
 import internal.app.packed.service.MainServiceNamespaceHandle;
+import internal.app.packed.util.handlers.ExtensionHandlers;
 
 /**
  * Internal configuration of an extension.
@@ -181,10 +181,10 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
         return mirror;
     }
 
-    public MainServiceNamespaceHandle sm() {
+    public MainServiceNamespaceHandle services() {
         MainServiceNamespaceHandle s = sm;
         if (s == null) {
-            MainServiceNamespaceHandle par = treeParent == null ? null : treeParent.sm();
+            MainServiceNamespaceHandle par = treeParent == null ? null : treeParent.services();
             ExtensionHandle<BaseExtension> eh = new PackedExtensionHandle<>(container.base());
 
             s = this.sm = eh.namespaceLazy(MainServiceNamespaceHandle.TEMPLATE, extensionType.getSimpleName() + "#main", inst -> {

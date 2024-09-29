@@ -23,11 +23,10 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.binding.ComputedConstant;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.ExtensionHandle;
-import app.packed.lifetime.OnInitialize;
+import app.packed.lifecycle.OnInitialize;
 import app.packed.operation.OperationHandle;
 
 /**
@@ -55,7 +54,7 @@ public class MhExt extends BaseAssembly {
     public static class EBean {
         final MethodHandle mh;
 
-        public EBean(ExtensionContext context, @ComputedConstant MethodHandle f) throws Throwable {
+        public EBean(ExtensionContext context, MethodHandle f) throws Throwable {
             System.out.println("Got computed F");
             System.out.println(f.type());
             this.mh = f;

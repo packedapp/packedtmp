@@ -17,6 +17,7 @@ package app.packed.cli;
 
 import java.util.function.Consumer;
 
+import app.packed.build.BuildActor;
 import app.packed.namespace.NamespaceConfiguration;
 
 /**
@@ -26,8 +27,8 @@ public final class CliNamespaceConfiguration extends NamespaceConfiguration<CliE
 
     final CliNamespaceHandle handle;
 
-    public CliNamespaceConfiguration(CliNamespaceHandle o, CliExtension cli) {
-        super(o, cli);
+    public CliNamespaceConfiguration(CliNamespaceHandle o, CliExtension cli, BuildActor actor) {
+        super(o, cli, actor);
         this.handle = o;
     }
 

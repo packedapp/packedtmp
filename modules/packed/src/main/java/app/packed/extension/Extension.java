@@ -39,7 +39,7 @@ import app.packed.extension.Extension.ExtensionProperty;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceTemplate;
-import app.packed.service.ProvideableBeanConfiguration;
+import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.util.TreeView;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.extension.ExtensionSetup;
@@ -145,7 +145,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
 
     /** {@return the path of the container that this extension belongs to.} */
     protected final ComponentPath containerPath() {
-        return extension.container.componentPath();
+        return handle.containerPath();
     }
 
     /**
@@ -350,8 +350,8 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
         return handle.parent();
     }
 
-    protected final <T> ProvideableBeanConfiguration<T> provide(Class<T> implementation) {
-        ProvideableBeanConfiguration<T> sbc = base().install(implementation);
+    protected final <T> ProvidableBeanConfiguration<T> provide(Class<T> implementation) {
+        ProvidableBeanConfiguration<T> sbc = base().install(implementation);
         return sbc.provide();
     }
 
