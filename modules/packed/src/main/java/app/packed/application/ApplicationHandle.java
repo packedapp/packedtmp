@@ -15,13 +15,13 @@
  */
 package app.packed.application;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
-import app.packed.container.ContainerHandle;
-import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import app.packed.util.Nullable;
@@ -29,13 +29,15 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedBaseImage.ImageEager;
 import internal.app.packed.application.PackedBaseImage.ImageNonReusable;
+import internal.app.packed.container.wirelets.InternalBuildWirelet;
 import internal.app.packed.container.wirelets.WireletSelectionArray;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
+import internal.app.packed.lifetime.runtime.ContainerRunner;
 
 /**
  * An extendable handle for an application.
  */
-public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A> extends ComponentHandle implements ApplicationBuildLocal.Accessor {
+public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration> extends ComponentHandle implements ApplicationBuildLocal.Accessor {
 
     /** The handle's application. */
     final ApplicationSetup application;
@@ -46,7 +48,7 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
 
     /** An image if the application has been constructed using {@link BuildGoal#IMAGE}. */
     @Nullable
-    private final BaseImage<?> image;
+    private final BaseImage<A> image;
 
     /** The lazy generated application mirror. */
     @Nullable
@@ -58,14 +60,14 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
      * @param installer
      *            the installer for the application
      */
-    public ApplicationHandle(ApplicationTemplate.Installer<A> installer) {
-        PackedApplicationInstaller<A> inst = (PackedApplicationInstaller<A>) installer;
+    public ApplicationHandle(ApplicationTemplate.Installer<?> installer) {
+        PackedApplicationInstaller<?> inst = (PackedApplicationInstaller<?>) installer;
         this.application = inst.toHandle();
 
         // Build an image if that is the target.
-        BaseImage<?> img = null;
+        BaseImage<A> img = null;
         if (inst.buildProcess.goal() == BuildGoal.IMAGE) {
-            img = new ImageEager<>(application);
+            img = new ImageEager<>(this);
             if (!inst.optionBuildReusableImage) {
                 img = new ImageNonReusable<>(img);
             }
@@ -115,8 +117,8 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
      * @throws IllegalStateException
      *             if the application was build with {@link BuildGoal#IMAGE}.
      */
-    public final BaseImage<?> image() {
-        BaseImage<?> i = image;
+    public final BaseImage<A> image() {
+        BaseImage<A> i = image;
         if (i == null) {
             throw new IllegalStateException("The application must be installed with BuildImage, was " + application.goal);
         }
@@ -132,6 +134,7 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
     /**
      * Launches an instance of the application this handle represents.
      * <p>
+     * A handle can be used multiple types.
      *
      * @param state
      *            the state to launch the application in
@@ -141,11 +144,29 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
      */
     @SuppressWarnings("unchecked")
     public final A launch(RunState state, Wirelet... wirelets) {
-        ApplicationLaunchContext alc = ApplicationLaunchContext.launch(state, this, WireletSelectionArray.of(wirelets));
-        MethodHandle mh = application.launch;
+        requireNonNull(state, "state is null");
+        WireletSelectionArray<Wirelet> ws = WireletSelectionArray.of(wirelets);
+
+        ContainerRunner runner = new ContainerRunner(application);
+
+        // Create a launch context
+        ApplicationLaunchContext context = new ApplicationLaunchContext(runner, application, ws);
+
+        // Apply all internal wirelets
+        if (ws != null) {
+            for (Wirelet w : ws) {
+                if (w instanceof InternalBuildWirelet iw) {
+                    iw.onImageLaunch(application.container(), context);
+                }
+            }
+        }
+
+        context.runner.run(state);
+
+        MethodHandle mh = application.launcher;
         Object result;
         try {
-            result = mh.invokeExact(alc);
+            result = mh.invokeExact(context);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -160,6 +181,11 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
             m = mirror = newApplicationMirror();
         }
         return m;
+    }
+
+    /** {@return the name of the application} */
+    public final String name() {
+        return application.container().name();
     }
 
     /**
@@ -179,11 +205,6 @@ public non-sealed class ApplicationHandle<C extends ApplicationConfiguration, A>
      */
     protected ApplicationMirror newApplicationMirror() {
         return new ApplicationMirror(this);
-    }
-
-    // Would be strange if we cannot decide the containerMirror/configuration that should be returned...
-    protected ContainerHandle<?> newRootContainerHandle(ContainerTemplate.Installer installer) {
-        return new ContainerHandle<>(installer);
     }
 
 //    // Then we need to have a buildtime repository also

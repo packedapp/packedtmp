@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
 import app.packed.assembly.DelegatingAssembly;
@@ -41,7 +40,8 @@ import internal.app.packed.container.wirelets.InternalBuildWirelet;
 import internal.app.packed.util.handlers.AssemblyHandlers;
 
 /** Implementation of {@link ContainerTemplate.Installer} */
-public final class PackedContainerInstaller extends PackedComponentInstaller<ContainerSetup, PackedContainerInstaller> implements ContainerTemplate.Installer {
+public final class PackedContainerInstaller<H extends ContainerHandle<?>> extends PackedComponentInstaller<ContainerSetup, PackedContainerInstaller<H>>
+        implements ContainerTemplate.Installer<H> {
 
     /** Non-null if this container is being installed as the root container of an application. */
     @Nullable
@@ -68,13 +68,13 @@ public final class PackedContainerInstaller extends PackedComponentInstaller<Con
     public final ContainerSetup parent;
 
     /** The template for the new container. */
-    public final PackedContainerTemplate template;
+    public final PackedContainerTemplate<H> template;
 
     /** A list of wirelets that have not been consumed yet. */
     public final ArrayList<Wirelet> unconsumedWirelets = new ArrayList<>();
 
     // Cannot take ExtensionSetup, as BaseExtension is not instantiated for a root container
-    public PackedContainerInstaller(PackedContainerTemplate template, @Nullable PackedApplicationInstaller<?> application, @Nullable ContainerSetup parent,
+    public PackedContainerInstaller(PackedContainerTemplate<H> template, @Nullable PackedApplicationInstaller<?> application, @Nullable ContainerSetup parent,
             Class<? extends Extension<?>> installedBy) {
         super(template.componentTags(), new HashMap<>());
         this.applicationInstaller = application;
@@ -90,14 +90,14 @@ public final class PackedContainerInstaller extends PackedComponentInstaller<Con
     }
 
     @Override
-    public <T> ContainerTemplate.Installer carrierProvideConstant(Key<T> key, T constant) {
+    public <T> ContainerTemplate.Installer<H> carrierProvideConstant(Key<T> key, T constant) {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public <H extends ContainerHandle<?>> H install(Assembly assembly, Function<? super ContainerTemplate.Installer, H> factory, Wirelet... wirelets) {
+    public H install(Assembly assembly, Wirelet... wirelets) {
         checkNotInstalledYet();
         // TODO can install container (assembly.isConfigurable());
         this.isFromAssembly = true;
@@ -109,20 +109,19 @@ public final class PackedContainerInstaller extends PackedComponentInstaller<Con
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public <H extends ContainerHandle<?>> H install(Function<? super ContainerTemplate.Installer, H> factory, Wirelet... wirelets) {
+    public H install(Wirelet... wirelets) {
         checkNotInstalledYet();
         // TODO can install container
         processBuildWirelets(wirelets);
-        ContainerSetup container = ContainerSetup.newContainer(this, parent.application, parent.assembly, factory);
+        ContainerSetup container = ContainerSetup.newContainer(this, parent.application, parent.assembly);
         return (H) container.handle();
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public <H extends ContainerHandle<?>> H installAndUseThisExtension(Function<? super ContainerTemplate.Installer, H> configurationCreator,
-            Wirelet... wirelets) {
-        ContainerHandle<?> handle = install(configurationCreator, wirelets);
+    public H installAndUseThisExtension(Wirelet... wirelets) {
+        ContainerHandle<?> handle = install(wirelets);
         ContainerSetup.crack(handle).useExtension(installedBy, null);
         return (H) handle;
     }
@@ -140,7 +139,7 @@ public final class PackedContainerInstaller extends PackedComponentInstaller<Con
         return s.container;
     }
 
-    public <T> ContainerTemplate.Installer localConsume(ContainerBuildLocal<T> local, Consumer<T> action) {
+    public <T> ContainerTemplate.Installer<H> localConsume(ContainerBuildLocal<T> local, Consumer<T> action) {
 //        PackedAbstractContainerLocal<?> cl = (PackedAbstractContainerLocal<?>) local;
 
 //        cl.g
@@ -151,7 +150,7 @@ public final class PackedContainerInstaller extends PackedComponentInstaller<Con
 
     /** {@inheritDoc} */
     @Override
-    public ContainerTemplate.Installer named(String name) {
+    public ContainerTemplate.Installer<H> named(String name) {
         this.name = name;
         return this;
     }
@@ -178,9 +177,9 @@ public final class PackedContainerInstaller extends PackedComponentInstaller<Con
         }
     }
 
-    public static PackedContainerInstaller of(PackedContainerTemplate template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
+    public static PackedContainerInstaller<?> of(PackedContainerTemplate<?> template, Class<? extends Extension<?>> installedBy, ApplicationSetup application,
             @Nullable ContainerSetup parent) {
-        PackedContainerInstaller pcb = new PackedContainerInstaller(template, null, parent, installedBy);
+        PackedContainerInstaller<?> pcb = new PackedContainerInstaller<>(template, null, parent, installedBy);
 
         for (PackedContainerLink b : pcb.template.links().packs) {
             if (b.onUse() != null) {
@@ -192,7 +191,7 @@ public final class PackedContainerInstaller extends PackedComponentInstaller<Con
 
     /** {@inheritDoc} */
     @Override
-    public <T> PackedContainerInstaller setLocal(ContainerBuildLocal<T> local, T value) {
+    public <T> PackedContainerInstaller<H> setLocal(ContainerBuildLocal<T> local, T value) {
         return super.setLocal(local, value);
     }
 }

@@ -28,7 +28,7 @@ import app.packed.extension.Extension;
  * Represent a communication channel between a parent container lifetime and a child container lifetime. This class is
  * exposed as {@link ContainerLifetimeChannel}.
  */
-public record PackedContainerLink(Class<? extends Extension<?>> extension, Consumer<? super PackedContainerInstaller> onUse,
+public record PackedContainerLink(Class<? extends Extension<?>> extension, Consumer<? super PackedContainerInstaller<?>> onUse,
         Map<Key<?>, PackedContainerLink.KeyFragment> services) implements OldContainerTemplateLink {
 
     /** {@inheritDoc} */
@@ -50,7 +50,7 @@ public record PackedContainerLink(Class<? extends Extension<?>> extension, Consu
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public PackedContainerLink withUse(Consumer<? super PackedContainerInstaller> action) {
+    public PackedContainerLink withUse(Consumer<? super PackedContainerInstaller<?>> action) {
         return new PackedContainerLink(extension(), onUse == null ? action : onUse.andThen((Consumer) action), services);
     }
 

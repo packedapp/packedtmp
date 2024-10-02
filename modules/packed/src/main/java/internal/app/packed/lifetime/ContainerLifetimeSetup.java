@@ -86,7 +86,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
      * @param origin
      * @param parent
      */
-    public ContainerLifetimeSetup(PackedContainerInstaller installer, ContainerSetup newContainer, @Nullable ContainerLifetimeSetup parent) {
+    public ContainerLifetimeSetup(PackedContainerInstaller<?> installer, ContainerSetup newContainer, @Nullable ContainerLifetimeSetup parent) {
         super(parent);
         this.lifetimes = FuseableOperation.of(List.of(OperationTemplate.defaults())); // obviously wrong
         this.initialization = new FuseableOperation(OperationTemplate.defaults());

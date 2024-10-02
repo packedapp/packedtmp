@@ -55,7 +55,7 @@ import internal.app.packed.container.PackedContainerInstaller;
  * This class cannot be extended directly, you would typically extend {@link BaseAssembly} instead.
  */
 @AssemblySecurity(AssemblySecurity.Default.class)
-public sealed abstract class Assembly implements BuildCodeSource , ApplicationBuildLocal.Accessor
+public sealed abstract class Assembly implements BuildCodeSource, ApplicationBuildLocal.Accessor
         permits BuildableAssembly, DelegatingAssembly, ComposableAssembly {
 
     /**
@@ -73,7 +73,7 @@ public sealed abstract class Assembly implements BuildCodeSource , ApplicationBu
      *
      * @apiNote this method is for internal use only
      */
-    abstract AssemblySetup build(@Nullable PackedApplicationInstaller<?> applicationInstaller, PackedContainerInstaller installer);
+    abstract AssemblySetup build(@Nullable PackedApplicationInstaller<?> applicationInstaller, PackedContainerInstaller<?> installer);
 
     /** The state of an {@link Assembly}. */
     public enum State {

@@ -63,7 +63,7 @@ public class ContainerRunner {
         return pool;
     }
 
-    void run(RunState state) {
+    public void run(RunState state) {
         this.pool = container.lifetime.newRuntimePool();
         runtime.launch(state);
     }
@@ -80,13 +80,14 @@ public class ContainerRunner {
     }
 
     void start() {
-        // Run all initializers
-        for (MethodHandle mh : container.lifetime.startup.methodHandles) {
-            try {
-                mh.invokeExact(pool);
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
-        }
+        new StartRunner(container.lifetime.startup.methodHandles, pool, runtime).start();
+//        // Run all initializers
+//        for (MethodHandle mh : container.lifetime.startup.methodHandles) {
+//            try {
+//                mh.invokeExact(pool, (OnStartContext) new PackedOnStartContext());
+//            } catch (Throwable e) {
+//                throw ThrowableUtil.orUndeclared(e);
+//            }
+//        }
     }
 }

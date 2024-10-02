@@ -72,7 +72,6 @@ public class Ddd extends BaseAssembly {
 
         MyEntityExtension child;
 
-
         public void addEntityBean(Class<?> entityBean) {
             child().base().newBean(BeanKind.MANANGED.template()).install(entityBean, BeanHandle::new);
         }
@@ -80,8 +79,7 @@ public class Ddd extends BaseAssembly {
         MyEntityExtension child() {
             MyEntityExtension c = child;
             if (c == null) {
-                ContainerHandle<?> h = base().newContainer(ContainerTemplate.DEFAULT).named("EntityBeans")
-                        .installAndUseThisExtension(ContainerHandle::new);
+                ContainerHandle<?> h = base().newContainer(ContainerTemplate.DEFAULT).named("EntityBeans").installAndUseThisExtension();
                 c = child = fromContainerHandle(h).get();
             }
             return c;

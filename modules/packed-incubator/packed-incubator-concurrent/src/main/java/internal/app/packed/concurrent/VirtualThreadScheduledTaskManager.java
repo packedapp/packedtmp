@@ -34,15 +34,15 @@ import app.packed.extension.ExtensionContext;
  */
 class VirtualThreadScheduledTaskManager implements ScheduledTaskManager {
 
+    final ExecutorService es = Executors.newVirtualThreadPerTaskExecutor();
+
     final ExtensionContext pec;
+
+    final Set<ScheduledOperationRunner> runners = ConcurrentHashMap.newKeySet();
 
     VirtualThreadScheduledTaskManager(ExtensionContext pec) {
         this.pec = pec;
     }
-
-    final ExecutorService es = Executors.newVirtualThreadPerTaskExecutor();
-
-    final Set<ScheduledOperationRunner> runners = ConcurrentHashMap.newKeySet();
 
     @Override
     public void schedule(MethodHandle mh, Duration d) {
@@ -50,10 +50,16 @@ class VirtualThreadScheduledTaskManager implements ScheduledTaskManager {
         es.submit(pr);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void shutdown() {
+        es.shutdown();
+    }
+
     static class DaemonOperationRunner implements Runnable {
 
-        final MethodHandle mh;
         final ExtensionContext ec;
+        final MethodHandle mh;
 
         DaemonOperationRunner(ExtensionContext ec, MethodHandle mh) {
             this.ec = ec;
@@ -79,15 +85,15 @@ class VirtualThreadScheduledTaskManager implements ScheduledTaskManager {
     */
     private static class ScheduledOperationRunner implements Runnable {
 
-        final AtomicLong count = new AtomicLong();
-
-        final ReentrantLock l = new ReentrantLock();
-
         final Condition c;
+
+        final AtomicLong count = new AtomicLong();
 
         final Duration d;
 
         boolean isShutdown;
+
+        final ReentrantLock l = new ReentrantLock();
 
         final MethodHandle mh;
 
@@ -179,12 +185,6 @@ class VirtualThreadScheduledTaskManager implements ScheduledTaskManager {
                 return runner.count.get();
             }
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void shutdown() {
-        es.shutdown();
     }
 
 }

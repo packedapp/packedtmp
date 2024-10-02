@@ -81,7 +81,7 @@ import app.packed.operation.OperationDependencyOrder;
 
 @Target({ ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-@AnnotatedMethodBeanTrigger(allowInvoke = true, extension = BaseExtension.class)
+@AnnotatedMethodBeanTrigger(allowInvoke = true, extension = BaseExtension.class, requiresContext = OnStartContext.class)
 // , requiresContext = OnStartContext.class -> Provides contet
 public @interface OnStart {
 

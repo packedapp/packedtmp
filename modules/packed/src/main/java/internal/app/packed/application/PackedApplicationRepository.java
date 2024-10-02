@@ -15,16 +15,19 @@
  */
 package internal.app.packed.application;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
-import app.packed.application.ApplicationRepository;
 import app.packed.application.ApplicationTemplate;
+import app.packed.application.ApplicationTemplate.Installer;
+import app.packed.application.repository.ApplicationRepository;
+import app.packed.build.BuildGoal;
 import internal.app.packed.ValueBased;
 
 /** Implementation of {@link ApplicationRepository}. */
@@ -34,19 +37,29 @@ public final class PackedApplicationRepository<H extends ApplicationHandle<?, ?>
     /** All applications that are installed in the container. */
     private final ConcurrentHashMap<String, H> handles;
 
-    /** All application templates that are available when installing new applications at runtime. */
-    public final Map<ApplicationTemplate<?>, MethodHandle> templates;
+    /** MethodHandle to create the guest bean. */
+    private final MethodHandle methodHandle;
+
+    /** The template that is used to install new applications at runtime. */
+    private final PackedApplicationTemplate<?, H> template;
 
     @SuppressWarnings("unchecked")
     public PackedApplicationRepository(BuildApplicationRepository bar) {
         this.handles = new ConcurrentHashMap<>((Map<String, H>) bar.handles);
-        this.templates = Map.copyOf(bar.ms);
+        this.template = (PackedApplicationTemplate<?, H>) bar.template;
+        this.methodHandle = requireNonNull(bar.mh);
     }
 
     /** {@inheritDoc} */
     @Override
     public Optional<H> get(String name) {
         return Optional.ofNullable(handles.get(name));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Installer<H> newApplication() {
+        return template.newInstaller(BuildGoal.IMAGE, methodHandle);
     }
 
     /** {@inheritDoc} */
@@ -63,7 +76,7 @@ public final class PackedApplicationRepository<H extends ApplicationHandle<?, ?>
 
     /** {@inheritDoc} */
     @Override
-    public Set<ApplicationTemplate<?>> templates() {
-        return templates.keySet();
+    public ApplicationTemplate<?, H> template() {
+        return template;
     }
 }

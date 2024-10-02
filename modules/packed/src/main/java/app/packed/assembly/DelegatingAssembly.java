@@ -49,7 +49,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
 
     /** {@inheritDoc} */
     @Override
-    AssemblySetup build(@Nullable PackedApplicationInstaller<?> applicationInstaller, PackedContainerInstaller containerInstaller) {
+    AssemblySetup build(@Nullable PackedApplicationInstaller<?> applicationInstaller, PackedContainerInstaller<?> containerInstaller) {
         // Treat it as parent assembly?? Nah we have an Assembly instance. Anyone can get a hold of one.
         AssemblyModel.of(getClass()); // Check that this assembly does not use AssemblyHooks
         // Maybe allow if opens or same module
@@ -83,7 +83,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
     // If you want to apply a transformation to an assembly. You must have open access
     protected abstract Assembly delegateTo();
 
-    Assembly extractAssembly(PackedContainerInstaller containerBuilder) {
+    Assembly extractAssembly(PackedContainerInstaller<?> containerBuilder) {
         AssemblyModel.of(getClass()); // Check that this assembly does not use AssemblyHooks
 
         // Problem with relying on StackOverflowException is that you cannot really what assembly
@@ -134,7 +134,6 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
 //        throw new UnsupportedOperationException();
 //    }
 
-
     // Lidt nederen at de nok vil staa som public methods paa subclasses. Maaske flyt tilbage til build hook
 
     // Alternativ er der en applyLast() metode paa Applicator
@@ -171,7 +170,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
 
         /** {@inheritDoc} */
         @Override
-        AssemblySetup build(@Nullable PackedApplicationInstaller<?> applicationInstaller, PackedContainerInstaller containerBuilder) {
+        AssemblySetup build(@Nullable PackedApplicationInstaller<?> applicationInstaller, PackedContainerInstaller<?> containerBuilder) {
             containerBuilder.processBuildWirelets(wirelets);
             return assembly.build(applicationInstaller, containerBuilder);
         }
@@ -184,7 +183,7 @@ public non-sealed abstract class DelegatingAssembly extends Assembly {
 
         /** {@inheritDoc} */
         @Override
-        Assembly extractAssembly(PackedContainerInstaller containerBuilder) {
+        Assembly extractAssembly(PackedContainerInstaller<?> containerBuilder) {
             containerBuilder.processBuildWirelets(wirelets);
             return super.extractAssembly(containerBuilder);
         }

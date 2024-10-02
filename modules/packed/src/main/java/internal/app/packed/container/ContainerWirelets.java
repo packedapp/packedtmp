@@ -40,12 +40,14 @@ public class ContainerWirelets {
         /** {@inheritDoc} */
         @Override
         public void onImageLaunch(ContainerSetup c, ApplicationLaunchContext ic) {
-            ic.name = name;
+            // Don't know if we have the context of runnable names
+            throw new UnsupportedOperationException();
+            //ic.name = name;
         }
 
         /** {@inheritDoc} */
         @Override
-        public void onBuild(PackedContainerInstaller installer) {
+        public void onBuild(PackedContainerInstaller<?> installer) {
             installer.nameFromWirelet = name;// has already been validated
         }
     }

@@ -18,12 +18,14 @@ package internal.app.packed.application;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationTemplate;
+import app.packed.application.ApplicationTemplate.Installer;
 import app.packed.build.BuildGoal;
 
 /**
@@ -31,40 +33,37 @@ import app.packed.build.BuildGoal;
  */
 public final class BuildApplicationRepository {
 
-    private final Map<String, Fut> buildThese = new HashMap<>();
+    private final ArrayList<Consumer<? super ApplicationTemplate.Installer<?>>> children = new ArrayList<>();
 
     final Map<String, ApplicationHandle<?, ?>> handles = new HashMap<>();
 
-    final HashMap<ApplicationTemplate<?>, MethodHandle> ms = new HashMap<>();
+    MethodHandle mh;
+
+    public final PackedApplicationTemplate<?, ?> template;
+
+    /**
+     * @param t
+     */
+    public BuildApplicationRepository(PackedApplicationTemplate<?, ?> template) {
+        this.template = requireNonNull(template);
+    }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <H extends ApplicationHandle<?, A>, A> void add(PackedApplicationTemplate<A> template, String name,
-            Function<? super ApplicationTemplate.Installer<A>, H> installer) {
-        buildThese.putIfAbsent(name, new Fut(template, name, (Function) installer));
+    public <H extends ApplicationHandle<?, ?>> void add(Consumer<? super ApplicationTemplate.Installer<H>> installer) {
+        children.add((Consumer) installer);
     }
 
     public void build() {
-        for (Fut fut : buildThese.values()) {
-
-            PackedApplicationInstaller<?> pai = fut.template.newInstaller(BuildGoal.IMAGE);
-            pai.launcher = requireNonNull(ms.get(fut.template));
-            pai.bar = this;
-
-            Function<? super ApplicationTemplate.Installer<?>, ? extends ApplicationHandle<?, ?>> handleFactory = fut.installer;
-
-            ApplicationHandle<?, ?> h = handleFactory.apply(pai);
-
-            handles.put(fut.name, h);
+        for (Consumer<? super Installer<?>> con : children) {
+            PackedApplicationInstaller<?> installer = template.newInstaller(BuildGoal.IMAGE, mh);
+            con.accept(installer);
+            // TODO check that install has been invoked
+            handles.put(installer.name, installer.toHandle().handle());
         }
     }
 
-    Map<String, ApplicationHandle<?, ?>> forInit() {
-        return handles;
+    public void onCodeGenerated(MethodHandle mh) {
+        this.mh = requireNonNull(mh);
     }
 
-    public void onLauncherBuild(ApplicationTemplate<?> template, MethodHandle mh) {
-        ms.put(template, mh);
-    }
-
-    private record Fut(PackedApplicationTemplate<?> template, String name, Function<? super ApplicationTemplate.Installer<?>, ? extends ApplicationHandle<?, ?>> installer) {}
 }

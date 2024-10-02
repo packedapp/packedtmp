@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.application.repository;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
+import app.packed.application.ApplicationHandle;
+import app.packed.application.ApplicationTemplate;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BaseExtensionPoint;
 import internal.app.packed.application.PackedApplicationRepository;
 import internal.app.packed.extension.ExtensionSetup;
 
 /**
- * An application repository can be used to install child applications at runtime.
+ * An application repository that can be used to install applications at runtime or retrieve applications that were
+ * installed at build-time.
  * <p>
  * For now, we don't track instances here. We need some else for this
  */
@@ -33,12 +35,18 @@ public sealed interface ApplicationRepository<H extends ApplicationHandle<?, ?>>
 
     Optional<H> get(String name);
 
-    /** {@return whether or not applications can be added or removed from the repository} */
-    default boolean isReadOnly() {
-        return true;
-    }
+    /**
+     * Creates an installer for a new application based on {@link #template()}.
+     *
+     * @return an installer for a new application
+     */
+    ApplicationTemplate.Installer<H> newApplication();
 
-    /** {@return the number of installed applications.} */
+    /**
+     * {@return the number of installed applications}
+     * <p>
+     * This may include application that are in the process of being installed
+     */
     int size();
 
     /**
@@ -47,15 +55,9 @@ public sealed interface ApplicationRepository<H extends ApplicationHandle<?, ?>>
      */
     Stream<H> stream();
 
-    /**
-     * {@return the templates that are available at runtime}
-     * <p>
-     * Attempting to install a new application with an application template that is not in returned set will fail with a
-     * build exception.
-     *
-     * @see ApplicationRepositoryConfiguration#addRuntimeTemplate(ApplicationTemplate)
-     */
-    Set<ApplicationTemplate<?>> templates();
+    /** {@return the template that is used for all applications in this repository} */
+    // Don't know if we want this...
+    ApplicationTemplate<?, H> template();
 
     // An application can be, NA, INSTALLING, AVAILABLE
     // Don't know if we at runtime
@@ -63,11 +65,12 @@ public sealed interface ApplicationRepository<H extends ApplicationHandle<?, ?>>
 
     // boolean availableAtRuntime
 
-    static <A, H extends ApplicationHandle<?, A>> ApplicationRepositoryConfiguration<H, A> install(BaseExtensionPoint point) {
-        throw new UnsupportedOperationException();
+    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<A, H> install(ApplicationTemplate<A, H> template,
+            BaseExtension extension) {
+        return ApplicationRepositoryHandle.install(template, ExtensionSetup.crack(extension), ExtensionSetup.crack(extension).container.assembly);
     }
 
-    static <A, H extends ApplicationHandle<?, A>> ApplicationRepositoryConfiguration<H, A> install(Class<H> handleType, BaseExtension extension) {
-        return ApplicationRepositoryHandle.install(ExtensionSetup.crack(extension), ExtensionSetup.crack(extension).container.assembly);
+    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<A, H> install(BaseExtensionPoint point) {
+        throw new UnsupportedOperationException();
     }
 }

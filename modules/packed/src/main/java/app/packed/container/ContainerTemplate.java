@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
@@ -43,19 +42,7 @@ import sandbox.extension.context.ContextSpanKind;
  *
  * @see app.packed.extension.BaseExtensionPoint#newContainer(ContainerTemplate)
  */
-public sealed interface ContainerTemplate permits PackedContainerTemplate {
-
-
-    // The issue here is that the application can get an instance of ContainerHandle
-    // For example, by setting it in a ThreadLocal...
-    // Alternative would be that you could have some ContainerMirror, ContainerFiguration methods
-    // But these also take a handle...
-    // Okay so If Application can decide configuration/mirror -> Then it has access to a ContainerHandle
-    // Which is probably okay
-    /** {@return the handle factory used for the root container of the application. */
-    default Function<? super ContainerTemplate.Installer, ? extends ContainerHandle<?>> rootContainerHandleFactory() {
-        return ContainerHandle::new;
-    }
+public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits PackedContainerTemplate {
 
     /**
      * A base template for a container that has the same lifetime as its parent container.
@@ -65,7 +52,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
      * <p>
      * This template does not support carrier objects. (or do we??)
      */
-    ContainerTemplate DEFAULT = new PackedContainerTemplate(PackedContainerKind.PARENT_LIFETIME);
+    ContainerTemplate<?> DEFAULT = new PackedContainerTemplate<>(PackedContainerKind.PARENT_LIFETIME);
 
     /**
      * A container template representing a container that exists solely within a single entry point operation.
@@ -81,30 +68,47 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
      * @see app.packed.extension.BeanElement.BeanMethod#newLifetimeOperation(ContainerHandle)
      * @see app.packed.extension.bean.BeanTemplate#Z_FROM_OPERATION
      **/
-    ContainerTemplate GATEWAY = new PackedContainerTemplate(PackedContainerKind.GATEWAY);
-
-    /**
-     * A template for a container that is lazily created.
-     * <p>
-     * The template has no {@link #lifetimeOperations() lifetime operations} as the container is automatically created
-     * whenever it is needed by the runtime.
-     */
-    ContainerTemplate LAZY = new PackedContainerTemplate(PackedContainerKind.LAZY);
+    ContainerTemplate<?> GATEWAY = new PackedContainerTemplate<>(PackedContainerKind.GATEWAY);
 
     // Cannot have managed on unmanaged
-    ContainerTemplate MANAGED = new PackedContainerTemplate(PackedContainerKind.MANAGED);
+    ContainerTemplate<?> MANAGED = new PackedContainerTemplate<>(PackedContainerKind.MANAGED);
+
+//    /**
+//     * A template for a container that is lazily created.
+//     * <p>
+//     * The template has no {@link #lifetimeOperations() lifetime operations} as the container is automatically created
+//     * whenever it is needed by the runtime.
+//     */
+//    ContainerTemplate LAZY = new PackedContainerTemplate(PackedContainerKind.LAZY);
 
     // Carefull with Unmanaged on Managed
-    ContainerTemplate UNMANAGED = new PackedContainerTemplate(PackedContainerKind.UNMANAGED);
+    ContainerTemplate<?> UNMANAGED = new PackedContainerTemplate<>(PackedContainerKind.UNMANAGED);
 
     ContainerTemplate.Descriptor descriptor();
 
-    ContainerTemplate reconfigure(Consumer<? super Configurator> configure);
+    ContainerTemplate<?> reconfigure(Consumer<? super Configurator> configure);
+
+    // The issue here is that the application can get an instance of ContainerHandle
+    // For example, by setting it in a ThreadLocal...
+    // Alternative would be that you could have some ContainerMirror, ContainerFiguration methods
+    // But these also take a handle...
+    // Okay so If Application can decide configuration/mirror -> Then it has access to a ContainerHandle
+    // Which is probably okay
+//    /** {@return the handle factory used for the root container of the application. */
+//    default Function<? super ContainerTemplate.Installer, ? extends ContainerHandle<?>> rootContainerHandleFactory() {
+//        return ContainerHandle::new;
+//    }
 
     public interface Configurator {
 
-        // Maybe put it on ContainerTemplate.
-        default Configurator configureRootContainerHandleFactory(Function<? super ContainerTemplate.Installer, ? extends ContainerHandle<?>> handleFactory) {
+        default <T> Configurator carrierProvideConstant(Class<T> key, T arg) {
+            return carrierProvideConstant(Key.of(key), arg);
+        }
+
+        /**
+         * @see FromLifetimeChannel
+         */
+        default <T> Configurator carrierProvideConstant(Key<T> key, T arg) {
             throw new UnsupportedOperationException();
         }
 
@@ -117,16 +121,10 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          */
         Configurator componentTag(String... tags);
 
-        default <T> Configurator carrierProvideConstant(Class<T> key, T arg) {
-            return carrierProvideConstant(Key.of(key), arg);
-        }
-
-        /**
-         * @see FromLifetimeChannel
-         */
-        default <T> Configurator carrierProvideConstant(Key<T> key, T arg) {
-            throw new UnsupportedOperationException();
-        }
+//        // Maybe put it on ContainerTemplate.
+//        default Configurator configureRootContainerHandleFactory(Function<? super ContainerTemplate.Installer<?>, ? extends ContainerHandle<?>> handleFactory) {
+//            throw new UnsupportedOperationException();
+//        }
 
 //        /**
 //         * Creates a new template that We need to set the holder type. Otherwise we cannot calculate
@@ -189,9 +187,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
      * @see BaseExtensionPoint#beanInstallerForExtension(app.packed.extension.bean.BeanTemplate,
      *      app.packed.extension.ExtensionPoint.UseSite)
      */
-    sealed interface Installer permits PackedContainerInstaller {
-
-        Installer componentTag(String... tags);
+    sealed interface Installer<H extends ContainerHandle<?>> permits PackedContainerInstaller {
 
         /**
          * Provides constants per Carrier Instance for this particular container builder
@@ -203,14 +199,16 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          *
          * @see ExtensionLink#ofConstant(Class, Object)
          */
-        default <T> Installer carrierProvideConstant(Class<T> key, T constant) {
+        default <T> Installer<H> carrierProvideConstant(Class<T> key, T constant) {
             return carrierProvideConstant(Key.of(key), constant);
         }
 
         /**
          * @see FromLifetimeChannel
          */
-        <T> Installer carrierProvideConstant(Key<T> key, T constant);
+        <T> Installer<H> carrierProvideConstant(Key<T> key, T constant);
+
+        Installer<H> componentTag(String... tags);
 
         /**
          *
@@ -257,7 +255,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          *
          * @see #build(Wirelet...)
          */
-        <H extends ContainerHandle<?>> H install(Assembly assembly, Function<? super ContainerTemplate.Installer, H> factory, Wirelet... wirelets);
+        H install(Assembly assembly, Wirelet... wirelets);
 
         /**
          * Creates a new configurable container.
@@ -268,7 +266,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          *
          * @see #install(Assembly, Wirelet...)
          */
-        <H extends ContainerHandle<?>> H install(Function<? super ContainerTemplate.Installer, H> factory, Wirelet... wirelets);
+        H install(Wirelet... wirelets);
 
         /**
          * Creates the new container and adds this extension to the new container.
@@ -279,7 +277,21 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          *
          * @see app.packed.extension.Extension#fromHandle(ContainerHandle)
          */
-        <H extends ContainerHandle<?>> H installAndUseThisExtension(Function<? super ContainerTemplate.Installer, H> factory, Wirelet... wirelets);
+        H installAndUseThisExtension(Wirelet... wirelets);
+
+        /**
+         * <p>
+         * TODO: How do we handle conflicts? I don't think we should fail
+         * <p>
+         * TODO This is probably overridable by Wirelet.named()
+         * <p>
+         * Beans not-capitalized? Containers capitalized
+         *
+         * @param name
+         *            the name of the container
+         * @return this builder
+         */
+        Installer<H> named(String name);
 
         /**
          * Sets the value of the specified container local for the container being built.
@@ -294,21 +306,7 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
          */
         // Do we allow non-container scope??? I don't think so
         // initializeLocalWith??
-        <T> Installer setLocal(ContainerBuildLocal<T> containerLocal, T value);
-
-        /**
-         * <p>
-         * TODO: How do we handle conflicts? I don't think we should fail
-         * <p>
-         * TODO This is probably overridable by Wirelet.named()
-         * <p>
-         * Beans not-capitalized? Containers capitalized
-         *
-         * @param name
-         *            the name of the container
-         * @return this builder
-         */
-        Installer named(String name);
+        <T> Installer<H> setLocal(ContainerBuildLocal<T> containerLocal, T value);
 
     }
 
@@ -330,7 +328,7 @@ interface Zandbox {
     // BeanSpan not supported
     // OperationSpan I will have to think about that
 
-    default ContainerTemplate allowRuntimeWirelets() {
+    default ContainerTemplate<?> allowRuntimeWirelets() {
         throw new UnsupportedOperationException();
     }
     // context either from args which are then stored
@@ -342,7 +340,7 @@ interface Zandbox {
     // Contexts?
     Optional<Class<? extends Extension<?>>> installedBy();
 
-    ContainerTemplate installedBy(Class<? extends Extension<?>> installedBy);
+    ContainerTemplate<?> installedBy(Class<? extends Extension<?>> installedBy);
 }
 //Hvis man har initialization kontekst saa bliver de noedt til ogsaa noedt til
 //kun at vaere parametere i initialzation. Vi kan ikke sige naa jaa de er ogsaa

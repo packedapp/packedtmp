@@ -18,6 +18,7 @@ package app.packed.component.guest;
 import java.util.HashMap;
 import java.util.Map;
 
+import app.packed.application.ApplicationTemplate;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.binding.Key;
 import app.packed.extension.BaseExtensionPoint;
@@ -44,15 +45,10 @@ public class ComponentHostConfiguration<T> extends InstanceBeanConfiguration<T> 
         super(handle);
     }
 
-    public ComponentHostConfiguration<T> addLink(BeanGuestLink linker) {
-        return this;
-    }
 
-    public ComponentHostConfiguration<T> addLink(ContainerGuestLink linker) {
-        return this;
-    }
-
-    public static <T> ComponentHostConfiguration<T> installApplicationHost(BaseExtensionPoint extensionPoint, Class<T> beanClass) {
+    // Fungere ikke... Hvad goer vi med det vi bygger nu
+    public static <T> ComponentHostConfiguration<T> installApplicationHost(ApplicationTemplate<?, ?> template, BaseExtensionPoint extensionPoint,
+            Class<T> beanClass) {
         throw new UnsupportedOperationException();
     }
 

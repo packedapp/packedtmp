@@ -19,13 +19,10 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Optional;
 
 import app.packed.bean.BeanTrigger.AnnotatedMethodBeanTrigger;
-import app.packed.context.Context;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.OperationDependencyOrder;
-import app.packed.runtime.StopInfo;
 
 /**
  * Indicates that the annotated method should be invoked as part of the targeted bean's initialization.
@@ -80,33 +77,33 @@ public @interface OnInitialize {
 }
 
 
-/**
- *
- */
-// Ogsaa tilgaengelig fra factory, constructor.
-
-// Den kan ikke rigtig noget. Maaske vi bare skal droppe den
-interface BeanInitializationContext extends Context<BaseExtension> {
-
-    /**
-     * @return
-     */
-    boolean isManaged();
-
-    /**
-     * @param action
-     * @throws if
-     *             already late
-     */
-    void runAfterDependencies(Runnable action);
-
-    // still not convinced
-    void runOnInitializationFailure(Runnable action);
-
-    // Den giver ingen mening vil jeg mene.
-    // Er det kun for application's lifetimen?
-    // Skal vel ikke have den for entity bean?
-    // For 3 timer siden genstartede applicationen
-    // Tror vi maa konfiguere applicationen til at gemme det
-    Optional<StopInfo> restartedFrom();
-}
+///**
+// *
+// */
+//// Ogsaa tilgaengelig fra factory, constructor.
+//
+//// Den kan ikke rigtig noget. Maaske vi bare skal droppe den
+//interface BeanInitializationContext extends Context<BaseExtension> {
+//
+//    /**
+//     * @return
+//     */
+//    boolean isManaged();
+//
+//    /**
+//     * @param action
+//     * @throws if
+//     *             already late
+//     */
+//    void runAfterDependencies(Runnable action);
+//
+//    // still not convinced
+//    void runOnInitializationFailure(Runnable action);
+//
+//    // Den giver ingen mening vil jeg mene.
+//    // Er det kun for application's lifetimen?
+//    // Skal vel ikke have den for entity bean?
+//    // For 3 timer siden genstartede applicationen
+//    // Tror vi maa konfiguere applicationen til at gemme det
+//    Optional<StopInfo> restartedFrom();
+//}

@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.application.repository;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
+import app.packed.application.ApplicationHandle;
+import app.packed.application.ApplicationTemplate;
 import app.packed.binding.Key;
 import app.packed.service.ProvidableBeanConfiguration;
-import internal.app.packed.application.PackedApplicationTemplate;
 
 /**
  *
@@ -36,59 +35,53 @@ import internal.app.packed.application.PackedApplicationTemplate;
 // I don't know don't we always??
 
 // Maybe we don't extend it ServiableBean and have a provideAtRuntime();
-public final class ApplicationRepositoryConfiguration<H extends ApplicationHandle<?, A>, A> extends ProvidableBeanConfiguration<ApplicationRepository<H>> {
+public final class ApplicationRepositoryConfiguration<A, H extends ApplicationHandle<A, ?>> extends ProvidableBeanConfiguration<ApplicationRepository<H>> {
 
     /** The application repository bean handle. */
-    final ApplicationRepositoryHandle<H, A> handle;
+    final ApplicationRepositoryHandle<A, H> handle;
 
     /**
      * @param handle
      *            the bean's handle
      */
-    ApplicationRepositoryConfiguration(ApplicationRepositoryHandle<H, A> handle) {
+    ApplicationRepositoryConfiguration(ApplicationRepositoryHandle<A, H> handle) {
         super(handle);
         this.handle = handle;
-    }
-
-    /**
-     * Make the specified application template available at runtime
-     *
-     * @param template
-     *            the template to add
-     */
-    public void addRuntimeTemplate(ApplicationTemplate<A> template) {
-        handle.addTemplate((PackedApplicationTemplate<?>) template);
     }
 
     // Okay, vi har elastic search in an Assembly. Byg den
     // Expose some services. Og vi har nok en masse shared services.
     // Tror ikke helt vi er klar
 
-    public void buildDependecy(ApplicationTemplate<A> template, String name, Function<? super ApplicationTemplate.Installer<A>, H> installer) {
-        addRuntimeTemplate(template);
-        handle.repository.add((PackedApplicationTemplate<A>) template, name, installer);
+    public void buildDependecy(Consumer<? super ApplicationTemplate.Installer<H>> installer) {
+        handle.repository.add(installer);
     }
 
-    public void buildLater(ApplicationTemplate<A> template, String name, Function<? super ApplicationTemplate.Installer<A>, H> installer) {
-        addRuntimeTemplate(template);
-        handle.repository.add((PackedApplicationTemplate<A>) template, name, installer);
+    // Name should be on the installer.
+    // And generated if left out
+    /**
+     * @param installer
+     *            a consumer that performs the actual installation of the application
+     */
+    public void installChildApplication(Consumer<? super ApplicationTemplate.Installer<H>> installer) {
+        handle.repository.add(installer);
     }
 
     @Override
-    public ProvidableBeanConfiguration<ApplicationRepository<H>> provideAs(Class<? super ApplicationRepository<H>> key) {
+    public ApplicationRepositoryConfiguration<A, H> provideAs(Class<? super ApplicationRepository<H>> key) {
         super.provideAs(key);
         return this;
     }
 
     @Override
-    public ProvidableBeanConfiguration<ApplicationRepository<H>> provideAs(Key<? super ApplicationRepository<H>> key) {
+    public ApplicationRepositoryConfiguration<A, H> provideAs(Key<? super ApplicationRepository<H>> key) {
         super.provideAs(key);
         return this;
     }
 
     /** {@return the templates that are available in the repository) */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Set<ApplicationTemplate<A>> templates() {
-        return (Set) Collections.unmodifiableSet(handle.templates.keySet());
+    @SuppressWarnings("unchecked")
+    public ApplicationTemplate<A, H> template() {
+        return (ApplicationTemplate<A, H>) handle.repository.template;
     }
 }

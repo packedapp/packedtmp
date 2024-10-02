@@ -93,7 +93,7 @@ public non-sealed abstract class BuildableAssembly extends Assembly {
 
     /** {@inheritDoc} */
     @Override
-    AssemblySetup build(PackedApplicationInstaller<?> applicationInstaller,PackedContainerInstaller installer) {
+    AssemblySetup build(PackedApplicationInstaller<?> applicationInstaller, PackedContainerInstaller<?> installer) {
         AssemblyConfiguration existing = configuration;
         if (existing == null) { // assembly has not been used in a build process before
             AssemblySetup assembly = AssemblySetup.newAssembly(installer, this);

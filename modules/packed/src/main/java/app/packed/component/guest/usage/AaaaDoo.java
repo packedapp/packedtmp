@@ -15,9 +15,11 @@
  */
 package app.packed.component.guest.usage;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import app.packed.application.App;
-import app.packed.application.ApplicationRepository;
-import app.packed.application.ApplicationRepositoryConfiguration;
+import app.packed.application.repository.ApplicationRepository;
+import app.packed.application.repository.ApplicationRepositoryConfiguration;
 import app.packed.assembly.BaseAssembly;
 import app.packed.binding.Key;
 import app.packed.component.guest.usage.GuestBean.GuestApplicationHandle;
@@ -29,28 +31,18 @@ import app.packed.runtime.RunState;
  */
 public class AaaaDoo extends BaseAssembly {
 
+    static AtomicLong al = new AtomicLong();
+
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        ApplicationRepositoryConfiguration<GuestApplicationHandle, GuestBean> c = ApplicationRepository.install(GuestApplicationHandle.class, base());
+        ApplicationRepositoryConfiguration<GuestBean, GuestApplicationHandle> c = ApplicationRepository.install(GuestBean.T, base());
 
         c.provideAs(new Key<ApplicationRepository<GuestApplicationHandle>>() {});
-        c.buildLater(GuestBean.T, "foo", i -> i.install(new SubApplication(), GuestApplicationHandle::new));
-        c.buildLater(GuestBean.T, "foox", i -> i.install(new SubApplication(), GuestApplicationHandle::new));
+        c.installChildApplication(i -> i.named("foo").install(new SubApplication()));
+        c.installChildApplication(i -> i.named("foox").install(new SubApplication()));
 
         install(MyBean.class);
-
-        /// Version 2, hvor man ikke som default installere en bean saa man kan goere noget runtime.
-        // Det eneste problem er hvordan jeg faar fat i applikationer paa runtime
-        // Men maaske kan vi binde
-//        ApplicationRepositoryConfiguration2<GuestApplicationHandle, GuestBean> c2 = ApplicationRepositoryConfiguration2.install(GuestApplicationHandle.class,
-//                base());
-//
-//        c2.installApplicationRepository().provideAs(new Key<ApplicationRepository<GuestApplicationHandle>>() {});
-//        c2.buildLater(GuestBean.T, "foo", i -> i.install(new SubApplication(), GuestApplicationHandle::new));
-//        c2.buildLater(GuestBean.T, "foox", i -> i.install(new SubApplication(), GuestApplicationHandle::new));
-//
-//        install(MyBean.class);
     }
 
     public static void main(String[] args) {
@@ -68,6 +60,11 @@ public class AaaaDoo extends BaseAssembly {
                 }
                 System.out.println("Sub app " + c.mirror().name());
             });
+
+            if (al.incrementAndGet() < 100) {
+                System.out.println(al.get());
+                repository.newApplication().install(new AaaaDoo()).launch(RunState.RUNNING);
+            }
         }
     }
 }

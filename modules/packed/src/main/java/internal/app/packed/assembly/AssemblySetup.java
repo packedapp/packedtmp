@@ -24,7 +24,6 @@ import app.packed.assembly.Assembly;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.assembly.DelegatingAssembly;
 import app.packed.build.BuildActor;
-import app.packed.container.ContainerHandle;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.BuildApplicationRepository;
@@ -89,7 +88,7 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
      * @param assembly
      *            the assembly instance
      */
-    private AssemblySetup(PackedContainerInstaller installer, Assembly assembly) {
+    private AssemblySetup(PackedContainerInstaller<?> installer, Assembly assembly) {
         super(installer.parent == null ? null : installer.parent.assembly, new ArrayList<>());
         assert (!(assembly instanceof DelegatingAssembly));
         this.assembly = assembly;
@@ -219,13 +218,13 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
     }
 
     // Called from Asembly#build
-    public static AssemblySetup newAssembly(PackedContainerInstaller installer, Assembly assembly) {
+    public static AssemblySetup newAssembly(PackedContainerInstaller<?> installer, Assembly assembly) {
         AssemblySetup as = new AssemblySetup(installer, assembly);
         if (installer.parent == null) {
             // This method creates both the application setup and container setup
             as.container = ApplicationSetup.newApplication(installer.applicationInstaller, as).container();
         } else {
-            as.container = ContainerSetup.newContainer(installer, installer.parent.application, as, ContainerHandle::new);
+            as.container = ContainerSetup.newContainer(installer, installer.parent.application, as);
         }
         return as;
     }

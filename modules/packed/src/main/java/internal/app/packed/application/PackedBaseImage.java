@@ -20,14 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+import app.packed.application.ApplicationHandle;
 import app.packed.application.BaseImage;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import internal.app.packed.ValueBased;
 import internal.app.packed.application.deployment.FutureApplicationSetup;
-import internal.app.packed.container.wirelets.CompositeWirelet;
-import internal.app.packed.container.wirelets.WireletSelectionArray;
-import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /** Various implementations of {@link BaseImage} */
 public sealed interface PackedBaseImage<A> extends BaseImage<A> {
@@ -62,10 +60,6 @@ public sealed interface PackedBaseImage<A> extends BaseImage<A> {
             this(new AtomicReference<>(image));
         }
 
-        public ImageNonReusable(PackedApplicationTemplate<?> template, ApplicationSetup application) {
-            this(new AtomicReference<>(new ImageEager<>(application)));
-        }
-
         /** {@inheritDoc} */
         @Override
         public A launch(RunState state, Wirelet... wirelets) {
@@ -84,41 +78,24 @@ public sealed interface PackedBaseImage<A> extends BaseImage<A> {
      * Implementation of {@link ApplicationLauncher} used by {@link OldBootstrapApp#newImage(Assembly, Wirelet...)}.
      */
     @ValueBased
-    public /* value */ record ImageEager<A>(ApplicationSetup application) implements PackedBaseImage<A> {
+    public record ImageEager<A>(ApplicationHandle<A, ?> handle) implements PackedBaseImage<A> {
+
+        /** {@inheritDoc} */
+        @Override
+        public A launch(RunState state, Wirelet... wirelets) {
+           return handle.launch(state, wirelets);
+        }
+    }
+
+    @ValueBased
+    public record ImageLazy<A>(PackedApplicationTemplate<A, ?> template, FutureApplicationSetup application) implements PackedBaseImage<A> {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
         public A launch(RunState state, Wirelet... wirelets) {
-            requireNonNull(wirelets, "wirelets is null");
-
-            // If launching an image, the user might have specified additional runtime wirelets
-            WireletSelectionArray<?> wrapper = null;
-            if (wirelets.length > 0) {
-                wrapper = WireletSelectionArray.of(CompositeWirelet.flattenAll(wirelets));
-            }
-            ApplicationLaunchContext aic = ApplicationLaunchContext.launch(state, application, wrapper);
-
-            return (A) application.template.newHolder(aic);
-        }
-    }
-
-    @ValueBased
-    public record ImageLazy<A>(PackedApplicationTemplate<A> template, FutureApplicationSetup application) implements PackedBaseImage<A> {
-
-        /** {@inheritDoc} */
-        @Override
-        public A launch(RunState state, Wirelet... wirelets) {
-            requireNonNull(wirelets, "wirelets is null");
-
-            // If launching an image, the user might have specified additional runtime wirelets
-            WireletSelectionArray<?> wrapper = null;
-            if (wirelets.length > 0) {
-                wrapper = WireletSelectionArray.of(CompositeWirelet.flattenAll(wirelets));
-            }
-            ApplicationLaunchContext aic = ApplicationLaunchContext.launch(state, application.lazyBuild(), wrapper);
-
-            return template.newHolder(aic);
+            ApplicationHandle<?, ?> ah = application.lazyBuild().handle();
+            return (A) ah.launch(state, wirelets);
         }
     }
 }

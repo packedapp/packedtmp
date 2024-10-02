@@ -15,49 +15,43 @@
  */
 package internal.app.packed.lifetime.runtime;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
-import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
-import app.packed.container.Wirelet;
 import app.packed.context.Context;
 import app.packed.context.ContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.runtime.ManagedLifecycle;
-import app.packed.runtime.RunState;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.container.wirelets.InternalBuildWirelet;
 import internal.app.packed.container.wirelets.WireletSelectionArray;
 
 /**
  * A temporary context object that is created whenever we launch an application.
  */
 @ContextualServiceProvider(extension = BaseExtension.class)
+// Wait a bit with transforming this class to a record.
+// We might have some mutable fields such as name
 public final class ApplicationLaunchContext implements Context<BaseExtension> {
+
     public static final MethodHandle EMPTY_MH = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
+
     /** The configuration of the application we are launching. */
     public final ApplicationSetup application;
 
     public final ContainerRunner runner;
 
-    /** The name of the application. May be overridden via {@link Wirelet#named(String)} if image. */
-    public String name;
-
     /** Wirelets specified if instantiating an image. */
     @Nullable
     private final WireletSelectionArray<?> wirelets;
 
-    private ApplicationLaunchContext(ApplicationSetup application, WireletSelectionArray<?> wirelets) {
+    public ApplicationLaunchContext(ContainerRunner runner, ApplicationSetup application, WireletSelectionArray<?> wirelets) {
         this.application = application;
         this.wirelets = wirelets;
-        this.name = requireNonNull(application.container().name());
-        this.runner = new ContainerRunner(application);
+        this.runner = runner;
     }
 
     public ApplicationMirror mirror() {
@@ -66,7 +60,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
 
     /** {@return the name of the application} */
     public String name() {
-        return name;
+        return application.container().name();
     }
 
     ManagedLifecycle runtime() {
@@ -85,40 +79,35 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
     public ServiceLocator serviceLocator() {
         return application.container().servicesMain().newExportedServiceLocator(runner.pool());
     }
-
-    /**
-     * Launches the application. Either directly or from an image
-     *
-     * @param <A>
-     *            the type of application shell
-     * @param driver
-     *            the driver of the application.
-     * @param application
-     *            the application we are launching
-     * @param wirelets
-     *            optional wirelets is always null if not launched from an image
-     * @return the application instance
-     */
-    public static ApplicationLaunchContext launch(RunState state, ApplicationHandle<?, ?> handle, @Nullable WireletSelectionArray<?> wirelets) {
-        ApplicationSetup application = ApplicationSetup.crack(handle);
-        return launch(state, application, wirelets);
-    }
-
-    public static ApplicationLaunchContext launch(RunState state, ApplicationSetup application, @Nullable WireletSelectionArray<?> wirelets) {
-        // Create a launch context
-        ApplicationLaunchContext context = new ApplicationLaunchContext(application, wirelets);
-
-        // Apply all internal wirelets
-        if (wirelets != null) {
-            for (Wirelet w : wirelets) {
-                if (w instanceof InternalBuildWirelet iw) {
-                    iw.onImageLaunch(application.container(), context);
-                }
-            }
-        }
-
-        context.runner.run(state);
-
-        return context;
-    }
+//
+//    /**
+//     * Launches the application. Either directly or from an image
+//     *
+//     * @param <A>
+//     *            the type of application shell
+//     * @param driver
+//     *            the driver of the application.
+//     * @param application
+//     *            the application we are launching
+//     * @param wirelets
+//     *            optional wirelets is always null if not launched from an image
+//     * @return the application instance
+//     */
+//    public static ApplicationLaunchContext newLaunchContext(RunState state, ApplicationSetup application, @Nullable WireletSelectionArray<?> wirelets) {
+//        // Create a launch context
+//        ApplicationLaunchContext context = new ApplicationLaunchContext(application, wirelets);
+//
+//        // Apply all internal wirelets
+//        if (wirelets != null) {
+//            for (Wirelet w : wirelets) {
+//                if (w instanceof InternalBuildWirelet iw) {
+//                    iw.onImageLaunch(application.container(), context);
+//                }
+//            }
+//        }
+//
+//        context.runner.run(state);
+//
+//        return context;
+//    }
 }

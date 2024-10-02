@@ -42,13 +42,13 @@ public final class FutureApplicationSetup {
     /** The result of a successful application build. */
     private volatile ApplicationSetup application;
 
-    final PackedContainerInstaller parent;
+    final PackedContainerInstaller<?> parent;
 
     /** A task for building the application. */
     private final FutureTask<ApplicationSetup> buildTask;
 
     // IDK vi skal nok have en specielt builder
-    public FutureApplicationSetup(PackedContainerInstaller parent, Assembly assembly) {
+    public FutureApplicationSetup(PackedContainerInstaller<?> parent, Assembly assembly) {
         this.parent = parent;
 
         Callable<ApplicationSetup> c = () -> {

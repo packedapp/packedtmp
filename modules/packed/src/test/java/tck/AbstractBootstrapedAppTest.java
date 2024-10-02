@@ -15,11 +15,11 @@
  */
 package tck;
 
-import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -40,8 +40,6 @@ import app.packed.runtime.RunState;
 import app.packed.service.ProvidableBeanConfiguration;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationTemplate;
-import internal.app.packed.container.wirelets.WireletSelectionArray;
-import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import tck.AbstractAppTest.InternalTestState.State3Build;
 
 /**
@@ -49,15 +47,8 @@ import tck.AbstractAppTest.InternalTestState.State3Build;
  */
 public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
 
-    /** The app that we are testing. */
-    final BootstrapApp<A> app;
-
-    /** The internals of a BootstrapApp. */
-    private final BootstrapAppInternals internals;
-
     protected AbstractBootstrapedAppTest(BootstrapApp<A> app) {
-        this.app = requireNonNull(app);
-        this.internals = BootstrapAppInternals.extractInternals(app);
+        super(app);
     }
 
     @Override
@@ -102,12 +93,14 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         State3Build b = stateBuild();
         ApplicationSetup as = b.application;
 
+        A app = (A) as.handle().launch(RunState.TERMINATED, wirelets);
         // Right now we do not support runtime wirelets
-        ApplicationLaunchContext alc = ApplicationLaunchContext.launch(RunState.TERMINATED, as, WireletSelectionArray.of(wirelets));
-
-        A app = (A) internals.template.newHolder(alc);
+//        ApplicationLaunchContext alc = ApplicationLaunchContext.launch(RunState.TERMINATED, as, WireletSelectionArray.of(wirelets));
+//
+//        A app = (A) alc.newHolder(internals.launcher);
         b.app = app;
         return app;
+//        return requireNonNull(app);
     }
 
     protected final void link(String name, Assembly assembly, Wirelet... wirelets) {
@@ -170,7 +163,7 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
     }
 
     /** Used for extracting the internal configuration of BootstrapApp. */
-    record BootstrapAppInternals(PackedApplicationTemplate<?> template) {
+    record BootstrapAppInternals(PackedApplicationTemplate<?, ?> template, MethodHandle launcher) {
 
         /**
          * Create a new application interface using the specified launch context.
@@ -197,7 +190,7 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         public static BootstrapAppInternals extractInternals(BootstrapApp<?> app) {
             try {
 //                Object holder = read(app, "setup");
-                return new BootstrapAppInternals(read(app, "template"));
+                return new BootstrapAppInternals(read(app, "template"), read(app, "launcher"));
             } catch (ReflectiveOperationException e) {
                 throw new AssertionError(e);
             }

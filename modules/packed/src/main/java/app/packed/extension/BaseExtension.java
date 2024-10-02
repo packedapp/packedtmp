@@ -6,7 +6,6 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.Assembly;
@@ -38,10 +37,13 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.context.Context;
+import app.packed.context.ContextTemplate;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.lifecycle.OnInitialize;
 import app.packed.lifecycle.OnStart;
+import app.packed.lifecycle.OnStartContext;
 import app.packed.lifecycle.OnStop;
+import app.packed.lifecycle.OnStopContext;
 import app.packed.lifetime.Main;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
@@ -297,7 +299,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      */
     // Why not on ContainerConfiguration. Think because I wanted to keep it clean
     public void link(String name, Assembly assembly, Wirelet... wirelets) {
-        link0().named(name).install(assembly, ContainerHandle::new, wirelets);
+        link0().named(name).install(assembly, wirelets);
     }
 
     /**
@@ -309,13 +311,13 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      */
     // addContainer??? Yeah it is not linked
     public ContainerConfiguration link(Wirelet... wirelets) {
-        ContainerHandle<?> handle = link0().install(ContainerHandle::new, wirelets);
+        ContainerHandle<?> handle = link0().install(wirelets);
         return handle.configuration();
     }
 
     /** {@return a new container builder used for linking.} */
-    private ContainerTemplate.Installer link0() {
-        return PackedContainerInstaller.of((PackedContainerTemplate) ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application,
+    private ContainerTemplate.Installer<?> link0() {
+        return PackedContainerInstaller.of((PackedContainerTemplate<?>) ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application,
                 extension.container);
     }
 
@@ -353,6 +355,16 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             /** A template for bean lifecycle operations. */
             private static final OperationTemplate BEAN_LIFECYCLE_TEMPLATE = OperationTemplate.defaults().reconfigure(c -> c.returnIgnore());
+
+            static final ContextTemplate ON_START_CONTEXT_TEMPLATE = ContextTemplate.of(OnStartContext.class, c -> {});
+
+            static final ContextTemplate ON_STOP_CONTEXT_TEMPLATE = ContextTemplate.of(OnStopContext.class, c -> {});
+
+            private static final OperationTemplate BEAN_LIFECYCLE_ON_START_TEMPLATE = OperationTemplate.defaults()
+                    .reconfigure(c -> c.returnIgnore().inContext(ON_START_CONTEXT_TEMPLATE));
+
+            private static final OperationTemplate BEAN_LIFECYCLE_ON_STOP_TEMPLATE = OperationTemplate.defaults()
+                    .reconfigure(c -> c.returnIgnore().inContext(ON_STOP_CONTEXT_TEMPLATE));
 
             /** Handles {@link Inject}. */
             @Override
@@ -394,7 +406,8 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
             }
 
             @Override
-            public void onContextualServiceProvision(Key<?> key, Class<?> actualHook, Set<Class<? extends Context<?>>> contexts,UnwrappedBindableVariable binding) {
+            public void onContextualServiceProvision(Key<?> key, Class<?> actualHook, Set<Class<? extends Context<?>>> contexts,
+                    UnwrappedBindableVariable binding) {
                 Class<?> hook = key.rawType();
                 OperationSetup operation = ((PackedBindableWrappedVariable) binding).var().operation;
 
@@ -409,6 +422,9 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
                 } else if (hook == ComponentHostContext.class) {
                     PackedComponentHostContext c = beanHandle(GuestBeanHandle.class).get().toContext();
                     binding.bindInstance(c);
+                } else if (hook == OnStartContext.class) {
+                    // v.bindInvocationArgument(1);
+                    binding.bindContext(OnStartContext.class);
                 }
 
                 // MIRRORS
@@ -431,13 +447,10 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
                 }
             }
 
-            private <H extends OperationHandle<?>> H checkNotStaticBean(Class<? extends Annotation> annotationType, BeanMethod method,
-                    Function<? super OperationTemplate.Installer, H> factory) {
+            private <H extends OperationHandle<?>> void checkNotStaticBean(Class<? extends Annotation> annotationType) {
                 if (beanKind() == BeanKind.STATIC) {
                     throw new ManagedBeanRequiredException(annotationType + " is not supported for static beans");
                 }
-                // Maybe lifecycle members cannot be static at all
-                return method.newOperation(BEAN_LIFECYCLE_TEMPLATE).install(factory);
             }
 
             /** Handles {@link Inject}, {@link OnInitialize}, {@link OnStart} and {@link OnStop}. */
@@ -446,16 +459,20 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
                 BeanSetup bean = BeanHandlers.invokeBeanIntrospectorBean(this);
 
                 if (annotation instanceof Inject) {
-                    OperationHandle<?> handle = checkNotStaticBean(Inject.class, method, OperationHandle::new);
+                    checkNotStaticBean(Inject.class);
+                    OperationHandle<?> handle = method.newOperation(BEAN_LIFECYCLE_TEMPLATE).install(OperationHandle::new);
                     bean.operations.addLifecycleOperation(BeanLifecycleOrder.INJECT, handle);
                 } else if (annotation instanceof OnInitialize oi) {
-                    OnInitializeOperationHandle handle = checkNotStaticBean(OnInitialize.class, method, i -> new OnInitializeOperationHandle(i, oi));
+                    checkNotStaticBean(OnInitialize.class);
+                    OperationHandle<?> handle = method.newOperation(BEAN_LIFECYCLE_TEMPLATE).install(i -> new OnInitializeOperationHandle(i, oi));
                     bean.operations.addLifecycleOperation(BeanLifecycleOrder.fromInitialize(oi.order()), handle);
                 } else if (annotation instanceof OnStart oi) {
-                    OperationHandle<?> handle = checkNotStaticBean(OnStart.class, method, i -> new OnStartOperationHandle(i, oi));
+                    checkNotStaticBean(OnStart.class);
+                    OperationHandle<?> handle = method.newOperation(BEAN_LIFECYCLE_ON_START_TEMPLATE).install(i -> new OnStartOperationHandle(i, oi));
                     bean.operations.addLifecycleOperation(BeanLifecycleOrder.fromStarting(oi.order()), handle);
                 } else if (annotation instanceof OnStop oi) {
-                    OperationHandle<?> handle = checkNotStaticBean(OnStop.class, method, i -> new OnStopOperationHandle(i, oi));
+                    checkNotStaticBean(OnStop.class);
+                    OperationHandle<?> handle = method.newOperation(BEAN_LIFECYCLE_ON_STOP_TEMPLATE).install(i -> new OnStopOperationHandle(i, oi));
                     bean.operations.addLifecycleOperation(BeanLifecycleOrder.fromStopping(oi.order()), handle);
                 } else if (annotation instanceof Provide) {
                     OperationTemplate temp2 = OperationTemplate.defaults().reconfigure(c -> c.returnType(method.operationType().returnRawType()));

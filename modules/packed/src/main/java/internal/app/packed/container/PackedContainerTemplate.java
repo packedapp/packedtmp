@@ -18,9 +18,11 @@ package internal.app.packed.container;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.binding.Key;
 import app.packed.component.guest.OldContainerTemplateLink;
+import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.context.ContextTemplate;
@@ -32,8 +34,8 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.component.ComponentTagHolder;
 
 /** Implementation of {@link ContainerTemplate}. */
-public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, PackedContainerTemplatePackList links, Class<?> resultType,
-        Set<String> componentTags, LifecycleKind lifecycleKind) implements ContainerTemplate {
+public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContainerKind kind, Class<?> holderClass, PackedContainerTemplatePackList links,
+        Class<?> resultType, Set<String> componentTags, LifecycleKind lifecycleKind) implements ContainerTemplate<H> {
 
     public PackedContainerTemplate(PackedContainerKind kind) {
         this(kind, void.class);
@@ -47,6 +49,11 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
         this(kind, holderClass, links, resultType, Set.of(), LifecycleKind.UNMANAGED);
     }
 
+    @SuppressWarnings("unchecked")
+    public Function<? super ContainerTemplate.Installer<?>, H> handleFactory() {
+        return i -> (H) new ContainerHandle<>(i);
+    }
+
     public LifecycleKind lifecycleKind() {
         if (kind == PackedContainerKind.ROOT_UNMANAGED || kind == PackedContainerKind.UNMANAGED) {
             return LifecycleKind.UNMANAGED;
@@ -54,8 +61,8 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
         return LifecycleKind.MANAGED;
     }
 
-    public PackedContainerInstaller newInstaller(Class<? extends Extension<?>> installedBy, ApplicationSetup application, @Nullable ContainerSetup parent) {
-        PackedContainerInstaller installer = new PackedContainerInstaller(this, null, parent, installedBy);
+    public PackedContainerInstaller<?> newInstaller(Class<? extends Extension<?>> installedBy, ApplicationSetup application, @Nullable ContainerSetup parent) {
+        PackedContainerInstaller<?> installer = new PackedContainerInstaller<>(this, null, parent, installedBy);
 
         for (PackedContainerLink b : installer.template.links().packs) {
             if (b.onUse() != null) {
@@ -67,21 +74,22 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
 
     /** {@inheritDoc} */
     @Override
-    public ContainerTemplate reconfigure(Consumer<? super Configurator> configure) {
+    public ContainerTemplate<H> reconfigure(Consumer<? super Configurator> configure) {
         return configure(this, configure);
     }
 
-    public static PackedContainerTemplate configure(PackedContainerTemplate template, Consumer<? super Configurator> configure) {
-        PackedContainerTemplateConfigurator c = new PackedContainerTemplateConfigurator(template);
+    public static <H extends ContainerHandle<?>> PackedContainerTemplate<H> configure(PackedContainerTemplate<H> template,
+            Consumer<? super Configurator> configure) {
+        PackedContainerTemplateConfigurator<H> c = new PackedContainerTemplateConfigurator<>(template);
         configure.accept(c);
         return c.pbt;
     }
 
-    public final static class PackedContainerTemplateConfigurator implements ContainerTemplate.Configurator {
+    public final static class PackedContainerTemplateConfigurator<H extends ContainerHandle<?>> implements ContainerTemplate.Configurator {
 
-        public PackedContainerTemplate pbt;
+        public PackedContainerTemplate<H> pbt;
 
-        public PackedContainerTemplateConfigurator(PackedContainerTemplate pbt) {
+        public PackedContainerTemplateConfigurator(PackedContainerTemplate<H> pbt) {
             this.pbt = pbt;
         }
 
@@ -96,14 +104,14 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
 //        }
 
         // expects results. Maa ogsaa tage en Extension...
-        public PackedContainerTemplateConfigurator expectResult(Class<?> resultType) {
-            this.pbt = new PackedContainerTemplate(pbt.kind, pbt.holderClass, pbt.links, resultType, pbt.componentTags, pbt.lifecycleKind);
+        public PackedContainerTemplateConfigurator<H> expectResult(Class<?> resultType) {
+            this.pbt = new PackedContainerTemplate<>(pbt.kind, pbt.holderClass, pbt.links, resultType, pbt.componentTags, pbt.lifecycleKind);
             return this;
         }
 
         /** {@inheritDoc} */
         @Override
-        public PackedContainerTemplateConfigurator lifetimeOperationAddContext(int index, ContextTemplate template) {
+        public PackedContainerTemplateConfigurator<H> lifetimeOperationAddContext(int index, ContextTemplate template) {
             throw new UnsupportedOperationException();
         }
 
@@ -111,34 +119,34 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
             return null;
         }
 
-        public PackedContainerTemplateConfigurator withKind(PackedContainerKind kind) {
-            this.pbt = new PackedContainerTemplate(kind, pbt.holderClass, pbt.links, pbt.resultType, pbt.componentTags, pbt.lifecycleKind);
+        public PackedContainerTemplateConfigurator<H> withKind(PackedContainerKind kind) {
+            this.pbt = new PackedContainerTemplate<>(kind, pbt.holderClass, pbt.links, pbt.resultType, pbt.componentTags, pbt.lifecycleKind);
             return this;
         }
 
         /** {@inheritDoc} */
         @Override
-        public PackedContainerTemplateConfigurator withPack(OldContainerTemplateLink channel) {
+        public PackedContainerTemplateConfigurator<H> withPack(OldContainerTemplateLink channel) {
             PackedContainerTemplatePackList tunnels = pbt.links.add((PackedContainerLink) channel);
-            this.pbt = new PackedContainerTemplate(pbt.kind, pbt.holderClass, tunnels, pbt.resultType, pbt.componentTags, pbt.lifecycleKind);
+            this.pbt = new PackedContainerTemplate<>(pbt.kind, pbt.holderClass, tunnels, pbt.resultType, pbt.componentTags, pbt.lifecycleKind);
             return this;
         }
 
-        public PackedContainerTemplateConfigurator withWirelets(Wirelet... wirelets) {
+        public PackedContainerTemplateConfigurator<H> withWirelets(Wirelet... wirelets) {
             throw new UnsupportedOperationException();
         }
 
         /** {@inheritDoc} */
         @Override
         public Configurator componentTag(String... tags) {
-            this.pbt = new PackedContainerTemplate(pbt.kind, pbt.holderClass, pbt.links, pbt.resultType, ComponentTagHolder.copyAndAdd(pbt.componentTags, tags),
-                    pbt.lifecycleKind);
+            this.pbt = new PackedContainerTemplate<>(pbt.kind, pbt.holderClass, pbt.links, pbt.resultType,
+                    ComponentTagHolder.copyAndAdd(pbt.componentTags, tags), pbt.lifecycleKind);
             return this;
 
         }
     }
 
-    public record PackedDescriptor(PackedContainerTemplate template) implements ContainerTemplate.Descriptor {
+    public record PackedDescriptor(PackedContainerTemplate<?> template) implements ContainerTemplate.Descriptor {
 
         /** {@inheritDoc} */
         @Override

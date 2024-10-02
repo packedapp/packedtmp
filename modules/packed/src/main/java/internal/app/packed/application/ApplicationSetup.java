@@ -90,7 +90,7 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     /** All hooks applied on the application. */
     public final ArrayList<ApplicationBuildHook> hooks = new ArrayList<>();
 
-    public MethodHandle launch;
+    public final MethodHandle launcher;
 
     /** This map maintains all locals for the entire application. */
     private final BuildLocalMap locals = new BuildLocalMap();
@@ -105,7 +105,7 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     public final ArrayList<BuildApplicationRepository> subChildren = new ArrayList<>();
 
     /** The template used to create the application. */
-    public final PackedApplicationTemplate<?> template;
+    public final PackedApplicationTemplate<?, ?> template;
 
     /**
      * Create a new application.
@@ -118,7 +118,7 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
         this.deployment = new DeploymentSetup(this, installer);
         this.codegenActions = deployment.goal.isCodeGenerating() ? new ArrayList<>() : null;
         this.goal = installer.buildProcess.goal();
-        this.launch = installer.launcher;
+        this.launcher = installer.launcher; // Is null for rootstrap
     }
 
     /**
@@ -225,15 +225,14 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
 
         ApplicationSetup application = installer.install(new ApplicationSetup(installer));
 
-        Function f = installer.handleFactory;
+        Function f = installer.template.handleFactory();
         application.handle = (ApplicationHandle<?, ?>) f.apply(installer);
 //        if (as.handle == null) {
 //            throw new InternalExtensionException(installer.operator.extensionType, handleFactory + " returned null, when creating a new OperationHandle");
 //        }
 
         // Initialize the root container
-        application.container = ContainerSetup.newContainer(installer.containerInstaller, application, assembly,
-                installer.containerInstaller.template.rootContainerHandleFactory());
+        application.container = ContainerSetup.newContainer(installer.containerInstaller, application, assembly);
         return application;
     }
 

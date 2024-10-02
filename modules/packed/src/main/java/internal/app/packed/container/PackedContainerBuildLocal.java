@@ -50,7 +50,7 @@ public final class PackedContainerBuildLocal<T> extends PackedBuildLocal<Contain
         final class ContainerSetLocalWirelet extends InternalBuildWirelet {
 
             @Override
-            public void onBuild(PackedContainerInstaller installer) {
+            public void onBuild(PackedContainerInstaller<?> installer) {
                 installer.locals.put(PackedContainerBuildLocal.this, value);
             }
         }

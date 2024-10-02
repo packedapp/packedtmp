@@ -34,10 +34,10 @@ import internal.app.packed.ValueBased;
 @ValueBased
 public final class PackedApp implements App {
 
-   public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp.of(ApplicationTemplate.of(PackedApp.class, c -> {
-        c.rootContainer(ContainerTemplate.MANAGED);
-    }));
+    public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp
+            .of(ApplicationTemplate.of(PackedApp.class, c -> c.rootContainer(ContainerTemplate.MANAGED)));
 
+    /** Manages the lifecycle of the app. */
     final ManagedLifecycle lifecycle;
 
     PackedApp(@FromComponentGuest ManagedLifecycle lc, ComponentHostContext context) {
@@ -56,10 +56,6 @@ public final class PackedApp implements App {
 
     }
 
-    @Override
-    public String toString() {
-        return state().toString();
-    }
     /**
      * Creates a new app image by wrapping the specified bootstrap image.
      *
@@ -81,6 +77,11 @@ public final class PackedApp implements App {
     @Override
     public void stop(StopOption... options) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String toString() {
+        return state().toString();
     }
 
     /** Implementation of {@link app.packed.application.App.Image}. */

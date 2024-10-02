@@ -186,8 +186,8 @@ public sealed interface BootstrapApp<A> permits PackedBootstrapApp, MappedBootst
      *            the application template to create the bootstrap app from
      * @return the new bootstrap app.
      */
-    static <A> BootstrapApp<A> of(ApplicationTemplate<A> template) {
-        return PackedBootstrapApp.of((PackedApplicationTemplate<A>) template);
+    static <A> BootstrapApp<A> of(ApplicationTemplate<A, ?> template) {
+        return PackedBootstrapApp.of((PackedApplicationTemplate<A, ?>) template);
     }
 }
 

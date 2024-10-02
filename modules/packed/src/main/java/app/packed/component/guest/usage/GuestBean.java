@@ -33,16 +33,16 @@ public record GuestBean(long nanos) {
         this(System.nanoTime());
     }
 
-    static final ApplicationTemplate<GuestBean> T = ApplicationTemplate.of(GuestBean.class, c -> {
-        c.rootContainer(new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION));
+    static final ApplicationTemplate<GuestBean, GuestApplicationHandle> T = ApplicationTemplate.of(GuestBean.class, GuestApplicationHandle::new, c -> {
+        c.rootContainer(new PackedContainerTemplate<>(PackedContainerKind.BOOTSTRAP_APPLICATION));
     });
 
-    static class GuestApplicationHandle extends ApplicationHandle<ApplicationConfiguration, GuestBean> {
+    static class GuestApplicationHandle extends ApplicationHandle<GuestBean, ApplicationConfiguration> {
 
         /**
          * @param installer
          */
-        GuestApplicationHandle(Installer<GuestBean> installer) {
+        GuestApplicationHandle(Installer<?> installer) {
             super(installer);
         }
     }

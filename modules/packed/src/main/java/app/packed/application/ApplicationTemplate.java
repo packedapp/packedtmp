@@ -29,16 +29,7 @@ import internal.app.packed.application.PackedApplicationTemplate.PackedApplicati
 /**
  * A template for creating new applications.
  */
-public sealed interface ApplicationTemplate<A> permits PackedApplicationTemplate {
-
-    /**
-     * {@return an application handle factory that is used if the template is used with a bootstrap app}
-     * <p>
-     * This method will only be called if used for a {@link BootstrapApp}.
-     *
-     * @see Configurator#bootstrapAppHandleFactory(Function)
-     */
-    Function<? super ApplicationTemplate.Installer<A>, ? extends ApplicationHandle<?, A>> bootstrapAppHandleFactory();
+public sealed interface ApplicationTemplate<A, H extends ApplicationHandle<A, ?>> permits PackedApplicationTemplate {
 
     /**
      * @param <A>
@@ -50,30 +41,31 @@ public sealed interface ApplicationTemplate<A> permits PackedApplicationTemplate
      *             if attempting to create an application template without {@link Configurator#container(Consumer) setting}
      *             a container template for the application's root container
      */
-    static <A> ApplicationTemplate<A> of(Class<A> hostClass, Consumer<? super Configurator<A>> configurator) {
-        return new PackedApplicationTemplate<A>(hostClass, null).configure(configurator);
+    static <A> ApplicationTemplate<A, ApplicationHandle<A, ApplicationConfiguration>> of(Class<A> hostClass, Consumer<? super Configurator> configurator) {
+        return of(hostClass, ApplicationHandle::new, configurator);
     }
 
-    static ApplicationTemplate<Void> of(Consumer<? super Configurator<Void>> configure) {
+    static <A, H extends ApplicationHandle<A, ?>> ApplicationTemplate<A, H> of(Class<A> hostClass,
+            Function<? super ApplicationTemplate.Installer<H>, ? extends H> handleFactory, Consumer<? super Configurator> configurator) {
+        return new PackedApplicationTemplate<A, H>(hostClass, handleFactory, null).configure(configurator);
+    }
+
+    static ApplicationTemplate<Void, ApplicationHandle<Void, ApplicationConfiguration>> of(Consumer<? super Configurator> configure) {
         return of(Void.class, configure);
     }
 
-    static <A> ApplicationTemplate<A> of(Op<A> hostOp, Consumer<? super Configurator<A>> configurator) {
+    static <A> ApplicationTemplate<A, ApplicationHandle<A, ApplicationConfiguration>> of(Op<A> hostOp, Consumer<? super Configurator> configurator) {
+        return of(hostOp, ApplicationHandle::new, configurator);
+    }
+
+    static <A, H extends ApplicationHandle<A, ?>> ApplicationTemplate<A, H> of(Op<A> hostOp,
+            Function<? super ApplicationTemplate.Installer<H>, ? extends H> handleFactory, Consumer<? super Configurator> configurator) {
         Class<?> type = hostOp.type().returnRawType();
-        return new PackedApplicationTemplate<A>(type, hostOp, null).configure(configurator);
+        return new PackedApplicationTemplate<>(type, hostOp, handleFactory, null).configure(configurator);
     }
 
     /** A configuration object for creating an {@link ApplicationTemplate}. */
-    sealed interface Configurator<A> permits PackedApplicationTemplateConfigurator {
-
-        /**
-         * Registers a handle factory for use with bootstrapped applications.
-         *
-         * @param handleFactory
-         *            the handle factory
-         * @return this configurator
-         */
-        Configurator<A> bootstrapAppHandleFactory(Function<? super ApplicationTemplate.Installer<A>, ? extends ApplicationHandle<?, A>> handleFactory);
+    sealed interface Configurator permits PackedApplicationTemplateConfigurator {
 
         /**
          * Add the specified tags to the application.
@@ -85,7 +77,7 @@ public sealed interface ApplicationTemplate<A> permits PackedApplicationTemplate
          * @see ApplicationHandle#componentTag(String...)
          * @see ApplicationConfiguration#componentTag(String...)
          */
-        Configurator<A> componentTag(String... tags);
+        Configurator componentTag(String... tags);
 
 //        // Mark the application as removable()
 //        Configurator<A> removeable();
@@ -98,7 +90,7 @@ public sealed interface ApplicationTemplate<A> permits PackedApplicationTemplate
          * @return this configurator
          * @see #rootContainer(ContainerTemplate)
          */
-        Configurator<A> rootContainer(Consumer<? super ContainerTemplate.Configurator> configure);
+        Configurator rootContainer(Consumer<? super ContainerTemplate.Configurator> configure);
 
         /**
          * Configures the container template that should be used for the root container of the application.
@@ -108,13 +100,15 @@ public sealed interface ApplicationTemplate<A> permits PackedApplicationTemplate
          * @return this configurator
          * @see #rootContainer(Consumer)
          */
-        Configurator<A> rootContainer(ContainerTemplate template);
+        Configurator rootContainer(ContainerTemplate<?> template);
 
-        <T> Configurator<A> setLocal(ApplicationBuildLocal<T> local, T value);
+        <T> Configurator setLocal(ApplicationBuildLocal<T> local, T value);
     }
 
     /** An installer for applications. */
-    sealed interface Installer<A> permits PackedApplicationInstaller {
+    sealed interface Installer<H extends ApplicationHandle<?, ?>> permits PackedApplicationInstaller {
+
+        Installer<H> named(String name);
 
         /**
          * Add the specified tags to the application.
@@ -126,12 +120,19 @@ public sealed interface ApplicationTemplate<A> permits PackedApplicationTemplate
          * @see ApplicationHandle#componentTag(String...)
          * @see ApplicationConfiguration#componentTag(String...)
          */
-        Installer<A> componentTag(String... tags);
+        Installer<H> componentTag(String... tags);
 
-        <H extends ApplicationHandle<?, A>> H install(Assembly assembly, Function<? super ApplicationTemplate.Installer<A>, H> handleFactory,
-                Wirelet... wirelets);
+        /**
+         * <p>
+         * The handle that is returned will be non-configurable.
+         *
+         * @param assembly
+         * @param wirelets
+         * @return
+         */
+        H install(Assembly assembly, Wirelet... wirelets);
 
-        <T> Installer<A> setLocal(ApplicationBuildLocal<T> local, T value);
+        <T> Installer<H> setLocal(ApplicationBuildLocal<T> local, T value);
     }
 }
 

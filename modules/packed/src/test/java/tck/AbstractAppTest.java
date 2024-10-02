@@ -18,6 +18,9 @@ package tck;
 import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +30,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
+import app.packed.application.ApplicationHandle;
+import app.packed.application.BootstrapApp;
 import app.packed.assembly.BaseAssembly;
 import app.packed.assembly.BuildableAssembly;
 import app.packed.build.BuildGoal;
@@ -39,9 +44,11 @@ import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
+import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 import tck.AbstractAppTest.InternalTestState.State1Setup;
 import tck.AbstractAppTest.InternalTestState.State2Building;
 import tck.AbstractAppTest.InternalTestState.State3Build;
+import tck.AbstractBootstrapedAppTest.BootstrapAppInternals;
 
 /**
  *
@@ -58,13 +65,22 @@ abstract class AbstractAppTest<A> {
         c.getModule().addOpens(c.getPackageName(), c.getClassLoader().getUnnamedModule());
     }
 
+    /** The app that we are testing. */
+    final BootstrapApp<A> app;
+
+    /** The internals of a BootstrapApp. */
+    final BootstrapAppInternals internals;
+
     /** The state of the test. */
     private InternalTestState state;
 
     /** A simple boolean that can be triggered. */
     private AtomicBoolean triggered = new AtomicBoolean();
 
-    AbstractAppTest() {}
+    protected AbstractAppTest(BootstrapApp<A> app) {
+        this.app = requireNonNull(app);
+        this.internals = BootstrapAppInternals.extractInternals(app);
+    }
 
     public final void add(OperationHandle<?> h) {
         add("main", h);
@@ -195,15 +211,17 @@ abstract class AbstractAppTest<A> {
         }
 
         final class State2Building implements InternalTestState {
-            static final PackedApplicationTemplate<Void> PAT = new PackedApplicationTemplate<>(Void.class,
-                    new PackedContainerTemplate(PackedContainerKind.BOOTSTRAP_APPLICATION));
-            final PackedApplicationInstaller<?> b;
+            public static final MethodHandle EMPTY_MH = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
+            static final PackedApplicationTemplate<Void, ?> PAT = new PackedApplicationTemplate<>(Void.class, ApplicationHandle::new,
+                    new PackedContainerTemplate<>(PackedContainerKind.BOOTSTRAP_APPLICATION));
             final AssemblySetup assembly;
 
+            final PackedApplicationInstaller<?> b;
             public final ContainerConfiguration cc;
 
             State2Building(State1Setup setup) {
-                b = PAT.newInstaller(setup.goal);
+
+                b = PAT.newInstaller(setup.goal, setup.aat.internals.launcher());
 
                 BuildableAssembly ba = setup.assembly;
                 if (ba == null) {

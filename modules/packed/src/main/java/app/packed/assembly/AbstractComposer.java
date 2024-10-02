@@ -130,7 +130,7 @@ public abstract class AbstractComposer {
          *            the configuration to use for the assembling process
          */
         @Override
-        AssemblySetup build(@Nullable PackedApplicationInstaller<?> applicationInstaller, PackedContainerInstaller installer) {
+        AssemblySetup build(@Nullable PackedApplicationInstaller<?> applicationInstaller, PackedContainerInstaller<?> installer) {
 //            if (builder instanceof @SuppressWarnings("unused") PackedContainerInstaller installer) {
 //                throw new IllegalArgumentException("Cannot link an instance of " + ComposableAssembly.class + ", assembly must extend "
 //                        + BuildableAssembly.class.getSimpleName() + " instead");

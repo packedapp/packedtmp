@@ -106,7 +106,7 @@ public final class PackedManagedLifetime implements ManagedLifecycle {
         return state;
     }
 
-    private void initialize() {
+    private void doInitialize() {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
@@ -126,6 +126,7 @@ public final class PackedManagedLifetime implements ManagedLifecycle {
             } finally {
                 lock.unlock();
             }
+            // We never run any methods when an initialization method fails
             throw t;
         }
 
@@ -154,7 +155,7 @@ public final class PackedManagedLifetime implements ManagedLifecycle {
             throw new IllegalArgumentException("Unmanaged applications and containers can only launch with runstate INITIALIZED, was " + desiredState);
         }
 
-        initialize();
+        doInitialize();
 
         if (desiredState == RunState.INITIALIZED) {
             return;
@@ -273,6 +274,16 @@ public final class PackedManagedLifetime implements ManagedLifecycle {
             start();
             return result;
         });
+    }
+
+    void startFailed(Throwable t) {
+        this.throwable = t;
+        lock.lock();
+        try {
+            this.state = RunState.STOPPING;
+        } finally {
+            lock.unlock();
+        }
     }
 
     /** {@inheritDoc} */

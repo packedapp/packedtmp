@@ -31,7 +31,7 @@ import app.packed.extension.BaseExtension;
 @ContextualServiceProvider(extension = BaseExtension.class, context = ComponentHostContext.class)
 public interface ComponentHostContext extends Context<BaseExtension> {
 
-    // Hvis vi snakker bean instances. Kan vi sagtens have Object, eller Entity som key
+    // Hvis vi teanker paa at faa injected selve bean instancen. Kan vi sagtens have Object, eller Entity som key
     /**
      * {@return services that are available from the guest}
      * <p>

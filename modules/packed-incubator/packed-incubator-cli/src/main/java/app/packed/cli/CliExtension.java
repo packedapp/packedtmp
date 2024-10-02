@@ -23,9 +23,9 @@ import app.packed.assembly.Assembly;
 import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
-import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.extension.ExtensionHandle;
@@ -92,11 +92,11 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
         return ns().configuration(this);
     }
 
-    private ContainerTemplate.Installer newContainer() {
+    private ContainerTemplate.Installer<?> newContainer() {
         if (isInApplicationLifetime()) {
             throw new UnsupportedOperationException("This method must be called from an extension in the application lifetime");
         }
-        ContainerTemplate.Installer cb = base().newContainer(ContainerTemplate.GATEWAY);
+        ContainerTemplate.Installer<?> cb = base().newContainer(ContainerTemplate.GATEWAY);
         // CT.addEntryPointErrorMessage("Lifetime must container at least one entry point with CliCommand")
 
         return cb;
@@ -104,11 +104,11 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
     // Lifetime must have at least 1 CliCommand
     public void newContainer(Assembly assembly, Wirelet... wirelets) {
-        newContainer().install(assembly, ContainerHandle::new, wirelets);
+        newContainer().install(assembly, wirelets);
     }
 
     public ContainerConfiguration newContainer(Wirelet... wirelets) {
-        ContainerHandle<?> handle = newContainer().install(ContainerHandle::new, wirelets);
+        ContainerHandle<?> handle = newContainer().install(wirelets);
         return handle.configuration();
     }
 

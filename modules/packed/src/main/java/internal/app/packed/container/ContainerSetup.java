@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
 import app.packed.component.ComponentConfiguration;
@@ -32,7 +31,6 @@ import app.packed.component.ComponentPath;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerMirror;
-import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.BaseExtension;
@@ -92,7 +90,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     /** The container's service manager. */
     private MainServiceNamespaceHandle sm;
 
-    public final PackedContainerTemplate template;
+    public final PackedContainerTemplate<?> template;
 
     /**
      * Create a new container.
@@ -102,7 +100,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
      * @param assembly
      *            the assembly the defines the container
      */
-    private ContainerSetup(PackedContainerInstaller installer, ApplicationSetup application, AssemblySetup assembly) {
+    private ContainerSetup(PackedContainerInstaller<?> installer, ApplicationSetup application, AssemblySetup assembly) {
         super(installer.parent);
         this.application = requireNonNull(application);
         this.assembly = requireNonNull(assembly);
@@ -260,7 +258,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         name = newName;
     }
 
-    private void nameNewContainer(PackedContainerInstaller installer) {
+    private void nameNewContainer(PackedContainerInstaller<?> installer) {
         // Initializes the name of the container
         String nn = installer.nameFromWirelet;
 
@@ -429,8 +427,8 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
      *            a handle factory for the container
      * @return
      */
-    public static <H extends ContainerHandle<?>> ContainerSetup newContainer(PackedContainerInstaller installer, ApplicationSetup application,
-            AssemblySetup assembly, Function<? super ContainerTemplate.Installer, H> handleFactory) {
+    public static <H extends ContainerHandle<?>> ContainerSetup newContainer(PackedContainerInstaller<?> installer, ApplicationSetup application,
+            AssemblySetup assembly) {
         // Cannot reuse an installer
         installer.checkNotInstalledYet();
 
@@ -440,9 +438,9 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         container.nameNewContainer(installer);
 
         // Create the operation's handle.
-        ContainerHandle<?> handle = container.handle = handleFactory.apply(installer);
+        ContainerHandle<?> handle = container.handle = installer.template.handleFactory().apply(installer);
         if (handle == null) {
-            throw new InternalExtensionException(BaseExtension.class, handleFactory + " returned null, when creating a new ContainerHandle");
+            throw new InternalExtensionException(BaseExtension.class + " handleFactory returned null, when creating a new ContainerHandle");
         }
 
         // BaseExtension is always present in any container.

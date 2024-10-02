@@ -159,10 +159,10 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return the installer
      */
 
-    public ContainerTemplate.Installer newContainer(ContainerTemplate template) {
+    public ContainerTemplate.Installer<?> newContainer(ContainerTemplate<?> template) {
         // Kan only use channels that are direct dependencies of the usage extension
         ExtensionSetup es = usesite.usedBy();
-        return PackedContainerInstaller.of((PackedContainerTemplate) template, es.extensionType, es.container.application, es.container);
+        return PackedContainerInstaller.of((PackedContainerTemplate<?>) template, es.extensionType, es.container.application, es.container);
     }
 
     public int registerEntryPoint(Class<?> hook) {

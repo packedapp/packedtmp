@@ -46,7 +46,7 @@ public class AssemblyHandlers extends Handlers {
             PackedApplicationInstaller.class, PackedContainerInstaller.class);
 
     public static AssemblySetup invokeAssemblyBuild(Assembly assembly, @Nullable PackedApplicationInstaller<?> applicationInstaller,
-            PackedContainerInstaller installer) {
+            PackedContainerInstaller<?> installer) {
         try {
             // Call package private method Assembly#build(PackedContainerBuilder builder)
             return (AssemblySetup) MH_ASSEMBLY_BUILD.invokeExact(assembly, applicationInstaller, installer);

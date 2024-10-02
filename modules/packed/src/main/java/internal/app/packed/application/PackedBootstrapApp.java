@@ -37,10 +37,13 @@ import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /** Implementation of {@link BootstrapApp}. */
 @ValueBased
-public final class PackedBootstrapApp<A> implements BootstrapApp<A> {
+public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements BootstrapApp<A> {
+
+    /** The application launcher. */
+    private final MethodHandle launcher;
 
     /** The application template for new applications. */
-    private final PackedApplicationTemplate<A> template;
+    private final PackedApplicationTemplate<A, H> template;
 
     /**
      * Create a new bootstrap app
@@ -48,53 +51,49 @@ public final class PackedBootstrapApp<A> implements BootstrapApp<A> {
      * @param template
      *            the template for the apps that are being bootstrapped.
      */
-    private PackedBootstrapApp(PackedApplicationTemplate<A> template) {
+    private PackedBootstrapApp(PackedApplicationTemplate<A, H> template, MethodHandle launcher) {
         this.template = requireNonNull(template);
+        this.launcher = requireNonNull(launcher);
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedBootstrapApp<A> expectsResult(Class<?> resultType) {
+    public PackedBootstrapApp<A, H> expectsResult(Class<?> resultType) {
         // Ideen er bootstrapApp.expectsResult(FooBar.class).launch(...);
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
-    @SuppressWarnings("unchecked")
     public BaseImage<A> imageOf(Assembly assembly, Wirelet... wirelets) {
-        ApplicationTemplate.Installer<A> installer = template.newInstaller(BuildGoal.IMAGE, wirelets);
+        ApplicationTemplate.Installer<H> installer = template.newInstaller(BuildGoal.IMAGE, launcher, wirelets);
 
         // Build the application
-        ApplicationHandle<?, ?> handle = installer.install(assembly, template.bootstrapAppHandleFactory());
+        H handle = installer.install(assembly);
 
         // Returns an image for the application
-        return (BaseImage<A>) handle.image();
+        return handle.image();
     }
 
     /** {@inheritDoc} */
     @Override
     public A launch(RunState state, Assembly assembly, Wirelet... wirelets) {
-        ApplicationTemplate.Installer<A> installer = template.newInstaller(BuildGoal.LAUNCH, wirelets);
+        ApplicationTemplate.Installer<H> installer = template.newInstaller(BuildGoal.LAUNCH, launcher, wirelets);
 
         // Build the application
-        // Okay vi maa jo kunne saette default handle... Fx specificer mirror
-        ApplicationHandle<?, ?> handle = installer.install(assembly, template.bootstrapAppHandleFactory());
+        H handle = installer.install(assembly);
 
-        // Launch the application
-        ApplicationLaunchContext aic = ApplicationLaunchContext.launch(state, handle, null);
-
-        // Create and return an instance of the application interface
-        return template.newHolder(aic);
+        // Create and return an instance of the application interface, wirelets have already been specified in the installer
+        return handle.launch(state);
     }
 
     /** {@inheritDoc} */
     @Override
     public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        ApplicationTemplate.Installer<A> installer = template.newInstaller(BuildGoal.MIRROR, wirelets);
+        ApplicationTemplate.Installer<H> installer = template.newInstaller(BuildGoal.MIRROR, launcher, wirelets);
 
         // Build the application
-        ApplicationHandle<?, ?> handle = installer.install(assembly, template.bootstrapAppHandleFactory());
+        H handle = installer.install(assembly);
 
         // Returns a mirror for the application
         return handle.mirror();
@@ -103,10 +102,10 @@ public final class PackedBootstrapApp<A> implements BootstrapApp<A> {
     /** {@inheritDoc} */
     @Override
     public void verify(Assembly assembly, Wirelet... wirelets) {
-        ApplicationTemplate.Installer<A> installer = template.newInstaller(BuildGoal.VERIFY, wirelets);
+        ApplicationTemplate.Installer<H> installer = template.newInstaller(BuildGoal.VERIFY, launcher, wirelets);
 
         // Builds (and verifies) the application
-        installer.install(assembly, template.bootstrapAppHandleFactory());
+        installer.install(assembly);
     }
 
     /**
@@ -117,20 +116,14 @@ public final class PackedBootstrapApp<A> implements BootstrapApp<A> {
      *            the template for the type applications that should be bootstrapped
      * @return a new bootstrap app
      */
-    public static <A> BootstrapApp<A> of(PackedApplicationTemplate<A> template) {
-        // Create new installer for the bootstrap app
-        PackedApplicationInstaller<A> installer = PackedApplicationTemplate.newBootstrapAppInstaller();
-
+    public static <A> BootstrapApp<A> of(PackedApplicationTemplate<A, ?> template) {
         // We need a an assembly to build the (bootstrap) application
         BootstrapAppAssembly assembly = new BootstrapAppAssembly(template);
 
         // Build the bootstrap application
-        installer.install(assembly, ApplicationHandle::new);
+        PackedApplicationTemplate.newBootstrapAppInstaller().install(assembly);
 
-        // Create the application template.
-        PackedApplicationTemplate<A> t = new PackedApplicationTemplate<>(template.guestClass(), null, ApplicationHandle::new, template.containerTemplate(),
-                template.componentTags(), assembly.mh);
-        return new PackedBootstrapApp<>(t);
+        return new PackedBootstrapApp<>(template, assembly.mh);
     }
 
     /** The assembly responsible for building the bootstrap app. */
@@ -139,10 +132,10 @@ public final class PackedBootstrapApp<A> implements BootstrapApp<A> {
         /** The method handle to launch the application, the empty MH is used if A is Void.class */
         private MethodHandle mh = ApplicationLaunchContext.EMPTY_MH;
 
-        private final PackedApplicationTemplate<?> template;
+        private final PackedApplicationTemplate<?, ?> template;
 
-        private BootstrapAppAssembly(PackedApplicationTemplate<?> template) {
-            this.template = template;
+        private BootstrapAppAssembly(PackedApplicationTemplate<?, ?> template) {
+            this.template = requireNonNull(template);
         }
 
         /** {@inheritDoc} */
