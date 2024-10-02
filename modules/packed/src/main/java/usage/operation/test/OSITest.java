@@ -80,7 +80,7 @@ public class OSITest extends BaseAssembly {
         protected BeanIntrospector newBeanIntrospector() {
             return new BeanIntrospector() {
                 @Override
-                public void activatedByAnnotatedVariable(Annotation hook, BindableVariable d) {
+                public void onAnnotatedVariable(Annotation hook, BindableVariable d) {
                     if (hook instanceof BuildTime) {
                         d.checkAssignableTo(LocalDateTime.class);
                         // d.bindConstant(LocalDateTime.now());
@@ -93,7 +93,7 @@ public class OSITest extends BaseAssembly {
                         d.checkAssignableTo(LocalDateTime.class);
                         d.bindOp(new Op0<>(LocalDateTime::now) {});
                     } else {
-                        super.activatedByAnnotatedVariable(hook, d);
+                        super.onAnnotatedVariable(hook, d);
                     }
                 }
             };

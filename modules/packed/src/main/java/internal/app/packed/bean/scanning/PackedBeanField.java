@@ -158,7 +158,7 @@ public final class PackedBeanField extends PackedBeanElement implements BeanFiel
     }
 
     void onHook() {
-        participant.introspector.activatedByAnnotatedField(hooks, this);
+        participant.introspector.onAnnotatedField(hooks, this);
     }
 
     /** {@inheritDoc} */

@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 import app.packed.bean.BeanElement.BeanField;
@@ -38,6 +39,7 @@ import app.packed.bean.BeanTrigger.AnnotatedFieldBeanTrigger;
 import app.packed.bean.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.binding.Key;
 import app.packed.binding.UnwrappedBindableVariable;
+import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.ExtensionHandle;
@@ -53,13 +55,6 @@ import testutil.MemberFinder;
  */
 public class HookTestingExtension extends Extension<HookTestingExtension> {
 
-    /**
-     * @param handle
-     */
-     HookTestingExtension(ExtensionHandle<HookTestingExtension> handle) {
-        super(handle);
-    }
-
     private Map<String, OperationHandle<?>> ink = new HashMap<>();
 
     @Nullable
@@ -71,6 +66,12 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
     @Nullable
     private BiConsumer<? super Class<?>, ? super UnwrappedBindableVariable> onVariableType;
 
+    /**
+     * @param handle
+     */
+    HookTestingExtension(ExtensionHandle<HookTestingExtension> handle) {
+        super(handle);
+    }
 
     void generate(String name, OperationHandle<?> oh) {
         requireNonNull(name);
@@ -88,29 +89,30 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
         return new BeanIntrospector() {
 
             @Override
-            public void activatedByAnnotatedField(AnnotationList hooks, BeanField field) {
+            public void onContextualServiceProvision(Key<?> key, Class<?> actualHook, Set<Class<? extends Context<?>>> contexts,
+                    UnwrappedBindableVariable variable) {
+                if (onVariableType != null) {
+                    onVariableType.accept(key.rawType(), variable);
+                } else {
+                    super.onContextualServiceProvision(key, actualHook, contexts, variable);
+                }
+            }
+
+            @Override
+            public void onAnnotatedField(AnnotationList hooks, BeanField field) {
                 if (onAnnotatedField != null) {
                     onAnnotatedField.accept(hooks, field);
                 } else {
-                    super.activatedByAnnotatedField(hooks, field);
+                    super.onAnnotatedField(hooks, field);
                 }
             }
 
             @Override
-            public void triggeredByAnnotatedMethod(AnnotationList hooks, BeanMethod method) {
+            public void onAnnotatedMethod(AnnotationList hooks, BeanMethod method) {
                 if (onAnnotatedMethod != null) {
                     onAnnotatedMethod.accept(hooks, method);
                 } else {
-                    super.triggeredByAnnotatedMethod(hooks, method);
-                }
-            }
-
-            @Override
-            public void activatedByVariableType(Class<?> hook, Class<?> actualHook,UnwrappedBindableVariable variable) {
-                if (onVariableType != null) {
-                    onVariableType.accept(hook, variable);
-                } else {
-                    super.activatedByVariableType(hook, actualHook, variable);
+                    super.onAnnotatedMethod(hooks, method);
                 }
             }
         };

@@ -2,12 +2,15 @@ package app.packed.concurrent.other;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
+import java.util.Set;
 
 import app.packed.assembly.Assembly;
 import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.binding.Key;
 import app.packed.binding.UnwrappedBindableVariable;
+import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionHandle;
@@ -72,7 +75,7 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
 
             @SuppressWarnings("unused")
             @Override
-            public void triggeredByAnnotatedMethod(Annotation hook, BeanMethod method) {
+            public void onAnnotatedMethod(Annotation hook, BeanMethod method) {
                 Cron c = method.annotations().readRequired(Cron.class);
 
                 OperationHandle<?> operation = method.newOperation(OT).install(OperationHandle::new);
@@ -90,7 +93,8 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
             }
 
             @Override
-            public void activatedByVariableType(Class<?> hook, Class<?> actualHook, UnwrappedBindableVariable binding) {
+            public void onContextualServiceProvision(Key<?> key, Class<?> actualHook, Set<Class<? extends Context<?>>> contexts,UnwrappedBindableVariable binding) {
+                Class<?> hook = key.rawType();
                 if (hook == SchedulingContext.class) {
                     binding.bindContext(SchedulingContext.class);
                 } else if (hook == SchedulingHistory.class) {
@@ -98,7 +102,7 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
 
                     // binding.bindOp(new Op1<PackedSchedulingContext, SchedulingHistory>(c -> c.history) {});
                 } else {
-                    super.activatedByVariableType(hook, actualHook, binding);
+                    super.onContextualServiceProvision(key, actualHook, contexts, binding);
                 }
             }
         };

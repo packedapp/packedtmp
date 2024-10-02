@@ -23,7 +23,7 @@ import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
-import app.packed.component.guest.ContainerTemplateLink;
+import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.component.guest.FromComponentGuest;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
@@ -166,7 +166,7 @@ record ProgramImplementation(@FromComponentGuest String name, @FromComponentGues
         // System.out.println(services.keys());
     }
 
-    static ContainerTemplateLink EL = ContainerTemplateLink.of(MethodHandles.lookup(), Ele.MyE.class, "doo").provideExpose(Long.class).build();
+    static OldContainerTemplateLink EL = OldContainerTemplateLink.of(MethodHandles.lookup(), Ele.MyE.class, "doo").provideExpose(Long.class).build();
 
     /** An driver for creating App instances. */
     static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ApplicationTemplate.of(ProgramImplementation.class, c -> c.rootContainer(ContainerTemplate.MANAGED)));

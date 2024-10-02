@@ -20,7 +20,7 @@ import app.packed.context.ContextualServiceProvider;
 /**
  *
  */
-@ContextualServiceProvider(extension = ScheduledJobExtension.class, requiresContext = SchedulingContext.class)
+@ContextualServiceProvider(extension = ScheduledJobExtension.class, context = SchedulingContext.class)
 public interface SchedulingHistory {
 
 }

@@ -111,7 +111,7 @@ public class OperationMirrorTest extends AppAppTest {
         }
 
         hooks().onAnnotatedField((l, b) -> {
-            OperationHandle<?> h = b.newGetOperation(OperationTemplate.defaults()).install(MyHandle::new);
+            MyHandle h = b.newGetOperation(OperationTemplate.defaults()).install(MyHandle::new);
             add(h);
         });
         installInstance(new FieldPrivateInstanceString());

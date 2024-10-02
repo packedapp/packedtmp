@@ -23,18 +23,20 @@ import java.lang.annotation.Target;
 
 import app.packed.bean.BeanTrigger;
 import app.packed.extension.Extension;
+import app.packed.service.advanced.ServiceResolver.NoContext;
 
 /**
  *
  * <p>
  * If the type being provider is a generic type. It will match it independent on any actual types. There is no support
  * for refining this. It must be handled in the extension.
+ *
+ * @see InheritableContextualServiceProvider
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @BeanTrigger
-// Bliver ikke brugt hvis man er i namespace med en, bean overriddes, eller
 public @interface ContextualServiceProvider {
 
     /**
@@ -45,7 +47,8 @@ public @interface ContextualServiceProvider {
     Class<? extends Extension<?>> extension();
 
     /**
-     * Contexts that are required in order to use the binding class.
+     * Any context that is needed for the service to be provided. The default is
+     * {@link app.packed.service.advanced.ServiceResolver.NoContext} which indicates that the annotated class can be used anywhere.
      * <p>
      * If no contexts are specified, the type can be used anywhere.
      * <p>
@@ -57,5 +60,5 @@ public @interface ContextualServiceProvider {
      *
      * @return required contexts
      */
-    Class<? extends Context<?>>[] requiresContext() default {};
+    Class<? extends Context<?>> context() default NoContext.class;
 }

@@ -10,7 +10,7 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
-import app.packed.component.guest.ContainerTemplateLink;
+import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.container.ContainerTemplate;
 import app.packed.context.ContextTemplate;
 import app.packed.operation.Op;
@@ -34,16 +34,16 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     final static BeanTemplate CONTAINER;
 
-    public static ContainerTemplateLink CONTAINER_MIRROR = ContainerTemplateLink.of(MethodHandles.lookup(), BaseExtension.class, "ContainerMirror").build();
+    public static OldContainerTemplateLink CONTAINER_MIRROR = OldContainerTemplateLink.of(MethodHandles.lookup(), BaseExtension.class, "ContainerMirror").build();
 
     /**
      * A container lifetime channel that makes the container's exported services available as
      * {@link app.packed.service.ServiceLocator}.
      */
-    public static final ContainerTemplateLink EXPORTED_SERVICE_LOCATOR = baseBuilder("ExportedServiceLocator")
+    public static final OldContainerTemplateLink EXPORTED_SERVICE_LOCATOR = baseBuilder("ExportedServiceLocator")
             .localConsume(BaseExtension.FROM_LINKS, t -> t.exportServices = true).provideExpose(ServiceLocator.class).build();
 
-    public static final ContainerTemplateLink MANAGED_LIFETIME = baseBuilder(ManagedLifecycle.class.getSimpleName()).provideExpose(ManagedLifecycle.class)
+    public static final OldContainerTemplateLink MANAGED_LIFETIME = baseBuilder(ManagedLifecycle.class.getSimpleName()).provideExpose(ManagedLifecycle.class)
             .build();
 
     static {
@@ -169,8 +169,8 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
         return usesite.extension().container.lifetime.entryPoints.takeOver(extension(), usedBy());// .registerEntryPoint(usedBy(), isMain);
     }
 
-    private static ContainerTemplateLink.Configurator baseBuilder(String name) {
-        return ContainerTemplateLink.of(MethodHandles.lookup(), BaseExtension.class, name);
+    private static OldContainerTemplateLink.Configurator baseBuilder(String name) {
+        return OldContainerTemplateLink.of(MethodHandles.lookup(), BaseExtension.class, name);
     }
 }
 

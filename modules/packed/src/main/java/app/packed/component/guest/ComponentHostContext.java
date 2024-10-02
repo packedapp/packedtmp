@@ -28,10 +28,10 @@ import app.packed.extension.BaseExtension;
  * @see FromComponentGuest
  * @see OnComponentGuestLifecycle
  */
-// Maaske skal vi ikke have denne her...
-@ContextualServiceProvider(extension = BaseExtension.class, requiresContext = ComponentHostContext.class)
+@ContextualServiceProvider(extension = BaseExtension.class, context = ComponentHostContext.class)
 public interface ComponentHostContext extends Context<BaseExtension> {
 
+    // Hvis vi snakker bean instances. Kan vi sagtens have Object, eller Entity som key
     /**
      * {@return services that are available from the guest}
      * <p>
@@ -39,25 +39,3 @@ public interface ComponentHostContext extends Context<BaseExtension> {
      */
     Set<Key<?>> keys();
 }
-
-/// Injection af Guest Services
-/// Krav: Vi har behov for at kunne se paa guest beanen hvad der kan injectes via mirrors
-/// ServiceLocator-> Dynamiske alle services
-/// XXX
-
-/// Nuvaerende loesning
-// En Host/GuestContext
-// En FromComponentGuest annoteringer
-
-// I ny service lookup setup.
-// Det er ikke operation, fordi det er en guest bean.
-// Det er ikke et namespace fordi det kun er den ene bean det kan injectes i
-
-// Saa Bean
-// Eller Context
-
-// Det der taeller for context, er at vi kan faa ComponentHostContext injected.
-// Og vi kan se praecis hvad der er.
-// Det er svaert med beans, syntes ogsaa det skal vaere forbeholdt en selv...
-
-

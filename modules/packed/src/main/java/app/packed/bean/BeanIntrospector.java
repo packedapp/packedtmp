@@ -19,14 +19,17 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.util.Optional;
+import java.util.Set;
 
 import app.packed.bean.BeanBuildLocal.Accessor;
 import app.packed.bean.BeanElement.BeanClass;
 import app.packed.bean.BeanElement.BeanField;
 import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.binding.BindableVariable;
+import app.packed.binding.Key;
 import app.packed.binding.UnwrappedBindableVariable;
 import app.packed.build.BuildActor;
+import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
@@ -37,7 +40,6 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanScannerParticipant;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.util.PackedAnnotationList;
-import internal.app.packed.util.StringFormatter;
 
 /**
  * Bean introspectors are the primary way for extensions to interacts the
@@ -60,22 +62,121 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
      * {@link #initialize(ExtensionDescriptor, BeanSetup)}.
      */
     @Nullable
-    private BeanScannerParticipant setup;
+    private BeanScannerParticipant extension;
 
-    public void activatedByAnnotatedClass(Annotation annotated, BeanClass clazz) {}
+    BeanSetup bean() {
+        return requireNonNull(setup().scanner.bean);
+    }
 
-    // Replace set with something like AnnotatedHookSet
+    /** {@return an annotation reader for the bean class.} */
+    public final AnnotationList beanAnnotations() {
+        return new PackedAnnotationList(beanClass().getAnnotations());
+    }
+
+    /** {@return the owner of the bean.} */
+    public final BuildActor beanAuthor() {
+        return bean().owner();
+    }
+
+    /** {@return the bean class that is being introspected.} */
+    public final Class<?> beanClass() {
+        return bean().beanClass;
+    }
+
+    public final <H extends BeanHandle<?>> Optional<H> beanHandle(Class<H> handleKind) {
+        if (isBeanInstallingExtension()) {
+            return Optional.of(handleKind.cast(bean().handle()));
+        }
+        return Optional.empty();
+    }
+
+    /** {@return the extension the bean was installed via.} */
+    public final Class<? extends Extension<?>> beanInstallingExtension() {
+        return bean().installedBy.extensionType;
+    }
+
+    /** {@return an annotation reader for the bean class.} */
+    public final BeanKind beanKind() {
+        return bean().beanKind;
+    }
+
+    /** {@return the extension the bean was installed via.} */
+    public final LifecycleKind beanLifetimeKind() {
+        return bean().lifetime.lifetimeKind();
+    }
+
+    /** {@return the bean source kind.} */
+    public final BeanSourceKind beanSourceKind() {
+        return bean().beanSourceKind;
+    }
+
+    private ExtensionDescriptor extension() {
+        return setup().extension.model;
+    }
+
     /**
+     * @param postFix
+     *            the message to include in the final message
      *
+     * @throws BeanInstallationException
+     *             always thrown
+     */
+    public final void failWith(String postFix) {
+        throw new BeanInstallationException("OOPS " + postFix);
+    }
+
+    /**
+     * Invoked by a MethodHandle from ExtensionSetup.
+     *
+     * @param extension
+     *            the extension that owns the scanner
+     * @param bean
+     *            the bean we are scanning
+     * @throws IllegalStateException
+     *             if called more than once
+     */
+    final void initialize(BeanScannerParticipant ce) {
+        if (this.extension != null) {
+            throw new IllegalStateException("This scanner has already been initialized.");
+        }
+        this.extension = ce;
+    }
+
+    /**
+     * {@return whether or not the extension that implements this introspector is also the extension that is installing the
+     * bean.}
+     */
+    public final boolean isBeanInstallingExtension() {
+        return extension.extension == bean().installedBy;
+    }
+
+    /** {@return whether or not the bean is in same lifetime as the application.} */
+    public final boolean isInApplicationLifetime() {
+        BeanSetup b = bean();
+        return b.lifetime == b.container.application.container().lifetime;
+    }
+
+    /** {@return whether or not the bean is in same lifetime as its container.} */
+    public final boolean isInContainerLifetime() {
+        return bean().lifetime instanceof ContainerLifetimeSetup;
+    }
+
+    public void onAnnotatedClass(Annotation annotation, BeanClass clazz) {
+        throw new InternalExtensionException(
+                extension().fullName() + " failed to handle class annotation " + annotation.annotationType() + " on " + beanClass());
+    }
+
+    /**
      * The default implementation calls {@link #hookOnAnnotatedClass(Annotation, OperationalClass)}
      *
-     * @param hooks
-     *            the annotation(s) that hook
-     * @param an
+     * @param annotations
+     *            the annotations that used {@link app.packed.bean.BeanTrigger.AnnotatedClassBeanTrigger}
+     * @param clazz
+     *            an object that can be used to
      */
-    public void activatedByAnnotatedClass(AnnotationList annotations, BeanClass clazz) {
+    public void onAnnotatedClass(AnnotationList annotations, BeanClass clazz) {
         for (Annotation a : annotations) {
-            activatedByAnnotatedClass(a, clazz);
+            onAnnotatedClass(a, clazz);
         }
     }
 
@@ -88,8 +189,8 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
      * @param field
      *            an operational field
      */
-    public void activatedByAnnotatedField(Annotation annotation, BeanField field) {
-        throw new BeanInstallationException(extension().fullName() + " does not know how to handle " + annotation.annotationType() + " on " + field);
+    public void onAnnotatedField(Annotation annotation, BeanField field) {
+        throw new InternalExtensionException(extension().fullName() + " failed to handle field annotation " + annotation.annotationType() + " on " + field);
     }
 
     /**
@@ -119,9 +220,28 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
     // Combinations of Field Annotations, Variable Annotations & VariableType
     // Failures? or order of importancez
     // What about meta data annotations? Maybe this is mostly applicable to binding class hooks
-    public void activatedByAnnotatedField(AnnotationList hooks, BeanField field) {
+    public void onAnnotatedField(AnnotationList hooks, BeanField field) {
         for (Annotation a : hooks) {
-            activatedByAnnotatedField(a, field);
+            onAnnotatedField(a, field);
+        }
+    }
+
+    // can we attach information to the method???
+    // fx @Lock(sdfsdfsdf) uden @Query???
+    public void onAnnotatedMethod(Annotation hook, BeanMethod method) {
+        // Test if getClass()==BeanScanner forgot to implement
+        // Not we want to return generic bean scanner from newBeanScanner
+        throw new InternalExtensionException(extension().fullName() + " failed to handle method annotation(s) " + hook);
+    }
+
+    /**
+     * @param on
+     *
+     * @see AnnotatedMethodHook
+     */
+    public void onAnnotatedMethod(AnnotationList hooks, BeanMethod method) {
+        for (Annotation a : hooks) {
+            onAnnotatedMethod(a, method);
         }
     }
 
@@ -141,73 +261,30 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
      *
      * @see AnnotatedBindingHook
      */
-    public void activatedByAnnotatedVariable(Annotation hook, BindableVariable binder) {
+    public void onAnnotatedVariable(Annotation hook, BindableVariable binder) {
         throw new BeanInstallationException(extension().fullName() + " failed to handle parameter hook annotation(s) " + hook);
     }
 
     /**
      * @param v
      *
-     * @see BindingTypeHook
+     * @see app.packed.context.ContextualServiceProvider
+     * @see app.packed.context.InheritableContextualServiceProvider
      */
-    // Two methods, or taking two classes
-    public void activatedByVariableType(Class<?> hook, Class<?> actualHook, UnwrappedBindableVariable binder) {
-        throw new BeanInstallationException(extension().fullName() + " cannot handle type hook " + StringFormatter.format(hook));
+    public void onContextualServiceProvision(Key<?> key, Class<?> baseClass, Set<Class<? extends Context<?>>> contexts, UnwrappedBindableVariable binder) {
+        throw new BeanInstallationException(extension().fullName() + " cannot handle type hook " + key);
     }
 
-    /**
-     * A callback method that is invoked before any calls to any of the {@code hookOn} methods on this class.
-     * <p>
-     * This method can be used to setup data structures or perform validation.
-     *
-     * @see #beforeHooks()
-     */
-    public void afterHooks() {}
-
-    BeanSetup bean() {
-        return requireNonNull(setup().scanner.bean);
+    public void onContextualServiceProvision2(Key<?> key, Set<Class<? extends Context<?>>> contexts, Optional<Class<?>> baseClass,
+            UnwrappedBindableVariable binder) {
+        throw new BeanInstallationException(extension().fullName() + " cannot handle type hook " + key);
     }
 
-    /** {@return an annotation reader for the bean class.} */
-    public final AnnotationList beanAnnotations() {
-        return new PackedAnnotationList(beanClass().getAnnotations());
-    }
-
-    /** {@return the owner of the bean.} */
-    public final BuildActor beanAuthor() {
-        return bean().owner();
-    }
-
-    /** {@return the bean class that is being introspected.} */
-    public final Class<?> beanClass() {
-        return bean().beanClass;
-    }
-
-    /** {@return the extension the bean was installed via.} */
-    public final Class<? extends Extension<?>> beanInstalledVia() {
-        return bean().installedBy.extensionType;
-    }
-
-    /** {@return an annotation reader for the bean class.} */
-    public final BeanKind beanKind() {
-        return bean().beanKind;
-    }
-
-    /** {@return the extension the bean was installed via.} */
-    public final LifecycleKind beanLifetimeKind() {
-        return bean().lifetime.lifetimeKind();
-    }
-
-    /** {@return the bean source kind.} */
-    public final BeanSourceKind beanSourceKind() {
-        return bean().beanSourceKind;
-    }
-
-    public final <H extends BeanHandle<?>> Optional<H> beanHandle(Class<H> handleKind) {
-        if (setup.extension == bean().installedBy) {
-            return Optional.of(handleKind.cast(bean().handle()));
-        }
-        return Optional.empty();
+    // BaseClass = ApplicationMirror, for Key<MyApplicationMirror>
+    // For dynamic classes I think it is just the raw class
+    public void onInheritableContextualServiceProvision2(Key<?> key, Class<?> baseClass, Set<Class<? extends Context<?>>> contexts,
+            UnwrappedBindableVariable binder) {
+        throw new BeanInstallationException(extension().fullName() + " cannot handle type hook " + key);
     }
 
     /**
@@ -219,55 +296,16 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
      *
      * @see #afterHooks()
      */
-    public void beforeHooks() {}
-
-    private ExtensionDescriptor extension() {
-        return setup().extension.model;
-    }
+    public void onStart() {}
 
     /**
-     * @param postFix
-     *            the message to include in the final message
+     * A callback method that is invoked before any calls to any of the {@code hookOn} methods on this class.
+     * <p>
+     * This method can be used to setup data structures or perform validation.
      *
-     * @throws BeanInstallationException
-     *             always thrown
+     * @see #beforeHooks()
      */
-    public final void failWith(String postFix) {
-        throw new BeanInstallationException("OOPS " + postFix);
-    }
-
-    /**
-     * Invoked by a MethodHandle from ExtensionSetup.
-     *
-     * @param extension
-     *            the extension that owns the scanner
-     * @param bean
-     *            the bean we are scanning
-     * @throws IllegalStateException
-     *             if called more than once
-     */
-    final void initialize(BeanScannerParticipant ce) {
-        if (this.setup != null) {
-            throw new IllegalStateException("This scanner has already been initialized.");
-        }
-        this.setup = ce;
-    }
-
-    /** {@return whether or not the bean is in same lifetime as the application.} */
-    public final boolean isInApplicationLifetime() {
-        BeanSetup b = bean();
-        return b.lifetime == b.container.application.container().lifetime;
-    }
-
-    /** {@return whether or not the bean is in same lifetime as its container.} */
-    public final boolean isInContainerLifetime() {
-        return bean().lifetime instanceof ContainerLifetimeSetup;
-    }
-
-    /** {@return whether or not this introspector is the installing introspector.} */
-    public final boolean isInstallingIntrospector() {
-        throw new UnsupportedOperationException();
-    }
+    public void onStop() {}
 
     /**
      * {@return the internal configuration class.}
@@ -276,51 +314,10 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
      *             if called from the constructor of the class
      */
     private BeanScannerParticipant setup() {
-        BeanScannerParticipant s = setup;
+        BeanScannerParticipant s = extension;
         if (s == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of " + getClass());
         }
         return s;
     }
-
-    // can we attach information to the method???
-    // fx @Lock(sdfsdfsdf) uden @Query???
-    public void triggeredByAnnotatedMethod(Annotation hook, BeanMethod method) {
-        // Test if getClass()==BeanScanner forgot to implement
-        // Not we want to return generic bean scanner from newBeanScanner
-        throw new InternalExtensionException(extension().fullName() + " failed to handle method annotation(s) " + hook);
-    }
-
-    /**
-     * @param on
-     *
-     * @see AnnotatedMethodHook
-     */
-    // Called exactly once per extension???
-    public void triggeredByAnnotatedMethod(AnnotationList hooks, BeanMethod method) {
-        for (Annotation a : hooks) {
-            triggeredByAnnotatedMethod(a, method);
-        }
-    }
 }
-
-interface ZandboxBI {
-
-    // IDK vi bliver stadig noedt til at analysere den...
-    // Factory hint instead? Og allow en Method... saa det ikke kun er
-    // constructors
-    @interface ConstructorHint {
-        // Ideen er lidt at man bruger den for extension beans
-
-        Class<?>[] value();
-    }
-}
-
-// Proevede at lave en lidt slags eventdriver hook thingy med
-// pattern switches
-// Men det fungere ikke super godt. Isaer fordi vi ikke kan
-// switch on class literals
-//public void onHook(HookElement element) {
-//
-//}
-//

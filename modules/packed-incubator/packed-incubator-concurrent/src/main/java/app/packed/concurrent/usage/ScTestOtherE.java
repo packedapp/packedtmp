@@ -73,7 +73,7 @@ public class ScTestOtherE extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void triggeredByAnnotatedMethod(Annotation hook, BeanMethod on) {
+                public void onAnnotatedMethod(Annotation hook, BeanMethod on) {
                     ScheduleOther so = (ScheduleOther) hook;
                     ScheduledOperationConfiguration soc = use(ThreadExtensionPoint.class).schedule(null /*on.newDelegatingOperation()*/);
                     Duration p = Duration.parse(so.value());

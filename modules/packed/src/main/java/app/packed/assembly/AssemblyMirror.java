@@ -205,5 +205,4 @@ public final class AssemblyMirror implements BuildCodeSourceMirror {
     public String toString() {
         return "Assembly:" + application().name() + ":/";
     }
-
 }

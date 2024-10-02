@@ -78,11 +78,11 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
             /** {@inheritDoc} */
             @Override
-            public void triggeredByAnnotatedMethod(Annotation hook, BeanMethod method) {
+            public void onAnnotatedMethod(Annotation hook, BeanMethod method) {
                 if (hook instanceof CliCommand c) {
                     ns().process(CliExtension.this, c, method);
                 } else {
-                    super.triggeredByAnnotatedMethod(hook, method);
+                    super.onAnnotatedMethod(hook, method);
                 }
             }
         };

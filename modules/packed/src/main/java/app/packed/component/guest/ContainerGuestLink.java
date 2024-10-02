@@ -28,14 +28,15 @@ import app.packed.extension.Extension;
 // CodeGen Supplier
 // Lookup in extension service namespace
 
-public interface ContainerLinker {
+// Altsaa kan vi bruge den for ikke guests????
+public interface ContainerGuestLink {
 
     // Void/void.class will be ignored, but you can use onExtensionUsed. But not any of the bind methods
-    static <E extends Extension<E>> ContainerLinker of(Class<E> extensionType, Class<?> key, Consumer<? super Configurator<E>> configurator) {
+    static <E extends Extension<E>> ContainerGuestLink of(Class<E> extensionType, Class<?> key, Consumer<? super Configurator<E>> configurator) {
         throw new UnsupportedOperationException();
     }
 
-    static <E extends Extension<E>> ContainerLinker of(Class<E> extensionType, Key<?> key, Consumer<? super Configurator<E>> configurator) {
+    static <E extends Extension<E>> ContainerGuestLink of(Class<E> extensionType, Key<?> key, Consumer<? super Configurator<E>> configurator) {
         throw new UnsupportedOperationException();
     }
 

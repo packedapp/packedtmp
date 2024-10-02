@@ -78,7 +78,7 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
 
                 PackedBeanMethod pbm = new PackedBeanMethod(contributor, method, annotations, fh.isInvokable());
                 PackedAnnotationList pac = new PackedAnnotationList(new Annotation[] { a1 });
-                contributor.introspector.triggeredByAnnotatedMethod(pac, pbm);
+                contributor.introspector.onAnnotatedMethod(pac, pbm);
             }
         }
     }

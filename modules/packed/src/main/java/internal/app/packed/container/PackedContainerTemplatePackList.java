@@ -28,14 +28,14 @@ import app.packed.binding.Key;
 //Hvad man ikke goer...
 public final class PackedContainerTemplatePackList {
 
-    public final List<PackedContainerTemplatePack> packs;
+    public final List<PackedContainerLink> packs;
 
-    PackedContainerTemplatePackList(List<PackedContainerTemplatePack> tunnels) {
+    PackedContainerTemplatePackList(List<PackedContainerLink> tunnels) {
         this.packs = List.copyOf(tunnels);
     }
 
-    public PackedContainerTemplatePackList add(PackedContainerTemplatePack tunnel) {
-        ArrayList<PackedContainerTemplatePack> l = new ArrayList<>(packs);
+    public PackedContainerTemplatePackList add(PackedContainerLink tunnel) {
+        ArrayList<PackedContainerLink> l = new ArrayList<>(packs);
         l.add(tunnel);
         return new PackedContainerTemplatePackList(l);
     }

@@ -16,9 +16,11 @@
 package internal.app.packed.bean.scanning;
 
 import java.lang.annotation.Annotation;
+import java.util.Set;
 
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
+import app.packed.context.Context;
 import app.packed.service.advanced.ServiceResolver;
 import internal.app.packed.bean.scanning.BeanHookModel.AnnotatedParameterType;
 import internal.app.packed.bean.scanning.BeanHookModel.ParameterType;
@@ -45,7 +47,7 @@ final class BeanScannerBindingResolver {
                 BeanScannerParticipant ei = scanner.computeContributor(hook.extensionType());
 
                 PackedBindableVariable h = new PackedBindableVariable(scanner, operation, index, ei.extension, v);
-                ei.introspector.activatedByAnnotatedVariable(a1, h);
+                ei.introspector.onAnnotatedVariable(a1, h);
                 return;
             }
         }
@@ -60,7 +62,10 @@ final class BeanScannerBindingResolver {
             PackedBindableVariable h = new PackedBindableVariable(scanner, operation, index, contributor.extension, v);
 
             Class<?> cl = v.rawType();
-            contributor.introspector.activatedByVariableType(cl, hook.definingIfInherited() == null ? cl : hook.definingIfInherited(),
+            Key<?> k = h.toKey();
+            Set<Class<? extends Context<?>>> contexts = Set.of();
+            contributor.introspector.onContextualServiceProvision(k, hook.definingIfInherited() == null ? cl : hook.definingIfInherited(),
+                    contexts,
                     new PackedBindableWrappedVariable(h));
             if (operation.bindings[index] != null) {
                 return;

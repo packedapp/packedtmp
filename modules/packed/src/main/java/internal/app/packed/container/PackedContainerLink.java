@@ -21,15 +21,15 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.binding.Key;
-import app.packed.component.guest.ContainerTemplateLink;
+import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.extension.Extension;
 
 /**
  * Represent a communication channel between a parent container lifetime and a child container lifetime. This class is
  * exposed as {@link ContainerLifetimeChannel}.
  */
-public record PackedContainerTemplatePack(Class<? extends Extension<?>> extension, Consumer<? super PackedContainerInstaller> onUse,
-        Map<Key<?>, PackedContainerTemplatePack.KeyFragment> services) implements ContainerTemplateLink {
+public record PackedContainerLink(Class<? extends Extension<?>> extension, Consumer<? super PackedContainerInstaller> onUse,
+        Map<Key<?>, PackedContainerLink.KeyFragment> services) implements OldContainerTemplateLink {
 
     /** {@inheritDoc} */
     @Override
@@ -37,21 +37,21 @@ public record PackedContainerTemplatePack(Class<? extends Extension<?>> extensio
         return services.keySet();
     }
 
-    public PackedContainerTemplatePack withFragments(Key<?> key, PackedContainerTemplatePack.KeyFragment fragment) {
+    public PackedContainerLink withFragments(Key<?> key, PackedContainerLink.KeyFragment fragment) {
         Map<Key<?>, KeyFragment> s = services;
         if (s == null) {
             s = Map.of(key, fragment);
         } else {
-            Map<Key<?>, PackedContainerTemplatePack.KeyFragment> newServices = new HashMap<>(s);
+            Map<Key<?>, PackedContainerLink.KeyFragment> newServices = new HashMap<>(s);
             newServices.put(key, fragment);
             s = Map.copyOf(newServices);
         }
-        return new PackedContainerTemplatePack(extension(), onUse, s);
+        return new PackedContainerLink(extension(), onUse, s);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public PackedContainerTemplatePack withUse(Consumer<? super PackedContainerInstaller> action) {
-        return new PackedContainerTemplatePack(extension(), onUse == null ? action : onUse.andThen((Consumer) action), services);
+    public PackedContainerLink withUse(Consumer<? super PackedContainerInstaller> action) {
+        return new PackedContainerLink(extension(), onUse == null ? action : onUse.andThen((Consumer) action), services);
     }
 
     public sealed interface KeyFragment {

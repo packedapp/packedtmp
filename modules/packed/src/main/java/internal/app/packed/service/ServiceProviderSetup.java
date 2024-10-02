@@ -29,19 +29,20 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
-public abstract class ServiceProviderSetup implements Keyed {
+public sealed abstract class ServiceProviderSetup implements Keyed {
 
-    /** All bindings (in a interned linked list) that points to this provider. */
+    /** All bindings that uses this provider. */
     public final ArrayList<ServiceBindingSetup> bindings = new ArrayList<>();
 
     private final Key<?> key;
 
-    public ServiceProviderSetup(Key<?> key) {
+    protected ServiceProviderSetup(Key<?> key) {
         this.key = key;
     }
 
     public abstract BindingAccessor binding();
 
+    /** {@inheritDoc} */
     @Override
     public Key<?> key() {
         return key;
@@ -116,8 +117,16 @@ public abstract class ServiceProviderSetup implements Keyed {
         }
     }
 
+    /**
+     * A service that was bound on the {@link app.packed.service.advanced.ServiceProviderKind#OPERATION} level.
+     *
+     * @see app.packed.operation.OperationConfiguration#bindServiceInstance(Class, Object)
+     * @see app.packed.operation.OperationConfiguration#bindServiceInstance(Key, Object)
+     */
     public static final class OperationServiceProviderSetup extends ServiceProviderSetup {
+
         private final SupplierOrInstance binding;
+
         private final OperationSetup operation;
 
         public OperationServiceProviderSetup(Key<?> key, OperationSetup operation, SupplierOrInstance binding) {

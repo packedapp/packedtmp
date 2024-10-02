@@ -28,8 +28,8 @@ import app.packed.build.BuildException;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.extension.Extension;
 import internal.app.packed.container.PackedContainerInstaller;
-import internal.app.packed.container.PackedContainerTemplatePack;
-import internal.app.packed.container.PackedContainerTemplatePack.KeyFragment;
+import internal.app.packed.container.PackedContainerLink;
+import internal.app.packed.container.PackedContainerLink.KeyFragment;
 
 // A link has
 
@@ -58,7 +58,7 @@ import internal.app.packed.container.PackedContainerTemplatePack.KeyFragment;
 // Hvad med mesh
 
 // Move as nested class to ContainerTemplate
-public sealed interface ContainerTemplateLink permits PackedContainerTemplatePack {
+public sealed interface OldContainerTemplateLink permits PackedContainerLink {
 
     /** {@return the extension that defined the link} */ // declaringExtension?
     Class<? extends Extension<?>> extension();
@@ -103,13 +103,13 @@ public sealed interface ContainerTemplateLink permits PackedContainerTemplatePac
      *            the type of extension
      * @return the builder
      */
-    static ContainerTemplateLink.Configurator of(MethodHandles.Lookup caller, Class<? extends Extension<?>> extensionType, String name) {
+    static OldContainerTemplateLink.Configurator of(MethodHandles.Lookup caller, Class<? extends Extension<?>> extensionType, String name) {
         if (!caller.hasFullPrivilegeAccess()) {
             throw new IllegalArgumentException("caller must have full privilege access");
         } else if (caller.lookupClass().getModule() != extensionType.getModule()) {
             throw new IllegalArgumentException("extension type must be in the same module as the caller");
         }
-        return new ContainerTemplateLink.Configurator(new PackedContainerTemplatePack(extensionType, null, Map.of()));
+        return new OldContainerTemplateLink.Configurator(new PackedContainerLink(extensionType, null, Map.of()));
     }
 
     // Man kan ikke lave det uden en extension class
@@ -143,9 +143,9 @@ public sealed interface ContainerTemplateLink permits PackedContainerTemplatePac
     public static final class Configurator {
 
         /** The internal pack. */
-        private PackedContainerTemplatePack pack;
+        private PackedContainerLink pack;
 
-        private Configurator(PackedContainerTemplatePack pack) {
+        private Configurator(PackedContainerLink pack) {
             this.pack = requireNonNull(pack);
         }
 
@@ -154,7 +154,7 @@ public sealed interface ContainerTemplateLink permits PackedContainerTemplatePac
          *
          * @return the new pack
          */
-        public ContainerTemplateLink build() {
+        public OldContainerTemplateLink build() {
             return pack;
         }
 
@@ -166,7 +166,7 @@ public sealed interface ContainerTemplateLink permits PackedContainerTemplatePac
 
         // is used in the (unlikely) scenario with multiple links
         // that each provide something with the same key
-        public ContainerTemplateLink.Configurator rekey(Key<?> from, Key<?> to) {
+        public OldContainerTemplateLink.Configurator rekey(Key<?> from, Key<?> to) {
             // from key must exist
             // Advanced operation
             // no case checks are performed
@@ -268,8 +268,8 @@ public sealed interface ContainerTemplateLink permits PackedContainerTemplatePac
          * @return this builder
          */
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        ContainerTemplateLink.Configurator useBuilder(Consumer<? super PackedContainerInstaller> action) {
-            pack = new PackedContainerTemplatePack(pack.extension(), pack.onUse() == null ? action : pack.onUse().andThen((Consumer) action), pack.services());
+        OldContainerTemplateLink.Configurator useBuilder(Consumer<? super PackedContainerInstaller> action) {
+            pack = new PackedContainerLink(pack.extension(), pack.onUse() == null ? action : pack.onUse().andThen((Consumer) action), pack.services());
             return this;
         }
     }

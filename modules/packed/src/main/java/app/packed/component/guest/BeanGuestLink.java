@@ -13,24 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent;
-
-import java.util.concurrent.TimeUnit;
-
-import app.packed.context.Context;
-import app.packed.context.ContextualServiceProvider;
+package app.packed.component.guest;
 
 /**
  *
  */
-@ContextualServiceProvider(extension = ThreadExtension.class, context = DaemonContext.class)
-public interface DaemonContext extends Context<ThreadExtension> {
+public interface BeanGuestLink {
 
-    boolean isShutdown();
-
-    // Daemons should wait using this method
-    void awaitShutdown(long timeout, TimeUnit unit) throws InterruptedException;
-
-    // should probably check isShutdown();
-    void await() throws InterruptedException;
 }

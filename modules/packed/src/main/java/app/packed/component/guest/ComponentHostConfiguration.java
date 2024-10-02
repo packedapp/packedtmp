@@ -15,9 +15,14 @@
  */
 package app.packed.component.guest;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.binding.Key;
 import app.packed.extension.BaseExtensionPoint;
 import internal.app.packed.application.GuestBeanHandle;
+import internal.app.packed.container.PackedContainerLink;
 
 /**
  *
@@ -30,6 +35,8 @@ import internal.app.packed.application.GuestBeanHandle;
 // De enkelt required service links maa addes her
 public class ComponentHostConfiguration<T> extends InstanceBeanConfiguration<T> {
 
+    Map<Key<?>, PackedContainerLink> links = new HashMap<>();
+
     /**
      * @param handle
      */
@@ -37,13 +44,23 @@ public class ComponentHostConfiguration<T> extends InstanceBeanConfiguration<T> 
         super(handle);
     }
 
-    // Skal vi have 3 konfigurationer?
-    // Eller bare have den her og saa ogsaa addLink(BeanLinker)
-    public ComponentHostConfiguration<T> addLink(ContainerLinker linker) {
+    public ComponentHostConfiguration<T> addLink(BeanGuestLink linker) {
         return this;
     }
 
-    public static <T> ComponentHostConfiguration<T> installApplication(BaseExtensionPoint extensionPoint, Class<T> beanClass) {
+    public ComponentHostConfiguration<T> addLink(ContainerGuestLink linker) {
+        return this;
+    }
+
+    public static <T> ComponentHostConfiguration<T> installApplicationHost(BaseExtensionPoint extensionPoint, Class<T> beanClass) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static <T> ComponentHostConfiguration<T> installBeanHost(BaseExtensionPoint extensionPoint, Class<T> beanClass) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static <T> ComponentHostConfiguration<T> installContainerHost(BaseExtensionPoint extensionPoint, Class<T> beanClass) {
         throw new UnsupportedOperationException();
     }
 }

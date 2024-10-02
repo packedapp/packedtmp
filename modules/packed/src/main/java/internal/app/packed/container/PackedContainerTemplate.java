@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.binding.Key;
-import app.packed.component.guest.ContainerTemplateLink;
+import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.context.ContextTemplate;
@@ -57,7 +57,7 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
     public PackedContainerInstaller newInstaller(Class<? extends Extension<?>> installedBy, ApplicationSetup application, @Nullable ContainerSetup parent) {
         PackedContainerInstaller installer = new PackedContainerInstaller(this, null, parent, installedBy);
 
-        for (PackedContainerTemplatePack b : installer.template.links().packs) {
+        for (PackedContainerLink b : installer.template.links().packs) {
             if (b.onUse() != null) {
                 b.onUse().accept(installer);
             }
@@ -85,15 +85,15 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
             this.pbt = pbt;
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public PackedContainerTemplateConfigurator carrierType(Class<?> guest) {
-            // I don't think we are going to do any checks here?
-            // Well not interface, annotation, abstract class, ...
-            // All lifetime operation will change...
-            this.pbt = new PackedContainerTemplate(pbt.kind, guest, pbt.links, pbt.resultType, pbt.componentTags, pbt.lifecycleKind);
-            return this;
-        }
+//        /** {@inheritDoc} */
+//        @Override
+//        public PackedContainerTemplateConfigurator carrierType(Class<?> guest) {
+//            // I don't think we are going to do any checks here?
+//            // Well not interface, annotation, abstract class, ...
+//            // All lifetime operation will change...
+//            this.pbt = new PackedContainerTemplate(pbt.kind, guest, pbt.links, pbt.resultType, pbt.componentTags, pbt.lifecycleKind);
+//            return this;
+//        }
 
         // expects results. Maa ogsaa tage en Extension...
         public PackedContainerTemplateConfigurator expectResult(Class<?> resultType) {
@@ -118,8 +118,8 @@ public record PackedContainerTemplate(PackedContainerKind kind, Class<?> holderC
 
         /** {@inheritDoc} */
         @Override
-        public PackedContainerTemplateConfigurator withPack(ContainerTemplateLink channel) {
-            PackedContainerTemplatePackList tunnels = pbt.links.add((PackedContainerTemplatePack) channel);
+        public PackedContainerTemplateConfigurator withPack(OldContainerTemplateLink channel) {
+            PackedContainerTemplatePackList tunnels = pbt.links.add((PackedContainerLink) channel);
             this.pbt = new PackedContainerTemplate(pbt.kind, pbt.holderClass, tunnels, pbt.resultType, pbt.componentTags, pbt.lifecycleKind);
             return this;
         }

@@ -130,7 +130,7 @@ public final class BeanScanner {
             BeanHandlers.invokeBeanIntrospectorInitialize(introspector, bse);
 
             // Notify the bean introspector that it is being used
-            introspector.beforeHooks();
+            introspector.onStart();
             return bse;
         });
     }
@@ -271,7 +271,7 @@ public final class BeanScanner {
 
         // Call into every BeanIntrospector and tell them it is all over
         for (BeanScannerParticipant e : extensions.values()) {
-            e.introspector.afterHooks();
+            e.introspector.onStop();
         }
     }
 

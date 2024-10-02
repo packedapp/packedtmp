@@ -182,7 +182,7 @@ public final class PackedContainerInstaller extends PackedComponentInstaller<Con
             @Nullable ContainerSetup parent) {
         PackedContainerInstaller pcb = new PackedContainerInstaller(template, null, parent, installedBy);
 
-        for (PackedContainerTemplatePack b : pcb.template.links().packs) {
+        for (PackedContainerLink b : pcb.template.links().packs) {
             if (b.onUse() != null) {
                 b.onUse().accept(pcb);
             }

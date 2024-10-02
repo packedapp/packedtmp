@@ -92,7 +92,7 @@ public class Ddd extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void triggeredByAnnotatedMethod(Annotation hooks, BeanMethod on) {
+                public void onAnnotatedMethod(Annotation hooks, BeanMethod on) {
                     // base().runOnBeanInject(on.newDelegatingOperation());
 
                     // base().runOnBeanInject(on.newOperation());

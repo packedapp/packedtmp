@@ -23,7 +23,7 @@ import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
-import app.packed.component.guest.ContainerTemplateLink;
+import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension;
 import app.packed.operation.Op1;
@@ -56,7 +56,6 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
     default Function<? super ContainerTemplate.Installer, ? extends ContainerHandle<?>> rootContainerHandleFactory() {
         return ContainerHandle::new;
     }
-
 
     /**
      * A base template for a container that has the same lifetime as its parent container.
@@ -129,22 +128,23 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
             throw new UnsupportedOperationException();
         }
 
-        /**
-         * Creates a new template that We need to set the holder type. Otherwise we cannot calculate
-         * <p>
-         * A bean representing the will automatically be created. If you need speciel configuration for the bean. You can
-         * manually create one using {@link app.packed.extension.BaseExtensionPoint#containerHolderInstall(Class, boolean)}
-         *
-         * @param beanClass
-         *            the type of the lifetime bean
-         * @return the new template
-         *
-         * @throws UnsupportedOperationException
-         *             on container templates that do not have any lifetime operations
-         */
-        // HOW are we going to access this class????? Without a lookup object.
-        // Can't just initialize it
-        Configurator carrierType(Class<?> beanClass);
+//        /**
+//         * Creates a new template that We need to set the holder type. Otherwise we cannot calculate
+//         * <p>
+//         * A bean representing the will automatically be created. If you need speciel configuration for the bean. You can
+//         * manually create one using {@link app.packed.extension.BaseExtensionPoint#containerHolderInstall(Class, boolean)}
+//         *
+//         * @param beanClass
+//         *            the type of the lifetime bean
+//         * @return the new template
+//         *
+//         * @throws UnsupportedOperationException
+//         *             on container templates that do not have any lifetime operations
+//         */
+//        // HOW are we going to access this class????? Without a lookup object.
+//        // Can't just initialize it'
+//        @Deprecated // Guest bean
+//        Configurator carrierType(Class<?> beanClass);
 
         // Har kun visibility for the installing extension
         Configurator lifetimeOperationAddContext(int index, ContextTemplate template);
@@ -153,10 +153,10 @@ public sealed interface ContainerTemplate permits PackedContainerTemplate {
             throw new UnsupportedOperationException();
         }
 
-        Configurator withPack(ContainerTemplateLink pack);
+        Configurator withPack(OldContainerTemplateLink pack);
 
-        default Configurator withPack(ContainerTemplateLink... packs) {
-            for (ContainerTemplateLink p : packs) {
+        default Configurator withPack(OldContainerTemplateLink... packs) {
+            for (OldContainerTemplateLink p : packs) {
                 withPack(p);
             }
             return this;

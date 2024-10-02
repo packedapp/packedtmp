@@ -31,26 +31,5 @@ import app.packed.extension.BaseExtension;
  */
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
-@AnnotatedVariableBeanTrigger(extension = BaseExtension.class)
-
-// @ServiceResolver(context=ComponentHostContext.class, order = Kind.Context)
+@AnnotatedVariableBeanTrigger(extension = BaseExtension.class, requiresContext = ComponentHostContext.class)
 public @interface FromComponentGuest {}
-//Er lidt specielt fordi ApplicationMirror kan baade vaere i Applicationen og i guesten
-
-// replace GuestNamespaceContext
-
-//FromGuest, FromGuestContainer
-
-//Should be possible to see somewhere what is available, Have A ContainerGuestBean?
-//I don't think we need to see at runtime. The guest may provide more, but we have filtered what we want
-
-//Was ContainerCarrierService
-//Men taenker vi maaske kan faa BeanHosts paa et tidspunkt (og i saa fald hvor skal den vaere..
-//Maaske HostBeanConfiguration som jeg saa heller ikke ved hvor skal vaere
-//Maaske kan vi ikke hoste en bean... Men vi kan have en container med en enkelt bean
-//Altsaa Containeren ka
-
-//GuestToAdaptor
-//Ved ikke om vi vil injecte noget i fx OnComponentGuestRunstateChange
-
-// Host | HostManager

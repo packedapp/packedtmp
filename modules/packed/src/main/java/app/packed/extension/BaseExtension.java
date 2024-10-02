@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -26,7 +27,6 @@ import app.packed.bean.SyntheticBean;
 import app.packed.binding.BindableVariable;
 import app.packed.binding.Key;
 import app.packed.binding.UnwrappedBindableVariable;
-import app.packed.binding.Variable;
 import app.packed.build.BuildException;
 import app.packed.build.action.BuildActionable;
 import app.packed.component.guest.ComponentHostContext;
@@ -37,17 +37,16 @@ import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
+import app.packed.context.Context;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.lifecycle.OnInitialize;
 import app.packed.lifecycle.OnStart;
 import app.packed.lifecycle.OnStop;
 import app.packed.lifetime.Main;
 import app.packed.operation.Op;
-import app.packed.operation.Op1;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTemplate;
-import app.packed.runtime.ManagedLifecycle;
 import app.packed.service.Export;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.service.Provide;
@@ -357,7 +356,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             /** Handles {@link Inject}. */
             @Override
-            public void activatedByAnnotatedField(Annotation hook, BeanField field) {
+            public void onAnnotatedField(Annotation hook, BeanField field) {
                 if (hook instanceof Inject) {
                     // checkNotStatic
                     // Det er jo inject service!???
@@ -380,52 +379,38 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
                     // Hmm, vi har jo slet ikke lavet namespacet endnu
                     bean.serviceNamespace().provideOperation(key, operation, new FromOperationResult(operation));
                 } else {
-                    super.activatedByAnnotatedField(hook, field);
+                    super.onAnnotatedField(hook, field);
                 }
             }
 
             /** Handles {@link ContainerGuest}. */
             @Override
-            public void activatedByAnnotatedVariable(Annotation annotation, BindableVariable v) {
+            public void onAnnotatedVariable(Annotation annotation, BindableVariable v) {
                 if (annotation instanceof FromComponentGuest) {
-                    Variable va = v.variable();
-                    // AssignableTo in case of
-                    if (va.rawType().equals(ApplicationMirror.class)) {
-                        v.bindOp(new Op1<ApplicationLaunchContext, ApplicationMirror>(a -> a.mirror()) {});
-                    } else if (va.rawType().equals(String.class)) {
-                        v.bindOp(new Op1<ApplicationLaunchContext, String>(a -> a.name()) {});
-                    } else if (va.rawType().equals(ManagedLifecycle.class)) {
-                        v.bindOp(new Op1<ApplicationLaunchContext, ManagedLifecycle>(a -> a.runner.runtime) {});
-                    } else if (va.rawType().equals(ServiceLocator.class)) {
-                        v.bindOp(new Op1<ApplicationLaunchContext, ServiceLocator>(a -> a.serviceLocator()) {});
-                    } else if (va.rawType().equals(ComponentHostContext.class)) {
-                        v.bindOp(new Op1<ApplicationLaunchContext, ComponentHostContext>(a -> PackedComponentHostContext.DEFAULT) {});
-                    } else {
-                        throw new UnsupportedOperationException("Unknown Container Guest Service " + va.rawType());
-                    }
+                    beanHandle(GuestBeanHandle.class).get().resolve(this, v);
                 } else {
-                    super.activatedByAnnotatedVariable(annotation, v);
+                    super.onAnnotatedVariable(annotation, v);
                 }
             }
 
             @Override
-            public void activatedByVariableType(Class<?> hook, Class<?> actualHook, UnwrappedBindableVariable binding) {
+            public void onContextualServiceProvision(Key<?> key, Class<?> actualHook, Set<Class<? extends Context<?>>> contexts,UnwrappedBindableVariable binding) {
+                Class<?> hook = key.rawType();
                 OperationSetup operation = ((PackedBindableWrappedVariable) binding).var().operation;
 
                 if (ApplicationLaunchContext.class.isAssignableFrom(hook)) {
                     binding.bindContext(ApplicationLaunchContext.class);
                 } else if (hook == ExtensionContext.class) {
+                    // We probably should have failed already, so no need to check. Only beans that are in the context
                     if (beanAuthor().isApplication()) {
                         binding.failWith(hook.getSimpleName() + " can only be injected into bean that owned by an extension");
                     }
-//                    if (binding.availableInvocationArguments().isEmpty() || binding.availableInvocationArguments().get(0) != ExtensionContext.class) {
-//                        // throw new Error(v.availableInvocationArguments().toString());
-//                    }
                     binding.bindContext(ExtensionContext.class);
                 } else if (hook == ComponentHostContext.class) {
                     PackedComponentHostContext c = beanHandle(GuestBeanHandle.class).get().toContext();
                     binding.bindInstance(c);
                 }
+
                 // MIRRORS
                 else if (actualHook == DeploymentMirror.class) {
                     binding.bindInstance(operation.bean.container.application.deployment.mirror());
@@ -457,7 +442,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             /** Handles {@link Inject}, {@link OnInitialize}, {@link OnStart} and {@link OnStop}. */
             @Override
-            public void triggeredByAnnotatedMethod(Annotation annotation, BeanMethod method) {
+            public void onAnnotatedMethod(Annotation annotation, BeanMethod method) {
                 BeanSetup bean = BeanHandlers.invokeBeanIntrospectorBean(this);
 
                 if (annotation instanceof Inject) {
@@ -507,7 +492,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
 
                     os.generateMethodHandleOnCodegen(mh -> mc.generatedMethodHandle = mh);
                 } else {
-                    super.triggeredByAnnotatedMethod(annotation, method);
+                    super.onAnnotatedMethod(annotation, method);
                 }
             }
         };

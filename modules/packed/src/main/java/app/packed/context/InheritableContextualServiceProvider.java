@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 
 import app.packed.bean.BeanTrigger;
 import app.packed.extension.Extension;
+import app.packed.service.advanced.ServiceResolver.NoContext;
 
 /**
  * A version of the {@link ContextualServiceProvider} annotation that is {@link Inherited}. All other functionality is
@@ -31,6 +32,8 @@ import app.packed.extension.Extension;
  * <p>
  * NOTE: Remember, inherited annotations are not inherited on interfaces. So you an abstract class if you need to design
  * a inheritance hierarchy.
+ *
+ * @see ContextualServiceProvider
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -56,5 +59,5 @@ public @interface InheritableContextualServiceProvider {
      *
      * @return required contexts
      */
-    Class<? extends Context<?>>[] requiresContext() default {};
+    Class<? extends Context<?>> context() default NoContext.class;
 }

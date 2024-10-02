@@ -17,12 +17,15 @@ package app.packed.concurrent;
 
 import java.lang.annotation.Annotation;
 import java.time.Duration;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanIntrospector;
+import app.packed.binding.Key;
 import app.packed.binding.UnwrappedBindableVariable;
+import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
@@ -105,16 +108,17 @@ public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
         return new BeanIntrospector() {
 
             @Override
-            public void activatedByVariableType(Class<?> hook, Class<?> actualHook, UnwrappedBindableVariable v) {
+            public void onContextualServiceProvision(Key<?> key, Class<?> actualHook, Set<Class<? extends Context<?>>> contexts, UnwrappedBindableVariable v) {
+                Class<?> hook = key.rawType();
                 if (hook == SchedulingContext.class || hook == DaemonContext.class) {
                     v.bindInvocationArgument(1);
                 } else {
-                    super.activatedByVariableType(hook, actualHook, v);
+                    super.onContextualServiceProvision(key, actualHook, contexts, v);
                 }
             }
 
             @Override
-            public void triggeredByAnnotatedMethod(Annotation hook, BeanMethod on) {
+            public void onAnnotatedMethod(Annotation hook, BeanMethod on) {
                 if (hook instanceof ScheduleRecurrent schedule) {
                     // Parse the schedule
                     ScheduleImpl s = new ScheduleImpl(Duration.ofMillis(schedule.millies()));
@@ -137,7 +141,7 @@ public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
                     // Configure the handle
                     h.useVirtual = daemon.useVirtual();
                 } else {
-                    super.triggeredByAnnotatedMethod(hook, on);
+                    super.onAnnotatedMethod(hook, on);
                 }
             }
         };

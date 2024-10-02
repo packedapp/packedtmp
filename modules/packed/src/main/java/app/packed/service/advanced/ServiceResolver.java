@@ -84,7 +84,6 @@ public @interface ServiceResolver {
      * with no context should be resolved.
      */
     public interface NoContext extends Context<BaseExtension> {}
-
 }
 // Default
 // Is there are service for operation
