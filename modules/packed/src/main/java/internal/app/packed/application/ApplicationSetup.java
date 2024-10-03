@@ -105,7 +105,9 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     public final ArrayList<BuildApplicationRepository> subChildren = new ArrayList<>();
 
     /** The template used to create the application. */
-    public final PackedApplicationTemplate<?, ?> template;
+    public final PackedApplicationTemplate<?> template;
+
+    public boolean completedBuilding;
 
     /**
      * Create a new application.

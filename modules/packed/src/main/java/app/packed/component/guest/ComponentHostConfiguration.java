@@ -45,9 +45,8 @@ public class ComponentHostConfiguration<T> extends InstanceBeanConfiguration<T> 
         super(handle);
     }
 
-
     // Fungere ikke... Hvad goer vi med det vi bygger nu
-    public static <T> ComponentHostConfiguration<T> installApplicationHost(ApplicationTemplate<?, ?> template, BaseExtensionPoint extensionPoint,
+    public static <T> ComponentHostConfiguration<T> installApplicationHost(ApplicationTemplate<?> template, BaseExtensionPoint extensionPoint,
             Class<T> beanClass) {
         throw new UnsupportedOperationException();
     }

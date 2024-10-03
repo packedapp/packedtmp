@@ -145,8 +145,11 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
     @SuppressWarnings("unchecked")
     public final A launch(RunState state, Wirelet... wirelets) {
         requireNonNull(state, "state is null");
-        WireletSelectionArray<Wirelet> ws = WireletSelectionArray.of(wirelets);
+        if (!application.completedBuilding) {
+            throw new IllegalStateException("Application has not finished building");
+        }
 
+        WireletSelectionArray<Wirelet> ws = WireletSelectionArray.of(wirelets);
         ContainerRunner runner = new ContainerRunner(application);
 
         // Create a launch context

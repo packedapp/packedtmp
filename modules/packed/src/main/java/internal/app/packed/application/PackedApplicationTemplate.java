@@ -41,9 +41,9 @@ import internal.app.packed.context.PackedComponentHostContext;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /** Implementation of {@link ApplicationTemplate}. */
-public record PackedApplicationTemplate<A, H extends ApplicationHandle<A, ?>>(Class<?> guestClass, @Nullable Op<?> op,
-        Function<? super Installer<H>, ? extends ApplicationHandle<A, ?>> handleFactory, PackedContainerTemplate<?> containerTemplate, Set<String> componentTags)
-        implements ApplicationTemplate<A, H> {
+public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class<?> guestClass, @Nullable Op<?> op,
+        Function<? super ApplicationTemplate.Installer<H>, ? extends ApplicationHandle<?, ?>> handleFactory, PackedContainerTemplate<?> containerTemplate,
+        Set<String> componentTags) implements ApplicationTemplate<H> {
 
     static final ContextTemplate GB_CIT = ContextTemplate.of(ApplicationLaunchContext.class, c -> {});
 
@@ -54,12 +54,12 @@ public record PackedApplicationTemplate<A, H extends ApplicationHandle<A, ?>>(Cl
 
     public static final PackedBeanTemplate GB = new PackedBeanTemplate(BeanKind.UNMANAGED).withOperationTemplate(GB_CON);
 
-    public PackedApplicationTemplate(Class<?> guestClass, Function<? super Installer<H>, ? extends ApplicationHandle<A, ?>> handleFactory,
+    public PackedApplicationTemplate(Class<?> guestClass, Function<? super Installer<H>, ? extends ApplicationHandle<?, ?>> handleFactory,
             PackedContainerTemplate<?> containerTemplate) {
         this(guestClass, null, handleFactory, containerTemplate);
     }
 
-    public PackedApplicationTemplate(Class<?> guestClass, Op<?> op, Function<? super Installer<H>, ? extends ApplicationHandle<A, ?>> handleFactory,
+    public PackedApplicationTemplate(Class<?> guestClass, Op<?> op, Function<? super Installer<H>, ? extends ApplicationHandle<?, ?>> handleFactory,
             PackedContainerTemplate<?> containerTemplate) {
         this(guestClass, op, handleFactory, containerTemplate, Set.of());
     }
@@ -67,11 +67,11 @@ public record PackedApplicationTemplate<A, H extends ApplicationHandle<A, ?>>(Cl
     // De her er ikke public fordi de kun kan bruges fra Bootstrap App
     // Hvor ikke specificere en template direkte. Fordi den kun skal bruges en gang
     // Til at lave selve bootstrap applicationene.
-    static PackedApplicationTemplate<Void, ?> ROOT_MANAGED = null;
+    static PackedApplicationTemplate<?> ROOT_MANAGED = null;
 
-    static PackedApplicationTemplate<Void, ?> ROOT_UNMANAGED = null;
+    static PackedApplicationTemplate<?> ROOT_UNMANAGED = null;
 
-    public static final PackedApplicationTemplate<?, ?> BOOTSTRAP_APP = new PackedApplicationTemplate<>(PackedApplicationTemplate.class, ApplicationHandle::new,
+    public static final PackedApplicationTemplate<?> BOOTSTRAP_APP = new PackedApplicationTemplate<>(PackedApplicationTemplate.class, ApplicationHandle::new,
             new PackedContainerTemplate<>(PackedContainerKind.BOOTSTRAP_APPLICATION, PackedBootstrapApp.class));
 
     public static <A> PackedApplicationInstaller<?> newBootstrapAppInstaller() {
@@ -112,8 +112,8 @@ public record PackedApplicationTemplate<A, H extends ApplicationHandle<A, ?>>(Cl
         return installer;
     }
 
-    public ApplicationTemplate<A, H> configure(Consumer<? super Configurator> configure) {
-        PackedApplicationTemplateConfigurator<A, H> c = new PackedApplicationTemplateConfigurator<>();
+    public ApplicationTemplate<H> configure(Consumer<? super Configurator> configure) {
+        PackedApplicationTemplateConfigurator<H> c = new PackedApplicationTemplateConfigurator<>();
         c.t = this;
         configure.accept(c);
         if (c.t.containerTemplate == null) {
@@ -123,14 +123,14 @@ public record PackedApplicationTemplate<A, H extends ApplicationHandle<A, ?>>(Cl
     }
 
     /** Implementation of {@link ApplicationTemplate.Configurator} */
-    public final static class PackedApplicationTemplateConfigurator<A, H extends ApplicationHandle<A, ?>> implements ApplicationTemplate.Configurator {
+    public final static class PackedApplicationTemplateConfigurator<H extends ApplicationHandle<?, ?>> implements ApplicationTemplate.Configurator {
 
-        private PackedApplicationTemplate<A, H> t;
+        private PackedApplicationTemplate<H> t;
 
         /** {@inheritDoc} */
         @Override
         public Configurator componentTag(String... tags) {
-            this.t = new PackedApplicationTemplate<A, H>(t.guestClass(), t.op(), t.handleFactory, t.containerTemplate(),
+            this.t = new PackedApplicationTemplate<>(t.guestClass(), t.op(), t.handleFactory, t.containerTemplate(),
                     ComponentTagHolder.copyAndAdd(t.componentTags, tags));
             return this;
         }
@@ -147,7 +147,7 @@ public record PackedApplicationTemplate<A, H extends ApplicationHandle<A, ?>>(Cl
 
         /** {@inheritDoc} */
         @Override
-        public PackedApplicationTemplateConfigurator<A, H> rootContainer(ContainerTemplate<?> template) {
+        public PackedApplicationTemplateConfigurator<H> rootContainer(ContainerTemplate<?> template) {
             this.t = new PackedApplicationTemplate<>(t.guestClass(), t.op(), t.handleFactory(), (PackedContainerTemplate<?>) template, t.componentTags);
             return this;
         }

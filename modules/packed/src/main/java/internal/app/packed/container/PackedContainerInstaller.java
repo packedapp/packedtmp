@@ -90,7 +90,7 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
     }
 
     @Override
-    public <T> ContainerTemplate.Installer<H> carrierProvideConstant(Key<T> key, T constant) {
+    public <T> ContainerTemplate.Installer<H> provideGuestConstant(Key<T> key, T constant) {
         throw new UnsupportedOperationException();
     }
 

@@ -73,17 +73,17 @@ public final class ApplicationRepositoryConfiguration2<H extends ApplicationHand
     }
 
     /** {@return the templates that are available in the repository) */
-    public ApplicationTemplate<?, H> template() {
+    public ApplicationTemplate<H> template() {
         throw new UnsupportedOperationException();
     }
 
     public static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration2<H> install(BaseExtension extension,
-            ApplicationTemplate<A, H> template) {
+            ApplicationTemplate<H> template) {
         throw new UnsupportedOperationException();
     }
 
     public static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration2<H> install(BaseExtensionPoint extension,
-            ApplicationTemplate<A, H> template) {
+            ApplicationTemplate<H> template) {
         throw new UnsupportedOperationException();
     }
 

@@ -81,7 +81,7 @@ public final class ApplicationRepositoryConfiguration<H extends ApplicationHandl
 
     /** {@return the templates that are available in the repository) */
     @SuppressWarnings("unchecked")
-    public ApplicationTemplate<?, H> template() {
-        return (ApplicationTemplate<?, H>) handle.repository.template;
+    public ApplicationTemplate<H> template() {
+        return (ApplicationTemplate<H>) handle.repository.template;
     }
 }

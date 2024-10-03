@@ -62,9 +62,9 @@ public final class PackedApplicationInstaller<H extends ApplicationHandle<?, ?>>
     public boolean optionBuildReusableImage;
 
     /** The template of the application. */
-    final PackedApplicationTemplate<?, ?> template;
+    final PackedApplicationTemplate<?> template;
 
-    PackedApplicationInstaller(PackedApplicationTemplate<?, ?> template, @Nullable MethodHandle launcher, BuildGoal goal) {
+    PackedApplicationInstaller(PackedApplicationTemplate<?> template, @Nullable MethodHandle launcher, BuildGoal goal) {
         this.template = template;
         this.lk = template.containerTemplate().lifecycleKind();
         this.containerInstaller = new PackedContainerInstaller<>(template.containerTemplate(), this, null, null);
@@ -96,6 +96,7 @@ public final class PackedApplicationInstaller<H extends ApplicationHandle<?, ?>>
         } finally {
             buildProcess.finished();
         }
+        container.application.completedBuilding = true;
         return (H) container.application.handle();
     }
 

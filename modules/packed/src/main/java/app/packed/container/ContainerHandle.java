@@ -133,6 +133,10 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
         return m;
     }
 
+    public final String name() {
+        return container.name();
+    }
+
     @SuppressWarnings("unchecked")
     protected C newContainerConfiguration() {
         return (C) new ContainerConfiguration(this);

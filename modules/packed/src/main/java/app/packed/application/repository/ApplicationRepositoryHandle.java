@@ -53,9 +53,9 @@ class ApplicationRepositoryHandle<H extends ApplicationHandle<?, ?>> extends Bea
         BeanSetup.crack(this).container.application.subChildren.add(repository);
     }
 
-    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<H> install(ApplicationTemplate<A, H> template, ExtensionSetup es,
+    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<H> install(ApplicationTemplate<H> template, ExtensionSetup es,
             AuthoritySetup<?> owner) {
-        PackedApplicationTemplate<A, H> t = (PackedApplicationTemplate<A, H>) template;
+        PackedApplicationTemplate<H> t = (PackedApplicationTemplate<H>) template;
         if (t.guestClass() == Void.class) {
             throw new UnsupportedOperationException("Does not support application templates of Void.class guest type");
         }

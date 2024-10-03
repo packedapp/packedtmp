@@ -43,7 +43,7 @@ public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> impl
     private final MethodHandle launcher;
 
     /** The application template for new applications. */
-    private final PackedApplicationTemplate<A, H> template;
+    private final PackedApplicationTemplate<H> template;
 
     /**
      * Create a new bootstrap app
@@ -51,7 +51,7 @@ public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> impl
      * @param template
      *            the template for the apps that are being bootstrapped.
      */
-    private PackedBootstrapApp(PackedApplicationTemplate<A, H> template, MethodHandle launcher) {
+    private PackedBootstrapApp(PackedApplicationTemplate<H> template, MethodHandle launcher) {
         this.template = requireNonNull(template);
         this.launcher = requireNonNull(launcher);
     }
@@ -116,14 +116,15 @@ public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> impl
      *            the template for the type applications that should be bootstrapped
      * @return a new bootstrap app
      */
-    public static <A> BootstrapApp<A> of(PackedApplicationTemplate<A, ?> template) {
+
+    public static <A, H extends ApplicationHandle<A, ?>> BootstrapApp<A> of(PackedApplicationTemplate<H> template) {
         // We need a an assembly to build the (bootstrap) application
         BootstrapAppAssembly assembly = new BootstrapAppAssembly(template);
 
         // Build the bootstrap application
         PackedApplicationTemplate.newBootstrapAppInstaller().install(assembly);
 
-        return new PackedBootstrapApp<>(template, assembly.mh);
+        return new PackedBootstrapApp<A, H>(template, assembly.mh);
     }
 
     /** The assembly responsible for building the bootstrap app. */
@@ -132,9 +133,9 @@ public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> impl
         /** The method handle to launch the application, the empty MH is used if A is Void.class */
         private MethodHandle mh = ApplicationLaunchContext.EMPTY_MH;
 
-        private final PackedApplicationTemplate<?, ?> template;
+        private final PackedApplicationTemplate<?> template;
 
-        private BootstrapAppAssembly(PackedApplicationTemplate<?, ?> template) {
+        private BootstrapAppAssembly(PackedApplicationTemplate<?> template) {
             this.template = requireNonNull(template);
         }
 

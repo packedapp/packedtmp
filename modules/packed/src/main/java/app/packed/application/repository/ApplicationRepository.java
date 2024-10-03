@@ -57,7 +57,7 @@ public sealed interface ApplicationRepository<H extends ApplicationHandle<?, ?>>
 
     /** {@return the template that is used for all applications in this repository} */
     // Don't know if we want this...
-    ApplicationTemplate<?, H> template();
+    ApplicationTemplate<H> template();
 
     // An application can be, NA, INSTALLING, AVAILABLE
     // Don't know if we at runtime
@@ -65,7 +65,7 @@ public sealed interface ApplicationRepository<H extends ApplicationHandle<?, ?>>
 
     // boolean availableAtRuntime
 
-    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<H> install(ApplicationTemplate<A, H> template, BaseExtension extension) {
+    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<H> install(ApplicationTemplate<H> template, BaseExtension extension) {
         return ApplicationRepositoryHandle.install(template, ExtensionSetup.crack(extension), ExtensionSetup.crack(extension).container.assembly);
     }
 

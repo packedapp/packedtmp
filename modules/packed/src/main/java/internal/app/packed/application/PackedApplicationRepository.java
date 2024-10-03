@@ -41,12 +41,12 @@ public final class PackedApplicationRepository<H extends ApplicationHandle<?, ?>
     private final MethodHandle methodHandle;
 
     /** The template that is used to install new applications at runtime. */
-    private final PackedApplicationTemplate<?, H> template;
+    private final PackedApplicationTemplate<H> template;
 
     @SuppressWarnings("unchecked")
     public PackedApplicationRepository(BuildApplicationRepository bar) {
         this.handles = new ConcurrentHashMap<>((Map<String, H>) bar.handles);
-        this.template = (PackedApplicationTemplate<?, H>) bar.template;
+        this.template = (PackedApplicationTemplate<H>) bar.template;
         this.methodHandle = requireNonNull(bar.mh);
     }
 
@@ -76,7 +76,7 @@ public final class PackedApplicationRepository<H extends ApplicationHandle<?, ?>
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationTemplate<?, H> template() {
+    public ApplicationTemplate<H> template() {
         return template;
     }
 }

@@ -28,8 +28,11 @@ import internal.app.packed.application.PackedApplicationTemplate.PackedApplicati
 
 /**
  * A template for creating new applications.
+ *
+ * @param <H>
+ *            the type of application handles the template creates
  */
-public sealed interface ApplicationTemplate<A, H extends ApplicationHandle<A, ?>> permits PackedApplicationTemplate {
+public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> permits PackedApplicationTemplate {
 
     /**
      * @param <A>
@@ -41,20 +44,20 @@ public sealed interface ApplicationTemplate<A, H extends ApplicationHandle<A, ?>
      *             if attempting to create an application template without {@link Configurator#container(Consumer) setting}
      *             a container template for the application's root container
      */
-    static <A> ApplicationTemplate<A, ApplicationHandle<A, ApplicationConfiguration>> of(Class<A> hostClass, Consumer<? super Configurator> configurator) {
+    static <A> ApplicationTemplate<ApplicationHandle<A, ApplicationConfiguration>> of(Class<A> hostClass, Consumer<? super Configurator> configurator) {
         return of(hostClass, configurator, ApplicationHandle::new);
     }
 
-    static <A, H extends ApplicationHandle<A, ?>> ApplicationTemplate<A, H> of(Class<A> hostClass, Consumer<? super Configurator> configurator,
+    static <A, H extends ApplicationHandle<A, ?>> ApplicationTemplate<H> of(Class<A> hostClass, Consumer<? super Configurator> configurator,
             Function<? super ApplicationTemplate.Installer<H>, ? extends H> handleFactory) {
-        return new PackedApplicationTemplate<A, H>(hostClass, handleFactory, null).configure(configurator);
+        return new PackedApplicationTemplate<H>(hostClass, handleFactory, null).configure(configurator);
     }
 
-    static <A> ApplicationTemplate<A, ApplicationHandle<A, ApplicationConfiguration>> of(Op<A> hostOp, Consumer<? super Configurator> configurator) {
+    static <A> ApplicationTemplate<ApplicationHandle<A, ApplicationConfiguration>> of(Op<A> hostOp, Consumer<? super Configurator> configurator) {
         return of(hostOp, configurator, ApplicationHandle::new);
     }
 
-    static <A, H extends ApplicationHandle<A, ?>> ApplicationTemplate<A, H> of(Op<A> hostOp, Consumer<? super Configurator> configurator,
+    static <A, H extends ApplicationHandle<A, ?>> ApplicationTemplate<H> of(Op<A> hostOp, Consumer<? super Configurator> configurator,
             Function<? super ApplicationTemplate.Installer<H>, ? extends H> handleFactory) {
         Class<?> type = hostOp.type().returnRawType();
         return new PackedApplicationTemplate<>(type, hostOp, handleFactory, null).configure(configurator);

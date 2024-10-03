@@ -83,12 +83,12 @@ public sealed interface PackedBaseImage<A> extends BaseImage<A> {
         /** {@inheritDoc} */
         @Override
         public A launch(RunState state, Wirelet... wirelets) {
-           return handle.launch(state, wirelets);
+            return handle.launch(state, wirelets);
         }
     }
 
     @ValueBased
-    public record ImageLazy<A>(PackedApplicationTemplate<A, ?> template, FutureApplicationSetup application) implements PackedBaseImage<A> {
+    public record ImageLazy<A>(PackedApplicationTemplate<?> template, FutureApplicationSetup application) implements PackedBaseImage<A> {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")

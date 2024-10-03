@@ -33,7 +33,7 @@ public record GuestBean(long nanos) {
         this(System.nanoTime());
     }
 
-    static final ApplicationTemplate<GuestBean, GuestApplicationHandle> T = ApplicationTemplate.of(GuestBean.class, c -> {
+    static final ApplicationTemplate<GuestApplicationHandle> T = ApplicationTemplate.of(GuestBean.class, c -> {
         c.rootContainer(new PackedContainerTemplate<>(PackedContainerKind.BOOTSTRAP_APPLICATION));
     }, GuestApplicationHandle::new);
 

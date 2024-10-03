@@ -39,12 +39,12 @@ public final class BuildApplicationRepository {
 
     MethodHandle mh;
 
-    public final PackedApplicationTemplate<?, ?> template;
+    public final PackedApplicationTemplate<?> template;
 
     /**
      * @param t
      */
-    public BuildApplicationRepository(PackedApplicationTemplate<?, ?> template) {
+    public BuildApplicationRepository(PackedApplicationTemplate<?> template) {
         this.template = requireNonNull(template);
     }
 

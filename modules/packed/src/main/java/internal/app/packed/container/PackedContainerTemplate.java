@@ -146,7 +146,23 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
         }
     }
 
-    public record PackedDescriptor(PackedContainerTemplate<?> template) implements ContainerTemplate.Descriptor {
+
+    interface Descriptor {
+
+        /**
+         * A set of keys that are available for injection into a lifetime bean using {@link FromLifetimeChannel}.
+         * <p>
+         * This method is mainly used for informational purposes.
+         *
+         * @return the set of keys available for injection
+         */
+        Set<Key<?>> carrierKeys();
+
+        /** {@return a list of the lifetime operation of this container template.} */
+        List<OperationTemplate> lifetimeOperations();
+    }
+
+    public record PackedDescriptor(PackedContainerTemplate<?> template) implements Descriptor {
 
         /** {@inheritDoc} */
         @Override
@@ -162,7 +178,6 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
     }
 
     /** {@inheritDoc} */
-    @Override
     public Descriptor descriptor() {
         return new PackedDescriptor(this);
     }

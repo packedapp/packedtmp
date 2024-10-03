@@ -15,9 +15,7 @@
  */
 package app.packed.container;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.assembly.Assembly;
@@ -26,7 +24,6 @@ import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension;
 import app.packed.operation.Op1;
-import app.packed.operation.OperationTemplate;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
@@ -84,23 +81,17 @@ public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits 
     // Carefull with Unmanaged on Managed
     ContainerTemplate<?> UNMANAGED = new PackedContainerTemplate<>(PackedContainerKind.UNMANAGED);
 
-    ContainerTemplate.Descriptor descriptor();
-
     ContainerTemplate<?> reconfigure(Consumer<? super Configurator> configure);
-
-    // The issue here is that the application can get an instance of ContainerHandle
-    // For example, by setting it in a ThreadLocal...
-    // Alternative would be that you could have some ContainerMirror, ContainerFiguration methods
-    // But these also take a handle...
-    // Okay so If Application can decide configuration/mirror -> Then it has access to a ContainerHandle
-    // Which is probably okay
-//    /** {@return the handle factory used for the root container of the application. */
-//    default Function<? super ContainerTemplate.Installer, ? extends ContainerHandle<?>> rootContainerHandleFactory() {
-//        return ContainerHandle::new;
-//    }
 
     public interface Configurator {
 
+        /**
+         * @param <T>
+         * @param key
+         * @param arg
+         * @return
+         * @see app.packed.component.guest.FromComponentGuest
+         */
         default <T> Configurator carrierProvideConstant(Class<T> key, T arg) {
             return carrierProvideConstant(Key.of(key), arg);
         }
@@ -160,24 +151,6 @@ public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits 
             return this;
         }
 
-        default Configurator zRequireUseOfExtension(String errorMessage) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    interface Descriptor {
-
-        /**
-         * A set of keys that are available for injection into a lifetime bean using {@link FromLifetimeChannel}.
-         * <p>
-         * This method is mainly used for informational purposes.
-         *
-         * @return the set of keys available for injection
-         */
-        Set<Key<?>> carrierKeys();
-
-        /** {@return a list of the lifetime operation of this container template.} */
-        List<OperationTemplate> lifetimeOperations();
     }
 
     /**
@@ -189,26 +162,34 @@ public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits 
      */
     sealed interface Installer<H extends ContainerHandle<?>> permits PackedContainerInstaller {
 
-        /**
-         * Provides constants per Carrier Instance for this particular container builder
-         *
-         * @param <T>
-         * @param key
-         * @param arg
-         * @return
-         *
-         * @see ExtensionLink#ofConstant(Class, Object)
-         */
-        default <T> Installer<H> carrierProvideConstant(Class<T> key, T constant) {
-            return carrierProvideConstant(Key.of(key), constant);
-        }
-
-        /**
-         * @see FromLifetimeChannel
-         */
-        <T> Installer<H> carrierProvideConstant(Key<T> key, T constant);
-
         Installer<H> componentTag(String... tags);
+
+        /**
+         * Creates a new container using the specified assembly.
+         * <p>
+         * The container handle returned by this method is no longer {@link ContainerHandle#isConfigurable() configurable}.
+         * Configuration of the new container must be done prior to calling this method.
+         *
+         * @param assembly
+         *            the assembly to link
+         * @param wirelets
+         *            optional wirelets
+         * @return a container handle representing the new container
+         *
+         * @see #build(Wirelet...)
+         */
+        H install(Assembly assembly, Wirelet... wirelets);
+
+        /**
+         * Creates a new configurable container.
+         *
+         * @param wirelets
+         *            optional wirelets
+         * @return a container handle representing the new container
+         *
+         * @see #install(Assembly, Wirelet...)
+         */
+        H install(Wirelet... wirelets);
 
         /**
          *
@@ -242,33 +223,6 @@ public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits 
         // }
 
         /**
-         * Creates a new container using the specified assembly.
-         * <p>
-         * The container handle returned by this method is no longer {@link ContainerHandle#isConfigurable() configurable}.
-         * Configuration of the new container must be done prior to calling this method.
-         *
-         * @param assembly
-         *            the assembly to link
-         * @param wirelets
-         *            optional wirelets
-         * @return a container handle representing the new container
-         *
-         * @see #build(Wirelet...)
-         */
-        H install(Assembly assembly, Wirelet... wirelets);
-
-        /**
-         * Creates a new configurable container.
-         *
-         * @param wirelets
-         *            optional wirelets
-         * @return a container handle representing the new container
-         *
-         * @see #install(Assembly, Wirelet...)
-         */
-        H install(Wirelet... wirelets);
-
-        /**
          * Creates the new container and adds this extension to the new container.
          * <p>
          * The extension in new the container can be obtained by calling {@link Extension#fromHandle(ContainerHandle)}
@@ -294,6 +248,25 @@ public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits 
         Installer<H> named(String name);
 
         /**
+         * Provides constants per Carrier Instance for this particular container builder
+         *
+         * @param <T>
+         * @param key
+         * @param arg
+         * @return
+         *
+         * @see ExtensionLink#ofConstant(Class, Object)
+         */
+        default <T> Installer<H> provideGuestConstant(Class<T> key, T constant) {
+            return provideGuestConstant(Key.of(key), constant);
+        }
+
+        /**
+         * @see FromLifetimeChannel
+         */
+        <T> Installer<H> provideGuestConstant(Key<T> key, T constant);
+
+        /**
          * Sets the value of the specified container local for the container being built.
          *
          * @param <T>
@@ -314,6 +287,9 @@ public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits 
 
 interface Zandbox {
 
+    default Zandbox zRequireUseOfExtension(String errorMessage) {
+        throw new UnsupportedOperationException();
+    }
     // @ContextProvide(Context.class) T, hvor T=ArgType
     Zandbox addContextFromArg(ContextTemplate template);
 
