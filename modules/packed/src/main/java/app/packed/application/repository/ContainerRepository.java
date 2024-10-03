@@ -68,7 +68,7 @@ public interface ContainerRepository<H extends ContainerHandle<?>> {
 //        throw new UnsupportedOperationException();
 //    }
 
-    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<A, H> install(BaseExtensionPoint point) {
+    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<H> install(BaseExtensionPoint point) {
         throw new UnsupportedOperationException();
     }
 }

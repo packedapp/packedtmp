@@ -35,16 +35,16 @@ import app.packed.service.ProvidableBeanConfiguration;
 // I don't know don't we always??
 
 // Maybe we don't extend it ServiableBean and have a provideAtRuntime();
-public final class ApplicationRepositoryConfiguration<A, H extends ApplicationHandle<A, ?>> extends ProvidableBeanConfiguration<ApplicationRepository<H>> {
+public final class ApplicationRepositoryConfiguration<H extends ApplicationHandle<?, ?>> extends ProvidableBeanConfiguration<ApplicationRepository<H>> {
 
     /** The application repository bean handle. */
-    final ApplicationRepositoryHandle<A, H> handle;
+    final ApplicationRepositoryHandle<H> handle;
 
     /**
      * @param handle
      *            the bean's handle
      */
-    ApplicationRepositoryConfiguration(ApplicationRepositoryHandle<A, H> handle) {
+    ApplicationRepositoryConfiguration(ApplicationRepositoryHandle<H> handle) {
         super(handle);
         this.handle = handle;
     }
@@ -68,20 +68,20 @@ public final class ApplicationRepositoryConfiguration<A, H extends ApplicationHa
     }
 
     @Override
-    public ApplicationRepositoryConfiguration<A, H> provideAs(Class<? super ApplicationRepository<H>> key) {
+    public ApplicationRepositoryConfiguration<H> provideAs(Class<? super ApplicationRepository<H>> key) {
         super.provideAs(key);
         return this;
     }
 
     @Override
-    public ApplicationRepositoryConfiguration<A, H> provideAs(Key<? super ApplicationRepository<H>> key) {
+    public ApplicationRepositoryConfiguration<H> provideAs(Key<? super ApplicationRepository<H>> key) {
         super.provideAs(key);
         return this;
     }
 
     /** {@return the templates that are available in the repository) */
     @SuppressWarnings("unchecked")
-    public ApplicationTemplate<A, H> template() {
-        return (ApplicationTemplate<A, H>) handle.repository.template;
+    public ApplicationTemplate<?, H> template() {
+        return (ApplicationTemplate<?, H>) handle.repository.template;
     }
 }

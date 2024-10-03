@@ -29,7 +29,7 @@ import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.extension.ExtensionSetup;
 
-class ApplicationRepositoryHandle<A, H extends ApplicationHandle<A, ?>> extends BeanHandle<ApplicationRepositoryConfiguration<A, H>> {
+class ApplicationRepositoryHandle<H extends ApplicationHandle<?, ?>> extends BeanHandle<ApplicationRepositoryConfiguration<H>> {
 
     static final PackedBeanTemplate REPOSITORY_BEAN_TEMPLATE = (PackedBeanTemplate) BeanTemplate.of(BeanKind.CONTAINER,
             b -> b.createAs(PackedApplicationRepository.class));
@@ -42,7 +42,7 @@ class ApplicationRepositoryHandle<A, H extends ApplicationHandle<A, ?>> extends 
 
     /** {@inheritDoc} */
     @Override
-    protected ApplicationRepositoryConfiguration<A, H> newBeanConfiguration() {
+    protected ApplicationRepositoryConfiguration<H> newBeanConfiguration() {
         return new ApplicationRepositoryConfiguration<>(this);
     }
 
@@ -53,7 +53,7 @@ class ApplicationRepositoryHandle<A, H extends ApplicationHandle<A, ?>> extends 
         BeanSetup.crack(this).container.application.subChildren.add(repository);
     }
 
-    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<A, H> install(ApplicationTemplate<A, H> template, ExtensionSetup es,
+    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<H> install(ApplicationTemplate<A, H> template, ExtensionSetup es,
             AuthoritySetup<?> owner) {
         PackedApplicationTemplate<A, H> t = (PackedApplicationTemplate<A, H>) template;
         if (t.guestClass() == Void.class) {
@@ -62,7 +62,7 @@ class ApplicationRepositoryHandle<A, H extends ApplicationHandle<A, ?>> extends 
 
         // Create a new installer for the repository bean
         Installer installer = ApplicationRepositoryHandle.REPOSITORY_BEAN_TEMPLATE.newInstaller(es, owner);
-        ApplicationRepositoryHandle<A, H> h = installer.install(PackedApplicationRepository.class, ApplicationRepositoryHandle::new);
+        ApplicationRepositoryHandle<H> h = installer.install(PackedApplicationRepository.class, ApplicationRepositoryHandle::new);
         BuildApplicationRepository repository = h.repository = new BuildApplicationRepository(t);
 
         // Create a new installer for the guest bean

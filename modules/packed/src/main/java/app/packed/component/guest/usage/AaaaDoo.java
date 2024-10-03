@@ -36,11 +36,12 @@ public class AaaaDoo extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        ApplicationRepositoryConfiguration<GuestBean, GuestApplicationHandle> c = ApplicationRepository.install(GuestBean.T, base());
+        ApplicationRepositoryConfiguration<GuestApplicationHandle> c = ApplicationRepository.install(GuestBean.T, base());
 
         c.provideAs(new Key<ApplicationRepository<GuestApplicationHandle>>() {});
         c.installChildApplication(i -> i.named("foo").install(new SubApplication()));
         c.installChildApplication(i -> i.named("foox").install(new SubApplication()));
+
 
         install(MyBean.class);
     }

@@ -65,12 +65,11 @@ public sealed interface ApplicationRepository<H extends ApplicationHandle<?, ?>>
 
     // boolean availableAtRuntime
 
-    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<A, H> install(ApplicationTemplate<A, H> template,
-            BaseExtension extension) {
+    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<H> install(ApplicationTemplate<A, H> template, BaseExtension extension) {
         return ApplicationRepositoryHandle.install(template, ExtensionSetup.crack(extension), ExtensionSetup.crack(extension).container.assembly);
     }
 
-    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<A, H> install(BaseExtensionPoint point) {
+    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<H> install(BaseExtensionPoint point) {
         throw new UnsupportedOperationException();
     }
 }

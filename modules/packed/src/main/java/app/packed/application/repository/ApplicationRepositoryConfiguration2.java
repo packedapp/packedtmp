@@ -42,16 +42,16 @@ import app.packed.service.ProvidableBeanConfiguration;
 // I don't know don't we always??
 
 // Maybe we don't extend it ServiableBean and have a provideAtRuntime();
-public final class ApplicationRepositoryConfiguration2<A, H extends ApplicationHandle<A, ?>> {
+public final class ApplicationRepositoryConfiguration2<H extends ApplicationHandle<?, ?>> {
 
     /** The application repository bean handle. */
-    final ApplicationRepositoryHandle<A, H> handle;
+    final ApplicationRepositoryHandle<H> handle;
 
     /**
      * @param handle
      *            the bean's handle
      */
-    ApplicationRepositoryConfiguration2(ApplicationRepositoryHandle<A, H> handle) {
+    ApplicationRepositoryConfiguration2(ApplicationRepositoryHandle<H> handle) {
         this.handle = handle;
     }
 
@@ -73,16 +73,16 @@ public final class ApplicationRepositoryConfiguration2<A, H extends ApplicationH
     }
 
     /** {@return the templates that are available in the repository) */
-    public ApplicationTemplate<A, H> template() {
+    public ApplicationTemplate<?, H> template() {
         throw new UnsupportedOperationException();
     }
 
-    public static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration2<A, H> install(BaseExtension extension,
+    public static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration2<H> install(BaseExtension extension,
             ApplicationTemplate<A, H> template) {
         throw new UnsupportedOperationException();
     }
 
-    public static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration2<A, H> install(BaseExtensionPoint extension,
+    public static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration2<H> install(BaseExtensionPoint extension,
             ApplicationTemplate<A, H> template) {
         throw new UnsupportedOperationException();
     }
