@@ -20,6 +20,7 @@ import java.util.function.Function;
 
 import app.packed.component.ComponentPath;
 import app.packed.namespace.NamespaceHandle;
+import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.util.TreeView;
 import internal.app.packed.extension.PackedExtensionHandle;
@@ -44,7 +45,7 @@ public sealed interface ExtensionHandle<E extends Extension<E>> permits PackedEx
 
     boolean isExtensionUsed(Class<? extends Extension<?>> extensionType);
 
-    <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name, Function<NamespaceTemplate.Installer, T> factory);
+    <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name, Function<NamespaceInstaller, T> factory);
 
     /** {@return any parent extension this extension might have in the same application} */
     Optional<E> parent();

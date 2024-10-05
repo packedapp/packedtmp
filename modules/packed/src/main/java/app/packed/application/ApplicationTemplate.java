@@ -18,11 +18,8 @@ package app.packed.application;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.assembly.Assembly;
 import app.packed.container.ContainerTemplate;
-import app.packed.container.Wirelet;
 import app.packed.operation.Op;
-import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedApplicationTemplate.PackedApplicationTemplateConfigurator;
 
@@ -45,22 +42,22 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
      *             a container template for the application's root container
      */
     static <A> ApplicationTemplate<ApplicationHandle<A, ApplicationConfiguration>> of(Class<A> hostClass, Consumer<? super Configurator> configurator) {
-        return of(hostClass, configurator, ApplicationHandle::new);
+        return of(hostClass, configurator, ApplicationHandle.class, ApplicationHandle::new);
     }
 
     static <A, H extends ApplicationHandle<A, ?>> ApplicationTemplate<H> of(Class<A> hostClass, Consumer<? super Configurator> configurator,
-            Function<? super ApplicationTemplate.Installer<H>, ? extends H> handleFactory) {
-        return new PackedApplicationTemplate<H>(hostClass, handleFactory, null).configure(configurator);
+            Class<? super H> handleClass, Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
+        return new PackedApplicationTemplate<H>(hostClass, handleClass, handleFactory, null).configure(configurator);
     }
 
     static <A> ApplicationTemplate<ApplicationHandle<A, ApplicationConfiguration>> of(Op<A> hostOp, Consumer<? super Configurator> configurator) {
-        return of(hostOp, configurator, ApplicationHandle::new);
+        return of(hostOp, configurator, ApplicationHandle.class, ApplicationHandle::new);
     }
 
     static <A, H extends ApplicationHandle<A, ?>> ApplicationTemplate<H> of(Op<A> hostOp, Consumer<? super Configurator> configurator,
-            Function<? super ApplicationTemplate.Installer<H>, ? extends H> handleFactory) {
+            Class<? super H> handleClass, Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
         Class<?> type = hostOp.type().returnRawType();
-        return new PackedApplicationTemplate<>(type, hostOp, handleFactory, null).configure(configurator);
+        return new PackedApplicationTemplate<>(type, hostOp, handleClass, handleFactory, null).configure(configurator);
     }
 
     /** A configuration object for creating an {@link ApplicationTemplate}. */
@@ -102,36 +99,6 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
         Configurator rootContainer(ContainerTemplate<?> template);
 
         <T> Configurator setLocal(ApplicationBuildLocal<T> local, T value);
-    }
-
-    /** An installer for applications. */
-    sealed interface Installer<H extends ApplicationHandle<?, ?>> permits PackedApplicationInstaller {
-
-        /**
-         * Add the specified tags to the application.
-         *
-         * @param tags
-         *            the tags to add
-         * @return this configurator
-         * @see ApplicationMirror#componentTags()
-         * @see ApplicationHandle#componentTag(String...)
-         * @see ApplicationConfiguration#componentTag(String...)
-         */
-        Installer<H> componentTag(String... tags);
-
-        /**
-         * <p>
-         * The handle that is returned will be non-configurable.
-         *
-         * @param assembly
-         * @param wirelets
-         * @return
-         */
-        H install(Assembly assembly, Wirelet... wirelets);
-
-        Installer<H> named(String name);
-
-        <T> Installer<H> setLocal(ApplicationBuildLocal<T> local, T value);
     }
 }
 

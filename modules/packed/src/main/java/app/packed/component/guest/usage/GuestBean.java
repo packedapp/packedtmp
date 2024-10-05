@@ -20,8 +20,8 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationHandle;
+import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
-import app.packed.application.ApplicationTemplate.Installer;
 import app.packed.bean.Inject;
 import app.packed.component.guest.FromComponentGuest;
 import app.packed.runtime.ManagedLifecycle;
@@ -35,7 +35,7 @@ import sandbox.lifetime.external.ManagedLifetimeState;
 /**
  *
  */
-public record GuestBean(@FromComponentGuest ManagedLifecycle lifecycle, long nanos) implements ManagedLifecycle{
+public record GuestBean(@FromComponentGuest ManagedLifecycle lifecycle, long nanos) implements ManagedLifecycle {
 
     @Inject
     public GuestBean(@FromComponentGuest ManagedLifecycle lifecyle) {
@@ -44,7 +44,7 @@ public record GuestBean(@FromComponentGuest ManagedLifecycle lifecycle, long nan
 
     public static final ApplicationTemplate<GuestApplicationHandle> T = ApplicationTemplate.of(GuestBean.class, c -> {
         c.rootContainer(new PackedContainerTemplate<>(PackedContainerKind.BOOTSTRAP_APPLICATION));
-    }, GuestApplicationHandle::new);
+    }, GuestApplicationHandle.class, GuestApplicationHandle::new);
 
     @Override
     public void await(RunState state) throws InterruptedException {
@@ -106,7 +106,7 @@ public record GuestBean(@FromComponentGuest ManagedLifecycle lifecycle, long nan
         /**
          * @param installer
          */
-        GuestApplicationHandle(Installer<?> installer) {
+        GuestApplicationHandle(ApplicationInstaller<?> installer) {
             super(installer);
         }
     }

@@ -21,6 +21,7 @@ import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanInstallationException;
 import app.packed.build.BuildActor;
 import app.packed.namespace.NamespaceHandle;
+import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.operation.OperationTemplate;
 
@@ -35,7 +36,7 @@ final class CliNamespaceHandle extends NamespaceHandle<CliExtension, CliNamespac
     /** All the commands within the namespace. */
     final LinkedHashMap<String, CliCommandHandle> oldCommands = new LinkedHashMap<>();
 
-    CliNamespaceHandle(NamespaceTemplate.Installer installer) {
+    CliNamespaceHandle(NamespaceInstaller installer) {
         super(installer);
     }
 

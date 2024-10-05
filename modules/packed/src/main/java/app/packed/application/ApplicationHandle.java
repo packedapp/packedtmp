@@ -60,7 +60,7 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
      * @param installer
      *            the installer for the application
      */
-    public ApplicationHandle(ApplicationTemplate.Installer<?> installer) {
+    public ApplicationHandle(ApplicationInstaller<?> installer) {
         PackedApplicationInstaller<?> inst = (PackedApplicationInstaller<?>) installer;
         this.application = inst.toHandle();
 

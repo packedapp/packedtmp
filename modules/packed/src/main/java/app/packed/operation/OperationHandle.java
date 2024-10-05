@@ -113,7 +113,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
      * @param installer
      *            the installer for the operation
      */
-    public OperationHandle(OperationTemplate.Installer installer) {
+    public OperationHandle(OperationInstaller installer) {
         this.operation = ((PackedOperationInstaller) installer).toHandle();
     }
 

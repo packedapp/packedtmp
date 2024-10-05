@@ -26,8 +26,8 @@ import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceConfiguration;
 import app.packed.namespace.NamespaceHandle;
+import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceMirror;
-import app.packed.namespace.NamespaceTemplate.Installer;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.ContainerSetup;
@@ -102,7 +102,7 @@ public final class NamespaceSetup implements ComponentSetup {
 
     /** {@inheritDoc} */
     static <E extends Extension<E>, H extends NamespaceHandle<E, ?>, C extends NamespaceConfiguration<E>> H newNamespace(PackedNamespaceInstaller installer,
-            Function<? super Installer, H> newHandle) {
+            Function<? super NamespaceInstaller, H> newHandle) {
         NamespaceSetup namespace = installer.install(new NamespaceSetup(installer));
         H handle = newHandle.apply(installer);
         namespace.handle = handle;

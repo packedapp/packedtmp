@@ -25,6 +25,7 @@ import app.packed.bean.BeanBuildLocal.Accessor;
 import app.packed.binding.BindableVariable;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
+import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
@@ -135,7 +136,7 @@ public sealed interface BeanElement extends Accessor permits PackedBeanElement, 
         Constructor<?> constructor();
 
         // LifetimeTemplate??? Also available for on Method????
-        OperationTemplate.Installer newOperation(OperationTemplate template);
+        OperationInstaller newOperation(OperationTemplate template);
 
         /** {@return a factory type for this method.} */
         OperationType operationType();
@@ -166,7 +167,7 @@ public sealed interface BeanElement extends Accessor permits PackedBeanElement, 
          * @return an operation handle
          * @see Lookup#unreflectGetter(Field)
          */
-        OperationTemplate.Installer newGetOperation(OperationTemplate template);
+        OperationInstaller newGetOperation(OperationTemplate template);
 
         /**
          * Creates a new operation that can read or/and write a field as specified by the provided access mode.
@@ -187,7 +188,7 @@ public sealed interface BeanElement extends Accessor permits PackedBeanElement, 
          *          and one for writing a field). You must create an operation per access mode instead. Also, there is currently
          *          no way to obtain a VarHandle for the underlying field
          */
-        OperationTemplate.Installer newOperation(OperationTemplate template, VarHandle.AccessMode accessMode);
+        OperationInstaller newOperation(OperationTemplate template, VarHandle.AccessMode accessMode);
 
         /**
          * Creates a new operation that can write to a field.
@@ -201,7 +202,7 @@ public sealed interface BeanElement extends Accessor permits PackedBeanElement, 
          *
          * @see Lookup#unreflectSetter(Field)
          */
-        OperationTemplate.Installer newSetOperation(OperationTemplate template);
+        OperationInstaller newSetOperation(OperationTemplate template);
 
         /**
          * {@return the underlying field represented as a {@code Variable}.}
@@ -243,7 +244,7 @@ public sealed interface BeanElement extends Accessor permits PackedBeanElement, 
          * @see BeanMethodHook#allowInvoke()
          * @see BeanClassHook#allowFullPrivilegeAccess()
          */
-        OperationTemplate.Installer newOperation(OperationTemplate template);
+        OperationInstaller newOperation(OperationTemplate template);
 
         /** {@return the default type of operation that will be created.} */
         OperationType operationType();

@@ -50,7 +50,7 @@ public final class ApplicationRepositoryConfiguration<I, H extends ApplicationHa
     // Expose some services. Og vi har nok en masse shared services.
     // Tror ikke helt vi er klar
     // Ved ikke om det har noget med repository at goere. Det tror jeg egentlig ikke...
-    public void buildDependecy(Consumer<? super ApplicationTemplate.Installer<H>> installer) {
+    public void buildDependecy(Consumer<? super ApplicationInstaller<H>> installer) {
         handle.repository.add(installer);
     }
 
@@ -60,7 +60,7 @@ public final class ApplicationRepositoryConfiguration<I, H extends ApplicationHa
      * @param installer
      *            a consumer that performs the actual installation of the application
      */
-    public void installApplication(Consumer<? super ApplicationTemplate.Installer<H>> installer) {
+    public void installApplication(Consumer<? super ApplicationInstaller<H>> installer) {
         handle.repository.add(installer);
     }
 

@@ -15,7 +15,7 @@
  */
 package app.packed.concurrent;
 
-import app.packed.operation.OperationTemplate.Installer;
+import app.packed.operation.OperationInstaller;
 import app.packed.util.Nullable;
 import internal.app.packed.concurrent.ScheduleImpl;
 import internal.app.packed.concurrent.ScheduledOperation;
@@ -31,7 +31,7 @@ public final class ScheduledOperationHandle extends ThreadedOperationHandle<Sche
     /**
      * @param installer
      */
-    public ScheduledOperationHandle(Installer installer, ThreadNamespaceHandle namespace) {
+    public ScheduledOperationHandle(OperationInstaller installer, ThreadNamespaceHandle namespace) {
         super(installer, namespace);
     }
 

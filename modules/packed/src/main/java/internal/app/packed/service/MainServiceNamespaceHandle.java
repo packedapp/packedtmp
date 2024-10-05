@@ -25,6 +25,7 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.binding.Key;
 import app.packed.binding.KeyAlreadyProvidedException;
 import app.packed.extension.ExtensionContext;
+import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
@@ -57,7 +58,7 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
     @Nullable
     public final MainServiceNamespaceHandle parent;
 
-    public MainServiceNamespaceHandle(NamespaceTemplate.Installer installer, @Nullable MainServiceNamespaceHandle parent, ContainerSetup container) {
+    public MainServiceNamespaceHandle(NamespaceInstaller installer, @Nullable MainServiceNamespaceHandle parent, ContainerSetup container) {
         super(installer);
         // For now we a ServiceLocator as the root of the application.
         // Bridges

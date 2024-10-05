@@ -26,6 +26,7 @@ import java.lang.reflect.Modifier;
 import app.packed.bean.BeanElement.BeanField;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
+import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.AnnotationList;
@@ -113,7 +114,7 @@ public final class PackedBeanField extends PackedBeanElement implements BeanFiel
 
     /** {@inheritDoc} */
     @Override
-    public OperationTemplate.Installer newGetOperation(OperationTemplate template) {
+    public OperationInstaller newGetOperation(OperationTemplate template) {
         requireNonNull(template, "template is null");
         checkConfigurable();
 
@@ -125,7 +126,7 @@ public final class PackedBeanField extends PackedBeanElement implements BeanFiel
         return newOperation(template, directMH, accessMode);
     }
 
-    private OperationTemplate.Installer newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
+    private OperationInstaller newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
         PackedOperationTemplate t = (PackedOperationTemplate) template;
         OperationType ft = OperationType.fromField(field, accessMode);
 
@@ -135,7 +136,7 @@ public final class PackedBeanField extends PackedBeanElement implements BeanFiel
 
     /** {@inheritDoc} */
     @Override
-    public OperationTemplate.Installer newOperation(OperationTemplate template, VarHandle.AccessMode accessMode) {
+    public OperationInstaller newOperation(OperationTemplate template, VarHandle.AccessMode accessMode) {
         requireNonNull(template, "template is null");
         checkConfigurable();
 
@@ -147,7 +148,7 @@ public final class PackedBeanField extends PackedBeanElement implements BeanFiel
 
     /** {@inheritDoc} */
     @Override
-    public OperationTemplate.Installer newSetOperation(OperationTemplate template) {
+    public OperationInstaller newSetOperation(OperationTemplate template) {
         requireNonNull(template, "template is null");
         checkConfigurable();
 

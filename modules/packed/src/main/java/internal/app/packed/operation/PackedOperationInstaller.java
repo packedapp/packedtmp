@@ -29,9 +29,8 @@ import app.packed.bean.CannotDeclareInstanceMemberException;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationTemplate;
-import app.packed.operation.OperationTemplate.Installer;
 import app.packed.operation.OperationType;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
@@ -44,7 +43,7 @@ import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget
  *
  */
 public non-sealed class PackedOperationInstaller extends PackedComponentInstaller<OperationSetup, PackedOperationInstaller>
-        implements OperationTemplate.Installer {
+        implements OperationInstaller {
 
     NamespaceHandle<?, ?> addToNamespace;
 
@@ -81,30 +80,30 @@ public non-sealed class PackedOperationInstaller extends PackedComponentInstalle
 
     /** {@inheritDoc} */
     @Override
-    public OperationTemplate.Installer delegateTo(ExtensionUseSite extension) {
+    public OperationInstaller delegateTo(ExtensionUseSite extension) {
         return null;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <H extends OperationHandle<?>> H install(Function<? super Installer, H> handleFactory) {
-        return (H) newOperation((Function<? super Installer, OperationHandle<?>>) handleFactory).handle();
+    public <H extends OperationHandle<?>> H install(Function<? super OperationInstaller, H> handleFactory) {
+        return (H) newOperation((Function<? super OperationInstaller, OperationHandle<?>>) handleFactory).handle();
     }
 
     @Override
-    public final <H extends OperationHandle<?>, N extends NamespaceHandle<?, ?>> H install(N namespace, BiFunction<? super Installer, N, H> factory) {
+    public final <H extends OperationHandle<?>, N extends NamespaceHandle<?, ?>> H install(N namespace, BiFunction<? super OperationInstaller, N, H> factory) {
         checkNotInstalledYet();
         this.addToNamespace = requireNonNull(namespace);
         return install(f -> factory.apply(f, namespace));
     }
 
-    final OperationSetup newOperation(Function<? super Installer, OperationHandle<?>> newHandle) {
+    final OperationSetup newOperation(Function<? super OperationInstaller, OperationHandle<?>> newHandle) {
         return OperationSetup.newOperation(this, newHandle);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <H extends OperationHandle<?>> OperationSetup newOperationFromMember(PackedOperationInstaller installer, OperationMemberTarget<?> member,
-            MethodHandle methodHandle, Function<? super OperationTemplate.Installer, H> configurationCreator) {
+            MethodHandle methodHandle, Function<? super OperationInstaller, H> configurationCreator) {
         if (installer.bean.beanKind == BeanKind.STATIC && !Modifier.isStatic(member.modifiers())) {
             throw new CannotDeclareInstanceMemberException("Cannot create operation for non-static member " + member);
         }
@@ -122,7 +121,7 @@ public non-sealed class PackedOperationInstaller extends PackedComponentInstalle
         /**
          * @param installer
          */
-        public BeanFactoryOperationHandle(OperationTemplate.Installer installer) {
+        public BeanFactoryOperationHandle(OperationInstaller installer) {
             super(installer);
         }
 

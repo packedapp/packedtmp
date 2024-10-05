@@ -21,7 +21,7 @@ package app.packed.build;
 public enum BuildGoal {
 
     /**
-     * The goal is to build an application image that can be launched a single time at a later point.
+     * The goal is to build an application image that can be launched one or mores times at a later point.
      *
      * @see App#imageOf(Assembly, Wirelet...)
      */

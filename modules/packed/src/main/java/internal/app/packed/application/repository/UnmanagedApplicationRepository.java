@@ -46,4 +46,5 @@ public final class UnmanagedApplicationRepository<I, H extends ApplicationHandle
     public Stream<ManagedInstance<I>> instances() {
         throw new UnsupportedOperationException("This repository does not track unamanged application instance");
     }
+
 }

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate.Installer;
+import app.packed.operation.OperationInstaller;
 
 /**
  *
@@ -36,7 +36,7 @@ final class CliCommandHandle extends OperationHandle<CliCommandConfiguration> {
     /**
      * @param installer
      */
-    CliCommandHandle(Installer installer, CliNamespaceHandle namespace) {
+    CliCommandHandle(OperationInstaller installer, CliNamespaceHandle namespace) {
         super(installer);
         this.namespace = requireNonNull(namespace);
     }

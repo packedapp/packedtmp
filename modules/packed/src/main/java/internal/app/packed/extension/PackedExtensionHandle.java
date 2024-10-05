@@ -27,6 +27,7 @@ import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.InternalExtensionException;
 import app.packed.namespace.NamespaceHandle;
+import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.util.TreeView;
 import internal.app.packed.ValueBased;
@@ -115,7 +116,7 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name, Function<NamespaceTemplate.Installer, T> factory) {
+    public <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name, Function<NamespaceInstaller, T> factory) {
         NamespaceKey nk = new NamespaceKey(template.handleClass(), name);
         requireNonNull(factory);
 

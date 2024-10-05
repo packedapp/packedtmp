@@ -13,27 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent;
+package app.packed.namespace;
 
-import static java.util.Objects.requireNonNull;
+import java.util.function.Function;
 
-import app.packed.operation.OperationConfiguration;
-import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationInstaller;
+import app.packed.extension.Extension;
+import internal.app.packed.namespace.PackedNamespaceInstaller;
 
-/**
- *
- */
-public class ThreadedOperationHandle<C extends OperationConfiguration> extends OperationHandle<C> {
+public sealed interface NamespaceInstaller permits PackedNamespaceInstaller {
 
-    final ThreadNamespaceHandle namespace;
-
-    /**
-     * @param installer
-     */
-    public ThreadedOperationHandle(OperationInstaller installer, ThreadNamespaceHandle namespace) {
-        super(installer);
-        this.namespace = requireNonNull(namespace);
-    }
-
+    // return value.getClass() from newHandle must match handleClass
+    <E extends Extension<E>, H extends NamespaceHandle<E, ?>, C extends NamespaceConfiguration<E>> H install(
+            Function<? super NamespaceInstaller, H> newHandle);
 }

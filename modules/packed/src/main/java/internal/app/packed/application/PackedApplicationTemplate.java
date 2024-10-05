@@ -22,6 +22,7 @@ import java.util.function.Function;
 
 import app.packed.application.ApplicationBuildLocal;
 import app.packed.application.ApplicationHandle;
+import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
@@ -41,8 +42,8 @@ import internal.app.packed.context.PackedComponentHostContext;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /** Implementation of {@link ApplicationTemplate}. */
-public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class<?> guestClass, @Nullable Op<?> op,
-        Function<? super ApplicationTemplate.Installer<H>, ? extends ApplicationHandle<?, ?>> handleFactory, PackedContainerTemplate<?> containerTemplate,
+public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class<?> guestClass, @Nullable Op<?> op, Class<? super H> handleClass,
+        Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory, PackedContainerTemplate<?> containerTemplate,
         Set<String> componentTags) implements ApplicationTemplate<H> {
 
     static final ContextTemplate GB_CIT = ContextTemplate.of(ApplicationLaunchContext.class, c -> {});
@@ -54,14 +55,14 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
 
     public static final PackedBeanTemplate GB = new PackedBeanTemplate(BeanKind.UNMANAGED).withOperationTemplate(GB_CON);
 
-    public PackedApplicationTemplate(Class<?> guestClass, Function<? super Installer<H>, ? extends ApplicationHandle<?, ?>> handleFactory,
-            PackedContainerTemplate<?> containerTemplate) {
-        this(guestClass, null, handleFactory, containerTemplate);
+    public PackedApplicationTemplate(Class<?> guestClass, Class<? super H> handleClass,
+            Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory, PackedContainerTemplate<?> containerTemplate) {
+        this(guestClass, null, handleClass, handleFactory, containerTemplate);
     }
 
-    public PackedApplicationTemplate(Class<?> guestClass, Op<?> op, Function<? super Installer<H>, ? extends ApplicationHandle<?, ?>> handleFactory,
-            PackedContainerTemplate<?> containerTemplate) {
-        this(guestClass, op, handleFactory, containerTemplate, Set.of());
+    public PackedApplicationTemplate(Class<?> guestClass, Op<?> op, Class<? super H> handleClass,
+            Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory, PackedContainerTemplate<?> containerTemplate) {
+        this(guestClass, op, handleClass, handleFactory, containerTemplate, Set.of());
     }
 
     // De her er ikke public fordi de kun kan bruges fra Bootstrap App
@@ -71,8 +72,8 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
 
     static PackedApplicationTemplate<?> ROOT_UNMANAGED = null;
 
-    public static final PackedApplicationTemplate<?> BOOTSTRAP_APP = new PackedApplicationTemplate<>(PackedApplicationTemplate.class, ApplicationHandle::new,
-            new PackedContainerTemplate<>(PackedContainerKind.BOOTSTRAP_APPLICATION, PackedBootstrapApp.class));
+    public static final PackedApplicationTemplate<?> BOOTSTRAP_APP = new PackedApplicationTemplate<>(PackedApplicationTemplate.class, ApplicationHandle.class,
+            ApplicationHandle::new, new PackedContainerTemplate<>(PackedContainerKind.BOOTSTRAP_APPLICATION, PackedBootstrapApp.class));
 
     public static <A> PackedApplicationInstaller<?> newBootstrapAppInstaller() {
         return new PackedApplicationInstaller<>(PackedApplicationTemplate.BOOTSTRAP_APP, null, BuildGoal.LAUNCH);
@@ -106,7 +107,7 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
      *            optional wirelets
      * @return a new application installer
      */
-    public PackedApplicationInstaller<H> newInstaller(BuildGoal goal, MethodHandle launcher, Wirelet... wirelets) {
+    public PackedApplicationInstaller<H> newInstaller(ApplicationInstallingSource source, BuildGoal goal, MethodHandle launcher, Wirelet... wirelets) {
         PackedApplicationInstaller<H> installer = new PackedApplicationInstaller<>(this, launcher, goal);
         installer.containerInstaller.processBuildWirelets(wirelets);
         return installer;
@@ -130,7 +131,7 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
         /** {@inheritDoc} */
         @Override
         public Configurator componentTag(String... tags) {
-            this.t = new PackedApplicationTemplate<>(t.guestClass(), t.op(), t.handleFactory, t.containerTemplate(),
+            this.t = new PackedApplicationTemplate<>(t.guestClass(), t.op(), t.handleClass, t.handleFactory, t.containerTemplate(),
                     ComponentTagHolder.copyAndAdd(t.componentTags, tags));
             return this;
         }
@@ -148,7 +149,8 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
         /** {@inheritDoc} */
         @Override
         public PackedApplicationTemplateConfigurator<H> rootContainer(ContainerTemplate<?> template) {
-            this.t = new PackedApplicationTemplate<>(t.guestClass(), t.op(), t.handleFactory(), (PackedContainerTemplate<?>) template, t.componentTags);
+            this.t = new PackedApplicationTemplate<>(t.guestClass(), t.op(), t.handleClass, t.handleFactory(), (PackedContainerTemplate<?>) template,
+                    t.componentTags);
             return this;
         }
 
@@ -158,4 +160,6 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
             throw new UnsupportedOperationException();
         }
     }
+
+    public interface ApplicationInstallingSource {}
 }

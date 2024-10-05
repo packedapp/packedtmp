@@ -23,6 +23,7 @@ import java.util.function.Function;
 import app.packed.binding.Key;
 import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.container.ContainerHandle;
+import app.packed.container.ContainerInstaller;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.context.ContextTemplate;
@@ -50,7 +51,7 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
     }
 
     @SuppressWarnings("unchecked")
-    public Function<? super ContainerTemplate.Installer<?>, H> handleFactory() {
+    public Function<? super ContainerInstaller<?>, H> handleFactory() {
         return i -> (H) new ContainerHandle<>(i);
     }
 

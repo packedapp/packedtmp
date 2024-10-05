@@ -38,6 +38,7 @@ import app.packed.container.WireletSelection;
 import app.packed.extension.Extension.ExtensionProperty;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.namespace.NamespaceHandle;
+import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.util.TreeView;
@@ -228,7 +229,7 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
     }
 
     protected final <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name,
-            Function<NamespaceTemplate.Installer, T> factory) {
+            Function<NamespaceInstaller, T> factory) {
         return handle.namespaceLazy(template, name, factory);
     }
 

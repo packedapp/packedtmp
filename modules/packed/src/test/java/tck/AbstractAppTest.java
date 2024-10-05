@@ -41,6 +41,7 @@ import app.packed.operation.OperationHandle;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedApplicationTemplate;
+import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
@@ -210,9 +211,9 @@ abstract class AbstractAppTest<A> {
             }
         }
 
-        final class State2Building implements InternalTestState {
+        final class State2Building implements InternalTestState, ApplicationInstallingSource {
             public static final MethodHandle EMPTY_MH = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
-            static final PackedApplicationTemplate<?> PAT = new PackedApplicationTemplate<>(Void.class, ApplicationHandle::new,
+            static final PackedApplicationTemplate<?> PAT = new PackedApplicationTemplate<>(Void.class, ApplicationHandle.class, ApplicationHandle::new,
                     new PackedContainerTemplate<>(PackedContainerKind.BOOTSTRAP_APPLICATION));
             final AssemblySetup assembly;
 
@@ -221,7 +222,7 @@ abstract class AbstractAppTest<A> {
 
             State2Building(State1Setup setup) {
 
-                b = PAT.newInstaller(setup.goal, setup.aat.internals.launcher());
+                b = PAT.newInstaller(this, setup.goal, setup.aat.internals.launcher());
 
                 BuildableAssembly ba = setup.assembly;
                 if (ba == null) {

@@ -48,7 +48,7 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
     /** The namespace configuration. */
     final NamespaceSetup namespace;
 
-    protected NamespaceHandle(NamespaceTemplate.Installer installer) {
+    protected NamespaceHandle(NamespaceInstaller installer) {
         this.namespace = ((PackedNamespaceInstaller) installer).toHandle();
     }
 

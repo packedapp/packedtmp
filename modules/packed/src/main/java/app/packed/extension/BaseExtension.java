@@ -34,6 +34,7 @@ import app.packed.component.guest.FromComponentGuest;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
+import app.packed.container.ContainerInstaller;
 import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
@@ -317,7 +318,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     }
 
     /** {@return a new container builder used for linking.} */
-    private ContainerTemplate.Installer<?> link0() {
+    private ContainerInstaller<?> link0() {
         return PackedContainerInstaller.of((PackedContainerTemplate<?>) ContainerTemplate.DEFAULT, BaseExtension.class, extension.container.application,
                 extension.container);
     }

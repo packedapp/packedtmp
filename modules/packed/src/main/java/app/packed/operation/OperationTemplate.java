@@ -18,16 +18,11 @@ package app.packed.operation;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.bean.BeanKind;
 import app.packed.context.ContextTemplate;
-import app.packed.extension.ExtensionPoint;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
-import app.packed.namespace.NamespaceHandle;
-import internal.app.packed.operation.PackedOperationInstaller;
 import internal.app.packed.operation.PackedOperationTemplate;
 
 /**
@@ -200,49 +195,6 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     // DelegateTo
     // (Bounded) EmbeddedOp (Er aldrig visible...
 
-    /**
-     * An installer for operations.
-     * <p>
-     * An installer can only be used once. After an operation has been installed, all methods will throw
-     * {@link IllegalStateException}.
-     */
-    sealed interface Installer permits PackedOperationInstaller {
-
-        // redelegate(ExtensionPoint.UseSite extension, OperationTemplate);
-        Installer delegateTo(ExtensionPoint.ExtensionUseSite extension);
-
-        /**
-         * Creates the operation.
-         *
-         * @param <H>
-         *            the type of operation handle to represent the operation
-         * @param factory
-         *            a factory responsible for creating the operation handle to represent the operation
-         * @return the operation handle for the operation
-         *
-         * @throws IllegalStateException
-         *             if the installer has already been used
-         */
-        <H extends OperationHandle<?>> H install(Function<? super OperationTemplate.Installer, H> factory);
-
-        /**
-         * Creates the operation and installs it into the specified namespace.
-         *
-         * @param <H>
-         *            the type of operation handle to represent the operation
-         * @param <N>
-         *            the type of namespace we are installing the operation into
-         * @param namespace
-         *            the namespace we are installing the operation into
-         * @param factory
-         *            a factory responsible for creating the operation handle to represent the operation
-         * @return the operation handle for the operation
-         *
-         * @throws IllegalStateException
-         *             if the installer has already been used
-         */
-        <H extends OperationHandle<?>, N extends NamespaceHandle<?, ?>> H install(N namespace, BiFunction<? super OperationTemplate.Installer, N, H> factory);
-    }
 }
 //
 //// 3 choices?

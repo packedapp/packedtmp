@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.lifecycle.OnStart;
 import app.packed.operation.OperationDependencyOrder;
-import app.packed.operation.OperationTemplate.Installer;
+import app.packed.operation.OperationInstaller;
 import internal.app.packed.bean.BeanLifecycleOrder;
 
 /**
@@ -37,7 +37,7 @@ public final class OnStartOperationHandle extends LifecycleOperationHandle {
     /**
      * @param installer
      */
-    public OnStartOperationHandle(Installer installer, OnStart annotation) {
+    public OnStartOperationHandle(OperationInstaller installer, OnStart annotation) {
         super(installer, annotation.order(),
                 annotation.order() == OperationDependencyOrder.BEFORE_DEPENDENCIES ? BeanLifecycleOrder.START_PRE_ORDER : BeanLifecycleOrder.START_POST_ORDER);
         this.stopOnFailure = annotation.stopOnFailure();

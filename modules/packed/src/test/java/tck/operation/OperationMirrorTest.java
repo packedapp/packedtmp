@@ -28,10 +28,10 @@ import org.junit.jupiter.api.Test;
 import app.packed.bean.BeanMirror;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationTemplate;
-import app.packed.operation.OperationTemplate.Installer;
 import tck.AppAppTest;
 import tck.HookTestingExtension;
 import tck.HookTestingExtension.FieldHook.FieldPrivateInstanceString;
@@ -100,7 +100,7 @@ public class OperationMirrorTest extends AppAppTest {
             /**
              * @param installer
              */
-            public MyHandle(Installer installer) {
+            public MyHandle(OperationInstaller installer) {
                 super(installer);
             }
 

@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.application.ApplicationHandle;
+import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ApplicationTemplate;
 import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
@@ -32,12 +32,13 @@ import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.runtime.RunState;
 import internal.app.packed.ValueBased;
+import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /** Implementation of {@link BootstrapApp}. */
 @ValueBased
-public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements BootstrapApp<A> {
+public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements BootstrapApp<A>, ApplicationInstallingSource {
 
     /** The application launcher. */
     private final MethodHandle launcher;
@@ -66,7 +67,7 @@ public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> impl
     /** {@inheritDoc} */
     @Override
     public BaseImage<A> imageOf(Assembly assembly, Wirelet... wirelets) {
-        ApplicationTemplate.Installer<H> installer = template.newInstaller(BuildGoal.IMAGE, launcher, wirelets);
+        ApplicationInstaller<H> installer = template.newInstaller(this, BuildGoal.IMAGE, launcher, wirelets);
 
         // Build the application
         H handle = installer.install(assembly);
@@ -78,7 +79,7 @@ public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> impl
     /** {@inheritDoc} */
     @Override
     public A launch(RunState state, Assembly assembly, Wirelet... wirelets) {
-        ApplicationTemplate.Installer<H> installer = template.newInstaller(BuildGoal.LAUNCH, launcher, wirelets);
+        ApplicationInstaller<H> installer = template.newInstaller(this, BuildGoal.LAUNCH, launcher, wirelets);
 
         // Build the application
         H handle = installer.install(assembly);
@@ -90,7 +91,7 @@ public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> impl
     /** {@inheritDoc} */
     @Override
     public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        ApplicationTemplate.Installer<H> installer = template.newInstaller(BuildGoal.MIRROR, launcher, wirelets);
+        ApplicationInstaller<H> installer = template.newInstaller(this, BuildGoal.MIRROR, launcher, wirelets);
 
         // Build the application
         H handle = installer.install(assembly);
@@ -102,7 +103,7 @@ public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> impl
     /** {@inheritDoc} */
     @Override
     public void verify(Assembly assembly, Wirelet... wirelets) {
-        ApplicationTemplate.Installer<H> installer = template.newInstaller(BuildGoal.VERIFY, launcher, wirelets);
+        ApplicationInstaller<H> installer = template.newInstaller(this, BuildGoal.VERIFY, launcher, wirelets);
 
         // Builds (and verifies) the application
         installer.install(assembly);

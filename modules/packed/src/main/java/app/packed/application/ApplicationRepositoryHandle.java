@@ -23,12 +23,9 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
-import app.packed.lifecycle.LifecycleKind;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.repository.AbstractApplicationRepository;
 import internal.app.packed.application.repository.BuildApplicationRepository;
-import internal.app.packed.application.repository.ManagedApplicationRepository;
-import internal.app.packed.application.repository.UnmanagedApplicationRepository;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.build.AuthoritySetup;
@@ -40,21 +37,19 @@ class ApplicationRepositoryHandle<I, H extends ApplicationHandle<I, ?>> extends 
     private static final PackedBeanTemplate REPOSITORY_BEAN_TEMPLATE = (PackedBeanTemplate) BeanTemplate.of(BeanKind.CONTAINER,
             b -> b.createAs(AbstractApplicationRepository.class));
 
-    private final Class<H> handleKind;
-
     final BuildApplicationRepository repository;
 
-    private ApplicationRepositoryHandle(BeanInstaller installer, Class<H> handleKind, BuildApplicationRepository repository) {
+    private ApplicationRepositoryHandle(BeanInstaller installer, PackedApplicationTemplate<H> template) {
         super(installer);
-        this.handleKind = handleKind;
-        this.repository = repository;
+        this.repository = new BuildApplicationRepository(template);
     }
 
     @Override
     public Key<?> defaultKey() {
         // We need to know the template type either, from the template itself, or when creating the repository.
         // Think we might as well just do it in the template
-        ParameterizedType p = Types.createNewParameterizedType(ApplicationRepository.class, repository.template.guestClass(), handleKind);
+        ParameterizedType p = Types.createNewParameterizedType(ApplicationRepository.class, repository.template.guestClass(),
+                repository.template.handleClass());
         Variable v = Variable.of(p);
         Key<?> key = Key.fromVariable(v);
         return key;
@@ -73,24 +68,15 @@ class ApplicationRepositoryHandle<I, H extends ApplicationHandle<I, ?>> extends 
         BeanSetup.crack(this).container.application.subChildren.add(repository);
     }
 
-    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<A, H> install(Class<H> handleKind, ApplicationTemplate<H> template,
-            ExtensionSetup es, AuthoritySetup<?> owner) {
-        PackedApplicationTemplate<H> t = (PackedApplicationTemplate<H>) template;
-        if (t.guestClass() == Void.class) {
-            throw new UnsupportedOperationException("Does not support application templates of Void.class guest type");
-        }
-
-        // Create a new installer for the repository bean
-
-        Class<?> cl = t.containerTemplate().lifecycleKind() == LifecycleKind.UNMANAGED ? UnmanagedApplicationRepository.class
-                : ManagedApplicationRepository.class;
-
-        BeanInstaller installer = ApplicationRepositoryHandle.REPOSITORY_BEAN_TEMPLATE.newInstaller(es, owner);
-        ApplicationRepositoryHandle<A, H> h = installer.install(cl, i -> new ApplicationRepositoryHandle<>(i, handleKind, new BuildApplicationRepository(t)));
+    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<A, H> install(PackedApplicationTemplate<H> template, ExtensionSetup es,
+            AuthoritySetup<?> owner) {
+        // Install a ApplicationRepository
+        ApplicationRepositoryHandle<A, H> h = REPOSITORY_BEAN_TEMPLATE.newInstaller(es, owner)
+                .install(AbstractApplicationRepository.repositoryClassFor(template), i -> new ApplicationRepositoryHandle<>(i, template));
 
         // Create a new installer for the guest bean
         BeanInstaller i = PackedApplicationTemplate.GB.newInstaller(es, owner);
-        t.installGuestBean(i, h.repository::onCodeGenerated);
+        template.installGuestBean(i, h.repository::onCodeGenerated);
 
         return h.configuration();
     }

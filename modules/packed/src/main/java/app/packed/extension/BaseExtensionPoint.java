@@ -12,12 +12,13 @@ import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
 import app.packed.component.guest.OldContainerTemplateLink;
+import app.packed.container.ContainerInstaller;
 import app.packed.container.ContainerTemplate;
 import app.packed.context.ContextTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationDependencyOrder;
-import app.packed.operation.OperationTemplate;
+import app.packed.operation.OperationInstaller;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.service.ProvidableBeanConfiguration;
@@ -160,7 +161,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      * @return the installer
      */
 
-    public ContainerTemplate.Installer<?> newContainer(ContainerTemplate<?> template) {
+    public ContainerInstaller<?> newContainer(ContainerTemplate<?> template) {
         // Kan only use channels that are direct dependencies of the usage extension
         ExtensionSetup es = usesite.usedBy();
         return PackedContainerInstaller.of((PackedContainerTemplate<?>) template, es.extensionType, es.container.application, es.container);
@@ -197,11 +198,11 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
 class unknown {
 
-    public OperationConfiguration runLifecycleOperation(OperationTemplate.Installer operation, RunState state, OperationDependencyOrder ordering) {
+    public OperationConfiguration runLifecycleOperation(OperationInstaller operation, RunState state, OperationDependencyOrder ordering) {
         throw new UnsupportedOperationException();
     }
 
-    public OperationConfiguration runOnBeanInitialization(OperationTemplate.Installer operation, OperationDependencyOrder ordering) {
+    public OperationConfiguration runOnBeanInitialization(OperationInstaller operation, OperationDependencyOrder ordering) {
         requireNonNull(ordering, "ordering is null");
         throw new UnsupportedOperationException();
 //        OperationHandle handle = h.newOperation(OperationTemplate.defaults(), context());
@@ -217,7 +218,7 @@ class unknown {
      * @return a configuration object representing the inject operation
      * @see Inject
      */
-    public OperationConfiguration runOnBeanInject(OperationTemplate.Installer operation) {
+    public OperationConfiguration runOnBeanInject(OperationInstaller operation) {
 //        PackedOperationHandle handle = (PackedOperationHandle) h.newOperation(OperationTemplate.defaults(), context());
 //        handle.operation().bean.addLifecycleOperation(BeanLifecycleOrder.INJECT, handle);
 //        return new OperationConfiguration(handle);

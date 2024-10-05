@@ -23,7 +23,7 @@ import app.packed.binding.KeyAlreadyProvidedException;
 import app.packed.build.BuildActor;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceHandle;
-import app.packed.namespace.NamespaceTemplate.Installer;
+import app.packed.namespace.NamespaceInstaller;
 import app.packed.service.ServiceNamespaceConfiguration;
 import app.packed.service.ServiceNamespaceMirror;
 import app.packed.util.Nullable;
@@ -49,7 +49,7 @@ public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtensi
     /**
      * @param installer
      */
-    protected ServiceNamespaceHandle(Installer installer) {
+    protected ServiceNamespaceHandle(NamespaceInstaller installer) {
         super(installer);
     }
 

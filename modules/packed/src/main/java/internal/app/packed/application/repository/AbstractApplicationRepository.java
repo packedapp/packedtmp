@@ -19,23 +19,29 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
+import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationRepository;
 import app.packed.application.ApplicationTemplate;
-import app.packed.application.ApplicationTemplate.Installer;
 import app.packed.application.repository.ApplicationLauncher;
 import app.packed.application.repository.ManagedInstance;
 import app.packed.build.BuildGoal;
+import app.packed.lifecycle.LifecycleKind;
 import internal.app.packed.ValueBased;
+import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedApplicationTemplate;
+import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
 import internal.app.packed.application.repository.LauncherOrFuture.PackedApplicationLauncher;
 
 /** Implementation of {@link ApplicationRepository}. */
 @ValueBased
-public abstract class AbstractApplicationRepository<I, H extends ApplicationHandle<I, ?>> implements ApplicationRepository<I, H> {
+public abstract class AbstractApplicationRepository<I, H extends ApplicationHandle<I, ?>> implements ApplicationRepository<I, H>, ApplicationInstallingSource {
 
     /** All applications that are installed in the container. */
     private final ConcurrentHashMap<String, LauncherOrFuture<I, H>> handles;
@@ -53,43 +59,33 @@ public abstract class AbstractApplicationRepository<I, H extends ApplicationHand
         this.template = (PackedApplicationTemplate<H>) bar.template;
         this.methodHandle = requireNonNull(bar.mh);
     }
+//
+//    /** {@inheritDoc} */
+//    @Override
+//    public Optional<H> handle(String name) {
+//        LauncherOrFuture<I, H> f = handles.get(name);
+//        if (f instanceof PackedApplicationLauncher<I, H> l) {
+//            return Optional.of(l.handle());
+//        }
+//        return Optional.empty();
+//    }
+//
+//    /** {@inheritDoc} */
+//    @Override
+//    public Stream<H> handles() {
+//        return launchers0().map(l -> l.handle());
+//    }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
-    public Optional<H> handle(String name) {
-        LauncherOrFuture<I, H> f = handles.get(name);
-        if (f instanceof PackedApplicationLauncher<I, H> l) {
-            return Optional.of(l.handle());
-        }
-        return Optional.empty();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<ApplicationLauncher<I>> launcher(String name) {
-        LauncherOrFuture<I, H> f = handles.get(name);
-        if (f instanceof PackedApplicationLauncher<I, H> l) {
-            return Optional.of(l);
-        }
-        return Optional.empty();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Installer<H> newApplication() {
-        return template.newInstaller(BuildGoal.IMAGE, methodHandle);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Stream<H> handles() {
-        return launchers0().map(l -> l.handle());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ApplicationTemplate<H> template() {
-        return template;
+    public final ApplicationLauncher<I> install(Consumer<? super ApplicationInstaller<H>> installer) {
+        PackedApplicationInstaller<H> pai = template.newInstaller(this, BuildGoal.IMAGE, methodHandle);
+        installer.accept(pai);
+        ApplicationSetup setup = pai.toHandle();
+        PackedApplicationLauncher<I, H> pal = new PackedApplicationLauncher<>(this, (H) setup.handle());
+        handles.put(UUID.randomUUID().toString(), pal);
+        return pal;
     }
 
     /** {@inheritDoc} */
@@ -105,6 +101,16 @@ public abstract class AbstractApplicationRepository<I, H extends ApplicationHand
     }
 
     /** {@inheritDoc} */
+    @Override
+    public Optional<ApplicationLauncher<I>> launcher(String name) {
+        LauncherOrFuture<I, H> f = handles.get(name);
+        if (f instanceof PackedApplicationLauncher<I, H> l) {
+            return Optional.of(l);
+        }
+        return Optional.empty();
+    }
+
+    /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Stream<ApplicationLauncher<I>> launchers() {
@@ -113,5 +119,16 @@ public abstract class AbstractApplicationRepository<I, H extends ApplicationHand
 
     public Stream<PackedApplicationLauncher<I, H>> launchers0() {
         return handles.values().stream().filter(l -> l instanceof PackedApplicationLauncher).map(l -> (PackedApplicationLauncher<I, H>) l);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ApplicationTemplate<H> template() {
+        return template;
+    }
+
+    public static Class<?> repositoryClassFor(PackedApplicationTemplate<?> template) {
+        return template.containerTemplate().lifecycleKind() == LifecycleKind.UNMANAGED ? UnmanagedApplicationRepository.class
+                : ManagedApplicationRepository.class;
     }
 }

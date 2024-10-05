@@ -20,15 +20,14 @@ import java.util.function.Function;
 import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceConfiguration;
 import app.packed.namespace.NamespaceHandle;
-import app.packed.namespace.NamespaceTemplate;
-import app.packed.namespace.NamespaceTemplate.Installer;
+import app.packed.namespace.NamespaceInstaller;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.component.PackedComponentInstaller;
 import internal.app.packed.extension.ExtensionSetup;
 
 /** Implementation of {@link NamespaceTemplate.Installer} */
-public final class PackedNamespaceInstaller extends PackedComponentInstaller<NamespaceSetup, PackedNamespaceInstaller> implements NamespaceTemplate.Installer {
+public final class PackedNamespaceInstaller extends PackedComponentInstaller<NamespaceSetup, PackedNamespaceInstaller> implements NamespaceInstaller {
 
     public NamespaceHandle<?, ?> handle;
     final String name;
@@ -56,7 +55,7 @@ public final class PackedNamespaceInstaller extends PackedComponentInstaller<Nam
 
     /** {@inheritDoc} */
     @Override
-    public <E extends Extension<E>, H extends NamespaceHandle<E, ?>, C extends NamespaceConfiguration<E>> H install(Function<? super Installer, H> newHandle) {
+    public <E extends Extension<E>, H extends NamespaceHandle<E, ?>, C extends NamespaceConfiguration<E>> H install(Function<? super NamespaceInstaller, H> newHandle) {
         return NamespaceSetup.newNamespace(this, newHandle);
     }
 

@@ -23,8 +23,7 @@ import java.util.UUID;
 
 import app.packed.application.ApplicationBuildLocal;
 import app.packed.application.ApplicationHandle;
-import app.packed.application.ApplicationTemplate;
-import app.packed.application.ApplicationTemplate.Installer;
+import app.packed.application.ApplicationInstaller;
 import app.packed.assembly.Assembly;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
@@ -38,7 +37,7 @@ import internal.app.packed.util.ThrowableUtil;
 
 /** Implementation of {@link ApplicationTemplate.Installer}. */
 public final class PackedApplicationInstaller<H extends ApplicationHandle<?, ?>>
-        extends PackedComponentInstaller<ApplicationSetup, PackedApplicationInstaller<H>> implements ApplicationTemplate.Installer<H> {
+        extends PackedComponentInstaller<ApplicationSetup, PackedApplicationInstaller<H>> implements ApplicationInstaller<H> {
 
     /** The build process the application is part of. */
     public final PackedBuildProcess buildProcess;
@@ -102,7 +101,7 @@ public final class PackedApplicationInstaller<H extends ApplicationHandle<?, ?>>
 
     /** {@inheritDoc} */
     @Override
-    public Installer<H> named(String name) {
+    public ApplicationInstaller<H> named(String name) {
         this.name = requireNonNull(name);
         return this;
     }

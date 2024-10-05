@@ -15,6 +15,7 @@
  */
 package app.packed.application.repository;
 
+import app.packed.application.ApplicationHandle;
 import app.packed.container.Wirelet;
 
 /**
@@ -23,15 +24,19 @@ import app.packed.container.Wirelet;
  */
 // Handlers can be used across multiple application instances.
 // So we need to be able to uninstall them  per application instance
+
+// Add H, and drop Handles
+
 public interface ApplicationLauncher<I> {
 
     boolean isAvailable();
 
     GuestLauncher<I> launcher();
 
+    ApplicationHandle<?,?> handle();
+
     // Will also remove the underlying handle from the repository
     void disable();
 
     I startGuest(Wirelet... wirelets);
-
 }

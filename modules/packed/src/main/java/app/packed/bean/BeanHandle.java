@@ -33,8 +33,8 @@ import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
-import app.packed.operation.OperationTemplate.Installer;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
@@ -301,7 +301,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     }
 
     /** {@inheritDoc} */
-    public final Installer newFunctionalOperation(OperationTemplate template, Object function) {
+    public final OperationInstaller newFunctionalOperation(OperationTemplate template, Object function) {
         return null;
     }
 

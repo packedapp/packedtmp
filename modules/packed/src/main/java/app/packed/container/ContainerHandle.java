@@ -53,7 +53,7 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
      * @param installer
      *            the installer for the container
      */
-    public ContainerHandle(ContainerTemplate.Installer<?> installer) {
+    public ContainerHandle(ContainerInstaller<?> installer) {
         this.container = ((PackedContainerInstaller<?>) installer).toHandle();
     }
 

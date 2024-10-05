@@ -15,7 +15,7 @@
  */
 package app.packed.concurrent;
 
-import app.packed.operation.OperationTemplate.Installer;
+import app.packed.operation.OperationInstaller;
 import internal.app.packed.concurrent.ScheduledDaemon;
 
 /** An operation handle for a daemon operation. */
@@ -27,7 +27,7 @@ final class DaemonOperationHandle extends ThreadedOperationHandle<DaemonOperatio
 
     boolean useVirtual;
 
-    DaemonOperationHandle(Installer installer, ThreadNamespaceHandle namespace) {
+    DaemonOperationHandle(OperationInstaller installer, ThreadNamespaceHandle namespace) {
         super(installer, namespace);
     }
 

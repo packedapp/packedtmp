@@ -16,11 +16,8 @@
 package app.packed.namespace;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
-import app.packed.extension.Extension;
 import app.packed.namespace.sandbox.BuildPermission;
-import internal.app.packed.namespace.PackedNamespaceInstaller;
 import internal.app.packed.namespace.PackedNamespaceTemplate;
 
 /**
@@ -65,13 +62,5 @@ public sealed interface NamespaceTemplate permits PackedNamespaceTemplate {
         default void addPermission(BuildPermission permissions) {
             // Default values??? for example, root only
         }
-
-    }
-
-   sealed interface Installer permits PackedNamespaceInstaller {
-
-        // return value.getClass() from newHandle must match handleClass
-        <E extends Extension<E>, H extends NamespaceHandle<E, ?>, C extends NamespaceConfiguration<E>> H install(
-                Function<? super NamespaceTemplate.Installer, H> newHandle);
     }
 }

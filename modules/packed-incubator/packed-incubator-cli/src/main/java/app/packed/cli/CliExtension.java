@@ -26,6 +26,7 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
+import app.packed.container.ContainerInstaller;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.extension.ExtensionHandle;
@@ -92,11 +93,11 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
         return ns().configuration(this);
     }
 
-    private ContainerTemplate.Installer<?> newContainer() {
+    private ContainerInstaller<?> newContainer() {
         if (isInApplicationLifetime()) {
             throw new UnsupportedOperationException("This method must be called from an extension in the application lifetime");
         }
-        ContainerTemplate.Installer<?> cb = base().newContainer(ContainerTemplate.GATEWAY);
+        ContainerInstaller<?> cb = base().newContainer(ContainerTemplate.GATEWAY);
         // CT.addEntryPointErrorMessage("Lifetime must container at least one entry point with CliCommand")
 
         return cb;

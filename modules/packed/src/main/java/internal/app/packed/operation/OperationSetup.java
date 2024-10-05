@@ -29,8 +29,8 @@ import app.packed.component.ComponentPath;
 import app.packed.context.Context;
 import app.packed.extension.InternalExtensionException;
 import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationTemplate.Installer;
 import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.ValueBased;
@@ -251,7 +251,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
      * @throws InternalExtensionException
      *             if the handleFactory returns null
      */
-    static OperationSetup newOperation(PackedOperationInstaller installer, Function<? super Installer, OperationHandle<?>> handleFactory) {
+    static OperationSetup newOperation(PackedOperationInstaller installer, Function<? super OperationInstaller, OperationHandle<?>> handleFactory) {
         // Cannot reuse an installer
         installer.checkNotInstalledYet();
 

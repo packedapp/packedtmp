@@ -23,7 +23,6 @@ import app.packed.application.ApplicationRepositoryConfiguration;
 import app.packed.assembly.BaseAssembly;
 import app.packed.component.guest.usage.GuestBean.GuestApplicationHandle;
 import app.packed.lifecycle.OnInitialize;
-import app.packed.runtime.RunState;
 
 /**
  *
@@ -33,8 +32,7 @@ public class AaaaDoo extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        ApplicationRepositoryConfiguration<GuestBean, GuestApplicationHandle> repo = ApplicationRepository.provide(GuestApplicationHandle.class, GuestBean.T,
-                base());
+        ApplicationRepositoryConfiguration<GuestBean, GuestApplicationHandle> repo = ApplicationRepository.provide(GuestBean.T, base());
         repo.installApplication(i -> i.named("foo").install(new SubApplication()));
         install(MyBean.class);
     }
@@ -56,7 +54,7 @@ public class AaaaDoo extends BaseAssembly {
             });
 
             if (al.incrementAndGet() < 10) {
-                repository.newApplication().install(new AaaaDoo()).launch(RunState.RUNNING);
+                repository.install(i -> i.install(new AaaaDoo())).startGuest();
             }
         }
     }

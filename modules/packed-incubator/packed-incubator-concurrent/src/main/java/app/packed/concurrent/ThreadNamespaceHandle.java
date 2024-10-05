@@ -20,6 +20,7 @@ import java.util.List;
 import app.packed.bean.BeanConfiguration;
 import app.packed.build.BuildActor;
 import app.packed.namespace.NamespaceHandle;
+import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceTemplate;
 import internal.app.packed.concurrent.ExecutorConfiguration;
 import internal.app.packed.concurrent.ScheduledDaemon;
@@ -41,7 +42,7 @@ final class ThreadNamespaceHandle extends NamespaceHandle<ThreadExtension, Threa
      * @param installer
      *            the namespace installer
      */
-    protected ThreadNamespaceHandle(NamespaceTemplate.Installer installer) {
+    protected ThreadNamespaceHandle(NamespaceInstaller installer) {
         super(installer);
     }
 

@@ -13,6 +13,7 @@ import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.ExtensionContext;
 import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
@@ -70,7 +71,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
             @SuppressWarnings("unchecked")
             @Override
-            public final <H extends OperationHandle<?>> H install(Function<? super OperationTemplate.Installer, H> handleFactory) {
+            public final <H extends OperationHandle<?>> H install(Function<? super OperationInstaller, H> handleFactory) {
                 OperationSetup operation = PackedOperationInstaller.newOperationFromMember(this, target, methodHandle, handleFactory);
                 extension.scanner.unBoundOperations.add(operation);
                 return (H) operation.handle();

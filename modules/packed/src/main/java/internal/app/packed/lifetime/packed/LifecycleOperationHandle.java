@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationDependencyOrder;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate.Installer;
+import app.packed.operation.OperationInstaller;
 import internal.app.packed.bean.BeanLifecycleOrder;
 
 /**
@@ -38,7 +38,7 @@ public abstract sealed class LifecycleOperationHandle extends OperationHandle<Op
     /**
      * @param installer
      */
-    public LifecycleOperationHandle(Installer installer, OperationDependencyOrder order, BeanLifecycleOrder lifecycleOrder) {
+    public LifecycleOperationHandle(OperationInstaller installer, OperationDependencyOrder order, BeanLifecycleOrder lifecycleOrder) {
         super(installer);
         this.order = requireNonNull(order);
     }

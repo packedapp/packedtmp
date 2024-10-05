@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 
 import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.binding.Key;
+import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.scanning.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
@@ -44,7 +45,7 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
 
     /** {@inheritDoc} */
     @Override
-    public OperationTemplate.Installer newOperation(OperationTemplate template) {
+    public OperationInstaller newOperation(OperationTemplate template) {
         PackedOperationTemplate t = (PackedOperationTemplate)  requireNonNull(template);
         checkConfigurable();
 

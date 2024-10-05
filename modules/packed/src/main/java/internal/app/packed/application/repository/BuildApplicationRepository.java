@@ -24,18 +24,18 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationHandle;
-import app.packed.application.ApplicationTemplate;
-import app.packed.application.ApplicationTemplate.Installer;
+import app.packed.application.ApplicationInstaller;
 import app.packed.build.BuildGoal;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedApplicationTemplate;
+import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
 
 /**
  *
  */
-public final class BuildApplicationRepository {
+public final class BuildApplicationRepository implements ApplicationInstallingSource {
 
-    private final ArrayList<Consumer<? super ApplicationTemplate.Installer<?>>> children = new ArrayList<>();
+    private final ArrayList<Consumer<? super ApplicationInstaller<?>>> children = new ArrayList<>();
 
     final Map<String, ApplicationHandle<?, ?>> handles = new HashMap<>();
 
@@ -51,13 +51,13 @@ public final class BuildApplicationRepository {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <H extends ApplicationHandle<?, ?>> void add(Consumer<? super ApplicationTemplate.Installer<H>> installer) {
+    public <H extends ApplicationHandle<?, ?>> void add(Consumer<? super ApplicationInstaller<H>> installer) {
         children.add((Consumer) installer);
     }
 
     public void build() {
-        for (Consumer<? super Installer<?>> con : children) {
-            PackedApplicationInstaller<?> installer = template.newInstaller(BuildGoal.IMAGE, mh);
+        for (Consumer<? super ApplicationInstaller<?>> con : children) {
+            PackedApplicationInstaller<?> installer = template.newInstaller(this, BuildGoal.IMAGE, mh);
             con.accept(installer);
             // TODO check that install has been invoked
             handles.put(installer.name, installer.toHandle().handle());

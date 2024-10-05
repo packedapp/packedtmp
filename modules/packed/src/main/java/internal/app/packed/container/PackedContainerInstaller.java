@@ -27,7 +27,7 @@ import app.packed.binding.Key;
 import app.packed.build.hook.BuildHook;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerHandle;
-import app.packed.container.ContainerTemplate;
+import app.packed.container.ContainerInstaller;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.util.Nullable;
@@ -41,7 +41,7 @@ import internal.app.packed.util.handlers.AssemblyHandlers;
 
 /** Implementation of {@link ContainerTemplate.Installer} */
 public final class PackedContainerInstaller<H extends ContainerHandle<?>> extends PackedComponentInstaller<ContainerSetup, PackedContainerInstaller<H>>
-        implements ContainerTemplate.Installer<H> {
+        implements ContainerInstaller<H> {
 
     /** Non-null if this container is being installed as the root container of an application. */
     @Nullable
@@ -90,7 +90,7 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
     }
 
     @Override
-    public <T> ContainerTemplate.Installer<H> provideGuestConstant(Key<T> key, T constant) {
+    public <T> ContainerInstaller<H> provideGuestConstant(Key<T> key, T constant) {
         throw new UnsupportedOperationException();
     }
 
@@ -139,7 +139,7 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
         return s.container;
     }
 
-    public <T> ContainerTemplate.Installer<H> localConsume(ContainerBuildLocal<T> local, Consumer<T> action) {
+    public <T> ContainerInstaller<H> localConsume(ContainerBuildLocal<T> local, Consumer<T> action) {
 //        PackedAbstractContainerLocal<?> cl = (PackedAbstractContainerLocal<?>) local;
 
 //        cl.g
@@ -150,7 +150,7 @@ public final class PackedContainerInstaller<H extends ContainerHandle<?>> extend
 
     /** {@inheritDoc} */
     @Override
-    public ContainerTemplate.Installer<H> named(String name) {
+    public ContainerInstaller<H> named(String name) {
         this.name = name;
         return this;
     }
