@@ -19,7 +19,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.util.Nullable;
-import internal.app.packed.lifetime.runtime.PackedManagedLifetime;
 import sandbox.lifetime.external.ManagedLifetimeState;
 
 // This is basically something thats wraps a state that is 100 Linear
@@ -55,7 +54,7 @@ import sandbox.lifetime.external.ManagedLifetimeState;
 
 // this is lifecycle instead of lifetime because the lifetime already exists.
 
-public sealed interface ManagedLifecycle permits PackedManagedLifetime {
+public interface ManagedLifecycle  {
 
     // Optional<Throwable> getFailure();
 

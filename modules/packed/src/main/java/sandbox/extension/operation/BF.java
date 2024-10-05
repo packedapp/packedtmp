@@ -17,6 +17,7 @@ package sandbox.extension.operation;
 
 import java.lang.invoke.VarHandle.AccessMode;
 
+import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanTemplate;
 import app.packed.operation.OperationHandle;
 
@@ -44,5 +45,5 @@ public interface BF {
     OperationHandle<?> factoryForThis(); // Always a get operation
 
     // Will create a dependency on this bean, even if static
-    BeanTemplate.Installer newInstaller(BeanTemplate kind); // cannot be static
+    BeanInstaller newInstaller(BeanTemplate kind); // cannot be static
 }

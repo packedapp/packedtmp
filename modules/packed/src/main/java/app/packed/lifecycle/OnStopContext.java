@@ -15,7 +15,10 @@
  */
 package app.packed.lifecycle;
 
+import java.util.concurrent.TimeUnit;
+
 import app.packed.context.Context;
+import app.packed.context.ContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.runtime.StopInfo;
 
@@ -24,6 +27,7 @@ import app.packed.runtime.StopInfo;
  */
 // Bliver lavet per operation
 // BeanStopContext
+@ContextualServiceProvider(extension = BaseExtension.class, context = OnStopContext.class)
 public interface OnStopContext extends Context<BaseExtension> {
 
     /**
@@ -34,4 +38,14 @@ public interface OnStopContext extends Context<BaseExtension> {
     /** {@return Information about why the containing lifetime was stopped.} */
     StopInfo info();
     // isApplicationStopping();
+
+
+    default void await(AwaitingTimeoutFunction f) {
+
+    }
+
+    @FunctionalInterface
+    interface AwaitingTimeoutFunction {
+        boolean await(long timeout, TimeUnit unit) throws InterruptedException;
+    }
 }

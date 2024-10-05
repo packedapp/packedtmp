@@ -39,11 +39,16 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
     /** The handle's container */
     final ContainerSetup container;
 
+    /** Whether or not the container if configurable. {@link #doClose()} marks it as non-configurable. */
+    private boolean isConfigurable = true;
+
     /** The lazy generated container mirror. */
     private ContainerMirror mirror;
 
+
     /**
      * Creates a new container handle.
+     *
      *
      * @param installer
      *            the installer for the container
@@ -74,6 +79,11 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
         return c;
     }
 
+    final void doClose() {
+        onClose();
+        isConfigurable = false;
+    }
+
     /**
      * {@return an unmodifiable view of the extensions that are currently used by this container.}
      *
@@ -88,7 +98,7 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
     /** {@inheritDoc} */
     @Override
     public final boolean isConfigurable() {
-        return container.isConfigurable();
+        return isConfigurable;
     }
 
     /**
@@ -156,6 +166,8 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
     protected ContainerMirror newContainerMirror() {
         return new ContainerMirror(this);
     }
+
+    protected void onClose() {}
 
     /** {@inheritDoc} */
     @Override

@@ -20,12 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.context.ContextTemplate;
-import app.packed.operation.Op;
 import app.packed.operation.OperationTemplate;
-import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanTemplate;
 import sandbox.application.LifetimeTemplate;
 
@@ -229,82 +226,6 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
         }
     }
 
-    /**
-     * An installer for installing beans into a container.
-     * <p>
-     * The various install methods can be called multiple times to install multiple beans. However, the use cases for this
-     * are limited.
-     *
-     * @see app.packed.extension.BaseExtensionPoint#newApplicationBean(BeanTemplate)
-     * @see app.packed.extension.BaseExtensionPoint#newDependantExtensionBean(BeanTemplate,
-     *      app.packed.extension.ExtensionPoint.UseSite)
-     *
-     * @apiNote The reason we have a Builder and not just 1 class. Is because of the bean scanning. Which makes it confusing
-     *          which methods can be invoked before or only after the scanning
-     */
-    sealed interface Installer permits PackedBeanInstaller {
-
-        Installer componentTag(String... tags);
-
-        default BeanHandle<BeanConfiguration> install(Class<?> beanClass) {
-            return install(beanClass, BeanHandle::new);
-        }
-
-        /**
-         * Installs the bean using the specified class as the bean source.
-         * <p>
-         * {@link BeanHandle#configuration()} returns the configuration that is created using the specified function
-         *
-         * @param <T>
-         *            the bean class
-         * @param beanClass
-         *            the bean class
-         * @param configurationCreator
-         *            responsible for creating the configuration of the bean that is exposed to the end user.
-         * @return a bean handle representing the installed bean
-         *
-         * @see app.packed.bean.BeanSourceKind#CLASS
-         */
-        <H extends BeanHandle<?>> H install(Class<?> beanClass, Function<? super BeanTemplate.Installer, H> factory);
-
-        <H extends BeanHandle<?>> H install(Op<?> beanClass, Function<? super BeanTemplate.Installer, H> factory);
-
-        // These things can never be multi
-        // AbsentInstalledComponent(boolean wasInstalled)
-        <H extends BeanHandle<T>, T extends BeanConfiguration> H installIfAbsent(Class<?> beanClass, Class<T> beanConfigurationClass,
-                Function<? super BeanTemplate.Installer, H> configurationCreator, Consumer<? super BeanHandle<?>> onNew);
-
-        // instance = introspected bean
-        // constant = non-introspected bean
-        <H extends BeanHandle<?>> H installInstance(Object instance, Function<? super BeanTemplate.Installer, H> factory);
-
-        /**
-         * Creates a new bean without a source.
-         *
-         * @return a bean handle representing the new bean
-         *
-         * @throws IllegalStateException
-         *             if this builder was created with a base template other than {@link BeanTemplate#STATIC}
-         * @see app.packed.bean.BeanSourceKind#SOURCELESS
-         */
-        <H extends BeanHandle<?>> H installSourceless(Function<? super BeanTemplate.Installer, H> factory);
-
-        Installer namePrefix(String prefix);
-
-        /**
-         * Sets the value of the specified bean local for the new bean.
-         *
-         * @param <T>
-         *            the type of value the bean local holds
-         * @param local
-         *            the bean local to set
-         * @param value
-         *            the value of the local
-         * @return this builder
-         */
-        <T> Installer setLocal(BeanBuildLocal<T> local, T value);
-    }
-
 }
 
 interface Sandbox {
@@ -331,7 +252,7 @@ interface Sandbox {
      *
      * @return this installer
      */
-    BeanTemplate.Installer synthetic(); // Maybe on template?
+    BeanInstaller synthetic(); // Maybe on template?
 
 //    // No seperet MH for starting, part of init
 //    // Tror maaske det her er en seperat template

@@ -15,34 +15,11 @@
  */
 package app.packed.binding.sandbox;
 
-import java.util.concurrent.Callable;
-import java.util.function.Supplier;
-
-import app.packed.lifecycle.OnStart;
-
 /**
  *
  */
+public class LazyInitializationException extends RuntimeException {
 
-// Maybe just LazyStarting
-public interface Lazy<T> extends Supplier<T> {
+    private static final long serialVersionUID = 1L;
 
-    static <T> Lazy<T> of(Callable<T> callable) {
-        throw new UnsupportedOperationException();
-    }
-}
-
-class SomeBean {
-
-    @OnStart(fork = true) // will it just get the field. and call get??? Catching Lazy Initialization exception
-    final Lazy<String> l = Lazy.of(this::calc);
-
-    private String calc() {
-        return "afasdf";
-    }
-
-    @OnStart(fork = true)
-    public void start() {
-        l.get();
-    }
 }

@@ -235,7 +235,7 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
 
     /** {@return the owner of the bean.} */
     public final BuildActor owner() {
-        return handle.bean.owner();
+        return handle.owner();
     }
 
     /** {@return any proxy the bean may have.} */

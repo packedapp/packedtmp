@@ -246,6 +246,7 @@ abstract class AbstractAppTest<A> {
             State3Build(State2Building sb) {
                 sb.assembly.postBuild();
                 this.application = sb.assembly.container.application;
+                this.application.completedBuilding = true;
             }
         }
     }

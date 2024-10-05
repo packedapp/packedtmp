@@ -40,6 +40,16 @@ public sealed interface NamespaceTemplate permits PackedNamespaceTemplate {
 
     interface Configurator {
 
+        //Logging/Config er manuelt enabled
+        // Forstaaet paa den maade at annoteringerne stadig kan bruges af extensions.
+        // Men hvis namespaces ikke bliver enabled er det ikke aktivt...
+        // IDK maaske er det okay.
+        // Logging og Config er ihvertfald en del af BaseExtension... ellers biver det weird med used extensions
+        // Maaske ogsaa metrics. Men metrics er > 1.0
+
+        // IDK maaske er namespaces der stadig.. Men er bare ikke enabled
+        Configurator manualEnabled();
+
         // Taenker maaske man skal kunne foersporge paa det.
         // Give me all domains of typeX
 

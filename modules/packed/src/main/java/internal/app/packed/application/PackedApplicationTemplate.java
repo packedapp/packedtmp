@@ -23,8 +23,8 @@ import java.util.function.Function;
 import app.packed.application.ApplicationBuildLocal;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationTemplate;
+import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanTemplate;
 import app.packed.build.BuildGoal;
 import app.packed.component.guest.ComponentHostContext;
 import app.packed.container.ContainerTemplate;
@@ -78,7 +78,7 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
         return new PackedApplicationInstaller<>(PackedApplicationTemplate.BOOTSTRAP_APP, null, BuildGoal.LAUNCH);
     }
 
-    public void installGuestBean(BeanTemplate.Installer installer, Consumer<? super MethodHandle> assigner) {
+    public void installGuestBean(BeanInstaller installer, Consumer<? super MethodHandle> assigner) {
         if (guestClass() == Void.class) {
             return;
         }

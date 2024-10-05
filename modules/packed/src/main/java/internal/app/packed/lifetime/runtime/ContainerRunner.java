@@ -69,18 +69,21 @@ public class ContainerRunner {
     }
 
     void shutdown() {
-        // Run all initializers
-        for (MethodHandle mh : container.lifetime.shutdown.methodHandles) {
-            try {
-                mh.invokeExact(pool);
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
-        }
+
+        new StopRunner(container.lifetime.shutdown.operations, pool, runtime).start();
+//
+//        // Run all initializers
+//        for (MethodHandle mh : container.lifetime.shutdown.methodHandles) {
+//            try {
+//                mh.invokeExact(pool);
+//            } catch (Throwable e) {
+//                throw ThrowableUtil.orUndeclared(e);
+//            }
+//        }
     }
 
     void start() {
-        new StartRunner(container.lifetime.startup.methodHandles, pool, runtime).start();
+        new StartRunner(container.lifetime.startup.operations, pool, runtime).start();
 //        // Run all initializers
 //        for (MethodHandle mh : container.lifetime.startup.methodHandles) {
 //            try {

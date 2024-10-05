@@ -42,6 +42,7 @@ public interface OnStartContext extends Context<BaseExtension>{
     void fail(Throwable cause); //hvorfor ikke bare smide den...
 
     // StartReason?
+
 }
 
 //Eller har vi noget generisk AsyncDependecyContext???

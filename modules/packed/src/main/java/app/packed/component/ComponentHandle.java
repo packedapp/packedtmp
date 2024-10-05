@@ -24,7 +24,7 @@ import app.packed.namespace.NamespaceHandle;
 import app.packed.operation.OperationHandle;
 
 /**
- *
+ * Tror den ryger... Maaske bliver den intern
  */
 public sealed abstract class ComponentHandle permits ApplicationHandle, ContainerHandle, BeanHandle, OperationHandle, NamespaceHandle {
 
@@ -48,6 +48,16 @@ public sealed abstract class ComponentHandle permits ApplicationHandle, Containe
     public abstract ComponentPath componentPath();
 
     /**
+     * @param tags
+     * @return
+     */
+    public abstract void componentTag(String... tags);
+
+    public Set<String> componentTags() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Returns whether or not the component is still configurable.
      *
      * @return {@code true} if the component is still configurable
@@ -56,17 +66,5 @@ public sealed abstract class ComponentHandle permits ApplicationHandle, Containe
 
     /** { @return a mirror for the component} */
     public abstract ComponentMirror mirror();
-
-    /**
-     * @param tags
-     * @return
-     */
-    public void componentTag(String... tags) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Set<String> componentTags() {
-        throw new UnsupportedOperationException();
-    }
 
 }

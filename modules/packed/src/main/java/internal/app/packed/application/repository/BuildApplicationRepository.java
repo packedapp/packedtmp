@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package internal.app.packed.application.repository;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,6 +27,8 @@ import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.ApplicationTemplate.Installer;
 import app.packed.build.BuildGoal;
+import internal.app.packed.application.PackedApplicationInstaller;
+import internal.app.packed.application.PackedApplicationTemplate;
 
 /**
  *

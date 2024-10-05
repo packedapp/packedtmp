@@ -26,7 +26,7 @@ import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.assembly.BuildableAssembly;
-import app.packed.bean.BeanTemplate;
+import app.packed.bean.BeanInstaller;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
@@ -151,7 +151,7 @@ public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> impl
             ExtensionSetup es = ExtensionSetup.crack(base);
 
             // Create a new installer
-            BeanTemplate.Installer installer = PackedApplicationTemplate.GB.newInstaller(es, es.container.assembly);
+            BeanInstaller installer = PackedApplicationTemplate.GB.newInstaller(es, es.container.assembly);
 
             // Install the guest bean if needed (code is shared with App-On-App)
             template.installGuestBean(installer, m -> mh = m);

@@ -18,10 +18,9 @@ package app.packed.component.guest.usage;
 import java.util.concurrent.atomic.AtomicLong;
 
 import app.packed.application.App;
-import app.packed.application.repository.ApplicationRepository;
-import app.packed.application.repository.ApplicationRepositoryConfiguration;
+import app.packed.application.ApplicationRepository;
+import app.packed.application.ApplicationRepositoryConfiguration;
 import app.packed.assembly.BaseAssembly;
-import app.packed.binding.Key;
 import app.packed.component.guest.usage.GuestBean.GuestApplicationHandle;
 import app.packed.lifecycle.OnInitialize;
 import app.packed.runtime.RunState;
@@ -31,18 +30,12 @@ import app.packed.runtime.RunState;
  */
 public class AaaaDoo extends BaseAssembly {
 
-    static AtomicLong al = new AtomicLong();
-
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        ApplicationRepositoryConfiguration<GuestApplicationHandle> c = ApplicationRepository.install(GuestBean.T, base());
-
-        c.provideAs(new Key<ApplicationRepository<GuestApplicationHandle>>() {});
-        c.installChildApplication(i -> i.named("foo").install(new SubApplication()));
-        c.installChildApplication(i -> i.named("foox").install(new SubApplication()));
-
-
+        ApplicationRepositoryConfiguration<GuestBean, GuestApplicationHandle> repo = ApplicationRepository.provide(GuestApplicationHandle.class, GuestBean.T,
+                base());
+        repo.installApplication(i -> i.named("foo").install(new SubApplication()));
         install(MyBean.class);
     }
 
@@ -50,20 +43,19 @@ public class AaaaDoo extends BaseAssembly {
         App.run(new AaaaDoo());
     }
 
-    public record MyBean(ApplicationRepository<GuestApplicationHandle> repository) {
+    public record MyBean(ApplicationRepository<GuestBean, GuestApplicationHandle> repository) {
+
+        static AtomicLong al = new AtomicLong();
 
         @OnInitialize
         public void oni() {
-            repository.stream().forEach(c -> {
-                for (int i = 0; i < 100; i++) {
-                    GuestBean b = c.launch(RunState.RUNNING);
-                    System.out.println(b.nanos());
+            repository.launchers().forEach(c -> {
+                for (int i = 0; i < 10; i++) {
+                    c.startGuest();
                 }
-                System.out.println("Sub app " + c.mirror().name());
             });
 
-            if (al.incrementAndGet() < 100) {
-                System.out.println(al.get());
+            if (al.incrementAndGet() < 10) {
                 repository.newApplication().install(new AaaaDoo()).launch(RunState.RUNNING);
             }
         }

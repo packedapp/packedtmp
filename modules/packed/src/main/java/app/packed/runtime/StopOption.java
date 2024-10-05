@@ -33,6 +33,14 @@ import java.util.function.Supplier;
 // Men okay det er jo det samme fail, o.s.v.
 public interface StopOption {
 
+    static StopOption parentStopping() {
+       return new StopOption() {};
+    }
+
+    static StopOption parentStopping(Throwable cause) {
+        throw new UnsupportedOperationException();
+    }
+
     static StopOption cancel() {
         throw new UnsupportedOperationException();
     }
@@ -69,7 +77,6 @@ public interface StopOption {
         throw new UnsupportedOperationException();
     }
 
-
     static StopOption now(Throwable cause) {
         throw new UnsupportedOperationException();
     }
@@ -84,7 +91,6 @@ public interface StopOption {
         // Now == shutdownNow();
         throw new UnsupportedOperationException();
     }
-
 
 //        // add Runtime.IsRestartable??
 //        static StopOption restart(Wirelet... wirelets) {

@@ -19,9 +19,9 @@ import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanTemplate.Installer;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 
@@ -60,7 +60,7 @@ public class MyW extends BaseAssembly {
         /**
          * @param installer
          */
-        public MyBeanHandle(Installer installer) {
+        public MyBeanHandle(BeanInstaller installer) {
             super(installer);
         }
 

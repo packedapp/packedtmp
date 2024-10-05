@@ -187,7 +187,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     @Override
     @BuildActionable("component.addTags") // Hmm or bean.addTags
     public BeanConfiguration componentTag(String... tags) {
-        handle.componentTags(tags);
+        handle.componentTag(tags);
         return this;
     }
 

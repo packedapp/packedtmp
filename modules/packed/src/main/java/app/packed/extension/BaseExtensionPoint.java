@@ -8,6 +8,7 @@ import java.util.function.Function;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
 import app.packed.component.guest.OldContainerTemplateLink;
@@ -94,7 +95,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T> ProvidableBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ProvidableBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
-        Function<BeanTemplate.Installer, ProvidableBeanHandle<?>> f = ProvidableBeanHandle::new;
+        Function<BeanInstaller, ProvidableBeanHandle<?>> f = ProvidableBeanHandle::new;
         BeanHandle<?> handle = newBean(CONTAINER, context()).installIfAbsent(clazz, ProvidableBeanConfiguration.class, (Function) f,
                 h -> action.accept((ProvidableBeanConfiguration<T>) h.configuration()));
         return (ProvidableBeanConfiguration<T>) handle.configuration();
@@ -132,7 +133,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            a bean template representing the behaviour of the new bean
      * @return the installer
      */
-    public BeanTemplate.Installer newBean(BeanTemplate template) {
+    public BeanInstaller newBean(BeanTemplate template) {
         PackedBeanTemplate t = (PackedBeanTemplate) template;
         ExtensionSetup e = usesite.usedBy();
         return t.newInstaller(e, e.container.assembly);
@@ -145,7 +146,7 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
      *            a bean template representing the behaviour of the new bean
      * @return the installer
      */
-    public BeanTemplate.Installer newBean(BeanTemplate template, ExtensionUseSite forExtension) {
+    public BeanInstaller newBean(BeanTemplate template, ExtensionUseSite forExtension) {
         requireNonNull(forExtension, "forExtension is null");
         PackedBeanTemplate t = (PackedBeanTemplate) template;
         return t.newInstaller(extension().extension, ((PackedExtensionUseSite) forExtension).usedBy());

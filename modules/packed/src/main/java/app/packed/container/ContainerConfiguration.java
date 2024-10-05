@@ -52,7 +52,8 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
     @Override
     @BuildActionable("container.addTags")
     public ComponentConfiguration componentTag(String... tags) {
-        return handle.container.componentTag(tags);
+        handle.componentTag(tags);
+        return this;
     }
 
     /**
@@ -115,6 +116,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      */
     @BuildActionable("container.named")
     public ContainerConfiguration named(String name) {
+        checkIsConfigurable();
         handle.container.named(name);
         return this;
     }

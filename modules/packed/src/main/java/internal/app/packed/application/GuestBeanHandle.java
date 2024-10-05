@@ -20,8 +20,8 @@ import java.util.Set;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanTemplate.Installer;
 import app.packed.binding.BindableVariable;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
@@ -42,7 +42,7 @@ public class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration<?>> {
     /**
      * @param installer
      */
-    public GuestBeanHandle(Installer installer) {
+    public GuestBeanHandle(BeanInstaller installer) {
         super(installer);
     }
 

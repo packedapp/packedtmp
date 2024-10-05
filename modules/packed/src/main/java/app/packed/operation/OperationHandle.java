@@ -229,9 +229,12 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     @Override
     public final boolean isConfigurable() {
         // Hah der er forskel paa handle og configuration
-        return operation.isConfigurable();
+        // Fordi configuration kan tilgaas af brugeren.
+        // Det er jo faktisk det samme som for en bean...
+        return operation.installedByExtension.isConfigurable();
     }
 
+    /** {@inheritDoc} */
     @Override
     public final OperationMirror mirror() {
         OperationMirror m = mirror;
@@ -266,7 +269,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
 
     /** {@return the target of this operation.} */
     public final OperationTarget target() {
-        return operation.target();
+        return operation.target.target();
     }
 
     /** {@inheritDoc} */

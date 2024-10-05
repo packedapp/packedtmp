@@ -30,7 +30,6 @@ import app.packed.context.Context;
 import app.packed.extension.InternalExtensionException;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationTemplate.Installer;
 import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
@@ -204,10 +203,6 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         throw new IllegalStateException();
     }
 
-    public boolean isConfigurable() {
-        return installedByExtension.isConfigurable();
-    }
-
     /** {@return the initial method handle.} */
     public MethodHandle methodHandle() {
         return target.methodHandle();
@@ -228,20 +223,10 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         return namePrefix;
     }
 
-    /** {@return the target of the operation.} */
-    public OperationTarget target() {
-        return target.target();
-    }
-
     /** {@inheritDoc} */
     @Override
     public String toString() {
         return componentPath().toString();
-    }
-
-    /** {@return the type of operation.} */
-    public OperationType type() {
-        return type;
     }
 
     /**

@@ -117,6 +117,7 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
      * @throws IllegalStateException
      *             if the application was build with {@link BuildGoal#IMAGE}.
      */
+    // Tror jeg fjerner den her... BaseImage er kun noget man bruger ved rødder tænker jeg???
     public final BaseImage<A> image() {
         BaseImage<A> i = image;
         if (i == null) {
@@ -141,10 +142,18 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
      * @param wirelets
      *            optional wirelets
      * @return the application instance
+     *
+     * @throws UnsupportedOperationException
+     *             if managed and not a root container\
+     * @see #launch(GuestManager, Wirelet...)
      */
     @SuppressWarnings("unchecked")
+    // Tror den her bliver hidden
+    // Problemet er at den er statisk. Der er ingen runtime information.
+    // Hvis vi har startet 23 applikationer, faar de stadig ingen input
     public final A launch(RunState state, Wirelet... wirelets) {
         requireNonNull(state, "state is null");
+        // TODO fix
         if (!application.completedBuilding) {
             throw new IllegalStateException("Application has not finished building");
         }

@@ -39,6 +39,10 @@ import sandbox.extension.context.ContextSpanKind;
  *
  * @see app.packed.extension.BaseExtensionPoint#newContainer(ContainerTemplate)
  */
+// Managed/Unmanaged
+// Root/NoRoot
+// Linked/Configuration
+// ParentLifetime/NewLifetime
 public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits PackedContainerTemplate {
 
     /**

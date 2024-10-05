@@ -15,6 +15,7 @@
  */
 package internal.app.packed.util.handlers;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
@@ -50,5 +51,19 @@ public final class ContainerHandlers extends Handlers {
 
     public static ContainerHandle<?> getContainerMirrorHandle(ContainerMirror mirror) {
         return (ContainerHandle<?>) VH_CONTAINER_MIRROR_TO_HANDLE.get(mirror);
+    }
+
+    /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
+    private static final MethodHandle MH_CONTAINER_HANDLE_DO_CLOSE =method(MethodHandles.lookup(), ContainerHandle.class, "doClose",
+            void.class);
+    /**
+     * @param handle
+     */
+    public static void invokeContainerHandleDoClose(ContainerHandle<?> handle) {
+        try {
+            MH_CONTAINER_HANDLE_DO_CLOSE.invokeExact(handle);
+        } catch (Throwable t) {
+            throw throwIt(t);
+        }
     }
 }

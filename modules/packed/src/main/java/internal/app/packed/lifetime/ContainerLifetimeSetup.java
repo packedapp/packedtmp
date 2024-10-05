@@ -36,6 +36,8 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.entrypoint.OldContainerEntryPointManager;
+import internal.app.packed.lifetime.packed.OnStartOperationHandle;
+import internal.app.packed.lifetime.packed.OnStopOperationHandle;
 import internal.app.packed.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.AbstractTreeNode;
@@ -204,12 +206,16 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
                 lop.handle().generateMethodHandleOnCodegen(mh -> {
                     // won't work with multiple concurrent threads, or any change to order
                     startup.methodHandles.add(mh);
+                    OnStartOperationHandle hh = (OnStartOperationHandle) lop.handle();
+                    hh.methodHandle = mh;
                 });
             } else if (lop.runOrder().runState == RunState.STOPPING) {
                 shutdown.operations.addFirst(lop.handle());
                 lop.handle().generateMethodHandleOnCodegen(mh -> {
                     // won't work with multiple concurrent threads, or any change to order
                     shutdown.methodHandles.addFirst(mh);
+                    OnStopOperationHandle hh = (OnStopOperationHandle) lop.handle();
+                    hh.methodHandle = mh;
                 });
             } else {
                 throw new Error();

@@ -44,9 +44,9 @@ import internal.app.packed.application.PackedBootstrapApp;
  * @param <E>
  *            the type of applications this bootstrap app creates
  */
-public sealed interface BootstrapApp<A> permits PackedBootstrapApp, MappedBootstrapApp {
+public sealed interface BootstrapApp<I> permits PackedBootstrapApp, MappedBootstrapApp {
 
-    BootstrapApp<A> expectsResult(Class<?> resultType);
+    BootstrapApp<I> expectsResult(Class<?> resultType);
 
     /**
      * An application image is a stand-alone program, derived from an {@link app.packed.container.Assembly}, which runs the
@@ -90,7 +90,7 @@ public sealed interface BootstrapApp<A> permits PackedBootstrapApp, MappedBootst
      * @throws RuntimeException
      *             if the image could not be build
      */
-    BaseImage<A> imageOf(Assembly assembly, Wirelet... wirelets);
+    BaseImage<I> imageOf(Assembly assembly, Wirelet... wirelets);
 
     /**
      * Builds an application, launches it and returns an application interface instance (possible {@code void})
@@ -107,7 +107,7 @@ public sealed interface BootstrapApp<A> permits PackedBootstrapApp, MappedBootst
      *             if the application could not be built or failed to launch
      * @see App#run(Assembly, Wirelet...)
      */
-    A launch(RunState state, Assembly assembly, Wirelet... wirelets);
+    I launch(RunState state, Assembly assembly, Wirelet... wirelets);
 
     /**
      * Creates a new bootstrap app that maps the application using the specified mapper.
@@ -119,7 +119,7 @@ public sealed interface BootstrapApp<A> permits PackedBootstrapApp, MappedBootst
      * @return the new bootstrap app
      */
     // I don't see it.. we never expose
-    default <E> BootstrapApp<E> map(Function<? super A, ? extends E> mapper) {
+    default <E> BootstrapApp<E> map(Function<? super I, ? extends E> mapper) {
         requireNonNull(mapper, "mapper is null");
         return new MappedBootstrapApp<>(this, mapper);
     }
@@ -174,7 +174,7 @@ public sealed interface BootstrapApp<A> permits PackedBootstrapApp, MappedBootst
      * @return the new bootstrap app
      */
     // Before orAfter
-    default BootstrapApp<A> withWirelets(boolean before, Wirelet... wirelets) {
+    default BootstrapApp<I> withWirelets(boolean before, Wirelet... wirelets) {
         // Lad os ogsaa lige se med expectsResult, inde vi implementere det
         throw new UnsupportedOperationException();
     }

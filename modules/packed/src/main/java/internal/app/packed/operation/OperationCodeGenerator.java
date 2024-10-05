@@ -54,8 +54,12 @@ final class OperationCodeGenerator {
         // debug(mh.type());
         for (BindingSetup binding : operation.bindings) {
 //            System.out.println(binding.resolver().getClass());
-  //          System.out.println(mh.type());
-            requireNonNull(binding.resolver());
+            // System.out.println(mh.type());
+            if (binding.resolver() == null) {
+                System.out.println(operation.bean);
+                System.out.println(operation.type);
+                requireNonNull(binding.resolver());
+            }
             mh = provide(operation, mh, binding.resolver());
         }
 
@@ -122,7 +126,6 @@ final class OperationCodeGenerator {
 //            }
 //            System.out.println("TMP After" +tmp.type());
 
-
 //            System.out.println(tmp.type());
 //            System.out.println(tmp.type().returnType());
 //            System.out.println();
@@ -134,7 +137,7 @@ final class OperationCodeGenerator {
             if (ClassUtil.isInnerOrLocal(operation.bean.beanClass)) {
                 System.err.println("Inner Bean");
             }
-            throw new UnsupportedOperationException("" + p + " " + operation.target());
+            throw new UnsupportedOperationException("" + p + " " + operation.target.target());
         }
     }
 }

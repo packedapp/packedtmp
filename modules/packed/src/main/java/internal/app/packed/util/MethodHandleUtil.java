@@ -37,7 +37,7 @@ import app.packed.binding.Provider;
 public class MethodHandleUtil {
 
     /** A method handle that calls {@link OptionalDouble#of(double)} (double)OptionalDouble. */
-    public static final MethodHandle PROVIDER_GET = LookupUtil.findVirtualPublic(Provider.class, "get", Object.class);
+    public static final MethodHandle PROVIDER_GET = LookupUtil.findVirtualPublic(Provider.class, "provide", Object.class);
 
     /** A method handle that calls {@link OptionalDouble#of(double)} (double)OptionalDouble. */
     public static final MethodHandle OPTIONAL_DOUBLE_OF = LookupUtil.findStaticPublic(OptionalDouble.class, "of", OptionalDouble.class, double.class);
@@ -83,7 +83,9 @@ public class MethodHandleUtil {
                     actualHandle = actualHandleRef.get();
                     if (actualHandle == null) {
                         actualHandle = supplier.get();
-                        if (actualHandle.type() != callSite.type()) {
+                        if (actualHandle == null) {
+                            throw new NullPointerException("LazyMethodHandle Supplier returned null");
+                        } else if (actualHandle.type() != callSite.type()) {
                             throw new WrongMethodTypeException(
                                     "Supplier returned a MethodHandle with wrong type, expected" + callSite + ", was " + actualHandle);
                         }

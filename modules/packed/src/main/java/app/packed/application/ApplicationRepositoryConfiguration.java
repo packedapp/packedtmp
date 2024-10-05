@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.repository;
+package app.packed.application;
 
 import java.util.function.Consumer;
 
-import app.packed.application.ApplicationHandle;
-import app.packed.application.ApplicationTemplate;
-import app.packed.binding.Key;
 import app.packed.service.ProvidableBeanConfiguration;
 
 /**
@@ -35,16 +32,16 @@ import app.packed.service.ProvidableBeanConfiguration;
 // I don't know don't we always??
 
 // Maybe we don't extend it ServiableBean and have a provideAtRuntime();
-public final class ApplicationRepositoryConfiguration<H extends ApplicationHandle<?, ?>> extends ProvidableBeanConfiguration<ApplicationRepository<H>> {
+public final class ApplicationRepositoryConfiguration<I, H extends ApplicationHandle<I, ?>> extends ProvidableBeanConfiguration<ApplicationRepository<I, H>> {
 
     /** The application repository bean handle. */
-    final ApplicationRepositoryHandle<H> handle;
+    final ApplicationRepositoryHandle<I, H> handle;
 
     /**
      * @param handle
      *            the bean's handle
      */
-    ApplicationRepositoryConfiguration(ApplicationRepositoryHandle<H> handle) {
+    ApplicationRepositoryConfiguration(ApplicationRepositoryHandle<I, H> handle) {
         super(handle);
         this.handle = handle;
     }
@@ -52,7 +49,7 @@ public final class ApplicationRepositoryConfiguration<H extends ApplicationHandl
     // Okay, vi har elastic search in an Assembly. Byg den
     // Expose some services. Og vi har nok en masse shared services.
     // Tror ikke helt vi er klar
-
+    // Ved ikke om det har noget med repository at goere. Det tror jeg egentlig ikke...
     public void buildDependecy(Consumer<? super ApplicationTemplate.Installer<H>> installer) {
         handle.repository.add(installer);
     }
@@ -63,21 +60,16 @@ public final class ApplicationRepositoryConfiguration<H extends ApplicationHandl
      * @param installer
      *            a consumer that performs the actual installation of the application
      */
-    public void installChildApplication(Consumer<? super ApplicationTemplate.Installer<H>> installer) {
+    public void installApplication(Consumer<? super ApplicationTemplate.Installer<H>> installer) {
         handle.repository.add(installer);
     }
 
     @Override
-    public ApplicationRepositoryConfiguration<H> provideAs(Class<? super ApplicationRepository<H>> key) {
-        super.provideAs(key);
+    public ApplicationRepositoryConfiguration<I, H> provide() {
+        super.provide();
         return this;
     }
 
-    @Override
-    public ApplicationRepositoryConfiguration<H> provideAs(Key<? super ApplicationRepository<H>> key) {
-        super.provideAs(key);
-        return this;
-    }
 
     /** {@return the templates that are available in the repository) */
     @SuppressWarnings("unchecked")

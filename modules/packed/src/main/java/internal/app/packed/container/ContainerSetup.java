@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Set;
 
 import app.packed.assembly.Assembly;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerConfiguration;
@@ -148,14 +147,6 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         return ComponentKind.CONTAINER.pathNew(application.componentPath(), path);
     }
 
-    /**
-     * @param tags
-     * @return
-     */
-    public ComponentConfiguration componentTag(String[] tags) {
-        throw new UnsupportedOperationException();
-    }
-
     public ContainerConfiguration configuration() {
         return handle().configuration();
     }
@@ -181,10 +172,6 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         // is because AssemblySetup.container is set after BaseExtension is installed
         // for the root container. And we use this method to test
         return treeParent == null || assembly.container == this;
-    }
-
-    public boolean isConfigurable() {
-        return assembly.isConfigurable();
     }
 
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionClass) {
@@ -230,9 +217,6 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
      *            the new name of the container
      */
     public void named(String newName) {
-        if (!isConfigurable()) {
-            throw new IllegalStateException("The component is no longer configurable");
-        }
         // TODO start by checking isConfigurable
 
         // We start by validating the new name of the component
@@ -310,11 +294,12 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     public void onAssemblyClose(AuthoritySetup<?> as) {
         for (BeanSetup b : beans) {
             if (b.owner == as) {
-                BeanHandlers.invokeBeanHandleOnAssemblyClose(b.handle());
+                BeanHandlers.invokeBeanHandleDoClose(b.handle());
             }
         }
         for (ContainerSetup c : treeChildren.values()) {
             if (assembly == c.assembly) {
+                ContainerHandlers.invokeContainerHandleDoClose(c.handle());
                 c.onAssemblyClose(as);
             }
         }

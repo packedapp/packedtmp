@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.assembly.AssemblyMirror;
+import app.packed.bean.BeanMirror;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
@@ -59,6 +60,34 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         this.handle = requireNonNull(handle);
     }
 
+    /**
+     * {@return a stream of all of the operations declared in the application.}
+     * <p>
+     * Unlike {@link #beans()}, this stream includes beans that are owned by extensions.
+     */
+    public Stream<BeanMirror> allBeans() {
+        return containers().stream().flatMap(ContainerMirror::allBeans);
+    }
+
+    /** {@return a stream of all of the operations declared by the user in the application.} */
+    public Stream<OperationMirror> allOperations() {
+        return allBeans().flatMap(BeanMirror::operations);
+    }
+
+    /**
+     * Returns a stream of all of the operations declared by the bean with the specified mirror type.
+     *
+     * @param <T>
+     * @param operationType
+     *            the type of operations to include
+     * @return a collection of all of the operations declared by the bean of the specified type.
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends OperationMirror> Stream<T> allOperations(Class<T> operationType) {
+        requireNonNull(operationType, "operationType is null");
+        return (Stream<T>) allOperations().filter(f -> operationType.isAssignableFrom(f.getClass()));
+    }
+
     /** {@return a tree representing all the assemblies used for creating this application} */
     public TreeView<AssemblyMirror> assemblies() {
         return new PackedTreeView<>(handle.application.container().assembly, null, c -> c.mirror());
@@ -68,6 +97,15 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     public AssemblyMirror assembly() {
         return handle.application.container().assembly.mirror();
     }
+
+    /** {@return a stream of all of the bean declared by the user in the application.} */
+    public Stream<BeanMirror> beans() {
+        return containers().stream().flatMap(ContainerMirror::beans);
+    }
+    // ApplicationMirror
+    // All namespaces with root container
+    // All namespaces in the whole application
+    // All namespaces with a non-user owner
 
     /** {@return the build goal that was used when building the application} */
     public BuildGoal buildGoal() {
@@ -158,6 +196,9 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         return handle.application.container().name();
     }
 
+    // Alternatively all keysspaces not owned by the application must be prefixed with $
+    // $FooExtension$main I think I like this better
+    // NamespaceKey <Type, Owner?, ContainerPath, Name>
 
     // Application owned namespace...
     // Optional???
@@ -177,18 +218,9 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         return Optional.empty();
     }
 
-    // ApplicationMirror
-    // All namespaces with root container
-    // All namespaces in the whole application
-    // All namespaces with a non-user owner
-
-    // Alternatively all keysspaces not owned by the application must be prefixed with $
-    // $FooExtension$main I think I like this better
-    // NamespaceKey <Type, Owner?, ContainerPath, Name>
-
-    /** {@return a stream of all of the operations declared by the bean.} */
+    /** {@return a stream of all of the operations declared by the user in the application.} */
     public Stream<OperationMirror> operations() {
-        return handle.application.container().stream().map(s -> s.mirror()).flatMap(ContainerMirror::operations);
+        return beans().flatMap(BeanMirror::operations);
     }
 
     /**

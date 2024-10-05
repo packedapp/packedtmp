@@ -289,7 +289,7 @@ public final class PackedManagedLifetime implements ManagedLifecycle {
     /** {@inheritDoc} */
     @Override
     public void stop(StopOption... options) {
-
+        shutdown();
     }
 
     /** {@inheritDoc} */

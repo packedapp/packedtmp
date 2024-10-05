@@ -16,6 +16,7 @@ import app.packed.bean.BeanElement.BeanField;
 import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstallationException;
+import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
@@ -337,7 +338,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      *            a template for the bean
      * @return a bean installer
      */
-    private BeanTemplate.Installer newBeanBuilderSelf(BeanTemplate template) {
+    private BeanInstaller newBeanBuilderSelf(BeanTemplate template) {
         return ((PackedBeanTemplate) template).newInstaller(extension, extension);
     }
 
@@ -425,6 +426,9 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
                 } else if (hook == OnStartContext.class) {
                     // v.bindInvocationArgument(1);
                     binding.bindContext(OnStartContext.class);
+                } else if (hook == OnStopContext.class) {
+                    // v.bindInvocationArgument(1);
+                    binding.bindContext(OnStopContext.class);
                 }
 
                 // MIRRORS

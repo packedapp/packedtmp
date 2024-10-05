@@ -16,11 +16,11 @@ import app.packed.bean.BeanBuildLocal.Accessor;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanElement;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.BeanTemplate;
 import app.packed.binding.BindableVariable;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
@@ -30,9 +30,7 @@ import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
 import app.packed.operation.Op;
-import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
-import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.scanning.BeanScanner;
 import internal.app.packed.bean.scanning.PackedBeanElement;
@@ -59,9 +57,7 @@ import internal.app.packed.operation.BeanOperationStore;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.operation.PackedOp.NewOS;
-import internal.app.packed.operation.PackedOperationInstaller;
 import internal.app.packed.operation.PackedOperationInstaller.BeanFactoryOperationHandle;
-import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationTarget;
 import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.service.MainServiceNamespaceHandle;
 import internal.app.packed.service.ServiceProviderSetup.BeanServiceProviderSetup;
@@ -224,22 +220,6 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         return Collections.emptyList();
     }
 
-    // Relative to x
-    public OperationSetup instanceAccessOperation() {
-        PackedOperationTemplate template = (PackedOperationTemplate) OperationTemplate.defaults().reconfigure(c -> c.returnType(beanClass));
-
-        PackedOperationInstaller installer = template.newInstaller(OperationType.of(beanClass), this, installedBy);
-        installer.operationTarget = new BeanAccessOperationTarget();
-        installer.namePrefix = "InstantAccess";
-
-        return OperationSetup.crack(installer.install(OperationHandle::new));
-    }
-
-    public boolean isConfigurable() {
-
-        return true;
-    }
-
     /** {@return a map of locals for the bean} */
     @Override
     public BuildLocalMap locals() {
@@ -355,7 +335,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
      */
     @SuppressWarnings("unchecked")
     static <H extends BeanHandle<?>> H newBean(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
-            Function<? super BeanTemplate.Installer, H> factory) {
+            Function<? super BeanInstaller, H> factory) {
         requireNonNull(factory, "factory is null");
         if (sourceKind != BeanSourceKind.SOURCELESS && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);

@@ -19,6 +19,7 @@ import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
 import app.packed.lifecycle.OnStart;
 import app.packed.lifecycle.OnStartContext;
+import app.packed.operation.OperationDependencyOrder;
 
 /**
  *
@@ -37,12 +38,34 @@ public class OnStartTest extends BaseAssembly {
 
     public static class Mine {
 
-        @OnStart
+        @OnStart(order = OperationDependencyOrder.AFTER_DEPENDENCIES)
         public void onStart(OnStartContext context) {
-            System.out.println("Started");
+            System.out.println("1 - NICE " + Thread.currentThread());
+        }
+
+        @OnStart(fork = true)
+        public void onStartdx(OnStartContext context) throws InterruptedException {
+            System.out.println("2 - Started " + Thread.currentThread());
             context.fork(() -> {
-                System.out.println("NICE");
+                System.out.println("2 - NICE from " + Thread.currentThread());
+                context.fork(() -> {
+                    System.out.println("2 - NICE2 from " + Thread.currentThread());
+                });
+                context.fork(() -> {
+                    System.out.println("2 - NICE2 from " + Thread.currentThread());
+                });
+
             });
+            Thread.sleep(500);
+        }
+
+        @OnStart(fork = true)
+        public void onStart2(OnStartContext context) throws InterruptedException {
+            System.out.println("3 - Started " + Thread.currentThread());
+            context.fork(() -> {
+                System.out.println("3 - NICE " + Thread.currentThread());
+            });
+            Thread.sleep(300);
         }
     }
 }

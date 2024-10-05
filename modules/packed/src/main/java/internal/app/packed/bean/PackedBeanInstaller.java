@@ -23,10 +23,9 @@ import java.util.function.Function;
 import app.packed.bean.BeanBuildLocal;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.BeanTemplate;
-import app.packed.bean.BeanTemplate.Installer;
 import app.packed.extension.InternalExtensionException;
 import app.packed.operation.Op;
 import app.packed.service.ProvidableBeanConfiguration;
@@ -38,7 +37,7 @@ import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.PackedOp;
 
 /** Implementation of {@link BeanTemplate.Installer}. */
-public final class PackedBeanInstaller extends PackedComponentInstaller<BeanSetup, PackedBeanInstaller> implements BeanTemplate.Installer {
+public final class PackedBeanInstaller extends PackedComponentInstaller<BeanSetup, PackedBeanInstaller> implements BeanInstaller {
 
     /** The extension that is installing the bean. */
     final ExtensionSetup installledByExtension;
@@ -79,14 +78,14 @@ public final class PackedBeanInstaller extends PackedComponentInstaller<BeanSetu
 
     /** {@inheritDoc} */
     @Override
-    public <H extends BeanHandle<?>> H install(Class<?> beanClass, Function<? super BeanTemplate.Installer, H> factory) {
+    public <H extends BeanHandle<?>> H install(Class<?> beanClass, Function<? super BeanInstaller, H> factory) {
         requireNonNull(beanClass, "beanClass is null");
         return BeanSetup.newBean(this, beanClass, BeanSourceKind.CLASS, beanClass, factory);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <H extends BeanHandle<?>> H install(Op<?> op, Function<? super BeanTemplate.Installer, H> factory) {
+    public <H extends BeanHandle<?>> H install(Op<?> op, Function<? super BeanInstaller, H> factory) {
         PackedOp<?> pop = PackedOp.crack(op);
         Class<?> beanClass = pop.type.returnRawType();
         return BeanSetup.newBean(this, beanClass, BeanSourceKind.OP, pop, factory);
@@ -96,7 +95,7 @@ public final class PackedBeanInstaller extends PackedComponentInstaller<BeanSetu
     @SuppressWarnings("unchecked")
     @Override
     public <H extends BeanHandle<T>, T extends BeanConfiguration> H installIfAbsent(Class<?> beanClass, Class<T> beanConfigurationClass,
-            Function<? super BeanTemplate.Installer, H> factory, Consumer<? super BeanHandle<?>> onNew) {
+            Function<? super BeanInstaller, H> factory, Consumer<? super BeanHandle<?>> onNew) {
         requireNonNull(beanClass, "beanClass is null");
 
         BeanClassKey e = new BeanClassKey(owner.authority(), beanClass);
@@ -123,14 +122,14 @@ public final class PackedBeanInstaller extends PackedComponentInstaller<BeanSetu
 
     /** {@inheritDoc} */
     @Override
-    public <H extends BeanHandle<?>> H installInstance(Object instance, Function<? super BeanTemplate.Installer, H> factory) {
+    public <H extends BeanHandle<?>> H installInstance(Object instance, Function<? super BeanInstaller, H> factory) {
         requireNonNull(instance, "instance is null");
         return BeanSetup.newBean(this, instance.getClass(), BeanSourceKind.INSTANCE, instance, factory);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <H extends BeanHandle<?>> H installSourceless(Function<? super BeanTemplate.Installer, H> factory) {
+    public <H extends BeanHandle<?>> H installSourceless(Function<? super BeanInstaller, H> factory) {
         if (template.kind() != BeanKind.STATIC) {
             throw new InternalExtensionException("Only static beans can be source less");
         }
@@ -156,7 +155,7 @@ public final class PackedBeanInstaller extends PackedComponentInstaller<BeanSetu
         /**
          * @param installer
          */
-        public ProvidableBeanHandle(Installer installer) {
+        public ProvidableBeanHandle(BeanInstaller installer) {
             super(installer);
         }
 

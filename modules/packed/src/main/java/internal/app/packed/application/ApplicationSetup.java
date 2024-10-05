@@ -34,6 +34,7 @@ import app.packed.extension.Extension;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.util.Nullable;
 import internal.app.packed.application.deployment.DeploymentSetup;
+import internal.app.packed.application.repository.BuildApplicationRepository;
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;

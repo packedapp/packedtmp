@@ -99,7 +99,7 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
     /** {@inheritDoc} */
     @Override
     public final boolean isConfigurable() {
-        return namespace.root.container.isConfigurable();
+        return namespace.root.container.handle().isConfigurable();
     }
 
     public final boolean isInApplicationLifetime(Extension<?> extension) {

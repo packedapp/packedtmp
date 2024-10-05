@@ -26,7 +26,7 @@ import app.packed.assembly.DelegatingAssembly;
 import app.packed.build.BuildActor;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.application.BuildApplicationRepository;
+import internal.app.packed.application.repository.BuildApplicationRepository;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;

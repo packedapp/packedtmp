@@ -15,6 +15,8 @@
  */
 package internal.app.packed.lifetime.packed;
 
+import java.lang.invoke.MethodHandle;
+
 import app.packed.lifecycle.OnStop;
 import app.packed.operation.OperationDependencyOrder;
 import app.packed.operation.OperationTemplate.Installer;
@@ -26,12 +28,17 @@ import internal.app.packed.bean.BeanLifecycleOrder;
 public final class OnStopOperationHandle extends LifecycleOperationHandle {
 
 
+    public boolean fork;
+    public MethodHandle methodHandle;
+
     /**
      * @param installer
      */
     public OnStopOperationHandle(Installer installer, OnStop annotation) {
         super(installer, annotation.order(),
                 annotation.order() == OperationDependencyOrder.BEFORE_DEPENDENCIES ? BeanLifecycleOrder.STOP_PRE_ORDER : BeanLifecycleOrder.STOP_POST_ORDER);
+
+        this.fork = annotation.fork();
     }
 
 }

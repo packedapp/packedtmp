@@ -79,10 +79,10 @@ import app.packed.operation.OperationDependencyOrder;
 
 // A bean is started when all OnStart methods on the bean has completed successfully
 
+// When used on a field the target type must be Lazy
 @Target({ ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @AnnotatedMethodBeanTrigger(allowInvoke = true, extension = BaseExtension.class, requiresContext = OnStartContext.class)
-// , requiresContext = OnStartContext.class -> Provides contet
 public @interface OnStart {
 
     String JOIN_ON_AFTER_DEPENDENCIES = "AFTER_DEPENDENCIES";

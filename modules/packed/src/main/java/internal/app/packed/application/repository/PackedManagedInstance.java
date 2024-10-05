@@ -13,101 +13,96 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component.guest.usage;
+package internal.app.packed.application.repository;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import app.packed.application.ApplicationConfiguration;
-import app.packed.application.ApplicationHandle;
-import app.packed.application.ApplicationTemplate;
-import app.packed.application.ApplicationTemplate.Installer;
-import app.packed.bean.Inject;
-import app.packed.component.guest.FromComponentGuest;
+import app.packed.application.repository.ManagedInstance;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
 import app.packed.util.Nullable;
-import internal.app.packed.container.PackedContainerKind;
-import internal.app.packed.container.PackedContainerTemplate;
 import sandbox.lifetime.external.ManagedLifetimeState;
 
 /**
  *
  */
-public record GuestBean(@FromComponentGuest ManagedLifecycle lifecycle, long nanos) implements ManagedLifecycle{
-
-    @Inject
-    public GuestBean(@FromComponentGuest ManagedLifecycle lifecyle) {
-        this(lifecyle, System.nanoTime());
-    }
-
-    public static final ApplicationTemplate<GuestApplicationHandle> T = ApplicationTemplate.of(GuestBean.class, c -> {
-        c.rootContainer(new PackedContainerTemplate<>(PackedContainerKind.BOOTSTRAP_APPLICATION));
-    }, GuestApplicationHandle::new);
+public record PackedManagedInstance<I>(ManagedLifecycle i) implements ManagedInstance<I> {
 
     @Override
     public void await(RunState state) throws InterruptedException {
-        lifecycle.await(state);
+        i.await(state);
     }
 
     @Override
     public boolean await(RunState state, long timeout, TimeUnit unit) throws InterruptedException {
-        return lifecycle.await(state, timeout, unit);
+        return i.await(state, timeout, unit);
     }
 
     @Override
     public RunState currentState() {
-        return lifecycle.currentState();
+        return i.currentState();
     }
 
     @Override
     public boolean isFailed() {
-        return lifecycle.isFailed();
+        return i.isFailed();
     }
 
     @Override
     public void start() {
-        lifecycle.start();
+        i.start();
     }
 
     @Override
     public CompletableFuture<Void> startAsync() {
-        return lifecycle.startAsync();
+        return i.startAsync();
     }
 
     @Override
     public <T> CompletableFuture<@Nullable T> startAsync(@Nullable T result) {
-        return lifecycle.startAsync(result);
+        return i.startAsync(result);
     }
 
     @Override
     public ManagedLifetimeState state() {
-        return lifecycle.state();
+        return i.state();
     }
 
     @Override
     public void stop(StopOption... options) {
-        lifecycle.stop(options);
+        i.stop(options);
     }
 
     @Override
     public CompletableFuture<Void> stopAsync(StopOption... options) {
-        return lifecycle.stopAsync(options);
+        return i.stopAsync(options);
     }
 
     @Override
     public <T> CompletableFuture<T> stopAsync(T result, StopOption... options) {
-        return lifecycle.stopAsync(result, options);
+        return i.stopAsync(result, options);
     }
 
-    public static class GuestApplicationHandle extends ApplicationHandle<GuestBean, ApplicationConfiguration> {
-
-        /**
-         * @param installer
-         */
-        GuestApplicationHandle(Installer<?> installer) {
-            super(installer);
-        }
+    /** {@inheritDoc} */
+    @Override
+    public Optional<I> get() {
+        return Optional.empty();
     }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public I getNow() {
+        return (I) i;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String name() {
+        return null;
+    }
+
 }
