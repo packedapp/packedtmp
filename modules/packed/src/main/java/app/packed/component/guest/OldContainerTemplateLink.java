@@ -58,6 +58,8 @@ import internal.app.packed.container.PackedContainerLink.KeyFragment;
 // Hvad med mesh
 
 // Move as nested class to ContainerTemplate
+
+// ExtensionBridge?
 public sealed interface OldContainerTemplateLink permits PackedContainerLink {
 
     /** {@return the extension that defined the link} */ // declaringExtension?

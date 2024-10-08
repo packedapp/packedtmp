@@ -15,26 +15,17 @@
  */
 package app.packed.application;
 
-import static java.util.Objects.requireNonNull;
-
-import java.lang.invoke.MethodHandle;
-
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
-import app.packed.container.Wirelet;
-import app.packed.runtime.RunState;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedBaseImage.ImageEager;
 import internal.app.packed.application.PackedBaseImage.ImageNonReusable;
-import internal.app.packed.container.wirelets.InternalBuildWirelet;
-import internal.app.packed.container.wirelets.WireletSelectionArray;
-import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
-import internal.app.packed.lifetime.runtime.ContainerRunner;
 
 /**
+ * An application handle represents an installed application towards the person
  * An extendable handle for an application.
  */
 public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration> extends ComponentHandle implements ApplicationBuildLocal.Accessor {
@@ -90,7 +81,7 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
     /** {@inheritDoc} */
     @Override
     public final void componentTag(String... tags) {
-        checkIsConfigurable();
+        checkHandleIsConfigurable();
         application.componentTags.addComponentTags(application, tags);
     }
 
@@ -128,61 +119,14 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
 
     /** {@inheritDoc} */
     @Override
-    public final boolean isConfigurable() {
+    public final boolean isConfigurationConfigurable() {
         return application.container().assembly.isConfigurable();
     }
 
-    /**
-     * Launches an instance of the application this handle represents.
-     * <p>
-     * A handle can be used multiple types.
-     *
-     * @param state
-     *            the state to launch the application in
-     * @param wirelets
-     *            optional wirelets
-     * @return the application instance
-     *
-     * @throws UnsupportedOperationException
-     *             if managed and not a root container\
-     * @see #launch(GuestManager, Wirelet...)
-     */
-    @SuppressWarnings("unchecked")
-    // Tror den her bliver hidden
-    // Problemet er at den er statisk. Der er ingen runtime information.
-    // Hvis vi har startet 23 applikationer, faar de stadig ingen input
-    public final A launch(RunState state, Wirelet... wirelets) {
-        requireNonNull(state, "state is null");
-        // TODO fix
-        if (!application.completedBuilding) {
-            throw new IllegalStateException("Application has not finished building");
-        }
-
-        WireletSelectionArray<Wirelet> ws = WireletSelectionArray.of(wirelets);
-        ContainerRunner runner = new ContainerRunner(application);
-
-        // Create a launch context
-        ApplicationLaunchContext context = new ApplicationLaunchContext(runner, application, ws);
-
-        // Apply all internal wirelets
-        if (ws != null) {
-            for (Wirelet w : ws) {
-                if (w instanceof InternalBuildWirelet iw) {
-                    iw.onImageLaunch(application.container(), context);
-                }
-            }
-        }
-
-        context.runner.run(state);
-
-        MethodHandle mh = application.launcher;
-        Object result;
-        try {
-            result = mh.invokeExact(context);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-        return (A) result;
+    /** {@inheritDoc} */
+    @Override
+    public final boolean isHandleConfigurable() {
+        return application.container().assembly.isConfigurable();
     }
 
     /** {@return a mirror for the application} */

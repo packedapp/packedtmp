@@ -66,7 +66,7 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
     /** {@inheritDoc} */
     @Override
     public final void componentTag(String... tags) {
-        checkIsConfigurable();
+        checkHandleIsConfigurable();
         container.application.componentTags.addComponentTags(container, tags);
     }
 
@@ -95,9 +95,16 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
         return container.extensionTypes();
     }
 
+
     /** {@inheritDoc} */
     @Override
-    public final boolean isConfigurable() {
+    public final boolean isConfigurationConfigurable() {
+        return isConfigurable;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean isHandleConfigurable() {
         return isConfigurable;
     }
 

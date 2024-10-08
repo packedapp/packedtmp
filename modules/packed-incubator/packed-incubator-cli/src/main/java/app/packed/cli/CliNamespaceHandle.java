@@ -17,8 +17,8 @@ package app.packed.cli;
 
 import java.util.LinkedHashMap;
 
-import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanInstallationException;
+import app.packed.bean.scanning.BeanElement.BeanMethod;
 import app.packed.build.BuildActor;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceInstaller;
@@ -31,12 +31,12 @@ import app.packed.operation.OperationTemplate;
 final class CliNamespaceHandle extends NamespaceHandle<CliExtension, CliNamespaceConfiguration> {
 
     /** The default namespace template. */
-    static final NamespaceTemplate TEMPLATE = NamespaceTemplate.of(CliNamespaceHandle.class, c -> {});
+    static final NamespaceTemplate<CliNamespaceHandle> TEMPLATE = NamespaceTemplate.of(CliNamespaceHandle.class, CliNamespaceHandle::new, c -> {});
 
     /** All the commands within the namespace. */
     final LinkedHashMap<String, CliCommandHandle> oldCommands = new LinkedHashMap<>();
 
-    CliNamespaceHandle(NamespaceInstaller installer) {
+    CliNamespaceHandle(NamespaceInstaller<?> installer) {
         super(installer);
     }
 

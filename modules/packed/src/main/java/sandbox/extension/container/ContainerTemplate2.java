@@ -41,6 +41,7 @@ public interface ContainerTemplate2 {
     SequencedSet<Class<? extends Extension<?>>> requiredExtensions();
 
     // Nydus Canal
+    // Extension
     interface Link {
 
         static Link of(Consumer<? super Configurator> configure) {

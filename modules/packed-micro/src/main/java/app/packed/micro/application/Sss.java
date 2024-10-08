@@ -17,7 +17,7 @@ package app.packed.micro.application;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.lifecycle.OnInitialize;
+import app.packed.bean.lifecycle.Initialize;
 
 /**
  *
@@ -28,7 +28,7 @@ public class Sss {
     public static class MyClass {
         public void foo1() {}
 
-        @OnInitialize
+        @Initialize
         public void boo2() {}
 
         public void Goo() {}

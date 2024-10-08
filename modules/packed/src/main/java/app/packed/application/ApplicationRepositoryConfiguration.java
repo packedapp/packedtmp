@@ -54,8 +54,6 @@ public final class ApplicationRepositoryConfiguration<I, H extends ApplicationHa
         handle.repository.add(installer);
     }
 
-    // Name should be on the installer.
-    // And generated if left out
     /**
      * @param installer
      *            a consumer that performs the actual installation of the application

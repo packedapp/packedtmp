@@ -18,7 +18,7 @@ package app.packed.binding.sandbox;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
-import app.packed.lifecycle.OnStart;
+import app.packed.bean.lifecycle.Start;
 
 /**
  *
@@ -34,14 +34,14 @@ public interface Lazy<T> extends Supplier<T> {
 
 class SomeBean {
 
-    @OnStart(fork = true) // will it just get the field. and call get??? Catching Lazy Initialization exception
+    @Start(fork = true) // will it just get the field. and call get??? Catching Lazy Initialization exception
     final Lazy<String> l = Lazy.of(this::calc);
 
     private String calc() {
         return "afasdf";
     }
 
-    @OnStart(fork = true)
+    @Start(fork = true)
     public void start() {
         l.get();
     }

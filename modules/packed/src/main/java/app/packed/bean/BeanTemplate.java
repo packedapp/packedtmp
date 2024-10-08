@@ -58,6 +58,8 @@ import sandbox.application.LifetimeTemplate;
  * @see app.packed.extension.BaseExtensionPoint#newBean(BeanTemplate)
  * @see app.packed.extension.BaseExtensionPoint#newBean(BeanTemplate, app.packed.extension.ExtensionPoint.UseSite)
  */
+// Don't do BeanTemplate<H> it does not work because Bean is parameterized unlike Container/Application
+// It al goes well until you get to BeanInstaller. Where we need the Handle
 public sealed interface BeanTemplate permits PackedBeanTemplate {
 
     BeanTemplate FUNCTIONAL = BeanKind.STATIC.template();

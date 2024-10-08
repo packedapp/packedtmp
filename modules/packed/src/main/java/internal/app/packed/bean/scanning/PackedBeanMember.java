@@ -47,7 +47,7 @@ abstract sealed class PackedBeanMember<M extends Member> extends PackedBeanEleme
     }
 
     @Override
-    public BeanSetup bean() {
+    public final BeanSetup bean() {
         return participant.scanner.bean;
     }
 

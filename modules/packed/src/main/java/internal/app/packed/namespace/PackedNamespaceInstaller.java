@@ -15,10 +15,6 @@
  */
 package internal.app.packed.namespace;
 
-import java.util.function.Function;
-
-import app.packed.extension.Extension;
-import app.packed.namespace.NamespaceConfiguration;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceInstaller;
 import internal.app.packed.application.ApplicationSetup;
@@ -27,7 +23,8 @@ import internal.app.packed.component.PackedComponentInstaller;
 import internal.app.packed.extension.ExtensionSetup;
 
 /** Implementation of {@link NamespaceTemplate.Installer} */
-public final class PackedNamespaceInstaller extends PackedComponentInstaller<NamespaceSetup, PackedNamespaceInstaller> implements NamespaceInstaller {
+public final class PackedNamespaceInstaller<H extends NamespaceHandle<?, ?>> extends PackedComponentInstaller<NamespaceSetup, PackedNamespaceInstaller<H>>
+        implements NamespaceInstaller<H> {
 
     public NamespaceHandle<?, ?> handle;
     final String name;
@@ -36,11 +33,10 @@ public final class PackedNamespaceInstaller extends PackedComponentInstaller<Nam
 
     final ExtensionSetup root;
 
-
     /** The template for the new namespace. */
-    final PackedNamespaceTemplate template;
+    final PackedNamespaceTemplate<?> template;
 
-    public PackedNamespaceInstaller(PackedNamespaceTemplate template, ExtensionSetup root, AuthoritySetup<?> owner, String name) {
+    public PackedNamespaceInstaller(PackedNamespaceTemplate<?> template, ExtensionSetup root, AuthoritySetup<?> owner, String name) {
         this.template = template;
         this.root = root;
         this.owner = owner;
@@ -55,8 +51,8 @@ public final class PackedNamespaceInstaller extends PackedComponentInstaller<Nam
 
     /** {@inheritDoc} */
     @Override
-    public <E extends Extension<E>, H extends NamespaceHandle<E, ?>, C extends NamespaceConfiguration<E>> H install(Function<? super NamespaceInstaller, H> newHandle) {
-        return NamespaceSetup.newNamespace(this, newHandle);
+    public H install() {
+        return NamespaceSetup.newNamespace(this);
     }
 
 }

@@ -77,6 +77,10 @@ public class MethodHandleUtil {
 
     record Lazy(MutableCallSite callSite, Supplier<MethodHandle> supplier, AtomicReference<MethodHandle> actualHandleRef) {
         public Object initialize(Object[] args) throws Throwable {
+            return resolveNow().invokeWithArguments(args);
+        }
+
+        public MethodHandle resolveNow() {
             MethodHandle actualHandle = actualHandleRef.get();
             if (actualHandle == null) {
                 synchronized (actualHandleRef) {
@@ -94,8 +98,19 @@ public class MethodHandleUtil {
                     }
                 }
             }
-            return actualHandle.invokeWithArguments(args);
+            return actualHandle;
         }
+    }
+
+    public record LazyResolable(MethodHandle handle, Runnable resolveNow) {}
+
+    public static LazyResolable lazyF(MethodType mt, Supplier<MethodHandle> supplier) {
+        MutableCallSite callSite = new MutableCallSite(mt);
+        Lazy lazy = new Lazy(callSite, requireNonNull(supplier), new AtomicReference<>());
+        MethodHandle mh = INIT_METHOD_HANDLE.bindTo(lazy);
+        mh = mh.asCollector(Object[].class, mt.parameterCount()).asType(mt);
+        callSite.setTarget(mh);
+        return new LazyResolable(callSite.dynamicInvoker(), () -> lazy.resolveNow());
     }
 
     public static MethodHandle lazy(MethodType mt, Supplier<MethodHandle> supplier) {

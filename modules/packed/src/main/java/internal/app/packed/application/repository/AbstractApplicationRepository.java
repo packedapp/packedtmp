@@ -31,17 +31,16 @@ import app.packed.application.ApplicationTemplate;
 import app.packed.application.repository.ApplicationLauncher;
 import app.packed.application.repository.ManagedInstance;
 import app.packed.build.BuildGoal;
-import app.packed.lifecycle.LifecycleKind;
 import internal.app.packed.ValueBased;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
-import internal.app.packed.application.repository.LauncherOrFuture.PackedApplicationLauncher;
 
 /** Implementation of {@link ApplicationRepository}. */
 @ValueBased
-public abstract class AbstractApplicationRepository<I, H extends ApplicationHandle<I, ?>> implements ApplicationRepository<I, H>, ApplicationInstallingSource {
+public sealed abstract class AbstractApplicationRepository<I, H extends ApplicationHandle<I, ?>>
+        implements ApplicationRepository<I, H>, ApplicationInstallingSource permits ManagedApplicationRepository, UnmanagedApplicationRepository {
 
     /** All applications that are installed in the container. */
     private final ConcurrentHashMap<String, LauncherOrFuture<I, H>> handles;
@@ -55,7 +54,7 @@ public abstract class AbstractApplicationRepository<I, H extends ApplicationHand
     @SuppressWarnings("unchecked")
     public AbstractApplicationRepository(BuildApplicationRepository bar) {
         this.handles = new ConcurrentHashMap<>();
-        bar.handles.forEach((n, h) -> handles.put(n, new PackedApplicationLauncher<>(this, (H) h)));
+        bar.handles.forEach((n, h) -> handles.put(n, new PackedApplicationLauncher<>(this instanceof ManagedApplicationRepository, (H) h)));
         this.template = (PackedApplicationTemplate<H>) bar.template;
         this.methodHandle = requireNonNull(bar.mh);
     }
@@ -83,21 +82,15 @@ public abstract class AbstractApplicationRepository<I, H extends ApplicationHand
         PackedApplicationInstaller<H> pai = template.newInstaller(this, BuildGoal.IMAGE, methodHandle);
         installer.accept(pai);
         ApplicationSetup setup = pai.toHandle();
-        PackedApplicationLauncher<I, H> pal = new PackedApplicationLauncher<>(this, (H) setup.handle());
+        PackedApplicationLauncher<I, H> pal = new PackedApplicationLauncher<>(this instanceof ManagedApplicationRepository, (H) setup.handle());
         handles.put(UUID.randomUUID().toString(), pal);
         return pal;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Optional<ManagedInstance<I>> instance(String name) {
-        return Optional.empty();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Stream<ManagedInstance<I>> instances() {
-        return null;
+        return launchers().flatMap(l -> l.instances());
     }
 
     /** {@inheritDoc} */
@@ -128,7 +121,6 @@ public abstract class AbstractApplicationRepository<I, H extends ApplicationHand
     }
 
     public static Class<?> repositoryClassFor(PackedApplicationTemplate<?> template) {
-        return template.containerTemplate().lifecycleKind() == LifecycleKind.UNMANAGED ? UnmanagedApplicationRepository.class
-                : ManagedApplicationRepository.class;
+        return template.containerTemplate().isManaged() ? ManagedApplicationRepository.class : UnmanagedApplicationRepository.class;
     }
 }

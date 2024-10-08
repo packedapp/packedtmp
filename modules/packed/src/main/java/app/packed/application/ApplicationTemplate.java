@@ -15,6 +15,7 @@
  */
 package app.packed.application;
 
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -24,7 +25,8 @@ import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedApplicationTemplate.PackedApplicationTemplateConfigurator;
 
 /**
- * A template for creating new applications.
+ * A template for creating new applications. It is typically only used by {@link app.packed.extension.Extension
+ * extensions} and normal users will rarely have any use for it.
  *
  * @param <H>
  *            the type of application handles the template creates
@@ -32,7 +34,14 @@ import internal.app.packed.application.PackedApplicationTemplate.PackedApplicati
 public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> permits PackedApplicationTemplate {
 
     /**
+     * Create a new application template, that will use
+     *
+     * <p>
+     * This method calls {@link #of(Class, Consumer, Class, Function)} with
+     * {@code ApplicationHandle.class, ApplicationHandle::new} as respectively the handler class and the handler factory.
+     *
      * @param <A>
+     *            the type of host class that are returned when launching the application.
      * @param hostClass
      * @param configurator
      * @return the new template
@@ -41,42 +50,39 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
      *             if attempting to create an application template without {@link Configurator#container(Consumer) setting}
      *             a container template for the application's root container
      */
-    static <A> ApplicationTemplate<ApplicationHandle<A, ApplicationConfiguration>> of(Class<A> hostClass, Consumer<? super Configurator> configurator) {
+    static <I> ApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> of(Class<I> hostClass, Consumer<? super Configurator> configurator) {
         return of(hostClass, configurator, ApplicationHandle.class, ApplicationHandle::new);
     }
 
-    static <A, H extends ApplicationHandle<A, ?>> ApplicationTemplate<H> of(Class<A> hostClass, Consumer<? super Configurator> configurator,
+    static <I, H extends ApplicationHandle<I, ?>> ApplicationTemplate<H> of(Class<I> hostClass, Consumer<? super Configurator> configurator,
             Class<? super H> handleClass, Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
-        return new PackedApplicationTemplate<H>(hostClass, handleClass, handleFactory, null).configure(configurator);
+        return new PackedApplicationTemplate<H>(hostClass, null, handleClass, handleFactory, null, Set.of()).configure(configurator);
     }
 
-    static <A> ApplicationTemplate<ApplicationHandle<A, ApplicationConfiguration>> of(Op<A> hostOp, Consumer<? super Configurator> configurator) {
+    static <I> ApplicationTemplate<ApplicationHandle<I, ApplicationConfiguration>> of(Op<I> hostOp, Consumer<? super Configurator> configurator) {
         return of(hostOp, configurator, ApplicationHandle.class, ApplicationHandle::new);
     }
 
-    static <A, H extends ApplicationHandle<A, ?>> ApplicationTemplate<H> of(Op<A> hostOp, Consumer<? super Configurator> configurator,
+    static <I, H extends ApplicationHandle<I, ?>> ApplicationTemplate<H> of(Op<I> hostOp, Consumer<? super Configurator> configurator,
             Class<? super H> handleClass, Function<? super ApplicationInstaller<H>, ? extends H> handleFactory) {
         Class<?> type = hostOp.type().returnRawType();
-        return new PackedApplicationTemplate<>(type, hostOp, handleClass, handleFactory, null).configure(configurator);
+        return new PackedApplicationTemplate<>(type, hostOp, handleClass, handleFactory, null, Set.of()).configure(configurator);
     }
 
     /** A configuration object for creating an {@link ApplicationTemplate}. */
     sealed interface Configurator permits PackedApplicationTemplateConfigurator {
 
         /**
-         * Add the specified tags to the application.
+         * Add the specified tag(s) to the application.
          *
          * @param tags
-         *            the tags to add
+         *            the tag(s) to add
          * @return this configurator
          * @see ApplicationMirror#componentTags()
          * @see ApplicationHandle#componentTag(String...)
          * @see ApplicationConfiguration#componentTag(String...)
          */
         Configurator componentTag(String... tags);
-
-//        // Mark the application as removable()
-//        Configurator<A> removeable();
 
         /**
          * Configures the container template that should be used for the root container of the application.
@@ -101,12 +107,3 @@ public sealed interface ApplicationTemplate<H extends ApplicationHandle<?, ?>> p
         <T> Configurator setLocal(ApplicationBuildLocal<T> local, T value);
     }
 }
-
-// lazy start single application. and make the following services available
-// Her taenker jeg fx ElasticSearch
-// Som kunne vaere en kaempe kompliceret application.
-// Som vi gerne vil starte foer hoved applicationen
-
-// prestartIt. And then block operations?
-
-// Bootstrap App har ogsaa en template

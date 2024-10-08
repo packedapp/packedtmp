@@ -5,9 +5,9 @@ import java.lang.invoke.MethodHandle;
 import java.util.Set;
 
 import app.packed.assembly.Assembly;
-import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.bean.BeanIntrospector;
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.bean.scanning.BeanElement.BeanMethod;
+import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.binding.UnwrappedBindableVariable;
 import app.packed.context.Context;
@@ -63,7 +63,7 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
         super(handle);
     }
 
-    private static final ContextTemplate CT = ContextTemplate.of(SchedulingContext.class, c->c.implementationClass(PackedSchedulingContext.class));
+    private static final ContextTemplate CT = ContextTemplate.of(SchedulingContext.class, c -> c.implementationClass(PackedSchedulingContext.class));
 
     private static final OperationTemplate OT = OperationTemplate.defaults().reconfigure(c -> c.inContext(CT));
 
@@ -75,13 +75,13 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
 
             @SuppressWarnings("unused")
             @Override
-            public void onAnnotatedMethod(Annotation hook, BeanMethod method) {
+            public void onAnnotatedMethod(BeanMethod method, Annotation hook) {
                 Cron c = method.annotations().readRequired(Cron.class);
 
                 OperationHandle<?> operation = method.newOperation(OT).install(OperationHandle::new);
 
                 InstanceBeanConfiguration<SchedulingBean> bean = lifetimeRoot().base().installIfAbsent(SchedulingBean.class, handle -> {
-                    handle.bindCodeGenerator(MethodHandle.class, () -> operation.generateMethodHandle());
+                    handle.bindServiceInstance(MethodHandle.class, operation.methodHandle());
                 });
                 // bean, add scheduling +
                 // Manytons dur ikke direkte
@@ -93,7 +93,8 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
             }
 
             @Override
-            public void onContextualServiceProvision(Key<?> key, Class<?> actualHook, Set<Class<? extends Context<?>>> contexts,UnwrappedBindableVariable binding) {
+            public void onContextualServiceProvision(Key<?> key, Class<?> actualHook, Set<Class<? extends Context<?>>> contexts,
+                    UnwrappedBindableVariable binding) {
                 Class<?> hook = key.rawType();
                 if (hook == SchedulingContext.class) {
                     binding.bindContext(SchedulingContext.class);

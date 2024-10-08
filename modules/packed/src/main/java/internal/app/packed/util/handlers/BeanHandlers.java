@@ -21,8 +21,8 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.scanning.BeanIntrospector;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.BeanScannerParticipant;
 
@@ -31,24 +31,19 @@ import internal.app.packed.bean.scanning.BeanScannerParticipant;
  */
 public final class BeanHandlers extends Handlers {
 
-    /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
-    private static final MethodHandle MH_BEAN_HANDLE_DO_CLOSE = method(MethodHandles.lookup(), BeanHandle.class, "doClose", void.class);
 
     /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
-    private static final MethodHandle MH_BEAN_INTROSPECTOR_INITIALIZE =method(MethodHandles.lookup(), BeanIntrospector.class, "initialize",
-            void.class, BeanScannerParticipant.class);
+    private static final MethodHandle MH_BEAN_INTROSPECTOR_INITIALIZE = method(MethodHandles.lookup(), BeanIntrospector.class, "initialize", void.class,
+            BeanScannerParticipant.class);
 
     /** A MethodHandle for invoking {@link BeanIntrospector#bean}. */
-    private static final MethodHandle MH_BEAN_INTROSPECTOR_TO_SETUP =method(MethodHandles.lookup(), BeanIntrospector.class, "bean",
-            BeanSetup.class);
+    private static final MethodHandle MH_BEAN_INTROSPECTOR_TO_SETUP = method(MethodHandles.lookup(), BeanIntrospector.class, "bean", BeanSetup.class);
 
     /** A handle that can access {@link BeanConfiguration#handle}. */
-    private static final VarHandle VH_BEAN_CONFIGURATION_TO_HANDLE = field(MethodHandles.lookup(), BeanConfiguration.class, "handle",
-            BeanHandle.class);
+    private static final VarHandle VH_BEAN_CONFIGURATION_TO_HANDLE = field(MethodHandles.lookup(), BeanConfiguration.class, "handle", BeanHandle.class);
 
     /** A handle that can access {@link BeanHandleHandle#bean}. */
     private static final VarHandle VH_BEAN_HANDLE_TO_SETUP = field(MethodHandles.lookup(), BeanHandle.class, "bean", BeanSetup.class);
-
 
     /** A handle that can access BeanConfiguration#handle. */
     private static final VarHandle VH_BEAN_MIRROR_TO_HANDLE = field(MethodHandles.lookup(), BeanMirror.class, "handle", BeanHandle.class);
@@ -64,6 +59,9 @@ public final class BeanHandlers extends Handlers {
     public static BeanHandle<?> getBeanMirrorHandle(BeanMirror mirror) {
         return (BeanHandle<?>) VH_BEAN_MIRROR_TO_HANDLE.get(mirror);
     }
+
+    /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
+    private static final MethodHandle MH_BEAN_HANDLE_DO_CLOSE = method(MethodHandles.lookup(), BeanHandle.class, "doClose", void.class);
 
     /** Call {@link BeanHandle#onClose()}. */
     public static void invokeBeanHandleDoClose(BeanHandle<?> handle) {
@@ -89,4 +87,5 @@ public final class BeanHandlers extends Handlers {
             throw throwIt(t);
         }
     }
+
 }

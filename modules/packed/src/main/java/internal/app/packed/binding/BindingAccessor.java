@@ -17,7 +17,7 @@ package internal.app.packed.binding;
 
 import java.util.function.Supplier;
 
-import internal.app.packed.lifetime.ContainerLifetimeSetup;
+import internal.app.packed.lifecycle.lifetime.RegionalLifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 import sandbox.operation.mirror.BindingProviderKind;
 
@@ -60,7 +60,7 @@ public sealed interface BindingAccessor {
     }
 
     /** Provides values by accessing a lifetime arena. */
-    public record FromLifetimeArena(ContainerLifetimeSetup containerLifetime, int index, Class<?> type) implements BindingAccessor {
+    public record FromLifetimeArena(RegionalLifetimeSetup containerLifetime, int index, Class<?> type) implements BindingAccessor {
 
         /** {@inheritDoc} */
         @Override

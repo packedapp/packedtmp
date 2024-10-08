@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanBuildLocal.Accessor;
+import app.packed.bean.lifecycle.BeanLifecycleMirror;
 import app.packed.binding.Key;
 import app.packed.build.BuildActor;
 import app.packed.build.action.BuildActionMirror;
@@ -32,6 +33,7 @@ import app.packed.service.mirror.ServiceProviderMirror;
 import app.packed.service.mirror.oldMaybe.BeanServiceBindingMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.context.ContextSetup;
+import internal.app.packed.lifecycle.PackedBeanLifecycleMirror;
 import internal.app.packed.operation.OperationSetup;
 import sandbox.operation.mirror.DependenciesMirror;
 
@@ -129,24 +131,6 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
         return this == other || other instanceof BeanMirror m && handle.bean == m.handle.bean;
     }
 
-    /**
-     * If instances of this bean is created at runtime. This method will return the operation that creates the instance.
-     *
-     * @return operation that creates instances of the bean. Or empty if instances are never created
-     */
-    // instantiatedBy
-
-    // Syntes maaske bare skal lede efter den i operations()?
-    // Saa supportere vi ogsaa flere factory metodes hvis vi har brug for det en gang
-    // We don't support multi factory for default installs.
-    // However custom bean templates may support it
-    public Optional<OperationMirror> factoryOperation() {
-        if (handle.bean.beanKind != BeanKind.STATIC && handle.bean.beanSourceKind != BeanSourceKind.INSTANCE) {
-            return Optional.of(handle.bean.operations.first().mirror());
-        }
-        return Optional.empty();
-    }
-
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
@@ -160,6 +144,11 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
     /** {@return the extension that installed the bean, typically BaseExtension} */
     public final Class<? extends Extension<?>> installedByExtension() {
         return handle.bean.installedBy.extensionType;
+    }
+
+    /** {@return a mirror detailing the lifecycle of the bean} */
+    public final BeanLifecycleMirror lifecycle() {
+        return new PackedBeanLifecycleMirror(handle.bean);
     }
 
     /**
@@ -212,22 +201,6 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
         return (Stream<T>) operations().filter(f -> operationType.isAssignableFrom(f.getClass()));
     }
 
-    /**
-     * Returns any extension the bean's driver is part of. All drivers are either part of an extension. Or is a build in
-     * drive
-     * <p>
-     * Another thing is extension member, which is slightly different.
-     *
-     * @return any extension the bean's driver is part of
-     */
-    // handledBy, managedBy (What if the bean is unmanaged, or stateless)
-    // Think it should be similar named on the operation
-
-    // intermediary
-    Class<? extends Extension<?>> operator() { // registrant
-        return handle.bean.installedBy.extensionType;
-    }
-
     @SuppressWarnings("exports")
     public Map<Key<?>, Collection<BeanServiceBindingMirror>> overriddenServices() {
         throw new UnsupportedOperationException();
@@ -238,10 +211,10 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
         return handle.owner();
     }
 
-    /** {@return any proxy the bean may have.} */
-    public final Optional<BeanProxyMirror> proxy() {
-        return Optional.empty();
-    }
+//    /** {@return any proxy the bean may have.} */
+//    public final Optional<BeanProxyMirror> proxy() {
+//        return Optional.empty();
+//    }
 
     /**
      * @param to

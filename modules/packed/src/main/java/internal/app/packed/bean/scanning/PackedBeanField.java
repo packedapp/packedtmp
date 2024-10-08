@@ -23,7 +23,7 @@ import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import app.packed.bean.BeanElement.BeanField;
+import app.packed.bean.scanning.BeanElement.BeanField;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
 import app.packed.operation.OperationInstaller;
@@ -159,7 +159,7 @@ public final class PackedBeanField extends PackedBeanElement implements BeanFiel
     }
 
     void onHook() {
-        participant.introspector.onAnnotatedField(hooks, this);
+        participant.introspector.onAnnotatedField(this, hooks);
     }
 
     /** {@inheritDoc} */

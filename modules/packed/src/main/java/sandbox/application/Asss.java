@@ -20,10 +20,10 @@ import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
+import app.packed.bean.lifecycle.Initialize;
 import app.packed.build.BuildProcess;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
-import app.packed.lifecycle.OnInitialize;
 
 /**
  *
@@ -58,7 +58,7 @@ public class Asss extends BaseAssembly {
 
     public record Foo(String s) {
 
-        @OnInitialize
+        @Initialize
         public void onStart() {
             System.out.println("Initized!!");
         }
@@ -90,7 +90,7 @@ public class Asss extends BaseAssembly {
 
     public static class Foox {
 
-        @OnInitialize
+        @Initialize
         public void onStart() {
             System.out.println("Initized");
         }

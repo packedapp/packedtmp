@@ -20,8 +20,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.assembly.Assembly;
-import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.bean.BeanIntrospector;
+import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.scanning.BeanElement.BeanMethod;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerConfiguration;
@@ -69,7 +69,7 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
     }
 
     CliNamespaceHandle ns() {
-        return applicationRoot().namespaceLazy(CliNamespaceHandle.TEMPLATE, "main", c -> c.install(CliNamespaceHandle::new));
+        return applicationRoot().namespaceLazy(CliNamespaceHandle.TEMPLATE, "main");
     }
 
     /** {@inheritDoc} */
@@ -79,11 +79,11 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
             /** {@inheritDoc} */
             @Override
-            public void onAnnotatedMethod(Annotation hook, BeanMethod method) {
+            public void onAnnotatedMethod(BeanMethod method, Annotation hook) {
                 if (hook instanceof CliCommand c) {
                     ns().process(CliExtension.this, c, method);
                 } else {
-                    super.onAnnotatedMethod(hook, method);
+                    super.onAnnotatedMethod(method, hook);
                 }
             }
         };

@@ -23,9 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import app.packed.bean.BeanMetaBeanTrigger;
-import app.packed.bean.BeanTrigger.AnnotatedMethodBeanTrigger;
-import app.packed.bean.BeanTrigger.AnnotatedVariableBeanTrigger;
+import app.packed.bean.scanning.BeanMetaBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.AnnotatedVariableBeanTrigger;
 import app.packed.context.ContextualServiceProvider;
 import app.packed.context.InheritableContextualServiceProvider;
 import app.packed.extension.Extension;

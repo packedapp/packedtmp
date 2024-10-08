@@ -25,10 +25,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Optional;
-import java.util.function.Function;
 
 import app.packed.BaseModuleNames;
-import app.packed.bean.BeanIntrospector;
+import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.build.BuildCodeSource;
 import app.packed.build.BuildGoal;
 import app.packed.component.ComponentPath;
@@ -38,7 +37,6 @@ import app.packed.container.WireletSelection;
 import app.packed.extension.Extension.ExtensionProperty;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.namespace.NamespaceHandle;
-import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.util.TreeView;
@@ -228,9 +226,8 @@ public non-sealed abstract class Extension<E extends Extension<E>> implements Bu
         return (E) s.instance();
     }
 
-    protected final <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name,
-            Function<NamespaceInstaller, T> factory) {
-        return handle.namespaceLazy(template, name, factory);
+    protected final <H extends NamespaceHandle<E, ?>> H namespaceLazy(NamespaceTemplate<H> template, String name) {
+        return handle.namespaceLazy(template, name);
     }
 
     /**

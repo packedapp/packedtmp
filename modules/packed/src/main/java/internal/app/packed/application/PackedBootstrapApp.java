@@ -18,6 +18,7 @@ package internal.app.packed.application;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.util.Set;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
@@ -33,12 +34,18 @@ import app.packed.extension.BaseExtension;
 import app.packed.runtime.RunState;
 import internal.app.packed.ValueBased;
 import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
+import internal.app.packed.container.PackedContainerKind;
+import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
+import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
 /** Implementation of {@link BootstrapApp}. */
 @ValueBased
 public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements BootstrapApp<A>, ApplicationInstallingSource {
+
+    /** An application template that is used for the bootstrap app. */
+    private static final PackedApplicationTemplate<?> BOOTSTRAP_APP_TEMPLATE = new PackedApplicationTemplate<>(Void.class, null, ApplicationHandle.class,
+            ApplicationHandle::new, new PackedContainerTemplate<>(PackedContainerKind.BOOTSTRAP_APPLICATION, PackedBootstrapApp.class), Set.of("bootstrap"));
 
     /** The application launcher. */
     private final MethodHandle launcher;
@@ -85,7 +92,7 @@ public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> impl
         H handle = installer.install(assembly);
 
         // Create and return an instance of the application interface, wirelets have already been specified in the installer
-        return handle.launch(state);
+        return ApplicationLaunchContext.launch(handle, state);
     }
 
     /** {@inheritDoc} */
@@ -123,8 +130,9 @@ public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> impl
         BootstrapAppAssembly assembly = new BootstrapAppAssembly(template);
 
         // Build the bootstrap application
-        PackedApplicationTemplate.newBootstrapAppInstaller().install(assembly);
+        BOOTSTRAP_APP_TEMPLATE.newInstaller(null, BuildGoal.LAUNCH, null).install(assembly);
 
+        // Returned the bootstrap implementation (represented by a construcing method handle) wrapped in this class.
         return new PackedBootstrapApp<A, H>(template, assembly.mh);
     }
 
@@ -152,10 +160,10 @@ public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> impl
             ExtensionSetup es = ExtensionSetup.crack(base);
 
             // Create a new installer
-            BeanInstaller installer = PackedApplicationTemplate.GB.newInstaller(es, es.container.assembly);
+            BeanInstaller installer = GuestBeanHandle.GUEST_BEAN_TEMPLATE.newInstaller(es, es.container.assembly);
 
             // Install the guest bean if needed (code is shared with App-On-App)
-            template.installGuestBean(installer, m -> mh = m);
+            this.mh = GuestBeanHandle.installGuestBean(template, installer);
         }
     }
 }

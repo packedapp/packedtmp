@@ -15,6 +15,7 @@
  */
 package internal.app.packed.util.handlers;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
@@ -39,5 +40,17 @@ public final class OperationHandlers extends Handlers {
      */
     public static OperationSetup getOperationHandleOperation(OperationHandle<?> handle) {
         return (OperationSetup) VH_OPERATION_HANDLE_TO_SETUP.get(handle);
+    }
+
+    /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
+    private static final MethodHandle MH_OPERATION_HANDLE_DO_CLOSE = method(MethodHandles.lookup(), OperationHandle.class, "doClose", void.class);
+
+    /** Call {@link OperationHandle#onClose()}. */
+    public static void invokeOperationHandleDoClose(OperationHandle<?> handle) {
+        try {
+            MH_OPERATION_HANDLE_DO_CLOSE.invokeExact(handle);
+        } catch (Throwable t) {
+            throw throwIt(t);
+        }
     }
 }

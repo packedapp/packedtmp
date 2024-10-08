@@ -23,8 +23,8 @@ import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanMirror;
 import app.packed.extension.BaseExtensionMirror;
 import app.packed.service.Export;
-import app.packed.service.Provide;
 import app.packed.service.ProvidableBeanConfiguration;
+import app.packed.service.Provide;
 import app.packed.service.mirror.oldMaybe.ExportedServiceMirror;
 
 /**
@@ -47,7 +47,7 @@ public class CheckCycles extends BaseAssembly {
 
         ApplicationMirror am = App.mirrorOf(new CheckCycles());
         for (var b : am.container().beans().toList()) {
-            System.out.println(b.beanClass().getSimpleName() + " " + b.factoryOperation().get().target());
+            System.out.println(b.beanClass().getSimpleName() + " " + b.lifecycle().factoryOperation().get().target());
         }
 
 //        Collection<ProvidedServiceMirror> c = am.use(BaseExtensionMirror.class).serviceProviders().values();

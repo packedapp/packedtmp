@@ -15,8 +15,8 @@
  */
 package internal.app.packed.concurrent;
 
+import app.packed.bean.lifecycle.Start;
 import app.packed.extension.ExtensionContext;
-import app.packed.lifecycle.OnStart;
 import internal.app.packed.concurrent.VirtualThreadScheduledTaskManager.DaemonOperationRunner;
 
 // Runtime
@@ -44,7 +44,7 @@ public class SchedulingTaskManager {
         this.mhs = mhs;
     }
 
-    @OnStart
+    @Start
     public void onStart() {
         System.out.println("On Start");
 
@@ -60,7 +60,7 @@ public class SchedulingTaskManager {
         }
     }
 
-    @OnStart
+    @Start
     public void onStop() {
         System.out.println("Bye");
     }

@@ -21,8 +21,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.bean.BeanIntrospector;
+import app.packed.bean.scanning.BeanElement.BeanMethod;
+import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.binding.Key;
 import app.packed.binding.UnwrappedBindableVariable;
 import app.packed.context.Context;
@@ -79,16 +79,11 @@ public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
     static final OperationTemplate DAEMON_OPERATION_TEMPLATE = OperationTemplate.defaults()
             .reconfigure(c -> c.inContext(DAEMON_CONTEXT_TEMPLATE).returnIgnore());
 
-    private BeanConfiguration schedulingBean;
-
     /** Creates a new thread extension. */
 
-    BeanConfiguration initSchedulingBean() {
-        BeanConfiguration b = schedulingBean;
-        if (b == null) {
-            b = schedulingBean = provide(SchedulingTaskManager.class);
-            b.bindServiceInstance(ExecutorConfiguration.class, main().scheduler);
-        }
+    BeanConfiguration newSchedulingBean() {
+        BeanConfiguration b = provide(SchedulingTaskManager.class);
+        b.bindServiceInstance(ExecutorConfiguration.class, main().scheduler);
         return b;
     }
 
@@ -118,7 +113,7 @@ public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
             }
 
             @Override
-            public void onAnnotatedMethod(Annotation hook, BeanMethod on) {
+            public void onAnnotatedMethod(BeanMethod on, Annotation hook) {
                 if (hook instanceof ScheduleRecurrent schedule) {
                     // Parse the schedule
                     ScheduleImpl s = new ScheduleImpl(Duration.ofMillis(schedule.millies()));
@@ -141,7 +136,7 @@ public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
                     // Configure the handle
                     h.useVirtual = daemon.useVirtual();
                 } else {
-                    super.onAnnotatedMethod(hook, on);
+                    super.onAnnotatedMethod(on, hook);
                 }
             }
         };
@@ -157,7 +152,7 @@ public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
     }
 
     private ThreadNamespaceHandle main() {
-        return namespaceLazy(ThreadNamespaceHandle.TEMPLATE, "main", c -> c.install(ThreadNamespaceHandle::new));
+        return namespaceLazy(ThreadNamespaceHandle.TEMPLATE, "main");
     }
 
     /** {@inheritDoc} */

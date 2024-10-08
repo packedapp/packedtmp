@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
@@ -27,7 +26,6 @@ import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.InternalExtensionException;
 import app.packed.namespace.NamespaceHandle;
-import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceTemplate;
 import app.packed.util.TreeView;
 import internal.app.packed.ValueBased;
@@ -116,23 +114,24 @@ public record PackedExtensionHandle<E extends Extension<E>>(ExtensionSetup exten
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends NamespaceHandle<E, ?>> T namespaceLazy(NamespaceTemplate template, String name, Function<NamespaceInstaller, T> factory) {
+    public <H extends NamespaceHandle<E, ?>> H namespaceLazy(NamespaceTemplate<H> template, String name) {
         NamespaceKey nk = new NamespaceKey(template.handleClass(), name);
-        requireNonNull(factory);
 
         Map<NamespaceKey, NamespaceHandle<?, ?>> m = extension.container.application.namespaces;
 
+        PackedNamespaceTemplate<H> t = (PackedNamespaceTemplate<H>) template;
         // cannot use computeIfAbsent, as we want to store the handle before the install method returns
         NamespaceHandle<?, ?> namespaceHandle = m.get(nk);
         if (namespaceHandle == null) {
-            PackedNamespaceInstaller installer = new PackedNamespaceInstaller((PackedNamespaceTemplate) template, extension, extension, name);
-            namespaceHandle = factory.apply(installer);
-            if (namespaceHandle != installer.handle) {
-                throw new InternalExtensionException("must return newly installed namespace handle");
-            }
+            PackedNamespaceInstaller<H> installer = new PackedNamespaceInstaller<>((PackedNamespaceTemplate<H>) template, extension, extension, name);
+
+            installer.install();
+
+
+            namespaceHandle = t.newHandle().apply(installer);
         }
 
-        return (T) namespaceHandle;
+        return (H) namespaceHandle;
     }
 
     /**

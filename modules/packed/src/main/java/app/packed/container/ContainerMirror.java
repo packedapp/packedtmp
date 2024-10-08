@@ -19,7 +19,7 @@ import app.packed.context.InheritableContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
-import app.packed.lifetime.ContainerLifetimeMirror;
+import app.packed.lifetime.RegionalLifetimeMirror;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.util.Nullable;
@@ -136,7 +136,7 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
      *            the mirror type
      * @return a mirror of the specified type, or empty if the extension the mirror represents is not used in the container
      */
-    public <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> mirrorType) {
+    public final <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> mirrorType) {
         ClassUtil.checkProperSubclass(ExtensionMirror.class, mirrorType, "mirrorType");
         return Optional.ofNullable(newMirrorOrNull(handle.container, mirrorType));
     }
@@ -165,7 +165,7 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
     }
 
     /** {@return the containers's lifetime.} */
-    public ContainerLifetimeMirror lifetime() {
+    public final RegionalLifetimeMirror lifetime() {
         return handle.container.lifetime.mirror();
     }
 

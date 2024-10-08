@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.BeanTrigger;
+import app.packed.bean.scanning.BeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.service.advanced.ServiceResolver.NoContext;
 

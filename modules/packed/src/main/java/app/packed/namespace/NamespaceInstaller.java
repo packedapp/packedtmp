@@ -15,14 +15,14 @@
  */
 package app.packed.namespace;
 
-import java.util.function.Function;
-
-import app.packed.extension.Extension;
 import internal.app.packed.namespace.PackedNamespaceInstaller;
 
-public sealed interface NamespaceInstaller permits PackedNamespaceInstaller {
+public sealed interface NamespaceInstaller<H extends NamespaceHandle<?, ?>> permits PackedNamespaceInstaller {
 
-    // return value.getClass() from newHandle must match handleClass
-    <E extends Extension<E>, H extends NamespaceHandle<E, ?>, C extends NamespaceConfiguration<E>> H install(
-            Function<? super NamespaceInstaller, H> newHandle);
+    /**
+     * Installs the namespace
+     *
+     * @return a handle for the new namespace as configured in the underlying {@link NamespaceTemplate} used
+     */
+    H install();
 }

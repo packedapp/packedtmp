@@ -15,6 +15,7 @@
  */
 package app.packed.application;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.ParameterizedType;
 
 import app.packed.bean.BeanHandle;
@@ -23,6 +24,7 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
+import internal.app.packed.application.GuestBeanHandle;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.repository.AbstractApplicationRepository;
 import internal.app.packed.application.repository.BuildApplicationRepository;
@@ -75,9 +77,9 @@ class ApplicationRepositoryHandle<I, H extends ApplicationHandle<I, ?>> extends 
                 .install(AbstractApplicationRepository.repositoryClassFor(template), i -> new ApplicationRepositoryHandle<>(i, template));
 
         // Create a new installer for the guest bean
-        BeanInstaller i = PackedApplicationTemplate.GB.newInstaller(es, owner);
-        template.installGuestBean(i, h.repository::onCodeGenerated);
-
+        BeanInstaller i = GuestBeanHandle.GUEST_BEAN_TEMPLATE.newInstaller(es, owner);
+        MethodHandle mh = GuestBeanHandle.installGuestBean(template, i);
+        h.repository.onCodeGenerated(mh);
         return h.configuration();
     }
 }

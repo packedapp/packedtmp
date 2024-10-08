@@ -22,12 +22,12 @@ import java.time.LocalDateTime;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanTrigger.AnnotatedVariableBeanTrigger;
+import app.packed.bean.lifecycle.Initialize;
+import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.scanning.BeanTrigger.AnnotatedVariableBeanTrigger;
 import app.packed.binding.BindableVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
-import app.packed.lifecycle.OnInitialize;
 import app.packed.operation.Op0;
 import app.packed.operation.Op1;
 
@@ -52,12 +52,12 @@ public class OSITest extends BaseAssembly {
             System.out.println(i2);
         }
 
-        @OnInitialize
+        @Initialize
         public void sd(@Now LocalDateTime i2, @BuildTime LocalDateTime i24) {
             System.out.println(i2);
         }
 
-        @OnInitialize
+        @Initialize
         public static void fsd(@Now LocalDateTime i2, @BuildTime LocalDateTime i24) {
             System.out.println(i2 + " " + i24);
         }
@@ -80,7 +80,7 @@ public class OSITest extends BaseAssembly {
         protected BeanIntrospector newBeanIntrospector() {
             return new BeanIntrospector() {
                 @Override
-                public void onAnnotatedVariable(Annotation hook, BindableVariable d) {
+                public void onAnnotatedVariable(BindableVariable d, Annotation hook) {
                     if (hook instanceof BuildTime) {
                         d.checkAssignableTo(LocalDateTime.class);
                         // d.bindConstant(LocalDateTime.now());
@@ -93,7 +93,7 @@ public class OSITest extends BaseAssembly {
                         d.checkAssignableTo(LocalDateTime.class);
                         d.bindOp(new Op0<>(LocalDateTime::now) {});
                     } else {
-                        super.onAnnotatedVariable(hook, d);
+                        super.onAnnotatedVariable(d, hook);
                     }
                 }
             };

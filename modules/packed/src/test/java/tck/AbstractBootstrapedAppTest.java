@@ -40,6 +40,7 @@ import app.packed.runtime.RunState;
 import app.packed.service.ProvidableBeanConfiguration;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationTemplate;
+import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 import tck.AbstractAppTest.InternalTestState.State3Build;
 
 /**
@@ -93,7 +94,7 @@ public abstract class AbstractBootstrapedAppTest<A> extends AbstractAppTest<A> {
         State3Build b = stateBuild();
         ApplicationSetup as = b.application;
 
-        A app = (A) as.handle().launch(RunState.TERMINATED, wirelets);
+        A app = (A) ApplicationLaunchContext.launch(as.handle(), RunState.TERMINATED, wirelets);
         // Right now we do not support runtime wirelets
 //        ApplicationLaunchContext alc = ApplicationLaunchContext.launch(RunState.TERMINATED, as, WireletSelectionArray.of(wirelets));
 //

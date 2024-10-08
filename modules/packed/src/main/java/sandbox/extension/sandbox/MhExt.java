@@ -23,10 +23,10 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.bean.lifecycle.Initialize;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.ExtensionHandle;
-import app.packed.lifecycle.OnInitialize;
 import app.packed.operation.OperationHandle;
 
 /**
@@ -60,7 +60,7 @@ public class MhExt extends BaseAssembly {
             this.mh = f;
         }
 
-        @OnInitialize
+        @Initialize
         public void onInit(ExtensionContext ec) throws Throwable {
             FFF fff = (FFF) mh.invokeExact(ec);
 
@@ -88,18 +88,8 @@ public class MhExt extends BaseAssembly {
         @Override
         public void onAssemblyClose() {
             InstanceBeanConfiguration<EBean> b = base().install(EBean.class);
-
-            // Codegenerated.push(b,
-
-            b.bindCodeGenerator(MethodHandle.class, () -> {
-                if (h != null) {
-                    OperationHandle<?> oh = h.lifetimeOperations().get(0);
-                    //System.out.println(oh);
-                    //System.out.println("ASDADS");
-                    return oh.generateMethodHandle();
-                }
-                return null;
-            });
+            OperationHandle<?> oh = h.lifetimeOperations().get(0);
+            b.bindServiceInstance(MethodHandle.class, oh.methodHandle());
         }
     }
 }

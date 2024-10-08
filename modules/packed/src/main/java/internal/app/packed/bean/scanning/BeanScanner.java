@@ -32,20 +32,22 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 
-import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.InaccessibleBeanMemberException;
+import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.scanning.InaccessibleBeanMemberException;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.integration.devtools.PackedDevToolsIntegration;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationInitializeHandle;
+import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
 import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
-import internal.app.packed.operation.PackedOperationInstaller.BeanFactoryOperationHandle;
 import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.handlers.BeanHandlers;
@@ -130,7 +132,7 @@ public final class BeanScanner {
             BeanHandlers.invokeBeanIntrospectorInitialize(introspector, bse);
 
             // Notify the bean introspector that it is being used
-            introspector.onStart();
+            introspector.onBegin();
             return bse;
         });
     }
@@ -145,18 +147,18 @@ public final class BeanScanner {
         // Extract a direct method handle from the constructor
         MethodHandle mh = unreflectConstructor(con);
 
-        PackedOperationTemplate ot;
-        if (bean.lifetime.lifetimes().isEmpty()) {
+        PackedOperationTemplate ot = bean.operations.bot;
+        if (ot == null) {
             ot = (PackedOperationTemplate) OperationTemplate.defaults();
-        } else {
-            ot = bean.lifetime.lifetimes().get(0).template;
         }
         ot = ot.reconfigure(c -> c.returnType(beanClass));
 
         PackedOperationInstaller installer = ot.newInstaller(constructor.operationType(), bean, bean.installedBy);
 
         OperationSetup os = PackedOperationInstaller.newOperationFromMember(installer, new OperationConstructorTarget(constructor.constructor()), mh,
-                BeanFactoryOperationHandle::new);
+                i -> new LifecycleOperationInitializeHandle(i, InternalBeanLifecycleKind.FACTORY));
+
+        bean.operations.addHandle((BeanLifecycleOperationHandle) os.handle());
         resolveNow(os);
     }
 
@@ -271,7 +273,7 @@ public final class BeanScanner {
 
         // Call into every BeanIntrospector and tell them it is all over
         for (BeanScannerParticipant e : extensions.values()) {
-            e.introspector.onStop();
+            e.introspector.onFinished();
         }
     }
 

@@ -16,7 +16,7 @@
 package app.packed.runtime;
 
 /**
- * An enum containing all valid states of an application, container or bean.
+ * An enum containing all valid states of a component of some kind.
  *
  * There are 4 <b>steady</b> states: {@link #UNINITIALIZED}, {@link #INITIALIZED}, {@link #RUNNING} and
  * {@link #TERMINATED}.
@@ -24,12 +24,10 @@ package app.packed.runtime;
  * There are 3 <b>intermediate</b> states: {@link #INITIALIZING}, {@link #STARTING} and {@link #STOPPING}.
  *
  * Steady states normally requires external stimuli to transition to a new state. For example, that the user invokes a
- * {@code start} function of some kind on the object. Which results in the object transitioning from
+ * {@code start} function of some kind on the component. Which results in the component transitioning from
  * {@link #INITIALIZED} state to {@link #STARTING} state. Intermediate states on the other hand normally transitions
- * "automatically". That is, when all the startup code has been successfully executed. The object will automatically
+ * "automatically". That is, when all the startup code has been successfully executed. The component will automatically
  * transition to the {@link #RUNNING} state without the user having to do anything.
- * <p>
- * This enum does not contain information about whether or not a guest is restarted.
  */
 // Failure on Initializain -> Stopping or Terminated?
 // Stop called on Initialized -> Stopping or Terminated? (should be same as above)

@@ -17,7 +17,7 @@ package app.packed.binding.usage;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.Inject;
+import app.packed.bean.lifecycle.Inject;
 import app.packed.service.advanced.ServiceProviderKind;
 import app.packed.service.advanced.ServiceResolver;
 

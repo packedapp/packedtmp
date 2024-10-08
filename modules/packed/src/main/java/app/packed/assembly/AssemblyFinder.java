@@ -40,6 +40,9 @@ import internal.app.packed.assembly.PackedAssemblyFinder;
  * What about service loaders?
  *
  */
+// WatchableAssembly-> An assembly that may be rebuild in which case it will be reinstalled
+
+
 // Jeg tror ikke man kan skifte mode...
 // Module paths kan aldrig laese class paths.
 // Og classpath er ikke interesseret i at lase module paths

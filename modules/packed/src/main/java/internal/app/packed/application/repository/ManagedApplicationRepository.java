@@ -15,15 +15,14 @@
  */
 package internal.app.packed.application.repository;
 
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.repository.ManagedInstance;
-import app.packed.lifecycle.OnStop;
-import app.packed.lifecycle.OnStopContext;
-import app.packed.operation.OperationDependencyOrder;
+import app.packed.bean.lifecycle.LifecycleDependantOrder;
+import app.packed.bean.lifecycle.Stop;
+import app.packed.bean.lifecycle.StopContext;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
 
@@ -49,32 +48,25 @@ public final class ManagedApplicationRepository<I, H extends ApplicationHandle<I
 
     /** {@inheritDoc} */
     @Override
-    public Optional<ManagedInstance<I>> instance(String name) {
-        checkNotStopped();
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Stream<ManagedInstance<I>> instances() {
         checkNotStopped();
         return instances.values().stream();
     }
 
-    @OnStop(order = OperationDependencyOrder.AFTER_DEPENDENCIES)
-    public void stopAfterDependencis(OnStopContext c) {
+    @Stop(order = LifecycleDependantOrder.AFTER_DEPENDANTS)
+    public void stopAfterDependencis(StopContext c) {
         for (ManagedInstance<I> i : instances.values()) {
             c.await((l, u) -> i.await(RunState.TERMINATED, l, u));
         }
     }
 
-    @OnStop(order = OperationDependencyOrder.BEFORE_DEPENDENCIES)
+    @Stop(order = LifecycleDependantOrder.BEFORE_DEPENDANTS)
     // Need to wait on any installs to finish
     public void stopBeforeDependencies() {
         isStopped = true;
 
         // Disable all existing launchers
-        launchers().forEach(l -> l.disable());
+        launchers().forEach(l -> l.disableLaunch());
 
         System.out.println(instances.size());
         // Propbably need to have some kind of limit if we have millions of applications.

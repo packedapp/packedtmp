@@ -28,6 +28,7 @@ import app.packed.operation.OperationMirror;
  * By static we mean that it can be determined at build time to always be present. It may be possible that contexts are
  * added dynamically at runtime. For example, by starting a transaction in raw code.
  */
+// Maybe ditch it? Can really see any usecases.
 public sealed interface ContextualizedElementMirror permits BeanMirror, OperationMirror {
 
     /** {@return an unchangeable map view of all the contexts that the element operates within.} */

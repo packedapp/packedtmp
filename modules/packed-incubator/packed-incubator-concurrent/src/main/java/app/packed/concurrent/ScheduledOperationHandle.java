@@ -18,7 +18,6 @@ package app.packed.concurrent;
 import app.packed.operation.OperationInstaller;
 import app.packed.util.Nullable;
 import internal.app.packed.concurrent.ScheduleImpl;
-import internal.app.packed.concurrent.ScheduledOperation;
 
 /**
  *
@@ -45,12 +44,11 @@ public final class ScheduledOperationHandle extends ThreadedOperationHandle<Sche
         return new ScheduledOperationMirror(this);
     }
 
-    ScheduledOperation schedule() {
+    @Override
+    protected void onClose() {
         /// Called from a code generation thread
         if (s == null) {
             throw new IllegalStateException("Operation " + this + " was never scheduled");
         }
-        return new ScheduledOperation(s, generateMethodHandle());
     }
-
 }

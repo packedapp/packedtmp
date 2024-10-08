@@ -20,8 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
-import app.packed.bean.BeanElement.BeanMethod;
+import app.packed.bean.scanning.BeanElement.BeanMethod;
 import app.packed.binding.Key;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;
@@ -39,8 +40,8 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
 
     /** {@inheritDoc} */
     @Override
-    public Method method() {
-        return member;
+    public Optional<Method> method() {
+        return Optional.ofNullable(member);
     }
 
     /** {@inheritDoc} */
@@ -79,7 +80,7 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
 
                 PackedBeanMethod pbm = new PackedBeanMethod(contributor, method, annotations, fh.isInvokable());
                 PackedAnnotationList pac = new PackedAnnotationList(new Annotation[] { a1 });
-                contributor.introspector.onAnnotatedMethod(pac, pbm);
+                contributor.introspector.onAnnotatedMethod(pbm, pac);
             }
         }
     }

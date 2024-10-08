@@ -15,8 +15,6 @@
  */
 package app.packed.concurrent;
 
-import java.util.List;
-
 import app.packed.bean.BeanConfiguration;
 import app.packed.build.BuildActor;
 import app.packed.namespace.NamespaceHandle;
@@ -32,7 +30,7 @@ import internal.app.packed.concurrent.ScheduledOperation;
 final class ThreadNamespaceHandle extends NamespaceHandle<ThreadExtension, ThreadNamespaceConfiguration> {
 
     /** The default thread namespace template. */
-    static final NamespaceTemplate TEMPLATE = NamespaceTemplate.of(ThreadNamespaceHandle.class, c -> {});
+    static final NamespaceTemplate<ThreadNamespaceHandle> TEMPLATE = NamespaceTemplate.of(ThreadNamespaceHandle.class, ThreadNamespaceHandle::new, c -> {});
 
     ExecutorConfiguration scheduler;
 
@@ -42,7 +40,7 @@ final class ThreadNamespaceHandle extends NamespaceHandle<ThreadExtension, Threa
      * @param installer
      *            the namespace installer
      */
-    protected ThreadNamespaceHandle(NamespaceInstaller installer) {
+    protected ThreadNamespaceHandle(NamespaceInstaller<?> installer) {
         super(installer);
     }
 
@@ -60,19 +58,18 @@ final class ThreadNamespaceHandle extends NamespaceHandle<ThreadExtension, Threa
 
     @Override
     protected void onNamespaceClose() {
-        // Get all t
-        List<ScheduledOperationHandle> l = operations(ScheduledOperationHandle.class).toList();
-        List<DaemonOperationHandle> daemons = operations(DaemonOperationHandle.class).toList();
+        // Find all scheduling operations in the namespace.
+        ScheduledOperation[] so = operations(ScheduledOperationHandle.class).map(h -> new ScheduledOperation(h.s, h.methodHandle()))
+                .toArray(ScheduledOperation[]::new);
+        // Find all daemon operations in the namespace.
+        ScheduledDaemon[] sd = operations(DaemonOperationHandle.class).map(h -> new ScheduledDaemon(h.useVirtual, h.methodHandle()))
+                .toArray(ScheduledDaemon[]::new);
 
-        if (l.size() > 0) {
-            BeanConfiguration b = rootExtension().initSchedulingBean();
-
-            b.bindCodeGenerator(ScheduledOperation[].class,
-                    () -> operations(ScheduledOperationHandle.class).map(ScheduledOperationHandle::schedule).toArray(ScheduledOperation[]::new));
-
-            b.bindCodeGenerator(ScheduledDaemon[].class,
-                    () -> operations(DaemonOperationHandle.class).map(DaemonOperationHandle::schedule).toArray(ScheduledDaemon[]::new));
+        // Install a scheduling bean if we have any operations.
+        if (so.length > 0 || sd.length > 0) {
+            BeanConfiguration b = rootExtension().newSchedulingBean();
+            b.bindServiceInstance(ScheduledOperation[].class, so);
+            b.bindServiceInstance(ScheduledDaemon[].class, sd);
         }
-        System.out.println("CLosing " + daemons.size());
     }
 }

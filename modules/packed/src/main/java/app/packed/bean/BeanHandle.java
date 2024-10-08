@@ -46,6 +46,7 @@ import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationTa
 import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.service.ServiceProviderSetup.BeanServiceProviderSetup;
 import internal.app.packed.service.util.InternalServiceUtil;
+import internal.app.packed.util.handlers.OperationHandlers;
 
 /**
  * A bean handle is a build-time reference to an installed bean. They are created by the framework when an extension
@@ -85,7 +86,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      *
      */
     public final void allowMultiClass() {
-        checkIsConfigurable();
+        checkHandleIsConfigurable();
         bean.multiInstall = bean.multiInstall | 1 << 31;
     }
 
@@ -114,7 +115,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     // Is lazy, or eager?
     // Eager_never_fail, Eager_fail_if_not_used, Lazy_whenFirstUsed, LazyFailIfNotUsed, Some default for the container?
     public final <K> void bindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
-        checkIsConfigurable();
+        checkHandleIsConfigurable();
         bean.bindCodeGenerator(key, supplier);
     }
 
@@ -168,7 +169,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     /** {@inheritDoc} */
     @Override
     public final void componentTag(String... tags) {
-        checkIsConfigurable();
+        checkHandleIsConfigurable();
         bean.container.application.componentTags.addComponentTags(bean, tags);
     }
 
@@ -205,6 +206,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      * @see internal.app.packed.util.handlers.BeanHandlers#invokeBeanHandleDoClose(BeanHandle)
      */
     final void doClose() {
+        bean.operations.forEach(o -> OperationHandlers.invokeOperationHandleDoClose(o.handle()));
         // Do we want to close operations?
         // Or is this based on the installing extension and not the owner??
         onClose();
@@ -228,7 +230,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      * @see #serviceProvideAs(Key)
      */
     public final void exportAs(Key<?> key) {
-        checkIsConfigurable();
+        checkHandleIsConfigurable();
         bean.serviceNamespace().export(key, instanceAccessOperation());
     }
 
@@ -246,7 +248,13 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
 
     /** {@inheritDoc} */
     @Override
-    public final boolean isConfigurable() {
+    public final boolean isConfigurationConfigurable() {
+        return isConfigurable;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean isHandleConfigurable() {
         return isConfigurable;
     }
 
@@ -285,7 +293,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      *             if another bean with the specified name already exists
      */
     public final void named(String name) {
-        checkIsConfigurable();
+        checkHandleIsConfigurable();
         bean.named(name);
     }
 
@@ -347,7 +355,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      */
     public final void provideAs(Key<?> key) {
         Key<?> k = InternalServiceUtil.checkKey(bean.beanClass, key);
-        checkIsConfigurable();
+        checkHandleIsConfigurable();
         if (beanKind() != BeanKind.CONTAINER || beanKind() != BeanKind.LAZY) {
             // throw new UnsupportedOperationException("This method can only be called on beans of kind " + BeanKind.CONTAINER + "
             // or " + BeanKind.LAZY);

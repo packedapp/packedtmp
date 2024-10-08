@@ -2,7 +2,6 @@ package app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -18,7 +17,7 @@ import app.packed.context.InheritableContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
-import app.packed.lifetime.ContainerLifetimeMirror;
+import app.packed.lifetime.RegionalLifetimeMirror;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
@@ -147,7 +146,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     }
 
     /** {@return a collection of all entry points the application may have.} */
-    public Collection<OperationMirror> entryPoints() {
+    public Stream<OperationMirror> entryPoints() {
         return container().lifetime().entryPoints();
     }
 
@@ -180,7 +179,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     }
 
     /** {@return the application's lifetime. Which is identical to the root container's.} */
-    public ContainerLifetimeMirror lifetime() {
+    public RegionalLifetimeMirror lifetime() {
         return container().lifetime();
     }
 

@@ -15,7 +15,7 @@
  */
 package app.packed.assembly;
 
-import app.packed.bean.BeanMetaBeanTrigger.JavaBaseSupport;
+import app.packed.bean.scanning.BeanMetaBeanTrigger.JavaBaseSupport;
 
 /**
  *

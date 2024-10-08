@@ -24,44 +24,55 @@ import app.packed.application.repository.ManagedInstance;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.BaseExtensionPoint;
 import internal.app.packed.application.PackedApplicationTemplate;
+import internal.app.packed.application.repository.AbstractApplicationRepository;
 import internal.app.packed.extension.ExtensionSetup;
 
 /**
- * An application repository that can be used to install applications at runtime or retrieve applications that were
- * installed at build-time.
+ * An application repository is used for launching new applications at runtime. The applications can be installed at
+ * build time using {@link ApplicationRepositoryConfiguration#installChildApplication(Consumer)}. Or at runtime using
+ * {@link #install(Consumer)}.
  * <p>
- * This interface only supported unmanaged applications. If you need to create managed applications uses
- * {@link app.packed.application.guestmanager.ManagedApplicationRepository}.
+ * Once installed and application can be launched by using it {@link ApplicationLauncher}.
+ * <p>
+ * Managed vs Unmanaged
+ *
+ * <p>
+ * If an application is no longer needed it can be uninstalled by calling {@link ApplicationLauncher#uninstall()}.
+ * This will, first disable launch of any
  */
-public interface ApplicationRepository<I, H extends ApplicationHandle<I, ?>> {
+public sealed interface ApplicationRepository<I, H extends ApplicationHandle<I, ?>> permits AbstractApplicationRepository {
 
-    Optional<ManagedInstance<I>> instance(String name);
+    /**
+     * Installs a new application in the repository based on {@link #template()}.
+     * <p>
+     * Applications can be uninstalled by calling {@link ApplicationLauncher#uninstall()}.
+     *
+     * @return an application launcher representing the new application
+     */
+    ApplicationLauncher<I> install(Consumer<? super ApplicationInstaller<H>> installer);
 
-    Stream<ManagedInstance<I>> instances();
+    /** {@return a concatenated stream of all instances managed by every launcher in this repository} */
+    default Stream<ManagedInstance<I>> instances() {
+        return launchers().flatMap(l -> l.instances());
+    }
 
+    /**
+     * @param name
+     *            the name of the application
+     * @return
+     */
     Optional<ApplicationLauncher<I>> launcher(String name);
 
     /**
-     * {@return a stream of all applications (represented by their application handle} that have been installed into the
+     * {@return a stream of all applications (represented by an application launcher) that have been installed into the
      * repository}
      */
     Stream<ApplicationLauncher<I>> launchers();
 
-    /**
-     * Creates an installer for a new application based on {@link #template()}.
-     *
-     * @return an installer for a new application
-     */
-    ApplicationLauncher<I> install(Consumer<? super ApplicationInstaller<H>> installer);
-
-    /** {@return the template that is used for all applications in this repository} */
+    /** {@return the template that is used for every application in this repository} */
     ApplicationTemplate<H> template();
 
-    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<A, H> install(BaseExtensionPoint point) {
-        throw new UnsupportedOperationException();
-    }
-
-    // Syntes maaske vi skal tage H med.. Saa kan vi lave en god default key
+    // We need to fail on a managed appplication template in an unmanaged container
     static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<A, H> install(ApplicationTemplate<H> template, BaseExtension extension) {
         // Hmm, maaske flyt tilbage til config, skal lave de samme checks for extension der laver det
         PackedApplicationTemplate<H> t = (PackedApplicationTemplate<H>) template;
@@ -69,6 +80,10 @@ public interface ApplicationRepository<I, H extends ApplicationHandle<I, ?>> {
             throw new UnsupportedOperationException("Does not support application templates of Void.class guest type");
         }
         return ApplicationRepositoryHandle.install(t, ExtensionSetup.crack(extension), ExtensionSetup.crack(extension).container.assembly);
+    }
+
+    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<A, H> install(BaseExtensionPoint point) {
+        throw new UnsupportedOperationException();
     }
 
     static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<A, H> provide(ApplicationTemplate<H> template, BaseExtension extension) {

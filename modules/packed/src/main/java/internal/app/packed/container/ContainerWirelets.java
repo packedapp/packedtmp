@@ -16,7 +16,7 @@
 package internal.app.packed.container;
 
 import internal.app.packed.container.wirelets.InternalBuildWirelet;
-import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
+import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
 /**
  *

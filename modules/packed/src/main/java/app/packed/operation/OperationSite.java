@@ -25,14 +25,28 @@ import app.packed.context.Context;
  */
 public interface OperationSite {
     Class<?> beanClass();
+
     ComponentPath beanComponentPath();
+
     String beanName();
+
     ComponentPath containerComponentPath();
+
     String containerName();
+
     String containerPath();
+
     Set<? extends Context<?>> contexts();
+
+    /** {@return the component path of the operation} */
     ComponentPath operationComponentPath();
+
+    /** {@return the name of the operation} */
     String operationName();
 
-    Set<String> tags();
+    /** {@return the (component) tags that are on the operation} */
+    Set<String> operationTags();
 }
+// OperationType?????? Hmmm
+
+record OperationPriority(OperationSite site, int priority) {}

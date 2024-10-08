@@ -22,15 +22,12 @@ import java.lang.reflect.Modifier;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import app.packed.bean.BeanFactoryConfiguration;
-import app.packed.bean.BeanFactoryMirror;
 import app.packed.bean.BeanKind;
-import app.packed.bean.CannotDeclareInstanceMemberException;
+import app.packed.bean.scanning.CannotDeclareInstanceMemberException;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationInstaller;
-import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
@@ -113,26 +110,5 @@ public non-sealed class PackedOperationInstaller extends PackedComponentInstalle
 
         OperationSetup os = installer.newOperation((Function) configurationCreator);
         return os;
-    }
-
-    /** A bean handle for a factory method. */
-    public static final class BeanFactoryOperationHandle extends OperationHandle<BeanFactoryConfiguration> {
-
-        /**
-         * @param installer
-         */
-        public BeanFactoryOperationHandle(OperationInstaller installer) {
-            super(installer);
-        }
-
-        @Override
-        protected BeanFactoryConfiguration newOperationConfiguration() {
-            return new BeanFactoryConfiguration(this);
-        }
-
-        @Override
-        protected OperationMirror newOperationMirror() {
-            return new BeanFactoryMirror(this);
-        }
     }
 }

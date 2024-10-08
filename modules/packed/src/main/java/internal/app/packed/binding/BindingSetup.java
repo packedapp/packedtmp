@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Supplier;
 
-import app.packed.binding.BindingMirror;
 import app.packed.binding.BindingKind;
+import app.packed.binding.BindingMirror;
 import app.packed.build.BuildActor;
 import app.packed.component.ComponentPath;
 import app.packed.util.Nullable;

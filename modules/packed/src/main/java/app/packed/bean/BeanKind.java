@@ -77,7 +77,7 @@ public enum BeanKind {
      * Since static beans are stateless, they have no lifecycle as lifecycles are always bound to a bean instance.
      * <p>
      * Trying to use lifecycle annotations such as {@link Inject} or {@link OnStart} will fail with a
-     * {@link BeanInstallationException}.
+     * {@link app.packed.bean.lifecycle.UnsupportedLifecycleException}.
      * <p>
      * Constructors are never scanned when creating static beans, and therefore never validated for correctness.
      * <p>
@@ -86,6 +86,8 @@ public enum BeanKind {
      *
      * @see BaseExtension#installStatic(Class)
      **/
+    // I think we should add a Functional Bean
+    // A static bean always has its containers lifetime as its lifetime
     STATIC,
 
     /**

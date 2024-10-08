@@ -36,7 +36,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
     final boolean ignoreReturn;
 
-    final MethodType methodType;
+    public final MethodType methodType;
 
     PackedOperationTemplate(Map<Class<? extends Context<?>>, PackedContextTemplate> contexts, int extensionContext, int beanInstanceIndex,
             MethodType methodType, boolean ignoreReturn) {

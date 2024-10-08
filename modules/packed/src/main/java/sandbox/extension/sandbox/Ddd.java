@@ -24,17 +24,17 @@ import java.lang.annotation.Target;
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.BeanElement.BeanMethod;
 import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.lifecycle.Initialize;
+import app.packed.bean.lifecycle.LifecycleDependantOrder;
+import app.packed.bean.scanning.BeanElement.BeanMethod;
+import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerTemplate;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
-import app.packed.lifecycle.OnInitialize;
-import app.packed.operation.OperationDependencyOrder;
 
 /**
  *
@@ -90,7 +90,7 @@ public class Ddd extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void onAnnotatedMethod(Annotation hooks, BeanMethod on) {
+                public void onAnnotatedMethod(BeanMethod on, Annotation hooks) {
                     // base().runOnBeanInject(on.newDelegatingOperation());
 
                     // base().runOnBeanInject(on.newOperation());
@@ -109,12 +109,12 @@ public class Ddd extends BaseAssembly {
          * @return whether or not the annotated method should be run before or after dependencies in the same lifetime are
          *         initialized.
          */
-        OperationDependencyOrder ordering() default OperationDependencyOrder.BEFORE_DEPENDENCIES;
+        LifecycleDependantOrder ordering() default LifecycleDependantOrder.BEFORE_DEPENDANTS;
     }
 
     public static class Oi {
 
-        @OnInitialize
+        @Initialize
         public void onInit() {
             System.out.println("ASDASD");
         }

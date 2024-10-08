@@ -6,13 +6,14 @@ module app.packed {
     exports app.packed.application;
     exports app.packed.assembly;
     exports app.packed.bean;
+    exports app.packed.bean.lifecycle;
+    exports app.packed.bean.scanning;
     exports app.packed.binding;
     exports app.packed.build;
     exports app.packed.component;
     exports app.packed.container;
     exports app.packed.context;
     exports app.packed.extension;
-    exports app.packed.lifecycle;
     exports app.packed.lifetime;
     exports app.packed.namespace;
     exports app.packed.operation;

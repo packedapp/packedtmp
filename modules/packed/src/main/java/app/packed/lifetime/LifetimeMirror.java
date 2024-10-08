@@ -1,18 +1,16 @@
 package app.packed.lifetime;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
 import app.packed.build.BuildMirror;
 import app.packed.extension.Extension;
-import app.packed.lifecycle.LifecycleKind;
 import app.packed.operation.CompositeOperationMirror;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.lifetime.LifetimeSetup;
+import internal.app.packed.lifecycle.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -34,7 +32,8 @@ import internal.app.packed.operation.OperationSetup;
 
 // Lifetime == Scope????
 
-public abstract sealed class LifetimeMirror implements BuildMirror permits BeanLifetimeMirror, ContainerLifetimeMirror {
+// What about OperationLifetimeMirror????
+public abstract sealed class LifetimeMirror implements BuildMirror permits BeanLifetimeMirror, RegionalLifetimeMirror {
 
     /**
      * If the lifetime has any entry points. This method returns the extension that is responsible for choosing the right
@@ -58,25 +57,8 @@ public abstract sealed class LifetimeMirror implements BuildMirror permits BeanL
      * An entry point may be located in a child lifetime of this lifetime. In which case the child lifetime is created on
      * the condition that the particular entry point is taken.
      */
-    public final Collection<OperationMirror> entryPoints() {
-        return lifetime().entryPoints().stream().map(OperationSetup::mirror).collect(Collectors.toUnmodifiableList());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final boolean equals(Object other) {
-        return this == other || other instanceof LifetimeMirror m && lifetime() == m.lifetime();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final int hashCode() {
-        return lifetime().hashCode();
-    }
-
-    /** {@return the lifetime kind.} */
-    public final LifecycleKind kind() {
-        return lifetime().lifetimeKind();
+    public final Stream<OperationMirror> entryPoints() {
+        return lifetime().entryPoints().stream().map(OperationSetup::mirror);
     }
 
     abstract LifetimeSetup lifetime();
@@ -100,7 +82,7 @@ public abstract sealed class LifetimeMirror implements BuildMirror permits BeanL
     }
 
     /** {@return any parent lifetime this lifetime is contained within.} */
-    public abstract Optional<ContainerLifetimeMirror> parent();
+    public abstract Optional<RegionalLifetimeMirror> parent();
 
     /**
      * If the lifetime needs to produce a result.

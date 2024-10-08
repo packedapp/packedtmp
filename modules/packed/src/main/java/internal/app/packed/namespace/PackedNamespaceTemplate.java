@@ -15,14 +15,17 @@
  */
 package internal.app.packed.namespace;
 
+import java.util.function.Function;
+
 import app.packed.namespace.NamespaceHandle;
+import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceTemplate;
 
 /**
  *
  */
 
-public record PackedNamespaceTemplate(Class<? extends NamespaceHandle<?, ?>> handleClass)implements NamespaceTemplate
-{
+public record PackedNamespaceTemplate<H extends NamespaceHandle<?, ?>>(Class<? extends NamespaceHandle<?, ?>> handleClass,
+        Function<? super NamespaceInstaller<?>, H> newHandle) implements NamespaceTemplate<H> {
 
 }

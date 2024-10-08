@@ -29,18 +29,18 @@ import internal.app.packed.binding.BindingAccessor.FromInvocationArgument;
 import internal.app.packed.binding.BindingAccessor.FromLifetimeArena;
 import internal.app.packed.binding.BindingAccessor.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
-import internal.app.packed.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
 import internal.app.packed.util.types.ClassUtil;
 
 /**
  *
  */
-final class OperationCodeGenerator {
+public final class OperationCodeGenerator {
 
     private final ArrayList<Integer> permuters = new ArrayList<>();
 
-    MethodHandle generate(OperationSetup operation, MethodHandle initial) {
+    public MethodHandle generate(OperationSetup operation, MethodHandle initial) {
         MethodHandle mh = initial;
         // debug("%s: %s -> %s", operation.bean.path(), initial.type(), operation.template.invocationType());
 
@@ -102,7 +102,7 @@ final class OperationCodeGenerator {
             permuters.add(c.argumentIndex());
             return mh;
         } else if (p instanceof FromOperationResult fo) {
-            MethodHandle methodHandle = fo.operation().generateMethodHandle();
+            MethodHandle methodHandle = fo.operation().handle().generateMethodHandle();
 
             mh = MethodHandles.collectArguments(mh, permuters.size(), methodHandle);
             for (int j = 0; j < methodHandle.type().parameterCount(); j++) {

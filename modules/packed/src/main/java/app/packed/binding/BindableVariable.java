@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanElement;
 import app.packed.bean.BeanInstallationException;
+import app.packed.bean.scanning.BeanElement;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;

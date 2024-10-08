@@ -10,7 +10,6 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.build.action.BuildActionable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
-import app.packed.lifecycle.LifecycleKind;
 import app.packed.util.Nullable;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.util.types.ClassUtil;
@@ -52,8 +51,15 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
     @Override
     @BuildActionable("container.addTags")
     public ComponentConfiguration componentTag(String... tags) {
+        checkIsConfigurable();
         handle.componentTag(tags);
         return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final Set<String> componentTags() {
+        return handle.componentTags();
     }
 
     /**
@@ -63,7 +69,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      * @see BaseAssembly#extensionsTypes()
      * @see ContainerMirror#extensionsTypes()
      */
-    public Set<Class<? extends Extension<?>>> extensionTypes() {
+    public final Set<Class<? extends Extension<?>>> extensionTypes() {
         return handle.container.extensionTypes();
     }
 
@@ -73,11 +79,11 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
         return handle;
     }
 
-    public boolean isApplicationRoot() {
+    public final boolean isApplicationRoot() {
         return handle.container.isApplicationRoot();
     }
 
-    public boolean isAssemblyRoot() {
+    public final boolean isAssemblyRoot() {
         return handle.container.isAssemblyRoot();
     }
 
@@ -91,12 +97,8 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      * @implNote Packed does not perform detailed tracking on which extensions use other extensions. As a consequence it
      *           cannot give a more detailed answer about who is using a particular extension
      */
-    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
+    public final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return handle.container.isExtensionUsed(extensionType);
-    }
-
-    public LifecycleKind lifetimeKind() {
-        return handle.container.lifetime.lifetimeKind();
     }
 
     /**
@@ -149,7 +151,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      *            the type of wirelet to select
      * @return A wirelet selection
      */
-    public <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
+    public final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
         ClassUtil.checkProperSubclass(Wirelet.class, wireletClass, "wireletClass");
         return handle.container.selectWireletsUnsafe(wireletClass);
     }
@@ -179,14 +181,8 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      * @see BaseAssembly#use(Class)
      */
     @BuildActionable("container.installExtension")
-    public <E extends Extension<?>> E use(Class<E> extensionClass) {
+    public final <E extends Extension<?>> E use(Class<E> extensionClass) {
         ExtensionSetup extension = handle.container.useExtension(extensionClass, null);
         return extensionClass.cast(extension.instance());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Set<String> componentTags() {
-        return handle.componentTags();
     }
 }

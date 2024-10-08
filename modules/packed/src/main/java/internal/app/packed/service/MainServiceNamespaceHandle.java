@@ -32,7 +32,7 @@ import app.packed.service.ServiceLocator;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingAccessor;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationTarget;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
@@ -43,7 +43,8 @@ import internal.app.packed.service.util.SequencedServiceMap;
 public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
 
     /** The default namespace template used for the service namespace. */
-    public static NamespaceTemplate TEMPLATE = NamespaceTemplate.of(MainServiceNamespaceHandle.class, c -> {});
+    public static NamespaceTemplate<MainServiceNamespaceHandle> TEMPLATE = NamespaceTemplate.of(MainServiceNamespaceHandle.class,
+            MainServiceNamespaceHandle::new, c -> {});
 
     // All provided services are automatically exported
     public boolean exportAll;
@@ -56,12 +57,15 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
     public final SequencedServiceMap<ExportedService> exports = new SequencedServiceMap<>();
 
     @Nullable
-    public final MainServiceNamespaceHandle parent;
+    MainServiceNamespaceHandle parent;
 
-    public MainServiceNamespaceHandle(NamespaceInstaller installer, @Nullable MainServiceNamespaceHandle parent, ContainerSetup container) {
+    public MainServiceNamespaceHandle(NamespaceInstaller<?> installer) {
         super(installer);
         // For now we a ServiceLocator as the root of the application.
         // Bridges
+    }
+
+    public void init(@Nullable MainServiceNamespaceHandle parent, ContainerSetup container) {
         this.parent = parent;
 
         if (container != null && container.isApplicationRoot()) {
@@ -101,7 +105,7 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
             } else if (accessor >= 0) {
                 mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, accessor);
             } else {
-                mh = o.generateMethodHandle();
+                mh = o.handle().generateMethodHandle();
             }
             mh = mh.asType(mh.type().changeReturnType(Object.class));
             assert (mh.type().equals(MethodType.methodType(Object.class, ExtensionContext.class)));

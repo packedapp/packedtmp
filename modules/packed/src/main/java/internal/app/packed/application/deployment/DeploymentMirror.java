@@ -26,7 +26,6 @@ import app.packed.container.ContainerMirror;
 import app.packed.context.ContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.util.TreeView;
 
 /**
@@ -84,10 +83,6 @@ public class DeploymentMirror implements BuildMirror {
 
     // Er som udgangspunkt "syntetisk" og alt information er ikke med
     public ApplicationMirror hostApplication() {
-        throw new UnsupportedOperationException();
-    }
-
-    public TreeView<ContainerLifetimeMirror> lifetimes() {
         throw new UnsupportedOperationException();
     }
 

@@ -48,8 +48,8 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
     /** The namespace configuration. */
     final NamespaceSetup namespace;
 
-    protected NamespaceHandle(NamespaceInstaller installer) {
-        this.namespace = ((PackedNamespaceInstaller) installer).toHandle();
+    protected NamespaceHandle(NamespaceInstaller<?> installer) {
+        this.namespace = requireNonNull(((PackedNamespaceInstaller<?>) installer).toHandle());
     }
 
     /** {@return the root extension of this domain.} */
@@ -58,20 +58,20 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
         return (E) namespace.root.root().instance();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final ComponentPath componentPath() {
-        return namespace.componentPath();
-    }
-
     public final BuildActor componentOwner() {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
+    public final ComponentPath componentPath() {
+        return namespace.componentPath();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public final void componentTag(String... tags) {
-        checkIsConfigurable();
+        checkHandleIsConfigurable();
         namespace.container().application.componentTags.addComponentTags(namespace, tags);
     }
 
@@ -98,8 +98,14 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
 
     /** {@inheritDoc} */
     @Override
-    public final boolean isConfigurable() {
-        return namespace.root.container.handle().isConfigurable();
+    public final boolean isConfigurationConfigurable() {
+        return namespace.root.container.handle().isHandleConfigurable();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean isHandleConfigurable() {
+        return namespace.root.container.handle().isHandleConfigurable();
     }
 
     public final boolean isInApplicationLifetime(Extension<?> extension) {

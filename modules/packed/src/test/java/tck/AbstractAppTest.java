@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.AfterEach;
@@ -45,7 +46,7 @@ import internal.app.packed.application.PackedApplicationTemplate.ApplicationInst
 import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
-import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
+import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 import tck.AbstractAppTest.InternalTestState.State1Setup;
 import tck.AbstractAppTest.InternalTestState.State2Building;
 import tck.AbstractAppTest.InternalTestState.State3Build;
@@ -213,8 +214,8 @@ abstract class AbstractAppTest<A> {
 
         final class State2Building implements InternalTestState, ApplicationInstallingSource {
             public static final MethodHandle EMPTY_MH = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
-            static final PackedApplicationTemplate<?> PAT = new PackedApplicationTemplate<>(Void.class, ApplicationHandle.class, ApplicationHandle::new,
-                    new PackedContainerTemplate<>(PackedContainerKind.BOOTSTRAP_APPLICATION));
+            static final PackedApplicationTemplate<?> PAT = new PackedApplicationTemplate<>(Void.class, null, ApplicationHandle.class, ApplicationHandle::new,
+                    new PackedContainerTemplate<>(PackedContainerKind.BOOTSTRAP_APPLICATION), Set.of());
             final AssemblySetup assembly;
 
             final PackedApplicationInstaller<?> b;

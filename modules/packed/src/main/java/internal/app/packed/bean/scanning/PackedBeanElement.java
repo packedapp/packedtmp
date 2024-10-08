@@ -15,7 +15,7 @@
  */
 package internal.app.packed.bean.scanning;
 
-import app.packed.bean.BeanElement;
+import app.packed.bean.scanning.BeanElement;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.PackedBindableVariable;
 

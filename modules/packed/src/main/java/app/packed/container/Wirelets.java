@@ -18,8 +18,8 @@ package app.packed.container;
 import java.util.function.Function;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.bean.lifecycle.BeanLifecycleKind;
 import app.packed.context.Context;
-import app.packed.lifecycle.LifecycleKind;
 import app.packed.runtime.StopOption;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.wirelets.InternalBuildWirelet;
@@ -68,7 +68,7 @@ public final class Wirelets {
     }
 
     // Should probably be a lifetime wirelet
-    public static Wirelet conditionalOnApplicationLifetimeKind(LifecycleKind kind, Wirelet w) {
+    public static Wirelet conditionalOnApplicationLifetimeKind(BeanLifecycleKind kind, Wirelet w) {
         throw new UnsupportedOperationException();
     }
 
@@ -183,6 +183,7 @@ public final class Wirelets {
     // Multiple shutdown hooks? I don't think we should do any checks.
     // Problem is if we have ApplicationConfiguration.installShutdownHook()
     // And CliApp uses a wirelet at the same time
+    // Maybe only ApplicationConfiguration,
     public static Wirelet shutdownHook(StopOption... options) {
         // https://www.baeldung.com/spring-boot-shutdown
         return shutdownHook(r -> new Thread(r), options);

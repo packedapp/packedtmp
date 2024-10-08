@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.bean.InaccessibleBeanMemberException;
+import app.packed.bean.scanning.InaccessibleBeanMemberException;
 import app.packed.util.Nullable;
 import internal.app.packed.operation.PackedOp;
 

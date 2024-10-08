@@ -21,10 +21,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.BeanTrigger.AnnotatedFieldBeanTrigger;
-import app.packed.bean.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.AnnotatedFieldBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.extension.BaseExtension;
-import app.packed.namespace.sandbox.NamespaceAnnotation;
+import app.packed.namespace.sandbox.NamespaceMetaAnnotation;
 
 /**
  * An annotation indicating that an annotated method or field on a bean provides a service to the container in which the
@@ -54,11 +54,13 @@ import app.packed.namespace.sandbox.NamespaceAnnotation;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@NamespaceAnnotation
+@NamespaceMetaAnnotation
 @AnnotatedMethodBeanTrigger(extension = BaseExtension.class, allowInvoke = true)
 @AnnotatedFieldBeanTrigger(extension = BaseExtension.class, allowGet = true)
 // Hvis vi laver meta annoteringen, skal vi jo naesten lave den om til en repeatable..
 // Syntes godt man maa smide flere pa
 public @interface Provide {
-    String namespace() default NamespaceAnnotation.DEFAULT_NAMESPACE;
+    // What about extensions? There name is FooExtension#main
+    // Maybe just have it empty? and then ->Main | FooExtension#Main
+    String namespace() default NamespaceMetaAnnotation.DEFAULT_NAMESPACE;
 }

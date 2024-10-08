@@ -27,7 +27,6 @@ import app.packed.application.ApplicationInstaller;
 import app.packed.assembly.Assembly;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
-import app.packed.lifecycle.LifecycleKind;
 import app.packed.util.Nullable;
 import internal.app.packed.build.PackedBuildProcess;
 import internal.app.packed.component.PackedComponentInstaller;
@@ -35,7 +34,7 @@ import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.util.ThrowableUtil;
 
-/** Implementation of {@link ApplicationTemplate.Installer}. */
+/** Implementation of {@link ApplicationInstaller}. */
 public final class PackedApplicationInstaller<H extends ApplicationHandle<?, ?>>
         extends PackedComponentInstaller<ApplicationSetup, PackedApplicationInstaller<H>> implements ApplicationInstaller<H> {
 
@@ -48,11 +47,11 @@ public final class PackedApplicationInstaller<H extends ApplicationHandle<?, ?>>
     // I would like to time stuff. But I have no idea on how to do it reliable with all the laziness
     long creationNanos;
 
+    public final boolean isManaged;
+
     // This is the guest bean that is created
     @Nullable
     public final MethodHandle launcher;
-
-    public final LifecycleKind lk;
 
     public String name = UUID.randomUUID().toString();
 
@@ -65,7 +64,7 @@ public final class PackedApplicationInstaller<H extends ApplicationHandle<?, ?>>
 
     PackedApplicationInstaller(PackedApplicationTemplate<?> template, @Nullable MethodHandle launcher, BuildGoal goal) {
         this.template = template;
-        this.lk = template.containerTemplate().lifecycleKind();
+        this.isManaged = template.containerTemplate().isManaged();
         this.containerInstaller = new PackedContainerInstaller<>(template.containerTemplate(), this, null, null);
         this.buildProcess = new PackedBuildProcess(this, goal);
         this.launcher = launcher;

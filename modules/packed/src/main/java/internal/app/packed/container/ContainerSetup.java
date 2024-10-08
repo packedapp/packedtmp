@@ -48,7 +48,7 @@ import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionHandle;
-import internal.app.packed.lifetime.ContainerLifetimeSetup;
+import internal.app.packed.lifecycle.lifetime.RegionalLifetimeSetup;
 import internal.app.packed.service.MainServiceNamespaceHandle;
 import internal.app.packed.util.AbstractNamedTreeNode;
 import internal.app.packed.util.handlers.BeanHandlers;
@@ -84,9 +84,10 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
     final boolean ignoreRename;
 
     /** The lifetime the container is a part of. */
-    public final ContainerLifetimeSetup lifetime;
+    public final RegionalLifetimeSetup lifetime;
 
     /** The container's service manager. */
+    // Maybe replace with ContainerServiceSetup. Where all the logic is.
     private MainServiceNamespaceHandle sm;
 
     public final PackedContainerTemplate<?> template;
@@ -108,7 +109,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         if (installer.template.kind() == PackedContainerKind.PARENT_LIFETIME) {
             this.lifetime = installer.parent.lifetime;
         } else {
-            this.lifetime = new ContainerLifetimeSetup(installer, this, null);
+            this.lifetime = new RegionalLifetimeSetup(installer, this, null);
         }
         // If a name has been set using a wirelet, we ignore calls to #named(String)
         this.ignoreRename = installer.nameFromWirelet != null || installer.isFromAssembly;
@@ -321,9 +322,8 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         MainServiceNamespaceHandle s = sm;
         if (s == null) {
             ExtensionHandle<BaseExtension> eh = new PackedExtensionHandle<>(base());
-            s = this.sm = eh.namespaceLazy(MainServiceNamespaceHandle.TEMPLATE, "main", inst -> {
-                return inst.install(ii -> new MainServiceNamespaceHandle(inst, null, this));
-            });
+            s = this.sm = eh.namespaceLazy(MainServiceNamespaceHandle.TEMPLATE, "main");
+            s.init(null, this);
         }
         return s;
     }

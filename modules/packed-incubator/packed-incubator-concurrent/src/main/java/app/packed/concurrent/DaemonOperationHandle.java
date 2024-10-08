@@ -16,7 +16,6 @@
 package app.packed.concurrent;
 
 import app.packed.operation.OperationInstaller;
-import internal.app.packed.concurrent.ScheduledDaemon;
 
 /** An operation handle for a daemon operation. */
 final class DaemonOperationHandle extends ThreadedOperationHandle<DaemonOperationConfiguration> {
@@ -39,9 +38,5 @@ final class DaemonOperationHandle extends ThreadedOperationHandle<DaemonOperatio
     @Override
     public DaemonOperationMirror newOperationMirror() {
         return new DaemonOperationMirror(this);
-    }
-
-    ScheduledDaemon schedule() {
-        return new ScheduledDaemon(useVirtual, generateMethodHandle());
     }
 }

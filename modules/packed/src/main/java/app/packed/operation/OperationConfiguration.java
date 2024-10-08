@@ -59,6 +59,7 @@ public non-sealed class OperationConfiguration extends ComponentConfiguration {
      *             to use at runtime using service locator?
      */
     public <K> OperationConfiguration bindServiceInstance(Key<K> key, K instance) {
+        checkIsConfigurable();
         return this;
     }
 
@@ -66,6 +67,7 @@ public non-sealed class OperationConfiguration extends ComponentConfiguration {
     /** {@inheritDoc} */
     @Override
     public OperationConfiguration componentTag(String... tags) {
+        checkIsConfigurable();
         handle.componentTag(tags);
         return this;
     }
@@ -82,14 +84,15 @@ public non-sealed class OperationConfiguration extends ComponentConfiguration {
         return handle;
     }
 
-    public OperationConfiguration named(String name) {
-        handle.named(name);
-        return this;
+    /** {@return the extension that operates the operation} */
+    public final Class<? extends Extension<?>> installerByExtension() {
+        return handle.installerByExtension();
     }
 
-    /** {@return the extension that operates the operation} */
-    public final Class<? extends Extension<?>> operator() {
-        return handle.operator();
+    public OperationConfiguration named(String name) {
+        checkIsConfigurable();
+        handle.named(name);
+        return this;
     }
 
     OperationConfiguration runBefore(Runnable runnable) {

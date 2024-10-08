@@ -2,7 +2,7 @@ package internal.app.packed.extension;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.bean.BeanIntrospector;
+import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.build.BuildActor;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
@@ -187,9 +187,8 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
             MainServiceNamespaceHandle par = treeParent == null ? null : treeParent.services();
             ExtensionHandle<BaseExtension> eh = new PackedExtensionHandle<>(container.base());
 
-            s = this.sm = eh.namespaceLazy(MainServiceNamespaceHandle.TEMPLATE, extensionType.getSimpleName() + "#main", inst -> {
-                return inst.install(ii -> new MainServiceNamespaceHandle(ii, par, container));
-            });
+            s = this.sm = eh.namespaceLazy(MainServiceNamespaceHandle.TEMPLATE, extensionType.getSimpleName() + "#main");
+            s.init(par, container);
         }
         return s;
     }
@@ -221,7 +220,8 @@ public final class ExtensionSetup extends AuthoritySetup<ExtensionSetup> impleme
      *            the extension that requested the extension or null if user
      * @return the new extension
      */
-    public static ExtensionSetup newExtension(Class<? extends Extension<?>> extensionType, ContainerSetup container, @Nullable ExtensionSetup requestedByExtension) {
+    public static ExtensionSetup newExtension(Class<? extends Extension<?>> extensionType, ContainerSetup container,
+            @Nullable ExtensionSetup requestedByExtension) {
         // Install the extension recursively into all container ancestors in the same application (if not already installed)
         ExtensionSetup extensionParent = container.isApplicationRoot() ? null : container.treeParent.useExtension(extensionType, requestedByExtension);
 

@@ -32,11 +32,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-import app.packed.bean.BeanElement.BeanField;
-import app.packed.bean.BeanElement.BeanMethod;
-import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanTrigger.AnnotatedFieldBeanTrigger;
-import app.packed.bean.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.scanning.BeanElement.BeanField;
+import app.packed.bean.scanning.BeanElement.BeanMethod;
+import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.scanning.BeanTrigger.AnnotatedFieldBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.binding.Key;
 import app.packed.binding.UnwrappedBindableVariable;
 import app.packed.context.Context;
@@ -78,9 +78,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
         ink.putIfAbsent(name, oh);
 
         base().installIfAbsent(HookBean.class, b -> {
-            b.bindCodeGenerator(new Key<Map<String, MethodHandle>>() {}, () -> {
-                return CollectionUtil.copyOf(ink, v -> v.generateMethodHandle());
-            });
+            b.bindServiceInstance(new Key<Map<String, MethodHandle>>() {}, CollectionUtil.copyOf(ink, v -> v.methodHandle()));
         });
     }
 
@@ -99,20 +97,20 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
             }
 
             @Override
-            public void onAnnotatedField(AnnotationList hooks, BeanField field) {
+            public void onAnnotatedField(BeanField field, AnnotationList hooks) {
                 if (onAnnotatedField != null) {
                     onAnnotatedField.accept(hooks, field);
                 } else {
-                    super.onAnnotatedField(hooks, field);
+                    super.onAnnotatedField(field, hooks);
                 }
             }
 
             @Override
-            public void onAnnotatedMethod(AnnotationList hooks, BeanMethod method) {
+            public void onAnnotatedMethod(BeanMethod method, AnnotationList hooks) {
                 if (onAnnotatedMethod != null) {
                     onAnnotatedMethod.accept(hooks, method);
                 } else {
-                    super.onAnnotatedMethod(hooks, method);
+                    super.onAnnotatedMethod(method, hooks);
                 }
             }
         };

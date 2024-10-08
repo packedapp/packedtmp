@@ -15,6 +15,7 @@
  */
 package app.packed.bean;
 
+import app.packed.bean.scanning.BeanClassMutator;
 import app.packed.build.hook.BuildHook;
 
 /**

@@ -29,7 +29,11 @@ import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
+import app.packed.util.Nullable;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.PackedBindableVariable;
+import internal.app.packed.operation.LazyMethodHandle;
+import internal.app.packed.operation.OperationCodeGenerator;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
 
@@ -100,6 +104,13 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
 
     /** The lazy generated operation configuration. */
     private C configuration;
+
+    /** The generated method handle. */
+    @Nullable
+    private MethodHandle generatedMethodHandle;
+
+    @Nullable
+    private LazyMethodHandle lmh;
 
     /** The lazy generated operation mirror. */
     private OperationMirror mirror;
@@ -178,7 +189,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     /** {@inheritDoc} */
     @Override
     public final void componentTag(String... tags) {
-        checkIsConfigurable();
+        checkHandleIsConfigurable();
         operation.bean.container.application.componentTags.addComponentTags(operation, tags);
     }
 
@@ -189,6 +200,16 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
             c = configuration = newOperationConfiguration();
         }
         return c;
+    }
+
+    /**
+     * Called by the framework to mark the bean as no longer be configurable.
+     *
+     * @see internal.app.packed.util.handlers.BeanHandlers#invokeBeanHandleDoClose(BeanHandle)
+     */
+    final void doClose() {
+        onClose();
+        // isConfigurable = false;
     }
 
     /**
@@ -203,14 +224,21 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
      * @throws IllegalStateException
      *             if called before the code generating phase of the application.
      */
-    public final MethodHandle generateMethodHandle() {
-        return operation.generateMethodHandle();
+    public MethodHandle generateMethodHandle() {
+        // Maybe have a check here instead, and specifically mention generateMethodHandle when calling
+        BeanSetup bean = operation.bean;
+        bean.container.application.checkInCodegenPhase();
+        MethodHandle mh = generatedMethodHandle;
+        if (mh == null) {
+            mh = generatedMethodHandle = new OperationCodeGenerator().generate(operation, operation.target.methodHandle());
+        }
+        assert (mh.type() == operation.template.methodType);
+        return mh;
     }
 
-    /** {@inheritDoc} */
-    public final void generateMethodHandleOnCodegen(Consumer<? super MethodHandle> assigner) {
-        checkIsConfigurable();
-        operation.bean.container.application.addCodegenAction(() -> assigner.accept(generateMethodHandle()));
+    /** {@return the operator of the operation.} */
+    public final Class<? extends Extension<?>> installerByExtension() {
+        return operation.installedByExtension.extensionType;
     }
 
     /**
@@ -227,11 +255,27 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
 
     /** {@inheritDoc} */
     @Override
-    public final boolean isConfigurable() {
+    public final boolean isConfigurationConfigurable() {
+        return operation.installedByExtension.isConfigurable();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean isHandleConfigurable() {
         // Hah der er forskel paa handle og configuration
         // Fordi configuration kan tilgaas af brugeren.
         // Det er jo faktisk det samme som for en bean...
         return operation.installedByExtension.isConfigurable();
+    }
+
+    public final MethodHandle methodHandle() {
+        LazyMethodHandle l = lmh;
+        if (l == null) {
+            checkHandleIsConfigurable();
+            l = lmh = new LazyMethodHandle(operation, operation.template.methodType);
+            // If eager codegen .addToSomeQueue
+        }
+        return l.methodHandle();
     }
 
     /** {@inheritDoc} */
@@ -249,7 +293,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
 
     public final void named(String name) {
         requireNonNull(name, "name is null");
-        checkIsConfigurable();
+        checkHandleIsConfigurable();
         operation.namePrefix = name;
     }
 
@@ -262,10 +306,19 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
         return new OperationMirror(this);
     }
 
-    /** {@return the operator of the operation.} */
-    public final Class<? extends Extension<?>> operator() {
-        return operation.installedByExtension.extensionType;
-    }
+    /**
+     * Called by the framework when the bean is marked as no longer configurable.
+     * <p>
+     * This handle will be {@link #isConfigurable()} while calling this method, but marked as non configurable immediately
+     * after.
+     * <p>
+     * For beans owned by the user, this method will be called when the owning assembly is closed. For beans owned by an
+     * application, this method will be called when the application closes.
+     * <p>
+     * The framework may call this method for all beans owned by the same authority in any order within the same
+     * assembly/application (Ideen er bare at smide dem i en liste)
+     */
+    protected void onClose() {}
 
     /** {@return the target of this operation.} */
     public final OperationTarget target() {

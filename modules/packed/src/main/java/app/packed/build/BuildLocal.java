@@ -28,8 +28,7 @@ import internal.app.packed.build.PackedBuildLocal;
  * <p>
  * What about ISE do we support valid points you can use a local???
  * <p>
- * Can I set a build local whenever I want or ISE????
- * I would say no, but then again...
+ * Can I set a build local whenever I want or ISE???? I would say no, but then again...
  *
  * <p>
  * Build locals are only intended to be used by secure code. Hence there is no support for checking the values that are
@@ -38,8 +37,8 @@ import internal.app.packed.build.PackedBuildLocal;
  * Component locals are only intended to be used at build time. If you need to share state at runtime the right way to
  * do so is by installing a shared bean of some kind
  * <p>
- * Notice: Build locals do do not cache errors thrown from initial suppliers... These are intended to not be handled
- * at build-time. Naah, tror vi gemmer them...
+ * Notice: Build locals do do not cache errors thrown from initial suppliers... These are intended to not be handled at
+ * build-time. Naah, tror vi gemmer them...
  */
 
 // Adopt method naming from ComputedConstant
@@ -49,9 +48,12 @@ import internal.app.packed.build.PackedBuildLocal;
 //// Locals are rarely used by application developers, wirelets are
 //// Locals are build only , wirelets are both build and
 
-
 // Or ComponentLocal. Depends on where we end of with Authority, Assembly, and so on
 // BuildProcessLocal???
+// Operation makes no sense-> Because we must have an operation handle
+// Namespace same
+// The others are maybe okay.
+// Probably ContainerLocal mostly for communication
 public sealed interface BuildLocal<A, T> permits PackedBuildLocal, ApplicationBuildLocal, ContainerBuildLocal, BeanBuildLocal {
 
     /**

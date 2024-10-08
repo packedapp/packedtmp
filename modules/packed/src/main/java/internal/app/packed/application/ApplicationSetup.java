@@ -151,7 +151,7 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
      *             if not in the code generating phase
      */
     public void checkInCodegenPhase() {
-        if (phase != ApplicationBuildPhase.CODEGEN) {
+        if (phase == ApplicationBuildPhase.ASSEMBLE) {
             throw new IllegalStateException("This method can only called in the codegenerating phase, current state = " + phase);
         }
     }

@@ -17,9 +17,9 @@ package internal.app.packed.application;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.lifecycle.OnInitialize;
-import app.packed.lifecycle.OnStart;
-import app.packed.lifecycle.OnStop;
+import app.packed.bean.lifecycle.Initialize;
+import app.packed.bean.lifecycle.Start;
+import app.packed.bean.lifecycle.Stop;
 import app.packed.runtime.RunState;
 
 /**
@@ -42,20 +42,20 @@ public class AaaTest extends BaseAssembly {
 
     public static class TB {
 
-        @OnInitialize
+        @Initialize
         public void init() {
             System.out.println("INIT");
             System.out.println(Thread.currentThread());
         }
 
-        @OnStart
+        @Start
         public void onStart() throws InterruptedException {
             Thread.sleep(1000);
             System.out.println("STARTING");
             System.out.println(Thread.currentThread());
         }
 
-        @OnStop
+        @Stop
         public void onstop() throws InterruptedException {
             Thread.sleep(1000);
             System.out.println("soppping");

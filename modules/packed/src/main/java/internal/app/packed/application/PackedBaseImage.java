@@ -26,6 +26,7 @@ import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import internal.app.packed.ValueBased;
 import internal.app.packed.application.deployment.FutureApplicationSetup;
+import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
 /** Various implementations of {@link BaseImage} */
 public sealed interface PackedBaseImage<A> extends BaseImage<A> {
@@ -83,7 +84,7 @@ public sealed interface PackedBaseImage<A> extends BaseImage<A> {
         /** {@inheritDoc} */
         @Override
         public A launch(RunState state, Wirelet... wirelets) {
-            return handle.launch(state, wirelets);
+            return ApplicationLaunchContext.launch(handle, state, wirelets);
         }
     }
 
@@ -95,7 +96,7 @@ public sealed interface PackedBaseImage<A> extends BaseImage<A> {
         @Override
         public A launch(RunState state, Wirelet... wirelets) {
             ApplicationHandle<?, ?> ah = application.lazyBuild().handle();
-            return (A) ah.launch(state, wirelets);
+            return (A) ApplicationLaunchContext.launch(ah, state, wirelets);
         }
     }
 }

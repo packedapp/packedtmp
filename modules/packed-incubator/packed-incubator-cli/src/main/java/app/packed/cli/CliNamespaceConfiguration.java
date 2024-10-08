@@ -18,6 +18,7 @@ package app.packed.cli;
 import java.util.function.Consumer;
 
 import app.packed.build.BuildActor;
+import app.packed.namespace.NamespaceBuildHook;
 import app.packed.namespace.NamespaceConfiguration;
 
 /**
@@ -39,5 +40,10 @@ public final class CliNamespaceConfiguration extends NamespaceConfiguration<CliE
         // exten
         throw new UnsupportedOperationException();
     }
+
+    public static NamespaceBuildHook<CliNamespaceConfiguration> pushToNewApplication(boolean inheritExistingConfiguration, Consumer<? super CliNamespaceConfiguration> c) {
+        throw new UnsupportedOperationException();
+    }
+
 
 }

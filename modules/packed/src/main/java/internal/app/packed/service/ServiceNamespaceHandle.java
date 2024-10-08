@@ -49,7 +49,7 @@ public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtensi
     /**
      * @param installer
      */
-    protected ServiceNamespaceHandle(NamespaceInstaller installer) {
+    protected ServiceNamespaceHandle(NamespaceInstaller<?> installer) {
         super(installer);
     }
 

@@ -15,7 +15,6 @@
  */
 package internal.app.packed.application.repository;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
@@ -33,12 +32,6 @@ public final class UnmanagedApplicationRepository<I, H extends ApplicationHandle
      */
     public UnmanagedApplicationRepository(BuildApplicationRepository bar) {
         super(bar);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<ManagedInstance<I>> instance(String name) {
-        throw new UnsupportedOperationException("This repository does not track unamanged application instance");
     }
 
     /** {@inheritDoc} */

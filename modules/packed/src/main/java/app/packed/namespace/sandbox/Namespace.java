@@ -19,7 +19,7 @@ package app.packed.namespace.sandbox;
  *
  */
 
-// Can be applied to val
+// Can be applied to val. Naah
 public @interface Namespace {
 
     String value() default "main";

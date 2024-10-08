@@ -17,7 +17,7 @@ package tck;
 
 import java.lang.reflect.Method;
 
-import app.packed.lifecycle.OnInitialize;
+import app.packed.bean.lifecycle.Initialize;
 import app.packed.lifetime.Main;
 import testutil.MemberFinder;
 import testutil.stubs.Letters.A;
@@ -39,7 +39,7 @@ public class TckBeans {
     public static class NeedsOnInitializeABean {
         public static final Method METHOD = MemberFinder.findMethod("needsA");
 
-        @OnInitialize
+        @Initialize
         public void needsA(A a) {}
     }
 }

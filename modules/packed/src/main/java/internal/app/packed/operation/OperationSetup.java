@@ -17,7 +17,6 @@ package internal.app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,8 +41,8 @@ import internal.app.packed.context.ContextInfo;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedComponentSetup;
 import internal.app.packed.context.PackedContextTemplate;
-import internal.app.packed.entrypoint.EntryPointSetup;
 import internal.app.packed.extension.ExtensionSetup;
+import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointSetup;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceProviderSetup;
@@ -70,10 +69,6 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
 
     @Nullable
     public final EntryPointSetup entryPoint;
-
-    /** The generated method handle. */
-    @Nullable
-    private MethodHandle generatedMethodHandle;
 
     /** The operation's handle. */
     @Nullable
@@ -182,17 +177,6 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         bean.forEachContext(action);
     }
 
-    public MethodHandle generateMethodHandle() {
-        // Maybe have a check here instead, and specifically mention generateMethodHandle when calling
-        bean.container.application.checkInCodegenPhase();
-        MethodHandle mh = generatedMethodHandle;
-        if (mh == null) {
-            mh = generatedMethodHandle = new OperationCodeGenerator().generate(this, methodHandle());
-        }
-        assert (mh.type() == template.methodType);
-        return mh;
-    }
-
     /** {@return the operation's handle} */
     @Override
     public OperationHandle<?> handle() {
@@ -201,11 +185,6 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
             return h;
         }
         throw new IllegalStateException();
-    }
-
-    /** {@return the initial method handle.} */
-    public MethodHandle methodHandle() {
-        return target.methodHandle();
     }
 
     /** {@return the operation's mirror.} */

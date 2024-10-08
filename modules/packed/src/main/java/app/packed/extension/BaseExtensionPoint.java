@@ -11,13 +11,13 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
+import app.packed.bean.lifecycle.LifecycleDependantOrder;
 import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.container.ContainerInstaller;
 import app.packed.container.ContainerTemplate;
 import app.packed.context.ContextTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
-import app.packed.operation.OperationDependencyOrder;
 import app.packed.operation.OperationInstaller;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
@@ -29,7 +29,7 @@ import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionUseSite;
-import internal.app.packed.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
 
 /** An {@link ExtensionPoint extension point} for {@link BaseExtension}. */
 public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
@@ -198,11 +198,11 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
 class unknown {
 
-    public OperationConfiguration runLifecycleOperation(OperationInstaller operation, RunState state, OperationDependencyOrder ordering) {
+    public OperationConfiguration runLifecycleOperation(OperationInstaller operation, RunState state, LifecycleDependantOrder ordering) {
         throw new UnsupportedOperationException();
     }
 
-    public OperationConfiguration runOnBeanInitialization(OperationInstaller operation, OperationDependencyOrder ordering) {
+    public OperationConfiguration runOnBeanInitialization(OperationInstaller operation, LifecycleDependantOrder ordering) {
         requireNonNull(ordering, "ordering is null");
         throw new UnsupportedOperationException();
 //        OperationHandle handle = h.newOperation(OperationTemplate.defaults(), context());

@@ -18,7 +18,7 @@ package internal.app.packed.bean.scanning;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 
-import app.packed.bean.BeanElement.BeanConstructor;
+import app.packed.bean.scanning.BeanElement.BeanConstructor;
 import app.packed.binding.Key;
 import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationTemplate;

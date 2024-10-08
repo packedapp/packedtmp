@@ -19,7 +19,7 @@ import app.packed.container.Wirelet;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
-import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
+import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
 /** Internal wirelets have their logic directly embedded into the wirelet. */
 

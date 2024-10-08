@@ -18,9 +18,9 @@ package sandbox.program;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.assembly.BaseAssembly;
-import app.packed.lifecycle.OnInitialize;
-import app.packed.lifecycle.OnStart;
-import app.packed.lifecycle.OnStop;
+import app.packed.bean.lifecycle.Initialize;
+import app.packed.bean.lifecycle.Start;
+import app.packed.bean.lifecycle.Stop;
 import app.packed.lifetime.Main;
 
 /**
@@ -52,23 +52,23 @@ public class X extends BaseAssembly {
             // System.out.println("New f");
         }
 
-        @OnInitialize
+        @Initialize
         public static void init() {
             System.out.println("Init F");
         }
 
-        @OnStart
+        @Start
       //  @Fork
         public static void start() {
             System.out.println("start F");
         }
 
-        @OnStart(fork = true)
+        @Start(fork = true)
         public static void stardt() {
             System.out.println("start F");
         }
 
-        @OnStop
+        @Stop
         public static void stop() {
             System.out.println("stop F");
         }
@@ -84,17 +84,17 @@ public class X extends BaseAssembly {
             requireNonNull(f);
         }
 
-        @OnInitialize
+        @Initialize
         public static void init() {
             System.out.println("Init NeedsF");
         }
 
-        @OnStart
+        @Start
         public static void start() {
             System.out.println("start NeedsF");
         }
 
-        @OnStop
+        @Stop
         public static void stop() {
             System.out.println("stop NeedsF");
         }

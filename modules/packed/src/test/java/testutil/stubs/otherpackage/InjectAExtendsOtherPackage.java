@@ -20,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import app.packed.bean.Inject;
-import app.packed.lifecycle.OnInitialize;
+import app.packed.bean.lifecycle.Inject;
+import app.packed.bean.lifecycle.Initialize;
 import testutil.stubs.Injectables.InjectA;
 import testutil.stubs.Letters.A;
 
@@ -56,27 +56,27 @@ public class InjectAExtendsOtherPackage extends InjectA {
     }
 
     @SuppressWarnings("all")
-    @OnInitialize
+    @Initialize
     void accessPackagePrivate(A value) {
         assertSame(expected, value);
         this.methodAccessPackagePrivate = true;
     }
 
-    @OnInitialize
+    @Initialize
     private void accessPrivate(A value) {
         assertSame(expected, value);
         methodAccessPrivate = true;
     }
 
     @Override
-    @OnInitialize
+    @Initialize
     protected void accessProtected(A value) {
         assertSame(expected, value);
         this.methodAccessProtected = true;
     }
 
     @Override
-    @OnInitialize
+    @Initialize
     public void accessPublic(A value) {
         assertSame(expected, value);
         this.methodAccessPublic = true;

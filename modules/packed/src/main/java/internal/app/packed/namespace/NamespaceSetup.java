@@ -20,13 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 import app.packed.component.ComponentPath;
-import app.packed.extension.Extension;
-import app.packed.namespace.NamespaceConfiguration;
 import app.packed.namespace.NamespaceHandle;
-import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceMirror;
 import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.component.ComponentSetup;
@@ -101,10 +97,11 @@ public final class NamespaceSetup implements ComponentSetup {
     }
 
     /** {@inheritDoc} */
-    static <E extends Extension<E>, H extends NamespaceHandle<E, ?>, C extends NamespaceConfiguration<E>> H newNamespace(PackedNamespaceInstaller installer,
-            Function<? super NamespaceInstaller, H> newHandle) {
+    static <H extends NamespaceHandle<?, ?>> H newNamespace(PackedNamespaceInstaller<H> installer) {
         NamespaceSetup namespace = installer.install(new NamespaceSetup(installer));
-        H handle = newHandle.apply(installer);
+
+        @SuppressWarnings("unchecked")
+        H handle = (H) installer.template.newHandle().apply(installer);
         namespace.handle = handle;
 
         installer.root.container.application.namespaces.put(new NamespaceKey(installer.template.handleClass(), installer.name), handle);

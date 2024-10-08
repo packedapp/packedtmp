@@ -28,7 +28,6 @@ import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension;
-import app.packed.lifecycle.LifecycleKind;
 import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
@@ -36,7 +35,7 @@ import internal.app.packed.component.ComponentTagHolder;
 
 /** Implementation of {@link ContainerTemplate}. */
 public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContainerKind kind, Class<?> holderClass, PackedContainerTemplatePackList links,
-        Class<?> resultType, Set<String> componentTags, LifecycleKind lifecycleKind) implements ContainerTemplate<H> {
+        Class<?> resultType, Set<String> componentTags, boolean isManaged) implements ContainerTemplate<H> {
 
     public PackedContainerTemplate(PackedContainerKind kind) {
         this(kind, void.class);
@@ -47,7 +46,7 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
     }
 
     public PackedContainerTemplate(PackedContainerKind kind, Class<?> holderClass, PackedContainerTemplatePackList links, Class<?> resultType) {
-        this(kind, holderClass, links, resultType, Set.of(), LifecycleKind.UNMANAGED);
+        this(kind, holderClass, links, resultType, Set.of(), false);
     }
 
     @SuppressWarnings("unchecked")
@@ -55,11 +54,11 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
         return i -> (H) new ContainerHandle<>(i);
     }
 
-    public LifecycleKind lifecycleKind() {
+    public boolean isManaged() {
         if (kind == PackedContainerKind.ROOT_UNMANAGED || kind == PackedContainerKind.UNMANAGED) {
-            return LifecycleKind.UNMANAGED;
+            return false;
         }
-        return LifecycleKind.MANAGED;
+        return true;
     }
 
     public PackedContainerInstaller<?> newInstaller(Class<? extends Extension<?>> installedBy, ApplicationSetup application, @Nullable ContainerSetup parent) {
@@ -106,7 +105,7 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
 
         // expects results. Maa ogsaa tage en Extension...
         public PackedContainerTemplateConfigurator<H> expectResult(Class<?> resultType) {
-            this.pbt = new PackedContainerTemplate<>(pbt.kind, pbt.holderClass, pbt.links, resultType, pbt.componentTags, pbt.lifecycleKind);
+            this.pbt = new PackedContainerTemplate<>(pbt.kind, pbt.holderClass, pbt.links, resultType, pbt.componentTags, pbt.isManaged);
             return this;
         }
 
@@ -121,7 +120,7 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
         }
 
         public PackedContainerTemplateConfigurator<H> withKind(PackedContainerKind kind) {
-            this.pbt = new PackedContainerTemplate<>(kind, pbt.holderClass, pbt.links, pbt.resultType, pbt.componentTags, pbt.lifecycleKind);
+            this.pbt = new PackedContainerTemplate<>(kind, pbt.holderClass, pbt.links, pbt.resultType, pbt.componentTags, pbt.isManaged);
             return this;
         }
 
@@ -129,7 +128,7 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
         @Override
         public PackedContainerTemplateConfigurator<H> withPack(OldContainerTemplateLink channel) {
             PackedContainerTemplatePackList tunnels = pbt.links.add((PackedContainerLink) channel);
-            this.pbt = new PackedContainerTemplate<>(pbt.kind, pbt.holderClass, tunnels, pbt.resultType, pbt.componentTags, pbt.lifecycleKind);
+            this.pbt = new PackedContainerTemplate<>(pbt.kind, pbt.holderClass, tunnels, pbt.resultType, pbt.componentTags, pbt.isManaged);
             return this;
         }
 
@@ -141,7 +140,7 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
         @Override
         public Configurator componentTag(String... tags) {
             this.pbt = new PackedContainerTemplate<>(pbt.kind, pbt.holderClass, pbt.links, pbt.resultType,
-                    ComponentTagHolder.copyAndAdd(pbt.componentTags, tags), pbt.lifecycleKind);
+                    ComponentTagHolder.copyAndAdd(pbt.componentTags, tags), pbt.isManaged);
             return this;
 
         }

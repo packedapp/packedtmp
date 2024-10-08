@@ -17,7 +17,7 @@ package sandbox.service;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.lifecycle.OnInitialize;
+import app.packed.bean.lifecycle.Initialize;
 import app.packed.service.ServiceContract;
 
 /**
@@ -43,7 +43,7 @@ public class Xdd extends BaseAssembly {
             System.out.println(s + " " + i);
         }
 
-        @OnInitialize
+        @Initialize
         public void dd(Long l) {
             System.out.println(s + " " + l);
         }

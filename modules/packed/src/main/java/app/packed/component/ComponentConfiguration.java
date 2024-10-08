@@ -57,7 +57,6 @@ public abstract sealed class ComponentConfiguration
 
     public abstract Set<String> componentTags();
 
-
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object obj) {
@@ -86,6 +85,6 @@ public abstract sealed class ComponentConfiguration
     // I think the handle is configurable after the assembly has closed????
     // So I think handle.isConfigurable!=configuration.configurable
     public final boolean isConfigurable() {
-        return handle().isConfigurable();
+        return handle().isConfigurationConfigurable();
     }
 }

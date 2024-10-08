@@ -19,16 +19,23 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.stream.Stream;
 
-import app.packed.operation.OperationHandle;
-import internal.app.packed.bean.BeanLifecycleOperation;
-import internal.app.packed.bean.BeanLifecycleOrder;
+import app.packed.bean.BeanKind;
+import app.packed.bean.BeanSourceKind;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle;
+import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderSetup;
+import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.LazyNamer;
 
 /** This class manages all operations declared by a bean. */
 public final class BeanOperationStore implements Iterable<OperationSetup> {
+
+    public PackedOperationTemplate bot;
 
     /** Operations declared by the bean. */
     private final ArrayList<OperationSetup> all = new ArrayList<>();
@@ -38,7 +45,8 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
      * the list will be sorted in the order of execution. With {@link app.packed.lifetime.RunState#INITIALIZING} lifecycle
      * operations first, and {@link app.packed.lifetime.RunState#STOPPING} lifecycle operations at the end.
      */
-    public final ArrayList<BeanLifecycleOperation> lifecycleOperations = new ArrayList<>();
+    // We need it sorted for now
+    public final SortedMap<InternalBeanLifecycleKind, List<BeanLifecycleOperationHandle>> lifecycleHandles = new TreeMap<>();
 
     /**
      * The unique name of every operation.
@@ -60,8 +68,27 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
         all.add(os);
     }
 
-    public void addLifecycleOperation(BeanLifecycleOrder runOrder, OperationHandle<?> operation) {
-        lifecycleOperations.add(new BeanLifecycleOperation(runOrder, operation));
+    public void addHandle(BeanLifecycleOperationHandle handle) {
+        lifecycleHandles.compute(handle.lifecycleKind, (k, v) -> {
+            if (v == null) {
+                return List.of(handle);
+            } else {
+                return CollectionUtil.copyAndAdd(v, handle);
+            }
+        });
+
+        if (handle.lifecycleKind == InternalBeanLifecycleKind.FACTORY) {
+            OperationSetup os = OperationSetup.crack(handle);
+            BeanSetup bean = os.bean;
+            if (bean.beanKind == BeanKind.CONTAINER || bean.beanKind == BeanKind.LAZY) {
+                assert (bean.beanSourceKind != BeanSourceKind.INSTANCE);
+                bean.container.application.addCodegenAction(() -> {
+                    handle.setMethodHandle(handle.generateMethodHandle());
+                });
+            }
+        } else {
+            handle.setMethodHandle(handle.methodHandle());
+        }
     }
 
     public OperationSetup first() {

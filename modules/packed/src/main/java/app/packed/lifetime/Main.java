@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
 import app.packed.extension.BaseExtension;
 
 /**
@@ -42,6 +42,7 @@ import app.packed.extension.BaseExtension;
 @Documented
 @AnnotatedMethodBeanTrigger(allowInvoke = true, extension = BaseExtension.class)
 public @interface Main {}
+
 //A single method. Will be executed.
 //and then shutdown container down again
 //Panic if it fails???? or do we not wrap exception??? I think we wrap...

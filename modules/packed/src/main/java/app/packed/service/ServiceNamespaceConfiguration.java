@@ -20,13 +20,17 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
+import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
 import app.packed.build.BuildActor;
+import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceConfiguration;
 import app.packed.operation.OperationConfiguration;
+import app.packed.service.sandbox.ServiceOutgoingTransformer;
 import internal.app.packed.service.PackedServiceLocator;
 import internal.app.packed.service.ServiceNamespaceHandle;
 import internal.app.packed.util.CollectionUtil;
@@ -162,4 +166,72 @@ public final class ServiceNamespaceConfiguration extends NamespaceConfiguration<
         checkIsConfigurable();
         throw new UnsupportedOperationException();
     }
+}
+
+
+//Functionality for
+//* Explicitly requiring services: require, requiOpt & Manual Requirements Management
+//* Exporting services: export, exportAll
+
+////Was
+//Functionality for
+//* Explicitly requiring services: require, requiOpt & Manual Requirements Management
+//* Exporting services: export, exportAll
+//* Providing components or injectors (provideAll)
+//* Manual Injection
+
+//Har ikke behov for delete fra ServiceLocator
+
+//Future potential functionality
+/// Contracts
+/// Security for public injector.... Maaske skal man explicit lave en public injector???
+/// Transient requirements Management (automatic require unresolved services from children)
+/// Integration pits
+//MHT til Manuel Requirements Management
+//(Hmm, lugter vi noget profile?? Nahh, folk maa extende BaseAssembly og vaelge det..
+//Hmm saa auto instantiere vi jo injector extensionen
+////Det man gerne vil kunne sige er at hvis InjectorExtensionen er aktiveret. Saa skal man
+//altid bruge Manual Requirements
+//contracts bliver installeret direkte paa ContainerConfiguration
+
+//Profile virker ikke her. Fordi det er ikke noget man dynamisk vil switche on an off..
+//Maybe have an Container.onExtensionActivation(Extension e) <- man kan overskrive....
+//Eller @ContainerStuff(onActivation = FooActivator.class) -> ForActivator extends ContainerController
+
+//Taenker den kun bliver aktiveret hvis vi har en factory med mindste 1 unresolved dependency....
+//D.v.s. install(Class c) -> aktivere denne extension, hvis der er unresolved dependencies...
+//Ellers selvfoelgelig hvis man bruger provide/@Provides\
+//final void embed(Assembly assembly) {
+///// MHT til hooks. Saa tror jeg faktisk at man tager de bean hooks
+////der er paa den assembly der definere dem
+//
+////Men der er helt klart noget arbejde der
+//throw new UnsupportedOperationException();
+//}
+
+class ZServiceSandbox {
+
+    public void applicationLink(Assembly assembly, Wirelet... wirelets) {
+        // Syntes den er maerkelig hvis vi havde ApplicationWirelet.NEW_APPLICATION
+        // Den her er klarere
+        // linkNewContainerBuilder().build(assembly, wirelets);
+    }
+
+    // Validates the outward facing contract
+    public void checkContract(Consumer<? super ServiceContract> validator) {}
+
+    // Det der er ved validator ServiceContractChecker er at man kan faa lidt mere context med
+    // checkContract(Service(c->c.checkExact(sc));// ContractChecker.exact(sc));
+    public void checkContractExact(ServiceContract sc) {}
+
+    public void exportsTransform(Consumer<? super ServiceOutgoingTransformer> s) {
+
+    }
+
+    public void provideAll(ServiceLocator locator, Consumer<Object> transformer) {
+        // ST.contract throws UOE
+    }
+
+    public void resolveFirst(Key<?> key) {}
+
 }

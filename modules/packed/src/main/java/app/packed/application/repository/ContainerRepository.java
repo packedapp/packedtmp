@@ -43,15 +43,15 @@ public interface ContainerRepository<I> {
 
     ApplicationLauncher<I> launcher();
 
-    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<A, H> install(Class<H> handleKind, ApplicationTemplate<H> template,
-            BaseExtension extension) {
-        throw new UnsupportedOperationException();
-    }
-
     // Problemet her kan jo saa vaere noget namespace fis...
     // Naar vi skal launches shittet
     static <A, H extends ApplicationHandle<A, ?>> ProvidableBeanConfiguration<A> install(ApplicationTemplate<H> template, BaseExtension extension,
             Consumer<? super ApplicationInstaller<H>> installer) {
+        throw new UnsupportedOperationException();
+    }
+
+    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<A, H> install(Class<H> handleKind, ApplicationTemplate<H> template,
+            BaseExtension extension) {
         throw new UnsupportedOperationException();
     }
 }

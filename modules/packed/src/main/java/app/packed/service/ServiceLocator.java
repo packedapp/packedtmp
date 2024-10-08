@@ -42,7 +42,7 @@ import app.packed.extension.BaseExtension;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.runtime.RunState;
-import internal.app.packed.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.service.PackedServiceLocator;
 
 /**

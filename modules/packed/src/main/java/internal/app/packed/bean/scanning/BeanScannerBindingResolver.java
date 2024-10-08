@@ -47,7 +47,7 @@ final class BeanScannerBindingResolver {
                 BeanScannerParticipant ei = scanner.computeContributor(hook.extensionType());
 
                 PackedBindableVariable h = new PackedBindableVariable(scanner, operation, index, ei.extension, v);
-                ei.introspector.onAnnotatedVariable(a1, h);
+                ei.introspector.onAnnotatedVariable(h, a1);
                 return;
             }
         }

@@ -21,6 +21,7 @@ import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -37,6 +38,31 @@ import java.util.stream.Stream;
  *
  */
 public class CollectionUtil {
+
+    public static <E> List<E> copyAndAdd(List<? extends E> coll, E elementToAdd) {
+        // Check the size of the collection and use List.of for optimal immutability
+        switch (coll.size()) {
+            case 0:
+                return List.of(elementToAdd);
+            case 1:
+                return List.of(coll.get(0), elementToAdd);
+            case 2:
+                return List.of(coll.get(0), coll.get(1), elementToAdd);
+            case 3:
+                return List.of(coll.get(0), coll.get(1), coll.get(2), elementToAdd);
+            default:
+                // For larger lists, use an array to create an immutable list
+                Object[] newArray = new Object[coll.size() + 1];
+                for (int i = 0; i < coll.size(); i++) {
+                    newArray[i] = coll.get(i);
+                }
+                newArray[coll.size()] = elementToAdd;
+                // Use List.of with varargs to return an immutable list
+                @SuppressWarnings("unchecked")
+                List<E> result = (List<E>) List.of(newArray);
+                return result;
+        }
+    }
 
     public static <K, V, W> Map<K, W> copyOf(Map<? extends K, ? extends V> map, Function<? super V, ? extends W> transformer) {
         HashMap<K, W> tmp = new HashMap<>();

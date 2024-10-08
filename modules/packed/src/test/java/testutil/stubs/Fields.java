@@ -22,8 +22,8 @@ import static testutil.MemberFinder.findFieldOnThisClass;
 
 import java.lang.reflect.Field;
 
-import app.packed.bean.Inject;
-import app.packed.lifecycle.OnInitialize;
+import app.packed.bean.lifecycle.Inject;
+import app.packed.bean.lifecycle.Initialize;
 import testutil.stubs.Letters.A;
 /**
  *
@@ -57,7 +57,7 @@ public class Fields {
     public static class InjectAMethod {
         public A value;
 
-        @OnInitialize
+        @Initialize
         public void injectMe(A value) {
             this.value = value;
         }
@@ -80,13 +80,13 @@ public class Fields {
             this.expected = expected;
         }
 
-        @OnInitialize
+        @Initialize
         public void inject(long value) {
             assertEquals(expected, value);
             methodInjected = true;
         }
 
-        @OnInitialize
+        @Initialize
         public void injectPrimitive(long value) {
             assertEquals(expected, value);
             methodPrimitiveInjected = true;

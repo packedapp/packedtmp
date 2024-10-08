@@ -31,7 +31,7 @@ import internal.app.packed.operation.OperationMemberTarget.OperationConstructorT
 public sealed abstract class PackedOperationTarget {
 
     /** {@return the initial method handle.} */
-    abstract MethodHandle methodHandle();
+    public abstract MethodHandle methodHandle();
 
     /** {@return the target of the operation.} */
     public OperationTarget target() {
@@ -49,7 +49,7 @@ public sealed abstract class PackedOperationTarget {
 
         /** {@inheritDoc} */
         @Override
-        MethodHandle methodHandle() {
+        public MethodHandle methodHandle() {
             throw new UnsupportedOperationException();
         }
 
@@ -101,7 +101,7 @@ public sealed abstract class PackedOperationTarget {
 
         /** {@inheritDoc} */
         @Override
-        MethodHandle methodHandle() {
+        public MethodHandle methodHandle() {
             return methodHandle;
         }
     }
@@ -125,7 +125,7 @@ public sealed abstract class PackedOperationTarget {
 
         /** {@inheritDoc} */
         @Override
-        MethodHandle methodHandle() {
+        public MethodHandle methodHandle() {
             return methodHandle;
         }
 
@@ -154,7 +154,7 @@ public sealed abstract class PackedOperationTarget {
 
         /** {@inheritDoc} */
         @Override
-        MethodHandle methodHandle() {
+        public MethodHandle methodHandle() {
             return methodHandle;
         }
 

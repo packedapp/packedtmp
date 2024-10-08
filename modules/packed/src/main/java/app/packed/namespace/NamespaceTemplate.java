@@ -16,6 +16,7 @@
 package app.packed.namespace;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.namespace.sandbox.BuildPermission;
 import internal.app.packed.namespace.PackedNamespaceTemplate;
@@ -26,18 +27,19 @@ import internal.app.packed.namespace.PackedNamespaceTemplate;
  */
 
 // A default domain is applicationWide...
-public sealed interface NamespaceTemplate permits PackedNamespaceTemplate {
+public sealed interface NamespaceTemplate<H extends NamespaceHandle<?, ?>> permits PackedNamespaceTemplate {
 
     // Er ikke sikker paa vi har behov for handler klassen...
     Class<? extends NamespaceHandle<?, ?>> handleClass();
 
-    static NamespaceTemplate of(Class<? extends NamespaceHandle<?, ?>> handleClass, Consumer<? super Configurator> configure) {
-        return new PackedNamespaceTemplate(handleClass);
+    static <H extends NamespaceHandle<?, ?>> NamespaceTemplate<H> of(Class<? extends NamespaceHandle<?, ?>> handleClass,
+            Function<? super NamespaceInstaller<?>, H> newHandle, Consumer<? super Configurator> configure) {
+        return new PackedNamespaceTemplate<>(handleClass, newHandle);
     }
 
     interface Configurator {
 
-        //Logging/Config er manuelt enabled
+        // Logging/Config er manuelt enabled
         // Forstaaet paa den maade at annoteringerne stadig kan bruges af extensions.
         // Men hvis namespaces ikke bliver enabled er det ikke aktivt...
         // IDK maaske er det okay.

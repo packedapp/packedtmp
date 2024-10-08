@@ -24,9 +24,9 @@ import java.util.List;
 
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
-import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanTrigger.AnnotatedVariableBeanTrigger;
+import app.packed.bean.scanning.BeanIntrospector;
+import app.packed.bean.scanning.BeanTrigger.AnnotatedVariableBeanTrigger;
 import app.packed.binding.BindableVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
@@ -103,12 +103,12 @@ public class TestNew extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void onAnnotatedVariable(Annotation hook, BindableVariable h) {
+                public void onAnnotatedVariable(BindableVariable h, Annotation hook) {
                     if (hook.annotationType() == XX.class) {
                         String str = h.annotations().readRequired(XX.class).value();
                         h.bindInstance(str.toUpperCase());
                     } else {
-                        super.onAnnotatedVariable(hook, h);
+                        super.onAnnotatedVariable(h, hook);
                     }
                 }
             };

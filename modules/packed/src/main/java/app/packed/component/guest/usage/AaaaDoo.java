@@ -21,8 +21,8 @@ import app.packed.application.App;
 import app.packed.application.ApplicationRepository;
 import app.packed.application.ApplicationRepositoryConfiguration;
 import app.packed.assembly.BaseAssembly;
+import app.packed.bean.lifecycle.Initialize;
 import app.packed.component.guest.usage.GuestBean.GuestApplicationHandle;
-import app.packed.lifecycle.OnInitialize;
 
 /**
  *
@@ -45,7 +45,7 @@ public class AaaaDoo extends BaseAssembly {
 
         static AtomicLong al = new AtomicLong();
 
-        @OnInitialize
+        @Initialize
         public void oni() {
             repository.launchers().forEach(c -> {
                 for (int i = 0; i < 10; i++) {

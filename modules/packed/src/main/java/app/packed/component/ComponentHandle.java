@@ -29,16 +29,16 @@ import app.packed.operation.OperationHandle;
 public sealed abstract class ComponentHandle permits ApplicationHandle, ContainerHandle, BeanHandle, OperationHandle, NamespaceHandle {
 
     /**
-     * Checks that the bean is still configurable or throws an {@link IllegalStateException} if not
+     * Checks that the component is still configurable or throws an {@link IllegalStateException} if not
      * <p>
      * A bean declared by the application is configurable as long as the assembly from which it was installed is
      * configurable. A bean declared by the application is configurable as long as the extension is configurable.
      *
      * @throws IllegalStateException
-     *             if the bean is no longer configurable
+     *             if this handle is no longer configurable
      */
-    public final void checkIsConfigurable() {
-        if (!isConfigurable()) {
+    public final void checkHandleIsConfigurable() {
+        if (!isHandleConfigurable()) {
             // could also go compo
             throw new IllegalStateException("The " + componentPath().componentKind().name() + " is no longer configurable");
         }
@@ -58,11 +58,14 @@ public sealed abstract class ComponentHandle permits ApplicationHandle, Containe
     }
 
     /**
-     * Returns whether or not the component is still configurable.
-     *
-     * @return {@code true} if the component is still configurable
+     * {@return whether or not the handle is still configurable}
+     * <p>
+     * A specific component instance's handle might be configurable while its configuration is not.
+     * For example, a bean that is being installed will have
      */
-    public abstract boolean isConfigurable();
+    public abstract boolean isHandleConfigurable();
+
+    public abstract boolean isConfigurationConfigurable();
 
     /** { @return a mirror for the component} */
     public abstract ComponentMirror mirror();

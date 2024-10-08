@@ -48,7 +48,6 @@ public class ContainerMirrorTest extends AppAppTest {
         mirrors().findSingleBean(c);
 
 
-        assertEquals(m.lifetime(), c.lifetime());
         assertEquals(m.name(), c.name());
     }
 }

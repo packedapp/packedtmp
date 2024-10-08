@@ -32,8 +32,8 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 
-import app.packed.bean.BeanElement.BeanField;
-import app.packed.bean.BeanElement.BeanMethod;
+import app.packed.bean.scanning.BeanElement.BeanField;
+import app.packed.bean.scanning.BeanElement.BeanMethod;
 import app.packed.util.AnnotationList;
 import internal.app.packed.bean.scanning.PackedBeanMethod;
 import internal.app.packed.binding.PackedBindableVariable;
@@ -634,6 +634,11 @@ public abstract class Key<T> {
         }
     }
 
+    public static Key<?> fromBindableVariable(BindableVariable variable) {
+        PackedBindableVariable v = (PackedBindableVariable) variable;
+        return convert(v.variable().type(), v.variable().annotations().toArray(), false, FROM_BEAN_VARIABLE, v);
+    }
+
     /**
      *
      * <p>
@@ -686,7 +691,7 @@ public abstract class Key<T> {
 
     public static Key<?> fromMethodReturnType(BeanMethod method) {
         PackedBeanMethod pbm = (PackedBeanMethod) method;
-        return convert(pbm.method().getGenericReturnType(), pbm.method().getAnnotations(), false, FROM_BEAN_METHOD_RETURN_TYPE, method);
+        return convert(pbm.method().get().getGenericReturnType(), pbm.method().get().getAnnotations(), false, FROM_BEAN_METHOD_RETURN_TYPE, method);
     }
 
     /**
@@ -704,11 +709,6 @@ public abstract class Key<T> {
     public static Key<?> fromMethodReturnType(Method method) {
         requireNonNull(method, "method is null");
         return convert(method.getGenericReturnType(), method.getAnnotations(), false, FROM_METHOD_RETURN_TYPE, method);
-    }
-
-    public static Key<?> fromBindableVariable(BindableVariable variable) {
-        PackedBindableVariable v = (PackedBindableVariable) variable;
-        return convert(v.variable().type(), v.variable().annotations().toArray(), false, FROM_BEAN_VARIABLE, v);
     }
 
     public static Key<?> fromVariable(Variable variable) {

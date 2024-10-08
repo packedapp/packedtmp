@@ -3,7 +3,6 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -49,6 +48,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      */
     @BuildActionable("bean.allowMultiClass")
     public BeanConfiguration allowMultiClass() {
+        checkIsConfigurable();
         handle.allowMultiClass();
         return this;
     }
@@ -107,6 +107,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
 
     @BuildActionable("bean.addCodeGenerator")
     public <K> void bindCodeGenerator(Class<K> key, Supplier<? extends K> supplier) {
+        checkIsConfigurable();
         bindCodeGenerator(Key.of(key), supplier);
     }
 
@@ -146,6 +147,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     // bind(Supplier) <-- every time we create the bean
     // bindSuppler(BuildTime, CodegenTime, Lazy, PerUsage); // Multithreaded???
     public <K> void bindCodeGenerator(Key<K> key, Supplier<? extends K> supplier) {
+        checkIsConfigurable();
         handle.bindCodeGenerator(key, supplier);
     }
 
@@ -169,7 +171,8 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      * Binds a (bean) service from the specified key to the specified instance.
      * <p>
      * If a service has already been specified on the bean with the same key it is overwritten.
-     *
+     * <p>
+     * IMPORTANT: The specified instance will not be treated as a bean, but merely as an instance
      * @param <K>
      *            type of the instance
      * @param key
@@ -179,6 +182,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      * @return this configuration
      */
     public <K> BeanConfiguration bindServiceInstance(Key<K> key, K instance) {
+        checkIsConfigurable();
         handle.bindServiceInstance(key, instance);
         return this;
     }
@@ -187,6 +191,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     @Override
     @BuildActionable("component.addTags") // Hmm or bean.addTags
     public BeanConfiguration componentTag(String... tags) {
+        checkIsConfigurable();
         handle.componentTag(tags);
         return this;
     }
@@ -208,19 +213,6 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     public final Set<Class<? extends Context<?>>> contexts() {
         // Need to filter hidden
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@return a stream of any bean instance factories this bean has.}
-     * <p>
-     * Static beans will always return an empty stream.
-     */
-    public final Stream<BeanFactoryConfiguration> factories() {
-        return operations(BeanFactoryConfiguration.class);
-    }
-
-    public final Optional<BeanFactoryConfiguration> factory() {
-        return operations(BeanFactoryConfiguration.class).findAny();
     }
 
     /** {@inheritDoc} */
@@ -256,6 +248,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      */
     @BuildActionable("bean.named")
     public BeanConfiguration named(String name) {
+        checkIsConfigurable();
         handle.named(name);
         return this;
     }

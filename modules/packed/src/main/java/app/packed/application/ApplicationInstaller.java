@@ -15,12 +15,16 @@
  */
 package app.packed.application;
 
-import app.packed.application.repository.ApplicationLauncher;
 import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import internal.app.packed.application.PackedApplicationInstaller;
 
-/** An installer for applications. */
+/**
+ * An installer for applications.
+ * <p>
+ * An application installer can only be used to install a single application. Using an application installer after it
+ * has been used will result in an {@link IllegalStateException} being thrown for any method on this interface.
+ */
 public sealed interface ApplicationInstaller<H extends ApplicationHandle<?, ?>> permits PackedApplicationInstaller {
 
     /**
@@ -28,28 +32,61 @@ public sealed interface ApplicationInstaller<H extends ApplicationHandle<?, ?>> 
      *
      * @param tags
      *            the tags to add
-     * @return this configurator
+     * @return this installer
      * @see ApplicationMirror#componentTags()
-     * @see ApplicationHandle#componentTag(String...)
      * @see ApplicationConfiguration#componentTag(String...)
+     * @see ApplicationConfiguration#componentTags()
+     * @see ApplicationHandle#componentTag(String...)
+     * @see ApplicationHandle#componentTags()
      */
     ApplicationInstaller<H> componentTag(String... tags);
 
     /**
+     * Installs the new application represented by the specified assembly.
      * <p>
-     * The handle that is returned will be non-configurable.
+     * The handle that is returned will no longer be configurable.
      *
      * @param assembly
+     *            the application represented by an assembly
      * @param wirelets
-     * @return
+     *            optional wirelets
+     * @return a handle representing the application
      */
     H install(Assembly assembly, Wirelet... wirelets);
 
-    default ApplicationLauncher<?> installAtRuntime(Assembly assembly, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
+    // Yes naming, my friend
     ApplicationInstaller<H> named(String name);
 
+    /**
+     * Sets the value of the specified application build local.
+     * <p>
+     * This method will override any value set by
+     * {@link ApplicationTemplate.Configurator#setLocal(ApplicationBuildLocal, Object)} for the same local.
+     *
+     * @param <T>
+     *            the type of value the local holds
+     * @param local
+     *            the local to set
+     * @param value
+     *            the value of the local
+     * @return this installer
+     */
     <T> ApplicationInstaller<H> setLocal(ApplicationBuildLocal<T> local, T value);
 }
+
+
+// Det er nok ikke her man skal installere det...
+
+// Paa selve extensionene maaske. Det skal maaske startes inde hoved applicationen.
+// Men det skal jo ikke noedvidigvis bygges inde
+
+// <H> ApplicationInstaller<H> newDependency(ApplicationTemplate<H> t);
+
+//lazy start single application. and make the following services available
+//Her taenker jeg fx ElasticSearch
+//Som kunne vaere en kaempe kompliceret application.
+//Som vi gerne vil starte foer hoved applicationen
+
+//prestartIt. And then block operations?
+
+//Bootstrap App har ogsaa en template

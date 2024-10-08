@@ -22,7 +22,7 @@ import app.packed.application.ApplicationConfiguration;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
-import app.packed.bean.Inject;
+import app.packed.bean.lifecycle.Inject;
 import app.packed.component.guest.FromComponentGuest;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;

@@ -15,7 +15,7 @@
  */
 package internal.app.packed.bean.scanning;
 
-import app.packed.bean.BeanElement.BeanClass;
+import app.packed.bean.scanning.BeanElement.BeanClass;
 
 /**
  *

@@ -15,18 +15,13 @@
  */
 package app.packed.concurrent.usage;
 
-import java.util.Optional;
-
 import app.packed.application.App;
-import app.packed.application.ApplicationMirror;
 import app.packed.assembly.BaseAssembly;
 import app.packed.concurrent.Daemon;
 import app.packed.concurrent.DaemonContext;
 import app.packed.concurrent.ScheduleRecurrent;
 import app.packed.concurrent.ScheduledOperationMirror;
 import app.packed.concurrent.SchedulingContext;
-import app.packed.concurrent.ThreadNamespaceMirror;
-import app.packed.concurrent.ThreadOperationMirror;
 
 /**
  *
@@ -34,26 +29,7 @@ import app.packed.concurrent.ThreadOperationMirror;
 public class ScTest extends BaseAssembly {
 
     public static void main(String[] args) throws Exception {
-        ApplicationMirror m = App.mirrorOf(new ScTest());
-        m.operations(ScheduledOperationMirror.class).forEach(c -> {
-            System.out.println(c.name() + ":" + c.schedule());
-        });
-        m.operations(ThreadOperationMirror.class).forEach(c -> {
-            System.out.println(c.name() + ":" + c);
-        });
-        Optional<ThreadNamespaceMirror> o = m.namespace(ThreadNamespaceMirror.class);
-
-        o.get().scheduledOperations().forEach(c -> {
-            System.out.println(c.name() + ":" + c.schedule());
-        });
-        o.get().daemonOperations().forEach(c -> {
-            System.out.println(c.name() + ":" + c.isInteruptAtStop());
-        });
-
-
-        System.out.println(o.get());
-        System.out.println();
-        App.run(new ScTest());
+        App.start(new ScTest());
         Thread.sleep(1000);
     }
 
@@ -72,9 +48,14 @@ public class ScTest extends BaseAssembly {
             Thread.sleep(100);
         }
 
+        @ScheduleRecurrent(millies = 10)
+        public static void schd(SchedulingContext sc, ScheduledOperationMirror op) {
+            System.out.println("SCHs®ED " + op.target());
+        }
+
         @ScheduleRecurrent(millies = 88)
         public static void sch(SchedulingContext sc, ScheduledOperationMirror op) {
-//            System.out.println("SCHED " + sc.invocationCount());
+            System.out.println("SCHED " + sc.invocationCount());
 //            System.out.println(op.target());
             if (sc.invocationCount() == 10) {
                 sc.cancel();

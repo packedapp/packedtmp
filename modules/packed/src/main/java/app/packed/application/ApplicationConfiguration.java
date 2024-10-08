@@ -20,11 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 import app.packed.assembly.Assembly;
 import app.packed.build.BuildException;
 import app.packed.build.BuildProcess;
 import app.packed.component.ComponentConfiguration;
+import app.packed.runtime.StopOption;
 
 /**
  * The configuration of an application.
@@ -84,6 +86,7 @@ public non-sealed class ApplicationConfiguration extends ComponentConfiguration 
     /** {@inheritDoc} */
     @Override
     public ApplicationConfiguration componentTag(String... tags) {
+        checkUpdatable();
         handle.componentTag(tags);
         return this;
     }
@@ -119,4 +122,42 @@ public non-sealed class ApplicationConfiguration extends ComponentConfiguration 
     public final void restrictUpdatesToThisAssembly() {
         allowedAssemblies = List.of(BuildProcess.current().currentAssembly().get());
     }
+
+    /**
+     * Installs a shutdown hook similar to {@link #shutdownHook(StopOption...)} exact that the thread passed to
+     * {@link Runtime#addShutdownHook(Thread)} can be customized.
+     *
+     * @param threadFactory
+     *            a factory that is used to create the shutdown hook thread
+     * @param options
+     *            stop options
+     * @return a shutdown hook wirelet
+     * @see Runtime#addShutdownHook(Thread)
+     */
+    // Why shouldn't I be able to use this on runtime???
+    public void shutdownHook(Function<Runnable, Thread> threadFactory, StopOption... options) {
+    }
+
+    /**
+     * Returns a wirelet that will install a shutdown hook for an application.
+     * <p>
+     * As shutting down the root will automatically shutdown all of its child applications. Attempting to specify a shutdown
+     * hook wirelet when launching a non-root application will fail with an exception.
+     * <p>
+     * Attempting to use more than one shutdown hook wirelet on an application will fail
+     *
+     * Attempting to use it anywhere else than on a root application will fail
+     *
+     * Attempting to use this wirelet for an application in an {@link LifetimeKind#UNMANAGED} will fail
+     *
+     * @return a shutdown hook wirelet
+     * @see #shutdownHook(Function, app.packed.lifetime.sandbox.StopOption...)
+     * @see Runtime#addShutdownHook(Thread)
+     */
+    // Ogsaa skrive noget om hvad der sker hvis vi stopper
+    // Multiple shutdown hooks? I don't think we should do any checks.
+    // Problem is if we have ApplicationConfiguration.installShutdownHook()
+    // And CliApp uses a wirelet at the same time
+    // Maybe only ApplicationConfiguration,
+    public void shutdownHook(StopOption... options) {}
 }

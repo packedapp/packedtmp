@@ -19,7 +19,7 @@ import app.packed.extension.Extension;
 
 /**
  * A static context. By static we mean that is can be determined at runtime whether or not a given context is available
- * in a container, bean or operation.
+ * for a bean or operation.
  * <p>
  * When using {@link ContextualServiceProvider} or {@link InheritableContextualServiceProvider} <E> and
  * {@link ContextualServiceProvider#extension()} or {@link InheritableContextualServiceProvider#extension()} must match.
@@ -32,7 +32,6 @@ public interface Context<E extends Extension<E>> {}
 //Check that if try to inject a a ContextImplementation
 //And it does not have a service provider annotation
 //We fail with a good explanation
-
 
 //Ved ikke om det er problematisk at tage E med paa runtime...
 //Den er jo ikke super needed. Og bliver jo encoded i klassen

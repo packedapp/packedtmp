@@ -22,17 +22,13 @@ import app.packed.operation.Op;
 import internal.app.packed.bean.PackedBeanInstaller;
 
 /**
- * An installer for installing beans into a container.
+ * A bean installer is responsible for installing new beans into a container. It is typically only used by
+ * {@link app.packed.extension.Extension extensions} and normal users will rarely have any use for it.
  * <p>
- * The various install methods can be called multiple times to install multiple beans. However, the use cases for this
- * are limited.
  *
  * @see app.packed.extension.BaseExtensionPoint#newApplicationBean(BeanTemplate)
  * @see app.packed.extension.BaseExtensionPoint#newDependantExtensionBean(BeanTemplate,
  *      app.packed.extension.ExtensionPoint.UseSite)
- *
- * @apiNote The reason we have a Builder and not just 1 class. Is because of the bean scanning. Which makes it confusing
- *          which methods can be invoked before or only after the scanning
  */
 public sealed interface BeanInstaller permits PackedBeanInstaller {
 

@@ -17,8 +17,8 @@ package internal.app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.binding.Key;
 import app.packed.binding.BindingKind;
+import app.packed.binding.Key;
 import app.packed.service.advanced.ServiceProviderKind;
 import app.packed.service.advanced.ServiceResolver;
 import app.packed.service.mirror.NamespaceServiceBindingMirror;

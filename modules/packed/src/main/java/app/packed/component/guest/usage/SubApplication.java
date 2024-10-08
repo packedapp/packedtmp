@@ -16,9 +16,9 @@
 package app.packed.component.guest.usage;
 
 import app.packed.assembly.BaseAssembly;
-import app.packed.lifecycle.OnInitialize;
-import app.packed.lifecycle.OnStart;
-import app.packed.lifecycle.OnStop;
+import app.packed.bean.lifecycle.Initialize;
+import app.packed.bean.lifecycle.Start;
+import app.packed.bean.lifecycle.Stop;
 
 /**
  *
@@ -34,17 +34,17 @@ public class SubApplication extends BaseAssembly {
 
     public static class SomeBean {
 
-        @OnInitialize
+        @Initialize
         public void doo() {
             System.out.println("Sub initialied!!! YOU ARE FUCKING AWESOME");
         }
 
-        @OnStart
+        @Start
         public void start() {
             System.out.println("Sub Started!!! YOU ARE FUCKING AWESOME");
         }
 
-        @OnStop
+        @Stop
         public void stop() {
             System.out.println("Sub Stopped!!! YOU ARE FUCKING AWESOME");
         }

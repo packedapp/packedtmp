@@ -14,13 +14,14 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanBuildHook;
 import app.packed.bean.BeanBuildLocal.Accessor;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanElement;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
+import app.packed.bean.lifecycle.BeanLifecycleKind;
+import app.packed.bean.scanning.BeanElement;
+import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.binding.BindableVariable;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
@@ -30,7 +31,6 @@ import app.packed.component.ComponentKind;
 import app.packed.component.ComponentPath;
 import app.packed.context.Context;
 import app.packed.operation.Op;
-import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.scanning.BeanScanner;
 import internal.app.packed.bean.scanning.PackedBeanElement;
@@ -50,14 +50,12 @@ import internal.app.packed.context.ContextSetup;
 import internal.app.packed.context.ContextualizedComponentSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.lifetime.BeanLifetimeSetup;
-import internal.app.packed.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.lifetime.LifetimeSetup;
+import internal.app.packed.lifecycle.LifecycleAnnotationIntrospector;
+import internal.app.packed.lifecycle.lifetime.BeanLifetimeSetup;
+import internal.app.packed.lifecycle.lifetime.LifetimeSetup;
+import internal.app.packed.lifecycle.lifetime.RegionalLifetimeSetup;
 import internal.app.packed.operation.BeanOperationStore;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.PackedOp;
-import internal.app.packed.operation.PackedOp.NewOS;
-import internal.app.packed.operation.PackedOperationInstaller.BeanFactoryOperationHandle;
 import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.service.MainServiceNamespaceHandle;
 import internal.app.packed.service.ServiceProviderSetup.BeanServiceProviderSetup;
@@ -83,6 +81,9 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     /** The source ({@code null}, {@link Class}, {@link PackedOp}, otherwise the bean instance) */
     @Nullable
     public final Object beanSource;
+
+    /** The lifecycle kind of the bean. */
+    public final BeanLifecycleKind beanLifecycleKind = BeanLifecycleKind.UNMANAGED;
 
     /** The type of source the installer is created from. */
     public final BeanSourceKind beanSourceKind;
@@ -132,17 +133,23 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         this.installedBy = requireNonNull(installer.installledByExtension);
         this.owner = requireNonNull(installer.owner);
 
-        // Set the lifetime of the bean
-        ContainerLifetimeSetup containerLifetime = container.lifetime;
+        RegionalLifetimeSetup containerLifetime = container.lifetime;
         if (beanKind == BeanKind.CONTAINER || beanKind == BeanKind.STATIC) {
             this.lifetime = containerLifetime;
             this.lifetimeStoreIndex = container.lifetime.addBean(this);
         } else {
-            BeanLifetimeSetup bls = new BeanLifetimeSetup(this, installer);
+            BeanLifetimeSetup bls = new BeanLifetimeSetup(this);
             this.lifetime = bls;
             this.lifetimeStoreIndex = -1;
             // containerLifetime.addDetachedChildBean(bls);
         }
+        operations.bot = (PackedOperationTemplate) installer.template.bot();
+
+        if (beanSourceKind != BeanSourceKind.SOURCELESS) {
+            scanner = new BeanScanner(this);
+        }
+
+        // Setup any contexts the bean is in
         for (PackedContextTemplate t : installer.template.contexts().values()) {
             contexts.put(t.contextClass(), new ContextSetup(t, this));
         }
@@ -335,51 +342,40 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
      */
     @SuppressWarnings("unchecked")
     static <H extends BeanHandle<?>> H newBean(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
-            Function<? super BeanInstaller, H> factory) {
-        requireNonNull(factory, "factory is null");
+            Function<? super BeanInstaller, H> handleFactory) {
+        requireNonNull(handleFactory, "handleFactory is null");
         if (sourceKind != BeanSourceKind.SOURCELESS && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
         }
-        installer.checkNotInstalledYet(); // TODO check extension/assembly can still install beans
+
+        if (!installer.owner.isConfigurable()) {
+            throw new IllegalStateException();
+        }
+        installer.checkNotInstalledYet();
 
         // Create the Bean, this also marks this installer as unconfigurable
         BeanSetup bean = installer.install(new BeanSetup(installer, beanClass, sourceKind, source));
 
-        // Creating an bean factory operation representing the Op if an Op was specified when creating the bean.
-        if (sourceKind == BeanSourceKind.OP) {
-            PackedOp<?> op = (PackedOp<?>) bean.beanSource;
-            PackedOperationTemplate ot;
-            if (bean.lifetime.lifetimes().isEmpty()) {
-                ot = (PackedOperationTemplate) OperationTemplate.defaults();
-            } else {
-                ot = bean.lifetime.lifetimes().get(0).template;
-            }
+        // Create the new BeanHandle
+        BeanHandle<?> handle = handleFactory.apply(installer);
+        bean.handle = handle;
 
-            // TODO should be marked as bean factory
-            op.newOperationSetup(new NewOS(bean, bean.installedBy, ot, BeanFactoryOperationHandle::new, null));
 
-            // Op'en bliver resolved med BeanClassen i scanneren...
-            // Ved ikke om det giver mening, vil umiddelbart sige nej
-            // Vil sige den er helt uafhaendig? Men for nu er det fint
-        }
-
-        // Scan the bean class for annotations if it has a source
-
-        // We need this here to access mirrors when binding them as constants
-        // Maybe we should bind them delayed.
-        BeanHandle<?> apply = factory.apply(installer);
-        bean.handle = apply;
-        if (sourceKind != BeanSourceKind.SOURCELESS) {
-            new BeanScanner(bean).introspect();
+        LifecycleAnnotationIntrospector.checkForFactoryOp(bean);
+        // Scan the bean if needed, and remove references to the scanner
+        BeanScanner bs = bean.scanner;
+        if (bs != null) {
+            bs.introspect();
             bean.scanner = null;
         }
 
         // Add the bean to the container and initialize the name of the bean
         bean.container.beans.installAndSetBeanName(bean, installer.namePrefix);
 
-        bean.container.assembly.model.hooks.forEach(BeanBuildHook.class, h -> h.onNew(apply.configuration()));
+        // Apply hooks to the bean. Hmm, I think may have hooks we need to apply before scanning
+        bean.container.assembly.model.hooks.forEach(BeanBuildHook.class, h -> h.onNew(handle.configuration()));
 
-        return (H) apply;
+        // Return the new bean's handle
+        return (H) handle;
     }
-
 }

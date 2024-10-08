@@ -24,80 +24,24 @@ import app.packed.application.ApplicationBuildLocal;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
-import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanKind;
 import app.packed.build.BuildGoal;
-import app.packed.component.guest.ComponentHostContext;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
-import app.packed.context.ContextTemplate;
 import app.packed.operation.Op;
-import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.component.ComponentTagHolder;
-import internal.app.packed.container.PackedContainerKind;
 import internal.app.packed.container.PackedContainerTemplate;
-import internal.app.packed.context.PackedComponentHostContext;
-import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
 
 /** Implementation of {@link ApplicationTemplate}. */
-public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class<?> guestClass, @Nullable Op<?> op, Class<? super H> handleClass,
-        Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory, PackedContainerTemplate<?> containerTemplate,
+public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(
+        Class<?> guestClass,
+        @Nullable Op<?> op, Class<? super H> handleClass,
+        Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory,
+        PackedContainerTemplate<?> containerTemplate,
         Set<String> componentTags) implements ApplicationTemplate<H> {
 
-    static final ContextTemplate GB_CIT = ContextTemplate.of(ApplicationLaunchContext.class, c -> {});
-
-    static final ContextTemplate GB_HIT = ContextTemplate.of(ComponentHostContext.class,
-            c -> c.implementationClass(PackedComponentHostContext.class).bindAsConstant());
-
-    static final OperationTemplate GB_CON = OperationTemplate.raw().reconfigure(c -> c.inContext(GB_CIT).inContext(GB_HIT).returnTypeObject());
-
-    public static final PackedBeanTemplate GB = new PackedBeanTemplate(BeanKind.UNMANAGED).withOperationTemplate(GB_CON);
-
-    public PackedApplicationTemplate(Class<?> guestClass, Class<? super H> handleClass,
-            Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory, PackedContainerTemplate<?> containerTemplate) {
-        this(guestClass, null, handleClass, handleFactory, containerTemplate);
-    }
-
-    public PackedApplicationTemplate(Class<?> guestClass, Op<?> op, Class<? super H> handleClass,
-            Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory, PackedContainerTemplate<?> containerTemplate) {
-        this(guestClass, op, handleClass, handleFactory, containerTemplate, Set.of());
-    }
-
-    // De her er ikke public fordi de kun kan bruges fra Bootstrap App
-    // Hvor ikke specificere en template direkte. Fordi den kun skal bruges en gang
-    // Til at lave selve bootstrap applicationene.
-    static PackedApplicationTemplate<?> ROOT_MANAGED = null;
-
-    static PackedApplicationTemplate<?> ROOT_UNMANAGED = null;
-
-    public static final PackedApplicationTemplate<?> BOOTSTRAP_APP = new PackedApplicationTemplate<>(PackedApplicationTemplate.class, ApplicationHandle.class,
-            ApplicationHandle::new, new PackedContainerTemplate<>(PackedContainerKind.BOOTSTRAP_APPLICATION, PackedBootstrapApp.class));
-
-    public static <A> PackedApplicationInstaller<?> newBootstrapAppInstaller() {
-        return new PackedApplicationInstaller<>(PackedApplicationTemplate.BOOTSTRAP_APP, null, BuildGoal.LAUNCH);
-    }
-
-    public void installGuestBean(BeanInstaller installer, Consumer<? super MethodHandle> assigner) {
-        if (guestClass() == Void.class) {
-            return;
-        }
-        GuestBeanHandle h;
-        if (op() == null) {
-            h = installer.install(guestClass(), GuestBeanHandle::new);
-        } else {
-            h = installer.install((Op<?>) op(), GuestBeanHandle::new);
-        }
-
-        h.lifetimeOperations().get(0).generateMethodHandleOnCodegen(m -> {
-            m = m.asType(m.type().changeReturnType(Object.class));
-            assigner.accept(m);
-        });
-    }
-
     /**
-     * Creates a new {@link Installer} from this template.
+     * Creates a new {@link ApplicationInstaller} from this template.
      * <p>
      * NOTE: this method must not be on {@link ApplicationTemplate}.
      *
@@ -107,7 +51,8 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class
      *            optional wirelets
      * @return a new application installer
      */
-    public PackedApplicationInstaller<H> newInstaller(ApplicationInstallingSource source, BuildGoal goal, MethodHandle launcher, Wirelet... wirelets) {
+    public PackedApplicationInstaller<H> newInstaller(@Nullable ApplicationInstallingSource source, BuildGoal goal, MethodHandle launcher,
+            Wirelet... wirelets) {
         PackedApplicationInstaller<H> installer = new PackedApplicationInstaller<>(this, launcher, goal);
         installer.containerInstaller.processBuildWirelets(wirelets);
         return installer;

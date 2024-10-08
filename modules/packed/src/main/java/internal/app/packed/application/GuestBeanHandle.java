@@ -15,29 +15,60 @@
  */
 package internal.app.packed.application;
 
+import java.lang.invoke.MethodHandle;
 import java.util.Map;
 import java.util.Set;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanKind;
+import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.binding.BindableVariable;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
 import app.packed.component.guest.ComponentHostConfiguration;
 import app.packed.component.guest.ComponentHostContext;
 import app.packed.context.Context;
+import app.packed.context.ContextTemplate;
+import app.packed.operation.Op;
 import app.packed.operation.Op1;
+import app.packed.operation.OperationTemplate;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.service.ServiceLocator;
+import internal.app.packed.bean.PackedBeanTemplate;
 import internal.app.packed.context.PackedComponentHostContext;
-import internal.app.packed.lifetime.runtime.ApplicationLaunchContext;
+import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
 /**
  *
  */
 public class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration<?>> {
+
+
+    static final ContextTemplate GB_HIT = ContextTemplate.of(ComponentHostContext.class,
+            c -> c.implementationClass(PackedComponentHostContext.class).bindAsConstant());
+
+    static final OperationTemplate GB_CON = OperationTemplate.raw()
+            .reconfigure(c -> c.inContext(ApplicationLaunchContext.CONTEXT_TEMPLATE).inContext(GB_HIT).returnTypeObject());
+
+    public static final PackedBeanTemplate GUEST_BEAN_TEMPLATE = new PackedBeanTemplate(BeanKind.UNMANAGED).withOperationTemplate(GB_CON);
+
+    public static MethodHandle installGuestBean(PackedApplicationTemplate<?> template, BeanInstaller installer) {
+        if (template.guestClass() == Void.class) {
+            return null;
+        }
+        GuestBeanHandle h;
+        if (template.op() == null) {
+            h = installer.install(template.guestClass(), GuestBeanHandle::new);
+        } else {
+            h = installer.install((Op<?>) template.op(), GuestBeanHandle::new);
+        }
+
+        MethodHandle m = h.lifetimeOperations().get(0).methodHandle();
+        m = m.asType(m.type().changeReturnType(Object.class));
+        return m;
+    }
 
     /**
      * @param installer

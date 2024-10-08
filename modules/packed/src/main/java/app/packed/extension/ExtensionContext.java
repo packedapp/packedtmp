@@ -17,7 +17,7 @@ package app.packed.extension;
 
 import app.packed.context.Context;
 import app.packed.context.ContextualServiceProvider;
-import internal.app.packed.lifetime.runtime.PackedExtensionContext;
+import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
 
 /**
  * All (container?) beans that are owned by an extension operates within an ExtensionContext.
