@@ -69,15 +69,13 @@ public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
     }
 
     /** A context template. */
-    static final ContextTemplate SCHEDULING_CONTEXT_TEMPLATE = ContextTemplate.of(SchedulingContext.class, c -> {});
+    static final ContextTemplate SCHEDULING_CONTEXT_TEMPLATE = ContextTemplate.of(SchedulingContext.class);
 
-    static final ContextTemplate DAEMON_CONTEXT_TEMPLATE = ContextTemplate.of(DaemonContext.class, c -> {});
+    static final ContextTemplate DAEMON_CONTEXT_TEMPLATE = ContextTemplate.of(DaemonContext.class);
 
-    static final OperationTemplate SCHEDULING_OPERATION_TEMPLATE = OperationTemplate.defaults()
-            .reconfigure(c -> c.inContext(SCHEDULING_CONTEXT_TEMPLATE).returnIgnore());
+    static final OperationTemplate SCHEDULING_OPERATION_TEMPLATE = OperationTemplate.of(c -> c.inContext(SCHEDULING_CONTEXT_TEMPLATE).returnIgnore());
 
-    static final OperationTemplate DAEMON_OPERATION_TEMPLATE = OperationTemplate.defaults()
-            .reconfigure(c -> c.inContext(DAEMON_CONTEXT_TEMPLATE).returnIgnore());
+    static final OperationTemplate DAEMON_OPERATION_TEMPLATE = OperationTemplate.of(c -> c.inContext(DAEMON_CONTEXT_TEMPLATE).returnIgnore());
 
     /** Creates a new thread extension. */
 

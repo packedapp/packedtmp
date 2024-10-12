@@ -21,6 +21,7 @@ import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceInstaller;
 import app.packed.namespace.NamespaceTemplate;
 import internal.app.packed.concurrent.ExecutorConfiguration;
+import internal.app.packed.concurrent.NewScheduledOperation;
 import internal.app.packed.concurrent.ScheduledDaemon;
 import internal.app.packed.concurrent.ScheduledOperation;
 
@@ -56,16 +57,23 @@ final class ThreadNamespaceHandle extends NamespaceHandle<ThreadExtension, Threa
         return new ThreadNamespaceMirror(this);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onNamespaceClose() {
         // Find all scheduling operations in the namespace.
-        ScheduledOperation[] so = operations(ScheduledOperationHandle.class).map(h -> new ScheduledOperation(h.s, h.methodHandle()))
+
+        @SuppressWarnings("unused")
+        NewScheduledOperation[] newSo = operations(ScheduledOperationHandle.class).map(h -> h.invokerAs(NewScheduledOperation.class, h.s))
+                .toArray(NewScheduledOperation[]::new);
+
+        ScheduledOperation[] so = operations(ScheduledOperationHandle.class).map(h -> new ScheduledOperation(h.s, h.invokerAsMethodHandle()))
                 .toArray(ScheduledOperation[]::new);
+
         // Find all daemon operations in the namespace.
-        ScheduledDaemon[] sd = operations(DaemonOperationHandle.class).map(h -> new ScheduledDaemon(h.useVirtual, h.methodHandle()))
+        ScheduledDaemon[] sd = operations(DaemonOperationHandle.class).map(h -> new ScheduledDaemon(h.useVirtual, h.invokerAsMethodHandle()))
                 .toArray(ScheduledDaemon[]::new);
 
-        // Install a scheduling bean if we have any operations.
+        // Install a scheduling bean if we have any scheduling or daemon operations.
         if (so.length > 0 || sd.length > 0) {
             BeanConfiguration b = rootExtension().newSchedulingBean();
             b.bindServiceInstance(ScheduledOperation[].class, so);

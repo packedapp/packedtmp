@@ -26,9 +26,13 @@ package app.packed.service.advanced;
 public enum ServiceProviderKind {
 
     /**
-     * A service that is provided by the operation itself.
+     * A service that is provided at the operation level.
+     * <p>
+     * Dependants??? Other stuff that uses the service that is injected..
+     * We do not replace, other stuff
      * <p>
      * The extension (operator) that operates the operation can also choose to specify
+     *
      * @see app.packed.operation.OperationConfiguration#bindServiceInstance(Class, Object)
      * @see app.packed.operation.OperationConfiguration#bindServiceInstance(app.packed.binding.Key, Object)
      */
@@ -40,20 +44,17 @@ public enum ServiceProviderKind {
     OPERATION,
 
     /**
-     * Lookup services that have been specified on the bean level.
+     * A service that is provided at the bean level.
      *
      * @see app.packed.bean.BeanConfiguration#bindCodeGenerator(Class, java.util.function.Supplier)
      * @see app.packed.bean.BeanConfiguration#bindCodeGenerator(app.packed.binding.Key, java.util.function.Supplier)
      * @see app.packed.bean.BeanConfiguration#bindServiceInstance(Class, Object)
      * @see app.packed.bean.BeanConfiguration#bindServiceInstance(app.packed.binding.Key, Object)
      **/
-    // Men har vi disse??? Er det ikke kun i factories???
-    // Altsaa hvis der er konstanter saa.
-    // Supportere vi Ops saa virker det naturligvis ikke
     BEAN,
 
     /**
-     * Lookup services that are provided by a context.
+     * A service that is provided through a {@link app.packed.context.Context} (possible the empty context).
      *
      * @see app.packed.context.ContextualServiceProvider
      * @see app.packed.context.InheritableContextualServiceProvider
@@ -61,7 +62,7 @@ public enum ServiceProviderKind {
     CONTEXT,
 
     /**
-     * Lookup services that are provided by a service namespace.
+     * A service that is provided through a (service) namespace.
      *
      * @see app.packed.extension.BaseExtension#services()
      * @see app.packed.extension.BaseExtension#services(String)

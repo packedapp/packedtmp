@@ -19,7 +19,6 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
 import app.packed.component.guest.FromComponentGuest;
-import app.packed.container.ContainerTemplate;
 
 /**
  * Must have a main in a bean with application lifetime.
@@ -53,7 +52,7 @@ import app.packed.container.ContainerTemplate;
 public final class Te {
 
     /** The bootstrap app. */
-    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(ApplicationTemplate.of(Holder.class, c -> c.rootContainer(ContainerTemplate.MANAGED)));
+    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(ApplicationTemplate.ofManaged(Holder.class));
 
     public static void main(String[] args) {
         BOOTSTRAP.getClass();

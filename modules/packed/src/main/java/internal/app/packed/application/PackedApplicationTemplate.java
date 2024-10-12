@@ -15,12 +15,12 @@
  */
 package internal.app.packed.application;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.application.ApplicationBuildLocal;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
@@ -33,17 +33,32 @@ import internal.app.packed.component.ComponentTagHolder;
 import internal.app.packed.container.PackedContainerTemplate;
 
 /** Implementation of {@link ApplicationTemplate}. */
-public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(
-        Class<?> guestClass,
-        @Nullable Op<?> op, Class<? super H> handleClass,
+public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(Class<?> guestClass, @Nullable Op<?> op, Class<? super H> handleClass,
         Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory,
-        PackedContainerTemplate<?> containerTemplate,
+        PackedContainerTemplate<?> rootContainer,
         Set<String> componentTags) implements ApplicationTemplate<H> {
+
+    public PackedApplicationTemplate(Class<?> guestClass, @Nullable Op<?> op, Class<? super H> handleClass,
+            Function<? super ApplicationInstaller<H>, ? extends ApplicationHandle<?, ?>> handleFactory) {
+        this(guestClass, op, handleClass, handleFactory, null, Set.of());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedApplicationTemplate<H> withComponentTags(String... tags) {
+        return new PackedApplicationTemplate<>(guestClass, op, handleClass, handleFactory, rootContainer,
+                ComponentTagHolder.copyAndAdd(componentTags, tags));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedApplicationTemplate<H> withRootContainer(ContainerTemplate<?> template) {
+        requireNonNull(template);
+        return new PackedApplicationTemplate<>(guestClass, op, handleClass, handleFactory, (PackedContainerTemplate<?>) template, componentTags);
+    }
 
     /**
      * Creates a new {@link ApplicationInstaller} from this template.
-     * <p>
-     * NOTE: this method must not be on {@link ApplicationTemplate}.
      *
      * @param goal
      *            the build goal
@@ -56,54 +71,6 @@ public record PackedApplicationTemplate<H extends ApplicationHandle<?, ?>>(
         PackedApplicationInstaller<H> installer = new PackedApplicationInstaller<>(this, launcher, goal);
         installer.containerInstaller.processBuildWirelets(wirelets);
         return installer;
-    }
-
-    public ApplicationTemplate<H> configure(Consumer<? super Configurator> configure) {
-        PackedApplicationTemplateConfigurator<H> c = new PackedApplicationTemplateConfigurator<>();
-        c.t = this;
-        configure.accept(c);
-        if (c.t.containerTemplate == null) {
-            throw new IllegalStateException("Must specify a container template for the root container");
-        }
-        return c.t;
-    }
-
-    /** Implementation of {@link ApplicationTemplate.Configurator} */
-    public final static class PackedApplicationTemplateConfigurator<H extends ApplicationHandle<?, ?>> implements ApplicationTemplate.Configurator {
-
-        private PackedApplicationTemplate<H> t;
-
-        /** {@inheritDoc} */
-        @Override
-        public Configurator componentTag(String... tags) {
-            this.t = new PackedApplicationTemplate<>(t.guestClass(), t.op(), t.handleClass, t.handleFactory, t.containerTemplate(),
-                    ComponentTagHolder.copyAndAdd(t.componentTags, tags));
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Configurator rootContainer(Consumer<? super ContainerTemplate.Configurator> configure) {
-            if (t.containerTemplate == null) {
-                t = rootContainer(ContainerTemplate.GATEWAY).t;
-            }
-            PackedContainerTemplate<?> pct = PackedContainerTemplate.configure(t.containerTemplate, configure);
-            return rootContainer(pct);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public PackedApplicationTemplateConfigurator<H> rootContainer(ContainerTemplate<?> template) {
-            this.t = new PackedApplicationTemplate<>(t.guestClass(), t.op(), t.handleClass, t.handleFactory(), (PackedContainerTemplate<?>) template,
-                    t.componentTags);
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public <T> Configurator setLocal(ApplicationBuildLocal<T> local, T value) {
-            throw new UnsupportedOperationException();
-        }
     }
 
     public interface ApplicationInstallingSource {}

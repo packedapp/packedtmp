@@ -29,21 +29,21 @@ import internal.app.packed.extension.ExtensionSetup;
 /**
  *
  */
-class ApplicationLauncherHandle<T> extends BeanHandle<ProvidableBeanConfiguration<T>>{
+final class InstalledApplicationHandle<T> extends BeanHandle<ProvidableBeanConfiguration<T>>{
 
     /**
      * @param installer
      */
-    public ApplicationLauncherHandle(BeanInstaller installer) {
+    public InstalledApplicationHandle(BeanInstaller installer) {
         super(installer);
     }
 
     @SuppressWarnings("unused")
     private static final PackedBeanTemplate REPOSITORY_BEAN_TEMPLATE = (PackedBeanTemplate) BeanTemplate.of(BeanKind.CONTAINER,
-            b -> b.createAs(ApplicationLauncher.class));
+            b -> {});
 
 
-    static <A, H extends ApplicationHandle<A, ?>> ProvidableBeanConfiguration<ApplicationLauncher<A>> install(PackedApplicationTemplate<H> template, ExtensionSetup es,
+    static <A, H extends ApplicationHandle<A, ?>> ProvidableBeanConfiguration<InstalledApplication<A>> install(PackedApplicationTemplate<H> template, ExtensionSetup es,
             AuthoritySetup<?> owner) {
 
         throw new UnsupportedOperationException();

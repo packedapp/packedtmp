@@ -38,7 +38,7 @@ public class OnStartTest extends BaseAssembly {
 
     public static class Mine {
 
-        @Start(order = LifecycleDependantOrder.AFTER_DEPENDANTS)
+        @Start(order = LifecycleDependantOrder.BEFORE_DEPENDANTS)
         public void onStart(StartContext context) {
             System.out.println("1 - NICE " + Thread.currentThread());
         }

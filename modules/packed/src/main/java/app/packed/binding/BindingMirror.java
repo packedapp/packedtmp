@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import app.packed.binding.sandbox.BindingHandle;
 import app.packed.build.BuildActor;
-import app.packed.build.BuildMirror;
+import app.packed.build.Mirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.binding.BindingAccessor;
 import internal.app.packed.binding.BindingAccessor.FromOperationResult;
@@ -35,7 +35,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * @see OperationMirror#bindings()
  */
 @SuppressWarnings("exports") // Uses sandbox classes
-public class BindingMirror implements BuildMirror {
+public class BindingMirror implements Mirror {
 
     /** The binding we are mirrored. */
     final BindingSetup binding;
@@ -47,7 +47,6 @@ public class BindingMirror implements BuildMirror {
      *             if attempting to explicitly construct an binding mirror instance
      */
     public BindingMirror(BindingHandle handle) {
-        // Will fail if the binding mirror is not initialized by the framework
         this.binding = ((PackedBindingHandle) handle).binding();
     }
 

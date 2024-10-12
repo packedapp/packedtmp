@@ -28,8 +28,7 @@ import internal.app.packed.operation.OperationSetup;
 public final class OperationHandlers extends Handlers {
 
     /** A handle that can access {@link OperationHandle#handle}. */
-    private static final VarHandle VH_OPERATION_HANDLE_TO_SETUP = field(MethodHandles.lookup(), OperationHandle.class, "operation",
-            OperationSetup.class);
+    private static final VarHandle VH_OPERATION_HANDLE_TO_SETUP = field(MethodHandles.lookup(), OperationHandle.class, "operation", OperationSetup.class);
 
     /**
      * Extracts an operation setup from an operation handle.
@@ -49,6 +48,19 @@ public final class OperationHandlers extends Handlers {
     public static void invokeOperationHandleDoClose(OperationHandle<?> handle) {
         try {
             MH_OPERATION_HANDLE_DO_CLOSE.invokeExact(handle);
+        } catch (Throwable t) {
+            throw throwIt(t);
+        }
+    }
+
+    /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
+    private static final MethodHandle MH_OPERATION_HANDLE_NEW_METHOD_HANDLE = method(MethodHandles.lookup(), OperationHandle.class, "newMethodHandle",
+            MethodHandle.class);
+
+    /** Call {@link OperationHandle#onClose()}. */
+    public static MethodHandle invokeOperationHandleNewMethodHandle(OperationHandle<?> handle) {
+        try {
+            return (MethodHandle) MH_OPERATION_HANDLE_NEW_METHOD_HANDLE.invokeExact(handle);
         } catch (Throwable t) {
             throw throwIt(t);
         }

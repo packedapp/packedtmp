@@ -46,7 +46,7 @@ import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointSetup;
 import internal.app.packed.namespace.NamespaceSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceProviderSetup;
-import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderSetup;
+import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.service.ServiceProviderSetup.OperationServiceProviderSetup;
 import internal.app.packed.service.util.SequencedServiceMap;
 import internal.app.packed.util.handlers.OperationHandlers;
@@ -122,9 +122,12 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         } else {
             this.entryPoint = null;
         }
-        for (PackedContextTemplate ct : template.contexts.values()) {
+        for (PackedContextTemplate ct : template.contexts) {
             contexts.put(ct.contextClass(), new ContextSetup(ct, this));
         }
+//        debug();
+//        System.err.println(template.methodType);
+//        new Exception().printStackTrace();
     }
 
     /** {@inheritDoc} */
@@ -139,7 +142,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         forEachBinding(b -> {
             if (b instanceof ServiceBindingSetup s) {
                 ServiceProviderSetup provider = s.resolvedProvider;
-                if (provider instanceof NamespaceServiceProviderSetup p) {
+                if (provider instanceof NamespaceServiceProviderHandle p) {
                     result.add(p.operation().bean);
                 }
             }

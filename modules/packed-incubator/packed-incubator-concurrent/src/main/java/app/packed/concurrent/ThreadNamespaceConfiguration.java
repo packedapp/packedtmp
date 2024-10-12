@@ -43,7 +43,6 @@ public final class ThreadNamespaceConfiguration extends NamespaceConfiguration<T
         this.handle = handle;
     }
 
-//Altssa Hvor brugbare er de her uden at man kan faa fat i andet en den context????
     public DaemonOperationConfiguration addDaemon(Consumer<DaemonContext> action) {
         throw new UnsupportedOperationException();
     }
@@ -55,13 +54,6 @@ public final class ThreadNamespaceConfiguration extends NamespaceConfiguration<T
     // Ideen er lidt at man registrer Executor Services, og saa mapper man dem bagefter
     // Function<OperationInfo -> ExecutorService>
     public void register(ExecutorService scheduler, boolean shutdownOnExit) {
-        handle.scheduler = new ExecutorConfiguration(scheduler, shutdownOnExit);
-    }
-
-    // If ExecutorService a task will be executed with sleep. Don't use this unless
-    // Otherwise the
-
-    public void setScheduling(ExecutorService scheduler, boolean shutdownOnExit) {
         handle.scheduler = new ExecutorConfiguration(scheduler, shutdownOnExit);
     }
 

@@ -15,28 +15,27 @@
  */
 package internal.app.packed.operation;
 
-import static java.util.Objects.requireNonNull;
+import java.util.List;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodType;
-
-import internal.app.packed.util.MethodHandleUtil;
+import app.packed.util.Nullable;
+import internal.app.packed.context.PackedContextTemplate;
+import internal.app.packed.operation.PackedOperationTemplate.ReturnKind;
 
 /**
  *
  */
-public class LazyMethodHandle {
-    final OperationSetup setup;
-    final MethodType mt;
-    final MethodHandleUtil.LazyResolable lr;
+public record PackedOperationTemplate2(
+        ReturnKind returnKind,
+        Class<?> returnClass,
+        boolean extensionContext,
+        @Nullable Class<?> beanClass,
+        List<PackedContextTemplate> contexts,
+        List<Class<?>> args
 
-    public LazyMethodHandle(OperationSetup setup, MethodType mt) {
-        this.setup = requireNonNull(setup);
-        this.mt = mt;
-        lr = MethodHandleUtil.lazyF(mt, () -> setup.handle().generateMethodHandle());
-    }
+        )
 
-    public MethodHandle methodHandle() {
-        return lr.handle();
-    }
+
+
+{
+
 }

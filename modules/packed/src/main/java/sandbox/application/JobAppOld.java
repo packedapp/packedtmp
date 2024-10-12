@@ -22,7 +22,6 @@ import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.component.guest.FromComponentGuest;
-import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import app.packed.util.Result;
@@ -59,7 +58,7 @@ import app.packed.util.Result;
 public final class JobAppOld {
 
     /** The bootstrap app. */
-    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(ApplicationTemplate.of(Holder.class, c -> c.rootContainer(ContainerTemplate.MANAGED)));
+    private static final BootstrapApp<Holder> BOOTSTRAP = BootstrapApp.of(ApplicationTemplate.ofManaged(Holder.class));
 
     @SuppressWarnings("unchecked")
     public static <T> Result<T> compute(Class<T> resultType, Assembly assembly, Wirelet... wirelets) {

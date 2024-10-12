@@ -18,6 +18,7 @@ package app.packed.service.sandbox;
 /**
  *
  */
+// Maybe ServiceProxies, and then just static methods
 class ServiceProxy {
     // Service proxies are configured at build time.
 

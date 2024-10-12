@@ -23,7 +23,6 @@ import app.packed.assembly.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import internal.app.packed.application.PackedApplicationTemplate;
-import internal.app.packed.application.PackedBootstrapApp;
 
 /**
  * A bootstrap app is a special type of application that can be used to create other (non-bootstrap) application.
@@ -118,7 +117,7 @@ public sealed interface BootstrapApp<I> permits PackedBootstrapApp, MappedBootst
      *            the application mapper
      * @return the new bootstrap app
      */
-    // I don't see it.. we never expose
+    // I think this only makes sense if someone wants to expose the bootstrap app to users
     default <E> BootstrapApp<E> map(Function<? super I, ? extends E> mapper) {
         requireNonNull(mapper, "mapper is null");
         return new MappedBootstrapApp<>(this, mapper);

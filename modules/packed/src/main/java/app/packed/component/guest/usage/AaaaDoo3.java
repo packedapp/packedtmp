@@ -16,32 +16,34 @@
 package app.packed.component.guest.usage;
 
 import app.packed.application.App;
-import app.packed.application.repository.ApplicationLauncher;
+import app.packed.application.repository.InstalledApplication;
+import app.packed.application.repository.ApplicationRepositoryExtension;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.lifecycle.Start;
+import app.packed.runtime.ManagedLifecycle;
 
 /**
  * Wauv...
  */
-public class AaaaDoo2 extends BaseAssembly {
+public class AaaaDoo3 extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        ApplicationLauncher.provide(GuestBean.T, i -> i.install(new SubApplication()), base());
+        use(ApplicationRepositoryExtension.class).provideApplication(SimpleManagedApplication.MANAGED, i -> i.install(new SubApplication()));
         install(MyBean.class);
     }
 
     public static void main(String[] args) {
-        App.run(new AaaaDoo2());
+        App.run(new AaaaDoo3());
     }
 
-    public record MyBean(ApplicationLauncher<GuestBean> launcher) {
+    public record MyBean(InstalledApplication<ManagedLifecycle> launcher) {
 
         @Start
         public void oni() {
             for (int i = 0; i < 10; i++) {
-                launcher.startGuest();
+                launcher.startNew();
             }
         }
     }

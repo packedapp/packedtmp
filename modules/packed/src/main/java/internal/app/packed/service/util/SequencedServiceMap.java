@@ -39,7 +39,6 @@ public final class SequencedServiceMap<V> implements Iterable<V> {
         return services.computeIfAbsent(key, mappingFunction);
     }
 
-
     public boolean contains(Class<?> key) {
         return contains(Key.of(key));
     }

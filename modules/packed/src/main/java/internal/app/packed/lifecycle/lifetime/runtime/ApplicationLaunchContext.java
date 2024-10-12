@@ -44,7 +44,7 @@ import internal.app.packed.container.wirelets.WireletSelectionArray;
 // We might have some mutable fields such as name
 public final class ApplicationLaunchContext implements Context<BaseExtension> {
 
-    public static final ContextTemplate CONTEXT_TEMPLATE = ContextTemplate.of(ApplicationLaunchContext.class, c -> {});
+    public static final ContextTemplate CONTEXT_TEMPLATE = ContextTemplate.of(ApplicationLaunchContext.class);
 
     public static final MethodHandle EMPTY_MH = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
 

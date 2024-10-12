@@ -37,6 +37,7 @@ public enum InternalBeanLifecycleKind {
     public final RunState runState;
 
     public final LifecycleDependantOrder ordering;
+
     InternalBeanLifecycleKind(RunState runState, LifecycleDependantOrder ordering) {
         this.runState = runState;
         this.ordering=ordering;

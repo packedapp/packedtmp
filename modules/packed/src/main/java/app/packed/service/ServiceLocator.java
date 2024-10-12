@@ -35,7 +35,6 @@ import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
 import app.packed.component.guest.FromComponentGuest;
-import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.context.ContextualServiceProvider;
 import app.packed.extension.BaseExtension;
@@ -320,8 +319,8 @@ public interface ServiceLocator {
      */
     private static BootstrapApp<ServiceLocator> bootstrap() {
         class ServiceLocatorBootstrap {
-            private static final BootstrapApp<ServiceLocator> APP =BootstrapApp.of( ApplicationTemplate
-                    .of(new Op1<@FromComponentGuest ServiceLocator, ServiceLocator>(e -> e) {}, c -> c.rootContainer(ContainerTemplate.UNMANAGED)));
+            private static final BootstrapApp<ServiceLocator> APP = BootstrapApp
+                    .of(ApplicationTemplate.ofUnmanaged(new Op1<@FromComponentGuest ServiceLocator, ServiceLocator>(e -> e) {}));
         }
         return ServiceLocatorBootstrap.APP;
     }

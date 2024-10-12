@@ -25,7 +25,6 @@ import app.packed.bean.scanning.BeanElement;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
-import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.PackedBindableVariable;
 
@@ -182,10 +181,6 @@ public sealed interface BindableVariable extends BeanElement permits PackedBinda
 
     /** {@return whether or not the underlying variable has been bound.} */
     boolean isBound();
-
-    /** {@return a descriptor of the underlying operation. */
-    // What if embedded?
-    OperationTemplate.Descriptor operation();
 
     /** {@return the raw type of the variable.} */
     default Class<?> rawType() {

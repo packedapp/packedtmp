@@ -24,8 +24,8 @@ import java.util.function.Predicate;
 import app.packed.binding.Key;
 import app.packed.container.Wirelet;
 import app.packed.service.ServiceContract;
-import app.packed.service.sandbox.ServiceIncomingTransformer;
-import app.packed.service.sandbox.ServiceOutgoingTransformer;
+import app.packed.service.bridge.old.ServiceIncomingTransformer;
+import app.packed.service.bridge.old.ServiceOutgoingTransformer;
 
 /**
  * This class provide wirelets that can be used to transform and filter services being pull and pushed into containers.

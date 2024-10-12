@@ -45,7 +45,7 @@ public final class ScheduledOperationHandle extends ThreadedOperationHandle<Sche
     }
 
     @Override
-    protected void onClose() {
+    protected void onOperationClose() {
         /// Called from a code generation thread
         if (s == null) {
             throw new IllegalStateException("Operation " + this + " was never scheduled");

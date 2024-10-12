@@ -18,7 +18,7 @@ package internal.app.packed.application.repository;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
-import app.packed.application.repository.ManagedInstance;
+import app.packed.application.repository.other.ManagedInstance;
 
 /**
  *
@@ -36,7 +36,7 @@ public final class UnmanagedApplicationRepository<I, H extends ApplicationHandle
 
     /** {@inheritDoc} */
     @Override
-    public Stream<ManagedInstance<I>> instances() {
+    public Stream<ManagedInstance<I>> allInstances() {
         throw new UnsupportedOperationException("This repository does not track unamanged application instance");
     }
 

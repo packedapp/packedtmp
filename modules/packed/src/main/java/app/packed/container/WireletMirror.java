@@ -17,7 +17,7 @@ package app.packed.container;
 
 import java.util.Optional;
 
-import app.packed.build.BuildMirror;
+import app.packed.build.Mirror;
 import app.packed.extension.Extension;
 
 /**
@@ -32,7 +32,7 @@ import app.packed.extension.Extension;
 // What about guarded wirelets or wrapped wirelets??? They kind of change
 // The bad thing about calling it a mirror. Is that it is not great for runtime
 // Maybe better something a.la. visitor.
-public interface WireletMirror extends BuildMirror {
+public interface WireletMirror extends Mirror {
 
     // If this extension an extension wirelet. The extension the wirelet is a part of
     Optional<Class<? extends Extension<?>>> extension();

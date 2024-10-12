@@ -22,8 +22,8 @@ import java.util.function.Consumer;
 
 import app.packed.bean.BeanKind;
 import app.packed.context.ContextTemplate;
-import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import internal.app.packed.operation.PackedOperationTemplate;
+import internal.app.packed.operation.PackedOperationTemplate.PackedOperationTemplateConfigurator;
 
 /**
  * An operation template defines the basic behaviour of an operation and is typically reused across multiple operations.
@@ -31,59 +31,20 @@ import internal.app.packed.operation.PackedOperationTemplate;
  *
  * <p>
  */
-
-// I can't see why we should not define context here
-// I think we should have a builder probably.
-// So we can condense information
-
-// Components
-//// BeanInstance, BeanPouch
-
-//// ExtensionContext  (Or InvocationContext??? IDK bliver jo brugt across multi usage)
-//// Contexts
-
-// Reserved arguments: ExtensionContext | Wirelet[] | BeanInstance
-// Free arguments available for hooks with the same extension type
-// Context
-
-//// ErrorHandling <- er paa Operationen ikke lifetimen
-
-// InvocationSite, InvocationType, Invocation contexts
-
-//InvocationType
-//Context's
-//Name
-//Codegen Type... (MH I guess)
-
-//Tror invocation orderen er fixed for de forskellige typer...
-//Args er altid til sidst...
-
-// OT.forBeanOperation()
-// OT.forNewApplication()
-// OT.forNewContainer
-
-// IsComposite
-
-// EC? BeanInstance? [Context*] Speciel (fields)
 public sealed interface OperationTemplate permits PackedOperationTemplate {
 
-    OperationTemplate.Descriptor descriptor();
+    OperationTemplate configure(Consumer<? super Configurator> configure);
 
-    OperationTemplate reconfigure(Consumer<? super Configurator> configure);
+    OperationTemplate.Descriptor descriptor();
 
     // Tror ikke laengere man kan lave dem direkte paa den her maade...
     static OperationTemplate defaults() {
         return PackedOperationTemplate.DEFAULTS;
     }
 
-    static OperationTemplate delegateTo(ExtensionUseSite useSite) {
-        return PackedOperationTemplate.DEFAULTS;
+    static OperationTemplate of(Consumer<? super Configurator> configure) {
+        return defaults().configure(configure);
     }
-
-    //
-//  default OperationTemplate withClassifier(Class<?> type) {
-//      throw new UnsupportedOperationException();
-//  }
 
     static OperationTemplate ofFunction(Class<?> functionalInterface, OperationType operationType) {
         return ofFunction(MethodHandles.publicLookup(), functionalInterface, operationType);
@@ -94,28 +55,9 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         throw new UnsupportedOperationException();
     }
 
-    static OperationTemplate raw() {
-        return PackedOperationTemplate.RAW;
-    }
+    sealed interface Configurator permits PackedOperationTemplateConfigurator {
 
-    // Was argument type.
-    enum BeanInstanceHowToGet {
-
-        /** The invocation argument is a bean instance. */
-        EXPLITCIT_BEAN_INSTANCE,
-
-        /** The invocation argument is an extension bean context. */
-        // Maaske noget andet end context, given dens mening
-        FROM_EXTENSION_CONTEXT; // InvocationContext
-    }
-
-    enum BeanInstanceHowToGet2 {
-        // Operation never takes a bean
-        STATIC
-    }
-
-    interface Configurator {
-
+        // requireBeanInstance() <- always 1 param
         default Configurator appendBeanInstance() {
             return appendBeanInstance(Object.class);
         }
@@ -125,23 +67,20 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         // Hvad sker der naar den er i andre lifetimes?
         Configurator inContext(ContextTemplate context);
 
+        Configurator raw();
+
         /** {@return an operation template that ignores any return value.} */
         // If you want to fail. Check return type
         // Isn't it just void???
+        // I think this won't fail unlike returnType(void.class)
+        // which requires void return type
         Configurator returnIgnore();
 
         Configurator returnType(Class<?> type);
 
-        default Configurator returnTypeObject() {
-            return returnType(Object.class);
-        }
-
-//        default OperationTemplate withoutContext(Class<? extends Context<?>> contextClass) {
-//            // Den eneste usecase er at fjerne ContainerContext
-//            return this;
-//        }
-
-        // Takes EBC returns void
+        // Field type, Method return Type
+        // The operation template will be re-adjusted before being used
+        Configurator returnTypeDynamic();
 
         default Configurator withInvocationArgument(Class<?> argumentClass) {
             // Kan man bruge alle argumenterne? eller kun dem her?
@@ -164,7 +103,7 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         // Men det er ikke et argument noget sted
 
         // Replace With ContextTemplate.Descriptor
-        Map<Class<?>, ContextTemplate.Descriptor> contexts();
+        Map<Class<?>, ContextTemplate> contexts();
 
         /**
          *
@@ -196,6 +135,48 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     // (Bounded) EmbeddedOp (Er aldrig visible...
 
 }
+
+interface sandBox {
+
+    // Was argument type.
+    enum BeanInstanceHowToGet {
+
+        /** The invocation argument is a bean instance. */
+        EXPLITCIT_BEAN_INSTANCE,
+
+        /** The invocation argument is an extension bean context. */
+        // Maaske noget andet end context, given dens mening
+        FROM_EXTENSION_CONTEXT; // InvocationContext
+    }
+
+    enum BeanInstanceHowToGet2 {
+        // Operation never takes a bean
+        STATIC
+    }
+}
+//Reserved arguments: ExtensionContext | Wirelet[] | BeanInstance
+//Free arguments available for hooks with the same extension type
+//Context
+
+////ErrorHandling <- er paa Operationen ikke lifetimen
+
+//InvocationSite, InvocationType, Invocation contexts
+
+//InvocationType
+//Context's
+//Name
+//Codegen Type... (MH I guess)
+
+//Tror invocation orderen er fixed for de forskellige typer...
+//Args er altid til sidst...
+
+//OT.forBeanOperation()
+//OT.forNewApplication()
+//OT.forNewContainer
+
+//IsComposite
+
+//EC? BeanInstance? [Context*] Speciel (fields)
 //
 //// 3 choices?
 //// No ErrorHandling (Exception will propagate directly)

@@ -29,30 +29,19 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
-public sealed abstract class ServiceProviderSetup implements Keyed {
+public sealed interface ServiceProviderSetup extends Keyed {
 
-    /** All bindings that uses this provider. */
-    public final ArrayList<ServiceBindingSetup> bindings = new ArrayList<>();
+    BindingAccessor binding();
 
-    private final Key<?> key;
-
-    protected ServiceProviderSetup(Key<?> key) {
-        this.key = key;
-    }
-
-    public abstract BindingAccessor binding();
-
-    /** {@inheritDoc} */
-    @Override
-    public Key<?> key() {
-        return key;
-    }
-
-    public static final class BeanServiceProviderSetup extends ServiceProviderSetup {
+    public static final class BeanServiceProviderSetup implements ServiceProviderSetup {
         private final SupplierOrInstance binding;
+        /** All bindings that uses this provider. */
+        public final ArrayList<ServiceBindingSetup> bindings = new ArrayList<>();
+
+        private final Key<?> key;
 
         public BeanServiceProviderSetup(Key<?> key, SupplierOrInstance binding) {
-            super(key);
+            this.key = key;
             this.binding = requireNonNull(binding);
         }
 
@@ -64,14 +53,24 @@ public sealed abstract class ServiceProviderSetup implements Keyed {
         public SupplierOrInstance bindingInstance() {
             return binding;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public Key<?> key() {
+            return key;
+        }
     }
 
-    public static final class ContextServiceProviderSetup extends ServiceProviderSetup {
+    public static final class ContextServiceProviderSetup implements ServiceProviderSetup {
         private final BindingAccessor binding;
         private final ContextSetup context;
+        /** All bindings that uses this provider. */
+        public final ArrayList<ServiceBindingSetup> bindings = new ArrayList<>();
+
+        private final Key<?> key;
 
         public ContextServiceProviderSetup(Key<?> key, ContextSetup context, BindingAccessor binding) {
-            super(key);
+            this.key = key;
             this.context = context;
             this.binding = binding;
         }
@@ -84,10 +83,23 @@ public sealed abstract class ServiceProviderSetup implements Keyed {
         public ContextSetup context() {
             return context;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public Key<?> key() {
+            return key;
+        }
     }
 
-    public static final class NamespaceServiceProviderSetup extends ServiceProviderSetup {
+    // extends OperationHandle
+    public static final class NamespaceServiceProviderHandle implements ServiceProviderSetup {
+
         private final BindingAccessor binding;
+
+        /** All bindings that uses this provider. */
+        public final ArrayList<ServiceBindingSetup> bindings = new ArrayList<>();
+
+        private final Key<?> key;
 
         /** Used for checking for dependency cycles. */
         public boolean hasBeenCheckForDependencyCycles;
@@ -96,8 +108,8 @@ public sealed abstract class ServiceProviderSetup implements Keyed {
 
         private final OperationSetup operation;
 
-        public NamespaceServiceProviderSetup(Key<?> key, ServiceNamespaceHandle namespace, OperationSetup operation, BindingAccessor binding) {
-            super(key);
+        public NamespaceServiceProviderHandle(Key<?> key, ServiceNamespaceHandle namespace, OperationSetup operation, BindingAccessor binding) {
+            this.key = key;
             this.namespace = namespace;
             this.operation = operation;
             this.binding = binding;
@@ -115,6 +127,12 @@ public sealed abstract class ServiceProviderSetup implements Keyed {
         public OperationSetup operation() {
             return operation;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public Key<?> key() {
+            return key;
+        }
     }
 
     /**
@@ -123,14 +141,18 @@ public sealed abstract class ServiceProviderSetup implements Keyed {
      * @see app.packed.operation.OperationConfiguration#bindServiceInstance(Class, Object)
      * @see app.packed.operation.OperationConfiguration#bindServiceInstance(Key, Object)
      */
-    public static final class OperationServiceProviderSetup extends ServiceProviderSetup {
+    public static final class OperationServiceProviderSetup implements ServiceProviderSetup {
+        /** All bindings that uses this provider. */
+        public final ArrayList<ServiceBindingSetup> bindings = new ArrayList<>();
+
+        private final Key<?> key;
 
         private final SupplierOrInstance binding;
 
         private final OperationSetup operation;
 
         public OperationServiceProviderSetup(Key<?> key, OperationSetup operation, SupplierOrInstance binding) {
-            super(key);
+            this.key = key;
             this.operation = operation;
             this.binding = binding;
         }
@@ -147,6 +169,12 @@ public sealed abstract class ServiceProviderSetup implements Keyed {
 
         public OperationSetup operation() {
             return operation;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Key<?> key() {
+            return key;
         }
     }
 }

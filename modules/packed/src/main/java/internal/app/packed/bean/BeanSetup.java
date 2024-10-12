@@ -56,7 +56,6 @@ import internal.app.packed.lifecycle.lifetime.LifetimeSetup;
 import internal.app.packed.lifecycle.lifetime.RegionalLifetimeSetup;
 import internal.app.packed.operation.BeanOperationStore;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.service.MainServiceNamespaceHandle;
 import internal.app.packed.service.ServiceProviderSetup.BeanServiceProviderSetup;
 import internal.app.packed.service.util.SequencedServiceMap;
@@ -122,13 +121,17 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
 
     public final SequencedServiceMap<BeanServiceProviderSetup> serviceProviders = new SequencedServiceMap<>();
 
+    /** The bean's template. */
+    public final PackedBeanTemplate template;
+
     /** Create a new bean. */
     private BeanSetup(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind beanSourceKind, @Nullable Object beanSource) {
-        this.beanKind = requireNonNull(installer.template.kind());
+        this.beanKind = requireNonNull(installer.template.beanKind());
         this.beanClass = requireNonNull(beanClass);
         this.beanSource = beanSource;
         this.beanSourceKind = requireNonNull(beanSourceKind);
 
+        this.template = installer.template;
         this.container = requireNonNull(installer.installledByExtension.container);
         this.installedBy = requireNonNull(installer.installledByExtension);
         this.owner = requireNonNull(installer.owner);
@@ -143,14 +146,12 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
             this.lifetimeStoreIndex = -1;
             // containerLifetime.addDetachedChildBean(bls);
         }
-        operations.bot = (PackedOperationTemplate) installer.template.bot();
 
         if (beanSourceKind != BeanSourceKind.SOURCELESS) {
             scanner = new BeanScanner(this);
         }
 
-        // Setup any contexts the bean is in
-        for (PackedContextTemplate t : installer.template.contexts().values()) {
+        for (PackedContextTemplate t :  installer.template.initializationTemplate().contexts) {
             contexts.put(t.contextClass(), new ContextSetup(t, this));
         }
     }
@@ -359,7 +360,6 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         // Create the new BeanHandle
         BeanHandle<?> handle = handleFactory.apply(installer);
         bean.handle = handle;
-
 
         LifecycleAnnotationIntrospector.checkForFactoryOp(bean);
         // Scan the bean if needed, and remove references to the scanner

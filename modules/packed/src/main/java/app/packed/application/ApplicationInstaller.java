@@ -39,6 +39,7 @@ public sealed interface ApplicationInstaller<H extends ApplicationHandle<?, ?>> 
      * @see ApplicationHandle#componentTag(String...)
      * @see ApplicationHandle#componentTags()
      */
+    // Still useful for Application Repository where the template is fixed
     ApplicationInstaller<H> componentTag(String... tags);
 
     /**

@@ -156,6 +156,10 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
         }
     }
 
+    public boolean isAssembling() {
+        return phase == ApplicationBuildPhase.ASSEMBLE;
+    }
+
     /** The application has been successfully assembled. Now generate any required code. */
     public void close() {
         // Only generate code if needed

@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
-import app.packed.build.BuildMirror;
+import app.packed.build.Mirror;
 import app.packed.extension.Extension;
 import app.packed.operation.CompositeOperationMirror;
 import app.packed.operation.OperationMirror;
@@ -33,7 +33,7 @@ import internal.app.packed.operation.OperationSetup;
 // Lifetime == Scope????
 
 // What about OperationLifetimeMirror????
-public abstract sealed class LifetimeMirror implements BuildMirror permits BeanLifetimeMirror, RegionalLifetimeMirror {
+public abstract sealed class LifetimeMirror implements Mirror permits BeanLifetimeMirror, RegionalLifetimeMirror {
 
     /**
      * If the lifetime has any entry points. This method returns the extension that is responsible for choosing the right

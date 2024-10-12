@@ -23,7 +23,7 @@ import app.packed.bean.scanning.SyntheticBean;
 import app.packed.binding.BindableVariable;
 import app.packed.binding.Key;
 import app.packed.binding.UnwrappedBindableVariable;
-import app.packed.build.BuildMirror;
+import app.packed.build.Mirror;
 import app.packed.build.action.BuildActionable;
 import app.packed.component.guest.ComponentHostContext;
 import app.packed.component.guest.FromComponentGuest;
@@ -47,6 +47,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
 import internal.app.packed.bean.PackedBeanTemplate;
+import internal.app.packed.bean.scanning.PackedBeanElement;
 import internal.app.packed.bean.scanning.PackedBeanField;
 import internal.app.packed.bean.scanning.PackedBeanMethod;
 import internal.app.packed.binding.PackedBindableWrappedVariable;
@@ -94,8 +95,10 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     // But right now we only have a single field
     static final ContainerBuildLocal<FromLinks> FROM_LINKS = ContainerBuildLocal.of(FromLinks::new);
 
+    static final BeanTemplate TEMPLATE = BeanKind.CONTAINER.template().configure(c -> c.initialization(o -> o.returnTypeDynamic()));
+
     /**
-     * All your base are belong to us.
+     * All your base are belong to us. £
      *
      * @param handle
      *            the extension's handle
@@ -158,7 +161,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      */
     @BuildActionable("bean.install")
     public <T> ProvidableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(BeanKind.CONTAINER.template()).install(implementation, ProvidableBeanHandle::new);
+        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(TEMPLATE).install(implementation, ProvidableBeanHandle::new);
         return h.configuration();
     }
 
@@ -171,7 +174,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @see CommonContainerAssembly#install(Op)
      */
     public <T> ProvidableBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(BeanKind.CONTAINER.template()).install(op, ProvidableBeanHandle::new);
+        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(TEMPLATE).install(op, ProvidableBeanHandle::new);
         return h.configuration();
     }
 
@@ -195,7 +198,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      * @return this configuration
      */
     public <T> ProvidableBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(BeanKind.CONTAINER.template()).installInstance(instance, ProvidableBeanHandle::new);
+        BeanHandle<ProvidableBeanConfiguration<T>> h = install0(TEMPLATE).installInstance(instance, ProvidableBeanHandle::new);
         return h.configuration();
     }
 
@@ -257,7 +260,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         // Create a new bean that holds the ServiceLocator to export
         // will fail if installed multiple times
 
-        BeanHandle<ProvidableBeanConfiguration<PackedServiceLocator>> ha = newBeanBuilderSelf(BeanKind.CONTAINER.template()).install(PackedServiceLocator.class,
+        BeanHandle<ProvidableBeanConfiguration<PackedServiceLocator>> ha = newBeanBuilderSelf(TEMPLATE).install(PackedServiceLocator.class,
                 ProvidableBeanHandle::new);
         ha.configuration().exportAs(ServiceLocator.class);
 
@@ -265,7 +268,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         BeanSetup.crack(ha).bindCodeGenerator(new Key<Map<Key<?>, MethodHandle>>() {}, () -> extension.container.servicesMain().exportedServices());
 
         // Alternative, If we do not use it for anything else
-        newBeanBuilderSelf(BeanKind.CONTAINER.template()).installIfAbsent(PackedServiceLocator.class, BeanConfiguration.class, BeanHandle::new, bh -> {
+        newBeanBuilderSelf(TEMPLATE).installIfAbsent(PackedServiceLocator.class, BeanConfiguration.class, BeanHandle::new, bh -> {
             bh.exportAs(ServiceLocator.class);
             BeanSetup.crack(bh).bindCodeGenerator(new Key<Map<Key<?>, MethodHandle>>() {}, () -> extension.container.servicesMain().exportedServices());
         });
@@ -389,7 +392,9 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
             @Override
             public void onAnnotatedVariable(BindableVariable v, Annotation annotation) {
                 if (annotation instanceof FromComponentGuest) {
-                    beanHandle(GuestBeanHandle.class).get().resolve(this, v);
+                    PackedBeanElement pbe = ((PackedBeanElement) v);
+                    GuestBeanHandle gbh = (GuestBeanHandle) pbe.bean().handle();
+                    gbh.resolve(this, v);
                 } else {
                     super.onAnnotatedVariable(v, annotation);
                 }
@@ -417,7 +422,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
                 } else if (hook == ComponentHostContext.class) {
                     PackedComponentHostContext c = beanHandle(GuestBeanHandle.class).get().toContext();
                     binding.bindInstance(c);
-                } else if (BuildMirror.class.isAssignableFrom(hook)) {
+                } else if (Mirror.class.isAssignableFrom(hook)) {
                     if (actualHook == DeploymentMirror.class) {
                         binding.bindInstance(operation.bean.container.application.deployment.mirror());
                     } else if (actualHook == ApplicationMirror.class) {

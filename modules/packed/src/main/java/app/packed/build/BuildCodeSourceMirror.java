@@ -20,4 +20,4 @@ import app.packed.build.hook.BuildHookMirror;
 import app.packed.extension.ExtensionMirror;
 
 /** A mirror for a {@link BuildCodeSource}. */
-public sealed interface BuildCodeSourceMirror extends BuildMirror permits AssemblyMirror, ExtensionMirror, BuildHookMirror {}
+public sealed interface BuildCodeSourceMirror extends Mirror permits AssemblyMirror, ExtensionMirror, BuildHookMirror {}

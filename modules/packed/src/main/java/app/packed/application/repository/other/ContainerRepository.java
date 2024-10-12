@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.repository;
+package app.packed.application.repository.other;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -21,8 +21,9 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
-import app.packed.application.ApplicationRepositoryConfiguration;
 import app.packed.application.ApplicationTemplate;
+import app.packed.application.repository.ApplicationRepositoryConfiguration;
+import app.packed.application.repository.InstalledApplication;
 import app.packed.extension.BaseExtension;
 import app.packed.service.ProvidableBeanConfiguration;
 
@@ -30,6 +31,10 @@ import app.packed.service.ProvidableBeanConfiguration;
 // Instance Manager
 
 // Vi har kun et handle. Kan ikke se hvor
+
+// Lad os sige vi har 23 session beans spredt ud og et container tree.
+
+// Hvor er rooten? Giver det meningen med wirelets???
 
 
 // Manages one or more instances, of a single
@@ -41,7 +46,7 @@ public interface ContainerRepository<I> {
 
     Stream<ManagedInstance<I>> instances();
 
-    ApplicationLauncher<I> launcher();
+    InstalledApplication<I> launcher();
 
     // Problemet her kan jo saa vaere noget namespace fis...
     // Naar vi skal launches shittet

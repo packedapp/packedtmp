@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service.sandbox;
+package app.packed.service.bridge.old;
 
 import java.lang.annotation.Annotation;
 import java.util.Set;
@@ -49,6 +49,7 @@ import app.packed.binding.Key;
 // Taenker de bliver applied i omvendt raekkefoelge hvis man har flere
 public interface ServiceIncomingTransformer {
 
+    // contract.foreachOptional.remove
     ServiceIncomingTransformer ignoreAllOptionals();
 
     ServiceIncomingTransformer ignoreOptionals(Key<?>... keys);
@@ -66,7 +67,7 @@ public interface ServiceIncomingTransformer {
      * @param a
      * @return
      */
-    ServiceIncomingTransformer rekeyAllAddQualifier(Annotation a);
+    ServiceIncomingTransformer rekeyAllWithQualifier(Annotation a);
 
     Set<Key<?>> requires();
 

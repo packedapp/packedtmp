@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.application.repository;
 
 import java.util.function.Consumer;
 
+import app.packed.application.ApplicationHandle;
+import app.packed.application.ApplicationInstaller;
+import app.packed.application.ApplicationTemplate;
 import app.packed.service.ProvidableBeanConfiguration;
 
 /**
@@ -31,27 +34,21 @@ import app.packed.service.ProvidableBeanConfiguration;
 // That has an provideRepositoryAtRuntime();
 // I don't know don't we always??
 
+// Maybe the bean is owned by the extension?? And provided to the user
+
 // Maybe we don't extend it ServiableBean and have a provideAtRuntime();
 public final class ApplicationRepositoryConfiguration<I, H extends ApplicationHandle<I, ?>> extends ProvidableBeanConfiguration<ApplicationRepository<I, H>> {
 
     /** The application repository bean handle. */
-    final ApplicationRepositoryHandle<I, H> handle;
+    final ApplicationRepositoryBeanHandle<I, H> handle;
 
     /**
      * @param handle
      *            the bean's handle
      */
-    ApplicationRepositoryConfiguration(ApplicationRepositoryHandle<I, H> handle) {
+    ApplicationRepositoryConfiguration(ApplicationRepositoryBeanHandle<I, H> handle) {
         super(handle);
         this.handle = handle;
-    }
-
-    // Okay, vi har elastic search in an Assembly. Byg den
-    // Expose some services. Og vi har nok en masse shared services.
-    // Tror ikke helt vi er klar
-    // Ved ikke om det har noget med repository at goere. Det tror jeg egentlig ikke...
-    public void buildDependecy(Consumer<? super ApplicationInstaller<H>> installer) {
-        handle.repository.add(installer);
     }
 
     /**
@@ -67,7 +64,6 @@ public final class ApplicationRepositoryConfiguration<I, H extends ApplicationHa
         super.provide();
         return this;
     }
-
 
     /** {@return the templates that are available in the repository) */
     @SuppressWarnings("unchecked")

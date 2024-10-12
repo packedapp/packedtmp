@@ -78,7 +78,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
         ink.putIfAbsent(name, oh);
 
         base().installIfAbsent(HookBean.class, b -> {
-            b.bindServiceInstance(new Key<Map<String, MethodHandle>>() {}, CollectionUtil.copyOf(ink, v -> v.methodHandle()));
+            b.bindServiceInstance(new Key<Map<String, MethodHandle>>() {}, CollectionUtil.copyOf(ink, v -> v.invokerAsMethodHandle()));
         });
     }
 

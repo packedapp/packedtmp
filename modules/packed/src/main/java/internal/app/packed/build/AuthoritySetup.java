@@ -25,7 +25,7 @@ import internal.app.packed.assembly.AssemblySetup;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceProviderSetup;
-import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderSetup;
+import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.util.AbstractTreeNode;
 
 /**
@@ -53,7 +53,7 @@ public sealed abstract class AuthoritySetup<T extends AbstractTreeNode<T>> exten
         ArrayList<ServiceBindingSetup> unresolved = new ArrayList<>();
         for (ServiceBindingSetup sbs : servicesToResolve) {
             ServiceProviderSetup sp = sbs.resolve();
-            if (sp instanceof NamespaceServiceProviderSetup n) {
+            if (sp instanceof NamespaceServiceProviderHandle n) {
                 n.bindings.add(sbs);
             }
             if (sp == null && sbs.isRequired) {

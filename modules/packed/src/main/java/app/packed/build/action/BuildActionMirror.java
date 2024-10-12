@@ -23,7 +23,7 @@ import java.util.Set;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.build.BuildActor;
 import app.packed.build.BuildCodeSourceMirror;
-import app.packed.build.BuildMirror;
+import app.packed.build.Mirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 
@@ -37,7 +37,7 @@ import app.packed.component.ComponentPath;
 
 // Can the user add Build instructions???????????? Why not
 // BuildAction?
-public interface BuildActionMirror extends BuildMirror {
+public interface BuildActionMirror extends Mirror {
 
     // The assembly in which the action was performed.
     // The targeted assembly. For extensions this will for example be the container where the bean is installed in.

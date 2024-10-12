@@ -51,7 +51,10 @@ public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits 
      * <p>
      * This template does not support carrier objects. (or do we??)
      */
-    ContainerTemplate<?> DEFAULT = new PackedContainerTemplate<>(PackedContainerKind.PARENT_LIFETIME);
+    ContainerTemplate<?> DEFAULT = new PackedContainerTemplate<>(PackedContainerKind.PARENT_CONTAINER);
+
+    // Optional, to support #DEFAULT
+    boolean isManaged();
 
     /**
      * A container template representing a container that exists solely within a single entry point operation.

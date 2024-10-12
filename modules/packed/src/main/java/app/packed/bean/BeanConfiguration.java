@@ -13,6 +13,7 @@ import app.packed.build.BuildActor;
 import app.packed.build.action.BuildActionable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.context.Context;
+import app.packed.extension.Extension;
 import app.packed.operation.OperationConfiguration;
 
 /**
@@ -53,15 +54,11 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         return this;
     }
 
-    /** {@return the owner of the bean.} */
-    // Declared by???
-    public final BuildActor author() {
-        return handle.owner();
-    }
-
     /**
-     * {@return a set of the contexts that available to the bean} These contexts can only be injected doing the construction
-     * of the bean. Either through a factory method or using {@link Inject}.
+     * {@return a set of the contexts that available to the bean}
+     * <p>
+     * These contexts can only be injected doing the initialization of the bean. Either through a factory method or using
+     * {@link Inject} or {@link app.packed.bean.lifecycle.Initialize}.
      */
     public final Set<? extends Context<?>> availableContexts() {
         throw new UnsupportedOperationException();
@@ -151,11 +148,6 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         handle.bindCodeGenerator(key, supplier);
     }
 
-    // provideTo??
-    // provideAs vs provideI
-
-    // bindinstance
-
     public <K> BeanConfiguration bindServiceInstance(Class<K> key, K instance) {
         // Future Functionality:
 
@@ -167,12 +159,18 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
         return bindServiceInstance(Key.of(key), instance);
     }
 
+    // provideTo??
+    // provideAs vs provideI
+
+    // bindinstance
+
     /**
      * Binds a (bean) service from the specified key to the specified instance.
      * <p>
      * If a service has already been specified on the bean with the same key it is overwritten.
      * <p>
      * IMPORTANT: The specified instance will not be treated as a bean, but merely as an instance
+     *
      * @param <K>
      *            type of the instance
      * @param key
@@ -198,7 +196,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
 
     /** {@inheritDoc} */
     @Override
-    public Set<String> componentTags() {
+    public final Set<String> componentTags() {
         return handle.componentTags();
     }
 
@@ -210,6 +208,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
      * <p>
      * This method is primarily used for informational purposes.
      */
+    //Is this still used
     public final Set<Class<? extends Context<?>>> contexts() {
         // Need to filter hidden
         throw new UnsupportedOperationException();
@@ -219,6 +218,10 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     @Override
     protected final BeanHandle<?> handle() {
         return handle;
+    }
+
+    public final Class<? extends Extension<?>> installedBy() {
+        return handle.bean.installedBy.extensionType;
     }
 
     // Outside of the framework I think we can only test on ComponentPath, that may be fine
@@ -294,6 +297,12 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration impleme
     @SuppressWarnings("unchecked")
     public final <T extends OperationConfiguration> Stream<T> operations(Class<T> operationType) {
         return (Stream<T>) operations().filter(e -> operationType.isInstance(e));
+    }
+
+    /** {@return the owner of the bean.} */
+    // Declared by???
+    public final BuildActor owner() {
+        return handle.owner();
     }
 
     // Ideen er at have alle de keys that are resolved as services

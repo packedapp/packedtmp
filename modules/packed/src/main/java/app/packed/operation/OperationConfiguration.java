@@ -63,7 +63,6 @@ public non-sealed class OperationConfiguration extends ComponentConfiguration {
         return this;
     }
 
-
     /** {@inheritDoc} */
     @Override
     public OperationConfiguration componentTag(String... tags) {
@@ -93,6 +92,11 @@ public non-sealed class OperationConfiguration extends ComponentConfiguration {
         checkIsConfigurable();
         handle.named(name);
         return this;
+    }
+
+    // peekBinding(int index, Consumer<?>)
+    public void replaceBinding(int index, Object value) {
+        throw new UnsupportedOperationException();
     }
 
     OperationConfiguration runBefore(Runnable runnable) {

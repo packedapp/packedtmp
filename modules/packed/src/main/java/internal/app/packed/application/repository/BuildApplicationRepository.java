@@ -39,7 +39,7 @@ public final class BuildApplicationRepository implements ApplicationInstallingSo
 
     final Map<String, ApplicationHandle<?, ?>> handles = new HashMap<>();
 
-    MethodHandle mh;
+    public MethodHandle mh;
 
     public final PackedApplicationTemplate<?> template;
 

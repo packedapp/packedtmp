@@ -63,9 +63,9 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
         super(handle);
     }
 
-    private static final ContextTemplate CT = ContextTemplate.of(SchedulingContext.class, c -> c.implementationClass(PackedSchedulingContext.class));
+    private static final ContextTemplate CT = ContextTemplate.of(SchedulingContext.class).withImplementation(PackedSchedulingContext.class);
 
-    private static final OperationTemplate OT = OperationTemplate.defaults().reconfigure(c -> c.inContext(CT));
+    private static final OperationTemplate OT = OperationTemplate.of(c -> c.inContext(CT));
 
     // Creates a new instance on every invocation
 
@@ -81,7 +81,7 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
                 OperationHandle<?> operation = method.newOperation(OT).install(OperationHandle::new);
 
                 InstanceBeanConfiguration<SchedulingBean> bean = lifetimeRoot().base().installIfAbsent(SchedulingBean.class, handle -> {
-                    handle.bindServiceInstance(MethodHandle.class, operation.methodHandle());
+                    handle.bindServiceInstance(MethodHandle.class, operation.invokerAsMethodHandle());
                 });
                 // bean, add scheduling +
                 // Manytons dur ikke direkte

@@ -38,12 +38,14 @@ import tck.HookTestingExtension.FieldHook.FieldPrivateStaticString;
  */
 public class OnAnnotatedFieldTest extends AppAppTest {
 
+    static final OperationTemplate T = OperationTemplate.of(c -> c.returnTypeDynamic());
+
     @Test
     public void instanceFieldGet() throws Throwable {
         hooks().onAnnotatedField((l, b) -> {
 
-            OperationHandle<?> h = b.newGetOperation(OperationTemplate.defaults()).install(OperationHandle::new);
-            assertEquals(MethodType.methodType(String.class, ExtensionContext.class), h.invocationType());
+            OperationHandle<?> h = b.newGetOperation(T).install(OperationHandle::new);
+            assertEquals(MethodType.methodType(String.class, ExtensionContext.class), h.invokerType());
             assertSame(HookTestingExtension.class, h.installerByExtension());
 
             if (h.target() instanceof OperationTarget.OfField f) {
@@ -65,7 +67,7 @@ public class OnAnnotatedFieldTest extends AppAppTest {
     @Test
     public void instanceFieldGetSet() throws Throwable {
         hooks().onAnnotatedField((l, b) -> {
-            add(b.newGetOperation(OperationTemplate.defaults()).install(OperationHandle::new));
+            add(b.newGetOperation(T).install(OperationHandle::new));
 //                OperationHandle h = b.newSetOperation(OperationTemplate.defaults().withArg(String.class));
             // assertEquals(MethodType.methodType(void.class, ExtensionContext.class, String.class), h.invocationType());
 
@@ -87,7 +89,7 @@ public class OnAnnotatedFieldTest extends AppAppTest {
     @Test
     public void staticFieldGet() throws Throwable {
         hooks().onAnnotatedField((l, b) -> {
-            add(b.newGetOperation(OperationTemplate.defaults()).install(OperationHandle::new));
+            add(b.newGetOperation(T).install(OperationHandle::new));
         });
 
         install(FieldPrivateStaticString.class);

@@ -77,12 +77,12 @@ public class RegionalEntryPointManager {
 
             bean.container.lifetime.entryPoints.entryPoint = new OldEntryPointSetup();
 
-            OperationTemplate temp = OperationTemplate.defaults().reconfigure(c -> c.returnType(method.operationType().returnRawType()));
+            OperationTemplate temp = OperationTemplate.of(c -> c.returnTypeDynamic());
             MainOperationHandle os = method.newOperation(temp).install(MainOperationHandle::new);
 
             MainThreadOfControl mc = bean.container.lifetime.entryPoints.entryPoint.mainThread();
 
-            mc.generatedMethodHandle=os.methodHandle();
+            mc.generatedMethodHandle=os.invokerAsMethodHandle();
 //            os.generateMethodHandleOnCodegen(mh -> mc.generatedMethodHandle = mh);
             return true;
         }

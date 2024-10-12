@@ -15,7 +15,6 @@ import app.packed.bean.lifecycle.LifecycleDependantOrder;
 import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.container.ContainerInstaller;
 import app.packed.container.ContainerTemplate;
-import app.packed.context.ContextTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationInstaller;
@@ -29,14 +28,16 @@ import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionUseSite;
-import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
 
 /** An {@link ExtensionPoint extension point} for {@link BaseExtension}. */
 public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
-    final static BeanTemplate CONTAINER;
+    /** Application scoped extension beans can have ExtensionContext injected. */
+    private final static BeanTemplate CONTAINER = BaseExtension.TEMPLATE
+            .configure(c -> c.initialization(o -> {}  /*o.inContext(PackedExtensionContext.CONTEXT_TEMPLATE)*/));
 
-    public static OldContainerTemplateLink CONTAINER_MIRROR = OldContainerTemplateLink.of(MethodHandles.lookup(), BaseExtension.class, "ContainerMirror").build();
+    public static OldContainerTemplateLink CONTAINER_MIRROR = OldContainerTemplateLink.of(MethodHandles.lookup(), BaseExtension.class, "ContainerMirror")
+            .build();
 
     /**
      * A container lifetime channel that makes the container's exported services available as
@@ -47,13 +48,6 @@ public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     public static final OldContainerTemplateLink MANAGED_LIFETIME = baseBuilder(ManagedLifecycle.class.getSimpleName()).provideExpose(ManagedLifecycle.class)
             .build();
-
-    static {
-        ContextTemplate ct = ContextTemplate.of(ExtensionContext.class, c -> c.implementationClass(PackedExtensionContext.class));
-        CONTAINER = BeanKind.CONTAINER.template().reconfigure(c -> {
-            c.inContext(ct);
-        });
-    }
 
     /** Creates a new base extension point. */
     BaseExtensionPoint(ExtensionUseSite usesite) {

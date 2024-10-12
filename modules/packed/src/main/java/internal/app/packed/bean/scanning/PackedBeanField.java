@@ -35,6 +35,7 @@ import internal.app.packed.bean.scanning.BeanHookCache.HookOnFieldAnnotation;
 import internal.app.packed.binding.PackedVariable;
 import internal.app.packed.operation.OperationMemberTarget.OperationFieldTarget;
 import internal.app.packed.operation.PackedOperationTemplate;
+import internal.app.packed.operation.PackedOperationTemplate.ReturnKind;
 import internal.app.packed.util.PackedAnnotationList;
 
 /** Implementation of {@link BeanField}. */
@@ -60,7 +61,7 @@ public final class PackedBeanField extends PackedBeanElement implements BeanFiel
 
     // Field, FieldAnnotations, Type, TypeAnnotations
     PackedBeanField(BeanScanner scanner, Field field, PackedAnnotationList annotations, PackedAnnotationList hookAnnotations, HookOnFieldAnnotation... hooks) {
-        participant= scanner.computeContributor(hooks[0].extensionType());
+        participant = scanner.computeContributor(hooks[0].extensionType());
         this.field = field;
         this.annotations = annotations;
 
@@ -115,15 +116,19 @@ public final class PackedBeanField extends PackedBeanElement implements BeanFiel
     /** {@inheritDoc} */
     @Override
     public OperationInstaller newGetOperation(OperationTemplate template) {
-        requireNonNull(template, "template is null");
+        PackedOperationTemplate t = (PackedOperationTemplate) requireNonNull(template, "template is null");
         checkConfigurable();
 
         // Get A direct method handle to a getter for the field
-        MethodHandle directMH = participant.scanner.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
 
-        template = template.reconfigure(c -> c.returnType(field.getType()));
-        return newOperation(template, directMH, accessMode);
+        if (t.returnKind == ReturnKind.DYNAMIC) {
+            t = t.configure(c -> c.returnType(field.getType()));
+        }
+
+//        template = template.reconfigure(c -> c.returnType(field.getType()));
+        MethodHandle directMH = participant.scanner.unreflectGetter(field);
+        return newOperation(t, directMH, accessMode);
     }
 
     private OperationInstaller newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {

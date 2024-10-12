@@ -16,7 +16,6 @@
 package app.packed.bean;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -59,7 +58,7 @@ import sandbox.application.LifetimeTemplate;
  * @see app.packed.extension.BaseExtensionPoint#newBean(BeanTemplate, app.packed.extension.ExtensionPoint.UseSite)
  */
 // Don't do BeanTemplate<H> it does not work because Bean is parameterized unlike Container/Application
-// It al goes well until you get to BeanInstaller. Where we need the Handle
+// It al goes well until you get to BeanInstaller. Where we need the <T> of the BeanHandle
 public sealed interface BeanTemplate permits PackedBeanTemplate {
 
     BeanTemplate FUNCTIONAL = BeanKind.STATIC.template();
@@ -72,17 +71,39 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
     // Fx @Provide paa en prototypeBean (giver vel ikke mening)
     BeanTemplate GATEWAY = new PackedBeanTemplate(BeanKind.UNMANAGED);
 
-    /** {@return a descriptor for this template} */
-    BeanTemplate.Descriptor descriptor();
+    // Okay, non static should have this
+    // Is it initialization?
+    // I actually think it is the component we are referencing
 
+    Optional<OperationTemplate> initializationX();
+
+//    /** {@return a list of the various lifetime operations for the descriptor's template.} */
+//    List<OperationTemplate> lifecycleOperations();
     /**
-     * Reconfigures this bean template.
+     * Configures this bean template.
      *
      * @param action
      *            the reconfiguration action
      * @return the reconfigured bean template
      */
-    BeanTemplate reconfigure(Consumer<? super Configurator> action);
+    BeanTemplate configure(Consumer<? super Configurator> action);
+
+    /** {@return the kind of bean the descriptor's template creates} */
+    BeanKind beanKind();
+
+    /** {@return the bean contexts} */
+    Map<Class<?>, ContextTemplate> contexts();
+
+    /**
+     * <p>
+     * Empty means create as bean class
+     *
+     * @return
+     *
+     * @see BeanTemplate#createAs(Class)
+     * @see BeanTemplate#createAsBeanClass()
+     */
+    Optional<Class<?>> createAsX();
 
     /**
      * Creates a new bean template.
@@ -92,7 +113,11 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
      * @return the configured bean template
      */
     static BeanTemplate of(BeanKind kind, Consumer<? super Configurator> action) {
-        return PackedBeanTemplate.reconfigureExisting(new PackedBeanTemplate(kind), action);
+        return new PackedBeanTemplate(kind).configure(action);
+    }
+
+    static BeanTemplate of(BeanKind kind) {
+        return new PackedBeanTemplate(kind);
     }
 
     /**
@@ -126,7 +151,13 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
          * @see java.lang.invoke.MethodHandle#invokeExact(Object...)
          * @see java.lang.invoke.MethodType#changeReturnType(Class)
          */
-        Configurator createAs(Class<?> clazz);
+        default Configurator initializeAs(Class<?> clazz) {
+//          if (template.createAs.isPrimitive() || BeanSetup.ILLEGAL_BEAN_CLASSES.contains(template.createAs)) {
+//          throw new IllegalArgumentException(template.createAs + " is not valid argument");
+//      }
+            initialization(c -> c.returnType(clazz));
+            return this;
+        }
 
         /**
          * The creation MethodHandle will have the actual bean type as its return type.
@@ -139,44 +170,15 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
          * @throws UnsupportedOperationException
          *             if bean kind is not {@link BeanKind#MANANGED} or {@link BeanKind#UNMANAGED}
          */
-        Configurator createAsBeanClass();
+        default Configurator initializeAsBeanClass() {
+            initialization(c -> c.returnTypeDynamic());
+            return this;
+        }
 
-        /**
-         * Sets a context for the whole bean
-         *
-         * @param context
-         *            the context
-         * @return the new template
-         */
-        // Man skal vel angive hvordan context fungere.
-        // Er den stored, eller skal den med til alle operation?
-         Configurator inContext(ContextTemplate context);
+        Configurator initialization(Consumer<? super OperationTemplate.Configurator> initialization);
 
-        /**
-         * <p>
-         * Use {@code ContextValue(BeanLifetimeOperationContext.class)} of the exact type
-         * <p>
-         * The context is only available for the extension that installed the bean
-         * <p>
-         * When returned the targeted lifetime operation will have been updated.
-         * <p>
-         * If this template contains multiple lifetime operations different contexts can be set.
-         *
-         * @param index
-         *            the index of the lifetime operation. Must match an operation in {@link #lifetimeOperations()}.
-         * @param argumentType
-         *            the type of argument that will be taken and made available
-         * @return the new template
-         * @throws IndexOutOfBoundsException
-         *             if the specified index does not match a lifetime operation
-         * @throws IllegalArgumentException
-         *             if the specified argument type is void
-         * @see BeanLifetimeOperationContext
-         * @see app.packed.extension.context.ContextValue
-         */
-        // Lifetime operationer kan koeres i en context
-        Configurator inContextForLifetimeOperation(int index, ContextTemplate template);
-
+        // Vi beholder den lidt endnu. Fordi vi maaske bliver noedt til at goere noget
+        // Hvis vi vil have foreign objecter osv
         @SuppressWarnings("exports")
         Configurator lifetime(LifetimeTemplate lifetime);
 
@@ -198,37 +200,32 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
         <T> Configurator localSet(BeanBuildLocal<T> local, T value);
     }
 
-    /** A descriptor for a BeanTemplate. This class is mainly used for informational purposes. */
-    // Alternativet er jo at vi ikke exposer det paa BeanMirrror...
-    // Lige nu er descriptoren kun fordi vi vil holde det "hemmeligt" fx links
-    sealed interface Descriptor permits PackedBeanTemplate.PackedBeanTemplateDescriptor {
-
-        /** {@return the kind of bean the descriptor's template creates} */
-        BeanKind beanKind();
-
-        /** {@return the bean contexts} */
-        Map<Class<?>, ContextTemplate.Descriptor> contexts();
-
-        /**
-         * <p>
-         * Empty means create as bean class
-         *
-         * @return
-         *
-         * @see BeanTemplate#createAs(Class)
-         * @see BeanTemplate#createAsBeanClass()
-         */
-        Optional<Class<?>> createAs();
-
-        /** {@return a list of the various lifetime operations for the descriptor's template.} */
-        List<OperationTemplate.Descriptor> lifetimeOperations();
-
-        default Module module() {
-            throw new UnsupportedOperationException();
-        }
-    }
-
 }
+
+///**
+//* <p>
+//* Use {@code ContextValue(BeanLifetimeOperationContext.class)} of the exact type
+//* <p>
+//* The context is only available for the extension that installed the bean
+//* <p>
+//* When returned the targeted lifetime operation will have been updated.
+//* <p>
+//* If this template contains multiple lifetime operations different contexts can be set.
+//*
+//* @param index
+//*            the index of the lifetime operation. Must match an operation in {@link #lifetimeOperations()}.
+//* @param argumentType
+//*            the type of argument that will be taken and made available
+//* @return the new template
+//* @throws IndexOutOfBoundsException
+//*             if the specified index does not match a lifetime operation
+//* @throws IllegalArgumentException
+//*             if the specified argument type is void
+//* @see BeanLifetimeOperationContext
+//* @see app.packed.extension.context.ContextValue
+//*/
+//// Lifetime operationer kan koeres i en context
+//Configurator inContextForLifetimeOperation(int index, ContextTemplate template);
 
 interface Sandbox {
 

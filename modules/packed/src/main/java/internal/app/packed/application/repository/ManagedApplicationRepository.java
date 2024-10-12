@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
-import app.packed.application.repository.ManagedInstance;
+import app.packed.application.repository.other.ManagedInstance;
 import app.packed.bean.lifecycle.LifecycleDependantOrder;
 import app.packed.bean.lifecycle.Stop;
 import app.packed.bean.lifecycle.StopContext;
@@ -30,6 +30,7 @@ import app.packed.runtime.StopOption;
  *
  */
 public final class ManagedApplicationRepository<I, H extends ApplicationHandle<I, ?>> extends AbstractApplicationRepository<I, H> {
+
 
     final ConcurrentHashMap<String, ManagedInstance<I>> instances = new ConcurrentHashMap<>();
 
@@ -48,7 +49,7 @@ public final class ManagedApplicationRepository<I, H extends ApplicationHandle<I
 
     /** {@inheritDoc} */
     @Override
-    public Stream<ManagedInstance<I>> instances() {
+    public Stream<ManagedInstance<I>> allInstances() {
         checkNotStopped();
         return instances.values().stream();
     }
@@ -66,12 +67,12 @@ public final class ManagedApplicationRepository<I, H extends ApplicationHandle<I
         isStopped = true;
 
         // Disable all existing launchers
-        launchers().forEach(l -> l.disableLaunch());
+        applications().forEach(l -> l.disable());
 
         System.out.println(instances.size());
         // Propbably need to have some kind of limit if we have millions of applications.
         // But than again virtual virtual threads really scale. But micro apps
-        instances().forEach(a -> {
+        allInstances().forEach(a -> {
             a.stop(StopOption.parentStopping());
         });
     }

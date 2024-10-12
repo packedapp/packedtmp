@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.service.bridge.old;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,7 +25,7 @@ import app.packed.container.Wirelet;
  */
 public class ServiceWirelets2 {
 
-    // Double Provide overrides, Double Provide fails
+    // Double Provide overrides, Double Provide fails, I think just override
     public static <T> Wirelet provideInstance(Class<T> key, T instance) {
         return provideInstance(Key.of(key), instance);
     }

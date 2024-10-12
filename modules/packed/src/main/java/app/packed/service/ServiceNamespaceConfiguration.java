@@ -30,7 +30,7 @@ import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceConfiguration;
 import app.packed.operation.OperationConfiguration;
-import app.packed.service.sandbox.ServiceOutgoingTransformer;
+import app.packed.service.bridge.old.ServiceOutgoingTransformer;
 import internal.app.packed.service.PackedServiceLocator;
 import internal.app.packed.service.ServiceNamespaceHandle;
 import internal.app.packed.util.CollectionUtil;

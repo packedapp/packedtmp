@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.repository;
+package app.packed.application.repository.other;
 
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
@@ -22,16 +22,23 @@ import app.packed.runtime.RunState;
 public interface GuestLauncher<I> {
 
     /**
+     * Initializes a new application instance.
+     *
+     * @param wirelets
+     *            optional wirelets
+     * @return the new application instance
+     */
+    I initialize(Wirelet... wirelets);
+
+    ManagedInstance<I> launch(RunState state, Wirelet... wirelets);
+
+    /**
      * @param wirelets
      * @return
      * @throws UnsupportedOperationException
-     *             if the underlying application template is unmanaged.
+     *             if the application is unmanaged.
      */
-    ManagedInstance<I> launchGuest(Wirelet... wirelets);
-
-    ManagedInstance<I> launchGuest(RunState state, Wirelet... wirelets);
-
-    I launchInitialized(Wirelet... wirelets); // maybe juse initialized
+    ManagedInstance<I> launch(Wirelet... wirelets);
 
     /**
      * Names the application instance to be launched.

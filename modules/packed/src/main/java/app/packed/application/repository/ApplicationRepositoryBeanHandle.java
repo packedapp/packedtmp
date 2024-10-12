@@ -13,39 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.application.repository;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.ParameterizedType;
 
+import app.packed.application.ApplicationHandle;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
-import app.packed.bean.BeanKind;
-import app.packed.bean.BeanTemplate;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
-import internal.app.packed.application.GuestBeanHandle;
 import internal.app.packed.application.PackedApplicationTemplate;
-import internal.app.packed.application.repository.AbstractApplicationRepository;
 import internal.app.packed.application.repository.BuildApplicationRepository;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.PackedBeanTemplate;
-import internal.app.packed.build.AuthoritySetup;
-import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.util.types.Types;
 
-class ApplicationRepositoryHandle<I, H extends ApplicationHandle<I, ?>> extends BeanHandle<ApplicationRepositoryConfiguration<I, H>> {
-
-    private static final PackedBeanTemplate REPOSITORY_BEAN_TEMPLATE = (PackedBeanTemplate) BeanTemplate.of(BeanKind.CONTAINER,
-            b -> b.createAs(AbstractApplicationRepository.class));
+/** A handle for an application repository bean. */
+final class ApplicationRepositoryBeanHandle<I, H extends ApplicationHandle<I, ?>> extends BeanHandle<ApplicationRepositoryConfiguration<I, H>> {
 
     final BuildApplicationRepository repository;
 
-    private ApplicationRepositoryHandle(BeanInstaller installer, PackedApplicationTemplate<H> template) {
+    ApplicationRepositoryBeanHandle(BeanInstaller installer, PackedApplicationTemplate<H> template) {
         super(installer);
         this.repository = new BuildApplicationRepository(template);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Key<?> defaultKey() {
         // We need to know the template type either, from the template itself, or when creating the repository.
@@ -53,8 +45,7 @@ class ApplicationRepositoryHandle<I, H extends ApplicationHandle<I, ?>> extends 
         ParameterizedType p = Types.createNewParameterizedType(ApplicationRepository.class, repository.template.guestClass(),
                 repository.template.handleClass());
         Variable v = Variable.of(p);
-        Key<?> key = Key.fromVariable(v);
-        return key;
+        return v.asKey();
     }
 
     /** {@inheritDoc} */
@@ -65,21 +56,8 @@ class ApplicationRepositoryHandle<I, H extends ApplicationHandle<I, ?>> extends 
 
     /** {@inheritDoc} */
     @Override
-    protected void onClose() {
+    protected void onConfigurationClosed() {
         bindServiceInstance(BuildApplicationRepository.class, repository);
         BeanSetup.crack(this).container.application.subChildren.add(repository);
-    }
-
-    static <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<A, H> install(PackedApplicationTemplate<H> template, ExtensionSetup es,
-            AuthoritySetup<?> owner) {
-        // Install a ApplicationRepository
-        ApplicationRepositoryHandle<A, H> h = REPOSITORY_BEAN_TEMPLATE.newInstaller(es, owner)
-                .install(AbstractApplicationRepository.repositoryClassFor(template), i -> new ApplicationRepositoryHandle<>(i, template));
-
-        // Create a new installer for the guest bean
-        BeanInstaller i = GuestBeanHandle.GUEST_BEAN_TEMPLATE.newInstaller(es, owner);
-        MethodHandle mh = GuestBeanHandle.installGuestBean(template, i);
-        h.repository.onCodeGenerated(mh);
-        return h.configuration();
     }
 }

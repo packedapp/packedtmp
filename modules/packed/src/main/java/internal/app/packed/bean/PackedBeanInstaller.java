@@ -130,7 +130,7 @@ public final class PackedBeanInstaller extends PackedComponentInstaller<BeanSetu
     /** {@inheritDoc} */
     @Override
     public <H extends BeanHandle<?>> H installSourceless(Function<? super BeanInstaller, H> factory) {
-        if (template.kind() != BeanKind.STATIC) {
+        if (template.beanKind() != BeanKind.STATIC) {
             throw new InternalExtensionException("Only static beans can be source less");
         }
         return BeanSetup.newBean(this, void.class, BeanSourceKind.SOURCELESS, null, factory);

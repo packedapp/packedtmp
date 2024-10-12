@@ -34,7 +34,6 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTemplate.Descriptor;
 import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
@@ -188,7 +187,7 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
         PackedOp<?> pop = PackedOp.crack(op);
 
         // Nested operation get the same arguments as this operation, but with op return type
-        PackedOperationTemplate template = operation.template.reconfigure(c -> c.returnType(pop.type().returnRawType()));
+        PackedOperationTemplate template = operation.template.configure(c -> c.returnType(pop.type().returnRawType()));
 
         // Create the nested operation
         OperationSetup os = pop
@@ -230,12 +229,6 @@ public final class PackedBindableVariable extends PackedBeanElement implements B
     @Override
     public int modifiers() {
         throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Descriptor operation() {
-        return operation.template.descriptor();
     }
 
     /** {@inheritDoc} */

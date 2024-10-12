@@ -13,13 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.namespace.bridge;
+package app.packed.service.mirror;
+
+import app.packed.namespace.NamespaceMirror;
+import app.packed.namespace.NamespaceOperationMirror;
+import app.packed.operation.OperationHandle;
 
 /**
  *
  */
-// Ideen er vi kan pushe noget ned i child applications
-// For ex et FileNamespaceEnvironment. Hvor vi siger hvor filer er for en sub application..
-public interface NamespaceEnvironment {
+public class ServiceProviderOperationMirror extends NamespaceOperationMirror {
+
+    /**
+     * @param handle
+     */
+    public ServiceProviderOperationMirror(OperationHandle<?> handle) {
+        super(handle);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public NamespaceMirror<?> namespace() {
+        return null;
+    }
 
 }

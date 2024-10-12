@@ -29,6 +29,7 @@ import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.scanning.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.PackedOperationTemplate;
+import internal.app.packed.operation.PackedOperationTemplate.ReturnKind;
 import internal.app.packed.util.PackedAnnotationList;
 
 /** Internal implementation of BeanMethod. Discard after use. */
@@ -47,12 +48,17 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
     /** {@inheritDoc} */
     @Override
     public OperationInstaller newOperation(OperationTemplate template) {
-        PackedOperationTemplate t = (PackedOperationTemplate)  requireNonNull(template);
+        PackedOperationTemplate t = (PackedOperationTemplate) requireNonNull(template);
         checkConfigurable();
 
-        // Attempt to unreflect the method (Create a direct method handle for it)
 
+        if (t.returnKind == ReturnKind.DYNAMIC) {
+            t = t.configure(c -> c.returnType(type.returnRawType()));
+        }
+
+        // Attempt to unreflect the method (Create a direct method handle for it)
         MethodHandle methodHandle = participant.scanner.unreflectMethod(member);
+
         // We should be able to create this lazily
         return t.newInstaller(participant, methodHandle, new OperationMethodTarget(member), type);
     }
@@ -74,12 +80,13 @@ public final class PackedBeanMethod extends PackedBeanExecutable<Method> impleme
         for (int i = 0; i < annotations.length; i++) {
             Annotation a1 = annotations[i];
             Class<? extends Annotation> a1Type = a1.annotationType();
-            AnnotatedMethod fh = iBean.hookModel.testMethodAnnotation(a1Type);
-            if (fh != null) {
-                BeanScannerParticipant contributor = iBean.computeContributor(fh.extensionType());
 
-                PackedBeanMethod pbm = new PackedBeanMethod(contributor, method, annotations, fh.isInvokable());
-                PackedAnnotationList pac = new PackedAnnotationList(new Annotation[] { a1 });
+            AnnotatedMethod am = iBean.hookModel.testMethodAnnotation(a1Type);
+            if (am != null) {
+                BeanScannerParticipant contributor = iBean.computeContributor(am.extensionType());
+
+                PackedBeanMethod pbm = new PackedBeanMethod(contributor, method, annotations, am.isInvokable());
+                PackedAnnotationList pac = new PackedAnnotationList(a1);
                 contributor.introspector.onAnnotatedMethod(pbm, pac);
             }
         }

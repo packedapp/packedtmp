@@ -17,7 +17,6 @@ package tck;
 
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
-import app.packed.container.ContainerTemplate;
 
 /**
  *
@@ -25,7 +24,7 @@ import app.packed.container.ContainerTemplate;
 public abstract class AppAppTest extends AbstractBootstrapedAppTest<Void> {
 
     /** The bootstrap app we are testing. */
-    private static final BootstrapApp<Void> APP = BootstrapApp.of(ApplicationTemplate.of(Void.class, c -> c.rootContainer(ContainerTemplate.MANAGED)));
+    private static final BootstrapApp<Void> APP = BootstrapApp.of(ApplicationTemplate.ofManaged(Void.class));
 
     public AppAppTest() {
         super(APP);

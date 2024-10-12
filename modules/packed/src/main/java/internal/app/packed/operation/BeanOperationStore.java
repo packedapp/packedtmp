@@ -28,14 +28,13 @@ import app.packed.bean.BeanSourceKind;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle;
 import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
-import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderSetup;
+import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.LazyNamer;
+import internal.app.packed.util.handlers.OperationHandlers;
 
 /** This class manages all operations declared by a bean. */
 public final class BeanOperationStore implements Iterable<OperationSetup> {
-
-    public PackedOperationTemplate bot;
 
     /** Operations declared by the bean. */
     private final ArrayList<OperationSetup> all = new ArrayList<>();
@@ -61,8 +60,10 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
 
     public boolean providingOperationsVisited;
 
+    public CompoundOperation initialization;
+
     /** A list of services provided by the bean, used for circular dependency checks. */
-    public final List<NamespaceServiceProviderSetup> serviceProviders = new ArrayList<>();
+    public final List<NamespaceServiceProviderHandle> serviceProviders = new ArrayList<>();
 
     void add(OperationSetup os) {
         all.add(os);
@@ -82,12 +83,16 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
             BeanSetup bean = os.bean;
             if (bean.beanKind == BeanKind.CONTAINER || bean.beanKind == BeanKind.LAZY) {
                 assert (bean.beanSourceKind != BeanSourceKind.INSTANCE);
+//                handle.setMethodHandle(handle.methodHandle());
+
+                // Problemet er hvor vi laver vi bedst adaption af method Handle???
+
                 bean.container.application.addCodegenAction(() -> {
-                    handle.setMethodHandle(handle.generateMethodHandle());
+                    handle.setMethodHandle(OperationHandlers.invokeOperationHandleNewMethodHandle(handle));
                 });
             }
         } else {
-            handle.setMethodHandle(handle.methodHandle());
+            handle.setMethodHandle(handle.invokerAsMethodHandle());
         }
     }
 

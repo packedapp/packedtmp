@@ -39,8 +39,7 @@ import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget
 /**
  *
  */
-public non-sealed class PackedOperationInstaller extends PackedComponentInstaller<OperationSetup, PackedOperationInstaller>
-        implements OperationInstaller {
+public non-sealed class PackedOperationInstaller extends PackedComponentInstaller<OperationSetup, PackedOperationInstaller> implements OperationInstaller {
 
     NamespaceHandle<?, ?> addToNamespace;
 
@@ -99,16 +98,15 @@ public non-sealed class PackedOperationInstaller extends PackedComponentInstalle
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <H extends OperationHandle<?>> OperationSetup newOperationFromMember(PackedOperationInstaller installer, OperationMemberTarget<?> member,
-            MethodHandle methodHandle, Function<? super OperationInstaller, H> configurationCreator) {
-        if (installer.bean.beanKind == BeanKind.STATIC && !Modifier.isStatic(member.modifiers())) {
+    public <H extends OperationHandle<?>> OperationSetup newOperationFromMember(OperationMemberTarget<?> member, MethodHandle methodHandle,
+            Function<? super OperationInstaller, H> configurationCreator) {
+        if (bean.beanKind == BeanKind.STATIC && !Modifier.isStatic(member.modifiers())) {
             throw new CannotDeclareInstanceMemberException("Cannot create operation for non-static member " + member);
         }
-        installer.namePrefix = member.name();
+        namePrefix = member.name();
 
-        installer.operationTarget = new MemberOperationTarget(member, methodHandle);
+        operationTarget = new MemberOperationTarget(member, methodHandle);
 
-        OperationSetup os = installer.newOperation((Function) configurationCreator);
-        return os;
+        return newOperation((Function) configurationCreator);
     }
 }

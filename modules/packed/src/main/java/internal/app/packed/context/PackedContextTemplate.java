@@ -15,8 +15,6 @@
  */
 package internal.app.packed.context;
 
-import java.util.function.Consumer;
-
 import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension;
@@ -40,61 +38,29 @@ public record PackedContextTemplate(Class<? extends Extension<?>> extensionClass
         }
     };
 
-    public ContextTemplate.Descriptor descriptor() {
-        throw new UnsupportedOperationException();
+    /** {@inheritDoc} */
+    @Override
+    public ContextTemplate withHidden() {
+        return new PackedContextTemplate(extensionClass, contextClass, contextImplementationClass, true, bindAsConstant);
     }
 
-    public ContextTemplate configure(Consumer<? super Configurator> configure) {
-        PackedContextTemplateConfigurator c = new PackedContextTemplateConfigurator(this);
-        configure.accept(c);
-        return c.t;
+    public static ContextTemplate of(Class<? extends Context<?>> contextClass) {
+        Class<? extends Extension<?>> c = PackedContextTemplate.TYPE_VARIABLE_EXTRACTOR.get(contextClass);
+        return new PackedContextTemplate(c, contextClass, contextClass, false, false);
     }
 
-    public static ContextTemplate of(boolean isHidden, Class<? extends Context<?>> contextClass, Class<? extends Context<?>> implementation) {
-        Class<? extends Extension<?>> c = PackedContextTemplate.TYPE_VARIABLE_EXTRACTOR.get(contextClass); // checks same module
-        // check implementation is same class or implement contextclass
-        return new PackedContextTemplate(c, contextClass, implementation, isHidden, false);
+    /** {@inheritDoc} */
+    @Override
+    public ContextTemplate withImplementation(Class<? extends Context<?>> implementationClass) {
+        // TODO check subclass
+        return new PackedContextTemplate(extensionClass, contextClass, implementationClass, isHidden, bindAsConstant);
     }
 
-    /**
-     * @param contextClass2
-     * @param configurator
-     * @return
-     */
-    public static ContextTemplate of(Class<? extends Context<?>> contextClass, Consumer<? super Configurator> configurator) {
-        Class<? extends Extension<?>> c = PackedContextTemplate.TYPE_VARIABLE_EXTRACTOR.get(contextClass); // checks same module
-        PackedContextTemplate t = new PackedContextTemplate(c, contextClass, contextClass, false, false);
-        return t.configure(configurator);
+    /** {@inheritDoc} */
+    @Override
+    public ContextTemplate withBindAsConstant() {
+        return new PackedContextTemplate(extensionClass, contextClass, contextImplementationClass, isHidden, true);
+
     }
 
-    static class PackedContextTemplateConfigurator implements ContextTemplate.Configurator {
-
-        public PackedContextTemplate t;
-
-        public PackedContextTemplateConfigurator(PackedContextTemplate t) {
-            this.t = t;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Configurator hidden() {
-            t = new PackedContextTemplate(t.extensionClass, t.contextClass, t.contextImplementationClass, true, t.bindAsConstant);
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Configurator implementationClass(Class<? extends Context<?>> implementationClass) {
-            // TODO check subclass
-            t = new PackedContextTemplate(t.extensionClass, t.contextClass, implementationClass, t.isHidden, t.bindAsConstant);
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Configurator bindAsConstant() {
-            t = new PackedContextTemplate(t.extensionClass, t.contextClass, t.contextImplementationClass, t.isHidden, true);
-            return this;
-        }
-    }
 }

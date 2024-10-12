@@ -23,7 +23,6 @@ import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.component.guest.ComponentHostContext;
 import app.packed.component.guest.FromComponentGuest;
-import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
@@ -32,10 +31,12 @@ import internal.app.packed.ValueBased;
 
 /** The default implementation of {@link App}. */
 @ValueBased
+// Move to .application when finished
+// Keep as interface if people want to mock it, extend it, ect.
 public final class PackedApp implements App {
 
-    public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp
-            .of(ApplicationTemplate.of(PackedApp.class, c -> c.rootContainer(ContainerTemplate.MANAGED)));
+    /** The bootstrap app for this application. */
+    public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp.of(ApplicationTemplate.ofManaged(PackedApp.class));
 
     /** Manages the lifecycle of the app. */
     final ManagedLifecycle lifecycle;

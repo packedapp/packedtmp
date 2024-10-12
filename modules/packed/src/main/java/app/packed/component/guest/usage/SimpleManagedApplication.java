@@ -24,27 +24,30 @@ import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
 import app.packed.bean.lifecycle.Inject;
 import app.packed.component.guest.FromComponentGuest;
+import app.packed.operation.Op1;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
 import app.packed.util.Nullable;
-import internal.app.packed.container.PackedContainerKind;
-import internal.app.packed.container.PackedContainerTemplate;
 import sandbox.lifetime.external.ManagedLifetimeState;
 
 /**
  *
  */
-public record GuestBean(@FromComponentGuest ManagedLifecycle lifecycle, long nanos) implements ManagedLifecycle {
+public record SimpleManagedApplication(@FromComponentGuest ManagedLifecycle lifecycle, long nanos) implements ManagedLifecycle {
+
+    // Problemet er vi skal definere en Handle Class...
+    // Men syntes ogsaa det er fint at folk skal lave en guest bean
+    public static final ApplicationTemplate<GuestApplicationHandle2> MANAGED = ApplicationTemplate
+            .ofManaged(new Op1<@FromComponentGuest ManagedLifecycle, ManagedLifecycle>(e -> e) {}, GuestApplicationHandle2.class, GuestApplicationHandle2::new);
+
+    public static final ApplicationTemplate<GuestApplicationHandle> MANAGED_SUB_APPLICATION = ApplicationTemplate.ofManaged(SimpleManagedApplication.class,
+            GuestApplicationHandle.class, GuestApplicationHandle::new);
 
     @Inject
-    public GuestBean(@FromComponentGuest ManagedLifecycle lifecyle) {
+    public SimpleManagedApplication(@FromComponentGuest ManagedLifecycle lifecyle) {
         this(lifecyle, System.nanoTime());
     }
-
-    public static final ApplicationTemplate<GuestApplicationHandle> T = ApplicationTemplate.of(GuestBean.class, c -> {
-        c.rootContainer(new PackedContainerTemplate<>(PackedContainerKind.BOOTSTRAP_APPLICATION));
-    }, GuestApplicationHandle.class, GuestApplicationHandle::new);
 
     @Override
     public void await(RunState state) throws InterruptedException {
@@ -101,7 +104,7 @@ public record GuestBean(@FromComponentGuest ManagedLifecycle lifecycle, long nan
         return lifecycle.stopAsync(result, options);
     }
 
-    public static class GuestApplicationHandle extends ApplicationHandle<GuestBean, ApplicationConfiguration> {
+    public static class GuestApplicationHandle extends ApplicationHandle<SimpleManagedApplication, ApplicationConfiguration> {
 
         /**
          * @param installer
@@ -110,4 +113,15 @@ public record GuestBean(@FromComponentGuest ManagedLifecycle lifecycle, long nan
             super(installer);
         }
     }
+
+    public static class GuestApplicationHandle2 extends ApplicationHandle<ManagedLifecycle, ApplicationConfiguration> {
+
+        /**
+         * @param installer
+         */
+        GuestApplicationHandle2(ApplicationInstaller<?> installer) {
+            super(installer);
+        }
+    }
+
 }

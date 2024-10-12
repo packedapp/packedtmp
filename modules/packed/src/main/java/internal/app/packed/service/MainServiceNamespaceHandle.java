@@ -30,14 +30,16 @@ import app.packed.namespace.NamespaceTemplate;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Nullable;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingAccessor;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationTarget.BeanAccessOperationTarget;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
-import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderSetup;
+import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.service.util.SequencedServiceMap;
+import internal.app.packed.util.handlers.OperationHandlers;
 
 /** Manages services in a single container. */
 public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
@@ -81,7 +83,6 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
             // A service with the key has already been exported
             throw new KeyAlreadyProvidedException("Jmm " + es.key);
         }
-//        es.operation.mirrorSupplier = h -> new ExportedServiceMirror(h, es);
         return es;
     }
 
@@ -105,7 +106,7 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
             } else if (accessor >= 0) {
                 mh = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, accessor);
             } else {
-                mh = o.handle().generateMethodHandle();
+                mh = OperationHandlers.invokeOperationHandleNewMethodHandle(o.handle());
             }
             mh = mh.asType(mh.type().changeReturnType(Object.class));
             assert (mh.type().equals(MethodType.methodType(Object.class, ExtensionContext.class)));
@@ -122,8 +123,8 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
 
         // All all requirements
         // This must included unresolved I think
-        for (Iterator<NamespaceServiceProviderSetup> iterator = providers.iterator(); iterator.hasNext();) {
-            NamespaceServiceProviderSetup provider = iterator.next();
+        for (Iterator<NamespaceServiceProviderHandle> iterator = providers.iterator(); iterator.hasNext();) {
+            NamespaceServiceProviderHandle provider = iterator.next();
             boolean isRequired = false;
             for (ServiceBindingSetup sbs : provider.bindings) {
                 if (sbs.isRequired) {
@@ -160,13 +161,11 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
      *            the operation that provides the service
      * @return a provided service
      */
-    public void provideOperation(Key<?> key, OperationSetup operation, BindingAccessor resolution) {
+    public void provideService(BeanSetup bean, Key<?> key, OperationSetup operation, BindingAccessor resolution) {
         super.provide(key, operation, resolution);
 
         if (exportAll) {
             export(key, operation);
         }
-
     }
-
 }

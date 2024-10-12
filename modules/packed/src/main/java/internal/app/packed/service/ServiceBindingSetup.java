@@ -30,7 +30,7 @@ import internal.app.packed.context.ContextSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.ServiceProviderSetup.BeanServiceProviderSetup;
 import internal.app.packed.service.ServiceProviderSetup.ContextServiceProviderSetup;
-import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderSetup;
+import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.service.ServiceProviderSetup.OperationServiceProviderSetup;
 
 /** Represents a binding to service (which may not exist.). */
@@ -114,7 +114,7 @@ public final class ServiceBindingSetup extends BindingSetup {
                 String namespace : resolver.namespaces()) {
                     // We only use main for now
                     MainServiceNamespaceHandle h = operation.bean.container.servicesMain();
-                    NamespaceServiceProviderSetup sps = h.provider(key);
+                    NamespaceServiceProviderHandle sps = h.provider(key);
                     if (sps != null) {
                         return sps;
                     }

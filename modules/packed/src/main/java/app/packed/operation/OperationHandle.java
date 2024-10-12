@@ -21,7 +21,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.binding.BindableVariable;
@@ -30,12 +29,12 @@ import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.util.Nullable;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.PackedBindableVariable;
-import internal.app.packed.operation.LazyMethodHandle;
 import internal.app.packed.operation.OperationCodeGenerator;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
+import internal.app.packed.util.MethodHandleUtil;
+import internal.app.packed.util.MethodHandleUtil.LazyResolable;
 
 /**
  * A container handle is a build-time reference to an installed container. They are created by the framework when an
@@ -100,7 +99,7 @@ import internal.app.packed.operation.PackedOperationInstaller;
 //Embedded
 // interceptor().add(...);
 // interceptor().peek(e->System.out.println(e));
-public non-sealed class OperationHandle<C extends OperationConfiguration> extends ComponentHandle {
+public non-sealed class OperationHandle<C extends OperationConfiguration> extends ComponentHandle implements InvokerFactory {
 
     /** The lazy generated operation configuration. */
     private C configuration;
@@ -110,7 +109,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     private MethodHandle generatedMethodHandle;
 
     @Nullable
-    private LazyMethodHandle lmh;
+    private LazyResolable lmh;
 
     /** The lazy generated operation mirror. */
     private OperationMirror mirror;
@@ -126,6 +125,10 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
      */
     public OperationHandle(OperationInstaller installer) {
         this.operation = ((PackedOperationInstaller) installer).toHandle();
+    }
+
+    protected MethodHandle adaptMethodHandle(MethodHandle mh) {
+        return mh;
     }
 
     /**
@@ -208,38 +211,58 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
      * @see internal.app.packed.util.handlers.BeanHandlers#invokeBeanHandleDoClose(BeanHandle)
      */
     final void doClose() {
-        onClose();
+        onOperationClose();
         // isConfigurable = false;
-    }
-
-    /**
-     * Generates a method handle that can be used to invoke the underlying operation.
-     * <p>
-     * This method cannot be called earlier than the code generating phase of the application.
-     * <p>
-     * The {@link MethodType method type} of the returned method handle is {@code invocationType()}.
-     *
-     * @return the generated method handle
-     *
-     * @throws IllegalStateException
-     *             if called before the code generating phase of the application.
-     */
-    public MethodHandle generateMethodHandle() {
-        // Maybe have a check here instead, and specifically mention generateMethodHandle when calling
-        BeanSetup bean = operation.bean;
-        bean.container.application.checkInCodegenPhase();
-        MethodHandle mh = generatedMethodHandle;
-        if (mh == null) {
-            mh = generatedMethodHandle = new OperationCodeGenerator().generate(operation, operation.target.methodHandle());
-        }
-        assert (mh.type() == operation.template.methodType);
-        return mh;
     }
 
     /** {@return the operator of the operation.} */
     public final Class<? extends Extension<?>> installerByExtension() {
         return operation.installedByExtension.extensionType;
     }
+
+    // For those that are "afraid" of method handles. You can specify a SAM interface (Or abstract class with an empty
+    // constructor)
+    // I actually think this is a lot prettier, you can see the signature
+    // Maybe a class value in the template.
+    // This will codegen though
+    // constructor arguments are for abstract classes only
+    @Override
+    public final <T> T invokerAs(Class<T> handleClass, Object... constructorArguments) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final MethodHandle invokerAsMethodHandle() {
+        // If we have already created the final method handle return this
+        MethodHandle result = generatedMethodHandle;
+        if (result != null) {
+            return result;
+        }
+
+        // If we already created a lazy method handle return this
+        LazyResolable l = lmh;
+        if (l != null) {
+            return l.handle();
+        }
+
+        // Check that we are still configurable
+        checkHandleIsConfigurable();
+
+        if (operation.bean.container.application.isAssembling()) {
+            // Still assembling, we need to create a lazy method handle
+            l = lmh = MethodHandleUtil.lazyF(operation.template.methodType, () -> generatedMethodHandle = newMethodHandle());
+
+            // If eager codegen .addToSomeQueue, in case we are static java£
+            result = l.handle();
+        } else {
+            // No longer assembling, lets create the method handle directly
+            result = newMethodHandle();
+            assert (result.type() == operation.template.methodType);
+        }
+        return result;
+    }
+
+    // Must be a SAM type
 
     /**
      * {@return the invocation type of this operation.}
@@ -249,8 +272,14 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
      *
      * @see OperationTemplate.Descriptor#invocationType()
      */
-    public final MethodType invocationType() {
+    @Override
+    public final MethodType invokerType() {
         return operation.template.descriptor().invocationType();
+    }
+
+    @Override
+    public final VarHandle invokerAsVarHandle() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -266,16 +295,6 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
         // Fordi configuration kan tilgaas af brugeren.
         // Det er jo faktisk det samme som for en bean...
         return operation.installedByExtension.isConfigurable();
-    }
-
-    public final MethodHandle methodHandle() {
-        LazyMethodHandle l = lmh;
-        if (l == null) {
-            checkHandleIsConfigurable();
-            l = lmh = new LazyMethodHandle(operation, operation.template.methodType);
-            // If eager codegen .addToSomeQueue
-        }
-        return l.methodHandle();
     }
 
     /** {@inheritDoc} */
@@ -297,17 +316,64 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
         operation.namePrefix = name;
     }
 
+    /**
+     * Generates a method handle that can be used to invoke the underlying operation. *
+     * <p>
+     * This method should never be called directly, only through {@link #configuration}
+     * <p>
+     * This method will be never called more than once for a single operation.
+     *
+     * <p>
+     * This method cannot be called earlier than the code generating phase of the application.
+     * <p>
+     * The {@link MethodType method type} of the returned method handle must be {@code invocationType()}.
+     *
+     * @return the generated method handle
+     *
+     * @throws IllegalStateException
+     *             if called before the code generating phase of the application.
+     */
+    protected MethodHandle newMethodHandle() {
+        // Maybe have a check here instead, and specifically mention generateMethodHandle when calling
+        // Check only called once
+        MethodHandle mh = generatedMethodHandle;
+        if (mh == null) {
+            mh = generatedMethodHandle = OperationCodeGenerator.newMethodHandle(operation);
+        }
+        // What if we subclassing fucks it op?
+        // It will fuck up the lazy generation
+
+        // I think we maybe have this protected.
+        // And methodHandle() will just create a lazy method handle if we assembling.
+        assert (mh.type() == operation.template.methodType);
+        return mh;
+    }
+
+    /**
+     * {@return creates a new configuration for the operation}
+     * <p>
+     * This method should never be called directly, only through {@link #configuration}
+     * <p>
+     * This method will be never called more than once for a single operation.
+     */
     @SuppressWarnings("unchecked")
     protected C newOperationConfiguration() {
         return (C) new OperationConfiguration(this);
     }
 
+    /**
+     * {@return creates a new mirror for the operation}
+     * <p>
+     * This method should never be called directly, only through, {@link #mirror}
+     * <p>
+     * This method will never be called more than once for a single operation.
+     */
     protected OperationMirror newOperationMirror() {
         return new OperationMirror(this);
     }
 
     /**
-     * Called by the framework when the bean is marked as no longer configurable.
+     * Called by the framework when the operation is marked as no longer configurable.
      * <p>
      * This handle will be {@link #isConfigurable()} while calling this method, but marked as non configurable immediately
      * after.
@@ -318,7 +384,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
      * The framework may call this method for all beans owned by the same authority in any order within the same
      * assembly/application (Ideen er bare at smide dem i en liste)
      */
-    protected void onClose() {}
+    protected void onOperationClose() {}
 
     /** {@return the target of this operation.} */
     public final OperationTarget target() {
@@ -339,18 +405,9 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
 
 interface Zandbox {
 
-//  // Maaske har vi en and then...
-//  // First@InitializeHandle.andThen(Builder )
-//  // Kan kun lave en MH for den foerste
-//  OperationHandle buildChild(OperationHandle parent);
-
     // raekkefoelgen kender man jo ikke
     // Foer vi har sorteret
     void addChild(OperationHandle<?> h);
-
-    // Det ville jo vaere rart at sige. Hey
-    // Lav denne Operation. Det er en naestet operation, saa
-    // tages contexts fra parent operation
 
     default VarHandle generateVarHandle() {
         throw new UnsupportedOperationException();
@@ -411,12 +468,6 @@ interface ZandboxOH {
 //         // check is type
 //         throw new UnsupportedOperationException();
 //     }
-    default <T> void attach(Class<T> t, T value) {
-        // detach <- removes
-        // Skal vi remove??? Taenker kun det er noget vi kan goere mens vi builder
-        // Det er ikke noget der giver mening senere hen
-        // Gem i et map i application <OperationHandle, Class> -> Value
-    }
 
     default boolean hasBindingsBeenResolved() {
         return false;
@@ -451,9 +502,6 @@ interface ZandboxOH {
         // Vi kan fx sige String -> StringReturnWrapper
         throw new UnsupportedOperationException();
     }
-
-    // We have on the extension now
-    void onCodegen(Consumer<OperationHandle<?>> action);
 
     // I think this needs to be first operation...
     // Once we start calling onBuild() which schedules it for the extension its over
@@ -526,94 +574,4 @@ interface ZandboxOH {
     // If immutable... IDK
     // Fx fra mirrors. Har composite operations ogsaa templates???
     OperationTemplate template();
-
-    //
-//  private static <K, U, V> Map<K, U> copyOf(Map<K, V> map, Function<V, U> valueMapper) {
-////      Map<K, U> result = map.entrySet().stream().collect(Collectors.toMap(Entry::getKey, valueMapper));
-////      return Map.copyOf(result);
-//      throw new UnsupportedOperationException();
-//  }
-//
-//  public static <B extends InstanceBeanConfiguration<?>> B initializeWithMethodHandleArray(B bean, Collection<OperationHandle> operations) {
-//      return bean;
-//  }
-//
-//  public static <B extends InstanceBeanConfiguration<?>> B initializeWithMethodHandleArray(B bean, OperationHandle[] operations) {
-//      return bean;
-//  }
-//
-//  public static <B extends InstanceBeanConfiguration<?>, K> B initializeWithMethodHandleMap(B bean, Key<Map<K, MethodHandle>> key,
-//          Map<K, OperationHandle> operations) {
-//      bean.overrideServiceDelayed(key, () -> copyOf(operations, h -> h.buildInvoker()));
-//      return bean;
-//  }
-//
-//  public static Supplier<MethodHandle[]> supplier(OperationHandle[] operations) {
-//      return () -> {
-//          MethodHandle[] mhs = new MethodHandle[operations.length];
-//          for (int i = 0; i < operations.length; i++) {
-//              mhs[i] = operations[i].buildInvoker();
-//          }
-//          return mhs; // .freeze();
-//      };
-//  }
-//
-//  public static <K> Supplier<Map<K, MethodHandle>> supplierMap(Map<K, OperationHandle> operations) {
-//      return () -> {
-//          throw new UnsupportedOperationException();
-//      };
-//  }
 }
-
-// Ideen er lidt at hvis vi har forskel
-
-// Eller har vi OperationConfiguration<T>, og saa bestemer man typen naar
-// laver operationen
-
-//Operation"Type"
-//Bean instance provided from OperationPack vs Bean Instance provided as MH.parameter
-
-//checks() are always performed before we create an actual operation
-
-//Vi skal have en eller anden form for naming.
-//int OperationID?
-//noget omkring Instance (requiresInstance) Altsaa det er lidt
-//noget omkring wrapping mode
-
-//FactoryInvoker??? Fraekt hvis faa dem bundet sammen
-
-//Kan laves fra et Field eller Method
-//og kan invokere en metoder/constructor, lase/skrive/update et field
-
-//To primaere funktioner...
-/// Injection, MH creation
-
-/// Styring omkring
-
-//Lad os sige vi godt vil generere en hidden class extension bean...
-
-// Vi har ikke MethodType/Factory type her... Det maa komme fra BeanConstructor/BeanMethod
-//
-
-//OperationHandle??? Vi dropper builder parten... Eller maaske ikke IDK
-//Vi har brug for at saette nogle ting inde vi skanner og tilfoejer operationer
-//i nogen tilfaelde..
-//Fx
-
-////Sources
-//* Fra MethodHook/FieldHook/InjectionHook
-//* Via BeanDriver <- er det altid bare en functional faetter????
-
-//Ved ikke fx med exportAll() <- her vil vi jo gerne capture alt paa ind gang, og ikke for hver bean
-////Der tilfojere vi jo bean
-
-//Kan godt kalde det BeanOperation... Det er ikke navne brugeren nogensinde bruger...
-//Men saa BeanOperationInterceptorMirror... May be okay.
-
-//Den her svare lidt til BeanDriver, og saa alligvl ikke
-
-//addHttpRequest();
-
-// Ved ikke om vi skal have <T extends OperationMirror) useMirror(Class<T> mirrorType, Supplier<T> suppler)
-// Som nu skal vi aktivt lave alle mirrors hvis man fx kalder ApplicationMirror.operations(EntryPointMirror.class)
-// Ved vi ikke hvilke operationer den passer på, det kan vi først finde ud af når den er lavet 

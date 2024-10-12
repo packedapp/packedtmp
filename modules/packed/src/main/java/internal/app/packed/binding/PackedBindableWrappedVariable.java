@@ -27,7 +27,6 @@ import app.packed.binding.Variable;
 import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.operation.Op;
-import app.packed.operation.OperationTemplate.Descriptor;
 import app.packed.util.AnnotationList;
 import app.packed.util.Nullable;
 
@@ -183,12 +182,6 @@ public record PackedBindableWrappedVariable(PackedBindableVariable var) implemen
     @Override
     public int modifiers() {
         throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Descriptor operation() {
-        return var.operation();
     }
 
     /** {@inheritDoc} */

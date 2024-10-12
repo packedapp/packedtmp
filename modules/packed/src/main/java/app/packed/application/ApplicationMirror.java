@@ -10,6 +10,8 @@ import java.util.stream.Stream;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.build.BuildGoal;
+import app.packed.build.Mirror;
+import app.packed.build.MirrorPrinter;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
@@ -117,10 +119,6 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         return handle.application.componentPath();
     }
 
-    // All mirrors "owned" by the user
-    public Stream<ComponentMirror> components() {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * {@return an immutable set of tags that have been set on the application}
@@ -236,6 +234,10 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
         return (Stream<T>) operations().filter(f -> operationType.isAssignableFrom(f.getClass()));
     }
 
+    public final void print(@SuppressWarnings("unchecked") Class<? extends Mirror>... mirrorTypes) {
+
+    }
+
     public void print() {
         // Maybe return ApplicationPrinter???
         // to(PrintStream ps);
@@ -293,8 +295,20 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     public <E extends ExtensionMirror<?>> void useIfPresent(Class<E> type, Consumer<? super E> action) {
         throw new UnsupportedOperationException();
     }
+
+    /**
+     *
+     */
+    public MirrorPrinter printer() {
+        throw new UnsupportedOperationException();
+    }
 }
 
+//
+//// All mirrors "owned" by the user
+//public Stream<ComponentMirror> components() {
+//  throw new UnsupportedOperationException();
+//}
 //
 ///** {@return a mirror of the root assembly that defines the application.} */
 //// IDK if we want this or only assemblies

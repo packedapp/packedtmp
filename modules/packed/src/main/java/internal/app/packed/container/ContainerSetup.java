@@ -106,7 +106,7 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         this.assembly = requireNonNull(assembly);
         this.template = installer.template;
 
-        if (installer.template.kind() == PackedContainerKind.PARENT_LIFETIME) {
+        if (installer.template.kind() == PackedContainerKind.PARENT_CONTAINER) {
             this.lifetime = installer.parent.lifetime;
         } else {
             this.lifetime = new RegionalLifetimeSetup(installer, this, null);

@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
-import app.packed.build.BuildMirror;
+import app.packed.build.Mirror;
 import app.packed.build.CodegenGenerated;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
@@ -37,7 +37,7 @@ import app.packed.util.AnnotationList;
 // Skal vi have noget med triggering "Annotations"
 
 // Do we have ServiceProxy as well???
-public interface BeanProxyMirror extends BuildMirror {
+public interface BeanProxyMirror extends Mirror {
 
     /** {@return the bean that is being proxied} */
     BeanMirror bean();

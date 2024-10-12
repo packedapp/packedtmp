@@ -64,13 +64,12 @@ public @interface ServiceResolver {
      * <p>
      * If a matching service is found at the operation level it is used
      *
-     * @see ServiceLookupScope#OPERATION
-     * @see ServiceLookupScope#BEAN
-     * @see ServiceLookupScope#CONTEXT
-     * @see ServiceLookupScope#SERVICE_NAMESPACE
+     * @see ServiceProviderKind#OPERATION
+     * @see ServiceProviderKind#BEAN
+     * @see ServiceProviderKind#CONTEXT
+     * @see ServiceProviderKind#NAMESPACE
      */
-    ServiceProviderKind[] order() default { ServiceProviderKind.OPERATION, ServiceProviderKind.BEAN, ServiceProviderKind.CONTEXT,
-            ServiceProviderKind.NAMESPACE };
+    ServiceProviderKind[] order() default { ServiceProviderKind.OPERATION, ServiceProviderKind.BEAN, ServiceProviderKind.CONTEXT, ServiceProviderKind.NAMESPACE };
 
     /**
     *

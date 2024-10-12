@@ -18,7 +18,6 @@ package tck;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.BootstrapApp;
 import app.packed.component.guest.FromComponentGuest;
-import app.packed.container.ContainerTemplate;
 import app.packed.operation.Op1;
 import app.packed.service.ServiceLocator;
 
@@ -27,8 +26,8 @@ import app.packed.service.ServiceLocator;
  */
 public class ServiceLocatorAppTest extends AbstractBootstrapedAppTest<ServiceLocator> {
 
-    private static final BootstrapApp<ServiceLocator> APP = BootstrapApp.of(ApplicationTemplate.of(new Op1<@FromComponentGuest ServiceLocator, ServiceLocator>(e -> e) {},
-            c -> c.rootContainer(ContainerTemplate.UNMANAGED)));
+    private static final BootstrapApp<ServiceLocator> APP = BootstrapApp
+            .of(ApplicationTemplate.ofUnmanaged(new Op1<@FromComponentGuest ServiceLocator, ServiceLocator>(e -> e) {}));
 
     public ServiceLocatorAppTest() {
         super(APP);

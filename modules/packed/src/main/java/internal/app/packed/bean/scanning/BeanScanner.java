@@ -37,7 +37,6 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.InaccessibleBeanMemberException;
 import app.packed.extension.Extension;
-import app.packed.operation.OperationTemplate;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.extension.ExtensionSetup;
@@ -147,15 +146,13 @@ public final class BeanScanner {
         // Extract a direct method handle from the constructor
         MethodHandle mh = unreflectConstructor(con);
 
-        PackedOperationTemplate ot = bean.operations.bot;
-        if (ot == null) {
-            ot = (PackedOperationTemplate) OperationTemplate.defaults();
-        }
-        ot = ot.reconfigure(c -> c.returnType(beanClass));
-
+        PackedOperationTemplate ot = bean.template.initializationTemplate();
+      //  if (ot.returnKind == ReturnKind.DYNAMIC) {
+            ot = ot.configure(c -> c.returnType(beanClass));
+       // }
         PackedOperationInstaller installer = ot.newInstaller(constructor.operationType(), bean, bean.installedBy);
 
-        OperationSetup os = PackedOperationInstaller.newOperationFromMember(installer, new OperationConstructorTarget(constructor.constructor()), mh,
+        OperationSetup os = installer.newOperationFromMember(new OperationConstructorTarget(constructor.constructor()), mh,
                 i -> new LifecycleOperationInitializeHandle(i, InternalBeanLifecycleKind.FACTORY));
 
         bean.operations.addHandle((BeanLifecycleOperationHandle) os.handle());

@@ -13,39 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.util.Set;
 
-import app.packed.application.ApplicationHandle;
-import app.packed.application.ApplicationInstaller;
-import app.packed.application.ApplicationMirror;
-import app.packed.application.BaseImage;
-import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.assembly.BuildableAssembly;
-import app.packed.bean.BeanInstaller;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.extension.BaseExtension;
 import app.packed.runtime.RunState;
 import internal.app.packed.ValueBased;
+import internal.app.packed.application.GuestBeanHandle;
+import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
-import internal.app.packed.container.PackedContainerKind;
-import internal.app.packed.container.PackedContainerTemplate;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
 /** Implementation of {@link BootstrapApp}. */
 @ValueBased
-public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements BootstrapApp<A>, ApplicationInstallingSource {
+final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> implements BootstrapApp<A>, ApplicationInstallingSource {
 
     /** An application template that is used for the bootstrap app. */
-    private static final PackedApplicationTemplate<?> BOOTSTRAP_APP_TEMPLATE = new PackedApplicationTemplate<>(Void.class, null, ApplicationHandle.class,
-            ApplicationHandle::new, new PackedContainerTemplate<>(PackedContainerKind.BOOTSTRAP_APPLICATION, PackedBootstrapApp.class), Set.of("bootstrap"));
+    // TODO we need to restrict the extensions that can be used to BaseExtension
+    // If the guest been uses hooks from various extensions
+    private static final PackedApplicationTemplate<?> BOOTSTRAP_APP_TEMPLATE2 = (PackedApplicationTemplate<?>) ApplicationTemplate
+            .ofManaged(PackedBootstrapApp.class).withComponentTags("bootstrap");
 
     /** The application launcher. */
     private final MethodHandle launcher;
@@ -129,8 +124,8 @@ public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> impl
         // We need a an assembly to build the (bootstrap) application
         BootstrapAppAssembly assembly = new BootstrapAppAssembly(template);
 
-        // Build the bootstrap application
-        BOOTSTRAP_APP_TEMPLATE.newInstaller(null, BuildGoal.LAUNCH, null).install(assembly);
+        // Creates a new application installer and installs the specified assembly and build the final bootstrap application
+        BOOTSTRAP_APP_TEMPLATE2.newInstaller(null, BuildGoal.LAUNCH, null).install(assembly);
 
         // Returned the bootstrap implementation (represented by a construcing method handle) wrapped in this class.
         return new PackedBootstrapApp<A, H>(template, assembly.mh);
@@ -142,6 +137,7 @@ public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> impl
         /** The method handle to launch the application, the empty MH is used if A is Void.class */
         private MethodHandle mh = ApplicationLaunchContext.EMPTY_MH;
 
+        /** The application template for the application type we need to bootstrap. */
         private final PackedApplicationTemplate<?> template;
 
         private BootstrapAppAssembly(PackedApplicationTemplate<?> template) {
@@ -155,15 +151,11 @@ public final class PackedBootstrapApp<A, H extends ApplicationHandle<A, ?>> impl
                 return;
             }
 
-            // Get the internal BaseExtension, we need this to use a customer BeanTemplate
-            BaseExtension base = assembly().containerRoot().use(BaseExtension.class);
-            ExtensionSetup es = ExtensionSetup.crack(base);
+            // Get the internal configuration of BaseExtension
+            ExtensionSetup es = ExtensionSetup.crack(assembly().containerRoot().use(BaseExtension.class));
 
-            // Create a new installer
-            BeanInstaller installer = GuestBeanHandle.GUEST_BEAN_TEMPLATE.newInstaller(es, es.container.assembly);
-
-            // Install the guest bean if needed (code is shared with App-On-App)
-            this.mh = GuestBeanHandle.installGuestBean(template, installer);
+            // Install the guest bean (code is shared with App-On-App) in the bootstrap application
+            this.mh = GuestBeanHandle.install(template, es, es.container.assembly);
         }
     }
 }

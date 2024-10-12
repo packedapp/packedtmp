@@ -16,7 +16,6 @@
 package app.packed.namespace.bridge;
 
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionWirelet;
 
 /**
  * A namespace bridge server as a communication link between 2 or more namespaces of the same kind. Typically, the
@@ -27,14 +26,16 @@ import app.packed.extension.ExtensionWirelet;
 
 // What about sideways Namespace->Othernamespace Either own or Extension in same container
 // Was promulgator
+// Hmm interface?
+// IDK Not sure we need one.
 public abstract class NamespaceBridge<E extends Extension<E>> {
 
     // Maybe they do extend wirelet. Maybe they can only be specified via wirelets
     // Or inter container
     // Would be nice with something immutable if it is a wirelet
-    public final ExtensionWirelet<E> toWirelet() {
-        throw new UnsupportedOperationException();
-    }
+//    public final ExtensionWirelet<E> toWirelet() {
+//        throw new UnsupportedOperationException();
+//    }
 }
 
 // Application methods

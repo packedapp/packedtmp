@@ -31,6 +31,7 @@ import internal.app.packed.binding.BindingAccessor.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
+import internal.app.packed.util.handlers.OperationHandlers;
 import internal.app.packed.util.types.ClassUtil;
 
 /**
@@ -40,7 +41,12 @@ public final class OperationCodeGenerator {
 
     private final ArrayList<Integer> permuters = new ArrayList<>();
 
-    public MethodHandle generate(OperationSetup operation, MethodHandle initial) {
+    public static MethodHandle newMethodHandle(OperationSetup operation) {
+        operation.bean.container.application.checkInCodegenPhase();
+       return new OperationCodeGenerator().generate(operation, operation.target.methodHandle());
+    }
+
+    MethodHandle generate(OperationSetup operation, MethodHandle initial) {
         MethodHandle mh = initial;
         // debug("%s: %s -> %s", operation.bean.path(), initial.type(), operation.template.invocationType());
 
@@ -51,12 +57,12 @@ public final class OperationCodeGenerator {
             requireNonNull(ba);
             mh = provide(operation, mh, operation.bean.beanInstanceBindingProvider());
         }
+
         // debug(mh.type());
         for (BindingSetup binding : operation.bindings) {
 //            System.out.println(binding.resolver().getClass());
             // System.out.println(mh.type());
             if (binding.resolver() == null) {
-                System.out.println(operation.bean);
                 System.out.println(operation.type);
                 requireNonNull(binding.resolver());
             }
@@ -77,6 +83,7 @@ public final class OperationCodeGenerator {
         try {
             mh = MethodHandles.permuteArguments(mh, mt, result);
         } catch (Exception e) {
+            e.printStackTrace();
             System.err.println("Permuter array " + permuters);
             result[1] = 1;
             mh = MethodHandles.permuteArguments(mh, mt, result);
@@ -102,7 +109,7 @@ public final class OperationCodeGenerator {
             permuters.add(c.argumentIndex());
             return mh;
         } else if (p instanceof FromOperationResult fo) {
-            MethodHandle methodHandle = fo.operation().handle().generateMethodHandle();
+            MethodHandle methodHandle = OperationHandlers.invokeOperationHandleNewMethodHandle(fo.operation().handle());
 
             mh = MethodHandles.collectArguments(mh, permuters.size(), methodHandle);
             for (int j = 0; j < methodHandle.type().parameterCount(); j++) {
@@ -112,14 +119,17 @@ public final class OperationCodeGenerator {
         } else if (p instanceof FromLifetimeArena fla) {
             permuters.add(0); // ExtensionContext is always 0
             MethodHandle tmp = MethodHandles.insertArguments(PackedExtensionContext.MH_CONSTANT_POOL_READER, 1, fla.index());
-
+            assert(tmp.type().returnType()==Object.class);
 //            System.out.println("FLA ->" + fla.type());
 //            System.out.println(mh.type());
 //
 //            // (LifetimePool)Object -> (LifetimePool)type
 //            System.out.println("TMP Before " +tmp.type());
+
+            // We need to convert it from Object to the expected type
             tmp = tmp.asType(tmp.type().changeReturnType(fla.type()));
-//            if (tmp.type().parameterCount() == 1) {
+
+            //            if (tmp.type().parameterCount() == 1) {
 //                if (tmp.type().returnType() == Hmm2.RAR.class) {
 //                 //  tmp = tmp.asType(tmp.type().changeReturnType(Hmm2.AR.class));
 //                }

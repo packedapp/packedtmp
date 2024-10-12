@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.binding.Key;
 import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerInstaller;
@@ -28,7 +27,6 @@ import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.Extension;
-import app.packed.operation.OperationTemplate;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.component.ComponentTagHolder;
@@ -55,7 +53,7 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
     }
 
     public boolean isManaged() {
-        if (kind == PackedContainerKind.ROOT_UNMANAGED || kind == PackedContainerKind.UNMANAGED) {
+        if (kind == PackedContainerKind.UNMANAGED) {
             return false;
         }
         return true;
@@ -146,39 +144,17 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
         }
     }
 
+//
+//        /**
+//         * A set of keys that are available for injection into a lifetime bean using {@link FromLifetimeChannel}.
+//         * <p>
+//         * This method is mainly used for informational purposes.
+//         *
+//         * @return the set of keys available for injection
+//         */
+//        Set<Key<?>> carrierKeys();
+//
+//        /** {@return a list of the lifetime operation of this container template.} */
+//        List<OperationTemplate> lifetimeOperations();
 
-    interface Descriptor {
-
-        /**
-         * A set of keys that are available for injection into a lifetime bean using {@link FromLifetimeChannel}.
-         * <p>
-         * This method is mainly used for informational purposes.
-         *
-         * @return the set of keys available for injection
-         */
-        Set<Key<?>> carrierKeys();
-
-        /** {@return a list of the lifetime operation of this container template.} */
-        List<OperationTemplate> lifetimeOperations();
-    }
-
-    public record PackedDescriptor(PackedContainerTemplate<?> template) implements Descriptor {
-
-        /** {@inheritDoc} */
-        @Override
-        public List<OperationTemplate> lifetimeOperations() {
-            return List.of();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Set<Key<?>> carrierKeys() {
-            return template.links.keys();
-        }
-    }
-
-    /** {@inheritDoc} */
-    public Descriptor descriptor() {
-        return new PackedDescriptor(this);
-    }
 }

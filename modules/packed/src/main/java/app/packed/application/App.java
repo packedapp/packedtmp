@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import app.packed.assembly.Assembly;
+import app.packed.build.MirrorPrinter;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
@@ -141,6 +142,10 @@ public interface App extends AutoCloseable {
 //      mirrorOf(assembly, wirelets).print();
 //  }
         mirrorOf(assembly, wirelets).print();
+    }
+
+    static MirrorPrinter printer(Assembly assembly, Wirelet... wirelets) {
+        return mirrorOf(assembly, wirelets).printer();
     }
 
     /**

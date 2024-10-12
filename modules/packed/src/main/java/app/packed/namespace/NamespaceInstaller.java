@@ -17,6 +17,9 @@ package app.packed.namespace;
 
 import internal.app.packed.namespace.PackedNamespaceInstaller;
 
+/**
+ * A installer for a namespace.
+ */
 public sealed interface NamespaceInstaller<H extends NamespaceHandle<?, ?>> permits PackedNamespaceInstaller {
 
     /**

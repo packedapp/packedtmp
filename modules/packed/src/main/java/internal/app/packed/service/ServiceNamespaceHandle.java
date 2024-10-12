@@ -15,7 +15,6 @@
  */
 package internal.app.packed.service;
 
-import java.util.Iterator;
 import java.util.Set;
 
 import app.packed.binding.Key;
@@ -33,7 +32,7 @@ import internal.app.packed.binding.BindingAccessor.FromOperationResult;
 import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
-import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderSetup;
+import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.service.util.SequencedServiceMap;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.handlers.ServiceHandlers;
@@ -44,7 +43,7 @@ import internal.app.packed.util.handlers.ServiceHandlers;
 public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtension, ServiceNamespaceConfiguration> {
 
     /** All service providers in the namespace. */
-    final SequencedServiceMap<NamespaceServiceProviderSetup> providers = new SequencedServiceMap<>();
+    final SequencedServiceMap<NamespaceServiceProviderHandle> providers = new SequencedServiceMap<>();
 
     /**
      * @param installer
@@ -81,7 +80,7 @@ public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtensi
      *            the operation that provides the service
      * @return a provided service
      */
-    public NamespaceServiceProviderSetup provide(Key<?> key, OperationSetup operation, BindingAccessor resolution) {
+    public NamespaceServiceProviderHandle provide(Key<?> key, OperationSetup operation, BindingAccessor resolution) {
         // Have no idea what we are doing here
         if (resolution instanceof FromLifetimeArena fla) {
             if (key.rawType() != fla.type()) {
@@ -89,19 +88,20 @@ public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtensi
             }
         }
 
-        // Check if we have an existing provider for the key
-        NamespaceServiceProviderSetup existing = providers.get(key);
+        // Check if we have an existing service provider for the specified key
+        NamespaceServiceProviderHandle existing = providers.get(key);
         if (existing != null) {
             throw new KeyAlreadyProvidedException(provideDublicateProvideErrorMsg(existing, operation));
         }
 
-        // Create a new service provider and add to the map of existing service providers
-        NamespaceServiceProviderSetup newProvider = new NamespaceServiceProviderSetup(key, this, operation, resolution);
+        // Create a new service provider and add it to the map of service providers
+        // bean.install(::newHandle);
+        NamespaceServiceProviderHandle newProvider = new NamespaceServiceProviderHandle(key, this, operation, resolution);
         providers.put(key, newProvider);
         return newProvider;
     }
 
-    private String provideDublicateProvideErrorMsg(NamespaceServiceProviderSetup existingProvider, OperationSetup newOperation) {
+    private String provideDublicateProvideErrorMsg(NamespaceServiceProviderHandle existingProvider, OperationSetup newOperation) {
         OperationSetup existingOperation = existingProvider.operation();
 
         Key<?> key = existingProvider.key();
@@ -130,11 +130,7 @@ public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtensi
     }
 
     @Nullable
-    public NamespaceServiceProviderSetup provider(Key<?> key) {
+    public NamespaceServiceProviderHandle provider(Key<?> key) {
         return providers.get(key);
-    }
-
-    public Iterator<NamespaceServiceProviderSetup> providers() {
-        return providers.iterator();
     }
 }

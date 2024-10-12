@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.assembly.AssemblyPropagator;
 import app.packed.build.BuildCodeSourceMirror;
-import app.packed.build.BuildMirror;
+import app.packed.build.Mirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.util.TreeView;
@@ -47,7 +47,7 @@ public non-sealed interface BuildHookMirror extends BuildCodeSourceMirror {
     // example, for BeanBuildHook
     ///// Uhhh, Kan man definere den bare paa en container?? I don't think so. Must be Assembly or Bean // Or extension??
     // So either Bean or ContainerMirror
-    BuildMirror declaredBy(); // Optional<BeanMirror>???
+    Mirror declaredBy(); // Optional<BeanMirror>???
 
     /** {@return the assembly where the build hook is declared} */
     AssemblyMirror declaredByAssembly();

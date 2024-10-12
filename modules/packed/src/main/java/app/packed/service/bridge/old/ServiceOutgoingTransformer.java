@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service.sandbox;
+package app.packed.service.bridge.old;
 
 import static java.util.Objects.requireNonNull;
 
@@ -111,6 +111,14 @@ public interface ServiceOutgoingTransformer extends ServiceTransformer.Outgoing 
 
     void map(Op<?> factory);
 
+    /**
+     * Similar to {@link #map(Op)} except that it will automatically remove all dependencies of the factory once the mapping
+     * has finished.
+     *
+     * @param factory
+     *            the factory
+     */
+    void replace(Op<?> factory);
     // provide a constant via an instance
     /**
      * Provides a new constant service returning the specified instance on every request.
@@ -246,7 +254,7 @@ public interface ServiceOutgoingTransformer extends ServiceTransformer.Outgoing 
         rekeyAll(s -> s.withTag(tag));
     }
 
-    default void rekeyAllAddQualifier(Annotation qualifier) {
+    default void rekeyAllWithQualifier(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
         rekeyAll(s -> s.withQualifier(qualifier));
     }
@@ -323,14 +331,6 @@ public interface ServiceOutgoingTransformer extends ServiceTransformer.Outgoing 
         }
     }
 
-    /**
-     * Similar to {@link #map(Op)} except that it will automatically remove all dependencies of the factory once the mapping
-     * has finished.
-     *
-     * @param factory
-     *            the factory
-     */
-    void replace(Op<?> factory);
 
     default void retain(Class<?>... keys) {
         retain(Key.ofAll(keys));

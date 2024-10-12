@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service.sandbox;
+package app.packed.service.bridge.old;
 
 import java.util.function.Consumer;
 import java.util.function.Function;

@@ -19,17 +19,28 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayDeque;
-import java.util.List;
 
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
-import app.packed.util.Nullable;
 
 /**
  * An op
  */
-@Deprecated
-public final class FuseableOperation {
+
+// Ideen er at vi kan kalde flere operation med en enkelt MH.
+
+// Fx
+// Factory
+// Inject
+// Initialization
+
+
+// Hvad er signature for Inject? BeanClass I guess (We are not reading from anywhere)
+
+// Jeg tror faktisk vi koere inject/initialization fra constant pool til at starte med.
+
+
+public final class CompoundOperation {
 
     public final PackedOperationTemplate template;
 
@@ -37,14 +48,14 @@ public final class FuseableOperation {
 
     public final ArrayDeque<MethodHandle> methodHandles = new ArrayDeque<>();
 
-    public FuseableOperation(OperationTemplate template) {
+    public CompoundOperation(OperationTemplate template) {
         this.template = (PackedOperationTemplate) requireNonNull(template);
     }
-
-    public static List<FuseableOperation> of(@Nullable List<OperationTemplate> templates) {
-        if (templates == null) {
-            return List.of();
-        }
-        return templates.stream().map(FuseableOperation::new).toList();
-    }
+//
+//    public static List<CompoundOperation> of(@Nullable List<OperationTemplate> templates) {
+//        if (templates == null) {
+//            return List.of();
+//        }
+//        return templates.stream().map(CompoundOperation::new).toList();
+//    }
 }

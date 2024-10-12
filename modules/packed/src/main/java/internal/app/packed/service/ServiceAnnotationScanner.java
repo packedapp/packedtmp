@@ -26,6 +26,7 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTemplate;
 import app.packed.service.Export;
 import app.packed.service.Provide;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.scanning.PackedBeanField;
 import internal.app.packed.bean.scanning.PackedBeanMethod;
 import internal.app.packed.binding.BindingAccessor.FromOperationResult;
@@ -34,53 +35,55 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
+
+// Scanner:onInject   :onInject(BeanField, ? extends Annotation) <-- annotation
 public final class ServiceAnnotationScanner {
 
     public static boolean testFieldAnnotation(PackedBeanField field, Annotation annotation) {
 
         if (annotation instanceof Provide) {
+            BeanSetup bean = field.bean();
+
             Key<?> key = field.toKey();
 
             if (!Modifier.isStatic(field.modifiers())) {
-                if (field.bean().beanKind != BeanKind.CONTAINER) {
+                if (bean.beanKind != BeanKind.CONTAINER) {
                     throw new BuildException("Not okay)");
                 }
             }
 
-            OperationSetup operation = OperationSetup.crack(field.newGetOperation(OperationTemplate.defaults()).install(OperationHandle::new));
+            OperationSetup operation = OperationSetup.crack(field.newGetOperation(TEMPLATE).install(OperationHandle::new));
 
             // Hmm, vi har jo slet ikke lavet namespacet endnu
-            field.bean().serviceNamespace().provideOperation(key, operation, new FromOperationResult(operation));
+            bean.serviceNamespace().provideService(bean, key, operation, new FromOperationResult(operation));
             return true;
         }
         return false;
     }
 
+    static final OperationTemplate TEMPLATE = OperationTemplate.of(c -> c.returnTypeDynamic());
+
     public static boolean testMethodAnnotation(PackedBeanMethod method, Annotation annotation) {
         if (annotation instanceof Provide) {
-            OperationTemplate temp2 = OperationTemplate.defaults().reconfigure(c -> c.returnType(method.operationType().returnRawType()));
             if (!Modifier.isStatic(method.modifiers())) {
                 if (method.bean().beanKind != BeanKind.CONTAINER) {
                     throw new BeanInstallationException("Not okay)");
                 }
             }
-            OperationSetup operation = OperationSetup.crack(method.newOperation(temp2).install(OperationHandle::new));
-            method.bean().container.servicesMain().provideOperation(method.toKey(), operation, new FromOperationResult(operation));
+            OperationSetup operation = OperationSetup.crack(method.newOperation(TEMPLATE).install(OperationHandle::new));
+            method.bean().container.servicesMain().provideService(method.bean(), method.toKey(), operation, new FromOperationResult(operation));
         } else if (annotation instanceof Export) {
-            OperationTemplate temp2 = OperationTemplate.defaults().reconfigure(c -> c.returnType(method.operationType().returnRawType()));
-
             if (!Modifier.isStatic(method.modifiers())) {
                 if (method.bean().beanKind != BeanKind.CONTAINER) {
                     throw new BeanInstallationException("Not okay)");
                 }
             }
-            OperationSetup operation = OperationSetup.crack(method.newOperation(temp2).install(OperationHandle::new));
+            OperationSetup operation = OperationSetup.crack(method.newOperation(TEMPLATE).install(OperationHandle::new));
             method.bean().container.servicesMain().export(method.toKey(), operation);
         } else {
             return false;
         }
         return true;
     }
-
 
 }

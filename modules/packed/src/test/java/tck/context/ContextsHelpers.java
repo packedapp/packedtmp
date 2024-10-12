@@ -29,13 +29,13 @@ public class ContextsHelpers {
     @ContextualServiceProvider(extension = HookTestingExtension.class)
     public record NoImplContext(int i) implements Context<HookTestingExtension> {
         /** A template. */
-        public static final ContextTemplate CT = ContextTemplate.of(NoImplContext.class, c -> {});
+        public static final ContextTemplate CT = ContextTemplate.of(NoImplContext.class);
 
         /** A simple operation with the context, that ignores return values. */
-        public static final OperationTemplate OT = OperationTemplate.defaults().reconfigure(c -> c.inContext(NoImplContext.CT).returnIgnore());
+        public static final OperationTemplate OT = OperationTemplate.of(c -> c.inContext(NoImplContext.CT).returnIgnore());
 
         /** A simple operation with the context, that ignores return values. */
-        public static final OperationTemplate OTINT = OperationTemplate.defaults().reconfigure(c -> c.inContext(NoImplContext.CT).returnType(int.class));
+        public static final OperationTemplate OTINT = OperationTemplate.of(c -> c.inContext(NoImplContext.CT).returnType(int.class));
     }
 
     public static void bindSimple(AbstractBootstrapedAppTest<?> t) {

@@ -23,24 +23,34 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
-import app.packed.application.repository.ApplicationLauncher;
-import app.packed.application.repository.GuestLauncher;
-import app.packed.application.repository.ManagedInstance;
+import app.packed.application.repository.InstalledApplication;
+import app.packed.application.repository.other.GuestLauncher;
+import app.packed.application.repository.other.ManagedInstance;
 import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
-public final class PackedApplicationLauncher<I, H extends ApplicationHandle<I, ?>> implements LauncherOrFuture<I, H>, ApplicationLauncher<I> {
+public final class PackedInstalledApplication<I, H extends ApplicationHandle<I, ?>> implements LauncherOrFuture<I, H>, InstalledApplication<I> {
 
     final H handle;
     final ConcurrentHashMap<String, ManagedInstance<I>> instances = new ConcurrentHashMap<>();
 
     final boolean isManaged;
 
-    public PackedApplicationLauncher(boolean isManaged, H handle) {
+    public PackedInstalledApplication(boolean isManaged, H handle) {
         this.handle = requireNonNull(handle);
         this.isManaged = isManaged;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void disable() {}
+
+    /** {@inheritDoc} */
+    @Override
+    public ApplicationHandle<?, ?> handle() {
+        return handle;
     }
 
     /** {@inheritDoc} */
@@ -63,7 +73,9 @@ public final class PackedApplicationLauncher<I, H extends ApplicationHandle<I, ?
 
     /** {@inheritDoc} */
     @Override
-    public void disableLaunch() {}
+    public boolean isManaged() {
+        return isManaged;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -73,18 +85,12 @@ public final class PackedApplicationLauncher<I, H extends ApplicationHandle<I, ?
 
     /** {@inheritDoc} */
     @Override
-    public I startGuest(Wirelet... wirelets) {
+    public I startNew(Wirelet... wirelets) {
         I i = ApplicationLaunchContext.launch(handle, RunState.STARTING, wirelets);
         if (isManaged) {
             instances.put(UUID.randomUUID().toString(), new PackedManagedInstance<I>((ManagedLifecycle) i));
         }
         return i;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ApplicationHandle<?, ?> handle() {
-        return handle;
     }
 
 }

@@ -15,8 +15,6 @@
  */
 package app.packed.context;
 
-import java.util.function.Consumer;
-
 import app.packed.extension.Extension;
 import internal.app.packed.context.PackedContextTemplate;
 
@@ -62,30 +60,15 @@ public sealed interface ContextTemplate permits PackedContextTemplate {
 
     boolean isHidden();
 
-    static ContextTemplate of(Class<? extends Context<?>> contextClass, Consumer<? super Configurator> configurator) {
-        return PackedContextTemplate.of(contextClass, configurator);
+    ContextTemplate withHidden();
+
+    ContextTemplate withImplementation(Class<? extends Context<?>> implementationClass);
+
+    ContextTemplate withBindAsConstant();
+
+    static ContextTemplate of(Class<? extends Context<?>> contextClass) {
+        return PackedContextTemplate.of(contextClass);
     }
-//
-//    static <T extends Context<?>> ContextTemplate of(Class<T> contextClass, Class<? extends T> implementation) {
-//        return PackedContextTemplate.of(false, contextClass, implementation);
-//    }
-//
-//    static ContextTemplate ofHidden(Class<? extends Context<?>> contextImplementation) {
-//        return PackedContextTemplate.of(true, contextImplementation, contextImplementation);
-//    }
-
-    interface Configurator {
-        // Will not be visible to users of the class
-        // IDK Er den saa useful naar den skal ind gemmen constructoren?
-        Configurator hidden();
-
-        // Tror det er ment fx @RequestParam -> Kan tage en RequestContextImpl og skal ikke caste den.
-        Configurator implementationClass(Class<? extends Context<?>> implementationClass);
-
-        Configurator bindAsConstant();
-    }
-
-    interface Descriptor {}
 
     // Maaske har vi ogsaa Span her... Saa maa man bare lave mere end en instans
     // Et span er naar man tilfoejer contexten

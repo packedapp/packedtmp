@@ -18,14 +18,14 @@ package app.packed.bean.lifecycle;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.build.BuildMirror;
+import app.packed.build.Mirror;
 
 /**
  * This mirror represents the lifecycle of a bean.
  *
  * @see app.packed.bean.BeanMirror#lifecycle()
  */
-public interface BeanLifecycleMirror extends BuildMirror {
+public interface BeanLifecycleMirror extends Mirror {
 
     Optional<InitializeOperationMirror> factoryOperation();
 

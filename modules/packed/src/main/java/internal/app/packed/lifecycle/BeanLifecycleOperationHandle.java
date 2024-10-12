@@ -93,23 +93,24 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
         }
 
         @Override
-        public MethodHandle generateMethodHandle() {
+        public MethodHandle newMethodHandle() {
             if (lifecycleKind == InternalBeanLifecycleKind.FACTORY) {
                 OperationSetup os = OperationSetup.crack(this);
                 BeanSetup bean = os.bean;
                 if (bean.beanKind == BeanKind.CONTAINER || bean.beanKind == BeanKind.LAZY) {
                     assert (bean.beanSourceKind != BeanSourceKind.INSTANCE);
-                    MethodHandle mha = super.generateMethodHandle();
+                    MethodHandle mha = super.newMethodHandle();
 
                     // We store container beans in a generic object array.
                     // Don't care about the exact type of the bean.
                     mha = mha.asType(mha.type().changeReturnType(Object.class));
 
+                    // Vil faktisk gemme den førends sidste
                     mha = RegionalLifetimeSetup.MH_INVOKE_INITIALIZER.bindTo(bean).bindTo(mha);
                     return mha;
                 }
             }
-            return super.generateMethodHandle();
+            return super.newMethodHandle();
         }
 
     }

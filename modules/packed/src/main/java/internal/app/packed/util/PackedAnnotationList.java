@@ -29,6 +29,9 @@ import app.packed.util.AnnotationList;
 /** Implementation of {@link AnnotationList}. */
 public record PackedAnnotationList(Annotation... annotations) implements AnnotationList {
 
+    public PackedAnnotationList(Annotation a) {
+        this(new Annotation[] { a });
+    }
     public static final PackedAnnotationList EMPTY = new PackedAnnotationList(new Annotation[0]);
 
     /** {@inheritDoc} */
@@ -55,7 +58,6 @@ public record PackedAnnotationList(Annotation... annotations) implements Annotat
         // TODO check for null
         return new PackedAnnotationList(annotations.clone());
     }
-
 
     /** {@inheritDoc} */
     @Override
@@ -84,7 +86,6 @@ public record PackedAnnotationList(Annotation... annotations) implements Annotat
     public Annotation[] readAnyOf(Class<?>... annotationTypes) {
         return null;
     }
-
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")

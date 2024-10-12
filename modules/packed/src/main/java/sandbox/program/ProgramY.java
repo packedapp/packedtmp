@@ -25,7 +25,6 @@ import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
 import app.packed.component.guest.FromComponentGuest;
 import app.packed.component.guest.OldContainerTemplateLink;
-import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
@@ -169,7 +168,7 @@ record ProgramImplementation(@FromComponentGuest String name, @FromComponentGues
     static OldContainerTemplateLink EL = OldContainerTemplateLink.of(MethodHandles.lookup(), Ele.MyE.class, "doo").provideExpose(Long.class).build();
 
     /** An driver for creating App instances. */
-    static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ApplicationTemplate.of(ProgramImplementation.class, c -> c.rootContainer(ContainerTemplate.MANAGED)));
+    static final BootstrapApp<ProgramImplementation> DRIVER = BootstrapApp.of(ApplicationTemplate.ofManaged(ProgramImplementation.class));
 //
 //            BootstrapApp.of(ProgramImplementation.class, c -> {
 //        c.managedLifetime();

@@ -16,30 +16,21 @@
 package app.packed.application.repository;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
-import app.packed.application.ApplicationInstaller;
-import app.packed.application.ApplicationTemplate;
+import app.packed.application.repository.other.GuestLauncher;
+import app.packed.application.repository.other.ManagedInstance;
 import app.packed.container.Wirelet;
-import app.packed.extension.BaseExtension;
-import app.packed.service.ProvidableBeanConfiguration;
+import internal.app.packed.application.repository.PackedInstalledApplication;
 
 /**
+ * A single application that has been installed into an {@link ApplicationRepository}.
+ * Either at build-time using.
+ * Or at runtime using {@link ApplicationRepository#install(java.util.function.Consumer)}.
  *
- * Could be a inner interface on the repository. Although som
  */
-// Handlers can be used across multiple application instances.
-// So we need to be able to uninstall them  per application instance
-
-// Add H?
-
-// Hvor meget er applications specific og hvor meget kunne genbruges for en Container???
-// Problemet her kan jo saa vaere noget namespace fis...
-// Naar vi skal launches shittet
-
-public interface ApplicationLauncher<I> {
+public sealed interface InstalledApplication<I> permits PackedInstalledApplication {
 
     /**
      * Disables all future launch from this launcher.
@@ -49,9 +40,9 @@ public interface ApplicationLauncher<I> {
     // Hvad saa med alle dem der er i gang??? Fx er de i initialized
     // Det kraever ihvertfald at alle instancer selv dem der ikke er running, er med i instances.
     // Saa vi kan lukke dem ned
-    void disableLaunch();
+    void disable();
 
-    /** {@return the launchers underlying (unconfigurable) handle} */
+    /** {@return the underlying (unconfigurable) handle of the applications} */
     ApplicationHandle<?, ?> handle();
 
     /** {@return an instance with the specified name if it exists} */
@@ -62,28 +53,18 @@ public interface ApplicationLauncher<I> {
 
     boolean isAvailable();
 
+    boolean isManaged();
+
     GuestLauncher<I> launcher();
 
-    I startGuest(Wirelet... wirelets);
+    I startNew(Wirelet... wirelets);
 
     /**
      *
      * @throws UnsupportedOperationException
      *             if used stand-alone outside of an {@link app.packed.application.ApplicationRepository}.
      */
-    default void uninstall() {
+    default void uninstall() {}
 
-    }
-
-    // Simple version of ApplicationRepository. Only thing is mirrors where we may now have multiple versions...
-    static <I, H extends ApplicationHandle<I, ?>> ProvidableBeanConfiguration<ApplicationLauncher<I>> install(ApplicationTemplate<H> template,
-            Consumer<? super ApplicationInstaller<H>> installer, BaseExtension extension) {
-
-        throw new UnsupportedOperationException();
-    }
-
-    static <I, H extends ApplicationHandle<I, ?>> ProvidableBeanConfiguration<ApplicationLauncher<I>> provide(ApplicationTemplate<H> template,
-            Consumer<? super ApplicationInstaller<H>> installer, BaseExtension extension) {
-        return install(template, installer, extension);
-    }
+    // States: -> Enabled->Disabled->Stopping->Stopped->UnInstalling->UnInstalled
 }

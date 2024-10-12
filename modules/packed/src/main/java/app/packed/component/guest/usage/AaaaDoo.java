@@ -18,11 +18,12 @@ package app.packed.component.guest.usage;
 import java.util.concurrent.atomic.AtomicLong;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationRepository;
-import app.packed.application.ApplicationRepositoryConfiguration;
+import app.packed.application.repository.ApplicationRepository;
+import app.packed.application.repository.ApplicationRepositoryConfiguration;
+import app.packed.application.repository.ApplicationRepositoryExtension;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.lifecycle.Initialize;
-import app.packed.component.guest.usage.GuestBean.GuestApplicationHandle;
+import app.packed.component.guest.usage.SimpleManagedApplication.GuestApplicationHandle;
 
 /**
  *
@@ -32,7 +33,8 @@ public class AaaaDoo extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        ApplicationRepositoryConfiguration<GuestBean, GuestApplicationHandle> repo = ApplicationRepository.provide(GuestBean.T, base());
+        ApplicationRepositoryConfiguration<SimpleManagedApplication, GuestApplicationHandle> repo = use(ApplicationRepositoryExtension.class)
+                .provideRepository(SimpleManagedApplication.MANAGED_SUB_APPLICATION);
         repo.installApplication(i -> i.named("foo").install(new SubApplication()));
         install(MyBean.class);
     }
@@ -41,20 +43,20 @@ public class AaaaDoo extends BaseAssembly {
         App.run(new AaaaDoo());
     }
 
-    public record MyBean(ApplicationRepository<GuestBean, GuestApplicationHandle> repository) {
+    public record MyBean(ApplicationRepository<SimpleManagedApplication, GuestApplicationHandle> repository) {
 
         static AtomicLong al = new AtomicLong();
 
         @Initialize
         public void oni() {
-            repository.launchers().forEach(c -> {
+            repository.applications().forEach(c -> {
                 for (int i = 0; i < 10; i++) {
-                    c.startGuest();
+                    c.startNew();
                 }
             });
 
             if (al.incrementAndGet() < 10) {
-                repository.install(i -> i.install(new AaaaDoo())).startGuest();
+                repository.install(i -> i.install(new AaaaDoo())).startNew();
             }
         }
     }

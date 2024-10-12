@@ -30,59 +30,34 @@ import app.packed.binding.Variable;
 import app.packed.component.guest.ComponentHostConfiguration;
 import app.packed.component.guest.ComponentHostContext;
 import app.packed.context.Context;
-import app.packed.context.ContextTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
-import app.packed.operation.OperationTemplate;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.bean.PackedBeanTemplate;
+import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.context.PackedComponentHostContext;
+import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
 /**
  *
  */
-public class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration<?>> {
+public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration<?>> {
 
-
-    static final ContextTemplate GB_HIT = ContextTemplate.of(ComponentHostContext.class,
-            c -> c.implementationClass(PackedComponentHostContext.class).bindAsConstant());
-
-    static final OperationTemplate GB_CON = OperationTemplate.raw()
-            .reconfigure(c -> c.inContext(ApplicationLaunchContext.CONTEXT_TEMPLATE).inContext(GB_HIT).returnTypeObject());
-
-    public static final PackedBeanTemplate GUEST_BEAN_TEMPLATE = new PackedBeanTemplate(BeanKind.UNMANAGED).withOperationTemplate(GB_CON);
-
-    public static MethodHandle installGuestBean(PackedApplicationTemplate<?> template, BeanInstaller installer) {
-        if (template.guestClass() == Void.class) {
-            return null;
-        }
-        GuestBeanHandle h;
-        if (template.op() == null) {
-            h = installer.install(template.guestClass(), GuestBeanHandle::new);
-        } else {
-            h = installer.install((Op<?>) template.op(), GuestBeanHandle::new);
-        }
-
-        MethodHandle m = h.lifetimeOperations().get(0).methodHandle();
-        m = m.asType(m.type().changeReturnType(Object.class));
-        return m;
-    }
-
-    /**
-     * @param installer
-     */
-    public GuestBeanHandle(BeanInstaller installer) {
-        super(installer);
-    }
+    /** A bean template for the guest bean. */
+    public static final PackedBeanTemplate APPLICATION_GUEST_BEAN_TEMPLATE = new PackedBeanTemplate(BeanKind.UNMANAGED).witInitialization(
+            c -> c.returnTypeDynamic().raw().inContext(ApplicationLaunchContext.CONTEXT_TEMPLATE).inContext(PackedComponentHostContext.TEMPLATE));
 
     static final Set<Key<?>> KEYS = Set.of(Key.of(ApplicationMirror.class), Key.of(String.class), Key.of(ManagedLifecycle.class), Key.of(ServiceLocator.class));
 
     public static final PackedComponentHostContext DEFAULT = new PackedComponentHostContext(KEYS);
 
-    public PackedComponentHostContext toContext() {
-        return DEFAULT;
+    /**
+     * @param installer
+     */
+    private GuestBeanHandle(BeanInstaller installer) {
+        super(installer);
     }
 
     // Called when service resolving contexts...
@@ -107,5 +82,28 @@ public class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration<?>> {
         } else {
             throw new UnsupportedOperationException("Unknown Container Guest Service " + va.rawType());
         }
+    }
+
+    public PackedComponentHostContext toContext() {
+        return DEFAULT;
+    }
+
+    public static MethodHandle install(PackedApplicationTemplate<?> template, ExtensionSetup installingExtension, AuthoritySetup<?> owner) {
+        // Create a new installer for the bean
+        BeanInstaller installer = APPLICATION_GUEST_BEAN_TEMPLATE.newInstaller(installingExtension, owner);
+
+        // Install the bean and get a handle
+        GuestBeanHandle h;
+        if (template.op() == null) {
+            h = installer.install(template.guestClass(), GuestBeanHandle::new);
+        } else {
+            h = installer.install((Op<?>) template.op(), GuestBeanHandle::new);
+        }
+
+        // Cleanup
+        // return invokerfactory instead
+        MethodHandle m = h.lifecycleInvokers().get(0).invokerAsMethodHandle();
+        m = m.asType(m.type().changeReturnType(Object.class));
+        return m;
     }
 }

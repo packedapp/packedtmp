@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import app.packed.service.CircularDependencyException;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderSetup;
+import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 
 /**
  * A service multi-composer is responsible for managing 1 or more {@link ServiceManager0 service composers} that are
@@ -37,8 +37,8 @@ import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProvider
  */
 public final class CircularServiceDependencyChecker {
 
-    private static void dependencyCyclesFind(ArrayDeque<NamespaceServiceProviderSetup> stack, ArrayDeque<NamespaceServiceProviderSetup> dependencies, ContainerSetup container) {
-        for (NamespaceServiceProviderSetup node : container.servicesMain().providers) {
+    private static void dependencyCyclesFind(ArrayDeque<NamespaceServiceProviderHandle> stack, ArrayDeque<NamespaceServiceProviderHandle> dependencies, ContainerSetup container) {
+        for (NamespaceServiceProviderHandle node : container.servicesMain().providers) {
             if (!node.hasBeenCheckForDependencyCycles) { // only process those nodes that have not been visited yet
                 detectCycle(node, stack, dependencies);
             }
@@ -51,8 +51,8 @@ public final class CircularServiceDependencyChecker {
     }
 
     public static void dependencyCyclesFind(ContainerSetup container) {
-        ArrayDeque<NamespaceServiceProviderSetup> stack = new ArrayDeque<>();
-        ArrayDeque<NamespaceServiceProviderSetup> dependencies = new ArrayDeque<>();
+        ArrayDeque<NamespaceServiceProviderHandle> stack = new ArrayDeque<>();
+        ArrayDeque<NamespaceServiceProviderHandle> dependencies = new ArrayDeque<>();
         dependencyCyclesFind(stack, dependencies, container);
     }
 
@@ -69,7 +69,7 @@ public final class CircularServiceDependencyChecker {
      * @throws BuildException
      *             if there is a cycle in the graph
      */
-    private static void detectCycle(NamespaceServiceProviderSetup ps, ArrayDeque<NamespaceServiceProviderSetup> stack, ArrayDeque<NamespaceServiceProviderSetup> dependencies) {
+    private static void detectCycle(NamespaceServiceProviderHandle ps, ArrayDeque<NamespaceServiceProviderHandle> stack, ArrayDeque<NamespaceServiceProviderHandle> dependencies) {
         ArrayList<ServiceBindingSetup> bindings = ps.bindings;
         if (bindings.isEmpty()) {
             return; // leaf
@@ -80,7 +80,7 @@ public final class CircularServiceDependencyChecker {
         stack.push(ps);
         for (ServiceBindingSetup binding : bindings) {
             BeanSetup bean = binding.operation.bean;
-            for (NamespaceServiceProviderSetup next : bean.operations.serviceProviders) {
+            for (NamespaceServiceProviderHandle next : bean.operations.serviceProviders) {
                 if (next.hasBeenCheckForDependencyCycles) {
                     continue;
                 }
@@ -106,7 +106,7 @@ public final class CircularServiceDependencyChecker {
 
     }
 
-    private static String createErrorMessage(ArrayDeque<NamespaceServiceProviderSetup> dependencies) {
+    private static String createErrorMessage(ArrayDeque<NamespaceServiceProviderHandle> dependencies) {
         int size = dependencies.size();
         StringBuilder sb = new StringBuilder("Circular dependencies between " + size + " services: ");
         if (size == 2) {
@@ -114,7 +114,7 @@ public final class CircularServiceDependencyChecker {
             sb.append(" <-> ");
             sb.append(dependencies.pollLast().key());
         } else {
-            NamespaceServiceProviderSetup e = dependencies.pollLast();
+            NamespaceServiceProviderHandle e = dependencies.pollLast();
             do {
                 sb.append(e.key());
                 if (!dependencies.isEmpty()) {

@@ -28,6 +28,7 @@ import internal.app.packed.operation.OperationMemberTarget.OperationConstructorT
 /**
  *
  */
+// I think interface, and then records
 public sealed abstract class PackedOperationTarget {
 
     /** {@return the initial method handle.} */

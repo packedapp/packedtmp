@@ -26,10 +26,10 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
-import app.packed.application.ApplicationRepository;
 import app.packed.application.ApplicationTemplate;
-import app.packed.application.repository.ApplicationLauncher;
-import app.packed.application.repository.ManagedInstance;
+import app.packed.application.repository.InstalledApplication;
+import app.packed.application.repository.ApplicationRepository;
+import app.packed.application.repository.other.ManagedInstance;
 import app.packed.build.BuildGoal;
 import internal.app.packed.ValueBased;
 import internal.app.packed.application.ApplicationSetup;
@@ -54,7 +54,7 @@ public sealed abstract class AbstractApplicationRepository<I, H extends Applicat
     @SuppressWarnings("unchecked")
     public AbstractApplicationRepository(BuildApplicationRepository bar) {
         this.handles = new ConcurrentHashMap<>();
-        bar.handles.forEach((n, h) -> handles.put(n, new PackedApplicationLauncher<>(this instanceof ManagedApplicationRepository, (H) h)));
+        bar.handles.forEach((n, h) -> handles.put(n, new PackedInstalledApplication<>(this instanceof ManagedApplicationRepository, (H) h)));
         this.template = (PackedApplicationTemplate<H>) bar.template;
         this.methodHandle = requireNonNull(bar.mh);
     }
@@ -78,26 +78,26 @@ public sealed abstract class AbstractApplicationRepository<I, H extends Applicat
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public final ApplicationLauncher<I> install(Consumer<? super ApplicationInstaller<H>> installer) {
+    public final InstalledApplication<I> install(Consumer<? super ApplicationInstaller<H>> installer) {
         PackedApplicationInstaller<H> pai = template.newInstaller(this, BuildGoal.IMAGE, methodHandle);
         installer.accept(pai);
         ApplicationSetup setup = pai.toHandle();
-        PackedApplicationLauncher<I, H> pal = new PackedApplicationLauncher<>(this instanceof ManagedApplicationRepository, (H) setup.handle());
+        PackedInstalledApplication<I, H> pal = new PackedInstalledApplication<>(this instanceof ManagedApplicationRepository, (H) setup.handle());
         handles.put(UUID.randomUUID().toString(), pal);
         return pal;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Stream<ManagedInstance<I>> instances() {
-        return launchers().flatMap(l -> l.instances());
+    public Stream<ManagedInstance<I>> allInstances() {
+        return applications().flatMap(l -> l.instances());
     }
 
     /** {@inheritDoc} */
     @Override
-    public Optional<ApplicationLauncher<I>> launcher(String name) {
+    public Optional<InstalledApplication<I>> application(String name) {
         LauncherOrFuture<I, H> f = handles.get(name);
-        if (f instanceof PackedApplicationLauncher<I, H> l) {
+        if (f instanceof PackedInstalledApplication<I, H> l) {
             return Optional.of(l);
         }
         return Optional.empty();
@@ -106,12 +106,12 @@ public sealed abstract class AbstractApplicationRepository<I, H extends Applicat
     /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public Stream<ApplicationLauncher<I>> launchers() {
+    public Stream<InstalledApplication<I>> applications() {
         return (Stream) launchers0();
     }
 
-    public Stream<PackedApplicationLauncher<I, H>> launchers0() {
-        return handles.values().stream().filter(l -> l instanceof PackedApplicationLauncher).map(l -> (PackedApplicationLauncher<I, H>) l);
+    public Stream<PackedInstalledApplication<I, H>> launchers0() {
+        return handles.values().stream().filter(l -> l instanceof PackedInstalledApplication).map(l -> (PackedInstalledApplication<I, H>) l);
     }
 
     /** {@inheritDoc} */
@@ -120,7 +120,7 @@ public sealed abstract class AbstractApplicationRepository<I, H extends Applicat
         return template;
     }
 
-    public static Class<?> repositoryClassFor(PackedApplicationTemplate<?> template) {
-        return template.containerTemplate().isManaged() ? ManagedApplicationRepository.class : UnmanagedApplicationRepository.class;
+    public static Class<?> repositoryClassFor(ApplicationTemplate<?> template) {
+        return template.isManaged() ? ManagedApplicationRepository.class : UnmanagedApplicationRepository.class;
     }
 }

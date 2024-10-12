@@ -27,7 +27,7 @@ import app.packed.bean.lifecycle.Initialize;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.ExtensionHandle;
-import app.packed.operation.OperationHandle;
+import app.packed.operation.InvokerFactory;
 
 /**
  *
@@ -70,7 +70,6 @@ public class MhExt extends BaseAssembly {
 
     public static class MyE extends Extension<MyE> {
 
-
         /**
          * @param handle
          */
@@ -88,8 +87,8 @@ public class MhExt extends BaseAssembly {
         @Override
         public void onAssemblyClose() {
             InstanceBeanConfiguration<EBean> b = base().install(EBean.class);
-            OperationHandle<?> oh = h.lifetimeOperations().get(0);
-            b.bindServiceInstance(MethodHandle.class, oh.methodHandle());
+            InvokerFactory oh = h.lifecycleInvokers().get(0);
+            b.bindServiceInstance(MethodHandle.class, oh.invokerAsMethodHandle());
         }
     }
 }

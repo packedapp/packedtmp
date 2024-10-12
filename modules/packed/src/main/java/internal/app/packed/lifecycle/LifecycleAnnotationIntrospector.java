@@ -50,26 +50,27 @@ import internal.app.packed.operation.PackedOperationTemplate;
 public final class LifecycleAnnotationIntrospector {
 
     /** A template for bean lifecycle operations. */
-    private static final OperationTemplate BEAN_LIFECYCLE_TEMPLATE = OperationTemplate.defaults().reconfigure(c -> c.returnIgnore());
+    private static final OperationTemplate BEAN_LIFECYCLE_TEMPLATE = OperationTemplate.of(c -> c.returnIgnore());
 
-    static final ContextTemplate ON_START_CONTEXT_TEMPLATE = ContextTemplate.of(StartContext.class, c -> {});
+    static final ContextTemplate ON_START_CONTEXT_TEMPLATE = ContextTemplate.of(StartContext.class);
 
-    static final ContextTemplate ON_STOP_CONTEXT_TEMPLATE = ContextTemplate.of(StopContext.class, c -> {});
+    static final ContextTemplate ON_STOP_CONTEXT_TEMPLATE = ContextTemplate.of(StopContext.class);
 
-    private static final OperationTemplate BEAN_LIFECYCLE_ON_START_TEMPLATE = OperationTemplate.defaults()
-            .reconfigure(c -> c.returnIgnore().inContext(ON_START_CONTEXT_TEMPLATE));
+    private static final OperationTemplate BEAN_LIFECYCLE_ON_START_TEMPLATE = OperationTemplate.of(c -> c.returnIgnore().inContext(ON_START_CONTEXT_TEMPLATE));
 
-    private static final OperationTemplate BEAN_LIFECYCLE_ON_STOP_TEMPLATE = OperationTemplate.defaults()
-            .reconfigure(c -> c.returnIgnore().inContext(ON_STOP_CONTEXT_TEMPLATE));
+    private static final OperationTemplate BEAN_LIFECYCLE_ON_STOP_TEMPLATE = OperationTemplate.of(c -> c.returnIgnore().inContext(ON_STOP_CONTEXT_TEMPLATE));
 
     public static void checkForFactoryOp(BeanSetup bean) {
         // Creating an bean factory operation representing the Op if an Op was specified when creating the bean.
         if (bean.beanSourceKind == BeanSourceKind.OP) {
             PackedOp<?> op = (PackedOp<?>) bean.beanSource;
-            PackedOperationTemplate ot = bean.operations.bot;
-            if (ot == null) {
-                ot = (PackedOperationTemplate) OperationTemplate.defaults();
-            }
+
+            PackedOperationTemplate   ot = bean.template.initializationTemplate();
+            //  if (ot.returnKind == ReturnKind.DYNAMIC) {
+            //      ot = ot.configure(c -> c.returnType(beanClass));
+             // }
+
+//            ot = bean.template.initializationTemplate()
 
             // What if no scanning and OP?????
             OperationSetup os = op.newOperationSetup(

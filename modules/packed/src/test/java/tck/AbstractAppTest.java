@@ -215,7 +215,7 @@ abstract class AbstractAppTest<A> {
         final class State2Building implements InternalTestState, ApplicationInstallingSource {
             public static final MethodHandle EMPTY_MH = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
             static final PackedApplicationTemplate<?> PAT = new PackedApplicationTemplate<>(Void.class, null, ApplicationHandle.class, ApplicationHandle::new,
-                    new PackedContainerTemplate<>(PackedContainerKind.BOOTSTRAP_APPLICATION), Set.of());
+                    new PackedContainerTemplate<>(PackedContainerKind.MANAGED), Set.of());
             final AssemblySetup assembly;
 
             final PackedApplicationInstaller<?> b;

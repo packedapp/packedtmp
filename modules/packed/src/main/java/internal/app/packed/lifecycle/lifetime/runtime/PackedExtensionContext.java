@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
+import app.packed.context.ContextTemplate;
 import app.packed.context.ContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionContext;
@@ -32,6 +33,9 @@ import internal.app.packed.util.LookupUtil;
 @ContextualServiceProvider(extension = BaseExtension.class)
 @ValueBased
 public final class PackedExtensionContext implements ExtensionContext {
+
+    /** A context template for {@link ExtensionContext}. */
+    public static final ContextTemplate CONTEXT_TEMPLATE = ContextTemplate.of(ExtensionContext.class).withImplementation(PackedExtensionContext.class);
 
     /** A method handle for calling {@link #read(int)} at runtime. */
     public static final MethodHandle MH_CONSTANT_POOL_READER;
