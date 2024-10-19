@@ -54,7 +54,7 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     @Nullable
     private ArrayList<Runnable> codegenActions;
 
-    /** Components tags on components in the application. */
+    /** Handles components tags for every components in the application. */
     public final ComponentTagHolder componentTags = new ComponentTagHolder();
 
     /**
@@ -100,15 +100,13 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     public final HashMap<NamespaceKey, NamespaceHandle<?, ?>> namespaces = new HashMap<>();
 
     /** The current phase of the application's build process. */
-    private ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
+    public ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
 
     /** Any (statically defined) children this application has. */
-    public final ArrayList<BuildApplicationRepository> subChildren = new ArrayList<>();
+    public final ArrayList<BuildApplicationRepository> childApplications = new ArrayList<>();
 
     /** The template used to create the application. */
     public final PackedApplicationTemplate<?> template;
-
-    public boolean completedBuilding;
 
     /**
      * Create a new application.
@@ -121,7 +119,7 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
         this.deployment = new DeploymentSetup(this, installer);
         this.codegenActions = deployment.goal.isCodeGenerating() ? new ArrayList<>() : null;
         this.goal = installer.buildProcess.goal();
-        this.launcher = installer.launcher; // Is null for rootstrap
+        this.launcher = installer.launcher; // Is null for bootstrap
     }
 
     /**
@@ -176,7 +174,8 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
         }
 
         // The application was build successfully
-        phase = ApplicationBuildPhase.COMPLETED;
+        phase = ApplicationBuildPhase.CLOSED;
+        new Exception().printStackTrace();
     }
 
     /** {@return the component path of the application} */
@@ -244,7 +243,7 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
     }
 
     /** The build phase of the application. */
-    private enum ApplicationBuildPhase {
-        ASSEMBLE, CODEGEN, COMPLETED;
+    public enum ApplicationBuildPhase {
+        ASSEMBLE, CODEGEN, CLOSED, COMPLETED;
     }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component.guest.usage;
+package app.packed.application.repository.usage;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -21,9 +21,9 @@ import app.packed.application.App;
 import app.packed.application.repository.ApplicationRepository;
 import app.packed.application.repository.ApplicationRepositoryConfiguration;
 import app.packed.application.repository.ApplicationRepositoryExtension;
+import app.packed.application.repository.usage.SimpleManagedApplication.GuestApplicationHandle;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.lifecycle.Initialize;
-import app.packed.component.guest.usage.SimpleManagedApplication.GuestApplicationHandle;
 
 /**
  *

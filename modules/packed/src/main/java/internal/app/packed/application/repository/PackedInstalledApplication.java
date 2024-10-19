@@ -23,8 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
+import app.packed.application.repository.ApplicationLauncher;
 import app.packed.application.repository.InstalledApplication;
-import app.packed.application.repository.other.GuestLauncher;
 import app.packed.application.repository.other.ManagedInstance;
 import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
@@ -79,7 +79,7 @@ public final class PackedInstalledApplication<I, H extends ApplicationHandle<I, 
 
     /** {@inheritDoc} */
     @Override
-    public GuestLauncher<I> launcher() {
+    public ApplicationLauncher<I> launcher() {
         return null;
     }
 

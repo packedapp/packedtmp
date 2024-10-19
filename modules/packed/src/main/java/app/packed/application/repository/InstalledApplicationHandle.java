@@ -15,21 +15,18 @@
  */
 package app.packed.application.repository;
 
-import app.packed.application.ApplicationHandle;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanTemplate;
 import app.packed.service.ProvidableBeanConfiguration;
-import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.bean.PackedBeanTemplate;
-import internal.app.packed.build.AuthoritySetup;
-import internal.app.packed.extension.ExtensionSetup;
 
-/**
- *
- */
-final class InstalledApplicationHandle<T> extends BeanHandle<ProvidableBeanConfiguration<T>>{
+/** A handle for an installed application. */
+final class InstalledApplicationHandle<T> extends BeanHandle<ProvidableBeanConfiguration<T>> {
+
+    @SuppressWarnings("unused")
+    private static final PackedBeanTemplate REPOSITORY_BEAN_TEMPLATE = (PackedBeanTemplate) BeanTemplate.of(BeanKind.CONTAINER);
 
     /**
      * @param installer
@@ -38,24 +35,4 @@ final class InstalledApplicationHandle<T> extends BeanHandle<ProvidableBeanConfi
         super(installer);
     }
 
-    @SuppressWarnings("unused")
-    private static final PackedBeanTemplate REPOSITORY_BEAN_TEMPLATE = (PackedBeanTemplate) BeanTemplate.of(BeanKind.CONTAINER,
-            b -> {});
-
-
-    static <A, H extends ApplicationHandle<A, ?>> ProvidableBeanConfiguration<InstalledApplication<A>> install(PackedApplicationTemplate<H> template, ExtensionSetup es,
-            AuthoritySetup<?> owner) {
-
-        throw new UnsupportedOperationException();
-
-        // Install a ApplicationRepository
-//        ApplicationRepositoryHandle<A, H> h = REPOSITORY_BEAN_TEMPLATE.newInstaller(es, owner)
-//                .install(AbstractApplicationRepository.repositoryClassFor(template), i -> new ApplicationRepositoryHandle<>(i, template));
-//
-//        // Create a new installer for the guest bean
-//        BeanInstaller i = PackedApplicationTemplate.GB.newInstaller(es, owner);
-//        template.installGuestBean(i, h.repository::onCodeGenerated);
-//
-//        return h.configuration();
-    }
 }

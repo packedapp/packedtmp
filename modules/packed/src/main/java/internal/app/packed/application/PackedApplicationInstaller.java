@@ -28,6 +28,7 @@ import app.packed.assembly.Assembly;
 import app.packed.build.BuildGoal;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
+import internal.app.packed.application.ApplicationSetup.ApplicationBuildPhase;
 import internal.app.packed.build.PackedBuildProcess;
 import internal.app.packed.component.PackedComponentInstaller;
 import internal.app.packed.container.ContainerSetup;
@@ -94,7 +95,7 @@ public final class PackedApplicationInstaller<H extends ApplicationHandle<?, ?>>
         } finally {
             buildProcess.finished();
         }
-        container.application.completedBuilding = true;
+        container.application.phase = ApplicationBuildPhase.COMPLETED;
         return (H) container.application.handle();
     }
 

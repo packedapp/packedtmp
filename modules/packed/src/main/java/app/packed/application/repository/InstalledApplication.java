@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationHandle;
-import app.packed.application.repository.other.GuestLauncher;
 import app.packed.application.repository.other.ManagedInstance;
 import app.packed.container.Wirelet;
 import internal.app.packed.application.repository.PackedInstalledApplication;
@@ -55,7 +54,7 @@ public sealed interface InstalledApplication<I> permits PackedInstalledApplicati
 
     boolean isManaged();
 
-    GuestLauncher<I> launcher();
+    ApplicationLauncher<I> launcher();
 
     I startNew(Wirelet... wirelets);
 

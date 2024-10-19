@@ -57,7 +57,9 @@ public final class ApplicationRepositoryExtension extends Extension<ApplicationR
     // Ved ikke om det har noget med repository at goere. Det tror jeg egentlig ikke...
     // Altsaa hvorfor ikke bare have en extension der exposer nogle beans?
     // Saa maa de selv om de vil bruge Packed
-    public void buildDependecy(Consumer<? super ApplicationInstaller<?>> installer) {
+
+    // Maybe you want an image???
+    public void newDependecy(Consumer<? super ApplicationInstaller<?>> installer) {
         throw new UnsupportedOperationException();
     }
 

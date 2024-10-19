@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.repository.other;
+package app.packed.application.repository;
 
+import app.packed.application.repository.other.ManagedInstance;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 
 // Kune maaske shares med container
-public interface GuestLauncher<I> {
+// Skal have lidt mere koedt paa en bare saette et navn syntes jegT
+public interface ApplicationLauncher<I> {
 
     /**
      * Initializes a new application instance.
@@ -40,12 +42,12 @@ public interface GuestLauncher<I> {
      */
     ManagedInstance<I> launch(Wirelet... wirelets);
 
-    /**
+    /**s
      * Names the application instance to be launched.
      *
      * @param instanceName
      *            the name of the application instance
      * @return this launcher
      */
-    GuestLauncher<I> named(String instanceName);
+    ApplicationLauncher<I> named(String instanceName);
 }

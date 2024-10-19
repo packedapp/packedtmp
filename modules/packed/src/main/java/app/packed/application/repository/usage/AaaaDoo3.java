@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component.guest.usage;
+package app.packed.application.repository.usage;
 
 import app.packed.application.App;
 import app.packed.application.repository.InstalledApplication;

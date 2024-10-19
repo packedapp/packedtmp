@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component.guest.usage;
+package app.packed.application.repository.usage;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +36,7 @@ import sandbox.lifetime.external.ManagedLifetimeState;
  */
 public record SimpleManagedApplication(@FromComponentGuest ManagedLifecycle lifecycle, long nanos) implements ManagedLifecycle {
 
-    // Problemet er vi skal definere en Handle Class...
+    // Problemet er vi skal definere en Handle Class... Der har <I> = ManagedLifecycle
     // Men syntes ogsaa det er fint at folk skal lave en guest bean
     public static final ApplicationTemplate<GuestApplicationHandle2> MANAGED = ApplicationTemplate
             .ofManaged(new Op1<@FromComponentGuest ManagedLifecycle, ManagedLifecycle>(e -> e) {}, GuestApplicationHandle2.class, GuestApplicationHandle2::new);

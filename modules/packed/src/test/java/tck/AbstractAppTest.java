@@ -40,6 +40,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.application.ApplicationSetup.ApplicationBuildPhase;
 import internal.app.packed.application.PackedApplicationInstaller;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.PackedApplicationTemplate.ApplicationInstallingSource;
@@ -248,7 +249,7 @@ abstract class AbstractAppTest<A> {
             State3Build(State2Building sb) {
                 sb.assembly.postBuild();
                 this.application = sb.assembly.container.application;
-                this.application.completedBuilding = true;
+                this.application.phase = ApplicationBuildPhase.COMPLETED;
             }
         }
     }

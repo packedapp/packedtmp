@@ -192,7 +192,7 @@ public final class AssemblySetup extends AuthoritySetup<AssemblySetup> implement
             // The application has been built successfully, generate code if needed
             container.application.close();
 
-            for (BuildApplicationRepository r : container.application.subChildren) {
+            for (BuildApplicationRepository r : container.application.childApplications) {
                 r.build();
             }
 

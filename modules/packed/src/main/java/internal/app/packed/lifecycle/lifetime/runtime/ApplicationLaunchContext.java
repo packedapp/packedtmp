@@ -33,6 +33,7 @@ import app.packed.runtime.RunState;
 import app.packed.service.ServiceLocator;
 import app.packed.util.Nullable;
 import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.application.ApplicationSetup.ApplicationBuildPhase;
 import internal.app.packed.container.wirelets.InternalBuildWirelet;
 import internal.app.packed.container.wirelets.WireletSelectionArray;
 
@@ -112,7 +113,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
         ApplicationSetup application = ApplicationSetup.crack(handle);
         requireNonNull(state, "state is null");
         // TODO fix
-        if (!application.completedBuilding) {
+        if (application.phase != ApplicationBuildPhase.COMPLETED) {
             throw new IllegalStateException("Application has not finished building");
         }
 

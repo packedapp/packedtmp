@@ -58,6 +58,6 @@ final class ApplicationRepositoryBeanHandle<I, H extends ApplicationHandle<I, ?>
     @Override
     protected void onConfigurationClosed() {
         bindServiceInstance(BuildApplicationRepository.class, repository);
-        BeanSetup.crack(this).container.application.subChildren.add(repository);
+        BeanSetup.crack(this).container.application.childApplications.add(repository);
     }
 }
