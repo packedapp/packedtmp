@@ -22,7 +22,7 @@
     <version.plugin.shade>3.4.1</version.plugin.shade>
     <version.plugin.gpg>3.0.1</version.plugin.gpg>
     <version.plugin.jxr>3.2.0</version.plugin.jxr>
-    <version.plugin.invoker>3.5.1</version.plugin.invoker>
+    <version.plugin.invoker>3.8.1</version.plugin.invoker>
     <version.plugin.buildhelper>3.3.0</version.plugin.buildhelper>
     <version.plugin.jar>3.3.0</version.plugin.jar>
     <version.plugin.site>4.0.0-M6</version.plugin.site>
