@@ -22,8 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import app.packed.bean.scanning.BeanTrigger.AnnotatedFieldBeanTrigger;
-import app.packed.bean.scanning.BeanTrigger.AnnotatedVariableBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedField;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
@@ -39,7 +39,7 @@ final class BeanHookCache {
 
         @Override
         protected HookOnFieldAnnotation computeValue(Class<?> type) {
-            AnnotatedFieldBeanTrigger hook = type.getAnnotation(AnnotatedFieldBeanTrigger.class);
+            OnAnnotatedField hook = type.getAnnotation(OnAnnotatedField.class);
             if (hook == null) {
                 return null;
             }
@@ -54,7 +54,7 @@ final class BeanHookCache {
 
         @Override
         protected HookOnAnnotatedBinding computeValue(Class<?> type) {
-            AnnotatedVariableBeanTrigger hook = type.getAnnotation(AnnotatedVariableBeanTrigger.class);
+            OnAnnotatedVariable hook = type.getAnnotation(OnAnnotatedVariable.class);
             if (hook == null) {
                 return null; // Annotation not annotated with AnnotatedVariableHook
             }

@@ -15,12 +15,12 @@
  */
 package app.packed.concurrent;
 
-import app.packed.namespace.NamespaceOperationMirror;
+import app.packed.operation.OperationMirror;
 
 /**
  *
  */
-public abstract class ThreadOperationMirror extends NamespaceOperationMirror {
+public abstract class ThreadOperationMirror extends OperationMirror {
 
     final ThreadedOperationHandle<?> handle;
 
@@ -32,7 +32,6 @@ public abstract class ThreadOperationMirror extends NamespaceOperationMirror {
         this.handle = handle;
     }
 
-    @Override
     public final ThreadNamespaceMirror namespace() {
         return (ThreadNamespaceMirror) handle.namespace.mirror();
     }

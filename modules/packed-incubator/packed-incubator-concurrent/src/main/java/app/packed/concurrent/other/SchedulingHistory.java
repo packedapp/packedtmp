@@ -15,12 +15,12 @@
  */
 package app.packed.concurrent.other;
 
-import app.packed.context.ContextualServiceProvider;
+import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
 
 /**
  *
  */
-@ContextualServiceProvider(extension = ScheduledJobExtension.class, context = SchedulingContext.class)
+@OnExtensionServiceBeanTrigger(extension = ScheduledJobExtension.class, requiresContext = SchedulingContext.class)
 public interface SchedulingHistory {
 
 }

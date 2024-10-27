@@ -21,8 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.scanning.BeanTrigger.AnnotatedFieldBeanTrigger;
-import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
 import app.packed.extension.BaseExtension;
 
 /**
@@ -45,8 +45,8 @@ import app.packed.extension.BaseExtension;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedMethodBeanTrigger(extension = BaseExtension.class, allowInvoke = true)
-@AnnotatedFieldBeanTrigger(extension = BaseExtension.class, allowGet = true)
+@OnAnnotatedMethod(extension = BaseExtension.class, allowInvoke = true)
+@BeanTrigger.OnAnnotatedField(extension = BaseExtension.class, allowGet = true)
 // Skal returnere implementationen
 public @interface ContainerContextProvide {
     // Det kan vi vel extracte fra metode/field signaturen

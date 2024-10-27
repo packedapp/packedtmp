@@ -21,8 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.scanning.BeanTrigger.AnnotatedFieldBeanTrigger;
-import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.sandbox.NamespaceMetaAnnotation;
 
@@ -55,8 +55,8 @@ import app.packed.namespace.sandbox.NamespaceMetaAnnotation;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @NamespaceMetaAnnotation
-@AnnotatedMethodBeanTrigger(extension = BaseExtension.class, allowInvoke = true)
-@AnnotatedFieldBeanTrigger(extension = BaseExtension.class, allowGet = true)
+@OnAnnotatedMethod(extension = BaseExtension.class, allowInvoke = true)
+@BeanTrigger.OnAnnotatedField(extension = BaseExtension.class, allowGet = true)
 // Hvis vi laver meta annoteringen, skal vi jo naesten lave den om til en repeatable..
 // Syntes godt man maa smide flere pa
 public @interface Provide {

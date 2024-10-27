@@ -20,9 +20,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.assembly.Assembly;
-import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.scanning.BeanElement.BeanMethod;
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
@@ -79,11 +78,11 @@ public class CliExtension extends FrameworkExtension<CliExtension> {
 
             /** {@inheritDoc} */
             @Override
-            public void onAnnotatedMethod(BeanMethod method, Annotation hook) {
+            public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod method) {
                 if (hook instanceof CliCommand c) {
                     ns().process(CliExtension.this, c, method);
                 } else {
-                    super.onAnnotatedMethod(method, hook);
+                    super.onAnnotatedMethod(hook, method);
                 }
             }
         };

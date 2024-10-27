@@ -17,6 +17,7 @@ package app.packed.bean.scanning;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -25,83 +26,18 @@ import app.packed.context.Context;
 import app.packed.extension.Extension;
 
 /**
- * A bean trigger is
+ * A bean trigger are simply properties of a bean that trigger some action.
  */
-//or Maybe just interface BeanHooks?
-//TODO I think the name is bad. I would think it was hooks I could place on my bean class.
-//ExtensionHooks?? Og saa AnnotatedFieldHook -> AnnotatedBeanFieldHook
-//Problemet er AssemblyHook som jo kan implementeres af users
-
-//ExtensionActivator in the .bean package
-
-//Stuff on a bean that will activate an extension
-
-//Something with Activator? ExtensionActivator
-
-//Was BindingActivator
-
-//BeanTriggers
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface BeanTrigger {
 
-    /**
-     * <p>
-     * Attempting to place multiple annotated variable hook annotations on a single field or parameter will result in a
-     * {@link BeanInstallationException} being thrown at build-time.
-     *
-     * @see BeanIntrospector#hookOnProvidedAnnotatedVariable(java.lang.annotation.Annotation,
-     *      app.packed.bindings.BindableVariable)
-     */
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @BeanTrigger
-    public @interface AnnotatedVariableBeanTrigger {
-
-        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
-        Class<? extends Extension<?>> extension();
-
-        /**
-         * Contexts that are required in order to use the binding class or annotation.
-         * <p>
-         * If this binding is attempted to be used without the context being available a {@link OutOfContextException} will be
-         * thrown.
-         * <p>
-         * If this method returns multiple contexts they will <strong>all</strong> be required.
-         *
-         * @return stuff
-         */
-        Class<? extends Context<?>>[] requiresContext() default {};
-
-        // I think it would be super nice to indicate that we simply uses a key based local namespace
-        // Nothing fancy freeflowing key
-        // Maybe this is actually two different annotations???
-        // Should we have something about we use a KeyBasedScheme? Or a free
-        // For example Codegenerated...
-        boolean checkKeyRepresentation() default true;
-
-        enum Mode {
-
-            // Tror maaske vi skal overskrive en eller anden klasse
-            // Som siger hvad vi skal goere i de enkelte tilfaelde
-
-            DECORATE, DEFAULT, PEEK;
-
-            // Kan kun vaere en Default annotering (Default og @Nullable?)
-
-            // Alle decorates er altid koert foerned peek.
-            //// fx vil vi altid have Peek efter decorate ved validering
-            //// selvom decorate annotering er efter peek
-        }
-    }
-
-    @Target(ElementType.ANNOTATION_TYPE)
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    @BeanTrigger
-    public @interface AnnotatedClassBeanTrigger {
+    public @interface OnAnnotatedClass {
 
         /** Whether or not the sidecar is allow to get the contents of a field. */
         /**
@@ -129,7 +65,7 @@ public @interface BeanTrigger {
     @Documented
     @BeanTrigger
     // I don't think we are going to support meta annotations that have both type use and field use
-    public @interface AnnotatedFieldBeanTrigger {
+    public @interface OnAnnotatedField {
 
         /** Whether or not the owning extension is allow to get the contents of the field. */
         boolean allowGet() default false;
@@ -155,7 +91,7 @@ public @interface BeanTrigger {
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @BeanTrigger
-    public @interface AnnotatedMethodBeanTrigger {
+    public @interface OnAnnotatedMethod {
 
         /**
          * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
@@ -174,6 +110,8 @@ public @interface BeanTrigger {
         /** The extension that will be triggered. */
         Class<? extends Extension<?>> extension();
 
+        // Can we have more than one???
+        // Ala Requires TransactionContext +
         Class<? extends Context<?>>[] requiresContext() default {};
 
         // Async, Transactional, Maybe metric?
@@ -182,5 +120,132 @@ public @interface BeanTrigger {
 //        // IDK, don't we just want to ignore it most of the time???
 //        // Nah maybe fail. People might think it does something
 //        boolean requiresVoidReturn() default false;
+    }
+
+    /**
+     * <p>
+     * Attempting to place multiple annotated variable hook annotations on a single field or parameter will result in a
+     * {@link BeanInstallationException} being thrown at build-time.
+     *
+     * @see BeanIntrospector#hookOnProvidedAnnotatedVariable(java.lang.annotation.Annotation,
+     *      app.packed.bindings.BindableVariable)
+     */
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @BeanTrigger
+    public @interface OnAnnotatedVariable {
+
+        // I think it would be super nice to indicate that we simply uses a key based local namespace
+        // Nothing fancy freeflowing key
+        // Maybe this is actually two different annotations???
+        // Should we have something about we use a KeyBasedScheme? Or a free
+        // For example Codegenerated...
+        // Hmm, men det betyder jo ogsaa vi laver peeling
+        boolean checkKeyRepresentation() default true;
+
+        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
+        Class<? extends Extension<?>> extension();
+
+        /**
+         * Contexts that are required in order to use the binding class or annotation.
+         * <p>
+         * If this binding is attempted to be used without the context being available a {@link OutOfContextException} will be
+         * thrown.
+         * <p>
+         * If this method returns multiple contexts they will <strong>all</strong> be required.
+         *
+         * @return stuff
+         */
+        Class<? extends Context<?>>[] requiresContext() default {};
+
+        enum Mode {
+
+            // Tror maaske vi skal overskrive en eller anden klasse
+            // Som siger hvad vi skal goere i de enkelte tilfaelde
+
+            DECORATE, DEFAULT, PEEK;
+
+            // Kan kun vaere en Default annotering (Default og @Nullable?)
+
+            // Alle decorates er altid koert foerned peek.
+            //// fx vil vi altid have Peek efter decorate ved validering
+            //// selvom decorate annotering er efter peek
+        }
+    }
+
+    /**
+     *
+     * <p>
+     * If the type being provider is a generic type. It will match it independent on any actual types. There is no support
+     * for refining this. It must be handled in the extension.
+     *
+     * @see InheritableContextualServiceProvider
+     */
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @BeanTrigger
+    public @interface OnExtensionServiceBeanTrigger {
+
+        /**
+         * The extension that will provide the services.
+         * <p>
+         * The extension must be located in the same module as the type that is annotated with this annotation.
+         */
+        Class<? extends Extension<?>> extension();
+
+        /**
+         * Any context that is needed for the service to be provided. The default is
+         * {@link app.packed.service.advanced.ServiceResolver.NoContext} which indicates that the annotated class can be used
+         * anywhere.
+         * <p>
+         * If no contexts are specified, the type can be used anywhere.
+         * <p>
+         * If this binding is attempted to be used without the context being available a
+         * {@link app.packed.context.NotInContextException} will be thrown.
+         * <p>
+         *
+         * If this method returns multiple contexts they will <strong>all</strong> be required.
+         *
+         * @return required contexts
+         */
+        Class<? extends Context<?>>[] requiresContext() default {};
+    }
+
+    /**
+     * A version of the {@link ContextualServiceProvider} annotation that is {@link Inherited}. All other functionality is
+     * identical.
+     * <p>
+     * NOTE: Remember, inherited annotations are not inherited on interfaces. So you an abstract class if you need to design
+     * a inheritance hierarchy.
+     *
+     * @see ContextualServiceProvider
+     */
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @BeanTrigger
+    @Inherited
+    public @interface OnExtensionServiceInteritedBeanTrigger {
+
+        /**
+         * The extension that will provide services of the annotated type.
+         * <p>
+         * The extension must be located in the same module as the type that is annotated with this annotation.
+         */
+        Class<? extends Extension<?>> extension();
+
+        /**
+         * Contexts that are required in order to use the binding class.
+         * <p>
+         * If this binding is attempted to be used without the context being available an {@link UnavilableContextException}
+         * will be thrown.
+         * <p>
+         * If this method returns multiple contexts they will <strong>all</strong> be required.
+         *
+         * @return required contexts
+         */
+        Class<? extends Context<?>>[] requiresContext() default {};
     }
 }

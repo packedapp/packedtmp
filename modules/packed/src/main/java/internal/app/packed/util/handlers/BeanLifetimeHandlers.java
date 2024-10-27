@@ -19,9 +19,9 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.lifetime.BeanLifetimeMirror;
-import app.packed.lifetime.RegionalLifetimeMirror;
+import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.lifecycle.lifetime.BeanLifetimeSetup;
-import internal.app.packed.lifecycle.lifetime.RegionalLifetimeSetup;
+import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 
 /**
  *
@@ -40,12 +40,12 @@ public class BeanLifetimeHandlers extends Handlers {
     }
 
     /** A MethodHandle for invoking {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_NEW_REGIONAL_LIFETIME_MIRROR = constructor(MethodHandles.lookup(), RegionalLifetimeMirror.class,
-            RegionalLifetimeSetup.class);
+    private static final MethodHandle MH_NEW_REGIONAL_LIFETIME_MIRROR = constructor(MethodHandles.lookup(), ContainerLifetimeMirror.class,
+            ContainerLifetimeSetup.class);
 
-    public static RegionalLifetimeMirror newRegionalLifetimeMirror(RegionalLifetimeSetup setup) {
+    public static ContainerLifetimeMirror newRegionalLifetimeMirror(ContainerLifetimeSetup setup) {
         try {
-            return (RegionalLifetimeMirror) MH_NEW_REGIONAL_LIFETIME_MIRROR.invokeExact(setup);
+            return (ContainerLifetimeMirror) MH_NEW_REGIONAL_LIFETIME_MIRROR.invokeExact(setup);
         } catch (Throwable t) {
             throw throwIt(t);
         }

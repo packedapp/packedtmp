@@ -45,7 +45,7 @@ public class InjectorWithTest {
 
         assertThat(i.use(A.class)).isInstanceOf(A.class);
         assertThat(i.use(new Key<A>() {})).isInstanceOf(A.class);
-        assertThat(i.use(new Key<A>() {})).isSameAs(i.findInstance(A.class).get());
+        assertThat(i.use(new Key<A>() {})).isSameAs(i.find(A.class).get());
 
         assertThat(i.use(new Key<@Left A>() {})).isInstanceOf(A.class);
 

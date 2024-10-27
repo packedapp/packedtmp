@@ -19,10 +19,9 @@ import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.lifecycle.BeanLifecycleKind;
-import app.packed.bean.scanning.BeanElement;
+import app.packed.bean.lifecycle.BeanLifecycleModel;
 import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.binding.BindableVariable;
+import app.packed.bean.scanning.BeanIntrospector.OnVariable;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
 import app.packed.build.BuildActor;
@@ -33,7 +32,6 @@ import app.packed.context.Context;
 import app.packed.operation.Op;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.scanning.BeanScanner;
-import internal.app.packed.bean.scanning.PackedBeanElement;
 import internal.app.packed.binding.BindingAccessor;
 import internal.app.packed.binding.BindingAccessor.FromCodeGenerated;
 import internal.app.packed.binding.BindingAccessor.FromConstant;
@@ -52,13 +50,13 @@ import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.lifecycle.LifecycleAnnotationIntrospector;
 import internal.app.packed.lifecycle.lifetime.BeanLifetimeSetup;
+import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifecycle.lifetime.LifetimeSetup;
-import internal.app.packed.lifecycle.lifetime.RegionalLifetimeSetup;
 import internal.app.packed.operation.BeanOperationStore;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.MainServiceNamespaceHandle;
 import internal.app.packed.service.ServiceProviderSetup.BeanServiceProviderSetup;
-import internal.app.packed.service.util.SequencedServiceMap;
+import internal.app.packed.service.util.ServiceMap;
 import internal.app.packed.util.handlers.BeanHandlers;
 
 /** The internal configuration of a bean. */
@@ -74,15 +72,15 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     /** The kind of bean. */
     public final BeanKind beanKind;
 
-    /** Bean services that have been bound specifically to the bean. */
-    public final SequencedServiceMap<BindableVariable> beanServices = new SequencedServiceMap<>();
+    /** Services that have been bound specifically to the bean. */
+    public final ServiceMap<OnVariable> beanServices = new ServiceMap<>();
 
     /** The source ({@code null}, {@link Class}, {@link PackedOp}, otherwise the bean instance) */
     @Nullable
     public final Object beanSource;
 
     /** The lifecycle kind of the bean. */
-    public final BeanLifecycleKind beanLifecycleKind = BeanLifecycleKind.UNMANAGED;
+    public final BeanLifecycleModel beanLifecycleKind = BeanLifecycleModel.UNMANAGED_LIFECYCLE;
 
     /** The type of source the installer is created from. */
     public final BeanSourceKind beanSourceKind;
@@ -119,7 +117,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
     @Nullable
     public BeanScanner scanner;
 
-    public final SequencedServiceMap<BeanServiceProviderSetup> serviceProviders = new SequencedServiceMap<>();
+    public final ServiceMap<BeanServiceProviderSetup> serviceProviders = new ServiceMap<>();
 
     /** The bean's template. */
     public final PackedBeanTemplate template;
@@ -136,7 +134,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         this.installedBy = requireNonNull(installer.installledByExtension);
         this.owner = requireNonNull(installer.owner);
 
-        RegionalLifetimeSetup containerLifetime = container.lifetime;
+        ContainerLifetimeSetup containerLifetime = container.lifetime;
         if (beanKind == BeanKind.CONTAINER || beanKind == BeanKind.STATIC) {
             this.lifetime = containerLifetime;
             this.lifetimeStoreIndex = container.lifetime.addBean(this);
@@ -174,8 +172,8 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         // Add the service provider for the bean
         serviceProviders.put(key, new BeanServiceProviderSetup(key, new FromCodeGenerated(supplier, SuppliedBindingKind.CODEGEN)));
 
-        SequencedServiceMap<BindableVariable> m = beanServices;
-        BindableVariable var = m.get(key);
+        ServiceMap<OnVariable> m = beanServices;
+        OnVariable var = m.get(key);
 //        if (var == null) {
 //            throw new IllegalArgumentException("The specified bean must have an injection site that uses @" + ComputedConstant.class.getSimpleName() + " " + key
 //                    + ". Available " + m.keySet());
@@ -292,7 +290,6 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         requireNonNull(accessor, "accessor is null");
         return switch (accessor) {
         case BeanConfiguration b -> crack(b);
-        case BeanElement b -> crack(b);
         case BeanHandle<?> b -> crack(b);
         case BeanIntrospector b -> crack(b);
         case BeanMirror b -> crack(b);
@@ -308,10 +305,6 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
      */
     public static BeanSetup crack(BeanConfiguration configuration) {
         return crack(BeanHandlers.getBeanConfigurationHandle(configuration));
-    }
-
-    public static BeanSetup crack(BeanElement element) {
-        return ((PackedBeanElement) element).bean();
     }
 
     public static BeanSetup crack(BeanHandle<?> handle) {

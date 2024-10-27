@@ -60,7 +60,7 @@ public final class BeanLifetimeMirror extends LifetimeMirror {
 
     /** {@inheritDoc} */
     @Override
-    public Optional<RegionalLifetimeMirror> parent() {
+    public Optional<ContainerLifetimeMirror> parent() {
         return Optional.of(lifetime.parent().mirror());
     }
 }

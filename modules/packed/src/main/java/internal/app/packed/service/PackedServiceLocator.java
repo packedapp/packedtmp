@@ -46,7 +46,7 @@ public record PackedServiceLocator(ExtensionContext context, Map<Key<?>, MethodH
 
     /** {@inheritDoc} */
     @Override
-    public <T> Optional<T> findInstance(Key<T> key) {
+    public <T> Optional<T> find(Key<T> key) {
         requireNonNull(key, "key is null");
         MethodHandle provider = entries.get(key);
 

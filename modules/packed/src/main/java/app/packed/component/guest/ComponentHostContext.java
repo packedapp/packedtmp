@@ -17,9 +17,9 @@ package app.packed.component.guest;
 
 import java.util.Set;
 
+import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
 import app.packed.binding.Key;
 import app.packed.context.Context;
-import app.packed.context.ContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 
 /**
@@ -28,7 +28,7 @@ import app.packed.extension.BaseExtension;
  * @see FromComponentGuest
  * @see OnComponentGuestLifecycle
  */
-@ContextualServiceProvider(extension = BaseExtension.class, context = ComponentHostContext.class)
+@OnExtensionServiceBeanTrigger(extension = BaseExtension.class, requiresContext = ComponentHostContext.class)
 public interface ComponentHostContext extends Context<BaseExtension> {
 
     // Hvis vi teanker paa at faa injected selve bean instancen. Kan vi sagtens have Object, eller Entity som key

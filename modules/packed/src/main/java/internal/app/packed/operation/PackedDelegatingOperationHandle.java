@@ -74,7 +74,6 @@ public final class PackedDelegatingOperationHandle implements DelegatingOperatio
 
         OperationSetup os = poi.newOperation(OperationHandle::new);
 
-//        bean.operations.all.add(os);
         scanner.unBoundOperations.add(os);
         return os.handle();
     }

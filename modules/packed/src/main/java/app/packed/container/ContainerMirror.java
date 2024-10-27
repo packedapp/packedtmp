@@ -11,15 +11,15 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceInteritedBeanTrigger;
 import app.packed.build.BuildActor;
 import app.packed.build.hook.BuildHookMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
-import app.packed.context.InheritableContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
-import app.packed.lifetime.RegionalLifetimeMirror;
+import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.util.Nullable;
@@ -39,7 +39,7 @@ import internal.app.packed.util.types.TypeVariableExtractor;
  * <p>
  * At runtime you can have a ContainerMirror injected
  */
-@InheritableContextualServiceProvider(extension = BaseExtension.class)
+@OnExtensionServiceInteritedBeanTrigger(extension = BaseExtension.class)
 public non-sealed class ContainerMirror implements ComponentMirror, ContainerBuildLocal.Accessor {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
@@ -165,7 +165,7 @@ public non-sealed class ContainerMirror implements ComponentMirror, ContainerBui
     }
 
     /** {@return the containers's lifetime.} */
-    public final RegionalLifetimeMirror lifetime() {
+    public final ContainerLifetimeMirror lifetime() {
         return handle.container.lifetime.mirror();
     }
 

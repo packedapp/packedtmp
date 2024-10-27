@@ -46,9 +46,11 @@ import internal.app.packed.build.AuthoritySetup;
 import internal.app.packed.build.BuildLocalMap;
 import internal.app.packed.build.BuildLocalMap.BuildLocalSource;
 import internal.app.packed.component.ComponentSetup;
+import internal.app.packed.container.wirelets.WireletSelectionArray;
+import internal.app.packed.container.wirelets.WireletWrapper;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.extension.PackedExtensionHandle;
-import internal.app.packed.lifecycle.lifetime.RegionalLifetimeSetup;
+import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.service.MainServiceNamespaceHandle;
 import internal.app.packed.util.AbstractNamedTreeNode;
 import internal.app.packed.util.handlers.BeanHandlers;
@@ -81,16 +83,21 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
      * ignored.
      */
+    // I think we use Wirelet spects instead
     final boolean ignoreRename;
 
     /** The lifetime the container is a part of. */
-    public final RegionalLifetimeSetup lifetime;
+    public final ContainerLifetimeSetup lifetime;
 
     /** The container's service manager. */
     // Maybe replace with ContainerServiceSetup. Where all the logic is.
     private MainServiceNamespaceHandle sm;
 
     public final PackedContainerTemplate<?> template;
+
+    public final ArrayList<Wirelet> wirelets;
+
+    public ContainerWireletSpecs wireletSpecs = new ContainerWireletSpecs();
 
     /**
      * Create a new container.
@@ -106,13 +113,15 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         this.assembly = requireNonNull(assembly);
         this.template = installer.template;
 
-        if (installer.template.kind() == PackedContainerKind.PARENT_CONTAINER) {
+        if (installer.template.kind() == PackedContainerKind.FROM_CONTAINER) {
             this.lifetime = installer.parent.lifetime;
         } else {
-            this.lifetime = new RegionalLifetimeSetup(installer, this, null);
+            this.lifetime = new ContainerLifetimeSetup(installer, this, null);
         }
         // If a name has been set using a wirelet, we ignore calls to #named(String)
         this.ignoreRename = installer.nameFromWirelet != null || installer.isFromAssembly;
+        this.wirelets = installer.unconsumedWirelets;
+        this.ws = new WireletWrapper(wirelets.toArray(i -> new Wirelet[i]));
     }
 
     /**
@@ -306,16 +315,24 @@ public final class ContainerSetup extends AbstractNamedTreeNode<ContainerSetup> 
         }
     }
 
+    WireletWrapper ws;
+
+    @SuppressWarnings("unchecked")
     public <T extends Wirelet> WireletSelection<T> selectWireletsUnsafe(Class<T> wireletClass) {
-
-//      WireletWrapper wirelets = extension.container.wirelets;
-//      if (wirelets == null || wirelets.unconsumed() == 0) {
-//          return WireletSelection.of();
-//      }
-//
-//      return new BuildtimeWireletSelection<>(wirelets, wireletClass);
-
-        throw new UnsupportedOperationException();
+//        if (module != wireletClass.getModule()) {
+//            throw new IllegalArgumentException("The specified wirelet must be in module " + module + ", was " + module.getName());
+//        }
+        WireletWrapper wirelets = ws;
+        if (wirelets == null || wirelets.unconsumed() == 0) {
+            return WireletSelection.of();
+        }
+        ArrayList<T> l = new ArrayList<>();
+        for (Wirelet w : this.wirelets) {
+            if (wireletClass.isInstance(w)) {
+                l.add((T) w);
+            }
+        }
+        return WireletSelectionArray.of(l);
     }
 
     public MainServiceNamespaceHandle servicesMain() {

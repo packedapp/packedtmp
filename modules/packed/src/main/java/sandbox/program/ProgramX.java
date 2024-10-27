@@ -21,7 +21,7 @@ import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
-import app.packed.component.guest.FromComponentGuest;
+import app.packed.component.guest.FromGuest;
 import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
@@ -154,7 +154,7 @@ public interface ProgramX extends AutoCloseable {
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementationX(@FromComponentGuest String name, @FromComponentGuest ServiceLocator services, @FromComponentGuest ManagedLifecycle runtime)
+record ProgramImplementationX(@FromGuest String name, @FromGuest ServiceLocator services, @FromGuest ManagedLifecycle runtime)
         implements ProgramX {
 
     ProgramImplementationX {

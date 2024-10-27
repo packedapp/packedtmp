@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger;
 import app.packed.extension.BaseExtension;
 
 /**
@@ -81,7 +81,7 @@ import app.packed.extension.BaseExtension;
 // When used on a field the target type must be Lazy
 @Target({ ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-@AnnotatedMethodBeanTrigger(allowInvoke = true, extension = BaseExtension.class, requiresContext = StartContext.class)
+@BeanTrigger.OnAnnotatedMethod(extension = BaseExtension.class, requiresContext = StartContext.class, allowInvoke = true)
 public @interface Start {
 
     String JOIN_ON_AFTER_DEPENDENCIES = "AFTER_DEPENDENCIES";

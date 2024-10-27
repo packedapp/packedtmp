@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
 import app.packed.namespace.sandbox.NamespaceOperation;
 
 /**
@@ -31,7 +31,7 @@ import app.packed.namespace.sandbox.NamespaceOperation;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @NamespaceOperation
-@AnnotatedMethodBeanTrigger(extension = CliExtension.class)
+@OnAnnotatedMethod(extension = CliExtension.class)
 public @interface CliCommand {
 
     /**w

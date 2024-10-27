@@ -18,12 +18,12 @@ package app.packed.cli;
 import java.util.Collections;
 import java.util.List;
 
-import app.packed.namespace.NamespaceOperationMirror;
+import app.packed.operation.OperationMirror;
 
 /**
  * A mirror for a CLI command (operation).
  */
-public class CliCommandMirror extends NamespaceOperationMirror {
+public class CliCommandMirror extends OperationMirror {
 
     final CliCommandHandle handle;
 
@@ -37,7 +37,6 @@ public class CliCommandMirror extends NamespaceOperationMirror {
     }
 
     /** {@return the namespace this command is part of.} */
-    @Override
     public CliNamespaceMirror namespace() {
         return handle.namespace.newNamespaceMirror();
     }

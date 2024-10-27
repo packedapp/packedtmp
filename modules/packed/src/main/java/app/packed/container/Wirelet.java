@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 import java.util.EnumSet;
 import java.util.function.Supplier;
 
-import app.packed.context.InheritableContextualServiceProvider;
+import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceInteritedBeanTrigger;
 import app.packed.extension.BaseExtension;
 import app.packed.util.Nullable;
 import internal.app.packed.container.ContainerWirelets.ContainerOverrideNameWirelet;
@@ -106,7 +106,7 @@ import internal.app.packed.container.wirelets.WrappingWirelet;
 // So now the "User" wirelet is just plain wirelet
 
 // Specified class must be visible when querying
-@InheritableContextualServiceProvider(extension = BaseExtension.class)
+@OnExtensionServiceInteritedBeanTrigger(extension = BaseExtension.class)
 public abstract class Wirelet {
 
     // How do com

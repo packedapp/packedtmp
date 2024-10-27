@@ -26,6 +26,7 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
+import app.packed.operation.OperationMirror;
 import app.packed.util.TreeView;
 
 /** A mirror of a namespace. */
@@ -124,7 +125,7 @@ public non-sealed class NamespaceMirror<E extends Extension<E>> implements Compo
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final <T extends NamespaceOperationMirror> Stream<T> operations(Class<T> operationType) {
+    protected final <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
         requireNonNull(operationType, "operationType is null");
         return (Stream) handle.namespace.operations.stream().map(e -> e.mirror()).filter(f -> operationType.isAssignableFrom(f.getClass()));
     }

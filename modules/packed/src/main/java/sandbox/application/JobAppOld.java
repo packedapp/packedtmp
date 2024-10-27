@@ -21,7 +21,7 @@ import app.packed.application.ApplicationTemplate;
 import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
-import app.packed.component.guest.FromComponentGuest;
+import app.packed.component.guest.FromGuest;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import app.packed.util.Result;
@@ -83,5 +83,5 @@ public final class JobAppOld {
         throw new UnsupportedOperationException();
     }
 
-    record Holder(@FromComponentGuest Future<?> result) {}
+    record Holder(@FromGuest Future<?> result) {}
 }

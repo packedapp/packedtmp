@@ -27,7 +27,7 @@ import app.packed.binding.Key;
 import app.packed.binding.Qualifier;
 import app.packed.operation.Op1;
 import app.packed.service.ServiceLocator;
-import sandbox.service.ServiceWirelets;
+import sandbox.service.OldServiceWirelets;
 
 /**
  *
@@ -37,8 +37,8 @@ public class ImportTest {
     // The import at (Xxxx) and (Yyyy) both defines are service with Key<ZoneId>
     public static void main(String[] args) {
         ServiceLocator i = ServiceLocator.of(c -> {
-            c.link("london1", new London(), ServiceWirelets.transformExports(t -> t.rekey(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("London") ZonedDateTime>() {})));
-            c.link("london2", new London(), ServiceWirelets.transformExports(t -> t.rekey(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin") ZonedDateTime>() {})));
+            c.link("london1", new London(), OldServiceWirelets.transformExports(t -> t.rekey(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("London") ZonedDateTime>() {})));
+            c.link("london2", new London(), OldServiceWirelets.transformExports(t -> t.rekey(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin") ZonedDateTime>() {})));
         });
         System.out.println(i);
     }

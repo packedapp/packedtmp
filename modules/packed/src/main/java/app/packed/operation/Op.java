@@ -15,20 +15,12 @@
  */
 package app.packed.operation;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.bean.scanning.InaccessibleBeanMemberException;
 import app.packed.util.Nullable;
 import internal.app.packed.operation.PackedOp;
 
@@ -111,71 +103,6 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
 
     /** {@return the type of this operation.} */
     OperationType type();
-
-    /**
-     * Creates a new operation that will invoke the specified constructor.
-     *
-     * @param constructor
-     *            the constructor that will be called when operation is invoked
-     * @return the new operation
-     */
-    static <T> Op<T> ofConstructor(Lookup lookup, Constructor<T> constructor) {
-        requireNonNull(constructor, "constructor is null");
-        throw new UnsupportedOperationException();
-    }
-
-    static Op<Void> ofRunnable(Runnable runnable) {
-        throw new UnsupportedOperationException();
-    }
-
-    static <T> Op<T> ofCallable(Class<T> returnType, Callable<? extends T> callable) {
-        throw new UnsupportedOperationException();
-    }
-
-    static <T> Op<Void> ofConsumer(Class<T> consumingType, Consumer<? super T> callable) {
-        throw new UnsupportedOperationException();
-    }
-
-    // Tror vi maa droppe de her lookups, de fungere ikke rigtig
-    static Op<?> ofField(Lookup lookup, Field field) {
-        requireNonNull(field, "field is null");
-        MethodHandle handle;
-        try {
-            if (Modifier.isPrivate(field.getModifiers())) {
-                // vs MethodHandles.private???
-                lookup = lookup.in(field.getDeclaringClass());
-            }
-            handle = lookup.unreflectGetter(field);
-        } catch (IllegalAccessException e) {
-            // I think we are going to throw another exception here
-            throw new InaccessibleBeanMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
-        }
-        System.out.println(handle);
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * <p>
-     * If the specified method is not a static method. The returned factory will have the method's declaring class as its
-     * first variable. Use to bind an instance of the declaring class.
-     *
-     * @param <T>
-     *            the type of value returned by the method
-     * @param method
-     *            the method to wrap
-     * @param returnType
-     *            the type of value returned by the method
-     * @return a factory that wraps the specified method
-     */
-    static Op<?> ofMethod(Lookup lookup, Method method) {
-        requireNonNull(method, "method is null");
-
-        throw new UnsupportedOperationException();
-    }
-
-    static Op<?> ofMethodHandle(MethodHandle methodHandle) {
-        throw new UnsupportedOperationException();
-    }
 }
 
 interface ZandboxOp<R> {
@@ -207,15 +134,11 @@ interface ZandboxOp<R> {
         throw new UnsupportedOperationException();
     }
 
-//  /** {@return The number of variables this factory takes.} */
-//  public abstract int variableCount();
-
     // Will retain annotations
     // adaptReturn <--- will do something about annotations
     default <T> Op<T> castReturn(Class<T> returnType) {
         throw new UnsupportedOperationException();
     }
-
     // Hmm, I think we are now a synthetic operation?
     // I don't know how else to map it
     default <T> Op<T> mapResult(Class<T> type, Function<? super R, ? extends T> mapper) {
@@ -239,24 +162,6 @@ interface ZandboxOp<R> {
         // FactoryMapper.of(dddd).removeMethodsStartingWithX().toFactory();
         throw new UnsupportedOperationException();
     }
-
-    /**
-     * Returns a new factory that maps every object this factory create using the specified mapper.
-     *
-     * @param <R>
-     *            the type of result to map to
-     * @param type
-     *            the type of the mapped value
-     * @param mapper
-     *            the mapper used to map the result
-     * @return a new mapped factory
-     */
-    // How do we handle key??? Think we might need a version that also takes a key.
-//    default <T> Op<T> mapTo(TypeToken<T> type, Function<? super R, ? extends T> mapper) {
-//        // MappingFactoryHandle<T, R> f = new MappingFactoryHandle<>(type, factory.handle, mapper);
-//        // return new Factory<>(new FactorySupport<>(f, factory.dependencies));
-//        throw new UnsupportedOperationException();
-//    }
 
     /**
      * Returns a new factory that maps every object this factory create using the specified mapper.
@@ -299,6 +204,8 @@ interface ZandboxOp<R> {
         return false;
     }
 
+
+
     /**
      * Returns the (raw) type of values this factory provide. This is also the type that is used for annotation scanning,
      * for example, for finding fields annotated with {@link Inject}.
@@ -309,6 +216,9 @@ interface ZandboxOp<R> {
     default Class<?> rawReturnType() {
         throw new UnsupportedOperationException();
     }
+
+//  /** {@return The number of variables this factory takes.} */
+//  public abstract int variableCount();
 
     default Op<R> useExactType(Class<? extends R> type) {
         // TypeHint.. withExactType
@@ -321,6 +231,45 @@ interface ZandboxOp<R> {
         // istedet for
         // @Inject
         // SomeServiceImpl create();
+        throw new UnsupportedOperationException();
+    }
+
+    // But is is Callable<>
+    static <T> Op<T> ofCallable(Class<T> returnType, Callable<? extends T> callable) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns a new factory that maps every object this factory create using the specified mapper.
+     *
+     * @param <R>
+     *            the type of result to map to
+     * @param type
+     *            the type of the mapped value
+     * @param mapper
+     *            the mapper used to map the result
+     * @return a new mapped factory
+     */
+    // How do we handle key??? Think we might need a version that also takes a key.
+//    default <T> Op<T> mapTo(TypeToken<T> type, Function<? super R, ? extends T> mapper) {
+//        // MappingFactoryHandle<T, R> f = new MappingFactoryHandle<>(type, factory.handle, mapper);
+//        // return new Factory<>(new FactorySupport<>(f, factory.dependencies));
+//        throw new UnsupportedOperationException();
+//    }
+
+    static <T> Op<Void> ofConsumer(Class<T> consumingType, Consumer<? super T> callable) {
+        throw new UnsupportedOperationException();
+    }
+
+    static <T> Op<T> ofInstance(T instance) {
+        throw new UnsupportedOperationException();
+    }
+
+    static Op<?> ofMethodHandle(MethodHandle methodHandle) {
+        throw new UnsupportedOperationException();
+    }
+
+    static Op<Void> ofRunnable(Runnable runnable) {
         throw new UnsupportedOperationException();
     }
 }
@@ -354,4 +303,53 @@ interface ZandboxOp<R> {
 //    requireNonNull(constructor, "constructor is null");
 //    // TODO we probably need to validate the type literal here
 //    return new ExecutableFactory<>(type, constructor);
+//}
+
+// Tror vi maa droppe de her lookups, de fungere ikke rigtig
+//static Op<?> ofField(Lookup lookup, Field field) {
+//    requireNonNull(field, "field is null");
+//    MethodHandle handle;
+//    try {
+//        if (Modifier.isPrivate(field.getModifiers())) {
+//            // vs MethodHandles.private???
+//            lookup = lookup.in(field.getDeclaringClass());
+//        }
+//        handle = lookup.unreflectGetter(field);
+//    } catch (IllegalAccessException e) {
+//        // I think we are going to throw another exception here
+//        throw new InaccessibleBeanMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
+//    }
+//    System.out.println(handle);
+//    throw new UnsupportedOperationException();
+//}
+
+///**
+// * Creates a new operation that will invoke the specified constructor.
+// *
+// * @param constructor
+// *            the constructor that will be called when operation is invoked
+// * @return the new operation
+// */
+//static <T> Op<T> ofConstructor(Lookup lookup, Constructor<T> constructor) {
+//    requireNonNull(constructor, "constructor is null");
+//    throw new UnsupportedOperationException();
+//}
+
+///**
+// * <p>
+// * If the specified method is not a static method. The returned factory will have the method's declaring class as its
+// * first variable. Use to bind an instance of the declaring class.
+// *
+// * @param <T>
+// *            the type of value returned by the method
+// * @param method
+// *            the method to wrap
+// * @param returnType
+// *            the type of value returned by the method
+// * @return a factory that wraps the specified method
+// */
+//static Op<?> ofMethod(Lookup lookup, Method method) {
+//    requireNonNull(method, "method is null");
+//
+//    throw new UnsupportedOperationException();
 //}

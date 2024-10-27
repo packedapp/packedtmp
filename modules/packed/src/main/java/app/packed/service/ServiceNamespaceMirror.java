@@ -22,7 +22,7 @@ import java.util.Set;
 import app.packed.binding.Key;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.NamespaceMirror;
-import app.packed.service.mirror.NamespaceServiceBindingMirror;
+import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.mirror.ServiceProviderMirror;
 import internal.app.packed.service.ServiceNamespaceHandle;
 
@@ -45,7 +45,7 @@ public final class ServiceNamespaceMirror extends NamespaceMirror<BaseExtension>
     }
 
     /** {@return A map of all the bindings from providers in the namespace} */
-    public Map<Key<?>, Collection<NamespaceServiceBindingMirror>> bindings() {
+    public Map<Key<?>, Collection<ServiceBindingMirror>> bindings() {
         throw new UnsupportedOperationException();
     }
 

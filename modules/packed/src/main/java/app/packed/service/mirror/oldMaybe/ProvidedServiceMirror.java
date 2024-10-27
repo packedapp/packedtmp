@@ -20,10 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.util.stream.Stream;
 
 import app.packed.binding.Key;
-import app.packed.namespace.NamespaceOperationMirror;
 import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationMirror;
 import app.packed.service.ServiceNamespaceMirror;
-import app.packed.service.mirror.NamespaceServiceBindingMirror;
+import app.packed.service.mirror.ServiceBindingMirror;
 import internal.app.packed.service.ServiceProviderSetup;
 
 /**
@@ -36,7 +36,7 @@ import internal.app.packed.service.ServiceProviderSetup;
 // ServiceProvisionSiteMirror
 // Maaske er export med i path'en istedet for et saelvstaendig mirror
 // Her taenker jeg fx alle de wirelets der mapper fra og til...
-public class ProvidedServiceMirror extends NamespaceOperationMirror {
+public class ProvidedServiceMirror extends OperationMirror {
 
     /** The service that is provided. */
     final ServiceProviderSetup service;
@@ -60,13 +60,12 @@ public class ProvidedServiceMirror extends NamespaceOperationMirror {
     // Det her er den eneste interessant ting klasser bruges til
     // Kan vi have en mere general API saa kan vi dropper denne klasse
     // Vi vil jo gerne vide hvor bliver den her bean, service, ect brugt henne...
-    public Stream<NamespaceServiceBindingMirror> useSites() {
+    public Stream<ServiceBindingMirror> useSites() {
         throw new UnsupportedOperationException();
 //        return service.entry.useSiteMirrors();
     }
 
     /** {@inheritDoc} */
-    @Override
     public ServiceNamespaceMirror namespace() {
         throw new UnsupportedOperationException();
     }

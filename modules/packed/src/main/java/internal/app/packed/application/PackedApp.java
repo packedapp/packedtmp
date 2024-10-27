@@ -22,7 +22,7 @@ import app.packed.application.ApplicationTemplate;
 import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.component.guest.ComponentHostContext;
-import app.packed.component.guest.FromComponentGuest;
+import app.packed.component.guest.FromGuest;
 import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
@@ -41,7 +41,7 @@ public final class PackedApp implements App {
     /** Manages the lifecycle of the app. */
     final ManagedLifecycle lifecycle;
 
-    PackedApp(@FromComponentGuest ManagedLifecycle lc, ComponentHostContext context) {
+    PackedApp(@FromGuest ManagedLifecycle lc, ComponentHostContext context) {
         this.lifecycle = lc;
     }
 

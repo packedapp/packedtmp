@@ -69,7 +69,7 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
         all.add(os);
     }
 
-    public void addHandle(BeanLifecycleOperationHandle handle) {
+    public <T extends BeanLifecycleOperationHandle> T addLifecycleHandle(T handle) {
         lifecycleHandles.compute(handle.lifecycleKind, (k, v) -> {
             if (v == null) {
                 return List.of(handle);
@@ -94,6 +94,7 @@ public final class BeanOperationStore implements Iterable<OperationSetup> {
         } else {
             handle.setMethodHandle(handle.invokerAsMethodHandle());
         }
+        return handle;
     }
 
     public OperationSetup first() {

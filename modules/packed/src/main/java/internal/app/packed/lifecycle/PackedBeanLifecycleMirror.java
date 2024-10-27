@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.lifecycle.BeanLifecycleKind;
+import app.packed.bean.lifecycle.BeanLifecycleModel;
 import app.packed.bean.lifecycle.BeanLifecycleMirror;
 import app.packed.bean.lifecycle.InitializeOperationMirror;
 import app.packed.bean.lifecycle.StartOperationMirror;
@@ -29,7 +29,7 @@ import app.packed.bean.lifecycle.StopOperationMirror;
 import internal.app.packed.ValueBased;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationInitializeHandle;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStartHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
 
 /** Implementation of {@link BeanLifecycleMirror}. */
@@ -48,7 +48,7 @@ public record PackedBeanLifecycleMirror(BeanSetup bean) implements BeanLifecycle
     // We don't support multi factory for default installs.
     // However custom bean templates may support it
     @Override
-    public Optional<InitializeOperationMirror> factoryOperation() {
+    public Optional<InitializeOperationMirror> factory() {
         if (bean.beanKind != BeanKind.STATIC && bean.beanSourceKind != BeanSourceKind.INSTANCE) {
             return Optional.of((InitializeOperationMirror) bean.operations.first().mirror());
         }
@@ -68,14 +68,14 @@ public record PackedBeanLifecycleMirror(BeanSetup bean) implements BeanLifecycle
 
     /** {@inheritDoc} */
     @Override
-    public BeanLifecycleKind kind() {
+    public BeanLifecycleModel kind() {
         return bean.beanLifecycleKind;
     }
 
     /** {@inheritDoc} */
     @Override
     public Stream<StartOperationMirror> starters() {
-        return stream(LifecycleOperationStartHandle.class);
+        return stream(LifecycleOnStartHandle.class);
     }
 
     /** {@inheritDoc} */

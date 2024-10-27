@@ -23,10 +23,10 @@ import java.lang.invoke.MethodType;
 
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
+import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
 import app.packed.container.Wirelet;
 import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
-import app.packed.context.ContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
@@ -40,7 +40,7 @@ import internal.app.packed.container.wirelets.WireletSelectionArray;
 /**
  * A temporary context object that is created whenever we launch an application.
  */
-@ContextualServiceProvider(extension = BaseExtension.class)
+@OnExtensionServiceBeanTrigger(extension = BaseExtension.class)
 // Wait a bit with transforming this class to a record.
 // We might have some mutable fields such as name
 public final class ApplicationLaunchContext implements Context<BaseExtension> {
@@ -106,13 +106,9 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
      * @see #launch(GuestManager, Wirelet...)
      */
     @SuppressWarnings("unchecked")
-    // Tror den her bliver hidden
-    // Problemet er at den er statisk. Der er ingen runtime information.
-    // Hvis vi har startet 23 applikationer, faar de stadig ingen input
     public static final <A> A launch(ApplicationHandle<A, ?> handle, RunState state, Wirelet... wirelets) {
         ApplicationSetup application = ApplicationSetup.crack(handle);
         requireNonNull(state, "state is null");
-        // TODO fix
         if (application.phase != ApplicationBuildPhase.COMPLETED) {
             throw new IllegalStateException("Application has not finished building");
         }

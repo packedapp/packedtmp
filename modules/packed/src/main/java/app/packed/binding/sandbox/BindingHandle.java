@@ -15,6 +15,8 @@
  */
 package app.packed.binding.sandbox;
 
+import java.util.Optional;
+
 import internal.app.packed.binding.PackedBindingHandle;
 
 /**
@@ -22,4 +24,7 @@ import internal.app.packed.binding.PackedBindingHandle;
  */
 public sealed interface BindingHandle permits PackedBindingHandle {
 
+    default Optional<Key<?>> key(){
+        return Optional.empty();
+    }
 }

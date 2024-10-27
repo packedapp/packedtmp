@@ -28,9 +28,8 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.lifecycle.Initialize;
 import app.packed.bean.lifecycle.LifecycleDependantOrder;
-import app.packed.bean.scanning.BeanElement.BeanMethod;
 import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
 import app.packed.container.ContainerHandle;
 import app.packed.container.ContainerTemplate;
 import app.packed.extension.Extension;
@@ -90,7 +89,7 @@ public class Ddd extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void onAnnotatedMethod(BeanMethod on, Annotation hooks) {
+                public void onAnnotatedMethod(Annotation hooks, BeanIntrospector.OnMethod on) {
                     // base().runOnBeanInject(on.newDelegatingOperation());
 
                     // base().runOnBeanInject(on.newOperation());
@@ -102,7 +101,7 @@ public class Ddd extends BaseAssembly {
 
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedMethodBeanTrigger(allowInvoke = true, extension = MyEntityExtension.class)
+    @OnAnnotatedMethod(allowInvoke = true, extension = MyEntityExtension.class)
     public @interface MyOnInitialize {
 
         /**

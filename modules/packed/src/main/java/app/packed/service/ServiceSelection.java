@@ -15,9 +15,7 @@
  */
 package app.packed.service;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.function.Consumer;
+import java.util.List;
 import java.util.stream.Stream;
 
 import app.packed.binding.Provider;
@@ -26,30 +24,25 @@ import app.packed.binding.Provider;
  * A specialization of {@link ServiceLocator} where all service instances have a common super type {@code <S>}.
  * <p>
  * Instances of this interface are normally created via the various select methods on ServiceLocator.
+ * <P>
  *
  * @see ServiceLocator#selectAll()
  * @see ServiceLocator#selectAssignableTo(Class)
  */
 // Should it include scoped services?
-public interface ServiceSelection<S> extends ServiceLocator {
-
-    /**
-     * Performs the specified action for each service in this selection.
-     *
-     * @param action
-     *            the action to perform on each service instance
-     */
-    default void forEachInstance(Consumer<? super S> action) {
-        requireNonNull(action, "action is null");
-        instanceStream().forEach(action);
-    }
+public interface ServiceSelection<S> extends ServiceLocator, Iterable<S> {
 
     /**
      * Acquires a service instance for each service in this selection returning them as a stream
      *
      * @return a stream of all instances in the selection
      */
-    Stream<S> instanceStream();
+    Stream<S> stream();
 
-    Stream<Provider<S>> providerStream();
+    Stream<Provider<S>> streamOfProviders();
+
+    List<S> toList();
+    // Problemet er lidt inject af List<SomeService>
+    // Hvis de alle har forskellige quarlifiers
+    //
 }

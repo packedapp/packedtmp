@@ -27,12 +27,8 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 
-import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.InaccessibleBeanMemberException;
@@ -40,14 +36,7 @@ import app.packed.extension.Extension;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.extension.ExtensionSetup;
-import internal.app.packed.integration.devtools.PackedDevToolsIntegration;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationInitializeHandle;
-import internal.app.packed.lifecycle.InternalBeanLifecycleKind;
-import internal.app.packed.operation.OperationMemberTarget.OperationConstructorTarget;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.PackedOperationInstaller;
-import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.handlers.BeanHandlers;
 
@@ -57,10 +46,10 @@ import internal.app.packed.util.handlers.BeanHandlers;
 public final class BeanScanner {
 
     /** The app.packed.base module, we will never scan classes in this module. */
-    private static final Module APP_PACKED_BASE_MODULE = OpenClass.class.getModule();
+    private static final Module APP_PACKED_BASE_MODULE = BeanScanner.class.getModule();
 
     /** We {@code java.base} module, which we never process classes from. */
-    private static final Module JAVA_BASE_MODULE = Object.class.getModule();
+    static final Module JAVA_BASE_MODULE = Object.class.getModule();
 
     private final OpenClass accessor;
 
@@ -72,12 +61,12 @@ public final class BeanScanner {
 
     final Lookup customLookup;
 
-    /** The various extensions that are part of the reflection process. */
-    // We sort it in the end
-    private final IdentityHashMap<Class<? extends Extension<?>>, BeanScannerParticipant> extensions = new IdentityHashMap<>();
-
     /** The hook model for the bean. */
     final BeanHookModel hookModel;
+
+    /** The various extensions that are part of the reflection process. */
+    // We sort it in the end
+    private final IdentityHashMap<Class<? extends Extension<?>>, BeanIntrospectorSetup> introspectors = new IdentityHashMap<>();
 
     boolean isConfigurable;
 
@@ -112,176 +101,63 @@ public final class BeanScanner {
         bean.scanner = this;
     }
 
-    /**
-     * @param extensionType
-     * @param fullAccess
-     * @return the contributor
-     */
-    BeanScannerParticipant computeContributor(Class<? extends Extension<?>> extensionType) {
-        return extensions.computeIfAbsent(extensionType, c -> {
+    BeanIntrospectorSetup computeIntrospector(Class<? extends Extension<?>> extensionType) {
+        return introspectors.computeIfAbsent(extensionType, c -> {
             // Get the extension (installing it if necessary)
             ExtensionSetup extension = bean.container.useExtension(extensionType, null);
 
             // Create a new introspector
             BeanIntrospector introspector = extension.newBeanIntrospector();
 
-            BeanScannerParticipant bse = new BeanScannerParticipant(this, extension, introspector);
+            BeanIntrospectorSetup setup = new BeanIntrospectorSetup(this, extension, introspector);
 
-            // Call BeanIntrospector#initialize(BeanScannerExtension)
-            BeanHandlers.invokeBeanIntrospectorInitialize(introspector, bse);
+            // Call BeanIntrospector#initialize(BeanIntrospectorSetup)
+            BeanHandlers.invokeBeanIntrospectorInitialize(introspector, setup);
 
             // Notify the bean introspector that it is being used
-            introspector.onBegin();
-            return bse;
+            introspector.scanningStarted();
+
+            return setup;
         });
-    }
-
-    /** Find a constructor on the bean and create an operation for it. */
-    private void findConstructor() {
-        BeanScannerConstructor constructor = BeanScannerConstructor.CACHE.get(beanClass);
-
-        // Get the Constructor
-        Constructor<?> con = constructor.constructor();
-
-        // Extract a direct method handle from the constructor
-        MethodHandle mh = unreflectConstructor(con);
-
-        PackedOperationTemplate ot = bean.template.initializationTemplate();
-      //  if (ot.returnKind == ReturnKind.DYNAMIC) {
-            ot = ot.configure(c -> c.returnType(beanClass));
-       // }
-        PackedOperationInstaller installer = ot.newInstaller(constructor.operationType(), bean, bean.installedBy);
-
-        OperationSetup os = installer.newOperationFromMember(new OperationConstructorTarget(constructor.constructor()), mh,
-                i -> new LifecycleOperationInitializeHandle(i, InternalBeanLifecycleKind.FACTORY));
-
-        bean.operations.addHandle((BeanLifecycleOperationHandle) os.handle());
-        resolveNow(os);
     }
 
     /** Introspect the bean. */
     public void introspect() {
-        // First, we process all annotations on the class
-
-        // Can we add operations here???
-        // In which case findConstructor while probably place its constructor on index!=0
-        // We could use an ArrayDeque and use addFirst
         introspectClass();
 
-        // We always have instances if we have an op.
-        // Make sure the op is resolved
+        // If the bean is created using an Op, we need to resolve it as the first thing
         if (bean.beanSourceKind == BeanSourceKind.OP) {
-            resolveNow(bean.operations.first());
+            resolveBindings(bean.operations.first());
         }
 
+        // What if the op creates an interface?
         if (!beanClass.isInterface()) {
-
-            // If a we have a (instantiating) class source, we need to find a constructor we can use
-            if (bean.beanSourceKind == BeanSourceKind.CLASS && bean.beanKind != BeanKind.STATIC) {
-                findConstructor();
-            }
-
-            // See also java.lang.PublicMethods
+            // Find the constructor if needed
+            BeanScannerConstructors.findConstructor(this, beanClass);
 
             // Introspect all fields on the bean and its super classes
-            introspectFields(this, beanClass);
+            BeanScannerFields.introspect(this, beanClass);
 
-            // Process all methods on the bean
-            record MethodHelper(int hash, String name, Class<?>[] parameterTypes) {
+            // Introspect all methods on the bean and its super classes
+            BeanScannerMethods.introspect(this, beanClass);
 
-                MethodHelper(Method method) {
-                    this(method.getName(), method.getParameterTypes());
-                }
-
-                MethodHelper(String name, Class<?>[] parameterTypes) {
-                    this(name.hashCode() ^ Arrays.hashCode(parameterTypes), name, parameterTypes);
-                }
-
-                /** {@inheritDoc} */
-                @Override
-                public boolean equals(Object obj) {
-                    return obj instanceof MethodHelper h && name == h.name() && Arrays.equals(parameterTypes, h.parameterTypes);
-                }
-
-                /** {@inheritDoc} */
-                @Override
-                public int hashCode() {
-                    return hash;
-                }
-            }
-
-            HashSet<Package> packages = new HashSet<>();
-            HashMap<MethodHelper, HashSet<Package>> types = new HashMap<>();
-
-            // Step 1, .getMethods() is the easiest way to find all default methods. Even if we also have to call
-            // getDeclaredMethods() later.
-            for (Method m : beanClass.getMethods()) {
-                // Filter methods whose from java.base module and bridge methods
-                // TODO add check for
-                if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
-                    types.put(new MethodHelper(m), packages);
-                    PackedBeanMethod.introspectMethodForAnnotations(this, m);
-                }
-            }
-
-            // Step 2 process all declared methods
-
-            // Maybe some kind of detection if current type (c) switches modules.
-            for (Class<?> c = beanClass; c.getModule() != JAVA_BASE_MODULE; c = c.getSuperclass()) {
-                Method[] methods = c.getDeclaredMethods();
-                PackedDevToolsIntegration.INSTANCE.reflectMembers(c, methods);
-                for (Method m : methods) {
-                    int mod = m.getModifiers();
-                    if (Modifier.isStatic(mod)) {
-                        if (c == beanClass && !Modifier.isPublic(mod)) { // we have already processed public static methods
-                            // only include static methods in the top level class
-                            // We do this, because it would be strange to include
-                            // static methods on any interfaces this class implements.
-                            // But it would also be strange to include static methods on sub classes
-                            // but not include static methods on interfaces.
-                            PackedBeanMethod.introspectMethodForAnnotations(this, m);
-                        }
-                    } else if (!m.isBridge() && !m.isSynthetic()) { // TODO should we include synthetic methods??
-                        switch (mod & (Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE)) {
-                        case Modifier.PUBLIC:
-                            continue; // we have already added the method in the first step
-                        default: // default access
-                            HashSet<Package> pkg = types.computeIfAbsent(new MethodHelper(m), key -> new HashSet<>());
-                            if (pkg != packages && pkg.add(c.getPackage())) {
-                                break;
-                            } else {
-                                continue;
-                            }
-                        case Modifier.PROTECTED:
-                            if (types.putIfAbsent(new MethodHelper(m), packages) != null) {
-                                continue; // method has been overridden by a super type
-                            }
-                            // otherwise fall-through
-                        case Modifier.PRIVATE:
-                            // Private methods are never overridden
-                        }
-                        PackedBeanMethod.introspectMethodForAnnotations(this, m);
-                    }
-                }
-            }
         }
-        // Should be empty... Maybe just an assert
+
         resolveOperations();
 
         // Call into every BeanIntrospector and tell them it is all over
-        for (BeanScannerParticipant e : extensions.values()) {
-            e.introspector.onFinished();
+        for (BeanIntrospectorSetup e : introspectors.values()) {
+            e.introspector.scanningStopped();
         }
     }
 
     private void introspectClass() {}
 
-    public void resolveNow(OperationSetup operation) {
+    void resolveBindings(OperationSetup operation) {
         for (int i = 0; i < operation.bindings.length; i++) {
-
             BindingSetup binding = operation.bindings[i];
             if (binding == null) {
-                BeanScannerBindingResolver.resolveBinding(this, operation, i);
+                BeanScannerVariable.resolveVariable(this, operation, operation.type.parameter(i), i);
             }
         }
     }
@@ -289,9 +165,9 @@ public final class BeanScanner {
     /**
      *
      */
-    void resolveOperations() {
+    private void resolveOperations() {
         for (OperationSetup operation = unBoundOperations.pollFirst(); operation != null; operation = unBoundOperations.pollFirst()) {
-            resolveNow(operation);
+            resolveBindings(operation);
         }
     }
 
@@ -344,24 +220,6 @@ public final class BeanScanner {
             return lookup.unreflectVarHandle(field);
         } catch (IllegalAccessException e) {
             throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
-        }
-    }
-
-    private static void introspectFields(BeanScanner introspector, Class<?> clazz) {
-        // We never process classes in the "java.base" module.
-        if (clazz.getModule() != BeanScanner.JAVA_BASE_MODULE) {
-            // Recursively call into superclass, before processing own fields
-            introspectFields(introspector, clazz.getSuperclass());
-
-            // We are never going to sort here. It only makes sense
-            // to sort fields that have hooks
-
-            // Iterate over all declared fields
-            for (Field field : clazz.getDeclaredFields()) {
-                FieldScan.fieldIntrospect(introspector, field);
-            }
-
-            // Maybe store things directly in BeanScannerExtension
         }
     }
 

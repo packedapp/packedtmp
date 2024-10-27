@@ -105,6 +105,7 @@ public sealed interface OldContainerTemplateLink permits PackedContainerLink {
      *            the type of extension
      * @return the builder
      */
+    // If we start to extract things we need the caller
     static OldContainerTemplateLink.Configurator of(MethodHandles.Lookup caller, Class<? extends Extension<?>> extensionType, String name) {
         if (!caller.hasFullPrivilegeAccess()) {
             throw new IllegalArgumentException("caller must have full privilege access");

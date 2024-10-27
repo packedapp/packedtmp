@@ -23,11 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import app.packed.bean.scanning.BeanMetaBeanTrigger;
-import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
-import app.packed.bean.scanning.BeanTrigger.AnnotatedVariableBeanTrigger;
-import app.packed.context.ContextualServiceProvider;
-import app.packed.context.InheritableContextualServiceProvider;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedVariable;
+import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceInteritedBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
+import app.packed.bean.scanning.ForeignBeanTrigger;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import app.packed.util.Nullable;
@@ -44,7 +44,7 @@ public final class BeanHookModel {
 
         @Override
         protected AnnotatedMethod computeValue(Class<?> type) {
-            AnnotatedMethodBeanTrigger h = type.getAnnotation(AnnotatedMethodBeanTrigger.class);
+            OnAnnotatedMethod h = type.getAnnotation(OnAnnotatedMethod.class);
             if (h == null) {
                 return null;
             }
@@ -78,7 +78,7 @@ public final class BeanHookModel {
         @Override
         protected AnnotatedParameterType computeValue(Class<?> type) {
 
-            AnnotatedVariableBeanTrigger h = type.getAnnotation(AnnotatedVariableBeanTrigger.class);
+            OnAnnotatedVariable h = type.getAnnotation(OnAnnotatedVariable.class);
 
             Class<? extends Annotation> cl = bindings.get(type.getName());
             if (cl != null) {
@@ -105,12 +105,12 @@ public final class BeanHookModel {
 
         @Override
         protected ParameterType computeValue(Class<?> type) {
-            ContextualServiceProvider h = type.getAnnotation(ContextualServiceProvider.class);
+            OnExtensionServiceBeanTrigger h = type.getAnnotation(OnExtensionServiceBeanTrigger.class);
 
-            InheritableContextualServiceProvider ih = type.getAnnotation(InheritableContextualServiceProvider.class);
+            OnExtensionServiceInteritedBeanTrigger ih = type.getAnnotation(OnExtensionServiceInteritedBeanTrigger.class);
 
             if (ih != null && type.isInterface()) {
-                throw new InternalExtensionException("@" + InheritableContextualServiceProvider.class.getSimpleName()
+                throw new InternalExtensionException("@" + OnExtensionServiceInteritedBeanTrigger.class.getSimpleName()
                         + " cannot be used on interfaces as interface annotations are never inherited, class = " + type);
             }
 
@@ -134,7 +134,7 @@ public final class BeanHookModel {
             if (ih != null) {
                 Class<?> clazz = type;
                 while (clazz != null) {
-                    if (clazz.getDeclaredAnnotation(InheritableContextualServiceProvider.class) != null) {
+                    if (clazz.getDeclaredAnnotation(OnExtensionServiceInteritedBeanTrigger.class) != null) {
                         break;
                     }
                     clazz = clazz.getSuperclass();
@@ -160,7 +160,7 @@ public final class BeanHookModel {
         this.parent = requireNonNull(parent);
         List<AssemblyMetaHolder> holders = new ArrayList<>();
         for (Annotation a : annotations) {
-            if (a.annotationType().isAnnotationPresent(BeanMetaBeanTrigger.class)) {
+            if (a.annotationType().isAnnotationPresent(ForeignBeanTrigger.class)) {
                 holders.add(new AssemblyMetaHolder(a.annotationType()));
             }
         }

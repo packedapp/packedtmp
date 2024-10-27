@@ -25,7 +25,7 @@ package app.packed.container;
  *
  * A wirelet was specified either at build time or at launch time that had no consumers.
  *
- * Wirelet specified but not appropiated for specific use site (ApplicationWirelet on leaf container)
+ * Wirelet specified but not appropriated for specific use site (ApplicationWirelet on leaf container)
  */
 /**
  * Indicates that a specified wirelet was not used anywhere. This can happen, for example, if a wirelet for a specific

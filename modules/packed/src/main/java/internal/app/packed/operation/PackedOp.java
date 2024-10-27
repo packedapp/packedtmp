@@ -36,6 +36,7 @@ import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.operation.IntermediateOp.BoundOp;
 import internal.app.packed.operation.IntermediateOp.PeekingOp;
 import internal.app.packed.operation.OperationSetup.EmbeddedIntoOperation;
+import internal.app.packed.util.types.ClassUtil;
 
 /** The internal implementation of Op. */
 public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp, TerminalOp {
@@ -54,66 +55,92 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
     /** {@inheritDoc} */
     @Override
     public final Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
+        // Validate input parameters
         requireNonNull(additionalArguments, "additionalArguments is null");
-
         Objects.checkIndex(position, type.parameterCount());
-        int len = 1 + additionalArguments.length;
-        int newLen = type.parameterCount() - len;
-        if (newLen < 0) {
-            throw new IllegalArgumentException(
-                    "Cannot specify more than " + (len - position) + " arguments for position = " + position + ", but arguments array was size " + len);
+
+        // Calculate new operation length and validate argument count
+        int argumentsLength = 1 + additionalArguments.length;
+        int newParameterCount = type.parameterCount() - argumentsLength;
+
+        if (newParameterCount < 0) {
+            throw new IllegalArgumentException("Cannot specify more than " + (argumentsLength - position) + " arguments for position = " + position
+                    + ", but arguments array was size " + argumentsLength);
         }
 
-        // Create new operation type
-        Variable[] vars = new Variable[newLen];
-        for (int i = 0; i < position; i++) {
-            vars[i] = type.parameter(i);
-        }
-        for (int i = position; i < vars.length; i++) {
-            vars[i] = type.parameter(i + len);
-        }
-        OperationType newType = OperationType.of(type.returnVariable(), vars);
-
-        // Populate argument array
-        Object[] args = new Object[len];
-        args[0] = argument;
+        // Type check the arguments against parameter types
+        validateArgument(argument, type.parameter(position), position);
         for (int i = 0; i < additionalArguments.length; i++) {
-            args[i + 1] = additionalArguments[i];
+            validateArgument(additionalArguments[i], type.parameter(position + i + 1), position + i + 1);
         }
-        // TODO check types...
 
-        MethodHandle newmh = MethodHandles.insertArguments(this.mhOperation, position, args);
+        // Create new operation type with updated parameters
+        Variable[] newParameters = new Variable[newParameterCount];
 
-        return new BoundOp<>(newType, newmh, this, position, args);
+        // Copy parameters before the binding position
+        for (int i = 0; i < position; i++) {
+            newParameters[i] = type.parameter(i);
+        }
+
+        // Copy parameters after the bound arguments
+        for (int i = position; i < newParameters.length; i++) {
+            newParameters[i] = type.parameter(i + argumentsLength);
+        }
+
+        OperationType newType = OperationType.of(type.returnVariable(), newParameters);
+
+        // Prepare the arguments array for binding
+        Object[] boundArgs = new Object[argumentsLength];
+        boundArgs[0] = argument;
+        System.arraycopy(additionalArguments, 0, boundArgs, 1, additionalArguments.length);
+
+        // Create new method handle with bound arguments
+        MethodHandle newMethodHandle = MethodHandles.insertArguments(this.mhOperation, position, boundArgs);
+
+        // Create and return new bound operation
+        return new BoundOp<>(newType, newMethodHandle, this, position, boundArgs);
     }
 
-    // Testing out claude
-    public final Op<R> bindClaude(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
-        requireNonNull(additionalArguments, "additionalArguments is null");
+    /**
+     * Validates that an argument matches the expected parameter type.
+     *
+     * @param argument
+     *            The argument to validate
+     * @param parameter
+     *            The parameter variable containing type information
+     * @param position
+     *            The position of the parameter for error reporting
+     * @throws IllegalArgumentException
+     *             if the argument doesn't match the parameter type
+     */
+    private void validateArgument(@Nullable Object argument, Variable parameter, int position) {
+        Class<?> parameterType = parameter.rawType();
 
-        Objects.checkIndex(position, type.parameterCount());
-        int len = 1 + additionalArguments.length;
+        // Handle null argument case
+        if (argument == null) {
+            if (parameter.rawType().isPrimitive()) {
+                throw new IllegalArgumentException(
+                        String.format("Cannot bind null to primitive parameter at position %d of type %s", position, parameterType.getSimpleName()));
+            }
 
-        // Create new operation type
-        Variable[] newVars = new Variable[type.parameterCount() - len];
-        for (int i = 0; i < position; i++) {
-            newVars[i] = type.parameter(i);
+            return;
         }
-        for (int i = position; i < newVars.length; i++) {
-            newVars[i] = type.parameter(i + len);
+
+        // Handle primitive types
+        if (parameterType.isPrimitive()) {
+            Class<?> boxedType = ClassUtil.boxPrimitiveClass(parameterType);
+            if (!boxedType.isInstance(argument)) {
+                throw new IllegalArgumentException(String.format("Type mismatch at position %d: expected %s, but got %s", position,
+                        parameterType.getSimpleName(), argument.getClass().getSimpleName()));
+            }
+            return;
         }
-        OperationType newType = OperationType.of(type.returnVariable(), newVars);
 
-        // Populate argument array
-        Object[] args = new Object[len];
-        args[0] = argument;
-        System.arraycopy(additionalArguments, 0, args, 1, additionalArguments.length);
-
-        // Create new MethodHandle
-        MethodHandle newMh = MethodHandles.insertArguments(this.mhOperation, position, args);
-
-        // Create and return the new BoundOp
-        return new BoundOp<>(newType, newMh, this, position, args);
+        // Handle reference types
+        if (!parameterType.isInstance(argument)) {
+            throw new IllegalArgumentException(
+                    String.format("Type mismatch at position %d: cannot convert from %s to %s", position, argument.getClass().getName(), parameter.toString()));
+        }
     }
 
     /** {@inheritDoc} */
@@ -122,7 +149,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
         return bind(0, argument);
     }
 
-    public abstract OperationSetup newOperationSetup(NewOS newos);
+    public abstract OperationSetup newOperationSetup(NewOperation newos);
 
     /** {@inheritDoc} */
     @Override
@@ -165,6 +192,6 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
         }
     }
 
-    public record NewOS(BeanSetup bean, ExtensionSetup operator, PackedOperationTemplate template, Function<? super OperationInstaller, OperationHandle<?>> newHandle,
-            @Nullable EmbeddedIntoOperation embeddedIn) {}
+    public record NewOperation(BeanSetup bean, ExtensionSetup operator, PackedOperationTemplate template,
+            Function<? super OperationInstaller, OperationHandle<?>> newHandle, @Nullable EmbeddedIntoOperation embeddedIn) {}
 }

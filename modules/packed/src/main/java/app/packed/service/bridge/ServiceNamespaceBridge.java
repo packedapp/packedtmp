@@ -18,55 +18,30 @@ package app.packed.service.bridge;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import app.packed.binding.Key;
-import app.packed.extension.BaseExtension;
-import app.packed.extension.ExtensionWirelet;
-import app.packed.namespace.bridge.NamespaceBridge;
 import app.packed.service.ServiceContract;
 
 /**
  * A service bridge between two service namespaces.
  */
-public abstract class ServiceNamespaceBridge extends NamespaceBridge<BaseExtension> {
+// Tror faktisk problem er her.
+// At det er 2 forskellige consumers vi skal bruge.
+// Incoming skal koeres foerst. Forend vi kan koere outgoing.
+public interface ServiceNamespaceBridge {
 
-    public abstract SharedServiceBridge incoming();
+    ServiceBridge incoming();
 
-    public abstract SharedServiceBridge outgoing();
+    ServiceBridge outgoing();
 
-    public Set<? extends Key<?>> missing() {
+    default Set<? extends Key<?>> unresolved() {
         HashSet<Key<?>> s = new HashSet<>(childContract().requires());
         s.removeAll(availableKeys());
         return Collections.unmodifiableSet(s);
     }
 
-    public abstract Set<? extends Key<?>> availableKeys();
+    Set<? extends Key<?>> availableKeys();
 
     // The contract of the child container
-    public abstract ServiceContract childContract();
-
-
-    // Maybe it is also here we configure exactly how it comes in
-    public static ExtensionWirelet<BaseExtension> wireletOf(Consumer<? super ServiceNamespaceBridge> configurator) {
-        throw new UnsupportedOperationException();
-    }
-//
-//    public void renameImport(Key<?> from, Key<?> to) {}
-//    public void renameExport(Key<?> from, Key<?> to) {}
-//
-//    // Her er Service Namespace nok meget specielt. Maaske sammen med EventBusNamespace
-//    // At vi tager ting ind...
-//    public ServiceNamespaceBridge incoming(Object transformer) {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    // Is this supported for app-on-app?
-//    public ServiceNamespaceBridge outgoing(Object transformer) {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    public ServiceNamespaceBridge bothWays(Object transformerIn, Object transformerOut) {
-//        throw new UnsupportedOperationException();
-//    }
+    ServiceContract childContract();
 }

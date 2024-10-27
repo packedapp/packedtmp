@@ -39,7 +39,7 @@ public class STest extends BaseAssembly {
     }
 
     public record Foo(A a) {
-        public Foo(@ServiceResolver(order = ServiceProviderKind.NAMESPACE) A a) {
+        public Foo(@ServiceResolver(order = ServiceProviderKind.NAMESPACE_SERVICE) A a) {
             this.a = a;
             System.out.println(a);
         }

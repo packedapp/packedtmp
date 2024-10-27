@@ -34,5 +34,4 @@ final class InstalledApplicationHandle<T> extends BeanHandle<ProvidableBeanConfi
     public InstalledApplicationHandle(BeanInstaller installer) {
         super(installer);
     }
-
 }

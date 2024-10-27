@@ -15,9 +15,13 @@
  */
 package app.packed.service;
 
+import java.util.function.Function;
+
 import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.binding.Key;
+import app.packed.binding.sandbox.BindingHandle;
+import app.packed.service.mirror.ServiceBindingMirror;
 
 /**
  * A configuration of a bean that can be provided as a service.
@@ -98,4 +102,10 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
         handle().provideAs(key);
         return this;
     }
+
+    @SuppressWarnings("exports")
+    public ProvidableBeanConfiguration<T> specializeMirror(Function<? super BindingHandle, ? extends ServiceBindingMirror> factory) {
+        throw new UnsupportedOperationException();
+    }
+
 }

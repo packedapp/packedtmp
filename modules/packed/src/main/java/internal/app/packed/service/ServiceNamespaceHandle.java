@@ -33,7 +33,7 @@ import internal.app.packed.operation.OperationMemberTarget.OperationMethodTarget
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
-import internal.app.packed.service.util.SequencedServiceMap;
+import internal.app.packed.service.util.ServiceMap;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.handlers.ServiceHandlers;
 
@@ -43,7 +43,7 @@ import internal.app.packed.util.handlers.ServiceHandlers;
 public abstract class ServiceNamespaceHandle extends NamespaceHandle<BaseExtension, ServiceNamespaceConfiguration> {
 
     /** All service providers in the namespace. */
-    final SequencedServiceMap<NamespaceServiceProviderHandle> providers = new SequencedServiceMap<>();
+    final ServiceMap<NamespaceServiceProviderHandle> providers = new ServiceMap<>();
 
     /**
      * @param installer

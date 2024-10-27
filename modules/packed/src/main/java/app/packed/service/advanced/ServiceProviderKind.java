@@ -41,7 +41,7 @@ public enum ServiceProviderKind {
     // Fx guests bean
     // En ting er uklart om vi skal supportere overrides?
     // Maaske kan en extension
-    OPERATION,
+    OPERATION_SERVICE,
 
     /**
      * A service that is provided at the bean level.
@@ -51,7 +51,7 @@ public enum ServiceProviderKind {
      * @see app.packed.bean.BeanConfiguration#bindServiceInstance(Class, Object)
      * @see app.packed.bean.BeanConfiguration#bindServiceInstance(app.packed.binding.Key, Object)
      **/
-    BEAN,
+    BEAN_SERVICE,
 
     /**
      * A service that is provided through a {@link app.packed.context.Context} (possible the empty context).
@@ -59,7 +59,7 @@ public enum ServiceProviderKind {
      * @see app.packed.context.ContextualServiceProvider
      * @see app.packed.context.InheritableContextualServiceProvider
      **/
-    CONTEXT,
+    EXTENSION_SERVICE,
 
     /**
      * A service that is provided through a (service) namespace.
@@ -68,5 +68,5 @@ public enum ServiceProviderKind {
      * @see app.packed.extension.BaseExtension#services(String)
      * @see app.packed.service.ServiceNamespaceConfiguration
      **/
-    NAMESPACE;
+    NAMESPACE_SERVICE;
 }

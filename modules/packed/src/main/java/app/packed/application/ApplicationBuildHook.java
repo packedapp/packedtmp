@@ -26,9 +26,18 @@ import app.packed.container.ContainerMirror;
 
 public non-sealed abstract class ApplicationBuildHook extends BuildHook {
 
-    // What happens if people applies an ApplicationBuildHook to a non-root assembly
     // Maybe take ApplicationDescriptor, and fail within the method instead of returning boolean
     // Then people call also just print a warning.
+    /**
+     * By default application build hooks can only be used on the root assembly of an application. This method can be used
+     * override this behaviour by return {@code false}. Which will allow the application build book to used on non-root
+     * assemblies.
+     * <p>
+     * Will throw a {@link app.packed.build.BuildException} with "This application build hook" can only be used on an
+     * application's root assembly"
+     *
+     * @return
+     */
     public boolean failIfAppliedOnNonRootAssembly() {
         return true;
     }

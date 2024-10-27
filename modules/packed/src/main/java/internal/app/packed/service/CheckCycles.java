@@ -36,18 +36,18 @@ public class CheckCycles extends BaseAssembly {
     @Override
     protected void build() {
         //bean().multiInstall(A.class).provide();
-        ProvidableBeanConfiguration<A> aaa = base().install(A.class).allowMultiClass();
+        ProvidableBeanConfiguration<AA> aaa = base().install(AA.class).allowMultiClass();
         aaa.provide();
         //aaa.provide();
-        provide(A.class);
-        provide(B.class);
+        provide(AA.class);
+        provide(BB.class);
     }
 
     public static void main(String[] args) {
 
         ApplicationMirror am = App.mirrorOf(new CheckCycles());
         for (var b : am.container().beans().toList()) {
-            System.out.println(b.beanClass().getSimpleName() + " " + b.lifecycle().factoryOperation().get().target());
+            System.out.println(b.beanClass().getSimpleName() + " " + b.lifecycle().factory().get().target());
         }
 
 //        Collection<ProvidedServiceMirror> c = am.use(BaseExtensionMirror.class).serviceProviders().values();
@@ -63,13 +63,13 @@ public class CheckCycles extends BaseAssembly {
         ex.forEach(e -> System.out.println(e.bean().componentPath() + " exported by " + e.key()));
     }
 
-    public record D() {}
+    public record DD() {}
 
-    public record C() {}
+    public record CC() {}
 
-    public record A(B b, BeanMirror bean) {}
+    public record AA(BB b, BeanMirror bean) {}
 
-    public record B() {
+    public record BB() {
 
         @Provide
         String dppro() {
@@ -78,7 +78,7 @@ public class CheckCycles extends BaseAssembly {
 
         @Provide
         @Export
-        C ppro() {
+        CC ppro() {
             return null;
         }
 

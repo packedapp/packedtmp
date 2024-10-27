@@ -18,7 +18,7 @@ package app.packed.container;
 import java.util.function.Function;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.lifecycle.BeanLifecycleKind;
+import app.packed.bean.lifecycle.BeanLifecycleModel;
 import app.packed.context.Context;
 import app.packed.runtime.StopOption;
 import internal.app.packed.container.PackedContainerInstaller;
@@ -68,7 +68,7 @@ public final class Wirelets {
     }
 
     // Should probably be a lifetime wirelet
-    public static Wirelet conditionalOnApplicationLifetimeKind(BeanLifecycleKind kind, Wirelet w) {
+    public static Wirelet conditionalOnApplicationLifetimeKind(BeanLifecycleModel kind, Wirelet w) {
         throw new UnsupportedOperationException();
     }
 

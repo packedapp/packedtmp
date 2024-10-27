@@ -48,7 +48,7 @@ import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.service.ServiceProviderSetup;
 import internal.app.packed.service.ServiceProviderSetup.NamespaceServiceProviderHandle;
 import internal.app.packed.service.ServiceProviderSetup.OperationServiceProviderSetup;
-import internal.app.packed.service.util.SequencedServiceMap;
+import internal.app.packed.service.util.ServiceMap;
 import internal.app.packed.util.handlers.OperationHandlers;
 
 /** The internal configuration of (bean) operation. */
@@ -92,7 +92,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
     public String namePrefix; // name = operator.simpleName + "Operation"
 
     /** ServiceProviders bound specifically for the operation. */
-    public final SequencedServiceMap<OperationServiceProviderSetup> serviceProviders = new SequencedServiceMap<>();
+    public final ServiceMap<OperationServiceProviderSetup> serviceProviders = new ServiceMap<>();
 
     public final PackedOperationTarget target;
 

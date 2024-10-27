@@ -20,17 +20,17 @@ package app.packed.binding;
  */
 
 // What about functions and their parameters?? Stuff into manual with a good story
-
+// What about OnBeanClass.forEachField <-- Manual or by annotation???
 public enum BindingKind {
 
     /**
-     * The binding has been created because of a Hook. Either the variable is annotated with a binding hook. Or the variable
+     * The binding was created because a bean trigger. Either the variable is annotated with a binding hook. Or the variable
      * class is annotated with BindingHook
      *
      * @see BindingTypeHook
      * @see AnnotatedBindingHook
      **/
-    HOOK,
+    ANNOTATION,
 
     /**
      * A binding that was created manually.
@@ -46,8 +46,8 @@ public enum BindingKind {
      * <p>
      * Service bindings are always represented by a {@link ServiceBindingMirror} which contains the key of the service.
      * <p>
-     * If a service has been overridden via {@link app.packed.bean.BeanConfiguration#overrideService(Class, Object)} the binding
-     * kind is replaced with {@link #MANUAL} and an {@link app.packed.service.OverriddenServiceBindingMirror}.
+     * If a service has been overridden via {@link app.packed.bean.BeanConfiguration#overrideService(Class, Object)} the
+     * binding kind is replaced with {@link #MANUAL} and an {@link app.packed.service.OverriddenServiceBindingMirror}.
      *
      * @see ServiceBindingMirror
      */

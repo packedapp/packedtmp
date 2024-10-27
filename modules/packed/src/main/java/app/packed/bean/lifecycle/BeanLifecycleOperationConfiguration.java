@@ -22,7 +22,7 @@ import app.packed.operation.OperationHandle;
  *
  */
 public abstract sealed class BeanLifecycleOperationConfiguration extends OperationConfiguration
-        permits InitializeOperationConfiguration, StartOperationConfiguration, StopOperationConfiguration {
+        permits InjectOperationConfiguration, InitializeOperationConfiguration, StartOperationConfiguration, StopOperationConfiguration {
 
     /**
      * @param handle

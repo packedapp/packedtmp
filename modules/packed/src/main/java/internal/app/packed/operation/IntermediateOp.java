@@ -44,7 +44,7 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
 
     /** {@inheritDoc} */
     @Override
-    public OperationSetup newOperationSetup(NewOS newOs) {
+    public OperationSetup newOperationSetup(NewOperation newOs) {
         return nextOp.newOperationSetup(newOs);
     }
 
@@ -67,7 +67,7 @@ abstract sealed class IntermediateOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(NewOS newOs) {
+        public OperationSetup newOperationSetup(NewOperation newOs) {
             OperationSetup os = super.newOperationSetup(newOs);
 
             for (int i = 0; i < indexes.length; i++) {

@@ -95,7 +95,7 @@ public abstract sealed class BindingSetup permits BindingSetup.ManualBindingSetu
         /** {@inheritDoc} */
         @Override
         public BindingKind kind() {
-            return BindingKind.HOOK;
+            return BindingKind.ANNOTATION;
         }
 
         @Override

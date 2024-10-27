@@ -21,6 +21,6 @@ import app.packed.namespace.bridge.NamespaceBridge;
  *
  */
 
-public class ThreadNamespaceBridge extends NamespaceBridge<ThreadExtension> {
+public class ThreadNamespaceBridge implements NamespaceBridge<ThreadExtension> {
 
 }

@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
 import app.packed.build.BuildCodeSourceMirror;
 import app.packed.build.hook.BuildHookMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.context.ContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.util.AnnotationList;
 import app.packed.util.TreeView;
@@ -31,7 +31,7 @@ import internal.app.packed.util.PackedTreeView;
  * @see ApplicationMirror#assembly()
  * @see ContainerMirror#assembly()
  */
-@ContextualServiceProvider(extension = BaseExtension.class)
+@OnExtensionServiceBeanTrigger(extension = BaseExtension.class)
 public final class AssemblyMirror implements BuildCodeSourceMirror {
 
     /** The assembly we are mirroring. */

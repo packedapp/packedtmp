@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger;
 import app.packed.extension.BaseExtension;
 
 /**
@@ -68,7 +68,7 @@ import app.packed.extension.BaseExtension;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@AnnotatedMethodBeanTrigger(allowInvoke = true, extension = BaseExtension.class)
+@BeanTrigger.OnAnnotatedMethod(extension = BaseExtension.class, allowInvoke = true)
 public @interface Initialize {
 
     /**

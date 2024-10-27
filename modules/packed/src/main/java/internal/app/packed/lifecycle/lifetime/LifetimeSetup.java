@@ -22,7 +22,7 @@ import internal.app.packed.operation.OperationSetup;
 //Application.Lazy -> launcher
 //Application.Many -> image
 
-public sealed interface LifetimeSetup permits RegionalLifetimeSetup, BeanLifetimeSetup {
+public sealed interface LifetimeSetup permits ContainerLifetimeSetup, BeanLifetimeSetup {
 
     default List<OperationSetup> entryPoints() {
         throw new UnsupportedOperationException();
@@ -33,7 +33,7 @@ public sealed interface LifetimeSetup permits RegionalLifetimeSetup, BeanLifetim
 
     /** {@return any parent lifetime of this lifetime.} */
     @Nullable
-    RegionalLifetimeSetup parent();
+    ContainerLifetimeSetup parent();
 
     Class<?> resultType();
 }

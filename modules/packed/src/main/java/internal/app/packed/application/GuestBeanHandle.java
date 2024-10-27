@@ -24,7 +24,7 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.bean.BeanKind;
 import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.binding.BindableVariable;
+import app.packed.bean.scanning.BeanIntrospector.OnVariable;
 import app.packed.binding.Key;
 import app.packed.binding.Variable;
 import app.packed.component.guest.ComponentHostConfiguration;
@@ -65,7 +65,7 @@ public final class GuestBeanHandle extends BeanHandle<ComponentHostConfiguration
         return Map.of();
     }
 
-    public void resolve(BeanIntrospector i, BindableVariable v) {
+    public void resolve(BeanIntrospector i, OnVariable v) {
         Variable va = v.variable();
 
         // AssignableTo in case of

@@ -15,8 +15,8 @@
  */
 package app.packed.extension;
 
+import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
 import app.packed.context.Context;
-import app.packed.context.ContextualServiceProvider;
 import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
 
 /**
@@ -24,7 +24,7 @@ import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
  * <p>
  * An instance of this class is typically required when invoking operations.
  */
-@ContextualServiceProvider(extension = BaseExtension.class)
+@OnExtensionServiceBeanTrigger(extension = BaseExtension.class)
 public sealed interface ExtensionContext extends Context<BaseExtension> permits PackedExtensionContext {}
 
 

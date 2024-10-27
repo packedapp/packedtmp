@@ -30,7 +30,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerTreeSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.ServiceProviderSetup.ContextServiceProviderSetup;
-import internal.app.packed.service.util.SequencedServiceMap;
+import internal.app.packed.service.util.ServiceMap;
 import internal.app.packed.util.collect.MappedMap;
 import internal.app.packed.util.collect.ValueMapper;
 
@@ -49,7 +49,7 @@ public final class ContextSetup {
     /** The template used when creating the context. */
     public final PackedContextTemplate template;
 
-    public final SequencedServiceMap<ContextServiceProviderSetup> serviceProvides = new SequencedServiceMap<>();
+    public final ServiceMap<ContextServiceProviderSetup> serviceProvides = new ServiceMap<>();
 
     public ContextSetup(PackedContextTemplate template, ContextualizedComponentSetup root) {
         this.template = template;

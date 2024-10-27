@@ -16,7 +16,6 @@
 package app.packed.container;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import app.packed.binding.Key;
 import app.packed.component.guest.OldContainerTemplateLink;
@@ -51,7 +50,7 @@ public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits 
      * <p>
      * This template does not support carrier objects. (or do we??)
      */
-    ContainerTemplate<?> DEFAULT = new PackedContainerTemplate<>(PackedContainerKind.PARENT_CONTAINER);
+    ContainerTemplate<?> DEFAULT = new PackedContainerTemplate<>(PackedContainerKind.FROM_CONTAINER);
 
     // Optional, to support #DEFAULT
     boolean isManaged();
@@ -85,8 +84,6 @@ public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits 
 
     // Carefull with Unmanaged on Managed
     ContainerTemplate<?> UNMANAGED = new PackedContainerTemplate<>(PackedContainerKind.UNMANAGED);
-
-    ContainerTemplate<?> reconfigure(Consumer<? super Configurator> configure);
 
     public interface Configurator {
 

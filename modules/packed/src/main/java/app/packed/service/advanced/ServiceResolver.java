@@ -21,7 +21,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.context.Context;
-import app.packed.extension.BaseExtension;
 import internal.app.packed.service.PackedServiceResolution;
 
 /**
@@ -69,7 +68,7 @@ public @interface ServiceResolver {
      * @see ServiceProviderKind#CONTEXT
      * @see ServiceProviderKind#NAMESPACE
      */
-    ServiceProviderKind[] order() default { ServiceProviderKind.OPERATION, ServiceProviderKind.BEAN, ServiceProviderKind.CONTEXT, ServiceProviderKind.NAMESPACE };
+    ServiceProviderKind[] order() default { ServiceProviderKind.OPERATION_SERVICE, ServiceProviderKind.BEAN_SERVICE, ServiceProviderKind.EXTENSION_SERVICE, ServiceProviderKind.NAMESPACE_SERVICE };
 
     /**
     *
@@ -77,12 +76,6 @@ public @interface ServiceResolver {
     // IDeen er at vi kan bruge til til at prioritere context. Fx ved guest
     // ApplicationMirror er
 
-    // Man specificere da bare Context.class
-    /**
-     * A special marker interface that can be used with {@link ServiceResolver#contexts()} to indicate that only services
-     * with no context should be resolved.
-     */
-    public interface NoContext extends Context<BaseExtension> {}
 }
 // Default
 // Is there are service for operation

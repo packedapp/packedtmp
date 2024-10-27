@@ -23,7 +23,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.bean.BeanKind;
-import app.packed.bean.scanning.CannotDeclareInstanceMemberException;
+import app.packed.bean.scanning.InstanceMembersNotAllowedException;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.operation.OperationHandle;
@@ -39,7 +39,7 @@ import internal.app.packed.operation.PackedOperationTarget.MemberOperationTarget
 /**
  *
  */
-public non-sealed class PackedOperationInstaller extends PackedComponentInstaller<OperationSetup, PackedOperationInstaller> implements OperationInstaller {
+public class PackedOperationInstaller extends PackedComponentInstaller<OperationSetup, PackedOperationInstaller> implements OperationInstaller {
 
     NamespaceHandle<?, ?> addToNamespace;
 
@@ -101,7 +101,7 @@ public non-sealed class PackedOperationInstaller extends PackedComponentInstalle
     public <H extends OperationHandle<?>> OperationSetup newOperationFromMember(OperationMemberTarget<?> member, MethodHandle methodHandle,
             Function<? super OperationInstaller, H> configurationCreator) {
         if (bean.beanKind == BeanKind.STATIC && !Modifier.isStatic(member.modifiers())) {
-            throw new CannotDeclareInstanceMemberException("Cannot create operation for non-static member " + member);
+            throw new InstanceMembersNotAllowedException("Cannot create operation for non-static member " + member);
         }
         namePrefix = member.name();
 

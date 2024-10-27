@@ -16,7 +16,7 @@
 package app.packed.binding;
 
 /**
- * Thrown at runtime if a value cannot be provided for a binding.
+ * Thrown at runtime if a value cannot be provided by a {@link Provider}.
  */
 public class ProvisionException extends RuntimeException {
 

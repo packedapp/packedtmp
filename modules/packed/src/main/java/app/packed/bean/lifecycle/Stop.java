@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger;
 import app.packed.extension.BaseExtension;
 
 /**
@@ -37,8 +37,6 @@ import app.packed.extension.BaseExtension;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedMethodBeanTrigger(allowInvoke = true, extension = BaseExtension.class)
-
 // Some examples:
 // https://stackoverflow.com/questions/26547532/how-to-shutdown-a-spring-boot-application-in-a-correct-way
 //https://www.smilecdr.com/our-blog/the-pros-and-cons-of-spring-smartlifecycle
@@ -46,6 +44,7 @@ import app.packed.extension.BaseExtension;
 // Channels -> Notification: Notifiers friends and families about the pending shutdown
 // Do the actual shutdown
 // Notifaction again: Shit has been shutdown
+@BeanTrigger.OnAnnotatedMethod(extension = BaseExtension.class, requiresContext = StopContext.class, allowInvoke = true)
 public @interface Stop {
 
 //    // What is the usecase?

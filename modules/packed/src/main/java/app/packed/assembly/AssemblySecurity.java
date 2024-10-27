@@ -46,10 +46,23 @@ public @interface AssemblySecurity {
         }
     }
 
+    // A simple mode. With two methods on Assemblies
+    enum AssemblyOpeness {
+        MUTABLE, IMMUTABLE
+    }
+//    public static Assembly immutable(Lookup caller, Assembly assembly) {
+//        return assembly;
+//    }
+//
+//    public static Assembly immutable(Assembly assembly) {
+//        return assembly;
+//    }
+
     // Alternativ er en enum. Eller maaske kan det hele vaere attributer i annotatering AssemblySecurityModel
     /**
      * Subclasses must define an INSTANCE field
      */
+    // I
     public abstract class Model {
         // Restrict Launching to these classes (default any launcher)
 
@@ -57,7 +70,6 @@ public @interface AssemblySecurity {
 
         // Buildhook handling
 
-        //
         protected abstract void define();
     }
 

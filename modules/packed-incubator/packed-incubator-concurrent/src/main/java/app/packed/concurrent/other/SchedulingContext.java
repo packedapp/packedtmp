@@ -1,9 +1,9 @@
 package app.packed.concurrent.other;
 
+import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
 import app.packed.context.Context;
-import app.packed.context.ContextualServiceProvider;
 
-@ContextualServiceProvider(extension = ScheduledJobExtension.class, context = SchedulingContext.class)
+@OnExtensionServiceBeanTrigger(extension = ScheduledJobExtension.class, requiresContext = SchedulingContext.class)
 public interface SchedulingContext extends Context<ScheduledJobExtension> /* extends AttributedElement */ {
 
     void pause();

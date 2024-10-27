@@ -19,7 +19,7 @@ import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.scanning.BeanScannerParticipant;
+import internal.app.packed.bean.scanning.BeanIntrospectorSetup;
 import internal.app.packed.context.PackedContextTemplate;
 import internal.app.packed.extension.ExtensionSetup;
 import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
@@ -94,7 +94,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
         return new PackedOperationTemplateDescriptor(this);
     }
 
-    public PackedOperationInstaller newInstaller(BeanScannerParticipant extension, MethodHandle methodHandle, OperationMemberTarget<?> target,
+    public PackedOperationInstaller newInstaller(BeanIntrospectorSetup extension, MethodHandle methodHandle, OperationMemberTarget<?> target,
             OperationType operationType) {
         return new PackedOperationInstaller(this, operationType, extension.scanner.bean, extension.extension) {
 

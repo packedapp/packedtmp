@@ -24,7 +24,7 @@ import app.packed.context.ContextMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.service.ServiceNamespaceMirror;
 import app.packed.service.advanced.ServiceProviderKind;
-import app.packed.service.mirror.oldMaybe.ServiceBindingMirror;
+import app.packed.service.mirror.ServiceBindingMirror;
 
 /**
  *

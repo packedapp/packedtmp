@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanBuildLocal.Accessor;
-import app.packed.bean.scanning.BeanElement;
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.build.BuildLocal;
 import internal.app.packed.bean.PackedBeanBuildLocal;
@@ -73,5 +72,5 @@ public sealed interface BeanBuildLocal<T> extends BuildLocal<Accessor, T> permit
     }
 
     /** An element where bean local values can be stored and loaded. */
-    sealed interface Accessor permits BeanConfiguration, BeanElement, BeanHandle, BeanIntrospector, BeanMirror {}
+    sealed interface Accessor permits BeanConfiguration,  BeanHandle, BeanIntrospector, BeanMirror {}
 }

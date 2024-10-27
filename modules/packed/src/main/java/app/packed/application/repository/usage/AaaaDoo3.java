@@ -16,8 +16,8 @@
 package app.packed.application.repository.usage;
 
 import app.packed.application.App;
-import app.packed.application.repository.InstalledApplication;
 import app.packed.application.repository.ApplicationRepositoryExtension;
+import app.packed.application.repository.InstalledApplication;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.lifecycle.Start;
 import app.packed.runtime.ManagedLifecycle;

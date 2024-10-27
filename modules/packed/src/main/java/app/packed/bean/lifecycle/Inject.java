@@ -21,8 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.scanning.BeanTrigger.AnnotatedFieldBeanTrigger;
-import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger;
 import app.packed.extension.BaseExtension;
 import app.packed.namespace.sandbox.NamespaceOperation;
 
@@ -56,9 +55,6 @@ import app.packed.namespace.sandbox.NamespaceOperation;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @NamespaceOperation
-@AnnotatedFieldBeanTrigger(extension = BaseExtension.class)
-@AnnotatedMethodBeanTrigger(allowInvoke = true, extension = BaseExtension.class)
+@BeanTrigger.OnAnnotatedField(extension = BaseExtension.class, allowSet = true)
+@BeanTrigger.OnAnnotatedMethod(extension = BaseExtension.class, allowInvoke = true)
 public @interface Inject {}
-// For en metode er det inject metoden
-
-// For et field er det inject service

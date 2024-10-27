@@ -10,6 +10,7 @@ import app.packed.operation.OperationMirror;
  */
 // We do not have a specific EntryPointOperationMirror
 // Because for some operations it might be be decided if it is an entry point or not at build time.
+// Would be nice with an example, but trust it now
 public class MainOperationMirror extends OperationMirror {
 
     /**

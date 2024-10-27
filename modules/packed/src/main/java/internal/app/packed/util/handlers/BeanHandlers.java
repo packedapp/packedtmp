@@ -24,7 +24,7 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.scanning.BeanIntrospector;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.scanning.BeanScannerParticipant;
+import internal.app.packed.bean.scanning.BeanIntrospectorSetup;
 
 /**
  *
@@ -34,7 +34,7 @@ public final class BeanHandlers extends Handlers {
 
     /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
     private static final MethodHandle MH_BEAN_INTROSPECTOR_INITIALIZE = method(MethodHandles.lookup(), BeanIntrospector.class, "initialize", void.class,
-            BeanScannerParticipant.class);
+            BeanIntrospectorSetup.class);
 
     /** A MethodHandle for invoking {@link BeanIntrospector#bean}. */
     private static final MethodHandle MH_BEAN_INTROSPECTOR_TO_SETUP = method(MethodHandles.lookup(), BeanIntrospector.class, "bean", BeanSetup.class);
@@ -80,12 +80,11 @@ public final class BeanHandlers extends Handlers {
         }
     }
 
-    public static void invokeBeanIntrospectorInitialize(BeanIntrospector introspector, BeanScannerParticipant ref) {
+    public static void invokeBeanIntrospectorInitialize(BeanIntrospector introspector, BeanIntrospectorSetup ref) {
         try {
             MH_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, ref);
         } catch (Throwable t) {
             throw throwIt(t);
         }
     }
-
 }

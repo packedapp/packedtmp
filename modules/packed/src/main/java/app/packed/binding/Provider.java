@@ -17,6 +17,9 @@ package app.packed.binding;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.bean.scanning.BeanTrigger;
+import app.packed.extension.BaseExtension;
+
 /**
  * A provider of instances.
  *
@@ -24,6 +27,7 @@ import static java.util.Objects.requireNonNull;
  *            the type of instances that are provided
  */
 @FunctionalInterface
+@BeanTrigger.OnExtensionServiceBeanTrigger(extension = BaseExtension.class)
 public interface Provider<T> {
 
     /**

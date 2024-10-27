@@ -177,4 +177,5 @@ public final class TypeUtil {
             typeVariableNamesOf0(addTo, wt.getUpperBounds()[0]);
         }
     }
+
 }

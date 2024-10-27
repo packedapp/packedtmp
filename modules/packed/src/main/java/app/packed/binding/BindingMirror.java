@@ -21,8 +21,6 @@ import app.packed.binding.sandbox.BindingHandle;
 import app.packed.build.BuildActor;
 import app.packed.build.Mirror;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.binding.BindingAccessor;
-import internal.app.packed.binding.BindingAccessor.FromOperationResult;
 import internal.app.packed.binding.BindingSetup;
 import internal.app.packed.binding.PackedBindingHandle;
 import sandbox.operation.mirror.BindingProviderKind;
@@ -83,9 +81,7 @@ public class BindingMirror implements Mirror {
     }
 
     /** {@return the index of parameter this binding into OperationMirror#bindings().} */
-    // Parametere er var.
-    // Bindingen er resultatet naar den er resolvet
-    public final int parameterIndex() {
+    public final int bindingIndex() {
         return binding.index;
     }
 
@@ -99,6 +95,16 @@ public class BindingMirror implements Mirror {
     public final Variable variable() {
         BindingSetup b = binding;
         return b.operation.type.parameter(b.index);
+    }
+
+}
+class Zandbox extends BindingMirror {
+
+    /**
+     * @param handle
+     */
+    public Zandbox(BindingHandle handle) {
+        super(handle);
     }
 
     /** {@return the dependencies this binding introduces.} */
@@ -121,14 +127,14 @@ public class BindingMirror implements Mirror {
         return Optional.ofNullable(binding.resolver()).map(b -> b.kind());
     }
 
-    public final Optional<OperationMirror> zProvidingOperation() {
-        // What about lifetime
-        BindingAccessor p = binding.resolver();
-        if (p instanceof FromOperationResult fo) {
-            return Optional.ofNullable(fo.operation().mirror());
-        }
-        return Optional.empty();
-    }
+//    public final Optional<OperationMirror> zProvidingOperation() {
+//        // What about lifetime
+//        BindingAccessor p = binding.resolver();
+//        if (p instanceof FromOperationResult fo) {
+//            return Optional.ofNullable(fo.operation().mirror());
+//        }
+//        return Optional.empty();
+//    }
 
     /**
      * Returns the field or parameter underlying the binding. Or empty if the underlying operation is a
@@ -139,9 +145,7 @@ public class BindingMirror implements Mirror {
     public final Optional<BindingTarget> zTarget() {
         return Optional.empty();
     }
-}
 
-interface Sandbox {
     // ; // What are we having injected... Giver det mening for functions????
 
     // BiFunction(WebRequest, WebResponse) vs
@@ -207,7 +211,8 @@ interface Sandbox {
 
     // Unresolved->Empty or Composite->Empty
 
-    Variable variableStripped(); // Remove @Nullable Quaifiers, Optional, PrimeAnnotation ect.. All annotations?? Maaske er det bare en type
+
+//   public Variable variableStripped(); // Remove @Nullable Quaifiers, Optional, PrimeAnnotation ect.. All annotations?? Maaske er det bare en type
 
 //    // Tror det bliver ligesom OperationTarget
 //    abstract class OfAnnotation extends BindingMirror {

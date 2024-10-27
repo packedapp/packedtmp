@@ -32,11 +32,7 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 
-import app.packed.bean.scanning.BeanElement.BeanField;
-import app.packed.bean.scanning.BeanElement.BeanMethod;
 import app.packed.util.AnnotationList;
-import internal.app.packed.bean.scanning.PackedBeanMethod;
-import internal.app.packed.binding.PackedBindableVariable;
 import internal.app.packed.util.AnnotationUtil;
 import internal.app.packed.util.PackedAnnotationList;
 import internal.app.packed.util.StringFormatter;
@@ -634,11 +630,6 @@ public abstract class Key<T> {
         }
     }
 
-    public static Key<?> fromBindableVariable(BindableVariable variable) {
-        PackedBindableVariable v = (PackedBindableVariable) variable;
-        return convert(v.variable().type(), v.variable().annotations().toArray(), false, FROM_BEAN_VARIABLE, v);
-    }
-
     /**
      *
      * <p>
@@ -659,17 +650,6 @@ public abstract class Key<T> {
     }
 
     /**
-     * @param field
-     * @return
-     * @see BeanField#toKey()
-     */
-    // Here for now, might move it somewhere else when we have finalized it
-    public static Key<?> fromField(BeanField field) {
-        requireNonNull(field, "field is null");
-        return convert(field.field().getGenericType(), field.field().getAnnotations(), false, FROM_FIELD, field);
-    }
-
-    /**
      * Returns a key matching the type of the specified field and any qualifiers that may be present on the field.
      * <p>
      * The type of the returned key is determined by {@link Field#getType()} and qualifiers are read from
@@ -687,11 +667,6 @@ public abstract class Key<T> {
     public static Key<?> fromField(Field field) {
         requireNonNull(field, "field is null");
         return convert(field.getGenericType(), field.getAnnotations(), false, FROM_FIELD, field);
-    }
-
-    public static Key<?> fromMethodReturnType(BeanMethod method) {
-        PackedBeanMethod pbm = (PackedBeanMethod) method;
-        return convert(pbm.method().get().getGenericReturnType(), pbm.method().get().getAnnotations(), false, FROM_BEAN_METHOD_RETURN_TYPE, method);
     }
 
     /**

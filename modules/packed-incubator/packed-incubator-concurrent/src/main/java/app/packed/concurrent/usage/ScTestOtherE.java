@@ -25,8 +25,7 @@ import java.time.Duration;
 import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.scanning.BeanElement.BeanMethod;
-import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
 import app.packed.concurrent.ScheduledOperationConfiguration;
 import app.packed.concurrent.SchedulingContext;
 import app.packed.concurrent.ThreadExtension;
@@ -53,7 +52,7 @@ public class ScTestOtherE extends BaseAssembly {
 
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedMethodBeanTrigger(allowInvoke = true, extension = MyE.class)
+    @OnAnnotatedMethod(allowInvoke = true, extension = MyE.class)
     public @interface ScheduleOther {
         String value();
     }
@@ -73,7 +72,7 @@ public class ScTestOtherE extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void onAnnotatedMethod(BeanMethod on, Annotation hook) {
+                public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod on) {
                     ScheduleOther so = (ScheduleOther) hook;
                     ScheduledOperationConfiguration soc = use(ThreadExtensionPoint.class).schedule(null /*on.newDelegatingOperation()*/);
                     Duration p = Duration.parse(so.value());

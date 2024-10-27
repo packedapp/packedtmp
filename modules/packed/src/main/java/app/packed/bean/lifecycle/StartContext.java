@@ -17,12 +17,12 @@ package app.packed.bean.lifecycle;
 
 import java.util.concurrent.Callable;
 
+import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
 import app.packed.context.Context;
-import app.packed.context.ContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 
 /** A context object that can be injected into methods annotated with {@link OnStart}. */
-@ContextualServiceProvider(extension = BaseExtension.class, context = StartContext.class)
+@OnExtensionServiceBeanTrigger(extension = BaseExtension.class, requiresContext = StartContext.class)
 public interface StartContext extends Context<BaseExtension>{
 
     // Maaske har vi i virkeligheden two scopes her???

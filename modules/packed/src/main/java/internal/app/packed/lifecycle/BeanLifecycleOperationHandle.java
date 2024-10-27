@@ -31,7 +31,7 @@ import app.packed.operation.OperationInstaller;
 import app.packed.operation.OperationMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.lifecycle.lifetime.RegionalLifetimeSetup;
+import internal.app.packed.lifecycle.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.handlers.BeanLifecycleHandlers;
 
@@ -106,7 +106,7 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
                     mha = mha.asType(mha.type().changeReturnType(Object.class));
 
                     // Vil faktisk gemme den førends sidste
-                    mha = RegionalLifetimeSetup.MH_INVOKE_INITIALIZER.bindTo(bean).bindTo(mha);
+                    mha = ContainerLifetimeSetup.MH_INVOKE_INITIALIZER.bindTo(bean).bindTo(mha);
                     return mha;
                 }
             }
@@ -115,7 +115,7 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
 
     }
 
-    public static final class LifecycleOperationStartHandle extends BeanLifecycleOperationHandle {
+    public static final class LifecycleOnStartHandle extends BeanLifecycleOperationHandle {
 
         public boolean fork;
         public boolean interruptOnStopping;
@@ -125,7 +125,7 @@ public abstract sealed class BeanLifecycleOperationHandle extends OperationHandl
         /**
          * @param installer
          */
-        LifecycleOperationStartHandle(OperationInstaller installer, Start annotation) {
+        LifecycleOnStartHandle(OperationInstaller installer, Start annotation) {
             super(installer, annotation.order() == LifecycleDependantOrder.BEFORE_DEPENDANTS ? InternalBeanLifecycleKind.START_PRE_ORDER
                     : InternalBeanLifecycleKind.START_POST_ORDER);
             this.stopOnFailure = annotation.stopOnFailure();

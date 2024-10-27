@@ -164,7 +164,7 @@ public interface BeanClassMutator {
     void setAddBeforeScan();
 
     // Hmm, skipMethod + skipFields???
-    void skipScan(@SuppressWarnings("unchecked") Class<? extends BeanElement>... elements);
+  //  void skipScan(@SuppressWarnings("unchecked") Class<? extends OnBase>... elements);
 
     // Will include the bean class and everyone of its super classes.
     // Object.class is never scanned.

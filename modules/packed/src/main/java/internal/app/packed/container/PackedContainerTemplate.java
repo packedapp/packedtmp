@@ -70,11 +70,6 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
         return installer;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ContainerTemplate<H> reconfigure(Consumer<? super Configurator> configure) {
-        return configure(this, configure);
-    }
 
     public static <H extends ContainerHandle<?>> PackedContainerTemplate<H> configure(PackedContainerTemplate<H> template,
             Consumer<? super Configurator> configure) {

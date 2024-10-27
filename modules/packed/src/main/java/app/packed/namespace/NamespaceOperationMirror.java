@@ -28,7 +28,8 @@ import app.packed.operation.OperationMirror;
 
 // Yes, er vi altid tilknyttet en bean???
 // Maske er operation Optional
-public abstract class NamespaceOperationMirror extends OperationMirror {
+@Deprecated
+abstract class NamespaceOperationMirror extends OperationMirror {
 
     /**
      * @param handle

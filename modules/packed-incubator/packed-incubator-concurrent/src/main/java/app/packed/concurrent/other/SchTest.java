@@ -16,7 +16,6 @@
 package app.packed.concurrent.other;
 
 import app.packed.assembly.BaseAssembly;
-import app.packed.operation.Op;
 
 /**
  *
@@ -26,7 +25,9 @@ public class SchTest extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        use(ScheduledJobExtension.class).schedule(Op.ofRunnable(() -> System.out.println("Hi")));
+//        use(ScheduledJobExtension.class).schedule(new Op0<>(() -> System.out.println("Hi")) {});
+//
+//        use(ScheduledJobExtension.class).schedule(Op.ofRunnable(() -> System.out.println("Hi")));
     }
 
 }

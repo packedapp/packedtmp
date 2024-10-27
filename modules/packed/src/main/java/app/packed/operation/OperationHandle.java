@@ -23,13 +23,13 @@ import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 import java.util.function.Function;
 
-import app.packed.binding.BindableVariable;
+import app.packed.bean.scanning.BeanIntrospector.OnVariable;
 import app.packed.component.ComponentHandle;
 import app.packed.component.ComponentPath;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.util.Nullable;
-import internal.app.packed.binding.PackedBindableVariable;
+import internal.app.packed.bean.scanning.IntrospectorOnVariable;
 import internal.app.packed.operation.OperationCodeGenerator;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOperationInstaller;
@@ -171,7 +171,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
     // bindManually
     // bind(index).toConstant("Foo");
     // Maybe take an consumer to make sure it is "executed"
-    public final BindableVariable bindManually(int index) {
+    public final OnVariable bindManually(int index) {
 
         // This method does not throw IllegalStateExtension, but OnBinding may.
         // custom invocationContext must have been set before calling this method
@@ -180,7 +180,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
             throw new UnsupportedOperationException();
         }
         // TODO we need to check that s is still active
-        return new PackedBindableVariable(operation.bean.scanner, operation, index, operation.installedByExtension, operation.type.parameter(index));
+        return new IntrospectorOnVariable(operation.bean.scanner, operation, index, operation.installedByExtension, operation.type.parameter(index));
     }
 
     /** {@inheritDoc} */

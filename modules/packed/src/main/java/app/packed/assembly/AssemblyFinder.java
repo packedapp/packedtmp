@@ -86,6 +86,9 @@ import internal.app.packed.assembly.PackedAssemblyFinder;
 // Future
 //// Taenk over hvordan man maaske vil kunne supportere mere komplekse layouts i fremtiden
 //// Eller det er maaske JLink images?
+
+// Ideen er nok at den her kan bruges til at finde flere
+// Mens container linker kun kan bruges til en
 public sealed interface AssemblyFinder permits PackedAssemblyFinder {
 
     AssemblyFinder addModuleLayer(ModuleLayer moduleLayer);
@@ -137,6 +140,7 @@ public sealed interface AssemblyFinder permits PackedAssemblyFinder {
      * @throws UnsupportedOperationException
      *             if this finder operates on the classpath
      */
+    // Altsaa
     Assembly findOne(String moduleName, String className);
 
     AssemblyFinder paths(Path... paths);
@@ -149,6 +153,7 @@ public sealed interface AssemblyFinder permits PackedAssemblyFinder {
     }
 
     /** {@return an assembly finder that uses the classpath to find assemblies} */
+    // I think we still need need classloader from a class
     static AssemblyFinder onClasspath() {
         throw new UnsupportedOperationException();
     }

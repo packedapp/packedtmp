@@ -33,7 +33,7 @@ import internal.app.packed.operation.OperationSetup;
 // Lifetime == Scope????
 
 // What about OperationLifetimeMirror????
-public abstract sealed class LifetimeMirror implements Mirror permits BeanLifetimeMirror, RegionalLifetimeMirror {
+public abstract sealed class LifetimeMirror implements Mirror permits BeanLifetimeMirror, ContainerLifetimeMirror {
 
     /**
      * If the lifetime has any entry points. This method returns the extension that is responsible for choosing the right
@@ -82,7 +82,7 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
     }
 
     /** {@return any parent lifetime this lifetime is contained within.} */
-    public abstract Optional<RegionalLifetimeMirror> parent();
+    public abstract Optional<ContainerLifetimeMirror> parent();
 
     /**
      * If the lifetime needs to produce a result.

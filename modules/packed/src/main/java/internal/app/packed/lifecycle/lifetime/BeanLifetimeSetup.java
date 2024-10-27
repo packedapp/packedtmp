@@ -37,7 +37,7 @@ public final class BeanLifetimeSetup implements LifetimeSetup {
 
     /** {@inheritDoc} */
     @Override
-    public RegionalLifetimeSetup parent() {
+    public ContainerLifetimeSetup parent() {
         return bean.container.lifetime;
     }
 

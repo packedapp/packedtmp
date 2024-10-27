@@ -16,8 +16,8 @@
 package app.packed.service.mirror.oldMaybe;
 
 import app.packed.binding.Key;
-import app.packed.namespace.NamespaceOperationMirror;
 import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationMirror;
 import app.packed.service.ServiceNamespaceMirror;
 import internal.app.packed.service.ExportedService;
 
@@ -31,7 +31,7 @@ import internal.app.packed.service.ExportedService;
 // Exports kan kun vaere namespace mirrors
 
 // An exported service is always a ServiceProviderMirror.OfNamespace
-public class ExportedServiceMirror extends NamespaceOperationMirror {
+public class ExportedServiceMirror extends OperationMirror {
 
     final ExportedService es;
 
@@ -46,7 +46,6 @@ public class ExportedServiceMirror extends NamespaceOperationMirror {
     }
 
     /** {@inheritDoc} */
-    @Override
     public ServiceNamespaceMirror namespace() {
         throw new UnsupportedOperationException();
     }

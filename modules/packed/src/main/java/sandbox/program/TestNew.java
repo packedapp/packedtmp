@@ -26,12 +26,11 @@ import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.scanning.BeanTrigger.AnnotatedVariableBeanTrigger;
-import app.packed.binding.BindableVariable;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.service.Provide;
-import app.packed.service.mirror.NamespaceServiceBindingMirror;
+import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.mirror.oldMaybe.ProvidedServiceMirror;
 
 /**
@@ -55,7 +54,7 @@ public class TestNew extends BaseAssembly {
 
         for (BeanMirror b : App.mirrorOf(new TestNew()).container().beans().toList()) {
             b.operations(ProvidedServiceMirror.class).forEach(e -> {
-                List<NamespaceServiceBindingMirror> sbm = e.useSites().toList();
+                List<ServiceBindingMirror> sbm = e.useSites().toList();
                 System.out.println(sbm);
                 System.out.println("Bean " + b.componentPath() + " provides services for key " + e.key());
                 for (var v : sbm) {
@@ -103,12 +102,12 @@ public class TestNew extends BaseAssembly {
             return new BeanIntrospector() {
 
                 @Override
-                public void onAnnotatedVariable(BindableVariable h, Annotation hook) {
+                public void onAnnotatedVariable(Annotation hook, OnVariable h ) {
                     if (hook.annotationType() == XX.class) {
                         String str = h.annotations().readRequired(XX.class).value();
                         h.bindInstance(str.toUpperCase());
                     } else {
-                        super.onAnnotatedVariable(h, hook);
+                        super.onAnnotatedVariable( hook, h);
                     }
                 }
             };
@@ -117,7 +116,7 @@ public class TestNew extends BaseAssembly {
 
     @Target({ ElementType.PARAMETER })
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedVariableBeanTrigger(extension = MyExt.class)
+    @OnAnnotatedVariable(extension = MyExt.class)
     @interface XX {
         String value();
     }

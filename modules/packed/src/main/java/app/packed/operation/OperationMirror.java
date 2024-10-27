@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.bean.BeanMirror;
+import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceInteritedBeanTrigger;
 import app.packed.binding.BindingMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
@@ -34,7 +35,6 @@ import app.packed.context.Context;
 import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
-import app.packed.context.InheritableContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
@@ -54,7 +54,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * <li>Must be located in the same module as the extension it is a member of.</li>
  * </ul>
  */
-@InheritableContextualServiceProvider(extension = BaseExtension.class)
+@OnExtensionServiceInteritedBeanTrigger(extension = BaseExtension.class)
 public non-sealed class OperationMirror implements ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderMirror {
 
     /** The handle of the operation we are mirroring. */

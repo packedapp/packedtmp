@@ -27,8 +27,8 @@ public record PackedServiceResolution(Class<? extends Context<?>>[] contexts, St
 
     @SuppressWarnings("unchecked")
     public PackedServiceResolution() {
-        this(new Class[0], new String[] { "main" }, new ServiceProviderKind[] { ServiceProviderKind.OPERATION, ServiceProviderKind.BEAN,
-                ServiceProviderKind.CONTEXT, ServiceProviderKind.NAMESPACE });
+        this(new Class[0], new String[] { "main" }, new ServiceProviderKind[] { ServiceProviderKind.OPERATION_SERVICE, ServiceProviderKind.BEAN_SERVICE,
+                ServiceProviderKind.EXTENSION_SERVICE, ServiceProviderKind.NAMESPACE_SERVICE });
     }
 
     /** {@inheritDoc} */

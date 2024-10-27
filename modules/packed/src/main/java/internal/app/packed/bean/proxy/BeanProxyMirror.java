@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
-import app.packed.build.Mirror;
 import app.packed.build.CodegenGenerated;
+import app.packed.build.Mirror;
 import app.packed.extension.Extension;
 import app.packed.operation.OperationMirror;
 import app.packed.util.AnnotationList;

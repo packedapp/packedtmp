@@ -29,6 +29,8 @@ import app.packed.extension.Extension;
 // Lookup in extension service namespace
 
 // Altsaa kan vi bruge den for ikke guests????
+
+// Alternativt skal man man extende noget...
 public interface ContainerGuestLink {
 
     // Void/void.class will be ignored, but you can use onExtensionUsed. But not any of the bind methods

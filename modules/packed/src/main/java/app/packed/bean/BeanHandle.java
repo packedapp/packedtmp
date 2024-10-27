@@ -212,6 +212,10 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      */
     // onOwnerClosed
     final void doClose() {
+        // I think we might need to methods, one before we close operations, and one after
+        // So the one before is the last chance to add (synthetic) operations
+        // Also we close the operation handles here. Not the configuration
+
         // Close all operations
         bean.operations.forEach(o -> OperationHandlers.invokeOperationHandleDoClose(o.handle()));
         // Do we want to close operations?

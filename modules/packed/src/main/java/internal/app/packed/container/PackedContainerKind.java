@@ -25,28 +25,21 @@ package internal.app.packed.container;
 // StartsNewLifetime|Does not start new lifetime (root always does) (needs to match a scope) // newLifetime(Some scope)
 public enum PackedContainerKind {
 
-//    /** Represents the root container of a {@link BootstrapApp}. */
-//    BOOTSTRAP_APPLICATION,
-
- //   ROOT_UNMANAGED,
-
-//    ROOT_MANAGED,
-
-    /** A container that is lazily created. */
-    LAZY,
-
-    UNMANAGED,
-
-    MANAGED,   /// MAnaged -> Unmanaged
-
-    // A container lifetime that must define 1 or more entry points
-    // Must Be property
+    // Same lifetime as parent
+    FROM_CONTAINER,
 
     // ContainerTempalte#requiresEntryPoints
     GATEWAY,
 
-    // Same lifetime as parent
-    PARENT_CONTAINER;
+    /** A container that is lazily created. */
+    LAZY,   /// MAnaged -> Unmanaged
+
+    // A container lifetime that must define 1 or more entry points
+    // Must Be property
+
+    MANAGED,
+
+    UNMANAGED;
 }
 
 // Managed, Unmanaged, FromParent

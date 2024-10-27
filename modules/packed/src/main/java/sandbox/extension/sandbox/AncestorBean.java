@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.scanning.BeanTrigger.AnnotatedVariableBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedVariable;
 import app.packed.extension.BaseExtension;
 
 // I virkeligheden er det jo en slags multi-return fra en operation...
@@ -48,7 +48,7 @@ import app.packed.extension.BaseExtension;
 @Target({ ElementType.PARAMETER, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedVariableBeanTrigger(extension = BaseExtension.class)
+@OnAnnotatedVariable(extension = BaseExtension.class)
 public @interface AncestorBean {} // childExtension? instead
 
 //Alternativt en ContainerLaucherContext? med context services.

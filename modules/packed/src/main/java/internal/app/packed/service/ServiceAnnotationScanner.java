@@ -27,8 +27,8 @@ import app.packed.operation.OperationTemplate;
 import app.packed.service.Export;
 import app.packed.service.Provide;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.scanning.PackedBeanField;
-import internal.app.packed.bean.scanning.PackedBeanMethod;
+import internal.app.packed.bean.scanning.IntrospectorOnField;
+import internal.app.packed.bean.scanning.IntrospectorOnMethod;
 import internal.app.packed.binding.BindingAccessor.FromOperationResult;
 import internal.app.packed.operation.OperationSetup;
 
@@ -39,7 +39,7 @@ import internal.app.packed.operation.OperationSetup;
 // Scanner:onInject   :onInject(BeanField, ? extends Annotation) <-- annotation
 public final class ServiceAnnotationScanner {
 
-    public static boolean testFieldAnnotation(PackedBeanField field, Annotation annotation) {
+    public static boolean testFieldAnnotation(IntrospectorOnField field, Annotation annotation) {
 
         if (annotation instanceof Provide) {
             BeanSetup bean = field.bean();
@@ -63,7 +63,7 @@ public final class ServiceAnnotationScanner {
 
     static final OperationTemplate TEMPLATE = OperationTemplate.of(c -> c.returnTypeDynamic());
 
-    public static boolean testMethodAnnotation(PackedBeanMethod method, Annotation annotation) {
+    public static boolean testMethodAnnotation(IntrospectorOnMethod method, Annotation annotation) {
         if (annotation instanceof Provide) {
             if (!Modifier.isStatic(method.modifiers())) {
                 if (method.bean().beanKind != BeanKind.CONTAINER) {

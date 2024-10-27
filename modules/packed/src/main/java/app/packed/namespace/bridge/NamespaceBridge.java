@@ -18,7 +18,7 @@ package app.packed.namespace.bridge;
 import app.packed.extension.Extension;
 
 /**
- * A namespace bridge server as a communication link between 2 or more namespaces of the same kind. Typically, the
+ * A namespace bridge serves as a communication link between 2 or more namespaces of the same kind. Typically, the
  * namespaces are in the same container or containers in a parent/child relationship.
  */
 // Promulgation
@@ -28,14 +28,31 @@ import app.packed.extension.Extension;
 // Was promulgator
 // Hmm interface?
 // IDK Not sure we need one.
-public abstract class NamespaceBridge<E extends Extension<E>> {
 
-    // Maybe they do extend wirelet. Maybe they can only be specified via wirelets
-    // Or inter container
-    // Would be nice with something immutable if it is a wirelet
-//    public final ExtensionWirelet<E> toWirelet() {
+// Can both be used manually and via a wirelet
+
+// Den fungere ikke super godt. Problemet er at det er svaert at faa fat i namespace handles.
+// Med mindre vi laver en masse generics magi.
+// Meget lettere at lave sine egen wirelets.
+// Og metoder på NamespaceConfiguration
+public interface NamespaceBridge<E extends Extension<E>> {
+//
+//    // Maybe they do extend wirelet. Maybe they can only be specified via wirelets
+//    // Or inter container
+//    // Would be nice with something immutable if it is a wirelet
+////    public final ExtensionWirelet<E> toWirelet() {
+////        throw new UnsupportedOperationException();
+////    }
+//
+//    protected <T extends NamespaceHandle<E, NamespaceConfiguration<E>>> T from(Class<T> handleType) {
 //        throw new UnsupportedOperationException();
 //    }
+//
+//    protected <T extends NamespaceHandle<E, NamespaceConfiguration<E>>> T to(Class<T> handleType) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    protected void apply() {}
 }
 
 // Application methods

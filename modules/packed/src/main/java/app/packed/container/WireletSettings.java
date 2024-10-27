@@ -21,6 +21,9 @@ package app.packed.container;
 public class WireletSettings {
     static final WireletSettings DEFAULTS = null;
 
+    // Er nok ikke super relevant. For extensions
+    // Er det nok primaert roden af et namespace
+    // Og det ved extension'en jo kun selv
     public WireletSettings siteApplication() {
         return this;
     }

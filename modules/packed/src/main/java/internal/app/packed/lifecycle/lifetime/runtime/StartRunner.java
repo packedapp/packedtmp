@@ -24,7 +24,7 @@ import java.util.concurrent.StructuredTaskScope;
 
 import app.packed.bean.lifecycle.StartContext;
 import app.packed.extension.ExtensionContext;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStartHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -32,7 +32,7 @@ import internal.app.packed.util.ThrowableUtil;
  */
 final class StartRunner {
 
-    final Collection<LifecycleOperationStartHandle> operations;
+    final Collection<LifecycleOnStartHandle> operations;
 
     /** The runtime component node we are building. */
     final ExtensionContext pool;
@@ -45,13 +45,13 @@ final class StartRunner {
     /** A structured task scope, used if forking. */
     StructuredTaskScope<Void> ts;
 
-    StartRunner(Collection<LifecycleOperationStartHandle> methodHandles, ExtensionContext pool, RegionalManagedLifetime runtime) {
+    StartRunner(Collection<LifecycleOnStartHandle> methodHandles, ExtensionContext pool, RegionalManagedLifetime runtime) {
         this.operations = methodHandles;
         this.pool = pool;
         this.runtime = runtime;
     }
 
-    private Void run(LifecycleOperationStartHandle h) {
+    private Void run(LifecycleOnStartHandle h) {
         MethodHandle mh = h.methodHandle;
         try {
             mh.invokeExact(pool, (StartContext) new PackedOnStartContext(this));
@@ -64,7 +64,7 @@ final class StartRunner {
     void start() {
         long start = System.currentTimeMillis();
 
-        for (LifecycleOperationStartHandle h : operations) {
+        for (LifecycleOnStartHandle h : operations) {
             if (h.fork) {
                 ts().fork(() -> run(h));
             } else {

@@ -17,7 +17,7 @@ package app.packed.lifetime;
 
 import java.util.List;
 
-import app.packed.context.ContextualServiceProvider;
+import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
 import app.packed.extension.BaseExtension;
 
 /**
@@ -40,7 +40,7 @@ import app.packed.extension.BaseExtension;
 // Hvad goere vi med child lifetimes? Maaske er den kun til gaeneglig i app lifetimen...
 // Det tror jeg faktisk
 
-@ContextualServiceProvider(extension = BaseExtension.class)
+@OnExtensionServiceBeanTrigger(extension = BaseExtension.class)
 public /* primitive */ class ArgList {
     private final String[] args;
 

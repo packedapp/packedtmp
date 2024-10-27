@@ -25,7 +25,7 @@ import app.packed.bean.lifecycle.StartOperationMirror;
 import app.packed.bean.lifecycle.StopOperationConfiguration;
 import app.packed.bean.lifecycle.StopOperationMirror;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationInitializeHandle;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStartHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
 
 /**
@@ -47,9 +47,9 @@ public class BeanLifecycleHandlers extends Handlers {
 
     /** A MethodHandle for invoking {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_NEW_START_MIRROR = constructor(MethodHandles.lookup(), StartOperationMirror.class,
-            LifecycleOperationStartHandle.class);
+            LifecycleOnStartHandle.class);
 
-    public static StartOperationMirror newStartOperationMirror(LifecycleOperationStartHandle handle) {
+    public static StartOperationMirror newStartOperationMirror(LifecycleOnStartHandle handle) {
         try {
             return (StartOperationMirror) MH_NEW_START_MIRROR.invokeExact(handle);
         } catch (Throwable t) {
@@ -85,9 +85,9 @@ public class BeanLifecycleHandlers extends Handlers {
 
     /** A MethodHandle for invoking {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_NEW_START_CONFIGURATION = constructor(MethodHandles.lookup(), StartOperationConfiguration.class,
-            LifecycleOperationStartHandle.class);
+            LifecycleOnStartHandle.class);
 
-    public static StartOperationConfiguration newStartOperationConfiguration(LifecycleOperationStartHandle handle) {
+    public static StartOperationConfiguration newStartOperationConfiguration(LifecycleOnStartHandle handle) {
         try {
             return (StartOperationConfiguration) MH_NEW_START_CONFIGURATION.invokeExact(handle);
         } catch (Throwable t) {

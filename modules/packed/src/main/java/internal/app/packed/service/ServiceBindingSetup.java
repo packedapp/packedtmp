@@ -21,7 +21,7 @@ import app.packed.binding.BindingKind;
 import app.packed.binding.Key;
 import app.packed.service.advanced.ServiceProviderKind;
 import app.packed.service.advanced.ServiceResolver;
-import app.packed.service.mirror.NamespaceServiceBindingMirror;
+import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.util.Nullable;
 import internal.app.packed.binding.BindingAccessor;
 import internal.app.packed.binding.BindingSetup;
@@ -56,7 +56,7 @@ public final class ServiceBindingSetup extends BindingSetup {
         this.key = key;
         this.isRequired = isRequired;
         this.resolver = requireNonNull(resolver);
-        this.mirrorSupplier = () -> new NamespaceServiceBindingMirror(new PackedBindingHandle(this), this);
+        this.mirrorSupplier = () -> new ServiceBindingMirror(new PackedBindingHandle(this), this.key);
     }
 
     /** {@return whether or not the service could be resolved.} */
@@ -79,19 +79,19 @@ public final class ServiceBindingSetup extends BindingSetup {
     private ServiceProviderSetup resolve0() {
         for (ServiceProviderKind s : resolver.order()) {
             switch (s) {
-            case OPERATION -> {
+            case OPERATION_SERVICE -> {
                 OperationServiceProviderSetup sps = operation.serviceProviders.get(key);
                 if (sps != null) {
                     return sps;
                 }
             }
-            case BEAN -> {
+            case BEAN_SERVICE -> {
                 BeanServiceProviderSetup sps = operation.bean.serviceProviders.get(key);
                 if (sps != null) {
                     return sps;
                 }
             }
-            case CONTEXT -> {
+            case EXTENSION_SERVICE -> {
                 // I think two options -> If empty we must be unique
                 // If non-empty we take them 1 at a time
 
@@ -109,7 +109,7 @@ public final class ServiceBindingSetup extends BindingSetup {
                     return sps;
                 }
             }
-            case NAMESPACE -> {
+            case NAMESPACE_SERVICE -> {
                 for (@SuppressWarnings("unused")
                 String namespace : resolver.namespaces()) {
                     // We only use main for now

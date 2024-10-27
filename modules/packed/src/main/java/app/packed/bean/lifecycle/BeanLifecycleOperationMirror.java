@@ -23,7 +23,8 @@ import app.packed.operation.OperationMirror;
  * An operation that is invoked doing lifecycle events on the bean. Typically from the usage of {@link Inject},
  * {@link OnInitialize}, {@link OnStart}, or {@link OnStop}.
  */
-public sealed class BeanLifecycleOperationMirror extends OperationMirror permits InitializeOperationMirror, StartOperationMirror, StopOperationMirror {
+public sealed class BeanLifecycleOperationMirror extends OperationMirror
+        permits InjectOperationMirror, InitializeOperationMirror, StartOperationMirror, StopOperationMirror {
 
     /**
      * @param handle

@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
+import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
 import app.packed.context.ContextTemplate;
-import app.packed.context.ContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.InternalExtensionException;
@@ -30,7 +30,7 @@ import internal.app.packed.util.LookupUtil;
 /**
  * All strongly connected components relate to the same pod.
  */
-@ContextualServiceProvider(extension = BaseExtension.class)
+@OnExtensionServiceBeanTrigger(extension = BaseExtension.class)
 @ValueBased
 public final class PackedExtensionContext implements ExtensionContext {
 

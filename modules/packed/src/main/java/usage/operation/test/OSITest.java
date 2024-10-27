@@ -24,8 +24,7 @@ import app.packed.application.App;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.lifecycle.Initialize;
 import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.scanning.BeanTrigger.AnnotatedVariableBeanTrigger;
-import app.packed.binding.BindableVariable;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedVariable;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionHandle;
 import app.packed.operation.Op0;
@@ -64,7 +63,7 @@ public class OSITest extends BaseAssembly {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedVariableBeanTrigger(extension = MyExt.class)
+    @OnAnnotatedVariable(extension = MyExt.class)
     @interface BuildTime {}
 
     static class MyExt extends Extension<MyExt> {
@@ -80,7 +79,7 @@ public class OSITest extends BaseAssembly {
         protected BeanIntrospector newBeanIntrospector() {
             return new BeanIntrospector() {
                 @Override
-                public void onAnnotatedVariable(BindableVariable d, Annotation hook) {
+                public void onAnnotatedVariable(Annotation hook, OnVariable d) {
                     if (hook instanceof BuildTime) {
                         d.checkAssignableTo(LocalDateTime.class);
                         // d.bindConstant(LocalDateTime.now());
@@ -93,7 +92,7 @@ public class OSITest extends BaseAssembly {
                         d.checkAssignableTo(LocalDateTime.class);
                         d.bindOp(new Op0<>(LocalDateTime::now) {});
                     } else {
-                        super.onAnnotatedVariable(d, hook);
+                        super.onAnnotatedVariable(hook, d);
                     }
                 }
             };
@@ -105,10 +104,10 @@ public class OSITest extends BaseAssembly {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedVariableBeanTrigger(extension = MyExt.class)
+    @OnAnnotatedVariable(extension = MyExt.class)
     @interface Now {}
 
     @Retention(RetentionPolicy.RUNTIME)
-    @AnnotatedVariableBeanTrigger(extension = MyExt.class)
+    @OnAnnotatedVariable(extension = MyExt.class)
     @interface InitializationTime {}
 }

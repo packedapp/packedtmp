@@ -20,14 +20,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
 
 /**
  *
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@AnnotatedMethodBeanTrigger(allowInvoke = true, extension = ThreadExtension.class)
+@OnAnnotatedMethod(allowInvoke = true, extension = ThreadExtension.class)
 public @interface ScheduleRecurrent {
     int millies();
 }

@@ -23,7 +23,7 @@ import app.packed.application.BaseImage;
 import app.packed.application.BootstrapApp;
 import app.packed.assembly.Assembly;
 import app.packed.binding.Key;
-import app.packed.component.guest.FromComponentGuest;
+import app.packed.component.guest.FromGuest;
 import app.packed.component.guest.OldContainerTemplateLink;
 import app.packed.container.Wirelet;
 import app.packed.runtime.ManagedLifecycle;
@@ -158,7 +158,7 @@ interface ProgramY extends AutoCloseable {
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementation(@FromComponentGuest String name, @FromComponentGuest ServiceLocator services, @FromComponentGuest ManagedLifecycle runtime)
+record ProgramImplementation(@FromGuest String name, @FromGuest ServiceLocator services, @FromGuest ManagedLifecycle runtime)
         implements ProgramY {
 
     ProgramImplementation {

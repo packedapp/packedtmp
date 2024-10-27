@@ -175,7 +175,6 @@ public final class ApplicationSetup implements BuildLocalSource, ComponentSetup 
 
         // The application was build successfully
         phase = ApplicationBuildPhase.CLOSED;
-        new Exception().printStackTrace();
     }
 
     /** {@return the component path of the application} */

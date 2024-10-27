@@ -22,10 +22,12 @@ import java.util.function.Function;
 
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
+import internal.app.packed.ValueBased;
 
 /**
  *
  */
+@ValueBased
 public final class WireletSelectionArray<W extends Wirelet> implements WireletSelection<W> {
 
     /** An empty selection. */
@@ -37,6 +39,12 @@ public final class WireletSelectionArray<W extends Wirelet> implements WireletSe
     WireletSelectionArray(List<W> wirelets) {
         this.wirelets = wirelets;
     }
+
+
+    public static <W extends Wirelet> WireletSelectionArray<W> of(List<W> wirelets) {
+        return new WireletSelectionArray<>(wirelets);
+    }
+
 
     public static <W extends Wirelet> WireletSelectionArray<W> of(W[] wirelets) {
         return new WireletSelectionArray<>(List.of(wirelets));

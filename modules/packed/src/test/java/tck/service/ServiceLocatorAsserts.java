@@ -37,7 +37,7 @@ public class ServiceLocatorAsserts {
             testPresent(sl, key.rawType(), instance);
         }
         assertTrue(sl.contains(key));
-        assertThat(sl.findInstance(key)).get().matches(instance);
+        assertThat(sl.find(key)).get().matches(instance);
         assertThat(sl.findProvider(key).get().provide()).matches(instance);
 
         AtomicBoolean hasRun = new AtomicBoolean();
@@ -53,7 +53,7 @@ public class ServiceLocatorAsserts {
 
     public static void testPresent(ServiceLocator sl, Class<?> key, Predicate<Object> instance) {
         assertTrue(sl.contains(key));
-        assertThat(sl.findInstance(key)).get().matches(instance);
+        assertThat(sl.find(key)).get().matches(instance);
         assertThat(sl.findProvider(key).get().provide()).matches(instance);
 
         AtomicBoolean hasRun = new AtomicBoolean();
@@ -73,7 +73,7 @@ public class ServiceLocatorAsserts {
         }
 
         assertFalse(sl.contains(key));
-        assertThat(sl.findInstance(key)).isEmpty();
+        assertThat(sl.find(key)).isEmpty();
         assertThat(sl.findProvider(key)).isEmpty();
         sl.ifPresent(key, c -> assertTrue(false));
         assertThat(sl.keys()).doesNotContain(key);
@@ -83,7 +83,7 @@ public class ServiceLocatorAsserts {
 
     public static void testNotPresent(ServiceLocator sl, Class<?> key) {
         assertFalse(sl.contains(key));
-        assertThat(sl.findInstance(key)).isEmpty();
+        assertThat(sl.find(key)).isEmpty();
         assertThat(sl.findProvider(key)).isEmpty();
         sl.ifPresent(key, c -> assertTrue(false));
         assertThat(sl.keys()).doesNotContain(Key.of(key));

@@ -3,7 +3,6 @@ package app.packed.extension;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationMirror;
@@ -16,17 +15,13 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanTemplate;
 import app.packed.bean.scanning.BeanClassMutator;
-import app.packed.bean.scanning.BeanElement.BeanField;
-import app.packed.bean.scanning.BeanElement.BeanMethod;
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.bean.scanning.SyntheticBean;
-import app.packed.binding.BindableVariable;
 import app.packed.binding.Key;
-import app.packed.binding.UnwrappedBindableVariable;
 import app.packed.build.Mirror;
 import app.packed.build.action.BuildActionable;
 import app.packed.component.guest.ComponentHostContext;
-import app.packed.component.guest.FromComponentGuest;
+import app.packed.component.guest.FromGuest;
 import app.packed.container.ContainerBuildLocal;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
@@ -34,7 +29,6 @@ import app.packed.container.ContainerInstaller;
 import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerTemplate;
 import app.packed.container.Wirelet;
-import app.packed.context.Context;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.operation.Op;
 import app.packed.operation.OperationMirror;
@@ -47,15 +41,15 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.bean.PackedBeanInstaller.ProvidableBeanHandle;
 import internal.app.packed.bean.PackedBeanTemplate;
-import internal.app.packed.bean.scanning.PackedBeanElement;
-import internal.app.packed.bean.scanning.PackedBeanField;
-import internal.app.packed.bean.scanning.PackedBeanMethod;
-import internal.app.packed.binding.PackedBindableWrappedVariable;
+import internal.app.packed.bean.scanning.IntrospectorOn;
+import internal.app.packed.bean.scanning.IntrospectorOnField;
+import internal.app.packed.bean.scanning.IntrospectorOnMethod;
+import internal.app.packed.bean.scanning.IntrospectorOnVariableUnwrapped;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.container.PackedContainerTemplate;
-import internal.app.packed.context.PackedComponentHostContext;
+import internal.app.packed.extension.BaseExtensionWirelet;
 import internal.app.packed.lifecycle.LifecycleAnnotationIntrospector;
-import internal.app.packed.lifecycle.lifetime.entrypoint.RegionalEntryPointManager;
+import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointManager;
 import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.PackedServiceLocator;
@@ -107,11 +101,6 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         super(handle);
     }
 
-    // One of 3 models...
-    // Fails on other exports
-    // Ignores other exports
-    // interacts with other exports in some way
-
     /**
      * Exports all container services and any services that have been explicitly anchored via of anchoring methods.
      * <p>
@@ -149,6 +138,11 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
 
         extension.container.servicesMain().exportAll = true;
     }
+
+    // One of 3 models...
+    // Fails on other exports
+    // Ignores other exports
+    // interacts with other exports in some way
 
     /**
      * Installs a bean of the specified type. A single instance of the specified class will be instantiated when the
@@ -283,6 +277,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
      *            optional wirelets
      */
     // Why not on ContainerConfiguration. Think because I wanted to keep it clean
+    // Maaske have en Container Linked???
     public void link(String name, Assembly assembly, Wirelet... wirelets) {
         link0().named(name).install(assembly, wirelets);
     }
@@ -340,8 +335,8 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
 
             /** Handles {@link Inject}. */
             @Override
-            public void onAnnotatedField(BeanField field, Annotation annotation) {
-                PackedBeanField f = (PackedBeanField) field;
+            public void onAnnotatedField(Annotation annotation, OnField onField) {
+                IntrospectorOnField f = (IntrospectorOnField) onField;
 
                 // Test for @Inject
                 if (LifecycleAnnotationIntrospector.testFieldAnnotation(f, annotation)) {
@@ -352,7 +347,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
                 if (ServiceAnnotationScanner.testFieldAnnotation(f, annotation)) {
                     return;
                 }
-                super.onAnnotatedField(field, annotation);
+                super.onAnnotatedField(annotation, onField);
             }
 
             /**
@@ -367,8 +362,8 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
              * @see app.packed.lifetime.Main
              */
             @Override
-            public void onAnnotatedMethod(BeanMethod method, Annotation annotation) {
-                PackedBeanMethod m = (PackedBeanMethod) method;
+            public void onAnnotatedMethod(Annotation annotation, BeanIntrospector.OnMethod method) {
+                IntrospectorOnMethod m = (IntrospectorOnMethod) method;
 
                 // Handles @Inject, @Initialize, @Start, @Stop
                 if (LifecycleAnnotationIntrospector.testMethodAnnotation(m, annotation)) {
@@ -381,35 +376,35 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
                 }
 
                 // Handles @Main
-                if (RegionalEntryPointManager.testMethodAnnotation(BaseExtension.this, isInApplicationLifetime(), m, annotation)) {
+                if (EntryPointManager.testMethodAnnotation(BaseExtension.this, isInApplicationLifetime(), m, annotation)) {
                     return;
                 }
 
-                super.onAnnotatedMethod(method, annotation);
+                super.onAnnotatedMethod(annotation, method);
             }
 
             /** Handles {@link ContainerGuest}. */
             @Override
-            public void onAnnotatedVariable(BindableVariable v, Annotation annotation) {
-                if (annotation instanceof FromComponentGuest) {
-                    PackedBeanElement pbe = ((PackedBeanElement) v);
+            public void onAnnotatedVariable(Annotation annotation, OnVariable v) {
+                if (annotation instanceof FromGuest) {
+                    IntrospectorOn pbe = ((IntrospectorOn) v);
                     GuestBeanHandle gbh = (GuestBeanHandle) pbe.bean().handle();
                     gbh.resolve(this, v);
                 } else {
-                    super.onAnnotatedVariable(v, annotation);
+                    super.onAnnotatedVariable(annotation, v);
                 }
             }
 
             @Override
-            public void onContextualServiceProvision(Key<?> key, Class<?> actualHook, Set<Class<? extends Context<?>>> contexts,
-                    UnwrappedBindableVariable binding) {
+            public void onExtensionService(Key<?> key, OnExtensionService service) {
+                Class<?> actualHook = service.baseClass();
+                OnVariableUnwrapped binding = service.binder();
 
-                if (LifecycleAnnotationIntrospector.testContextualService(key, actualHook, contexts, binding)) {
+                if (LifecycleAnnotationIntrospector.testExtensionService(service, binding)) {
                     return;
                 }
 
                 Class<?> hook = key.rawType();
-                OperationSetup operation = ((PackedBindableWrappedVariable) binding).var().operation;
 
                 if (ApplicationLaunchContext.class.isAssignableFrom(hook)) {
                     binding.bindContext(ApplicationLaunchContext.class);
@@ -420,9 +415,10 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
                     }
                     binding.bindContext(ExtensionContext.class);
                 } else if (hook == ComponentHostContext.class) {
-                    PackedComponentHostContext c = beanHandle(GuestBeanHandle.class).get().toContext();
+                    ComponentHostContext c = beanHandle(GuestBeanHandle.class).get().toContext();
                     binding.bindInstance(c);
                 } else if (Mirror.class.isAssignableFrom(hook)) {
+                    OperationSetup operation = ((IntrospectorOnVariableUnwrapped) binding).var().operation;
                     if (actualHook == DeploymentMirror.class) {
                         binding.bindInstance(operation.bean.container.application.deployment.mirror());
                     } else if (actualHook == ApplicationMirror.class) {
@@ -440,7 +436,8 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
                                 AssemblyMirror.class, BeanMirror.class, OperationMirror.class);
                     }
                 } else {
-                    super.onContextualServiceProvision(key, hook, contexts, binding);
+                    super.onExtensionService(key, service);
+
                 }
             }
         };
@@ -473,6 +470,12 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
         if (isLifetimeRoot()) {
             extension.container.lifetime.orderDependencies();
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void onNew() {
+        selectWirelets(BaseExtensionWirelet.class).forEach(w -> w.onBuild(extension.container));
     }
 
     /** {@return the container's main service namespace} */

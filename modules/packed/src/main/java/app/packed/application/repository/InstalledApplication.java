@@ -29,6 +29,7 @@ import internal.app.packed.application.repository.PackedInstalledApplication;
  * Or at runtime using {@link ApplicationRepository#install(java.util.function.Consumer)}.
  *
  */
+// extends InstalledContainer
 public sealed interface InstalledApplication<I> permits PackedInstalledApplication {
 
     /**

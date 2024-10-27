@@ -20,7 +20,6 @@ import java.util.function.Function;
 
 import app.packed.extension.ExtensionPoint;
 import app.packed.namespace.NamespaceHandle;
-import internal.app.packed.operation.PackedOperationInstaller;
 
 /**
  * An installer for operations.
@@ -28,7 +27,7 @@ import internal.app.packed.operation.PackedOperationInstaller;
  * An installer can only be used once. After an operation has been installed, all methods will throw
  * {@link IllegalStateException}.
  */
-public sealed interface OperationInstaller permits PackedOperationInstaller {
+public  interface OperationInstaller /* permits PackedOperationInstaller */ {
 
     // redelegate(ExtensionPoint.UseSite extension, OperationTemplate);
     OperationInstaller delegateTo(ExtensionPoint.ExtensionUseSite extension);

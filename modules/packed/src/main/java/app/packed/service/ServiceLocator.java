@@ -32,11 +32,11 @@ import app.packed.assembly.AbstractComposer;
 import app.packed.assembly.AbstractComposer.ComposableAssembly;
 import app.packed.assembly.AbstractComposer.ComposerAction;
 import app.packed.assembly.Assembly;
+import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
 import app.packed.binding.Key;
 import app.packed.binding.Provider;
-import app.packed.component.guest.FromComponentGuest;
+import app.packed.component.guest.FromGuest;
 import app.packed.container.Wirelet;
-import app.packed.context.ContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.operation.Op;
 import app.packed.operation.Op1;
@@ -111,7 +111,7 @@ import internal.app.packed.service.PackedServiceLocator;
  * <p>
  * Unless otherwise specified the set of services provided by a service locator is unchangeable.
  */
-@ContextualServiceProvider(extension = BaseExtension.class)
+@OnExtensionServiceBeanTrigger(extension = BaseExtension.class)
 // I don't think this should have a service provider
 public interface ServiceLocator {
 
@@ -153,8 +153,8 @@ public interface ServiceLocator {
      * @return an optional containing an instance of the service if present, or an empty optional if not present
      * @see #use(Class)
      */
-    default <T> Optional<T> findInstance(Class<T> key) {
-        return findInstance(Key.of(key));
+    default <T> Optional<T> find(Class<T> key) {
+        return find(Key.of(key));
     }
 
     /**
@@ -170,7 +170,7 @@ public interface ServiceLocator {
      * @return an optional containing an instance of the service if present, or an empty optional if not present
      * @see #use(Key)
      */
-    default <T> Optional<T> findInstance(Key<T> key) {
+    default <T> Optional<T> find(Key<T> key) {
         return findProvider(key).map(p -> p.provide());
     }
 
@@ -204,7 +204,7 @@ public interface ServiceLocator {
      */
     default <T> void ifPresent(Key<T> key, Consumer<? super T> action) {
         requireNonNull(action, "action is null");
-        Optional<T> o = findInstance(key);
+        Optional<T> o = find(key);
         if (o.isPresent()) {
             T instance = o.get();
             action.accept(instance);
@@ -251,6 +251,7 @@ public interface ServiceLocator {
         return keys().size();
     }
 
+    // toMapOfProviders
     default Map<Key<?>, Provider<?>> toProviderMap() {
         HashMap<Key<?>, Provider<?>> map = new HashMap<>();
         for (Key<?> key : keys()) {
@@ -306,7 +307,7 @@ public interface ServiceLocator {
      *             if no service with the specified key exist
      */
     default <T> T use(Key<T> key) {
-        Optional<T> t = findInstance(key);
+        Optional<T> t = find(key);
         if (!t.isPresent()) {
             throw new NoSuchElementException("A service with the specified key does not exist, key = " + key);
         }
@@ -320,7 +321,7 @@ public interface ServiceLocator {
     private static BootstrapApp<ServiceLocator> bootstrap() {
         class ServiceLocatorBootstrap {
             private static final BootstrapApp<ServiceLocator> APP = BootstrapApp
-                    .of(ApplicationTemplate.ofUnmanaged(new Op1<@FromComponentGuest ServiceLocator, ServiceLocator>(e -> e) {}));
+                    .of(ApplicationTemplate.ofUnmanaged(new Op1<@FromGuest ServiceLocator, ServiceLocator>(e -> e) {}));
         }
         return ServiceLocatorBootstrap.APP;
     }

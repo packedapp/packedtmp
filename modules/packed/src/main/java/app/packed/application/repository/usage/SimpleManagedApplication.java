@@ -23,7 +23,7 @@ import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
 import app.packed.bean.lifecycle.Inject;
-import app.packed.component.guest.FromComponentGuest;
+import app.packed.component.guest.FromGuest;
 import app.packed.operation.Op1;
 import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
@@ -34,18 +34,18 @@ import sandbox.lifetime.external.ManagedLifetimeState;
 /**
  *
  */
-public record SimpleManagedApplication(@FromComponentGuest ManagedLifecycle lifecycle, long nanos) implements ManagedLifecycle {
+public record SimpleManagedApplication(@FromGuest ManagedLifecycle lifecycle, long nanos) implements ManagedLifecycle {
 
     // Problemet er vi skal definere en Handle Class... Der har <I> = ManagedLifecycle
     // Men syntes ogsaa det er fint at folk skal lave en guest bean
     public static final ApplicationTemplate<GuestApplicationHandle2> MANAGED = ApplicationTemplate
-            .ofManaged(new Op1<@FromComponentGuest ManagedLifecycle, ManagedLifecycle>(e -> e) {}, GuestApplicationHandle2.class, GuestApplicationHandle2::new);
+            .ofManaged(new Op1<@FromGuest ManagedLifecycle, ManagedLifecycle>(e -> e) {}, GuestApplicationHandle2.class, GuestApplicationHandle2::new);
 
     public static final ApplicationTemplate<GuestApplicationHandle> MANAGED_SUB_APPLICATION = ApplicationTemplate.ofManaged(SimpleManagedApplication.class,
             GuestApplicationHandle.class, GuestApplicationHandle::new);
 
     @Inject
-    public SimpleManagedApplication(@FromComponentGuest ManagedLifecycle lifecyle) {
+    public SimpleManagedApplication(@FromGuest ManagedLifecycle lifecyle) {
         this(lifecyle, System.nanoTime());
     }
 

@@ -15,6 +15,7 @@
  */
 package internal.app.packed.container;
 
+import app.packed.container.Wirelet;
 import internal.app.packed.container.wirelets.InternalBuildWirelet;
 import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
@@ -22,6 +23,11 @@ import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
  *
  */
 public class ContainerWirelets {
+
+    public Wirelet tagWith(String... tags) {
+        throw new UnsupportedOperationException();
+    }
+
     public static final class ContainerOverrideNameWirelet extends InternalBuildWirelet {
 
         /** The (validated) name to override with. */
@@ -42,7 +48,7 @@ public class ContainerWirelets {
         public void onImageLaunch(ContainerSetup c, ApplicationLaunchContext ic) {
             // Don't know if we have the context of runnable names
             throw new UnsupportedOperationException();
-            //ic.name = name;
+            // ic.name = name;
         }
 
         /** {@inheritDoc} */

@@ -9,17 +9,17 @@ import java.util.stream.Stream;
 
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceInteritedBeanTrigger;
 import app.packed.build.BuildGoal;
 import app.packed.build.Mirror;
 import app.packed.build.MirrorPrinter;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerMirror;
-import app.packed.context.InheritableContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
-import app.packed.lifetime.RegionalLifetimeMirror;
+import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.namespace.NamespaceHandle;
 import app.packed.namespace.NamespaceMirror;
 import app.packed.operation.OperationMirror;
@@ -45,7 +45,7 @@ import internal.app.packed.util.PackedTreeView;
  * Like many other mirrors classes the type of application mirror being returned can be specialized. See
  * {@link BootstrapApp.Composer#specializeMirror(java.util.function.Supplier)} for details.
  */
-@InheritableContextualServiceProvider(extension = BaseExtension.class)
+@OnExtensionServiceInteritedBeanTrigger(extension = BaseExtension.class)
 public non-sealed class ApplicationMirror implements ComponentMirror, ApplicationBuildLocal.Accessor {
 
     /** The application's handle. */
@@ -177,7 +177,7 @@ public non-sealed class ApplicationMirror implements ComponentMirror, Applicatio
     }
 
     /** {@return the application's lifetime. Which is identical to the root container's.} */
-    public RegionalLifetimeMirror lifetime() {
+    public ContainerLifetimeMirror lifetime() {
         return container().lifetime();
     }
 

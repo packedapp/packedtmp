@@ -15,26 +15,86 @@
  */
 package internal.app.packed.lifecycle.lifetime.entrypoint;
 
+import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
+import java.util.List;
 
+import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanInstallationException;
+import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
-import internal.app.packed.lifecycle.lifetime.RegionalLifetimeSetup;
-import internal.app.packed.operation.OperationSetup;
+import app.packed.lifetime.Main;
+import app.packed.operation.OperationTemplate;
+import app.packed.util.Nullable;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.scanning.IntrospectorOnMethod;
+import internal.app.packed.lifecycle.lifetime.entrypoint.OldEntryPointSetup.MainThreadOfControl;
 
-/**
- *
- */
-// Error messages comes later
-public final class EntryPointManager {
+/** An instance of this class is shared between all entry point extensions for a single application. */
+public class EntryPointManager {
 
-    final Class<? extends Extension<?>> dispatcher;
+    Class<? extends Extension<?>> ownedByExtension;
 
-    final ArrayList<OperationSetup> entryPoints = new ArrayList<>();
+    @Nullable
+    public Class<? extends Extension<?>> dispatcher;
 
-    final RegionalLifetimeSetup lifetime;
+    public BeanConfiguration ebc;
 
-    public EntryPointManager(RegionalLifetimeSetup lifetime, Class<? extends Extension<?>> controlledBy) {
-        this.lifetime = lifetime;
-        this.dispatcher = controlledBy;
+    /** Any entry point of the lifetime, null if there are none. */
+    @Nullable
+    public OldEntryPointSetup entryPoint;
+
+    /** All entry points. */
+    public final List<EntryPointConf> entrypoints = new ArrayList<>();
+
+    MethodHandle[] entryPoints;
+
+    Class<?> resultType;
+
+    public int takeOver(Extension<?> epe, Class<? extends Extension<?>> takeOver) {
+        if (this.dispatcher != null) {
+            if (takeOver == this.dispatcher) {
+                return 0;
+            }
+            throw new IllegalStateException();
+        }
+        this.dispatcher = takeOver;
+        // ebc = epe.provide(EntryPointDispatcher.class);
+        return 0;
+    }
+
+    public static boolean testMethodAnnotation(BaseExtension extension, boolean isInApplicationLifetime, IntrospectorOnMethod method, Annotation annotation) {
+        BeanSetup bean = method.bean();
+
+        if (annotation instanceof Main) {
+
+            if (!isInApplicationLifetime) {
+                throw new BeanInstallationException("Must be in the application lifetime to use @" + Main.class.getSimpleName());
+            }
+
+            bean.container.lifetime.entryPoints.takeOver(extension, BaseExtension.class);
+
+            bean.container.lifetime.entryPoints.entryPoint = new OldEntryPointSetup();
+
+            OperationTemplate temp = OperationTemplate.of(c -> c.returnTypeDynamic());
+            MainOperationHandle os = method.newOperation(temp).install(MainOperationHandle::new);
+
+            MainThreadOfControl mc = bean.container.lifetime.entryPoints.entryPoint.mainThread();
+
+            mc.generatedMethodHandle=os.invokerAsMethodHandle();
+            return true;
+        }
+
+        return false;
+    }
+
+    public static class EntryPointConf {
+
+    }
+
+    public static class EntryPointDispatcher {
+        EntryPointDispatcher() {}
     }
 }
+

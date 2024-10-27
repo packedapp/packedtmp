@@ -35,5 +35,4 @@ public class EntryPointsMode {
 
     // NON_ROOT_ENTRYPOINTS_FOR_EXTENSION
     //// Must have entrypoints from extension fx Web
-
 }

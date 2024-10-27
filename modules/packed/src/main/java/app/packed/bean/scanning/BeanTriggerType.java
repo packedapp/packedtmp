@@ -22,6 +22,6 @@ package app.packed.bean.scanning;
 // List<Map.Entry<Class<?>, BeanTriggerType, BindingElement(Unmodifiable)>> BeanProxy.triggeredBy()
 
 // Maybe skip Inheritable... It is only source
-public enum BeanTriggerType {
-    ANNOTATED_CLASS, ANNOTATED_METHOD, ANNOTATED_FIELD, ANNOTATED_VARIABLE, BINDING_VARIABLE, INHERITABLE_BINDING_VARIABLE
+enum BeanTriggerType {
+    ANNOTATED_CLASS, ANNOTATED_METHOD, ANNOTATED_FIELD, ANNOTATED_VARIABLE, CONTEXTUAL_SERVICE, INHERITABLE_CONTEXTUAL_SERVICE
 }

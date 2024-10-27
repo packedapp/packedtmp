@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
 import app.packed.extension.BaseExtension;
 
 /**
@@ -40,7 +40,7 @@ import app.packed.extension.BaseExtension;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AnnotatedMethodBeanTrigger(allowInvoke = true, extension = BaseExtension.class)
+@OnAnnotatedMethod(allowInvoke = true, extension = BaseExtension.class)
 public @interface Main {}
 
 //A single method. Will be executed.

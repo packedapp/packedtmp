@@ -29,17 +29,14 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.BiConsumer;
 
-import app.packed.bean.scanning.BeanElement.BeanField;
-import app.packed.bean.scanning.BeanElement.BeanMethod;
 import app.packed.bean.scanning.BeanIntrospector;
-import app.packed.bean.scanning.BeanTrigger.AnnotatedFieldBeanTrigger;
-import app.packed.bean.scanning.BeanTrigger.AnnotatedMethodBeanTrigger;
+import app.packed.bean.scanning.BeanIntrospector.OnField;
+import app.packed.bean.scanning.BeanIntrospector.OnVariableUnwrapped;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedField;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
 import app.packed.binding.Key;
-import app.packed.binding.UnwrappedBindableVariable;
-import app.packed.context.Context;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.ExtensionHandle;
@@ -58,13 +55,13 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
     private Map<String, OperationHandle<?>> ink = new HashMap<>();
 
     @Nullable
-    private BiConsumer<? super AnnotationList, ? super BeanField> onAnnotatedField;
+    private BiConsumer<? super AnnotationList, ? super OnField> onAnnotatedField;
 
     @Nullable
-    private BiConsumer<? super AnnotationList, ? super BeanMethod> onAnnotatedMethod;
+    private BiConsumer<? super AnnotationList, ? super BeanIntrospector.OnMethod> onAnnotatedMethod;
 
     @Nullable
-    private BiConsumer<? super Class<?>, ? super UnwrappedBindableVariable> onVariableType;
+    private BiConsumer<? super Class<?>, ? super OnVariableUnwrapped> onVariableType;
 
     /**
      * @param handle
@@ -87,46 +84,47 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
         return new BeanIntrospector() {
 
             @Override
-            public void onContextualServiceProvision(Key<?> key, Class<?> actualHook, Set<Class<? extends Context<?>>> contexts,
-                    UnwrappedBindableVariable variable) {
+            public void onExtensionService(Key<?> key, OnExtensionService service) {
+                OnVariableUnwrapped variable = service.binder();
+
                 if (onVariableType != null) {
                     onVariableType.accept(key.rawType(), variable);
                 } else {
-                    super.onContextualServiceProvision(key, actualHook, contexts, variable);
+                    super.onExtensionService(key, service);
                 }
             }
 
             @Override
-            public void onAnnotatedField(BeanField field, AnnotationList hooks) {
+            public void onAnnotatedField(AnnotationList annotations, OnField onField) {
                 if (onAnnotatedField != null) {
-                    onAnnotatedField.accept(hooks, field);
+                    onAnnotatedField.accept(annotations, onField);
                 } else {
-                    super.onAnnotatedField(field, hooks);
+                    super.onAnnotatedField(annotations, onField);
                 }
             }
 
             @Override
-            public void onAnnotatedMethod(BeanMethod method, AnnotationList hooks) {
+            public void onAnnotatedMethod(AnnotationList hooks, BeanIntrospector.OnMethod method) {
                 if (onAnnotatedMethod != null) {
                     onAnnotatedMethod.accept(hooks, method);
                 } else {
-                    super.onAnnotatedMethod(method, hooks);
+                    super.onAnnotatedMethod(hooks, method);
                 }
             }
         };
     }
 
-    public HookTestingExtension onAnnotatedField(BiConsumer<? super AnnotationList, ? super BeanField> consumer) {
+    public HookTestingExtension onAnnotatedField(BiConsumer<? super AnnotationList, ? super OnField> consumer) {
         onAnnotatedField = consumer;
         return this;
     }
 
-    public HookTestingExtension onAnnotatedMethod(BiConsumer<? super AnnotationList, ? super BeanMethod> consumer) {
+    public HookTestingExtension onAnnotatedMethod(BiConsumer<? super AnnotationList, ? super BeanIntrospector.OnMethod> consumer) {
         onAnnotatedMethod = consumer;
         return this;
     }
 
-    public HookTestingExtension onVariableType(BiConsumer<? super Class<?>, ? super UnwrappedBindableVariable> onVariableType) {
+    public HookTestingExtension onVariableType(BiConsumer<? super Class<?>, ? super OnVariableUnwrapped> onVariableType) {
         this.onVariableType = onVariableType;
         return this;
     }
@@ -134,7 +132,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @AnnotatedFieldBeanTrigger(extension = HookTestingExtension.class)
+    @OnAnnotatedField(extension = HookTestingExtension.class)
     public @interface FieldHook {
 
         String name() default "main";
@@ -187,7 +185,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @AnnotatedMethodBeanTrigger(extension = HookTestingExtension.class)
+    @OnAnnotatedMethod(extension = HookTestingExtension.class)
     public @interface MethodHook {
 
         public static class InstanceMethodNoParamsVoid {
@@ -196,7 +194,7 @@ public class HookTestingExtension extends Extension<HookTestingExtension> {
             @MethodHook
             void foo() {}
 
-            public static void validateFoo(AnnotationList hooks, BeanMethod m) {
+            public static void validateFoo(AnnotationList hooks, BeanIntrospector.OnMethod m) {
                 // validate annotations
                 assertEquals(FOO, m.method());
                 assertEquals(FOO.getModifiers(), m.modifiers());

@@ -14,6 +14,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.assembly.AssemblyMirror;
 import app.packed.bean.BeanBuildLocal.Accessor;
 import app.packed.bean.lifecycle.BeanLifecycleMirror;
+import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceInteritedBeanTrigger;
 import app.packed.binding.Key;
 import app.packed.build.BuildActor;
 import app.packed.build.action.BuildActionMirror;
@@ -24,13 +25,12 @@ import app.packed.context.Context;
 import app.packed.context.ContextMirror;
 import app.packed.context.ContextScopeMirror;
 import app.packed.context.ContextualizedElementMirror;
-import app.packed.context.InheritableContextualServiceProvider;
 import app.packed.extension.BaseExtension;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
+import app.packed.service.mirror.ServiceBindingMirror;
 import app.packed.service.mirror.ServiceProviderMirror;
-import app.packed.service.mirror.oldMaybe.BeanServiceBindingMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.context.ContextSetup;
 import internal.app.packed.lifecycle.PackedBeanLifecycleMirror;
@@ -42,7 +42,7 @@ import sandbox.operation.mirror.DependenciesMirror;
  * <p>
  * An instance of BeanMirror (or a subclass hereof) can be injected at runtime simply by declaring a dependency on it.
  */
-@InheritableContextualServiceProvider(extension = BaseExtension.class)
+@OnExtensionServiceInteritedBeanTrigger(extension = BaseExtension.class)
 public non-sealed class BeanMirror implements Accessor, ComponentMirror, ContextualizedElementMirror, ContextScopeMirror, ServiceProviderMirror {
 
     /** The handle of the bean we are mirroring. */
@@ -201,8 +201,7 @@ public non-sealed class BeanMirror implements Accessor, ComponentMirror, Context
         return (Stream<T>) operations().filter(f -> operationType.isAssignableFrom(f.getClass()));
     }
 
-    @SuppressWarnings("exports")
-    public Map<Key<?>, Collection<BeanServiceBindingMirror>> overriddenServices() {
+    public Map<Key<?>, Collection<ServiceBindingMirror>> overriddenServices() {
         throw new UnsupportedOperationException();
     }
 

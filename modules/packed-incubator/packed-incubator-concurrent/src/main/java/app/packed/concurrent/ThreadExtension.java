@@ -17,15 +17,11 @@ package app.packed.concurrent;
 
 import java.lang.annotation.Annotation;
 import java.time.Duration;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.scanning.BeanElement.BeanMethod;
 import app.packed.bean.scanning.BeanIntrospector;
 import app.packed.binding.Key;
-import app.packed.binding.UnwrappedBindableVariable;
-import app.packed.context.Context;
 import app.packed.context.ContextTemplate;
 import app.packed.extension.ExtensionHandle;
 import app.packed.extension.ExtensionPoint;
@@ -101,17 +97,19 @@ public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
         return new BeanIntrospector() {
 
             @Override
-            public void onContextualServiceProvision(Key<?> key, Class<?> actualHook, Set<Class<? extends Context<?>>> contexts, UnwrappedBindableVariable v) {
+            public void onExtensionService(Key<?> key, OnExtensionService service) {
+                OnVariableUnwrapped binding = service.binder();
+
                 Class<?> hook = key.rawType();
                 if (hook == SchedulingContext.class || hook == DaemonContext.class) {
-                    v.bindInvocationArgument(1);
+                    binding.bindInvocationArgument(1);
                 } else {
-                    super.onContextualServiceProvision(key, actualHook, contexts, v);
+                    super.onExtensionService(key, service);
                 }
             }
 
             @Override
-            public void onAnnotatedMethod(BeanMethod on, Annotation hook) {
+            public void onAnnotatedMethod(Annotation hook, BeanIntrospector.OnMethod on) {
                 if (hook instanceof ScheduleRecurrent schedule) {
                     // Parse the schedule
                     ScheduleImpl s = new ScheduleImpl(Duration.ofMillis(schedule.millies()));
@@ -134,7 +132,7 @@ public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
                     // Configure the handle
                     h.useVirtual = daemon.useVirtual();
                 } else {
-                    super.onAnnotatedMethod(on, hook);
+                    super.onAnnotatedMethod(hook, on);
                 }
             }
         };

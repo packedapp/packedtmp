@@ -27,13 +27,13 @@ import app.packed.build.Mirror;
  */
 public interface BeanLifecycleMirror extends Mirror {
 
-    Optional<InitializeOperationMirror> factoryOperation();
+    Optional<InitializeOperationMirror> factory();
 
     /** {@return a list of all initialization operations on the bean, in the order they will be invoked} */
     Stream<InitializeOperationMirror> initializers();
 
     /** {@return the beans lifecycle kind} */
-    BeanLifecycleKind kind();
+    BeanLifecycleModel kind();
 
     /** {@return a list of all start operations on the bean, in the order they will be invoked} */
     Stream<StartOperationMirror> starters();
