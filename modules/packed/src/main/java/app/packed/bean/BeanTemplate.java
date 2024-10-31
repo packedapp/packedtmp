@@ -76,8 +76,7 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
 //    /** {@return a list of the various lifetime operations for the descriptor's template.} */
 //    List<OperationTemplate> lifecycleOperations();
 
-
-    /** {@return the bean contexts} */
+    /** {@return contexts that the bean are in} */
     Map<Class<?>, ContextTemplate> contexts();
 
     /**

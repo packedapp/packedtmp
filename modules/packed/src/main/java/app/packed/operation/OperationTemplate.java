@@ -90,35 +90,6 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     // The operation template will be re-adjusted before being used
     OperationTemplate withReturnTypeDynamic();
 
-
-    /**
-     * An immutable descriptor for an {@link OperationTemplate}. Acquired by calling {@link OperationTemplate#descriptor()}.
-     */
-    interface Descriptor {
-
-        // Skal hellere vaere BeanPackaging
-        int beanInstanceIndex();
-
-        // InvocationContexts? Or all contexts
-        // SessionContext kan f.eks. komme fra en ExtensionContext
-        // Men det er ikke et argument noget sted
-
-        // Replace With ContextTemplate.Descriptor
-        Map<Class<?>, ContextTemplate> contexts();
-
-        /**
-         *
-         * @return the method type representing the invocation
-         */
-        MethodType invocationType();
-
-        default boolean newLifetime() {
-            return false;
-        }
-
-        // Contexts
-    }
-
     /**
     *
     */

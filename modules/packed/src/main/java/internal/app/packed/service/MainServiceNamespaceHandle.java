@@ -46,7 +46,7 @@ public final class MainServiceNamespaceHandle extends ServiceNamespaceHandle {
 
     /** The default namespace template used for the service namespace. */
     public static NamespaceTemplate<MainServiceNamespaceHandle> TEMPLATE = NamespaceTemplate.of(MainServiceNamespaceHandle.class,
-            MainServiceNamespaceHandle::new, c -> {});
+            MainServiceNamespaceHandle::new);
 
     // All provided services are automatically exported
     public boolean exportAll;

@@ -31,7 +31,7 @@ import app.packed.operation.OperationTemplate;
 final class CliNamespaceHandle extends NamespaceHandle<CliExtension, CliNamespaceConfiguration> {
 
     /** The default namespace template. */
-    static final NamespaceTemplate<CliNamespaceHandle> TEMPLATE = NamespaceTemplate.of(CliNamespaceHandle.class, CliNamespaceHandle::new, c -> {});
+    static final NamespaceTemplate<CliNamespaceHandle> TEMPLATE = NamespaceTemplate.of(CliNamespaceHandle.class, CliNamespaceHandle::new);
 
     /** All the commands within the namespace. */
     final LinkedHashMap<String, CliCommandHandle> oldCommands = new LinkedHashMap<>();

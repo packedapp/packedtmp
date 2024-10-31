@@ -33,27 +33,6 @@ public final class PackedOperationTemplate implements OperationTemplate {
     // Where it doesn't really make sense to talk about the position
     public final List<Class<?>> args;
 
-    /** {@inheritDoc} */
-    @Override
-    public int beanInstanceIndex() {
-        throw new UnsupportedOperationException();
-//        return 0 pot.beanInstanceIndex;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Map<Class<?>, ContextTemplate> contexts() {
-        HashMap<Class<?>, ContextTemplate> m = new HashMap<>();
-        contexts.forEach(k -> m.put(k.contextClass(), k));
-        return Map.copyOf(m);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodType invocationType() {
-        return methodType;
-    }
-
     /** Of the operation takes a bean instance. What type of instance does it take */
     @Nullable
     public final Class<?> beanClass;
@@ -102,6 +81,27 @@ public final class PackedOperationTemplate implements OperationTemplate {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public int beanInstanceIndex() {
+        throw new UnsupportedOperationException();
+//        return 0 pot.beanInstanceIndex;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Map<Class<?>, ContextTemplate> contexts() {
+        HashMap<Class<?>, ContextTemplate> m = new HashMap<>();
+        contexts.forEach(k -> m.put(k.contextClass(), k));
+        return Map.copyOf(m);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodType invocationType() {
+        return methodType;
+    }
+
     public PackedOperationInstaller newInstaller(BeanIntrospectorSetup extension, MethodHandle methodHandle, OperationMemberTarget<?> target,
             OperationType operationType) {
         return new PackedOperationInstaller(this, operationType, extension.scanner.bean, extension.extension) {
@@ -118,6 +118,31 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
     public PackedOperationInstaller newInstaller(OperationType operationType, BeanSetup bean, ExtensionSetup operator) {
         return new PackedOperationInstaller(this, operationType, bean, operator);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public OperationTemplate withAppendBeanInstance(Class<?> beanClass) {
+        return null;
+    }
+
+    public PackedOperationTemplate withArg(Class<?> type) {
+        requireNonNull(type, "type is null");
+        return new PackedOperationTemplate(returnKind, returnClass, extensionContextFlag, beanClass, contexts, args);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedOperationTemplate withContext(ContextTemplate context) {
+        PackedContextTemplate c = (PackedContextTemplate) context;
+        ArrayList<PackedContextTemplate> m = new ArrayList<>(contexts);
+        for (PackedContextTemplate pct : m) {
+            if (pct.contextClass() == c.contextClass()) {
+                throw new IllegalArgumentException("This template already contains the context " + context.contextClass());
+            }
+        }
+        m.add(c);
+        return new PackedOperationTemplate(returnKind, returnClass, extensionContextFlag, beanClass, List.copyOf(m), args);
     }
 
     /**
@@ -148,58 +173,8 @@ public final class PackedOperationTemplate implements OperationTemplate {
         return new PackedOperationTemplate(ReturnKind.DYNAMIC, Object.class, extensionContextFlag, beanClass, contexts, args);
     }
 
-    public PackedOperationTemplate withArg(Class<?> type) {
-        requireNonNull(type, "type is null");
-        return new PackedOperationTemplate(returnKind, returnClass, extensionContextFlag, beanClass, contexts, args);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public PackedOperationTemplate withContext(ContextTemplate context) {
-        PackedContextTemplate c = (PackedContextTemplate) context;
-        ArrayList<PackedContextTemplate> m = new ArrayList<>(contexts);
-        for (PackedContextTemplate pct : m) {
-            if (pct.contextClass() == c.contextClass()) {
-                throw new IllegalArgumentException("This template already contains the context " + context.contextClass());
-            }
-        }
-        m.add(c);
-        return new PackedOperationTemplate(returnKind, returnClass, extensionContextFlag, beanClass, List.copyOf(m), args);
-    }
-
-
     public enum ReturnKind {
         CLASS, DYNAMIC, IGNORE;
-    }
-
-    public record PackedOperationTemplateDescriptor(PackedOperationTemplate pot) implements OperationTemplate.Descriptor {
-
-        /** {@inheritDoc} */
-        @Override
-        public int beanInstanceIndex() {
-            throw new UnsupportedOperationException();
-//            return 0 pot.beanInstanceIndex;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Map<Class<?>, ContextTemplate> contexts() {
-            HashMap<Class<?>, ContextTemplate> m = new HashMap<>();
-            pot.contexts.forEach(k -> m.put(k.contextClass(), k));
-            return Map.copyOf(m);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodType invocationType() {
-            return pot.methodType;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public OperationTemplate withAppendBeanInstance(Class<?> beanClass) {
-        return null;
     }
 
 }

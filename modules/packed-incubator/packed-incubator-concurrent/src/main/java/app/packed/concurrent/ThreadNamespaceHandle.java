@@ -31,7 +31,7 @@ import internal.app.packed.concurrent.ScheduledOperation;
 final class ThreadNamespaceHandle extends NamespaceHandle<ThreadExtension, ThreadNamespaceConfiguration> {
 
     /** The default thread namespace template. */
-    static final NamespaceTemplate<ThreadNamespaceHandle> TEMPLATE = NamespaceTemplate.of(ThreadNamespaceHandle.class, ThreadNamespaceHandle::new, c -> {});
+    static final NamespaceTemplate<ThreadNamespaceHandle> TEMPLATE = NamespaceTemplate.of(ThreadNamespaceHandle.class, ThreadNamespaceHandle::new);
 
     ExecutorConfiguration scheduler;
 
