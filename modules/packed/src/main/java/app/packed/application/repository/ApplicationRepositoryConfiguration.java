@@ -37,6 +37,12 @@ import app.packed.service.ProvidableBeanConfiguration;
 // Maybe the bean is owned by the extension?? And provided to the user
 
 // Maybe we don't extend it ServiableBean and have a provideAtRuntime();
+
+
+// Maybe it is a BaseExtension bean
+// But a service it is a service...
+
+
 public final class ApplicationRepositoryConfiguration<I, H extends ApplicationHandle<I, ?>> extends ProvidableBeanConfiguration<ApplicationRepository<I, H>> {
 
     /** The application repository bean handle. */

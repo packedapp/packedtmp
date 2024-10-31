@@ -27,7 +27,7 @@ import app.packed.namespace.NamespaceHandle;
  * An installer can only be used once. After an operation has been installed, all methods will throw
  * {@link IllegalStateException}.
  */
-public  interface OperationInstaller /* permits PackedOperationInstaller */ {
+public interface OperationInstaller /* permits PackedOperationInstaller */ {
 
     // redelegate(ExtensionPoint.UseSite extension, OperationTemplate);
     OperationInstaller delegateTo(ExtensionPoint.ExtensionUseSite extension);

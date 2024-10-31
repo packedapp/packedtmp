@@ -53,7 +53,7 @@ public non-sealed class ApplicationHandle<A, C extends ApplicationConfiguration>
      */
     public ApplicationHandle(ApplicationInstaller<?> installer) {
         PackedApplicationInstaller<?> inst = (PackedApplicationInstaller<?>) installer;
-        this.application = inst.toHandle();
+        this.application = inst.toSetup();
 
         // Build an image if that is the target.
         BaseImage<A> img = null;

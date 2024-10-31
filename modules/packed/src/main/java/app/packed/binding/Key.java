@@ -686,6 +686,12 @@ public abstract class Key<T> {
         return convert(method.getGenericReturnType(), method.getAnnotations(), false, FROM_METHOD_RETURN_TYPE, method);
     }
 
+    public static Key<?> fromParamaterizedTypes(Class<?> rawType, Type... typeArguments) {
+        ParameterizedType p = Types.createNewParameterizedType(rawType, typeArguments);
+        Variable v = Variable.of(p);
+        return v.asKey();
+    }
+
     public static Key<?> fromVariable(Variable variable) {
         return convert(variable.type(), variable.annotations().toArray(), false, FROM_VARIABLE, variable);
     }

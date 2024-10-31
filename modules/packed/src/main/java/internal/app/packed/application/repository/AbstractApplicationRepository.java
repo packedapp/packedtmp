@@ -29,7 +29,6 @@ import app.packed.application.ApplicationInstaller;
 import app.packed.application.ApplicationTemplate;
 import app.packed.application.repository.ApplicationRepository;
 import app.packed.application.repository.InstalledApplication;
-import app.packed.application.repository.other.ManagedInstance;
 import app.packed.build.BuildGoal;
 import internal.app.packed.ValueBased;
 import internal.app.packed.application.ApplicationSetup;
@@ -42,8 +41,8 @@ import internal.app.packed.application.PackedApplicationTemplate.ApplicationInst
 public sealed abstract class AbstractApplicationRepository<I, H extends ApplicationHandle<I, ?>>
         implements ApplicationRepository<I, H>, ApplicationInstallingSource permits ManagedApplicationRepository, UnmanagedApplicationRepository {
 
-    /** All applications that are installed in the container. */
-    private final ConcurrentHashMap<String, LauncherOrFuture<I, H>> handles;
+    /** All applications that are installed or being installed into the container. */
+    private final ConcurrentHashMap<String, ApplicationLauncherOrFuture<I, H>> applications;
 
     /** MethodHandle to create the guest bean. */
     private final MethodHandle methodHandle;
@@ -53,27 +52,33 @@ public sealed abstract class AbstractApplicationRepository<I, H extends Applicat
 
     @SuppressWarnings("unchecked")
     public AbstractApplicationRepository(BuildApplicationRepository bar) {
-        this.handles = new ConcurrentHashMap<>();
-        bar.handles.forEach((n, h) -> handles.put(n, new PackedInstalledApplication<>(this instanceof ManagedApplicationRepository, (H) h)));
+        this.applications = new ConcurrentHashMap<>();
+        bar.handles.forEach((n, h) -> applications.put(n, new PackedInstalledApplication<>(this instanceof ManagedApplicationRepository, (H) h)));
         this.template = (PackedApplicationTemplate<H>) bar.template;
         this.methodHandle = requireNonNull(bar.mh);
     }
-//
-//    /** {@inheritDoc} */
-//    @Override
-//    public Optional<H> handle(String name) {
-//        LauncherOrFuture<I, H> f = handles.get(name);
-//        if (f instanceof PackedApplicationLauncher<I, H> l) {
-//            return Optional.of(l.handle());
-//        }
-//        return Optional.empty();
-//    }
-//
-//    /** {@inheritDoc} */
-//    @Override
-//    public Stream<H> handles() {
-//        return launchers0().map(l -> l.handle());
-//    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final Optional<InstalledApplication<I>> application(String name) {
+        ApplicationLauncherOrFuture<I, H> f = applications.get(name);
+        return f instanceof PackedInstalledApplication<I, H> l ? Optional.of(l) : Optional.empty();
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public final Stream<InstalledApplication<I>> applications() {
+        return (Stream) applications0();
+    }
+
+    /**
+     * {@return a stream of all applications that been successfully installed, excludes applications that are in the process
+     * of being installed}
+     */
+    public final Stream<PackedInstalledApplication<I, H>> applications0() {
+        return applications.values().stream().filter(l -> l instanceof PackedInstalledApplication).map(l -> (PackedInstalledApplication<I, H>) l);
+    }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
@@ -81,42 +86,16 @@ public sealed abstract class AbstractApplicationRepository<I, H extends Applicat
     public final InstalledApplication<I> install(Consumer<? super ApplicationInstaller<H>> installer) {
         PackedApplicationInstaller<H> pai = template.newInstaller(this, BuildGoal.IMAGE, methodHandle);
         installer.accept(pai);
-        ApplicationSetup setup = pai.toHandle();
+        ApplicationSetup setup = pai.toSetup();
+
         PackedInstalledApplication<I, H> pal = new PackedInstalledApplication<>(this instanceof ManagedApplicationRepository, (H) setup.handle());
-        handles.put(UUID.randomUUID().toString(), pal);
+        applications.put(UUID.randomUUID().toString(), pal);
         return pal;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Stream<ManagedInstance<I>> allInstances() {
-        return applications().flatMap(l -> l.instances());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<InstalledApplication<I>> application(String name) {
-        LauncherOrFuture<I, H> f = handles.get(name);
-        if (f instanceof PackedInstalledApplication<I, H> l) {
-            return Optional.of(l);
-        }
-        return Optional.empty();
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Override
-    public Stream<InstalledApplication<I>> applications() {
-        return (Stream) launchers0();
-    }
-
-    public Stream<PackedInstalledApplication<I, H>> launchers0() {
-        return handles.values().stream().filter(l -> l instanceof PackedInstalledApplication).map(l -> (PackedInstalledApplication<I, H>) l);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ApplicationTemplate<H> template() {
+    public final ApplicationTemplate<H> template() {
         return template;
     }
 

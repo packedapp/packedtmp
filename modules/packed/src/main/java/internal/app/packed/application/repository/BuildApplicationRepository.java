@@ -60,7 +60,7 @@ public final class BuildApplicationRepository implements ApplicationInstallingSo
             PackedApplicationInstaller<?> installer = template.newInstaller(this, BuildGoal.IMAGE, mh);
             con.accept(installer);
             // TODO check that install has been invoked
-            handles.put(installer.name, installer.toHandle().handle());
+            handles.put(installer.name, installer.toSetup().handle());
         }
     }
 

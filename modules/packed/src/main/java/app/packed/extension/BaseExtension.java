@@ -89,7 +89,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     // But right now we only have a single field
     static final ContainerBuildLocal<FromLinks> FROM_LINKS = ContainerBuildLocal.of(FromLinks::new);
 
-    static final BeanTemplate TEMPLATE = BeanKind.CONTAINER.template().configure(c -> c.initialization(o -> o.returnTypeDynamic()));
+    static final BeanTemplate TEMPLATE = BeanKind.CONTAINER.template().withInitialization(o -> o.returnTypeDynamic());
 
     /**
      * All your base are belong to us. £

@@ -35,7 +35,25 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
 
     OperationTemplate configure(Consumer<? super Configurator> configure);
 
-    OperationTemplate.Descriptor descriptor();
+    // Skal hellere vaere BeanPackaging
+    int beanInstanceIndex();
+
+    // InvocationContexts? Or all contexts
+    // SessionContext kan f.eks. komme fra en ExtensionContext
+    // Men det er ikke et argument noget sted
+
+    // Replace With ContextTemplate.Descriptor
+    Map<Class<?>, ContextTemplate> contexts();
+
+    /**
+     *
+     * @return the method type representing the invocation
+     */
+    MethodType invocationType();
+
+    default boolean newLifetime() {
+        return false;
+    }
 
     // Tror ikke laengere man kan lave dem direkte paa den her maade...
     static OperationTemplate defaults() {

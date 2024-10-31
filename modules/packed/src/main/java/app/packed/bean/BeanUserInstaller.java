@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application.repository;
+package app.packed.bean;
 
-import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
+/**
+ * We need to able to specify shit before installing a bean
+ */
+// Vi undersoeger lidt muligheden for at lave 2 steps.
+public interface BeanUserInstaller<C extends BeanConfiguration> {
 
-import app.packed.application.ApplicationHandle;
+    C fromInstance(Class<?> clazz);
 
-public final class InstallingApplicationLauncher<I, H extends ApplicationHandle<I, ?>> implements ApplicationLauncherOrFuture<I, H> {
+    C fromClass(Class<?> clazz);
 
-    final CountDownLatch cdl = new CountDownLatch(1);
+    // install().fromClass();
 
-    String name = UUID.randomUUID().toString();
+    // Will be a hidden bean with a single operation taking
+    // All operations on the sidecar will be managed
 
-    public InstallingApplicationLauncher() {
+    BeanUserInstaller<C> named(String name);
 
-    }
+    BeanUserInstaller<C> hidden();
 
+    BeanUserInstaller<C> addSidecar(Class<?> clazz);
 }

@@ -34,6 +34,27 @@ public final class PackedOperationTemplate implements OperationTemplate {
     // Where it doesn't really make sense to talk about the position
     public final List<Class<?>> args;
 
+    /** {@inheritDoc} */
+    @Override
+    public int beanInstanceIndex() {
+        throw new UnsupportedOperationException();
+//        return 0 pot.beanInstanceIndex;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Map<Class<?>, ContextTemplate> contexts() {
+        HashMap<Class<?>, ContextTemplate> m = new HashMap<>();
+        contexts.forEach(k -> m.put(k.contextClass(), k));
+        return Map.copyOf(m);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodType invocationType() {
+        return methodType;
+    }
+
     /** Of the operation takes a bean instance. What type of instance does it take */
     @Nullable
     public final Class<?> beanClass;
@@ -86,12 +107,6 @@ public final class PackedOperationTemplate implements OperationTemplate {
     @Override
     public PackedOperationTemplate configure(Consumer<? super Configurator> configure) {
         return PackedOperationTemplate.configure(this, configure);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Descriptor descriptor() {
-        return new PackedOperationTemplateDescriptor(this);
     }
 
     public PackedOperationInstaller newInstaller(BeanIntrospectorSetup extension, MethodHandle methodHandle, OperationMemberTarget<?> target,

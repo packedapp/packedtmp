@@ -104,7 +104,7 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
     /** {@inheritDoc} */
     @Override
     public List<Class<?>> availableInvocationArguments() {
-        return operation.template.descriptor().invocationType().parameterList();
+        return operation.template.invocationType().parameterList();
     }
 
     /** {@inheritDoc} */
@@ -160,7 +160,7 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
                 throw new UnavilableContextException("oops " + context);
             }
         }
-        MethodType mt = operation.template.descriptor().invocationType();
+        MethodType mt = operation.template.invocationType();
         int indexOf = mt.parameterList().indexOf(context);
         // TODO fix. We need to look up the
         bindInvocationArgument(indexOf);
@@ -173,7 +173,7 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
         if (operation.installedByExtension != bindingExtension) {
             throw new UnsupportedOperationException("For binding " + variable);
         }
-        checkIndex(argumentIndex, operation.template.descriptor().invocationType().parameterCount());
+        checkIndex(argumentIndex, operation.template.invocationType().parameterCount());
         // TODO check type
 
         bind(new FromInvocationArgument(argumentIndex));

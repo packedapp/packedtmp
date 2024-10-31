@@ -49,7 +49,7 @@ public abstract non-sealed class NamespaceHandle<E extends Extension<E>, C exten
     final NamespaceSetup namespace;
 
     protected NamespaceHandle(NamespaceInstaller<?> installer) {
-        this.namespace = requireNonNull(((PackedNamespaceInstaller<?>) installer).toHandle());
+        this.namespace = requireNonNull(((PackedNamespaceInstaller<?>) installer).toSetup());
     }
 
     /** {@return the root extension of this domain.} */

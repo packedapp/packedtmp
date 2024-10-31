@@ -33,7 +33,7 @@ import app.packed.extension.Extension;
 // Alternativt skal man man extende noget...
 public interface ContainerGuestLink {
 
-    // Void/void.class will be ignored, but you can use onExtensionUsed. But not any of the bind methods
+    // Void/void.class will be igno red, but you can use onExtensionUsed. But not any of the bind methods
     static <E extends Extension<E>> ContainerGuestLink of(Class<E> extensionType, Class<?> key, Consumer<? super Configurator<E>> configurator) {
         throw new UnsupportedOperationException();
     }

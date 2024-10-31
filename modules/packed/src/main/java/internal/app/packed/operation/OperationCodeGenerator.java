@@ -73,7 +73,7 @@ public final class OperationCodeGenerator {
         for (int i = 0; i < permuters.size(); i++) {
             result[i] = permuters.get(i);
         }
-        MethodType mt = operation.template.descriptor().invocationType();
+        MethodType mt = operation.template.invocationType();
 
         // Embedded operations normally needs to return a value
         if (operation.embeddedInto != null) {

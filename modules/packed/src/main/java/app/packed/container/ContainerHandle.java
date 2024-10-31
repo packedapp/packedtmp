@@ -54,7 +54,7 @@ public non-sealed class ContainerHandle<C extends ContainerConfiguration> extend
      *            the installer for the container
      */
     public ContainerHandle(ContainerInstaller<?> installer) {
-        this.container = ((PackedContainerInstaller<?>) installer).toHandle();
+        this.container = ((PackedContainerInstaller<?>) installer).toSetup();
     }
 
     /** {@inheritDoc} */

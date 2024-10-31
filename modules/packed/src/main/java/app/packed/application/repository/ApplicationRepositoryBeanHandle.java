@@ -15,17 +15,13 @@
  */
 package app.packed.application.repository;
 
-import java.lang.reflect.ParameterizedType;
-
 import app.packed.application.ApplicationHandle;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstaller;
 import app.packed.binding.Key;
-import app.packed.binding.Variable;
 import internal.app.packed.application.PackedApplicationTemplate;
 import internal.app.packed.application.repository.BuildApplicationRepository;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.util.types.Types;
 
 /** A handle for an application repository bean. */
 final class ApplicationRepositoryBeanHandle<I, H extends ApplicationHandle<I, ?>> extends BeanHandle<ApplicationRepositoryConfiguration<I, H>> {
@@ -40,12 +36,7 @@ final class ApplicationRepositoryBeanHandle<I, H extends ApplicationHandle<I, ?>
     /** {@inheritDoc} */
     @Override
     public Key<?> defaultKey() {
-        // We need to know the template type either, from the template itself, or when creating the repository.
-        // Think we might as well just do it in the template
-        ParameterizedType p = Types.createNewParameterizedType(ApplicationRepository.class, repository.template.guestClass(),
-                repository.template.handleClass());
-        Variable v = Variable.of(p);
-        return v.asKey();
+        return Key.fromParamaterizedTypes(ApplicationRepository.class, repository.template.guestClass(), repository.template.handleClass());
     }
 
     /** {@inheritDoc} */

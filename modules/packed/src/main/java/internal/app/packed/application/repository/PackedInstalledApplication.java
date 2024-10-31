@@ -31,9 +31,11 @@ import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
 import internal.app.packed.lifecycle.lifetime.runtime.ApplicationLaunchContext;
 
-public final class PackedInstalledApplication<I, H extends ApplicationHandle<I, ?>> implements LauncherOrFuture<I, H>, InstalledApplication<I> {
+public final class PackedInstalledApplication<I, H extends ApplicationHandle<I, ?>> implements ApplicationLauncherOrFuture<I, H>, InstalledApplication<I> {
 
     final H handle;
+
+    /** All instances managed by the application. */
     final ConcurrentHashMap<String, ManagedInstance<I>> instances = new ConcurrentHashMap<>();
 
     final boolean isManaged;
@@ -56,12 +58,20 @@ public final class PackedInstalledApplication<I, H extends ApplicationHandle<I, 
     /** {@inheritDoc} */
     @Override
     public Optional<ManagedInstance<I>> instance(String name) {
+        if (!isManaged) {
+            throw new UnsupportedOperationException(
+                    "This application is an unmanaged application, once it is initialized the framework no longer keeps track of the application instance.");
+        }
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
     public Stream<ManagedInstance<I>> instances() {
+        if (!isManaged) {
+            throw new UnsupportedOperationException(
+                    "This application is an unmanaged application, once it is initialized the framework no longer keeps track of the application instance.");
+        }
         return instances.values().stream();
     }
 
@@ -92,5 +102,4 @@ public final class PackedInstalledApplication<I, H extends ApplicationHandle<I, 
         }
         return i;
     }
-
 }

@@ -38,12 +38,16 @@ import app.packed.util.AnnotationList;
 // Ja.... Hmm
 // Lad os lege lidt med den.
 //
+
+// Altsaa det gode ville jo vaere hvis vi har en descriptiv beskrivelse af hvordan annoteringerne virker...
+
 public interface NewIntrospector<E extends Extension<E>> {
 
     <T extends Annotation> OnAnnotatedField<E, T> onAnnotatedField(Class<T> annotationType);
 
     <T extends Annotation> OnAnnotatedMethod<E, T> onAnnotatedMethod(Class<T> annotationType);
 
+    // Must be a repeatable annotation
     <T extends Annotation> OnAnnotatedMethod<E, List<T>> onAnnotatedMethodArray(Class<T> annotationType);
 
     // Ideen er lidt fx at kunne saette Path
@@ -60,6 +64,8 @@ public interface NewIntrospector<E extends Extension<E>> {
         void install(OperationTemplate template, Consumer<? super OnAnnotatedField<E, T>> action);
     }
 
+    // Smart med at extende OperationInstaller fungere ikke rigtig med fields
+    // Da den har 3 metoder
     interface OnAnnotatedMethod<E extends Extension<E>, T> extends OperationInstaller {
 
         T value();

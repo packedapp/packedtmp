@@ -66,10 +66,10 @@ public class Asss extends BaseAssembly {
 
     @SuppressWarnings("unused")
     public void foo() {
-        BeanTemplate a = BeanTemplate.of(BeanKind.CONTAINER, b -> {});
-        BeanTemplate.of(BeanKind.CONTAINER, b -> {});
+        BeanTemplate a = BeanTemplate.of(BeanKind.CONTAINER);
+        BeanTemplate.of(BeanKind.CONTAINER);
         // BeanTemplateWithBuilder b = BeanTemplateWithBuilder.builder().rcreateAs(String.class).build();
-        BeanTemplate t = BeanTemplate.FUNCTIONAL.configure(c -> {});
+        BeanTemplate t = BeanTemplate.FUNCTIONAL;
 
     }
 

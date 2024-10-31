@@ -45,7 +45,8 @@ public final class ApplicationRepositoryExtension extends Extension<ApplicationR
         super(handle);
     }
 
-    // Dough, skal jo installeres senere...
+    // Dough, skal jo installeres after vi selv er blevet bygget...
+
 //    public <I, H extends ApplicationHandle<I, ?>> ProvidableBeanConfiguration<ApplicationLauncher<I>> provideNewApplication(ApplicationTemplate<H> template,
 //            Assembly assembly, Wirelet... wirelets) {
 //        throw new UnsupportedOperationException();
@@ -65,6 +66,15 @@ public final class ApplicationRepositoryExtension extends Extension<ApplicationR
 
     // We need to fail on a managed appplication template in an unmanaged container
 
+    /**
+     * @param <A>
+     *            the type of application instances all applications in the repository creates
+     * @param <H>
+     *            the type of handle that represents every application
+     * @param template
+     *            the application template used for all applications
+     * @return a configuration representing the new repository bean
+     */
     public <A, H extends ApplicationHandle<A, ?>> ApplicationRepositoryConfiguration<A, H> installRepository(ApplicationTemplate<H> template) {
         PackedApplicationTemplate<H> t = (PackedApplicationTemplate<H>) template;
         if (t.guestClass() == Void.class) {

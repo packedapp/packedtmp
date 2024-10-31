@@ -20,5 +20,4 @@ import app.packed.application.ApplicationHandle;
 /**
  *
  */
-public sealed interface LauncherOrFuture<I, H extends ApplicationHandle<I, ?>> permits PackedInstalledApplication, InstallingApplicationLauncher {
-}
+sealed interface ApplicationLauncherOrFuture<I, H extends ApplicationHandle<I, ?>> permits PackedInstalledApplication, InstallingApplicationLauncher {}

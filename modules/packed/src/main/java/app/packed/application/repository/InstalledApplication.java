@@ -24,9 +24,8 @@ import app.packed.container.Wirelet;
 import internal.app.packed.application.repository.PackedInstalledApplication;
 
 /**
- * A single application that has been installed into an {@link ApplicationRepository}.
- * Either at build-time using.
- * Or at runtime using {@link ApplicationRepository#install(java.util.function.Consumer)}.
+ * A single application that has been installed into an {@link ApplicationRepository}. Either at build-time using. Or at
+ * runtime using {@link ApplicationRepository#install(java.util.function.Consumer)}.
  *
  */
 // extends InstalledContainer
@@ -42,20 +41,38 @@ public sealed interface InstalledApplication<I> permits PackedInstalledApplicati
     // Saa vi kan lukke dem ned
     void disable();
 
-    /** {@return the underlying (unconfigurable) handle of the applications} */
+    /** {@return the underlying (unconfigurable) handle of the application} */
     ApplicationHandle<?, ?> handle();
 
-    /** {@return an instance with the specified name if it exists} */
+    /**
+     * {@return an instance with the specified name if it exists}
+     *
+     * @param name
+     *            the of the application instance to find
+     * @throws UnsupportedOperationException
+     *             if this application is not {@link #isManaged() managed}.
+     */
     Optional<ManagedInstance<I>> instance(String name);
 
-    /** {@return a stream of all managed instances for this application} */
+    /**
+     * {@return a stream of all managed instances for this application}
+     *
+     * @throws UnsupportedOperationException
+     *             if this application is not {@link #isManaged() managed}.
+     */
     Stream<ManagedInstance<I>> instances();
 
     boolean isAvailable();
 
+    /** {@return whether or not the application is managed or unmanaged} */
     boolean isManaged();
 
     ApplicationLauncher<I> launcher();
+
+    /** {@return the name of the application} */
+    default String name() {
+        return handle().name();
+    }
 
     I startNew(Wirelet... wirelets);
 
@@ -66,5 +83,33 @@ public sealed interface InstalledApplication<I> permits PackedInstalledApplicati
      */
     default void uninstall() {}
 
+    /**
+     * The state of a installed application.
+     */
+    enum State {
+
+        /** Applications can be created or started normally. */
+        READY,
+
+        /** Applications can no longer be created. */
+        DISABLED,
+
+        /**
+         * All managed instances of the application has been stopped, but some are still awaiting termination.
+         * <p>
+         * When they have all successfully been stopped. The application will be uninstalled.
+         */
+        STOPPING_INSTANCES,
+
+        /**
+         * The application is currently in the process of being uninstalled.
+         * <p>
+         * Normally this is instant, but sometimes there might be some cleanup.
+         */
+        UNINSTALLING,
+
+        /** The application has been fully uninstalled. */
+        UNINSTALLED;
+    }
     // States: -> Enabled->Disabled->Stopping->Stopped->UnInstalling->UnInstalled
 }

@@ -117,7 +117,7 @@ public final class OperationSetup implements ContextualizedComponentSetup, Compo
         this.bindings = new BindingSetup[type.parameterCount()];
         this.template = installer.template;
         this.namePrefix = installer.namePrefix; // temporarty
-        if (template.descriptor().newLifetime()) {
+        if (template.newLifetime()) {
             this.entryPoint = new EntryPointSetup(this, bean.lifetime);
         } else {
             this.entryPoint = null;

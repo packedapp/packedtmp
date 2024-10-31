@@ -36,14 +36,23 @@ public interface LifetimeTemplate {
 
     LifetimeTemplate APPLICATION = null;
 
-    // Lifetime er komplet managed af someone else
-    LifetimeTemplate FOREIGN = null;
+    String name();
 
-    interface Descriptor {
-        String name();
-    }
+    boolean requiresManaged();
 
-    interface Configurator {
+    LifetimeTemplate withRequiresManaged();
 
+    LifetimeTemplate newChild(String name);
+}
+
+class X {
+    public static void main(String[] args) {
+        LifetimeTemplate SESSION = LifetimeTemplate.APPLICATION.newChild("WebSession").withRequiresManaged();
+        LifetimeTemplate REQUEST = LifetimeTemplate.APPLICATION.newChild("WebRequest").withRequiresManaged();
+        System.out.println(SESSION);
+        System.out.println(REQUEST);
     }
 }
+// Session er Managed
+
+// SessionTemplate.requires(Managed_APPLICATION);

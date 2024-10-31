@@ -92,7 +92,7 @@ public abstract class PackedComponentInstaller<C extends ComponentSetup, I exten
         return (I) this;
     }
 
-    public C toHandle() {
+    public C toSetup() {
         C c = componentSetup;
         return c;
     }

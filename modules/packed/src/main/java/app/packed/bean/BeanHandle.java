@@ -82,7 +82,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
      *            the installer to create the handle from
      */
     public BeanHandle(BeanInstaller installer) {
-        this.bean = ((PackedBeanInstaller) installer).toHandle();
+        this.bean = ((PackedBeanInstaller) installer).toSetup();
     }
 
     /**

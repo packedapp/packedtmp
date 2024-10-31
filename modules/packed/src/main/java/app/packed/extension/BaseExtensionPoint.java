@@ -33,8 +33,10 @@ import internal.app.packed.extension.PackedExtensionUseSite;
 public final class BaseExtensionPoint extends ExtensionPoint<BaseExtension> {
 
     /** Application scoped extension beans can have ExtensionContext injected. */
-    private final static BeanTemplate CONTAINER = BaseExtension.TEMPLATE
-            .configure(c -> c.initialization(o -> {}  /*o.inContext(PackedExtensionContext.CONTEXT_TEMPLATE)*/));
+    private final static BeanTemplate CONTAINER = BaseExtension.TEMPLATE;
+//    .withInitialization(null)
+//
+//            .configure(c -> c.initialization(o -> {}  /*o.inContext(PackedExtensionContext.CONTEXT_TEMPLATE)*/));
 
     public static OldContainerTemplateLink CONTAINER_MIRROR = OldContainerTemplateLink.of(MethodHandles.lookup(), BaseExtension.class, "ContainerMirror")
             .build();

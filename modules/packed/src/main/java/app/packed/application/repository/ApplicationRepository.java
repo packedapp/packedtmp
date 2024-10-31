@@ -26,20 +26,20 @@ import app.packed.application.repository.other.ManagedInstance;
 import internal.app.packed.application.repository.AbstractApplicationRepository;
 
 /**
- * An application repository manages 1 or more applications at runtime. The applications can be installed at build time
- * using {@link ApplicationRepositoryConfiguration#installChildApplication(Consumer)}. Or at runtime using
+ * An application repository can be used to manage multiple installed applications at runtime.
+ * <p>
+ * Applications can be installed into a repository at build time using
+ * {@link ApplicationRepositoryConfiguration#installChildApplication(Consumer)}. Or at runtime using
  * {@link #install(Consumer)}.
  * <p>
- * Once installed and application can be launched by using it {@link ApplicationLauncher}.
- * <p>
- * Managed vs Unmanaged
- * <p>
- * If an application is no longer needed it can be uninstalled by calling {@link InstalledApplication#uninstall()}. This
- * will, first disable launch of any
+ * If an application is no longer needed it can be uninstalled by calling {@link InstalledApplication#uninstall()}.
  */
 public sealed interface ApplicationRepository<I, H extends ApplicationHandle<I, ?>> permits AbstractApplicationRepository {
 
-    /** {@return a concatenated stream of all instances managed by every installed application in this repository} */
+    /**
+     * {@return a concatenated stream of all application instances managed by every installed application in this
+     * repository}
+     */
     default Stream<ManagedInstance<I>> allInstances() {
         return applications().flatMap(l -> l.instances());
     }
@@ -52,13 +52,16 @@ public sealed interface ApplicationRepository<I, H extends ApplicationHandle<I, 
      */
     Optional<InstalledApplication<I>> application(String name);
 
-    /** {@return a stream of all applications that have been installed into the repository} */
+    /** {@return a stream of all installed applications in this repository} */
     Stream<InstalledApplication<I>> applications();
 
     /**
      * Installs a new application in the repository based on {@link #template()}.
      * <p>
      * Applications can be uninstalled by calling {@link InstalledApplication#uninstall()}.
+     * <p>
+     * If the application in which the repository is located is shutdown while calling this method. The returned application
+     * will report a state of XXXXXXX?
      *
      * @return the installed application
      * @throws RuntimeException

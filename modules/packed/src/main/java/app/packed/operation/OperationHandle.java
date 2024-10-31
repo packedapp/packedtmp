@@ -124,7 +124,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
      *            the installer for the operation
      */
     public OperationHandle(OperationInstaller installer) {
-        this.operation = ((PackedOperationInstaller) installer).toHandle();
+        this.operation = ((PackedOperationInstaller) installer).toSetup();
     }
 
     protected MethodHandle adaptMethodHandle(MethodHandle mh) {
@@ -274,7 +274,7 @@ public non-sealed class OperationHandle<C extends OperationConfiguration> extend
      */
     @Override
     public final MethodType invokerType() {
-        return operation.template.descriptor().invocationType();
+        return operation.template.invocationType();
     }
 
     @Override

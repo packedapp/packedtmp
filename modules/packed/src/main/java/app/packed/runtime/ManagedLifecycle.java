@@ -27,8 +27,7 @@ import sandbox.lifetime.external.ManagedLifetimeState;
 // It can be used either standalone or injected into a guest bean.
 
 /**
- * Controls the lifecycle of a lifetime (typically a container). An application runtime is available for all runnable
- * applications.
+ * Controls the lifecycle of a managed object. An application runtime is available for all runnable applications.
  *
  * <p>
  * This interface is meant to control a managed lifetime from outside of the lifetime. It is not meant to be used inside
@@ -54,7 +53,7 @@ import sandbox.lifetime.external.ManagedLifetimeState;
 
 // this is lifecycle instead of lifetime because the lifetime already exists.
 
-public interface ManagedLifecycle  {
+public interface ManagedLifecycle {
 
     // Optional<Throwable> getFailure();
 

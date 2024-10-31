@@ -39,7 +39,6 @@ public record PackedBeanTemplate(BeanKind beanKind, LifetimeTemplate lifetime, @
         this(kind, LifetimeTemplate.APPLICATION, null, Map.of(), (PackedOperationTemplate) OperationTemplate.defaults());
     }
 
-
     public PackedBeanTemplate withBeanClass(Class<?> beanClass) {
         return new PackedBeanTemplate(this.beanKind, this.lifetime, beanClass, this.locals, this.initializationTemplate);
     }
@@ -60,7 +59,7 @@ public record PackedBeanTemplate(BeanKind beanKind, LifetimeTemplate lifetime, @
 //      throw new IllegalArgumentException(template.createAs + " is not valid argument");
 //  }
 
-        return new PackedBeanTemplate(this.beanKind, this.lifetime,  this.createAs, this.locals, ot);
+        return new PackedBeanTemplate(this.beanKind, this.lifetime, this.createAs, this.locals, ot);
     }
 
     /**
@@ -68,12 +67,13 @@ public record PackedBeanTemplate(BeanKind beanKind, LifetimeTemplate lifetime, @
      * @return
      */
     public PackedBeanTemplate witInitialization(OperationTemplate ot) {
-        return new PackedBeanTemplate(this.beanKind, this.lifetime,  this.createAs, this.locals,(PackedOperationTemplate) ot);
+        return new PackedBeanTemplate(this.beanKind, this.lifetime, this.createAs, this.locals, (PackedOperationTemplate) ot);
     }
 
     /** {@inheritDoc} */
-    public <T> PackedBeanTemplate withBeanLocals(BeanBuildLocal<T> beanLocal, T value) {
-        return new PackedBeanTemplate(this.beanKind, this.lifetime,  this.createAs,
+    @Override
+    public <T> PackedBeanTemplate withBeanLocal(BeanBuildLocal<T> beanLocal, T value) {
+        return new PackedBeanTemplate(this.beanKind, this.lifetime, this.createAs,
                 PackedBuildLocal.initMap(this.locals, (PackedBeanBuildLocal<?>) beanLocal, value), this.initializationTemplate);
     }
 
@@ -92,39 +92,14 @@ public record PackedBeanTemplate(BeanKind beanKind, LifetimeTemplate lifetime, @
 
     /** {@inheritDoc} */
     @Override
-    public PackedBeanTemplate configure(Consumer<? super Configurator> configure) {
-        PackedBeanTemplateConfigurator c = new PackedBeanTemplateConfigurator();
-        c.template = this;
-        configure.accept(c);
-        return c.template;
+    public PackedBeanTemplate withInitialization(Consumer<? super OperationTemplate.Configurator> initialization) {
+        return witInitialization(initialization);
     }
 
-    /** Implementation of {@link BeanTemplate.Configurator} */
-    public static final class PackedBeanTemplateConfigurator implements BeanTemplate.Configurator {
-
-        /** The template we are configuring. */
-        private PackedBeanTemplate template;
-
-        /** {@inheritDoc} */
-        @Override
-        public Configurator initialization(Consumer<? super OperationTemplate.Configurator> initialization) {
-            template = template.witInitialization(initialization);
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Configurator lifetime(LifetimeTemplate lifetime) {
-            template = template.withLifetimeTemplate(lifetime);
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public <T> Configurator localSet(BeanBuildLocal<T> beanLocal, T value) {
-            template = template.withBeanLocals(beanLocal, value);
-            return this;
-        }
+    /** {@inheritDoc} */
+    @Override
+    public PackedBeanTemplate withLifetime(LifetimeTemplate lifetime) {
+        return withLifetimeTemplate(lifetime);
     }
 
     /** {@inheritDoc} */
@@ -133,13 +108,11 @@ public record PackedBeanTemplate(BeanKind beanKind, LifetimeTemplate lifetime, @
         return Optional.ofNullable(initializationTemplate);
     }
 
-
     /** {@inheritDoc} */
     @Override
     public Map<Class<?>, ContextTemplate> contexts() {
-       throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
-
 
     /** {@inheritDoc} */
     @Override
