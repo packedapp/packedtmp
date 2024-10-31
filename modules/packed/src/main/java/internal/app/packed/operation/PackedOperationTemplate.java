@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.context.ContextTemplate;
@@ -92,7 +91,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
         }
         newMt.addAll(args);
         methodType = MethodType.methodType(returnClass, newMt);
-        if (methodType== MethodType.methodType(Object.class, ExtensionContext.class, PackedExtensionContext.class)) {
+        if (methodType == MethodType.methodType(Object.class, ExtensionContext.class, PackedExtensionContext.class)) {
             throw new Error();
         }
     }
@@ -101,12 +100,6 @@ public final class PackedOperationTemplate implements OperationTemplate {
     // And then bean instance is always param 1
     PackedOperationTemplate appendBeanInstance(Class<?> beanClass) {
         throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public PackedOperationTemplate configure(Consumer<? super Configurator> configure) {
-        return PackedOperationTemplate.configure(this, configure);
     }
 
     public PackedOperationInstaller newInstaller(BeanIntrospectorSetup extension, MethodHandle methodHandle, OperationMemberTarget<?> target,
@@ -130,15 +123,18 @@ public final class PackedOperationTemplate implements OperationTemplate {
     /**
      * @return
      */
+    @Override
     public PackedOperationTemplate withRaw() {
         return new PackedOperationTemplate(ReturnKind.IGNORE, returnClass, false, beanClass, contexts, args);
     }
 
-    PackedOperationTemplate withReturnIgnore() {
+    @Override
+    public PackedOperationTemplate withReturnIgnore() {
         return new PackedOperationTemplate(ReturnKind.IGNORE, void.class, extensionContextFlag, beanClass, contexts, args);
     }
 
     /** {@inheritDoc} */
+    @Override
     public PackedOperationTemplate withReturnType(Class<?> returnType) {
         requireNonNull(returnType, "returnType is null");
         return new PackedOperationTemplate(ReturnKind.CLASS, returnType, extensionContextFlag, beanClass, contexts, args);
@@ -147,6 +143,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
     /**
      * @return
      */
+    @Override
     public PackedOperationTemplate withReturnTypeDynamic() {
         return new PackedOperationTemplate(ReturnKind.DYNAMIC, Object.class, extensionContextFlag, beanClass, contexts, args);
     }
@@ -157,6 +154,7 @@ public final class PackedOperationTemplate implements OperationTemplate {
     }
 
     /** {@inheritDoc} */
+    @Override
     public PackedOperationTemplate withContext(ContextTemplate context) {
         PackedContextTemplate c = (PackedContextTemplate) context;
         ArrayList<PackedContextTemplate> m = new ArrayList<>(contexts);
@@ -169,62 +167,6 @@ public final class PackedOperationTemplate implements OperationTemplate {
         return new PackedOperationTemplate(returnKind, returnClass, extensionContextFlag, beanClass, List.copyOf(m), args);
     }
 
-    public static PackedOperationTemplate configure(PackedOperationTemplate template, Consumer<? super Configurator> configure) {
-        PackedOperationTemplateConfigurator c = new PackedOperationTemplateConfigurator();
-        c.template = template;
-        configure.accept(c);
-        return c.template;
-    }
-
-    /** Implementation of {@link OperationTemplate.Configurator} */
-    public static final class PackedOperationTemplateConfigurator implements OperationTemplate.Configurator {
-
-        /** The template we are configuring. */
-        private PackedOperationTemplate template;
-
-        /** {@inheritDoc} */
-        @Override
-        public Configurator appendBeanInstance(Class<?> beanClass) {
-            this.template = template.appendBeanInstance(beanClass);
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Configurator inContext(ContextTemplate context) {
-            this.template = template.withContext(context);
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Configurator raw() {
-            this.template = template.withRaw();
-            return this;
-
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Configurator returnIgnore() {
-            this.template = template.withReturnIgnore();
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Configurator returnType(Class<?> type) {
-            this.template = template.withReturnType(type);
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Configurator returnTypeDynamic() {
-            this.template = template.withReturnTypeDynamic();
-            return this;
-        }
-    }
 
     public enum ReturnKind {
         CLASS, DYNAMIC, IGNORE;
@@ -252,6 +194,12 @@ public final class PackedOperationTemplate implements OperationTemplate {
         public MethodType invocationType() {
             return pot.methodType;
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public OperationTemplate withAppendBeanInstance(Class<?> beanClass) {
+        return null;
     }
 
 }

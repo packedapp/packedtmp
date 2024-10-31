@@ -61,7 +61,7 @@ public class ScheduledJobExtension extends IncubatorExtension<ScheduledJobExtens
 
     private static final ContextTemplate CT = ContextTemplate.of(SchedulingContext.class).withImplementation(PackedSchedulingContext.class);
 
-    private static final OperationTemplate OT = OperationTemplate.of(c -> c.inContext(CT));
+    private static final OperationTemplate OT = OperationTemplate.defaults().withContext(CT);
 
     // Creates a new instance on every invocation
 

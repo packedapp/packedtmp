@@ -131,7 +131,7 @@ public final class IntrospectorOnField extends IntrospectorOn implements OnField
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
 
         if (t.returnKind == ReturnKind.DYNAMIC) {
-            t = t.configure(c -> c.returnType(field.getType()));
+            t = t.withReturnType(field.getType());
         }
 
 //        template = template.reconfigure(c -> c.returnType(field.getType()));

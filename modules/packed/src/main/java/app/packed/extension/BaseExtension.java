@@ -32,6 +32,7 @@ import app.packed.container.Wirelet;
 import app.packed.extension.ExtensionPoint.ExtensionUseSite;
 import app.packed.operation.Op;
 import app.packed.operation.OperationMirror;
+import app.packed.operation.OperationTemplate;
 import app.packed.service.ProvidableBeanConfiguration;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceNamespaceConfiguration;
@@ -89,7 +90,7 @@ public final class BaseExtension extends FrameworkExtension<BaseExtension> {
     // But right now we only have a single field
     static final ContainerBuildLocal<FromLinks> FROM_LINKS = ContainerBuildLocal.of(FromLinks::new);
 
-    static final BeanTemplate TEMPLATE = BeanKind.CONTAINER.template().withInitialization(o -> o.returnTypeDynamic());
+    static final BeanTemplate TEMPLATE = BeanKind.CONTAINER.template().withInitialization(OperationTemplate.defaults().withReturnTypeDynamic());
 
     /**
      * All your base are belong to us. £

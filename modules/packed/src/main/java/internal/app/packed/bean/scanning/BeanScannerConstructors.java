@@ -196,7 +196,7 @@ final record BeanScannerConstructors(Constructor<?> constructor, OperationType o
 
             PackedOperationTemplate ot = scanner.bean.template.initializationTemplate();
             // if (ot.returnKind == ReturnKind.DYNAMIC) {
-            ot = ot.configure(c -> c.returnType(beanClass));
+            ot = ot.withReturnType(beanClass);
             // }
             PackedOperationInstaller installer = ot.newInstaller(constructor.operationType(), scanner.bean, scanner.bean.installedBy);
 

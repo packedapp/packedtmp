@@ -17,7 +17,7 @@ package internal.app.packed.bean;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.bean.BeanBuildLocal;
 import app.packed.bean.BeanKind;
@@ -51,8 +51,8 @@ public record PackedBeanTemplate(BeanKind beanKind, LifetimeTemplate lifetime, @
      * @param initialization
      * @return
      */
-    public PackedBeanTemplate witInitialization(Consumer<? super OperationTemplate.Configurator> initialization) {
-        PackedOperationTemplate ot = PackedOperationTemplate.configure(initializationTemplate, initialization);
+    public PackedBeanTemplate witInitialization(Function<OperationTemplate, OperationTemplate> configure) {
+        PackedOperationTemplate ot = (PackedOperationTemplate) configure.apply(initializationTemplate);
 
         // We need to filter on some valid bean types I think
         // if (template.createAs.isPrimitive() || BeanSetup.ILLEGAL_BEAN_CLASSES.contains(template.createAs)) {
@@ -92,7 +92,7 @@ public record PackedBeanTemplate(BeanKind beanKind, LifetimeTemplate lifetime, @
 
     /** {@inheritDoc} */
     @Override
-    public PackedBeanTemplate withInitialization(Consumer<? super OperationTemplate.Configurator> initialization) {
+    public PackedBeanTemplate withInitialization(OperationTemplate initialization) {
         return witInitialization(initialization);
     }
 

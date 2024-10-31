@@ -55,13 +55,13 @@ public final class LifecycleAnnotationIntrospector {
     private static final ContextTemplate CONTEXT_ON_STOP_TEMPLATE = ContextTemplate.of(StopContext.class);
 
     /** An operation template for {@link Inject} and {@link Initialize}. */
-    private static final OperationTemplate OPERATION_LIFECYCLE_TEMPLATE = OperationTemplate.of(c -> c.returnIgnore());
+    private static final OperationTemplate OPERATION_LIFECYCLE_TEMPLATE = OperationTemplate.defaults().withReturnIgnore();
 
     /** An operation template for {@link Start}. */
-    private static final OperationTemplate OPERATION_ON_START_TEMPLATE = OperationTemplate.of(c -> c.returnIgnore().inContext(CONTEXT_ON_START_TEMPLATE));
+    private static final OperationTemplate OPERATION_ON_START_TEMPLATE = OperationTemplate.defaults().withReturnIgnore().withContext(CONTEXT_ON_START_TEMPLATE);
 
     /** An operation template for {@link Stop}. */
-    private static final OperationTemplate OPERATION_ON_STOP_TEMPLATE = OperationTemplate.of(c -> c.returnIgnore().inContext(CONTEXT_ON_STOP_TEMPLATE));
+    private static final OperationTemplate OPERATION_ON_STOP_TEMPLATE = OperationTemplate.defaults().withReturnIgnore().withContext(CONTEXT_ON_STOP_TEMPLATE);
 
     public static void checkForFactoryOp(BeanSetup bean) {
         // Creating an bean factory operation representing the Op if an Op was specified when creating the bean.

@@ -187,7 +187,7 @@ public final class IntrospectorOnVariable extends IntrospectorOn implements OnVa
         PackedOp<?> pop = PackedOp.crack(op);
 
         // Nested operation get the same arguments as this operation, but with op return type
-        PackedOperationTemplate template = operation.template.configure(c -> c.returnType(pop.type().returnRawType()));
+        PackedOperationTemplate template = operation.template.withReturnType(pop.type().returnRawType());
 
         // Create the nested operation
         OperationSetup os = pop

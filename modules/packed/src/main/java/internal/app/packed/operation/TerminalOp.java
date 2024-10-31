@@ -53,7 +53,7 @@ public abstract sealed class TerminalOp<R> extends PackedOp<R> {
         /** {@inheritDoc} */
         @Override
         public OperationSetup newOperationSetup(NewOperation newOs) {
-            PackedOperationTemplate template = newOs.template().configure(c -> c.returnType(type.returnRawType()));
+            PackedOperationTemplate template = newOs.template().withReturnType(type.returnRawType());
 
             PackedOperationInstaller poi = template.newInstaller(type, newOs.bean(), newOs.operator());
             poi.embeddedInto = newOs.embeddedIn();

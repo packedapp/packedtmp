@@ -61,7 +61,7 @@ public final class ServiceAnnotationScanner {
         return false;
     }
 
-    static final OperationTemplate TEMPLATE = OperationTemplate.of(c -> c.returnTypeDynamic());
+    static final OperationTemplate TEMPLATE = OperationTemplate.defaults().withReturnTypeDynamic();
 
     public static boolean testMethodAnnotation(IntrospectorOnMethod method, Annotation annotation) {
         if (annotation instanceof Provide) {

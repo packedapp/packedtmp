@@ -32,10 +32,10 @@ public class ContextsHelpers {
         public static final ContextTemplate CT = ContextTemplate.of(NoImplContext.class);
 
         /** A simple operation with the context, that ignores return values. */
-        public static final OperationTemplate OT = OperationTemplate.of(c -> c.inContext(NoImplContext.CT).returnIgnore());
+        public static final OperationTemplate OT = OperationTemplate.defaults().withContext(NoImplContext.CT).withReturnIgnore();
 
         /** A simple operation with the context, that ignores return values. */
-        public static final OperationTemplate OTINT = OperationTemplate.of(c -> c.inContext(NoImplContext.CT).returnType(int.class));
+        public static final OperationTemplate OTINT = OperationTemplate.defaults().withContext(NoImplContext.CT).withReturnType(int.class);
     }
 
     public static void bindSimple(AbstractBootstrapedAppTest<?> t) {

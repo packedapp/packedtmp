@@ -18,12 +18,10 @@ package app.packed.operation;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import app.packed.bean.BeanKind;
 import app.packed.context.ContextTemplate;
 import internal.app.packed.operation.PackedOperationTemplate;
-import internal.app.packed.operation.PackedOperationTemplate.PackedOperationTemplateConfigurator;
 
 /**
  * An operation template defines the basic behaviour of an operation and is typically reused across multiple operations.
@@ -32,8 +30,6 @@ import internal.app.packed.operation.PackedOperationTemplate.PackedOperationTemp
  * <p>
  */
 public sealed interface OperationTemplate permits PackedOperationTemplate {
-
-    OperationTemplate configure(Consumer<? super Configurator> configure);
 
     // Skal hellere vaere BeanPackaging
     int beanInstanceIndex();
@@ -60,10 +56,6 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         return PackedOperationTemplate.DEFAULTS;
     }
 
-    static OperationTemplate of(Consumer<? super Configurator> configure) {
-        return defaults().configure(configure);
-    }
-
     static OperationTemplate ofFunction(Class<?> functionalInterface, OperationType operationType) {
         return ofFunction(MethodHandles.publicLookup(), functionalInterface, operationType);
     }
@@ -73,40 +65,31 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
         throw new UnsupportedOperationException();
     }
 
-    sealed interface Configurator permits PackedOperationTemplateConfigurator {
-
-        // requireBeanInstance() <- always 1 param
-        default Configurator appendBeanInstance() {
-            return appendBeanInstance(Object.class);
-        }
-
-        Configurator appendBeanInstance(Class<?> beanClass);
-
-        // Hvad sker der naar den er i andre lifetimes?
-        Configurator inContext(ContextTemplate context);
-
-        Configurator raw();
-
-        /** {@return an operation template that ignores any return value.} */
-        // If you want to fail. Check return type
-        // Isn't it just void???
-        // I think this won't fail unlike returnType(void.class)
-        // which requires void return type
-        Configurator returnIgnore();
-
-        Configurator returnType(Class<?> type);
-
-        // Field type, Method return Type
-        // The operation template will be re-adjusted before being used
-        Configurator returnTypeDynamic();
-
-        default Configurator withInvocationArgument(Class<?> argumentClass) {
-            // Kan man bruge alle argumenterne? eller kun dem her?
-            // Vil mene alle... Hmm, idk.
-            // Det er lettere at indexere hvis man det kun er dem man har tilfoejet her
-            return this;
-        }
+    // requireBeanInstance() <- always 1 param
+    default OperationTemplate withAppendBeanInstance() {
+        return withAppendBeanInstance(Object.class);
     }
+
+    OperationTemplate withAppendBeanInstance(Class<?> beanClass);
+
+    // Hvad sker der naar den er i andre lifetimes?
+    OperationTemplate withContext(ContextTemplate context);
+
+    OperationTemplate withRaw();
+
+    /** {@return an operation template that ignores any return value.} */
+    // If you want to fail. Check return type
+    // Isn't it just void???
+    // I think this won't fail unlike returnType(void.class)
+    // which requires void return type
+    OperationTemplate withReturnIgnore();
+
+    OperationTemplate withReturnType(Class<?> type);
+
+    // Field type, Method return Type
+    // The operation template will be re-adjusted before being used
+    OperationTemplate withReturnTypeDynamic();
+
 
     /**
      * An immutable descriptor for an {@link OperationTemplate}. Acquired by calling {@link OperationTemplate#descriptor()}.

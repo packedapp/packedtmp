@@ -77,7 +77,7 @@ public class EntryPointManager {
 
             bean.container.lifetime.entryPoints.entryPoint = new OldEntryPointSetup();
 
-            OperationTemplate temp = OperationTemplate.of(c -> c.returnTypeDynamic());
+            OperationTemplate temp = OperationTemplate.defaults().withReturnTypeDynamic();
             MainOperationHandle os = method.newOperation(temp).install(MainOperationHandle::new);
 
             MainThreadOfControl mc = bean.container.lifetime.entryPoints.entryPoint.mainThread();

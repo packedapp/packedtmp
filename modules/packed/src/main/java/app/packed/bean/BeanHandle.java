@@ -248,7 +248,7 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
     // Used from export/provide
     // The only funny thing is the operation target
     private OperationSetup instancePovideOperation() {
-        PackedOperationTemplate template = (PackedOperationTemplate) OperationTemplate.of(c -> c.returnType(beanClass()));
+        PackedOperationTemplate template = (PackedOperationTemplate) OperationTemplate.defaults().withReturnType(beanClass());
 
         PackedOperationInstaller installer = template.newInstaller(OperationType.of(beanClass()), bean, bean.installedBy);
         installer.operationTarget = new BeanAccessOperationTarget();

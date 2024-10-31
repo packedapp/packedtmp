@@ -53,7 +53,7 @@ public final class IntrospectorOnMethod extends IntrospectorOnExecutable<Method>
 
 
         if (t.returnKind == ReturnKind.DYNAMIC) {
-            t = t.configure(c -> c.returnType(type.returnRawType()));
+            t = t.withReturnType(type.returnRawType());
         }
 
         // Attempt to unreflect the method (Create a direct method handle for it)

@@ -38,7 +38,7 @@ import tck.HookTestingExtension.FieldHook.FieldPrivateStaticString;
  */
 public class OnAnnotatedFieldTest extends AppAppTest {
 
-    static final OperationTemplate T = OperationTemplate.of(c -> c.returnTypeDynamic());
+    static final OperationTemplate T = OperationTemplate.defaults().withReturnTypeDynamic();
 
     @Test
     public void instanceFieldGet() throws Throwable {

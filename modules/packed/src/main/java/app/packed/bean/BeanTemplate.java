@@ -18,7 +18,6 @@ package app.packed.bean;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import app.packed.context.ContextTemplate;
 import app.packed.operation.OperationTemplate;
@@ -118,9 +117,6 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
      */
     <T> BeanTemplate withBeanLocal(BeanBuildLocal<T> local, T value);
 
-    default BeanTemplate withInitialization(Consumer<? super OperationTemplate.Configurator> initialization) {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Specifies the return type signature of the factory operation(s) that create the bean.
@@ -149,7 +145,7 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
 //      if (template.createAs.isPrimitive() || BeanSetup.ILLEGAL_BEAN_CLASSES.contains(template.createAs)) {
 //      throw new IllegalArgumentException(template.createAs + " is not valid argument");
 //  }
-        return withInitialization(c -> c.returnType(clazz));
+        return withInitialization(OperationTemplate.defaults().withReturnType(clazz));
     }
 
     /**
@@ -164,7 +160,11 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
      *             if bean kind is not {@link BeanKind#MANANGED} or {@link BeanKind#UNMANAGED}
      */
     default BeanTemplate withInitializeAsBeanClass() {
-        return withInitialization(c -> c.returnTypeDynamic());
+        return withInitialization(OperationTemplate.defaults().withReturnTypeDynamic());
+    }
+
+    default BeanTemplate withInitialization(OperationTemplate initialization) {
+        throw new UnsupportedOperationException();
     }
 
     static BeanTemplate of(BeanKind kind) {
