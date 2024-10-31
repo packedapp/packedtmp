@@ -85,37 +85,35 @@ public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits 
     // Carefull with Unmanaged on Managed
     ContainerTemplate<?> UNMANAGED = new PackedContainerTemplate<>(PackedContainerKind.UNMANAGED);
 
-    public interface Configurator {
+    /**
+     * @param <T>
+     * @param key
+     * @param arg
+     * @return
+     * @see app.packed.component.guest.FromComponentGuest
+     */
+    default <T> ContainerTemplate<H> withCarrierProvideConstant(Class<T> key, T arg) {
+        return withCarrierProvideConstant(Key.of(key), arg);
+    }
 
-        /**
-         * @param <T>
-         * @param key
-         * @param arg
-         * @return
-         * @see app.packed.component.guest.FromComponentGuest
-         */
-        default <T> Configurator withCarrierProvideConstant(Class<T> key, T arg) {
-            return withCarrierProvideConstant(Key.of(key), arg);
-        }
+    /**
+     * @see FromLifetimeChannel
+     */
+    default <T> ContainerTemplate<H> withCarrierProvideConstant(Key<T> key, T arg) {
+        throw new UnsupportedOperationException();
+    }
 
-        /**
-         * @see FromLifetimeChannel
-         */
-        default <T> Configurator withCarrierProvideConstant(Key<T> key, T arg) {
-            throw new UnsupportedOperationException();
-        }
-
-        /**
-         * Add the specified tags to the application
-         *
-         * @param tags
-         *            the tags to add
-         * @return this configurator
-         */
-        Configurator withComponentTag(String... tags);
+    /**
+     * Add the specified tags to the application
+     *
+     * @param tags
+     *            the tags to add
+     * @return this ContainerTemplate<H>
+     */
+    ContainerTemplate<H> withComponentTag(String... tags);
 
 //        // Maybe put it on ContainerTemplate.
-//        default Configurator configureRootContainerHandleFactory(Function<? super ContainerTemplate.Installer<?>, ? extends ContainerHandle<?>> handleFactory) {
+//        default ContainerTemplate<H> configureRootContainerHandleFactory(Function<? super ContainerTemplate.Installer<?>, ? extends ContainerHandle<?>> handleFactory) {
 //            throw new UnsupportedOperationException();
 //        }
 
@@ -135,24 +133,24 @@ public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits 
 //        // HOW are we going to access this class????? Without a lookup object.
 //        // Can't just initialize it'
 //        @Deprecated // Guest bean
-//        Configurator carrierType(Class<?> beanClass);
+//        ContainerTemplate<H> carrierType(Class<?> beanClass);
 
-        // Har kun visibility for the installing extension
-        Configurator withLifetimeOperationAddContext(int index, ContextTemplate template);
+    // Har kun visibility for the installing extension
+    ContainerTemplate<H> withLifetimeOperationAddContext(int index, ContextTemplate template);
 
-        default <T> Configurator withLocalSet(ContainerBuildLocal<T> containerLocal, T value) {
-            throw new UnsupportedOperationException();
-        }
-
-        Configurator withPack(OldContainerTemplateLink pack);
-
-        default Configurator withPack(OldContainerTemplateLink... packs) {
-            for (OldContainerTemplateLink p : packs) {
-                withPack(p);
-            }
-            return this;
-        }
+    default <T> ContainerTemplate<H> withLocalSet(ContainerBuildLocal<T> containerLocal, T value) {
+        throw new UnsupportedOperationException();
     }
+
+    ContainerTemplate<H> withPack(OldContainerTemplateLink pack);
+
+    default ContainerTemplate<H> withPack(OldContainerTemplateLink... packs) {
+        for (OldContainerTemplateLink p : packs) {
+            withPack(p);
+        }
+        return this;
+    }
+
 }
 
 interface Zandbox {

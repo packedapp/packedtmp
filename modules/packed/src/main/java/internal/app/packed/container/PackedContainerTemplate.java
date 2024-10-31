@@ -17,7 +17,6 @@ package internal.app.packed.container;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.component.guest.OldContainerTemplateLink;
@@ -70,73 +69,51 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
         return installer;
     }
 
-
-    public static <H extends ContainerHandle<?>> PackedContainerTemplate<H> configure(PackedContainerTemplate<H> template,
-            Consumer<? super Configurator> configure) {
-        PackedContainerTemplateConfigurator<H> c = new PackedContainerTemplateConfigurator<>(template);
-        configure.accept(c);
-        return c.pbt;
-    }
-
-    public final static class PackedContainerTemplateConfigurator<H extends ContainerHandle<?>> implements ContainerTemplate.Configurator {
-
-        public PackedContainerTemplate<H> pbt;
-
-        public PackedContainerTemplateConfigurator(PackedContainerTemplate<H> pbt) {
-            this.pbt = pbt;
-        }
-
 //        /** {@inheritDoc} */
 //        @Override
 //        public PackedContainerTemplateConfigurator carrierType(Class<?> guest) {
 //            // I don't think we are going to do any checks here?
 //            // Well not interface, annotation, abstract class, ...
 //            // All lifetime operation will change...
-//            this.pbt = new PackedContainerTemplate(pbt.kind, guest, pbt.links, pbt.resultType, pbt.componentTags, pbt.lifecycleKind);
+//            this.pbt = new PackedContainerTemplate(kind, guest, links, resultType, componentTags, lifecycleKind);
 //            return this;
 //        }
 
-        // expects results. Maa ogsaa tage en Extension...
-        public PackedContainerTemplateConfigurator<H> expectResult(Class<?> resultType) {
-            this.pbt = new PackedContainerTemplate<>(pbt.kind, pbt.holderClass, pbt.links, resultType, pbt.componentTags, pbt.isManaged);
-            return this;
-        }
+    // expects results. Maa ogsaa tage en Extension...
+    public PackedContainerTemplate<H> expectResult(Class<?> resultType) {
+        return new PackedContainerTemplate<>(kind, holderClass, links, resultType, componentTags, isManaged);
+    }
 
-        /** {@inheritDoc} */
-        @Override
-        public PackedContainerTemplateConfigurator<H> withLifetimeOperationAddContext(int index, ContextTemplate template) {
-            throw new UnsupportedOperationException();
-        }
+    /** {@inheritDoc} */
+    @Override
+    public PackedContainerTemplate<H> withLifetimeOperationAddContext(int index, ContextTemplate template) {
+        throw new UnsupportedOperationException();
+    }
 
-        public Wirelet wirelet() {
-            return null;
-        }
+    public Wirelet wirelet() {
+        return null;
+    }
 
-        public PackedContainerTemplateConfigurator<H> withKind(PackedContainerKind kind) {
-            this.pbt = new PackedContainerTemplate<>(kind, pbt.holderClass, pbt.links, pbt.resultType, pbt.componentTags, pbt.isManaged);
-            return this;
-        }
+    public PackedContainerTemplate<H> withKind(PackedContainerKind kind) {
+        return new PackedContainerTemplate<>(kind, holderClass, links, resultType, componentTags, isManaged);
+    }
 
-        /** {@inheritDoc} */
-        @Override
-        public PackedContainerTemplateConfigurator<H> withPack(OldContainerTemplateLink channel) {
-            PackedContainerTemplatePackList tunnels = pbt.links.add((PackedContainerLink) channel);
-            this.pbt = new PackedContainerTemplate<>(pbt.kind, pbt.holderClass, tunnels, pbt.resultType, pbt.componentTags, pbt.isManaged);
-            return this;
-        }
+    /** {@inheritDoc} */
+    @Override
+    public PackedContainerTemplate<H> withPack(OldContainerTemplateLink channel) {
+        PackedContainerTemplatePackList tunnels = links.add((PackedContainerLink) channel);
+        return new PackedContainerTemplate<>(kind, holderClass, tunnels, resultType, componentTags, isManaged);
+    }
 
-        public PackedContainerTemplateConfigurator<H> withWirelets(Wirelet... wirelets) {
-            throw new UnsupportedOperationException();
-        }
+    public PackedContainerTemplate<H> withWirelets(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
 
-        /** {@inheritDoc} */
-        @Override
-        public Configurator withComponentTag(String... tags) {
-            this.pbt = new PackedContainerTemplate<>(pbt.kind, pbt.holderClass, pbt.links, pbt.resultType,
-                    ComponentTagHolder.copyAndAdd(pbt.componentTags, tags), pbt.isManaged);
-            return this;
+    /** {@inheritDoc} */
+    @Override
+    public PackedContainerTemplate<H> withComponentTag(String... tags) {
+        return new PackedContainerTemplate<>(kind, holderClass, links, resultType, ComponentTagHolder.copyAndAdd(componentTags, tags), isManaged);
 
-        }
     }
 
 //
