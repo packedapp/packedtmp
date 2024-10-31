@@ -104,7 +104,7 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
 
         /** {@inheritDoc} */
         @Override
-        public PackedContainerTemplateConfigurator<H> lifetimeOperationAddContext(int index, ContextTemplate template) {
+        public PackedContainerTemplateConfigurator<H> withLifetimeOperationAddContext(int index, ContextTemplate template) {
             throw new UnsupportedOperationException();
         }
 
@@ -131,7 +131,7 @@ public record PackedContainerTemplate<H extends ContainerHandle<?>>(PackedContai
 
         /** {@inheritDoc} */
         @Override
-        public Configurator componentTag(String... tags) {
+        public Configurator withComponentTag(String... tags) {
             this.pbt = new PackedContainerTemplate<>(pbt.kind, pbt.holderClass, pbt.links, pbt.resultType,
                     ComponentTagHolder.copyAndAdd(pbt.componentTags, tags), pbt.isManaged);
             return this;

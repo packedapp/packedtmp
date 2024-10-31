@@ -94,14 +94,14 @@ public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits 
          * @return
          * @see app.packed.component.guest.FromComponentGuest
          */
-        default <T> Configurator carrierProvideConstant(Class<T> key, T arg) {
-            return carrierProvideConstant(Key.of(key), arg);
+        default <T> Configurator withCarrierProvideConstant(Class<T> key, T arg) {
+            return withCarrierProvideConstant(Key.of(key), arg);
         }
 
         /**
          * @see FromLifetimeChannel
          */
-        default <T> Configurator carrierProvideConstant(Key<T> key, T arg) {
+        default <T> Configurator withCarrierProvideConstant(Key<T> key, T arg) {
             throw new UnsupportedOperationException();
         }
 
@@ -112,7 +112,7 @@ public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits 
          *            the tags to add
          * @return this configurator
          */
-        Configurator componentTag(String... tags);
+        Configurator withComponentTag(String... tags);
 
 //        // Maybe put it on ContainerTemplate.
 //        default Configurator configureRootContainerHandleFactory(Function<? super ContainerTemplate.Installer<?>, ? extends ContainerHandle<?>> handleFactory) {
@@ -138,9 +138,9 @@ public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits 
 //        Configurator carrierType(Class<?> beanClass);
 
         // Har kun visibility for the installing extension
-        Configurator lifetimeOperationAddContext(int index, ContextTemplate template);
+        Configurator withLifetimeOperationAddContext(int index, ContextTemplate template);
 
-        default <T> Configurator localSet(ContainerBuildLocal<T> containerLocal, T value) {
+        default <T> Configurator withLocalSet(ContainerBuildLocal<T> containerLocal, T value) {
             throw new UnsupportedOperationException();
         }
 
