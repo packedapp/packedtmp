@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package internal.app.packed.util;
 
 import java.util.Objects;
 import java.util.concurrent.Future;

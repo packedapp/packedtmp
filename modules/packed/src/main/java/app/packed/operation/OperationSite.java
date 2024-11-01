@@ -23,6 +23,7 @@ import app.packed.context.Context;
 /**
  *
  */
+// Implements Serializable??
 public interface OperationSite {
     Class<?> beanClass();
 

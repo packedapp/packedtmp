@@ -23,6 +23,7 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.service.ServiceLocator;
+import internal.app.packed.service.ServiceComposerLocator;
 
 /** Tests that we can inject varargs as ordinary arrays. */
 public class VarArgsInjectionTest {
@@ -31,7 +32,7 @@ public class VarArgsInjectionTest {
     @Test
     // Fix this test
     public void varargs() {
-        ServiceLocator i = ServiceLocator.of(c -> {
+        ServiceLocator i = ServiceComposerLocator.of(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(VarArgsInjectionTest.VarArgsConstructor.class);
             c.provideInstance(array);
@@ -41,7 +42,7 @@ public class VarArgsInjectionTest {
 
     @Test
     public void array() {
-        ServiceLocator i = ServiceLocator.of(c -> {
+        ServiceLocator i = ServiceComposerLocator.of(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(VarArgsInjectionTest.ArrayConstructor.class);
             c.provideInstance(array);

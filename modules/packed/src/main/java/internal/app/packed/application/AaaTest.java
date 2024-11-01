@@ -15,12 +15,23 @@
  */
 package internal.app.packed.application;
 
+import java.util.concurrent.TimeUnit;
+
 import app.packed.application.App;
+import app.packed.application.ApplicationException;
+import app.packed.application.ApplicationTemplate;
+import app.packed.application.BaseImage;
+import app.packed.application.BootstrapApp;
 import app.packed.assembly.BaseAssembly;
 import app.packed.bean.lifecycle.Initialize;
 import app.packed.bean.lifecycle.Start;
 import app.packed.bean.lifecycle.Stop;
+import app.packed.component.guest.ComponentHostContext;
+import app.packed.component.guest.FromGuest;
+import app.packed.container.Wirelet;
+import app.packed.runtime.ManagedLifecycle;
 import app.packed.runtime.RunState;
+import app.packed.runtime.StopOption;
 
 /**
  *
@@ -34,7 +45,7 @@ public class AaaTest extends BaseAssembly {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        App a = PackedApp.BOOTSTRAP_APP.launch(RunState.STARTING, new AaaTest());
+        App a = AApp.BOOTSTRAP_APP.launch(RunState.STARTING, new AaaTest());
 
         System.out.println("STate " + a.state());
         Thread.sleep(4000);
@@ -59,6 +70,76 @@ public class AaaTest extends BaseAssembly {
         public void onstop() throws InterruptedException {
             Thread.sleep(1000);
             System.out.println("soppping");
+        }
+    }
+
+    static final class AApp implements App {
+
+        /** The bootstrap app for this application. */
+        public static final BootstrapApp<AApp> BOOTSTRAP_APP = BootstrapApp.of(ApplicationTemplate.ofManaged(AApp.class));
+
+        /** Manages the lifecycle of the app. */
+        private final ManagedLifecycle lifecycle;
+
+        AApp(@FromGuest ManagedLifecycle lc, ComponentHostContext context) {
+            this.lifecycle = lc;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean awaitState(RunState state, long timeout, TimeUnit unit) throws InterruptedException {
+            return lifecycle.await(state, timeout, unit);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void close() {
+            lifecycle.stop();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public RunState state() {
+            return lifecycle.currentState();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void stop(StopOption... options) {
+            lifecycle.stop(options);
+        }
+
+        @Override
+        public String toString() {
+            return state().toString();
+        }
+
+        /** Implementation of {@link app.packed.application.App.Image}. */
+        public record AppImage(BaseImage<AApp> image) implements App.Image {
+
+            /** {@inheritDoc} */
+            @Override
+            public void run(Wirelet... wirelets) {
+                image.launch(RunState.TERMINATED, wirelets);
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public App start(Wirelet... wirelets) {
+                return image.launch(RunState.RUNNING, wirelets);
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public void checkedRun(Wirelet... wirelets) throws ApplicationException {
+                image.checkedLaunch(RunState.TERMINATED, wirelets);
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public App checkedStart(Wirelet... wirelets) throws ApplicationException {
+                return null;
+            }
         }
     }
 }

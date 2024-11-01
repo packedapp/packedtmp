@@ -91,6 +91,8 @@ public sealed interface BootstrapApp<I> permits PackedBootstrapApp, MappedBootst
      */
     BaseImage<I> imageOf(Assembly assembly, Wirelet... wirelets);
 
+    I checkedLaunch(RunState state, Assembly assembly, Wirelet... wirelets) throws ApplicationException;
+
     /**
      * Builds an application, launches it and returns an application interface instance (possible {@code void})
      * <p>
@@ -230,5 +232,14 @@ record MappedBootstrapApp<A, E>(BootstrapApp<A> app, Function<? super A, ? exten
     @Override
     public void verify(Assembly assembly, Wirelet... wirelets) {
         app.verify(assembly, wirelets);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public E checkedLaunch(RunState state, Assembly assembly, Wirelet... wirelets) throws ApplicationException {
+        A result = app.checkedLaunch(state, assembly, wirelets);
+        E e = mapper.apply(result);
+        return e;
+
     }
 }

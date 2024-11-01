@@ -13,14 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package app.packed.application;
 
 import java.util.concurrent.TimeUnit;
 
-import app.packed.application.App;
-import app.packed.application.ApplicationTemplate;
-import app.packed.application.BaseImage;
-import app.packed.application.BootstrapApp;
 import app.packed.component.guest.ComponentHostContext;
 import app.packed.component.guest.FromGuest;
 import app.packed.container.Wirelet;
@@ -31,15 +27,13 @@ import internal.app.packed.ValueBased;
 
 /** The default implementation of {@link App}. */
 @ValueBased
-// Move to .application when finished
-// Keep as interface if people want to mock it, extend it, ect.
-public final class PackedApp implements App {
+final class PackedApp implements App {
 
     /** The bootstrap app for this application. */
     public static final BootstrapApp<PackedApp> BOOTSTRAP_APP = BootstrapApp.of(ApplicationTemplate.ofManaged(PackedApp.class));
 
     /** Manages the lifecycle of the app. */
-    final ManagedLifecycle lifecycle;
+    private final ManagedLifecycle lifecycle;
 
     PackedApp(@FromGuest ManagedLifecycle lc, ComponentHostContext context) {
         this.lifecycle = lc;
@@ -48,24 +42,13 @@ public final class PackedApp implements App {
     /** {@inheritDoc} */
     @Override
     public boolean awaitState(RunState state, long timeout, TimeUnit unit) throws InterruptedException {
-        throw new UnsupportedOperationException();
+        return lifecycle.await(state, timeout, unit);
     }
 
     /** {@inheritDoc} */
     @Override
     public void close() {
-
-    }
-
-    /**
-     * Creates a new app image by wrapping the specified bootstrap image.
-     *
-     * @param image
-     *            the bootstrap app image to wrap
-     * @return an app image
-     */
-    protected App.Image newImage(BaseImage<?> image) {
-        return new AppImage(image);
+        lifecycle.stop();
     }
 
     /** {@inheritDoc} */
@@ -77,7 +60,7 @@ public final class PackedApp implements App {
     /** {@inheritDoc} */
     @Override
     public void stop(StopOption... options) {
-        throw new UnsupportedOperationException();
+        lifecycle.stop(options);
     }
 
     @Override
@@ -86,13 +69,7 @@ public final class PackedApp implements App {
     }
 
     /** Implementation of {@link app.packed.application.App.Image}. */
-    public record AppImage(BaseImage<?> image) implements App.Image {
-
-        /** {@inheritDoc} */
-        @Override
-        public void run() {
-            image.launch(RunState.TERMINATED);
-        }
+    record AppImage(BaseImage<PackedApp> image) implements App.Image {
 
         /** {@inheritDoc} */
         @Override
@@ -102,14 +79,20 @@ public final class PackedApp implements App {
 
         /** {@inheritDoc} */
         @Override
-        public App start() {
-            return null;
+        public App start(Wirelet... wirelets) {
+            return image.launch(RunState.RUNNING, wirelets);
         }
 
         /** {@inheritDoc} */
         @Override
-        public App start(Wirelet... wirelets) {
-            return null;
+        public void checkedRun(Wirelet... wirelets) throws ApplicationException {
+            image.checkedLaunch(RunState.TERMINATED, wirelets);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public App checkedStart(Wirelet... wirelets) throws ApplicationException {
+            return image.checkedLaunch(RunState.RUNNING, wirelets);
         }
     }
 }

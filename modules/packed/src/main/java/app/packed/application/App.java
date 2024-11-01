@@ -1,21 +1,5 @@
-/*
- * Copyright (c) 2008 Kasper Nielsen.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package app.packed.application;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -24,204 +8,297 @@ import app.packed.build.MirrorPrinter;
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
 import app.packed.runtime.StopOption;
-import internal.app.packed.application.PackedApp;
 
 /**
- * An entry point for... This class contains a number of methods that can be to execute or analyze programs that are
- * written use Packed.
+ * Represents the main entry point for executing and managing Packed applications. This interface provides methods for
+ * running, analyzing, and controlling the lifecycle of applications built using the Packed framework.
  *
- * An entry point for all the various types of applications that are available in Packed.
  * <p>
- * This class does not prov For creating application -instances -mirrors and -images.
+ * The App interface implements {@link AutoCloseable}, allowing it to be used with try-with-resources statements for
+ * automatic resource management. It provides various static factory methods for different ways of creating and
+ * executing applications, as well as instance methods for controlling running applications.
+ *
+ * <p>
+ * Applications can be in different states as defined by {@link RunState}, and their lifecycle can be controlled through
+ * methods like {@link #stop(StopOption...)} and monitored via {@link #awaitState(RunState, long, TimeUnit)}.
+ *
+ * <p>
+ * Example usage: <pre>{@code
+ * // Run an application to completion
+ * App.run(myAssembly);
+ *
+ * // Start an application and control it
+ * try (App app = App.start(myAssembly)) {
+ *     // Do something while the app is running
+ *     app.stop();
+ * }
+ * }</pre>
+ *
+ * @see Assembly
+ * @see RunState
+ * @see Wirelet
  */
-// [Checked|Not-Checked]Launch, Mirror, Launcher, ReuseableLauncher
-
-// Only thing you can get out is information about errors
-
-// App must either have threads running after it has started, or an entry point.
-// Ellers er det et sort hul...
 public interface App extends AutoCloseable {
 
     /**
-     * Blocks until all tasks within the application have completed after a shutdown request, or the timeout occurs, or the
-     * current thread is interrupted, whichever happens first.
+     * Waits for the application to reach a specified state, with a timeout.
      *
+     * <p>
+     * This method blocks until either:
+     * <ul>
+     * <li>The application reaches the specified state
+     * <li>The specified timeout period elapses
+     * <li>The current thread is interrupted
+     * </ul>
+     *
+     * @param state
+     *            the target state to wait for
      * @param timeout
      *            the maximum time to wait
      * @param unit
      *            the time unit of the timeout argument
-     * @return {@code true} if the application terminated and {@code false} if the timeout elapsed before termination
+     * @return {@code true} if the application reached the specified state, {@code false} if the timeout elapsed first
      * @throws InterruptedException
-     *             if interrupted while waiting
+     *             if the current thread is interrupted while waiting
      */
     boolean awaitState(RunState state, long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
-     * Closes the app (synchronously).
-     * <p>
-     * Calling this method is equivalent to calling {@code host().stop()}, but this method is called close in order to
-     * support try-with resources via {@link AutoCloseable}.
+     * Closes this application, stopping it if it's still running.
      *
      * <p>
-     * If the app has already terminated, invoking this method has no effect.
-     *
-     **/
+     * This method provides compatibility with the try-with-resources statement and is equivalent to calling {@code stop()}.
+     * If the application has already terminated, this method has no effect.
+     */
     @Override
     void close();
 
-    /** {@return the current state of the app} */
+    /**
+     * Returns the current state of the application.
+     *
+     * @return the current {@link RunState} of the application
+     */
     RunState state();
 
-    // Maybe Options are per App type and then maps into something else???
-    // Cancel makes no sense, for example, well maybe.
-    // pause() makes no sense -> Because we do not have a resume method
-    // But then again restart
+    /**
+     * Initiates an orderly shutdown of the application.
+     *
+     * <p>
+     * The exact behavior of the shutdown process can be customized using the provided stop options.
+     *
+     * @param options
+     *            the options to control the shutdown process
+     */
     void stop(StopOption... options);
 
     /**
-     * This method is identical to {@link #run(Assembly, Wirelet...)} except that it will never wraps any unhandled
-     * exceptions from the application.
+     * Runs an application with exception checking, wrapping any unhandled exceptions in {@link ApplicationException}.
      *
-     * @param assembly
-     * @param wirelets
-     * @throws Throwable
-     */
-    @SuppressWarnings("unused")
-    static void checkedRun(RunState state, Assembly assembly, Wirelet... wirelets) throws ExecutionException {
-        PackedApp.BOOTSTRAP_APP.launch(state, assembly, wirelets);
-    }
-
-    /**
-     * Builds the application from the specified assembly and returns a image that can be used to launch a <b>single</b>
-     * instance of the application at a later point.
      * <p>
-     * If you need to launch multiple instances of the same application. You can specify
-     * {@code ApplicationImageWirelets.reusable()} in the wirelet part of this method.
+     * This method is similar to {@link #run(Assembly, Wirelet...)}, but provides additional safety by ensuring all
+     * exceptions are wrapped in {@link ApplicationException}.
      *
      * @param assembly
      *            the application's assembly
      * @param wirelets
-     *            optional wirelets
-     * @return an image that can be used to launch a single instance of the application
+     *            optional wirelets for configuration
+     * @throws ApplicationException
+     *             if the application fails during execution
+     * @throws RuntimeException
+     *             if the application fails to build
+     */
+    static void checkedRun(Assembly assembly, Wirelet... wirelets) throws ApplicationException {
+        PackedApp.BOOTSTRAP_APP.checkedLaunch(RunState.TERMINATED, assembly, wirelets);
+    }
+
+    /**
+     * Starts an application with exception checking, wrapping any unhandled exceptions in {@link ApplicationException}.
+     *
+     * @param assembly
+     *            the application's assembly
+     * @param wirelets
+     *            optional wirelets for configuration
+     * @return a running instance of the application
+     * @throws ApplicationException
+     *             if the application fails to start
+     * @throws RuntimeException
+     *             if the application fails to build
+     */
+    static App checkedStart(Assembly assembly, Wirelet... wirelets) throws ApplicationException {
+        return PackedApp.BOOTSTRAP_APP.checkedLaunch(RunState.RUNNING, assembly, wirelets);
+    }
+
+    /**
+     * Creates an application image that can be used to launch a single instance of the application.
+     *
+     * <p>
+     * The returned image represents a pre-built application that can be launched at a later time. By default, the image can
+     * only be used to launch a single instance. For reusable images, use {@code ApplicationImageWirelets.reusable()} in the
+     * wirelets.
+     *
+     * @param assembly
+     *            the application's assembly
+     * @param wirelets
+     *            optional wirelets for configuration
+     * @return an image that can be used to launch the application
      */
     static App.Image imageOf(Assembly assembly, Wirelet... wirelets) {
         return new PackedApp.AppImage(PackedApp.BOOTSTRAP_APP.imageOf(assembly, wirelets));
     }
 
     /**
-     * Builds an application and returns a mirror representing it.
+     * Creates a mirror representation of the application for analysis purposes.
      *
      * @param assembly
      *            the application's assembly
      * @param wirelets
-     *            optional wirelets
-     * @return a mirror representing the application
+     *            optional wirelets for configuration
+     * @return a mirror representing the application structure
      * @throws RuntimeException
-     *             if the application could not be build
+     *             if the application fails to build
      */
     static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
         return PackedApp.BOOTSTRAP_APP.mirrorOf(assembly, wirelets);
     }
 
     /**
-     * Builds an application and prints out its structure using {@code System.out}.
+     * Builds an application and prints its structure to {@code System.out}.
+     *
+     * <p>
+     * This is a convenience method for debugging and analysis purposes.
      *
      * @param assembly
      *            the application's assembly
      * @param wirelets
-     *            optional wirelets
+     *            optional wirelets for configuration
      */
     static void print(Assembly assembly, Wirelet... wirelets) {
-        // not in final version I think IDK, why not...
-        // I think it is super usefull
-        //// Maybe have something like enum PrintDetail (Minimal, Normal, Full)
-        // ApplicationPrinter.Full, ApplicationPrinter.Normal
-
-//      static void print(Assembly assembly, Object printDetails, Wirelet... wirelets) {
-//      // printDetails=Container, Assemblies,////
-//      mirrorOf(assembly, wirelets).print();
-//  }
         mirrorOf(assembly, wirelets).print();
     }
 
+    /**
+     * Creates a printer for detailed application structure output.
+     *
+     * @param assembly
+     *            the application's assembly
+     * @param wirelets
+     *            optional wirelets for configuration
+     * @return a printer for the application structure
+     */
     static MirrorPrinter printer(Assembly assembly, Wirelet... wirelets) {
         return mirrorOf(assembly, wirelets).printer();
     }
 
     /**
-     * Builds and executes an application from the specified assembly and optional wirelets.
+     * Builds and runs an application to completion.
+     *
      * <p>
-     * If the application is built successfully from the assembly. A single instance of the application will be created and
-     * executed. This method will block until the application reaches the {@link RunState#TERMINATED terminated} state.
+     * This method blocks until the application reaches the {@link RunState#TERMINATED} state.
      *
      * @param assembly
      *            the application's assembly
      * @param wirelets
-     *            optional wirelets
+     *            optional wirelets for configuration
      * @throws RuntimeException
-     *             if the application failed to build or run
+     *             if the application fails to build or run
      */
     static void run(Assembly assembly, Wirelet... wirelets) {
         PackedApp.BOOTSTRAP_APP.launch(RunState.TERMINATED, assembly, wirelets);
     }
 
-    static App start(Assembly assembly, Wirelet... wirelets) {
-        return PackedApp.BOOTSTRAP_APP.launch(RunState.RUNNING, assembly, wirelets);
-    }
-
-    // Kunne jo vaere man gerne ville returnere et eller andet???
-    static void test(Assembly assembly, Consumer<? /* TestObject */> cno, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    // Problemet er lidt her at hvis App bestemmer noget som helst... andet en et raw interface
-    // Saa skal vi ogsaa bruge den naar vi tester. Fordi ellers er det jo en anden application
-
-    // Paa en eller anden maade vil vi teste nogle ting
-    // Er det her???? Eller et andet sted?
-    // Altsaa meningen er vel vi bygger en app med alt muligt gejl
-
-    // Maaske Brug Verify...
-    // Og koer den med Tester.xyz IDK. Super godt sporgsmaal
-
     /**
-     * Builds and verifies an application.
+     * Builds and starts an application, returning when it reaches the {@link RunState#RUNNING} state.
      *
      * @param assembly
      *            the application's assembly
      * @param wirelets
-     *            optional wirelets
+     *            optional wirelets for configuration
+     * @return the running application instance
      * @throws RuntimeException
-     *             if the application could not be build
+     *             if the application fails to build or start
+     */
+    static App start(Assembly assembly, Wirelet... wirelets) {
+        return PackedApp.BOOTSTRAP_APP.launch(RunState.RUNNING, assembly, wirelets);
+    }
+
+    /**
+     * Tests an application using the provided test consumer.
+     *
+     * @param assembly
+     *            the application's assembly
+     * @param cno
+     *            the test consumer
+     * @param wirelets
+     *            optional wirelets for configuration
+     * @throws UnsupportedOperationException
+     *             currently not implemented
+     */
+    static void test(Assembly assembly, Consumer<? /* TestObject */> cno, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Builds and verifies an application without running it.
+     *
+     * <p>
+     * This method can be used to validate the application structure and configuration without actually executing it.
+     *
+     * @param assembly
+     *            the application's assembly
+     * @param wirelets
+     *            optional wirelets for configuration
+     * @throws RuntimeException
+     *             if the application fails to build
      */
     static void verify(Assembly assembly, Wirelet... wirelets) {
         PackedApp.BOOTSTRAP_APP.verify(assembly, wirelets);
     }
 
-    /** An image for App. */
-    // Mirror???? Would be nice to know what is in the image...
+    /**
+     * Represents a pre-built application image that can be used to launch application instances.
+     */
     interface Image {
 
-        /** Runs the application represented by this image. */
-        void run();
-
         /**
-         * Runs the application represented by this image.
+         * Runs the application with exception checking.
          *
          * @param wirelets
-         *            optional wirelets
-         * @throws app.packed.container.WireletException
-         *             if a build wirelet is exposed
+         *            optional runtime wirelets
+         * @throws ApplicationException
+         *             if the application fails during execution
+         */
+        void checkedRun(Wirelet... wirelets) throws ApplicationException;
+
+        /**
+         * Starts the application with exception checking.
+         *
+         * @param wirelets
+         *            optional runtime wirelets
+         * @return the running application instance
+         * @throws ApplicationException
+         *             if the application fails to start
+         */
+        App checkedStart(Wirelet... wirelets) throws ApplicationException;
+
+        /**
+         * Runs the application to completion.
+         *
+         * @param wirelets
+         *            optional runtime wirelets
+         * @throws RuntimeException
+         *             if the application failed during executing
          */
         void run(Wirelet... wirelets);
 
         /**
-         * Starts the app and waits until it has fully started.
+         * Starts the application and waits until it is fully running.
          *
-         * @return
+         * @param wirelets
+         *            optional runtime wirelets
+         * @return the running application instance
+         * @throws RuntimeException
+         *             if the application fails to start
          */
-        App start();
-
         App start(Wirelet... wirelets);
     }
 }

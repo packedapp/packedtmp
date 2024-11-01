@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import app.packed.build.BuildException;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 
@@ -43,8 +44,12 @@ public final class BuildWirelets {
     }
 
     public static Wirelet alwaysThrowBuildException() {
-        // I don't think we can specify both this and onExceptionInBuild
-        throw new UnsupportedOperationException();
+        return onExceptionInBuild(e -> {
+            if (e instanceof BuildException be) {
+                throw be;
+            }
+            throw new BuildException(e.getMessage(), e);
+        });
     }
 
     public static Wirelet onExceptionInBuild(Consumer<Exception> handler) {
@@ -79,8 +84,11 @@ public final class BuildWirelets {
 
     // Maaske er det en build wirelet???
     // Taenker
+    // illegal, prohibit, restrict
+
     @SafeVarargs
-    public static Wirelet disableExtension(Class<? extends Extension<?>>... extensionTypes) {
+    public static Wirelet forbidExtensions(Function<? super Class<? extends Extension<?>>, BuildException> throwMe,
+            Class<? extends Extension<?>>... extensionTypes) {
         throw new UnsupportedOperationException();
     }
 

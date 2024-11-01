@@ -92,6 +92,8 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
 
     Optional<OperationTemplate> initializationX();
 
+    BeanTemplate withInitialization(OperationTemplate initialization);
+
     // Vi beholder den lidt endnu. Fordi vi maaske bliver noedt til at goere noget
     // Hvis vi vil have foreign objecter osv
     @SuppressWarnings("exports")
@@ -114,57 +116,7 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
      *            the value to set
      * @return this configurator
      */
-    <T> BeanTemplate withBeanLocal(BeanBuildLocal<T> local, T value);
-
-
-    /**
-     * Specifies the return type signature of the factory operation(s) that create the bean.
-     * <p>
-     * The return type of the lifetime operation that creates the bean is {@code Object.class} per default. In order to
-     * better support {@link java.lang.invoke.MethodHandle#invokeExact(Object...)}. This method can be used to specify a
-     * less generic type if needed.
-     * <p>
-     * If this template is used to install bean whose bean class is not assignable to the specified class. The framework
-     * will throw a {@link app.packed.bean.BeanInstallationException}.
-     * <p>
-     * The method handle of the factory operation of the new template will always have the specified class as its
-     * {@link java.lang.invoke.MethodType#returnType()}.
-     *
-     * @param clazz
-     *            the return type of the method handle that creates the bean lifetime
-     * @return a new template
-     * @throws IllegalArgumentException
-     *             if specifying a primitive type or {@code Void}
-     * @throws UnsupportedOperationException
-     *             if this template is not based on {@link #MANAGED} or {@link #UNMANAGED}
-     * @see java.lang.invoke.MethodHandle#invokeExact(Object...)
-     * @see java.lang.invoke.MethodType#changeReturnType(Class)
-     */
-    default BeanTemplate withInitializeAs(Class<?> clazz) {
-//      if (template.createAs.isPrimitive() || BeanSetup.ILLEGAL_BEAN_CLASSES.contains(template.createAs)) {
-//      throw new IllegalArgumentException(template.createAs + " is not valid argument");
-//  }
-        return withInitialization(OperationTemplate.defaults().withReturnType(clazz));
-    }
-
-    /**
-     * The creation MethodHandle will have the actual bean type as its return type.
-     * <p>
-     * Normally the return type is {@code Object.class} to allow for better interoperability with
-     * {@link java.lang.invoke.MethodHandle#invokeExact(Object...)}.
-     *
-     * @return the new template
-     *
-     * @throws UnsupportedOperationException
-     *             if bean kind is not {@link BeanKind#MANANGED} or {@link BeanKind#UNMANAGED}
-     */
-    default BeanTemplate withInitializeAsBeanClass() {
-        return withInitialization(OperationTemplate.defaults().withReturnTypeDynamic());
-    }
-
-    default BeanTemplate withInitialization(OperationTemplate initialization) {
-        throw new UnsupportedOperationException();
-    }
+    <T> BeanTemplate withLocal(BeanBuildLocal<T> local, T value);
 
     static BeanTemplate of(BeanKind kind) {
         return new PackedBeanTemplate(kind);
@@ -197,6 +149,52 @@ public sealed interface BeanTemplate permits PackedBeanTemplate {
 //Configurator inContextForLifetimeOperation(int index, ContextTemplate template);
 
 interface Sandbox {
+    /**
+     * Specifies the return type signature of the factory operation(s) that create the bean.
+     * <p>
+     * The return type of the lifetime operation that creates the bean is {@code Object.class} per default. In order to
+     * better support {@link java.lang.invoke.MethodHandle#invokeExact(Object...)}. This method can be used to specify a
+     * less generic type if needed.
+     * <p>
+     * If this template is used to install bean whose bean class is not assignable to the specified class. The framework
+     * will throw a {@link app.packed.bean.BeanInstallationException}.
+     * <p>
+     * The method handle of the factory operation of the new template will always have the specified class as its
+     * {@link java.lang.invoke.MethodType#returnType()}.
+     *
+     * @param clazz
+     *            the return type of the method handle that creates the bean lifetime
+     * @return a new template
+     * @throws IllegalArgumentException
+     *             if specifying a primitive type or {@code Void}
+     * @throws UnsupportedOperationException
+     *             if this template is not based on {@link #MANAGED} or {@link #UNMANAGED}
+     * @see java.lang.invoke.MethodHandle#invokeExact(Object...)
+     * @see java.lang.invoke.MethodType#changeReturnType(Class)
+     */
+    default BeanTemplate withInitializeAs(Class<?> clazz) {
+//      if (template.createAs.isPrimitive() || BeanSetup.ILLEGAL_BEAN_CLASSES.contains(template.createAs)) {
+//      throw new IllegalArgumentException(template.createAs + " is not valid argument");
+//  }
+        // return withInitialization(OperationTemplate.defaults().withReturnType(clazz));
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * The creation MethodHandle will have the actual bean type as its return type.
+     * <p>
+     * Normally the return type is {@code Object.class} to allow for better interoperability with
+     * {@link java.lang.invoke.MethodHandle#invokeExact(Object...)}.
+     *
+     * @return the new template
+     *
+     * @throws UnsupportedOperationException
+     *             if bean kind is not {@link BeanKind#MANANGED} or {@link BeanKind#UNMANAGED}
+     */
+    default BeanTemplate withInitializeAsBeanClass() {
+        // return withInitialization(OperationTemplate.defaults().withReturnTypeDynamic());
+        throw new UnsupportedOperationException();
+    }
 
     void ignoreAnnotations(Class<?> annot);
 

@@ -28,7 +28,8 @@ import java.nio.file.Path;
  */
 
 // Where to Print,
-// What to Print
+// Serialisation Format (I think we only support text based)
+
 public interface MirrorPrinter {
 
     // maybe it is not mirrors, but (open) options

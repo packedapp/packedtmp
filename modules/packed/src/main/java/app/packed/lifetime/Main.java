@@ -30,7 +30,7 @@ import app.packed.extension.BaseExtension;
  * <p>
  * Methods annotated with {@code @Main} must have a void return type.
  * <p>
- * If the application fails either at initialization time or startup time the annotated will not be invoked.
+ * If the application fails either while initializing or starting, the annotated method will not be invoked.
  * <p>
  * When the annotated method returns the container will automatically be stopped. If the annotated method fails with an
  * unhandled exception the container will automatically be shutdown with the exception being the cause.
@@ -40,7 +40,7 @@ import app.packed.extension.BaseExtension;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@OnAnnotatedMethod(allowInvoke = true, extension = BaseExtension.class)
+@OnAnnotatedMethod(extension = BaseExtension.class, allowInvoke = true)
 public @interface Main {}
 
 //A single method. Will be executed.

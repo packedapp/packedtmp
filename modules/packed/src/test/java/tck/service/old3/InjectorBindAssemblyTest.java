@@ -26,6 +26,7 @@ import app.packed.assembly.BaseAssembly;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op0;
 import app.packed.service.ServiceLocator;
+import internal.app.packed.service.ServiceComposerLocator;
 import testutil.Assertions;
 
 /**
@@ -41,8 +42,8 @@ public class InjectorBindAssemblyTest {
             protected void build() {}
         };
 
-        Assertions.npe(() -> ServiceLocator.of(c -> c.link("child", (BaseAssembly) null)), "assembly");
-        Assertions.npe(() -> ServiceLocator.of(c -> c.link("child", b, (Wirelet[]) null)), "wirelets");
+        Assertions.npe(() -> ServiceComposerLocator.of(c -> c.link("child", (BaseAssembly) null)), "assembly");
+        Assertions.npe(() -> ServiceComposerLocator.of(c -> c.link("child", b, (Wirelet[]) null)), "wirelets");
     }
 
     /** Tests that we can import no services. */
@@ -56,7 +57,7 @@ public class InjectorBindAssemblyTest {
             }
         };
 
-        ServiceLocator i = ServiceLocator.of(c -> {
+        ServiceLocator i = ServiceComposerLocator.of(c -> {
             c.link("child", b);
         });
         assertThat(i.keys().size()).isEqualTo(0L);
@@ -73,7 +74,7 @@ public class InjectorBindAssemblyTest {
             }
         };
 
-        ServiceLocator i = ServiceLocator.of(c -> {
+        ServiceLocator i = ServiceComposerLocator.of(c -> {
             c.link("child", b);
         });
         assertThat(i.use(String.class)).isEqualTo("X");
@@ -91,7 +92,7 @@ public class InjectorBindAssemblyTest {
             }
         };
 
-        ServiceLocator i = ServiceLocator.of(c -> {
+        ServiceLocator i = ServiceComposerLocator.of(c -> {
             c.link("child", b);
         });
         assertThat(i.use(Long.class)).isEqualTo(1L);

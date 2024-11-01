@@ -21,7 +21,6 @@ import java.util.function.Function;
 
 import app.packed.container.Wirelet;
 import app.packed.runtime.RunState;
-import app.packed.util.Result;
 import internal.app.packed.application.PackedBaseImage;
 import internal.app.packed.application.PackedBaseImage.ImageMapped;
 
@@ -42,18 +41,18 @@ public sealed interface BaseImage<A> permits PackedBaseImage {
 
     // Meningen er at prøve at styre fejl håndteringen bedre
     // <T> T BiFunction<@Nullable A, ErrorHandle e>
-
-    default Result<A> compute(Object unhandledErrorHandler, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    // Failure before A is created,
-    // Failure after A is created
-    // Action -> Return something, or throw something
-    // Tror ikke det giver mening foerend vi har en god error handling story
-    default Result<A> compute(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
+//
+//    default Result<A> compute(Object unhandledErrorHandler, Wirelet... wirelets) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    // Failure before A is created,
+//    // Failure after A is created
+//    // Action -> Return something, or throw something
+//    // Tror ikke det giver mening foerend vi har en god error handling story
+//    default Result<A> compute(Wirelet... wirelets) {
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * Launches an instance of the application that this image represents in the specified state.
@@ -70,6 +69,8 @@ public sealed interface BaseImage<A> permits PackedBaseImage {
      * @see BootstrapApp#launch(Assembly, Wirelet...)
      */
     A launch(RunState state, Wirelet... wirelets);
+
+    A checkedLaunch(RunState state, Wirelet... wirelets) throws ApplicationException;
 
     /**
      * Returns a new base image that maps this image.

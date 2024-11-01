@@ -138,7 +138,7 @@ public sealed interface ContainerTemplate<H extends ContainerHandle<?>> permits 
     // Har kun visibility for the installing extension
     ContainerTemplate<H> withLifetimeOperationAddContext(int index, ContextTemplate template);
 
-    default <T> ContainerTemplate<H> withLocalSet(ContainerBuildLocal<T> containerLocal, T value) {
+    default <T> ContainerTemplate<H> withLocal(ContainerBuildLocal<T> containerLocal, T value) {
         throw new UnsupportedOperationException();
     }
 

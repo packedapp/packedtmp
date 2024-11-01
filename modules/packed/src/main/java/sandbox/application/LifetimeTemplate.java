@@ -15,9 +15,13 @@
  */
 package sandbox.application;
 
+import app.packed.extension.Extension;
+
 /**
  *
  */
+
+// Lifetime, taenker jeg er owned by an extension...
 
 // Altsaa paa en eller anden maade skal den connectes til en Extension..
 // Hvis WebExtension nu ejer SessionLifetimeTemplate så er det jo den der skal instantiere den...
@@ -36,13 +40,19 @@ public interface LifetimeTemplate {
 
     LifetimeTemplate APPLICATION = null;
 
+    /** {@return the extension that owns the lifetime} */
+    Class<? extends Extension<?>> extension();
+
     String name();
+
+
+    boolean isComposite(); // vs isAtomic
+
+    LifetimeTemplate newChild(String name);
 
     boolean requiresManaged();
 
     LifetimeTemplate withRequiresManaged();
-
-    LifetimeTemplate newChild(String name);
 }
 
 class X {

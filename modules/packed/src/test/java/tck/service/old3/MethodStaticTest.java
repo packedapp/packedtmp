@@ -25,7 +25,8 @@ import org.junit.jupiter.api.Test;
 import app.packed.operation.Op0;
 import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;
-import app.packed.service.ServiceLocator.Composer;
+import internal.app.packed.service.ServiceComposerLocator;
+import internal.app.packed.service.ServiceComposerLocator.Composer;
 
 /** Tests {@link Provide#constant()} on static methods. */
 public class MethodStaticTest {
@@ -87,7 +88,7 @@ public class MethodStaticTest {
             // L = 1L;
             P = 1;
             S = 1;
-            ServiceLocator i = ServiceLocator.of(c -> {
+            ServiceLocator i = ServiceComposerLocator.of(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });
@@ -143,7 +144,7 @@ public class MethodStaticTest {
             // L = 1L;
             P = 1;
             S = 1;
-            ServiceLocator i = ServiceLocator.of(c -> {
+            ServiceLocator i = ServiceComposerLocator.of(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });

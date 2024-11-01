@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package internal.app.packed.errorhandling;
+
+import app.packed.operation.OperationSite;
+import app.packed.runtime.RunState;
 
 /**
- * Always has a cause.
+ *
  */
-// Just use ExecutionException???
-// RuntimeApplicationException
-public class ApplicationException extends Exception {
-
-    private static final long serialVersionUID = 1L;
-
+public interface ErrorHandler {
+    boolean handle(RunState state, OperationSite operationSite, Exception cause);
 }

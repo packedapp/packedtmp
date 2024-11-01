@@ -25,7 +25,8 @@ import org.junit.jupiter.api.Test;
 import app.packed.binding.Key;
 import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;
-import app.packed.service.ServiceLocator.Composer;
+import internal.app.packed.service.ServiceComposerLocator;
+import internal.app.packed.service.ServiceComposerLocator.Composer;
 import testutil.stubs.Qualifiers.StringQualifier;
 
 /**
@@ -42,7 +43,7 @@ public class MembersProvideTest {
     }
 
     private static ServiceLocator of(Consumer<? super Composer> consumer) {
-        return ServiceLocator.of(c -> {
+        return ServiceComposerLocator.of(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);
         });

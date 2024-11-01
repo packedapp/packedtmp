@@ -29,7 +29,8 @@ import app.packed.bean.BeanInstallationException;
 import app.packed.operation.Op0;
 import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;
-import app.packed.service.ServiceLocator.Composer;
+import internal.app.packed.service.ServiceComposerLocator;
+import internal.app.packed.service.ServiceComposerLocator.Composer;
 
 /** Tests {@link Provide#constant()}. */
 public class MethodInstanceTest {
@@ -55,7 +56,7 @@ public class MethodInstanceTest {
     /** Can never bind prototypes that have non-static provided fields. */
     @Test
     public void providePrototype() {
-        AbstractThrowableAssert<?, ?> a = assertThatThrownBy(() -> ServiceLocator.of(c -> {
+        AbstractThrowableAssert<?, ?> a = assertThatThrownBy(() -> ServiceComposerLocator.of(c -> {
             c.lookup(MethodHandles.lookup());
             c.provideInstance(new AtomicBoolean());
             c.providePrototype(SingletonMethod.class);
@@ -71,7 +72,7 @@ public class MethodInstanceTest {
         // a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
 
-        a = assertThatThrownBy(() -> ServiceLocator.of(c -> {
+        a = assertThatThrownBy(() -> ServiceComposerLocator.of(c -> {
             c.lookup(MethodHandles.lookup());
             c.provideInstance(new AtomicBoolean());
             c.providePrototype(PrototypeMethod.class);
@@ -118,7 +119,7 @@ public class MethodInstanceTest {
         }
 
         static void test(Consumer<? super Composer> configurator) {
-            ServiceLocator i = ServiceLocator.of(c -> {
+            ServiceLocator i = ServiceComposerLocator.of(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });

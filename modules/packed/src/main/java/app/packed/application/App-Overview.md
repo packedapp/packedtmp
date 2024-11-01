@@ -18,7 +18,7 @@ Error handling
   Can happen doing runtime Internally
   
 
-  An App must either have threads running after it has started, or an entry point.
+  An App must either have threads running after it has started, an entry point, or ApplicationConfiguration.keepRunningUntilStopped
   Well no, not after we have added Close.
   
 == JobApp  (extends App????)

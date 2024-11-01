@@ -29,7 +29,8 @@ import app.packed.build.BuildException;
 import app.packed.operation.Op0;
 import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;
-import app.packed.service.ServiceLocator.Composer;
+import internal.app.packed.service.ServiceComposerLocator;
+import internal.app.packed.service.ServiceComposerLocator.Composer;
 
 /** Tests {@link Provide#constant()} on fields. */
 public class FieldInstanceTest {
@@ -111,7 +112,7 @@ public class FieldInstanceTest {
         // a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
 
-        a = assertThatThrownBy(() -> ServiceLocator.of(c -> {
+        a = assertThatThrownBy(() -> ServiceComposerLocator.of(c -> {
             c.lookup(MethodHandles.lookup());
             c.provideInstance(new AtomicBoolean());
             c.providePrototype(PrototypeField.class);
@@ -121,7 +122,7 @@ public class FieldInstanceTest {
     }
 
     private static ServiceLocator create(Consumer<? super Composer> consumer) {
-        return ServiceLocator.of(c -> {
+        return ServiceComposerLocator.of(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);
         });
@@ -149,7 +150,7 @@ public class FieldInstanceTest {
         Short s = 1;
 
         static void test(Consumer<? super Composer> configurator) {
-            ServiceLocator i = ServiceLocator.of(c -> {
+            ServiceLocator i = ServiceComposerLocator.of(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });

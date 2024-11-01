@@ -72,7 +72,7 @@ public record PackedBeanTemplate(BeanKind beanKind, LifetimeTemplate lifetime, @
 
     /** {@inheritDoc} */
     @Override
-    public <T> PackedBeanTemplate withBeanLocal(BeanBuildLocal<T> beanLocal, T value) {
+    public <T> PackedBeanTemplate withLocal(BeanBuildLocal<T> beanLocal, T value) {
         return new PackedBeanTemplate(this.beanKind, this.lifetime, this.createAs,
                 PackedBuildLocal.initMap(this.locals, (PackedBeanBuildLocal<?>) beanLocal, value), this.initializationTemplate);
     }

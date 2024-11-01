@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
+import app.packed.application.ApplicationException;
 import app.packed.application.ApplicationHandle;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.scanning.BeanTrigger.OnExtensionServiceBeanTrigger;
@@ -36,6 +37,7 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.ApplicationSetup.ApplicationBuildPhase;
 import internal.app.packed.container.wirelets.InternalBuildWirelet;
 import internal.app.packed.container.wirelets.WireletSelectionArray;
+import internal.app.packed.util.ThrowableUtil;
 
 /**
  * A temporary context object that is created whenever we launch an application.
@@ -90,6 +92,11 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
         return application.container().servicesMain().newExportedServiceLocator(runner.pool());
     }
 
+    @SuppressWarnings("unused")
+    public static final <A> A checkedLaunch(ApplicationHandle<A, ?> handle, RunState state, Wirelet... wirelets) throws ApplicationException {
+        return launch(handle, state, wirelets);
+    }
+
     /**
      * Launches an instance of the application this handle represents.
      * <p>
@@ -110,7 +117,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
         ApplicationSetup application = ApplicationSetup.crack(handle);
         requireNonNull(state, "state is null");
         if (application.phase != ApplicationBuildPhase.COMPLETED) {
-            throw new IllegalStateException("Application has not finished building");
+            throw new IllegalStateException("Cannot launch the application before it has finished building");
         }
 
         WireletSelectionArray<Wirelet> ws = WireletSelectionArray.of(wirelets);
@@ -135,7 +142,7 @@ public final class ApplicationLaunchContext implements Context<BaseExtension> {
         try {
             result = mh.invokeExact(context);
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw ThrowableUtil.orUndeclared(e);
         }
         return (A) result;
     }
