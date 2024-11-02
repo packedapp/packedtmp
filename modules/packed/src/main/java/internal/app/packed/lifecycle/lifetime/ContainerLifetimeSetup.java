@@ -22,8 +22,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import app.packed.bean.BeanKind;
-import app.packed.bean.BeanSourceKind;
 import app.packed.extension.ExtensionContext;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.util.Nullable;
@@ -31,8 +29,8 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerInstaller;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle;
-import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationInitializeHandle;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOnStartHandle;
+import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationInitializeHandle;
 import internal.app.packed.lifecycle.BeanLifecycleOperationHandle.LifecycleOperationStopHandle;
 import internal.app.packed.lifecycle.lifetime.entrypoint.EntryPointManager;
 import internal.app.packed.lifecycle.lifetime.runtime.PackedExtensionContext;
@@ -67,7 +65,6 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     public final List<LifecycleOperationInitializeHandle> initializationPre = new ArrayList<>();
 
-
     // Er ikke noedvendigvis fra et entrypoint, kan ogsaa vaere en completer
     public final Class<?> resultType;
 
@@ -82,6 +79,8 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
 
     public final List<LifecycleOperationStopHandle> stoppersPre = new ArrayList<>();
 
+    private final LifetimeStoreSetup store = new LifetimeStoreSetup();
+
     /**
      * @param origin
      * @param parent
@@ -93,16 +92,13 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
         this.resultType = installer.template.resultType();
 
         if (newContainer.isApplicationRoot()) {
-            reserve(ManagedLifetime.class);
+            store.addOther(ManagedLifetime.class);
         }
     }
 
     public int addBean(BeanSetup bean) {
         beans.add(bean);
-        if (bean.beanKind == BeanKind.CONTAINER && bean.beanSourceKind != BeanSourceKind.INSTANCE) {
-            return reserve(bean.beanClass);
-        }
-        return -1;
+        return store.addBean(bean);
     }
 
     public void initialize(ExtensionContext pool) {
@@ -130,7 +126,7 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     }
 
     public ExtensionContext newRuntimePool() {
-        return PackedExtensionContext.create(size);
+        return store.newRuntimePool();
     }
 
     public void orderDependencies() {
@@ -174,15 +170,6 @@ public final class ContainerLifetimeSetup extends AbstractTreeNode<ContainerLife
     @Override
     public @Nullable ContainerLifetimeSetup parent() {
         return treeParent;
-    }
-
-    /**
-     * Reserves room for a single object.
-     *
-     * @return the index to store the object in at runtime
-     */
-    private int reserve(Class<?> cls) {
-        return size++;
     }
 
     /** {@inheritDoc} */

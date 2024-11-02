@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import app.packed.bean.BeanAttachmentConfiguration;
 import app.packed.bean.BeanBuildLocal.Accessor;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanInstallationException;
@@ -77,6 +78,14 @@ public non-sealed abstract class BeanIntrospector implements Accessor {
 
     BeanSetup bean() {
         return requireNonNull(introspector().scanner.bean);
+    }
+
+    public final <T> BeanAttachmentConfiguration<T> attachToBean(Op<T> op) {
+        throw new UnsupportedOperationException();
+    }
+
+    public final <T> BeanAttachmentConfiguration<T> attachToBeanIfAbsent(Op<T> op) {
+        throw new UnsupportedOperationException();
     }
 
     /** {@return an annotation reader for the bean class.} */

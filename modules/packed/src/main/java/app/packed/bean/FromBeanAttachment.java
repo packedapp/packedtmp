@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component.guest;
+package app.packed.bean;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -32,4 +32,4 @@ import app.packed.extension.BaseExtension;
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
 @OnAnnotatedVariable(extension = BaseExtension.class)
-public @interface FromAttachment {}
+public @interface FromBeanAttachment {}

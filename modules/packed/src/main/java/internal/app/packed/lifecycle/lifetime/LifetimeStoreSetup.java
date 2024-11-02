@@ -29,13 +29,18 @@ import internal.app.packed.operation.OperationSetup;
  */
 public final class LifetimeStoreSetup {
 
-    final ArrayList<BeanSetup> entries = new ArrayList<>();
+    final ArrayList<Object> entries = new ArrayList<>();
 
     public int addBean(BeanSetup bean) {
         if (bean.beanKind == BeanKind.CONTAINER && bean.beanSourceKind != BeanSourceKind.INSTANCE) {
             entries.add(bean);
+            return entries.size()-1;
         }
         return -1;
+    }
+
+    public void addOther(Class<?> other) {
+        entries.add(other);
     }
 
     public ExtensionContext newRuntimePool() {
