@@ -13,27 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.errorhandling;
+package internal.app.packed.application.deployment;
 
-import static java.util.Objects.requireNonNull;
+import app.packed.application.ApplicationMirror;
+import app.packed.assembly.Assembly;
+import app.packed.container.Wirelet;
 
 /**
  *
  */
-public class ErrorMessage {
+public interface BootstrapLauncher2<R, T extends Throwable> {
 
-    private final String message;
+    R launch(Assembly assembly, Wirelet... wirelets) throws T;
 
-    private ErrorMessage(String message) {
-        this.message = requireNonNull(message, "message is null");
-    }
-
-    public static ErrorMessage of(String message) {
-        return new ErrorMessage(message);
-    }
-
-    @Override
-    public String toString() {
-        return message;
-    }
+    ApplicationMirror mirror(Assembly assembly, Wirelet... wirelets);
 }

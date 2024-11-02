@@ -130,7 +130,7 @@ public class ThreadExtension extends FrameworkExtension<ThreadExtension> {
                     DaemonOperationHandle h = on.newOperation(DAEMON_OPERATION_TEMPLATE).install(namespace, DaemonOperationHandle::new);
 
                     // Configure the handle
-                    h.useVirtual = daemon.useVirtual();
+                    h.useVirtual = daemon.threadKind() == ThreadKind.VIRTUAL_THREAD;
                 } else {
                     super.onAnnotatedMethod(hook, on);
                 }

@@ -13,26 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent;
+package app.packed.component.guest;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.scanning.BeanTrigger.OnAnnotatedMethod;
+import app.packed.bean.scanning.BeanTrigger.OnAnnotatedVariable;
+import app.packed.extension.BaseExtension;
 
 /**
- * Will have a dedicated thread.
+ * Can be used to annotated injectable parameters into a guest bean.
+ *
+ * @see ComponentHostContext
+ * @see OnComponentGuestLifecycle
  */
-@Target(ElementType.METHOD)
+@Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
-@OnAnnotatedMethod(allowInvoke = true, extension = ThreadExtension.class)
-public @interface Daemon {
-
-    // resume->Never, Always, backoff policy
-
-    boolean interruptOnStop() default false;
-
-    ThreadKind threadKind() default ThreadKind.PLATFORM_THREAD;
-}
+@OnAnnotatedVariable(extension = BaseExtension.class)
+public @interface FromAttachment {}

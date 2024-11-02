@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.errorhandling;
-
-import app.packed.operation.OperationSite;
-import app.packed.runtime.RunState;
+package app.packed.lifetime;
 
 /**
  *
  */
-public interface ErrorHandler {
-    boolean handle(RunState state, OperationSite operationSite, Exception cause);
+public enum LifetimeStoreEntryKind {
+    ATTACHMENT, BEAN, SIDECAR;
 }

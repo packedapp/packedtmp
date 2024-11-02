@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.util.types;
-
-import java.lang.reflect.Type;
-
-import app.packed.runtime.errorhandling.ErrorProcessor;
+package app.packed.runtime.errorhandling;
 
 /**
  *
  */
-@FunctionalInterface
-public interface TypeConverter<R> {
+public class Tester {
 
-    <T extends Throwable> R convert(Type type, ErrorProcessor<T> processor);
+    public static void main(String[] args) {
+    }
+
+    public static <T extends Throwable> double calc(int f, ErrorProcessor<T> ep) throws T {
+        if (f < 0) {
+            throw ep.onError("f must be positive");
+        }
+        return 3.0 / f;
+    }
 }

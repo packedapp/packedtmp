@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.errorhandling;
+package app.packed.lifetime;
+
+import java.util.List;
 
 /**
  *
  */
-@FunctionalInterface
-public interface ErrorProcessor<T extends Throwable> {
-    T onError(String message);
+public interface LifetimeStoreMirror {
+    int size();
+
+    List<LifetimeStoreEntryMirror> entries();
 }

@@ -58,7 +58,7 @@ public class CronFutureTask<V> extends FutureTask<V> implements RunnableSchedule
      */
     private long computeNextExecutionTime() {
         ZonedDateTime now = ZonedDateTime.now(zoneId);
-        ZonedDateTime nextTime = cronExpression.getNextValidTimeAfter(now);
+        ZonedDateTime nextTime = cronExpression.nextInZone(now);
         if (nextTime == null) {
             return -1; // Indicates no more executions
         }

@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import internal.app.packed.errorhandling.ErrorProcessor;
+import app.packed.runtime.errorhandling.ErrorProcessor;
 import testutil.stubs.TypeStubs;
 
 /**

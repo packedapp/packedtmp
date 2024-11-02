@@ -13,17 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.util.types;
-
-import java.lang.reflect.Type;
-
-import app.packed.runtime.errorhandling.ErrorProcessor;
+package app.packed.runtime.errorhandling;
 
 /**
  *
  */
-@FunctionalInterface
-public interface TypeConverter<R> {
+// IDK hoere den til i Bean?
+public class BeanErrorHandling {
 
-    <T extends Throwable> R convert(Type type, ErrorProcessor<T> processor);
 }

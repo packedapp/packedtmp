@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.errorhandling;
+package internal.app.packed.lifecycle.lifetime;
 
 /**
  *
  */
-// IDK hoere den til i Bean?
-public class BeanErrorHandling {
+public interface LifetimeStoreEntrySetup {
 
 }

@@ -135,7 +135,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
         this.owner = requireNonNull(installer.owner);
 
         ContainerLifetimeSetup containerLifetime = container.lifetime;
-        if (beanKind == BeanKind.CONTAINER || beanKind == BeanKind.STATIC) {
+        if (beanKind == BeanKind.CONTAINER) {
             this.lifetime = containerLifetime;
             this.lifetimeStoreIndex = container.lifetime.addBean(this);
         } else {
@@ -149,7 +149,7 @@ public final class BeanSetup implements ContextualizedComponentSetup, BuildLocal
             scanner = new BeanScanner(this);
         }
 
-        for (PackedContextTemplate t :  installer.template.initializationTemplate().contexts) {
+        for (PackedContextTemplate t : installer.template.initializationTemplate().contexts) {
             contexts.put(t.contextClass(), new ContextSetup(t, this));
         }
     }

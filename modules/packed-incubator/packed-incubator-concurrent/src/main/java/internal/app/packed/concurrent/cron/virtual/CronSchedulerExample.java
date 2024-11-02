@@ -13,7 +13,7 @@ public class CronSchedulerExample {
 
         String cronExpressionStr = "0/1 * * * *"; // Every minute
         ZoneId zoneId = ZoneId.systemDefault();
-        CronExpression cronExpression = new CronExpression(cronExpressionStr);
+        CronExpression cronExpression = CronExpression.of(cronExpressionStr);
 
         ScheduledFuture<?> future = scheduler.schedule(() -> {
             System.out.println("Task executed at " + ZonedDateTime.now(zoneId));

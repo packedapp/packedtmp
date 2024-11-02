@@ -17,6 +17,7 @@ package app.packed.operation;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.List;
 import java.util.Map;
 
 import app.packed.bean.BeanKind;
@@ -29,6 +30,14 @@ import internal.app.packed.operation.PackedOperationTemplate;
  *
  * <p>
  */
+
+
+// Return types
+/// Checks
+/// Mappers (fx sealed record faetter)
+/// Sidecar extractor
+
+
 public sealed interface OperationTemplate permits PackedOperationTemplate {
 
     // Skal hellere vaere BeanPackaging
@@ -40,6 +49,8 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
 
     // Replace With ContextTemplate.Descriptor
     Map<Class<?>, ContextTemplate> contexts();
+
+    List<Class<? extends Throwable>> allowedThrowables();
 
     /**
      *
@@ -89,6 +100,8 @@ public sealed interface OperationTemplate permits PackedOperationTemplate {
     // Field type, Method return Type
     // The operation template will be re-adjusted before being used
     OperationTemplate withReturnTypeDynamic();
+
+    OperationTemplate withAllowedThrowables(Class<? extends Throwable> allowed);
 
     /**
     *

@@ -12,7 +12,7 @@ import java.util.concurrent.TimeoutException;
 public class CronScheduler {
 
     public static <T> ScheduledFuture<T> schedule(String cronExpression, Callable<T> callable, ScheduledExecutorService executorService) throws Exception {
-        CronExpression cron = new CronExpression(cronExpression);
+        CronExpression cron = CronExpression.of(cronExpression);
         CronScheduledFuture<T> future = new CronScheduledFuture<>(cron, callable, executorService);
         future.scheduleNext();
         return future;
@@ -40,7 +40,7 @@ public class CronScheduler {
                 return;
             }
             ZonedDateTime now = ZonedDateTime.now();
-            ZonedDateTime nextValidTime = cronExpression.getNextValidTimeAfter(now);
+            ZonedDateTime nextValidTime = cronExpression.nextInZone(now);
             if (nextValidTime == null) {
                 // No more executions
                 return;

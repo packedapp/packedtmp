@@ -24,6 +24,13 @@ import app.packed.context.Context;
  *
  */
 // Implements Serializable??
+
+// Important that we only make one of them per operation.
+// Because if we use it as a key in a map. The equals method is going to be very long
+// Maybe we compare for Identity only...
+
+// Is Static!
+// Maybe we can use already with interceptors filters
 public interface OperationSite {
     Class<?> beanClass();
 
@@ -37,7 +44,7 @@ public interface OperationSite {
 
     String containerPath();
 
-    Set<? extends Context<?>> contexts();
+    Set<Class<? extends Context<?>>> contexts();
 
     /** {@return the component path of the operation} */
     ComponentPath operationComponentPath();

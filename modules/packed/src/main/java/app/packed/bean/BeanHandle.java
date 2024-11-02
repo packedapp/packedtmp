@@ -93,6 +93,10 @@ public non-sealed class BeanHandle<C extends BeanConfiguration> extends Componen
         bean.multiInstall = bean.multiInstall | 1 << 31;
     }
 
+    public final void attach(Op<?> op) {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     public final Class<?> beanClass() {
         return bean.beanClass;

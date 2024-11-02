@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.util.types;
+package app.packed.runtime.errorhandling;
 
-import java.lang.reflect.Type;
-
-import app.packed.runtime.errorhandling.ErrorProcessor;
+import app.packed.build.BuildActor;
+import app.packed.extension.BaseExtension;
+import app.packed.namespace.NamespaceConfiguration;
+import app.packed.namespace.NamespaceHandle;
 
 /**
  *
  */
-@FunctionalInterface
-public interface TypeConverter<R> {
+public final class ErrorHandlingNamespaceConfiguration extends NamespaceConfiguration<BaseExtension> {
 
-    <T extends Throwable> R convert(Type type, ErrorProcessor<T> processor);
+    /**
+     * @param namespace
+     * @param extension
+     * @param actor
+     */
+    protected ErrorHandlingNamespaceConfiguration(NamespaceHandle<BaseExtension, ?> namespace, BaseExtension extension, BuildActor actor) {
+        super(namespace, extension, actor);
+    }
+
 }

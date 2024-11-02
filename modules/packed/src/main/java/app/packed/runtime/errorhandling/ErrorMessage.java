@@ -13,25 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.errorhandling;
+package app.packed.runtime.errorhandling;
 
-import app.packed.build.BuildActor;
-import app.packed.extension.BaseExtension;
-import app.packed.namespace.NamespaceConfiguration;
-import app.packed.namespace.NamespaceHandle;
+import static java.util.Objects.requireNonNull;
 
 /**
  *
  */
-public final class ErrorHandlingNamespaceConfiguration extends NamespaceConfiguration<BaseExtension> {
+public class ErrorMessage {
 
-    /**
-     * @param namespace
-     * @param extension
-     * @param actor
-     */
-    protected ErrorHandlingNamespaceConfiguration(NamespaceHandle<BaseExtension, ?> namespace, BaseExtension extension, BuildActor actor) {
-        super(namespace, extension, actor);
+    private final String message;
+
+    private ErrorMessage(String message) {
+        this.message = requireNonNull(message, "message is null");
     }
 
+    public static ErrorMessage of(String message) {
+        return new ErrorMessage(message);
+    }
+
+    @Override
+    public String toString() {
+        return message;
+    }
 }

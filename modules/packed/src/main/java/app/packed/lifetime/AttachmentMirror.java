@@ -13,17 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.util.types;
+package app.packed.lifetime;
 
-import java.lang.reflect.Type;
-
-import app.packed.runtime.errorhandling.ErrorProcessor;
+import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationMirror;
 
 /**
  *
  */
-@FunctionalInterface
-public interface TypeConverter<R> {
+public non-sealed class AttachmentMirror extends OperationMirror implements LifetimeStoreEntryMirror {
 
-    <T extends Throwable> R convert(Type type, ErrorProcessor<T> processor);
+    /**
+     * @param handle
+     */
+    public AttachmentMirror(OperationHandle<?> handle) {
+        super(handle);
+    }
+
 }

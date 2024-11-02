@@ -28,6 +28,8 @@ public final class PackedOperationTemplate implements OperationTemplate {
 
     public static PackedOperationTemplate DEFAULTS = new PackedOperationTemplate(ReturnKind.CLASS, Object.class, true, null, List.of(), List.of());
 
+    public final List<Class<? extends Throwable>> allowedThrowables = List.of(Throwable.class);
+
     /** Additional args */
     // I don't know if it useful, can't remember if we ditched it because of embedded args
     // Where it doesn't really make sense to talk about the position
@@ -73,6 +75,12 @@ public final class PackedOperationTemplate implements OperationTemplate {
         if (methodType == MethodType.methodType(Object.class, ExtensionContext.class, PackedExtensionContext.class)) {
             throw new Error();
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<Class<? extends Throwable>> allowedThrowables() {
+        return allowedThrowables;
     }
 
     // I think just a nullable Class
@@ -177,4 +185,9 @@ public final class PackedOperationTemplate implements OperationTemplate {
         CLASS, DYNAMIC, IGNORE;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public OperationTemplate withAllowedThrowables(Class<? extends Throwable> allowed) {
+        return null;
+    }
 }

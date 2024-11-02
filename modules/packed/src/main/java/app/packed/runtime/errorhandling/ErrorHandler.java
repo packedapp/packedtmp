@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.util.types;
+package app.packed.runtime.errorhandling;
 
-import java.lang.reflect.Type;
-
-import app.packed.runtime.errorhandling.ErrorProcessor;
+import app.packed.operation.OperationSite;
+import app.packed.runtime.RunState;
 
 /**
  *
  */
-@FunctionalInterface
-public interface TypeConverter<R> {
-
-    <T extends Throwable> R convert(Type type, ErrorProcessor<T> processor);
+public interface ErrorHandler {
+    boolean handle(RunState state, OperationSite operationSite, Exception cause);
 }

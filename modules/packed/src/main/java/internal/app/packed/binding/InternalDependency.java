@@ -30,8 +30,8 @@ import app.packed.binding.Key;
 import app.packed.binding.Variable;
 import app.packed.build.BuildException;
 import app.packed.operation.OperationType;
+import app.packed.runtime.errorhandling.ErrorMessageBuilder;
 import app.packed.util.Nullable;
-import internal.app.packed.errorhandling.ErrorMessageBuilder;
 import internal.app.packed.util.types.ClassUtil;
 import internal.app.packed.util.types.Types;
 

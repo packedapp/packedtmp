@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class VirtualCronScheduler {
 
     public static <T> ScheduledFuture<T> schedule(String cronExpression, ZoneId zoneId, Callable<T> callable) throws Exception {
-        CronExpression cron = new CronExpression(cronExpression);
+        CronExpression cron = CronExpression.of(cronExpression);
         CronScheduledFuture<T> future = new CronScheduledFuture<>(cron, callable, zoneId);
         future.start();
         return future;
@@ -47,7 +47,7 @@ public class VirtualCronScheduler {
                 try {
                     while (!cancelled) {
                         ZonedDateTime now = ZonedDateTime.now(zoneId);
-                        ZonedDateTime nextTime = cronExpression.getNextValidTimeAfter(now);
+                        ZonedDateTime nextTime = cronExpression.nextInZone(now);
                         if (nextTime == null) {
                             break; // No more scheduled times
                         }

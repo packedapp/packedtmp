@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.util.types;
-
-import java.lang.reflect.Type;
-
-import app.packed.runtime.errorhandling.ErrorProcessor;
+package app.packed.concurrent;
 
 /**
  *
  */
-@FunctionalInterface
-public interface TypeConverter<R> {
-
-    <T extends Throwable> R convert(Type type, ErrorProcessor<T> processor);
+public enum ThreadKind {
+    PLATFORM_THREAD, VIRTUAL_THREAD
 }

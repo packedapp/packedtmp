@@ -35,6 +35,7 @@ public class ApplicationException extends Exception {
 
     // Maybe OperationSite is optional.
     // For example, if I shutdown with a failure
+    // ApplicationException. Maybe we cannot shut it down with a failure from the outside?
 
     public ApplicationException(RunState state, OperationSite operationSite, String message) {
         super(message);
